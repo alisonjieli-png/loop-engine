@@ -130,7 +130,9 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
    that a checkbox opens, so the menu works without the page script and nothing moves when the script runs. The checkbox is
    hidden from sight but not from the keyboard, and its focus shows on the menu button. With enlarged text the bar wraps
    onto a second line instead of running off the screen. */
-.header{position:relative;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;min-height:72px;padding:0 var(--band-gutter);background:var(--paper);border-bottom:1px solid var(--border)}
+/* The bar stays in view while the page scrolls, on a solid ground under its rule, so the pages and the action are always one
+   press away. It sits below the safe area of a phone's screen. */
+.header{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;min-height:72px;padding:0 var(--band-gutter);background:var(--paper);border-bottom:1px solid var(--border)}
 .header .brand,.site-footer .brand{display:inline-flex;align-items:center;gap:.625rem;color:var(--ink);font-size:1.25rem;font-weight:700;letter-spacing:-.02em;text-decoration:none;white-space:nowrap}
 /* The mark is a placeholder the owner will replace: one file, baltor-mark.svg, used here and as the page icon. */
 .brand .brand-mark{display:block;flex-shrink:0;width:32px;height:32px;background:none;border-radius:7px}
@@ -139,6 +141,8 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
 .header nav a:hover{color:var(--ink)}
 .header nav a[aria-current=page]{color:var(--ink);box-shadow:0 2px 0 var(--button)}
 .header .nav-sign-in{margin-left:auto}
+/* Six page links, Sign in and the primary action share one row down to 861 pixels; below 1180 they sit closer together. */
+@media(max-width:1180px) and (min-width:861px){.header{column-gap:1.25rem}.header nav{column-gap:1.25rem}}
 .header .header-primary{flex-shrink:0;min-height:44px;padding:.5rem 1.25rem;border-radius:var(--radius-field);font-size:.9375rem}
 /* Signed in, the account entry stands where Sign in stood and Sign out where the primary action stood, as a quiet button,
    because it ends something rather than starting it. */
@@ -167,6 +171,12 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
   .header .nav-sign-out{width:100%;min-height:44px;padding:.8rem 0;border:0;border-radius:0;background:none;color:var(--muted);font-weight:500;text-align:left}
   .header .nav-sign-out:not(:disabled):hover{color:var(--ink)}
 }
+/* A phone held sideways has a short screen, so the sticky bar is slimmer there. */
+@media(max-height:500px) and (max-width:1000px){.header{min-height:52px;padding-top:.25rem;padding-bottom:.25rem}}
+/* A link to a part of a page lands below the sticky bar, not behind it. */
+main [id]{scroll-margin-top:5.25rem}
+@media(max-width:860px){main [id]{scroll-margin-top:4.75rem}}
+@media(max-height:500px) and (max-width:1000px){main [id]{scroll-margin-top:4rem}}
 /* On the narrowest phones the mark stands without the name beside it, so the bar stays on one line. The link keeps its name. */
 @media(max-width:380px){.header .brand-name{display:none}}
 
@@ -352,7 +362,11 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 
 /* The footer: four columns, the operator's address and the appearance switch. */
 .site-footer{display:block;padding:4rem var(--band-gutter) 3rem;background:var(--paper);border-top:1px solid var(--rule);color:var(--muted);font-size:.9375rem}
-.footer-grid{display:grid;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));gap:2.5rem;max-width:var(--content-max);margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(auto-fit,minmax(9rem,1fr));gap:2.5rem;max-width:var(--content-max);margin:0 auto}
+/* A footer group shows once it holds a link, so a group waiting for its pages takes no room. */
+.site-footer .footer-links:not(:has(a)){display:none}
+.footer-base{display:inline-flex;align-items:center;gap:.5rem}
+.footer-base .brand-mark{width:20px;height:20px;border-radius:5px}
 .site-footer .footer-brand{display:flex;flex-direction:column;gap:.875rem;min-width:0}
 .site-footer .footer-brand p{margin:0;max-width:20rem;color:var(--subtle)}
 .footer-status{display:inline-flex;align-items:center;gap:.5rem;font-size:.875rem}
@@ -379,7 +393,7 @@ main:has(> [data-view="setup"]:not([hidden])){max-width:none;padding:0}
 .start-intro h1{max-width:none;font-size:clamp(2.25rem,3.6vw,3.25rem);line-height:1.06;letter-spacing:-.035em}
 .start-intro .lede{max-width:47.5rem;margin:0;color:var(--muted);font-size:var(--text-lead);line-height:1.6}
 .start-layout{display:grid;grid-template-columns:minmax(0,18.75rem) minmax(0,1fr);gap:3.5rem;align-items:start;padding:3.5rem max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 6rem}
-.start-steps-nav{position:sticky;top:1.5rem;flex:initial}
+.start-steps-nav{position:sticky;top:6rem;flex:initial}
 .start-steps-nav ol{display:flex;flex-direction:column;gap:.375rem;list-style:none;margin:0;padding:0}
 .start-steps-nav a{display:flex;align-items:flex-start;gap:.875rem;padding:.875rem 1rem;border:1px solid transparent;border-radius:12px;color:var(--ink);text-decoration:none}
 .start-steps-nav a:hover{background:var(--paper);border-color:var(--border);color:var(--ink)}
@@ -498,3 +512,24 @@ main:has(> [data-view="setup"]:not([hidden])){max-width:none;padding:0}
 @media(min-width:1024px){:is([data-view="workspace"],[data-view="account"]):not([hidden]){grid-template-columns:13.5rem minmax(0,1fr);gap:1.25rem 1.5rem}
   :is([data-view="workspace"],[data-view="account"])>*{grid-column:2}
   :is([data-view="workspace"],[data-view="account"])>.dashboard-nav{grid-column:1;grid-row:1/span 6;position:sticky;top:1.5rem;flex-direction:column;align-items:stretch}}
+
+/* The waiting list page: the introduction band of the Get started page, the invitation card, and beside it what happens after
+   you ask. On a phone the card comes first, so the email field stands in the first screen. */
+main:has(> [data-view="waitlist"]:not([hidden])){max-width:none;padding:0}
+.waitlist-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,22rem);gap:2rem;align-items:start;padding:2.5rem max(var(--band-gutter),calc((100% - var(--content-max)) / 2)) 4.5rem}
+.waitlist-card{display:flex;flex-direction:column;gap:.75rem;min-width:0;padding:2rem;border-radius:var(--radius-panel)}
+.waitlist-card h2{margin:0;font-size:1.375rem;letter-spacing:-.02em}
+.waitlist-card p{margin:0}
+.waitlist-card form{display:flex;flex-direction:column;gap:.5rem}
+.waitlist-card label{margin:.5rem 0 0;font-size:.9375rem;font-weight:600}
+.waitlist-card input{min-height:48px}
+.waitlist-card form button{align-self:flex-start;min-height:52px;margin-top:.75rem;padding:0 1.6rem;border-radius:var(--radius-button);font-size:1.0625rem}
+.waitlist-card .start-signin{color:var(--ink);font-weight:500}
+.waitlist-after{display:flex;flex-direction:column;gap:1rem;padding:1.75rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel)}
+.waitlist-after h2{margin:0;font-size:1.0625rem;letter-spacing:-.01em}
+.waitlist-steps{display:flex;flex-direction:column;gap:.75rem;margin:0;padding-left:1.25rem;color:var(--muted);font-size:.9375rem}
+.waitlist-links{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;margin:.5rem 0 0}
+.waitlist-links a{font-weight:600;text-decoration:none}
+.start-invite .button{align-self:flex-start}
+@media(max-width:900px){.waitlist-layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.waitlist-layout{padding-top:1.25rem;padding-bottom:3rem}.waitlist-card,.waitlist-after{padding:1.25rem}.waitlist-card textarea{height:4.5rem}}

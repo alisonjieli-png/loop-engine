@@ -14,10 +14,10 @@
     // A link to a part of a page, such as the library section of the homepage, is not the page itself.
     document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name && !(item.getAttribute("href") || "").includes("#")) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
-  // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
-  // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
-  // "/waitlist" is served and opens the same page too, because the invitation request form leads it.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"setup", "/auth/callback":"login"};
+  // "/setup" opens the guide, Get set up, and "/connect" stays an alias for it, so older links and emails still work.
+  // "/get-started" is the sign-up, registration and payment funnel. Until that page is merged, it opens the waiting list page.
+  // "/waitlist" opens the waiting list page, which holds the invitation form; the guide links to it.
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"waitlist", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"waitlist", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
@@ -25,7 +25,7 @@
   }
   const serviceName = document.title.split(" | ")[0];
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get set up", waitlist:"Request an invitation", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -34,15 +34,15 @@
      They are read only from this exact record version, because another version may rename a field or give it a different meaning.
      Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
      registration closed, the operator's address leading the Get started page, payment not open, personal keys described as being prepared.
-     Every public access action carries one label in each state and opens the Get started page. The owner, September 22, 2026:
-     "get started and join the waiting list are redundant". While account creation is closed the label is "Request an invitation"
-     and the address is /waitlist, where the invitation form or the way to reach the operator leads the page; while it is open the
-     label is "Get started". The state also shows in the note under the hero action and in the panel that leads the page. */
+     Every public access action says "Get started" and opens /get-started, the sign-up, registration and payment funnel, in every
+     state: the funnel adapts, so no label switches. The owner, September 22, 2026: "get started and join the waiting list are
+     redundant"; September 23: "'get started' is the sign up and registration/pay funnel", and the guide is "Get set up". The
+     state shows in the note under the hero action, in the plan's tag, in the closing note and in the panel that leads the guide. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Get started", href:"/connect", note:"Account creation is open", tag:"Open to new accounts",
+    open:{label:"Get started", href:"/get-started", note:"Account creation is open", tag:"Open to new accounts",
           closing:"Create your account today. Search is free, and invited accounts stay free."},
-    waiting:{label:"Request an invitation", href:"/waitlist", note:"Invitation only while we open in small groups", tag:"Invitation only",
+    waiting:{label:"Get started", href:"/get-started", note:"Invitation only while we open in small groups", tag:"Invitation only",
              closing:"Request an invitation today. Invited accounts are free while we open in small groups."}};
   const paymentStates = {
     open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
@@ -62,8 +62,8 @@
     }
     $("hero-access-note").textContent = state.note; $("home-plan-access").textContent = state.tag; $("closing-note").textContent = state.closing;
   };
-  /* The Get started page leads with one panel, read from the same record: account creation when registration is open, the
-     invitation request form when the service keeps a waiting list, and otherwise the plain way to reach the operator. The
+  /* The Get started page leads with one panel, read from the same record: account creation when registration is open, the way to
+     the invitation request page when the service keeps a waiting list, and otherwise the plain way to reach the operator. The
      operator's panel is also the careful state, so the served page shows it before the service answers. */
   const startState = website => website.registration_available === true ? "register" : website.waitlist_available === true ? "invite" : "operator";
   const applyStartState = state => {

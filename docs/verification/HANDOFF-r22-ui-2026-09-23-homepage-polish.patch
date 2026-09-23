@@ -1,0 +1,549 @@
+diff -ru a/src/loop_engine/core/service_runtime/web_assets/architecture.css b/src/loop_engine/core/service_runtime/web_assets/architecture.css
+--- a/src/loop_engine/core/service_runtime/web_assets/architecture.css	2026-09-23 09:40:58.894215722 -0400
++++ b/src/loop_engine/core/service_runtime/web_assets/architecture.css	2026-09-23 09:40:58.982017429 -0400
+@@ -52,25 +52,29 @@
+ #plan-keys-detail{display:block}
+ .closing-callout{align-items:center}
+ .closing-actions{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;flex-shrink:0}
+-.pricing-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:1.5rem;align-items:start}
++.pricing-grid{display:flex;flex-direction:column;gap:1.5rem}
++.plan-card{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:1rem 3rem;align-items:start}
++.plan-card-main{min-width:0}
+ .plan-card .section-heading{align-items:start}
+ .plan-price{font-size:clamp(2rem,3.6vw,2.7rem);line-height:1.05;letter-spacing:-.03em;font-weight:700;margin:.4rem 0 0}
+ .plan-period{display:block;font-size:.95rem;color:var(--muted);font-weight:500;letter-spacing:0;margin-top:.4rem}
+-.plan-list{list-style:none;padding:0;margin:1.6rem 0 0}
+-.plan-list li{padding:1rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.95rem}
++.plan-list{list-style:none;padding:0;margin:0}
++.plan-list li{padding:.875rem 0;border-top:1px solid var(--border);color:var(--muted);font-size:.9375rem}
++.plan-list li:first-child{border-top:0;padding-top:0}
+ .plan-list strong{display:block;color:var(--ink);font-size:1rem;margin-bottom:.3rem}
+ .plan-card .actions{margin:1.8rem 0 .8rem}
+ #pricing-payment-state{color:var(--muted);font-size:.9rem;margin:0}
+-.pricing-notes{background:var(--bg)}
+-.pricing-notes h2{font-size:1.15rem}
+-.pricing-notes h3{font-size:1rem;margin:1.7rem 0 .4rem}
+-.pricing-notes p{color:var(--muted);font-size:.95rem;margin:.5rem 0 0}
+-.pricing-questions{margin:3rem 0 0}
+-.pricing-questions>h2{font-size:1.5rem;margin-bottom:.6rem}
++.pricing-notes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
++.pricing-note{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
++.pricing-note h2,.pricing-note h3{margin:0;font-size:1rem;letter-spacing:-.005em}
++.pricing-note p{margin:0;color:var(--muted);font-size:.9375rem}
++.pricing-questions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 3rem;margin:3rem 0 0}
++.pricing-questions>h2{grid-column:1/-1;font-size:1.5rem;margin:0 0 .6rem}
+ .pricing-questions details{border-top:1px solid var(--border);padding:.4rem 0}
+ .pricing-questions summary{cursor:pointer;font-weight:600;padding:.85rem 0;color:var(--ink)}
+ .pricing-questions p{color:var(--muted);margin:.2rem 0 1rem}
+-@media(max-width:1000px){.pricing-grid{grid-template-columns:1fr}}
++@media(max-width:1000px){.plan-card{grid-template-columns:minmax(0,1fr)}.pricing-notes{grid-template-columns:repeat(2,minmax(0,1fr))}}
++@media(max-width:640px){.pricing-notes,.pricing-questions{grid-template-columns:minmax(0,1fr)}}
+ /* Enlarged text on a narrow screen: the access actions wrap inside their band instead of pushing the page wider. */
+ [data-view=pricing]{overflow-wrap:anywhere}
+ .actions .button,.closing-actions .button,.pricing-teaser-side .button{max-width:100%;flex-shrink:1;flex-wrap:wrap;gap:.5rem;white-space:normal}
+@@ -111,15 +115,13 @@
+ .panel{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper);box-shadow:none}
+ .notice{background:var(--soft);border-radius:var(--radius-card)}
+ 
+-/* Status tags: what exists today, what is being built and what is planned. The colour pair differs on a night band. */
+-.status-tag{display:inline-flex;align-items:center;gap:.4rem;align-self:flex-start;width:fit-content;margin:0;padding:.25rem .65rem;border-radius:999px;font-size:.75rem;font-weight:600;line-height:1.4}
+-.status-tag.is-available,.status-tag.is-recorded,.status-tag.is-live{color:var(--ok);background:var(--ok-soft)}
+-.status-tag.is-building{color:var(--info);background:var(--info-soft)}
+-.status-tag.is-planned{color:var(--planned);background:var(--planned-soft)}
+-.status-tag.is-recorded::before{content:"";width:6px;height:6px;border-radius:999px;background:currentColor}
+-.band-night .status-tag.is-live,.band-night .status-tag.is-available{color:var(--night-live);background:var(--night-live-soft)}
+-.band-night .status-tag.is-building,.step-demo-harness .status-tag.is-building{color:var(--night-building);background:var(--night-building-soft)}
+-.band-night .status-tag.is-planned{color:var(--night-planned);background:var(--night-planned-soft)}
++/* Status labels: what exists today, what is being built and what is planned. A coloured dot and a word, with no pill, so a grid
++   of cards does not fill with competing badges. */
++.status-tag{display:inline-flex;align-items:center;gap:.45rem;align-self:flex-start;width:fit-content;margin:0;padding:0;border-radius:0;background:none;font-size:.8125rem;font-weight:600;line-height:1.4}
++.status-tag::before{content:"";flex:none;width:7px;height:7px;border-radius:999px;background:currentColor}
++.status-tag.is-available,.status-tag.is-recorded,.status-tag.is-live{color:var(--ok)}
++.status-tag.is-building{color:var(--info)}
++.status-tag.is-planned{color:var(--planned)}
+ 
+ /* Lists with a check mark drawn in the style sheet, so no image is fetched. */
+ .check-list,.hero-facts{list-style:none;margin:0;padding:0}
+@@ -186,50 +188,39 @@
+ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
+ .home-band{padding:var(--band-pad) max(var(--band-gutter),calc((100% - var(--content-max)) / 2));background:var(--ground);border-top:1px solid var(--rule);min-width:0}
+ .home-band.band-plain{background:var(--band)}
+-.home-band.band-night{background:var(--night);color:var(--night-ink);border-top-color:var(--night-rule)}
+-.band-night :focus-visible{outline-color:var(--night-accent)}
++.home-band.band-tint{background:var(--tint)}
+ .home-band .section-title{display:flex;flex-direction:column;gap:1rem;max-width:47.5rem}
+ .home-band .section-title>*{margin:0}
+ .home-band .section-title h2{font-size:var(--text-h2);line-height:1.1;letter-spacing:-.03em;text-wrap:balance}
+-.home-band .section-title>p:not(.eyebrow){font-size:var(--text-lead);line-height:1.6;color:var(--muted)}
+-.band-night .eyebrow{color:var(--night-accent)}
+-.band-night .section-title h2{color:#FFFFFF}
+-.band-night .section-title>p:not(.eyebrow){color:var(--night-muted)}
+-
+-/* The hero: the headline and the one action on the left, the demonstration of one step on the right, on a faint dot grid. */
+-.home-band.band-hero{border-top:0;padding-top:clamp(2.5rem,6.1vw,5.5rem);padding-bottom:clamp(2.75rem,6.7vw,6rem);background-color:var(--ground);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:22px 22px}
+-/* The opening message and its action lead; the supporting words sit beside them on a wide screen and under the action on a
+-   phone; the demonstration of one step follows below at the full width of the page. */
+-.band-hero .hero.product-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:end;max-width:none;margin:0;padding:0}
+-@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:3rem clamp(3rem,6vw,6rem)}}
+-.band-hero .hero.product-hero>.step-demo{grid-column:1/-1;margin-top:1rem}
+-.band-hero .hero-aside{display:flex;flex-direction:column;gap:1rem;min-width:0;padding-top:1.25rem;border-top:1px solid var(--line-strong)}
+-.band-hero .hero-aside>*{margin:0}
+-.band-hero .hero-copy{display:flex;flex-direction:column;gap:1.75rem;min-width:0}
++.home-band .section-title>p:not(.eyebrow){font-size:1.125rem;line-height:1.6;color:var(--muted)}
++
++/* The hero: one centred column on a faint dot grid. The promise, the plain definition of a harness, the one action and two facts.
++   The demonstration follows in a band of its own. */
++.home-band.band-hero{border-top:0;padding-top:clamp(3rem,6.5vw,6rem);padding-bottom:clamp(3rem,6.5vw,6rem);background-color:var(--ground);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:22px 22px}
++.band-hero .hero.product-hero{display:flex;flex-direction:column;align-items:center;max-width:none;margin:0;padding:0;text-align:center}
++.band-hero .hero-copy{display:flex;flex-direction:column;align-items:center;gap:1.5rem;max-width:52rem;min-width:0}
+ .band-hero .hero-copy>*{margin:0}
+-.band-hero .hero-chip{align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;min-height:32px;padding:0 .875rem;border:1px solid var(--border);border-radius:999px;background:var(--paper);color:var(--muted);font-size:.8125rem;font-weight:500;letter-spacing:0;text-transform:none}
++.band-hero .hero-chip{display:inline-flex;align-items:center;gap:.5rem;min-height:32px;padding:0 .875rem;border:1px solid var(--border);border-radius:999px;background:var(--paper);color:var(--muted);font-size:.8125rem;font-weight:500;letter-spacing:0;text-transform:none}
+ .band-hero .hero-chip .status-dot{width:8px;height:8px;margin:0;background:var(--button)}
+-.band-hero .hero.product-hero h1{font-size:var(--text-hero);line-height:1.04;letter-spacing:-.035em;text-wrap:balance;max-width:none}
+-.band-hero .hero-subhead,.band-hero .hero-positioning{max-width:40rem;padding:0;border:0;font-size:var(--text-lead);line-height:1.55;color:var(--muted);font-weight:400;text-wrap:pretty}
+-.band-hero .hero-subhead{color:var(--ink)}
+-.band-hero .hero-aside .hero-positioning{font-size:1rem;line-height:1.6}
+-.band-hero .hero-actions{display:flex;flex-wrap:wrap;gap:.75rem}
++.band-hero .hero.product-hero h1{max-width:15ch;font-size:var(--text-hero);line-height:1.04;letter-spacing:-.035em;text-wrap:balance}
++.band-hero .hero-subhead{max-width:40rem;padding:0;border:0;color:var(--ink);font-size:var(--text-lead);font-weight:400;line-height:1.55;text-wrap:pretty}
++.band-hero .hero-positioning{max-width:40rem;padding:0;border:0;color:var(--subtle);font-size:.9375rem;line-height:1.55;text-wrap:pretty}
++.band-hero .hero-subhead+.hero-positioning{margin-top:-.75rem}
++.band-hero .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
+ .band-hero .hero-actions .button{min-height:52px;padding:0 1.6rem;font-size:1.0625rem}
+-.band-hero .hero-facts{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;color:var(--subtle);font-size:.875rem}
+-.band-hero .hero-split{max-width:40rem;color:var(--subtle);font-size:.875rem;font-weight:400}
+-.band-hero .hero-split .hero-value{color:inherit;font-size:inherit}
++.band-hero .hero-facts{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 1.4rem;color:var(--subtle);font-size:.875rem}
+ 
+ /* The demonstration of one step. The search and the download are recorded from this release's library; the fresh harness
+    below them is being built. Everything is visible at once, so it reads without the page script and never moves by itself. */
+ .step-demo{min-width:0;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);box-shadow:var(--panel-shadow);overflow:hidden}
+ .step-demo-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1rem;padding:1rem 1.375rem;border-bottom:1px solid var(--border);background:var(--panel-head)}
+ .step-demo-head>div{min-width:0}
+-.step-demo-eyebrow{margin:0;color:var(--subtle);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+-.step-demo-head h2{margin:.15rem 0 0;font-size:.9375rem;font-weight:600;letter-spacing:0}
++.demo-section{display:flex;flex-direction:column;gap:2rem}
++.step-demo-head h3{margin:0;font-size:1rem;font-weight:600;letter-spacing:-.005em}
+ .step-demo-parts{display:flex;flex-direction:column;gap:1rem;list-style:none;margin:0;padding:1.25rem 1.375rem}
+ .step-demo-part{display:grid;grid-template-columns:24px minmax(0,1fr);gap:.75rem;align-items:start}
+ .step-demo-number{display:grid;place-items:center;width:24px;height:24px;margin-top:8px;border-radius:999px;background:var(--button);color:var(--button-ink);font-size:.75rem;font-weight:700}
+-.step-demo-number.is-dark{background:var(--night);color:#FFFFFF}
++.step-demo-number.is-dark{background:var(--paper);border:1.5px solid var(--line-strong);color:var(--muted)}
+ .step-demo-body{min-width:0}
+ .step-demo-query code{min-width:0}
+ @media(min-width:1100px){.step-demo-parts{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-areas:"search folder" "download folder";gap:1rem 2rem;align-items:start}
+@@ -250,14 +241,14 @@
+ .step-demo-download{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem .75rem;margin:0;padding:.625rem .875rem;border-radius:var(--radius-field);background:var(--bg);font-family:var(--font-mono);font-size:.8125rem}
+ .step-demo-ok{display:inline-flex;align-items:center;gap:.45rem;color:var(--ok);font-family:var(--font-ui);font-size:.8125rem;font-weight:600}
+ .step-demo-ok::before{content:"";width:.35rem;height:.65rem;margin:0 .15rem .2rem .1rem;border:solid currentColor;border-width:0 .15rem .15rem 0;transform:rotate(45deg)}
+-.step-demo-harness{display:flex;flex-direction:column;gap:.625rem;padding:.875rem 1rem;border-radius:12px;background:var(--night)}
++.step-demo-harness{display:flex;flex-direction:column;gap:.625rem;padding:.875rem 1rem;border:1px dashed var(--line-strong);border-radius:12px;background:var(--panel-head)}
+ .step-demo-harness-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem .75rem}
+ /* On a phone the folder keeps its paths and drops the notes beside them, so the tree needs less sideways room. */
+ @media(max-width:600px){.step-demo-note-inline{display:none}}
+-.step-demo-harness-head p:first-child{margin:0;color:var(--night-ink);font-size:.8125rem;font-weight:600}
++.step-demo-harness-head p:first-child{margin:0;color:var(--ink);font-size:.8125rem;font-weight:600}
+ .step-demo-harness .status-tag{font-size:.6875rem}
+-.step-demo .step-demo-tree{margin:0;padding:0;max-height:none;border:0;border-radius:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.78125rem;line-height:1.65;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+-.step-demo-note-inline{color:var(--night-muted)}
++.step-demo .step-demo-tree{margin:0;padding:0;max-height:none;border:0;border-radius:0;background:none;color:var(--ink);font-family:var(--font-mono);font-size:.78125rem;line-height:1.65;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
++.step-demo-note-inline{color:var(--subtle)}
+ 
+ /* The harness strip. */
+ .home-band.band-strip{padding-top:1.875rem;padding-bottom:1.875rem}
+@@ -271,29 +262,32 @@
+ .harness-note{margin:0;color:var(--subtle);font-size:.875rem}
+ 
+ /* The six problems, each with the honest state of the part behind it. */
+-.problems,.how-band,.trust{display:flex;flex-direction:column;gap:3.5rem}
++.problems,.how-band,.trust,.today{display:flex;flex-direction:column;gap:2.5rem}
+ .problem-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+-.problem{display:flex;flex-direction:column;gap:.875rem;min-width:0;padding:1.75rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+-.problem h3{margin:0;font-size:1.25rem;line-height:1.3}
+-.problem p:not(.status-tag){margin:0;color:var(--muted);font-size:1rem;line-height:1.6}
++.problem,.how-step,.kind,.today-grid li{display:flex;flex-direction:column;gap:.625rem;min-width:0;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
++.problem h3,.today-grid h3{margin:0;font-size:1.125rem;line-height:1.3}
++.problem p:not(.status-tag),.today-grid p{margin:0;color:var(--muted);font-size:.9375rem;line-height:1.55}
+ .problem .status-tag,.how-step .status-tag{margin-top:auto}
+ .problem-icon{flex-shrink:0;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ @media(max-width:980px){.problem-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+-@media(max-width:640px){.problem-grid{grid-template-columns:minmax(0,1fr)}.problem{gap:.625rem;padding:1.25rem}}
++@media(max-width:640px){.problem-grid{grid-template-columns:minmax(0,1fr)}.problem{gap:.5rem;padding:1.25rem}}
++.today-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem;list-style:none;margin:0;padding:0}
++@media(max-width:1100px){.today-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
++@media(max-width:560px){.today-grid{grid-template-columns:minmax(0,1fr)}.today-grid li{padding:1.25rem}}
+ 
+-/* How it works, on a night band: five steps and the one connection entry. */
++/* How it works, on a light tint: five steps and the one connection entry. The entry is the one dark block on the page, because
++   it is code. */
+ .how-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1rem;list-style:none;margin:0;padding:0}
+-.how-step{display:flex;flex-direction:column;gap:.75rem;min-width:0;padding:1.5rem;background:var(--night-card);border:1px solid var(--night-rule);border-radius:var(--radius-card)}
+-.how-index{color:var(--night-accent);font-family:var(--font-mono);font-size:.8125rem}
+-.how-step h3{margin:0;color:#FFFFFF;font-size:1.1875rem}
+-.how-step p:not(.status-tag){margin:0;color:var(--night-muted);font-size:.9375rem;line-height:1.55}
++.how-index{color:var(--accent);font-family:var(--font-mono);font-size:.8125rem}
++.how-step h3{margin:0;font-size:1.125rem}
++.how-step p:not(.status-tag){margin:0;color:var(--muted);font-size:.9375rem;line-height:1.55}
+ .how-connect{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.25rem;align-items:stretch}
+-.how-connect-copy{display:flex;flex-direction:column;gap:.875rem;padding:1.75rem;background:var(--night-card);border:1px solid var(--night-rule);border-radius:var(--radius-card)}
+-.how-connect-copy h3{margin:0;color:#FFFFFF;font-size:1.25rem}
+-.how-connect-copy p{margin:0;color:var(--night-muted)}
+-.how-connect-copy code{color:var(--night-ink);background:none;padding:0}
+-.band-night .how-connect-copy .text-link{margin-top:auto;color:var(--night-accent)}
+-.band-night .how-code{margin:0;padding:1.5rem 1.75rem;max-height:none;background:var(--code-bg);border:1px solid var(--night-rule);border-radius:var(--radius-card);color:var(--code-ink);font-family:var(--font-mono);font-size:.875rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
++.how-connect-copy{display:flex;flex-direction:column;gap:.75rem;padding:1.75rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
++.how-connect-copy h3{margin:0;font-size:1.125rem}
++.how-connect-copy p{margin:0;color:var(--muted)}
++.how-connect-copy code{color:var(--ink);background:none;padding:0}
++.how-connect-copy .text-link{margin-top:auto}
++.how-code{margin:0;padding:1.5rem 1.75rem;max-height:none;background:var(--code-bg);border:1px solid var(--code-rule);border-radius:var(--radius-card);color:var(--code-ink);font-family:var(--font-mono);font-size:.875rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+ @media(max-width:1100px){.how-steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+ @media(max-width:760px){.how-steps,.how-connect{grid-template-columns:minmax(0,1fr)}.how-step{gap:.5rem;padding:1.25rem}}
+ 
+@@ -301,10 +295,10 @@
+ .library{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,25rem);gap:3.5rem;align-items:start}
+ .library-main{display:flex;flex-direction:column;gap:2.5rem;min-width:0}
+ .kind-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.875rem;list-style:none;margin:0;padding:0}
+-.kind{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:1.25rem;border:1px solid var(--border);border-radius:14px}
+ .kind h3{margin:0;font-size:1rem}
+ .kind-files{margin:0;color:var(--subtle);font-family:var(--font-mono);font-size:.8125rem;overflow-wrap:anywhere}
+-.kind .status-tag{margin-top:.25rem}
++.kind{padding:1.25rem}
++.kind .status-tag{margin-top:auto}
+ .library-facts{display:flex;flex-direction:column;gap:1.375rem;padding:2rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-panel)}
+ .library-count{display:flex;flex-direction:column;gap:.25rem;margin:0;padding-bottom:1.375rem;border-bottom:1px solid var(--border)}
+ .library-number{font-size:3rem;font-weight:700;line-height:1;letter-spacing:-.03em}
+@@ -315,27 +309,37 @@
+ @media(max-width:760px){.kind-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+ @media(max-width:480px){.kind-grid{grid-template-columns:minmax(0,1fr)}}
+ 
++/* Spend more time on the problem: the promise on the left, what you set on the right. */
++.optimize{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:2rem 4rem;align-items:center}
++.optimize-side{display:flex;flex-direction:column;gap:.75rem;padding:1.75rem;background:var(--ground);border:1px solid var(--border);border-radius:var(--radius-card)}
++.optimize-side h3{margin:0;font-size:1.125rem}
++.optimize-side p{margin:0;color:var(--muted)}
++@media(max-width:900px){.optimize{grid-template-columns:minmax(0,1fr)}}
++
+ /* Trust: three columns, each under a rule. */
+ .trust h2,.faq-intro h2{margin:0;font-size:var(--text-h2-small);line-height:1.12;letter-spacing:-.03em;max-width:47.5rem}
+ .trust-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+-.trust-grid li{display:flex;flex-direction:column;gap:.75rem;padding-top:1.25rem;border-top:2px solid var(--ink)}
+-.trust-grid h3{margin:0;font-size:1.25rem}
++.trust-grid li{display:flex;flex-direction:column;gap:.5rem;padding-top:1.25rem;border-top:2px solid var(--ink)}
++.trust-grid h3{margin:0;font-size:1.125rem}
+ .trust-grid p{margin:0;color:var(--muted)}
+ @media(max-width:760px){.trust-grid{grid-template-columns:minmax(0,1fr)}}
+ 
+-/* Pricing on the homepage: one plan card. */
+-.home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:start;margin:0;padding:0;border:0;background:none}
+-.plan-summary{display:flex;flex-direction:column;gap:1.5rem;padding:2.25rem;background:var(--paper);border:1px solid var(--line-strong);border-radius:20px;box-shadow:var(--card-shadow)}
++/* Pricing on the homepage: the heading above one wide card that holds the plan, its points and the action side by side, so
++   no column stands empty beside a taller card. */
++.home-band .pricing-teaser{display:flex;flex-direction:column;gap:2.5rem;margin:0;padding:0;border:0;background:none}
++.plan-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,.95fr);gap:2rem 3rem;align-items:center;padding:2.25rem 2.5rem;background:var(--paper);border:1px solid var(--line-strong);border-radius:20px;box-shadow:var(--card-shadow)}
++.plan-summary-main{display:flex;flex-direction:column;gap:.75rem;min-width:0}
++.plan-summary-note{margin:0;color:var(--muted);font-size:.9375rem}
+ .plan-summary-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem}
+ .plan-summary-head h3{margin:0;font-size:1.375rem;font-weight:700}
+ .plan-summary-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 .5rem;margin:0}
+ .plan-amount{font-size:3.5rem;font-weight:700;line-height:1;letter-spacing:-.03em}
+ .plan-per{color:var(--subtle);font-size:1rem}
+-.plan-summary .check-list{display:flex;flex-direction:column;gap:.75rem;color:var(--ink);font-size:1rem}
++.plan-summary .check-list{display:flex;flex-direction:column;gap:.625rem;color:var(--ink);font-size:.9375rem}
+ .home-band .pricing-teaser-side{display:flex;flex-direction:column;align-items:stretch;gap:.75rem;flex:none}
+ .home-band .pricing-teaser-side .button{min-height:52px;font-size:1.0625rem}
+ .home-band .pricing-teaser-side .caption,.home-band .pricing-teaser-side .text-link{margin:0;text-align:center}
+-@media(max-width:980px){.home-band .pricing-teaser{grid-template-columns:minmax(0,1fr);gap:2rem}}
++@media(max-width:980px){.plan-summary{grid-template-columns:minmax(0,1fr);gap:1.5rem;padding:1.75rem}}
+ 
+ /* Questions, answered. Native disclosure elements, so every answer opens without the page script. */
+ .faq{display:grid;grid-template-columns:minmax(0,25rem) minmax(0,1fr);gap:4rem;align-items:start}
+@@ -352,13 +356,13 @@
+ .faq-item p{margin:0;padding:0 1.75rem 1.5rem;color:var(--muted)}
+ @media(max-width:900px){.faq{grid-template-columns:minmax(0,1fr);gap:2rem}}
+ 
+-/* The closing band, on night blue, with the one action. */
+-.band-night .closing-band{display:flex;align-items:center;justify-content:space-between;gap:3rem;margin:0;padding:0;border:0;border-radius:0;background:none;color:var(--night-ink)}
+-.band-night .closing-band h2{margin:0;color:#FFFFFF;font-size:var(--text-h2);line-height:1.1;letter-spacing:-.03em}
+-.band-night .closing-band p{margin:.875rem 0 0;max-width:none;color:var(--night-muted);font-size:var(--text-lead)}
+-.band-night .closing-actions .button{min-height:56px;padding:0 1.9rem;font-size:1.125rem}
+-.band-night .benefit-limits{margin:3rem 0 0;padding-top:1.25rem;max-width:none;border-top:1px solid var(--night-rule);color:var(--night-muted)}
+-@media(max-width:800px){.band-night .closing-band{flex-direction:column;align-items:flex-start;gap:1.75rem}}
++/* The closing band, on the light tint, with the one action and the page link to Get started. */
++.home-band .closing-band{display:flex;align-items:center;justify-content:space-between;gap:2rem 3rem;margin:0;padding:0;border:0;border-radius:0;background:none}
++.home-band .closing-band h2{margin:0;font-size:var(--text-h2);line-height:1.1;letter-spacing:-.03em}
++.home-band .closing-band p{margin:.75rem 0 0;max-width:none;color:var(--muted);font-size:1.125rem}
++.home-band .closing-actions .button{min-height:56px;padding:0 1.9rem;font-size:1.125rem}
++[data-band="closing"] .benefit-limits{margin:2.5rem 0 0;padding-top:1.25rem;max-width:none;border-top:1px solid var(--line-strong);color:var(--subtle)}
++@media(max-width:800px){.home-band .closing-band{flex-direction:column;align-items:flex-start;gap:1.5rem}}
+ 
+ /* The footer: four columns, the operator's address and the appearance switch. */
+ .site-footer{display:block;padding:4rem var(--band-gutter) 3rem;background:var(--paper);border-top:1px solid var(--rule);color:var(--muted);font-size:.9375rem}
+diff -ru a/src/loop_engine/core/service_runtime/web_assets/index.html b/src/loop_engine/core/service_runtime/web_assets/index.html
+--- a/src/loop_engine/core/service_runtime/web_assets/index.html	2026-09-23 09:40:58.892279629 -0400
++++ b/src/loop_engine/core/service_runtime/web_assets/index.html	2026-09-23 09:40:58.942890674 -0400
+@@ -29,10 +29,13 @@
+     <section data-view="home">
+       <div class="home-band band-hero" data-band="hero">
+       <div class="hero product-hero">
+-        <div class="hero-copy"><p class="eyebrow hero-chip"><span class="status-dot" aria-hidden="true"></span>Harness and agent optimized operation</p><h1>Supercharge your developers and AI agents.</h1><p class="hero-subhead">Big tasks go better in small steps. Give each step a fresh harness that holds only what that step needs: nothing drifts, and smaller models can do more of the work.</p><div class="actions hero-actions"><a class="button primary" id="hero-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a><a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a></div><ul class="hero-facts"><li>Search is free</li><li>Works with Claude Code, Codex and OpenCode</li><li id="hero-access-note">Invitation only while we open in small groups</li></ul></div>
+-        <div class="hero-aside"><p class="hero-positioning">Harness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode. Today your agent can search Baltor's reviewed library at each step and download only what that step needs, with its source, licence and exact version. The fresh harness for each step is being built.</p><p class="hero-split">Free to install. Paid access to the library, one plan at 29 United States dollars each month. <span class="hero-value">Your model keys stay with you, and Baltor never asks you for a provider key.</span></p></div>
+-<section class="step-demo" id="step-demo" aria-labelledby="step-demo-title" data-step-demo>
+-<div class="step-demo-head"><div><p class="step-demo-eyebrow">What your coding agent sees at one step</p><h2 id="step-demo-title">Split the address lines in a customer file</h2></div><p class="status-tag is-recorded" data-demo-label="recorded">Recorded from this release's library</p></div>
++        <div class="hero-copy"><p class="eyebrow hero-chip"><span class="status-dot" aria-hidden="true"></span>Harness and agent optimized operation</p><h1>Supercharge your developers and AI agents.</h1><p class="hero-subhead">Give each step of a task a fresh harness that holds only what that step needs. Nothing drifts, and smaller models can do more of the work.</p><p class="hero-positioning">A harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode.</p><div class="actions hero-actions"><a class="button primary" id="hero-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a><a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a></div><ul class="hero-facts"><li>Search is free</li><li id="hero-access-note">Invitation only while we open in small groups</li></ul></div>
++      </div>
++      </div>
++      <div class="home-band band-plain band-demo" data-band="demo">
++      <section class="demo-section" id="step-demo" aria-labelledby="demo-heading"><div class="section-title"><p class="eyebrow">One step</p><h2 id="demo-heading">What your coding agent sees at one step.</h2><p>Search and download work today. The fresh harness is being built.</p></div>
++<div class="step-demo" data-step-demo role="group" aria-labelledby="step-demo-title">
++<div class="step-demo-head"><h3 id="step-demo-title">Split the address lines in a customer file</h3><p class="status-tag is-recorded" data-demo-label="recorded">Recorded from this release's library</p></div>
+ <ol class="step-demo-parts">
+ <li class="step-demo-part" data-demo-stage="search" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">1</span><div class="step-demo-body">
+ <p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-demo-query>split address lines in a customer file</code></p>
+@@ -40,48 +43,42 @@
+ <li data-demo-item="split_address_lines_into_components" class="is-chosen"><span class="step-demo-name">split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">3.0 KB</span> · sha256 <span data-fact="digest">27cc9e73</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+ <li data-demo-item="find_duplicate_records_with_blocking_keys"><span class="step-demo-name">find_<wbr>duplicate_<wbr>records_<wbr>with_<wbr>blocking_<wbr>keys</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">175d693f</span>…</span></li>
+ <li data-demo-item="normalize_whitespace_and_unicode_text"><span class="step-demo-name">normalize_<wbr>whitespace_<wbr>and_<wbr>unicode_<wbr>text</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">e8192ce1</span>…</span></li>
+-</ol></div></li>
+-<li class="step-demo-part" data-demo-stage="download" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">2</span><div class="step-demo-body">
+-<p class="step-demo-download"><code data-demo-download="split_address_lines_into_components">download split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</code><span class="step-demo-ok">Bytes match the digest · 1 download recorded</span></p></div></li>
+-<li class="step-demo-part" data-demo-stage="folder" data-demo-evidence="illustration"><span class="step-demo-number is-dark" aria-hidden="true">3</span><div class="step-demo-body step-demo-harness">
+-<div class="step-demo-harness-head"><p>A fresh harness, holding only this step's files</p><p class="status-tag is-building" data-demo-label="illustration">Being built</p></div>
+-<pre class="step-demo-tree" tabindex="0" aria-label="The folder for this step">step-folder/
+-├── <span data-demo-path="AGENTS.md">AGENTS.md</span><span class="step-demo-note-inline"></span>
+-├── <span data-demo-path="CLAUDE.md">CLAUDE.md</span><span class="step-demo-note-inline">                  imports @AGENTS.md</span>
+-├── <span data-demo-folder=".agents/skills/split-address-lines-into-components/">.agents/skills/split-address-lines-into-components/</span><span class="step-demo-note-inline"></span>
+-│   ├── <span data-demo-path=".agents/skills/split-address-lines-into-components/SKILL.md">SKILL.md</span><span class="step-demo-note-inline"></span>
+-│   └── <span data-demo-path=".agents/skills/split-address-lines-into-components/scripts/split_address_lines.py">scripts/split_address_lines.py</span><span class="step-demo-note-inline"></span>
+-├── <span data-demo-path=".mcp.json">.mcp.json</span><span class="step-demo-note-inline">                  this step's tools only</span>
+-└── <span data-demo-path=".baltor/step.lock.json">.baltor/step.lock.json</span><span class="step-demo-note-inline">     item, version, digest</span></pre>
+-</div></li>
+ </ol>
+-</section>
++</div>
++      </section>
+       </div>
++      <div class="home-band band-strip" data-band="harnesses">
++      <section class="harness-strip" aria-labelledby="harness-strip-title" data-offer="recipes"><h2 id="harness-strip-title">Works with the harness you already run</h2><ul class="harness-list"><li><span class="harness-name">Claude Code</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">Codex</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">OpenCode</span><span class="harness-state is-live">Connect today</span></li><li class="is-planned"><span class="harness-name">Pi</span><span class="harness-state">Planned</span></li></ul><p class="harness-note">Any client that speaks this service's protocol version can connect.</p></section>
+       </div>
+-      <div class="home-band band-plain band-strip" data-band="harnesses">
+-      <section class="harness-strip" aria-labelledby="harness-strip-title" data-offer="recipes"><h2 id="harness-strip-title">Works with the harness you already run</h2><ul class="harness-list"><li><span class="harness-name">Claude Code</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">Codex</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">OpenCode</span><span class="harness-state is-live">Connect today</span></li><li class="is-planned"><span class="harness-name">Pi</span><span class="harness-state">Planned</span></li></ul><p class="harness-note">Other clients can connect when they speak the protocol version this service accepts.</p></section>
++      <div class="home-band band-plain" data-band="today">
++      <section class="today" id="what-you-get" aria-labelledby="today-title"><div class="section-title"><p class="eyebrow">Available now</p><h2 id="today-title">Four things you can do today.</h2></div>
++      <ul class="today-grid"><li data-today="search"><h3>Search what your account may see</h3><p>References with source, licence, size and exact version, not whole files.</p></li><li data-today="download"><h3>Download an exact version and check it</h3><p>Access is checked again, and the bytes match the digest.</p></li><li data-today="connect"><h3>Connect the tools you already run</h3><p>One reviewed entry for Claude Code, Codex or OpenCode, never holding a key.</p></li><li data-today="usage"><h3>See what your tools took</h3><p>Every download is recorded under your account, item by item.</p></li></ul></section>
+       </div>
+       <div class="home-band" data-band="problems">
+-      <section class="problems" id="why" aria-labelledby="problems-title"><div class="section-title"><p class="eyebrow">Why teams use Baltor</p><h2 id="problems-title">Right-sized help for every step of the work.</h2><p>Long sessions drift and large models are costly. Baltor gives each step the material it asks for, so the work stays focused and smaller models can do more of it.</p></div>
++      <section class="problems" id="why" aria-labelledby="problems-title"><div class="section-title"><p class="eyebrow">Why teams use Baltor</p><h2 id="problems-title">Right-sized help for every step of the work.</h2><p>Long sessions drift and large models are costly. Each step gets only what it asks for.</p></div>
+       <ul class="problem-grid">
+-<li class="problem" data-problem="context"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><h3>Only the context a step needs</h3><p>Search returns short references. Your agent downloads only the item it chose, so a small step never carries the whole history.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+-<li class="problem" data-problem="model"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg><h3>Smaller models for smaller decisions</h3><p>With the right material in front of it, a smaller or local model can take on work that would otherwise need a large one.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+-<li class="problem" data-problem="expertise"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19V6a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"/><path d="M8 8h6"/></svg><h3>Expertise your agent does not have</h3><p>A reviewed library of skills. Every item is approved by reviewers who did not write it.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+-<li class="problem" data-problem="reuse"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg><h3>Reuse code instead of rewriting it</h3><p>Every item carries its source, licence and exact version, so proven work can be reused rather than generated again.</p><p class="status-tag is-building" data-status="building">Code packages coming</p></li>
+-<li class="problem" data-problem="mistakes"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg><h3>Fewer repeated mistakes</h3><p>What went wrong in earlier work is kept, so the next step can start from it instead of repeating it.</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+-<li class="problem" data-problem="overnight"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><h3>Long jobs that finish overnight</h3><p>Work is split into small steps, each in its own fresh harness, so a small model can carry a long task to the end while you are away.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
++<li class="problem" data-problem="context"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><h3>Only the context a step needs</h3><p>Your agent downloads only the item it chose, not the whole history.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
++<li class="problem" data-problem="model"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg><h3>Smaller models for smaller decisions</h3><p>The right material lets a small or local model do more.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
++<li class="problem" data-problem="expertise"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19V6a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"/><path d="M8 8h6"/></svg><h3>Expertise your agent does not have</h3><p>Skills approved by reviewers who did not write them.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
++<li class="problem" data-problem="reuse"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg><h3>Reuse code instead of rewriting it</h3><p>Every item carries its source, licence and exact version.</p><p class="status-tag is-building" data-status="building">Code packages coming</p></li>
++<li class="problem" data-problem="mistakes"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg><h3>Fewer repeated mistakes</h3><p>Earlier failures are kept, so the next step starts from them.</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
++<li class="problem" data-problem="overnight"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><h3>Long jobs that finish overnight</h3><p>Small steps, each in a fresh harness, carried to the end.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+       </ul></section>
+       </div>
+-      <div class="home-band band-night" data-band="how">
+-      <section class="how-band" id="how" aria-labelledby="how-title"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="how-title">One fresh harness for each step.</h2><p>From one task to a checked result, in five steps. Search and download work today; the rest is being built.</p></div>
++      <div class="home-band band-plain" data-band="optimize">
++      <section class="optimize" aria-labelledby="optimize-title"><div class="section-title"><p class="eyebrow">One workflow for the decisions behind the work</p><h2 id="optimize-title">Spend more time on the problem. Less time assembling an optimization stack.</h2><p>Model selection, context sizing, tool choice and code reuse belong together, judged against the same requirements.</p></div>
++      <div class="optimize-side"><h3>You define success.</h3><p>Set the quality standard, budget, allowed tools and data access. A cheaper approach counts only when it still satisfies the task.</p><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See the approach</a></div></section>
++      </div>
++      <div class="home-band band-tint" data-band="how">
++      <section class="how-band" id="how" aria-labelledby="how-title"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="how-title">One fresh harness for each step.</h2><p>From one task to a checked result, in five steps.</p></div>
+       <ol class="how-steps">
+-<li class="how-step" data-how-step="split"><span class="how-index">01</span><h3>Split</h3><p>The task becomes small, focused steps with clear inputs and outputs.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+-<li class="how-step" data-how-step="search"><span class="how-index">02</span><h3>Search</h3><p>The step asks the library for what it needs. Searching is free.</p><p class="status-tag is-live" data-status="live">Live</p></li>
++<li class="how-step" data-how-step="split"><span class="how-index">01</span><h3>Split</h3><p>The task becomes small steps with clear inputs and outputs.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
++<li class="how-step" data-how-step="search"><span class="how-index">02</span><h3>Search</h3><p>The step asks the library for what it needs.</p><p class="status-tag is-live" data-status="live">Live</p></li>
+ <li class="how-step" data-how-step="download"><span class="how-index">03</span><h3>Download</h3><p>One exact version, checked against its digest and recorded in your usage.</p><p class="status-tag is-live" data-status="live">Live</p></li>
+-<li class="how-step" data-how-step="run"><span class="how-index">04</span><h3>Run</h3><p>A freshly started harness holds only that step's files, and nothing from your global settings.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+-<li class="how-step" data-how-step="check"><span class="how-index">05</span><h3>Check</h3><p>An independent check accepts the result, not the agent that produced it.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
++<li class="how-step" data-how-step="run"><span class="how-index">04</span><h3>Run</h3><p>A fresh harness holds only that step's files.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
++<li class="how-step" data-how-step="check"><span class="how-index">05</span><h3>Check</h3><p>An independent check accepts the result.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+       </ol>
+-      <div class="how-connect"><div class="how-connect-copy"><h3>Connect in one entry</h3><p>Your harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.</p><p class="how-connect-where">Claude Code, in <code>.mcp.json</code></p><a class="text-link" id="how-explore" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><pre class="how-code" data-home-recipe="claude-code" tabindex="0" aria-label="The Claude Code entry">{
++      <div class="how-connect"><div class="how-connect-copy"><h3>Connect in one entry</h3><p>Your harness gets this service's address and the name of the variable that holds your key, never the key.</p><p class="how-connect-where">Claude Code, in <code>.mcp.json</code></p><a class="text-link" id="how-explore" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><pre class="how-code" data-home-recipe="claude-code" tabindex="0" aria-label="The Claude Code entry">{
+   "mcpServers": {
+     "baltor": {
+       "type": "http",
+@@ -94,7 +91,7 @@
+ }</pre></div></section>
+       </div>
+       <div class="home-band band-plain" data-band="library">
+-      <section class="library" id="library" aria-labelledby="library-title"><div class="library-main"><div class="section-title"><p class="eyebrow">The library</p><h2 id="library-title">Anything a harness can pick up.</h2><p>Not only Markdown: instruction files, skills with their scripts, tools, subagents, hooks and protocol server settings. The library is built to hold every kind, and the tags say which you can download today.</p></div>
++      <section class="library" id="library" aria-labelledby="library-title"><div class="library-main"><div class="section-title"><p class="eyebrow">The library</p><h2 id="library-title">Anything a harness can pick up.</h2><p>Not only Markdown. The tags show what you can download today.</p></div>
+       <ul class="kind-grid">
+ <li class="kind" data-kind="skills"><h3>Skills</h3><p class="kind-files">SKILL.md today · scripts/ and assets/ coming</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+ <li class="kind" data-kind="instructions"><h3>Instruction files</h3><p class="kind-files">AGENTS.md · CLAUDE.md</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+@@ -103,59 +100,56 @@
+ <li class="kind" data-kind="hooks"><h3>Hooks</h3><p class="kind-files">steps your harness runs itself</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+ <li class="kind" data-kind="servers"><h3>Protocol servers</h3><p class="kind-files">one step's tool settings</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+       </ul></div>
+-      <aside class="library-facts" aria-label="The library today"><p class="library-count"><span class="library-number" data-library-count>43</span><span>reviewed items in the library today, and growing</span></p><ul class="check-list"><li>Approved by reviewers who did not write the item, bound to its exact bytes</li><li>Items that need file, network or process access are offered only to a step that declares it</li></ul><p class="library-note">Today every item is a single file. Packages with scripts and assets are coming.</p></aside></section>
++      <aside class="library-facts" aria-label="The library today"><p class="library-count"><span class="library-number" data-library-count>43</span><span>reviewed items today, and growing</span></p><ul class="check-list"><li>Approved by reviewers who did not write them</li><li>Items that need file, network or process access go only to a step that declares it</li></ul><p class="library-note">Every item is a single file today. Packages with scripts are coming.</p></aside></section>
+       </div>
+       <div class="home-band" data-band="trust">
+-      <section class="trust" aria-labelledby="trust-title"><h2 id="trust-title">Built for teams that check the details.</h2><ul class="trust-grid"><li><h3>Your keys stay yours</h3><p>Baltor never asks for a model key. Your harness calls your models through the connection you control.</p></li><li><h3>Exact versions, verified</h3><p>Every download names its version and digest, and your access is checked again before the bytes are read.</p></li><li><h3>Nothing runs on your computer</h3><p>Connecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.</p></li></ul></section>
++      <section class="trust" aria-labelledby="trust-title"><h2 id="trust-title">Built for teams that check the details.</h2><ul class="trust-grid"><li><h3>Your model keys stay with you</h3><p>Baltor never asks you for a provider key.</p></li><li><h3>Exact versions, checked</h3><p>Every download names its version and digest.</p></li><li><h3>Nothing runs on your computer</h3><p>Your harness decides what runs, within your permissions.</p></li></ul></section>
+       </div>
+       <div class="home-band band-plain" data-band="pricing">
+-      <section class="pricing-teaser" id="pricing-summary" aria-labelledby="pricing-teaser-heading"><div class="section-title"><p class="eyebrow">Pricing</p><h2 id="pricing-teaser-heading">One plan. Search is free.</h2><p>One monthly plan. Searching never counts: the measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups. Model costs stay with your own provider, and there is no overage billing.</p></div>
+-      <div class="plan-summary"><div class="plan-summary-head"><h3>Baltor Pro</h3><p class="status-tag is-building" id="home-plan-access">Invitation only</p></div><p class="plan-summary-price"><span class="plan-amount">$29</span><span class="plan-per">per month</span></p><ul class="check-list"><li data-offer="search">Free search of the library</li><li data-offer="downloads">One downloaded item is the measured unit, with no overage billing</li><li data-offer="keys"><span id="offer-usage-keys">Keys issued by the person who runs the service; a key for each device from your account page is being prepared</span></li><li data-offer="usage">Usage you can see, item by item</li></ul><div class="pricing-teaser-side"><a class="button primary" id="home-pricing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="home-pricing-primary-label">Get started</span></a><p class="caption" id="pricing-teaser-note">Payment is not open yet. Nothing on this page charges you today.</p><a class="text-link" href="/pricing" data-page="pricing">See what is included</a></div></div></section>
++      <section class="pricing-teaser" id="pricing-summary" aria-labelledby="pricing-teaser-heading"><div class="section-title"><p class="eyebrow">Pricing</p><h2 id="pricing-teaser-heading">One plan. Search is free.</h2></div>
++      <div class="plan-summary"><div class="plan-summary-main"><div class="plan-summary-head"><h3>Baltor Pro</h3><p class="status-tag is-building" id="home-plan-access">Invitation only</p></div><p class="plan-summary-price"><span class="plan-amount">$29</span><span class="plan-per">a month</span></p><p class="plan-summary-note">Invited accounts are free while we open in small groups.</p></div><ul class="check-list"><li data-offer="search">Free search of the library</li><li data-offer="downloads">One downloaded item is the measured unit, with no overage billing</li><li data-offer="keys"><span id="offer-usage-keys">Keys issued by the person who runs the service; a key for each device from your account page is being prepared</span></li><li data-offer="usage">Usage you can see, item by item</li></ul><div class="pricing-teaser-side"><a class="button primary" id="home-pricing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="home-pricing-primary-label">Get started</span></a><p class="caption" id="pricing-teaser-note">Payment is not open yet. Nothing on this page charges you today.</p><a class="text-link" href="/pricing" data-page="pricing">See what is included</a></div></div></section>
+       </div>
+       <div class="home-band" data-band="faq">
+-      <section class="faq" id="faq" aria-labelledby="faq-title"><div class="faq-intro"><h2 id="faq-title">Questions, answered.</h2><p>Anything else, write to the operator at the contact address in the <a href="/privacy" data-page="privacy">privacy notice</a>.</p></div><div class="faq-list">
+-<details class="faq-item" open><summary>Which tools work with it?</summary><p>Claude Code, Codex and OpenCode have reviewed connection settings on the Get started page. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.</p></details>
+-<details class="faq-item"><summary>What counts as a download?</summary><p>One item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.</p></details>
+-<details class="faq-item"><summary>What does Baltor keep about my work?</summary><p>For each item your agent downloads, one usage record: the item's name, its digest and the time. Your tasks, files, prompts and model keys stay on your computer. The <a href="/privacy" data-page="privacy">privacy notice</a> lists everything the service stores and for how long.</p></details>
+-<details class="faq-item"><summary>When can I sign up?</summary><p>Accounts open in small groups. The Get started page shows what this service offers you today, and a person reads every invitation request. Invited accounts are free while we open in small groups.</p></details>
++      <section class="faq" id="faq" aria-labelledby="faq-title"><div class="faq-intro"><h2 id="faq-title">Questions, answered.</h2><p>Anything else? Write to the operator at the address in the <a href="/privacy" data-page="privacy">privacy notice</a>.</p></div><div class="faq-list">
++<details class="faq-item" open><summary>Which tools work with it?</summary><p>Claude Code, Codex and OpenCode, with reviewed settings on the Get started page. Any client that speaks the same protocol version can connect.</p></details>
++<details class="faq-item"><summary>What counts as a download?</summary><p>One item at the version you chose counts once. Searches, second looks and refused downloads do not.</p></details>
++<details class="faq-item"><summary>What does Baltor keep about my work?</summary><p>One usage record per download: the item, its digest and the time. Your tasks, files, prompts and model keys stay with you.</p></details>
++<details class="faq-item"><summary>When can I sign up?</summary><p>Accounts open in small groups, and a person reads every invitation request.</p></details>
+       </div></section>
+       </div>
+-      <div class="home-band band-night" data-band="closing">
+-      <section class="closing-band closing-callout" aria-labelledby="closing-title"><div><h2 id="closing-title">Bring your next task to Baltor.</h2><p id="closing-note">Request an invitation today. Invited accounts are free while we open in small groups.</p></div><div class="closing-actions"><a class="button primary" id="closing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="closing-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a></div></section>
+-      <p class="caption benefit-limits">Token savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
++      <div class="home-band band-tint" data-band="closing">
++      <section class="closing-band closing-callout" aria-labelledby="closing-title"><div><h2 id="closing-title">Bring your next task to Baltor.</h2><p id="closing-note">Request an invitation today. Invited accounts are free.</p></div><div class="closing-actions"><a class="button primary" id="closing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="closing-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a><a class="text-link" href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a></div></section>
++      <p class="caption benefit-limits">Token savings depend on the task and configuration. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
+       </div>
+     </section>
+     <section data-view="pricing" hidden class="pricing-page">
+-      <div class="page-heading"><div><p class="eyebrow">Pricing</p><h1>One plan.<br>Search is free.</h1></div><p class="intro">Baltor Pro is for one person and the devices that person connects. You bring your own tools and your own model keys.</p></div>
++      <div class="page-heading"><div><p class="eyebrow">Pricing</p><h1>One plan.<br>Search is free.</h1></div><p class="intro">For one person and the devices they connect. You bring your own tools and model keys.</p></div>
+       <div class="pricing-grid">
+-        <section class="panel plan-card" aria-labelledby="plan-heading"><div class="section-heading"><div><p class="eyebrow">One plan</p><h2 id="plan-heading">Baltor Pro</h2></div><span class="badge" id="pricing-state">Payment not open</span></div>
+-          <p class="plan-price">29 United States dollars <span class="plan-period">each month</span></p>
++        <section class="panel plan-card" aria-labelledby="plan-heading">
++          <div class="plan-card-main"><div class="section-heading"><div><p class="eyebrow">One plan</p><h2 id="plan-heading">Baltor Pro</h2></div><span class="badge" id="pricing-state">Payment not open</span></div>
++          <p class="plan-price">$29 <span class="plan-period">a month</span></p>
++          <div class="actions"><a class="button primary" id="pricing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="pricing-primary-label">Get started</span> <span aria-hidden="true">↗</span></a><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See how it works</a></div>
++          <p id="pricing-payment-state" role="status" aria-live="polite">Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.</p></div>
+           <ul class="plan-list">
+-            <li data-plan-point="search"><strong>Search is free.</strong> Searching permitted material and reading a reference costs nothing, with an account or with a key from your operator.</li>
+-            <li data-plan-point="unit"><strong>The measured unit is one downloaded item.</strong> One item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.</li>
+-            <li data-plan-point="invited"><strong>Invited accounts are free.</strong> While invitations go out in small groups, an invited account pays nothing and keeps the same limits as a paid account. An invitation may also carry a discount code.</li>
++            <li data-plan-point="search"><strong>Search is free.</strong> With an account or with a key from your operator.</li>
++            <li data-plan-point="unit"><strong>The measured unit is one downloaded item.</strong> A search, a second look and a refused download do not count.</li>
++            <li data-plan-point="invited"><strong>Invited accounts are free.</strong> Same limits as a paid account. An invitation may carry a discount code.</li>
+             <li data-plan-point="keys"><strong>Personal keys for each device.</strong> <span id="plan-keys-detail">Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key.</span></li>
+-            <li data-plan-point="clients"><strong>Connection settings for OpenCode, Codex and Claude Code.</strong> Copy one reviewed entry. It never holds your key.</li>
++            <li data-plan-point="clients"><strong>Connection settings for OpenCode, Codex and Claude Code.</strong> One reviewed entry that never holds your key.</li>
+           </ul>
+-          <div class="actions"><a class="button primary" id="pricing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="pricing-primary-label">Get started</span> <span aria-hidden="true">↗</span></a><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See how it works</a></div>
+-          <p id="pricing-payment-state" role="status" aria-live="polite">Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.</p>
+         </section>
+-        <aside class="panel pricing-notes" aria-labelledby="pricing-notes-heading">
+-          <h2 id="pricing-notes-heading">What the price does not cover</h2>
+-          <p>Your model provider bills you directly for the calls your own tools make. Baltor does not resell model access and never asks for a model key.</p>
+-          <h3>How usage is counted</h3>
+-          <p>Your account page shows the usage the service recorded for your connections. That record is the same one the price is based on, so you can check it yourself.</p>
+-          <h3>How to stop paying</h3>
+-          <p>When payment is open you can cancel from your account page. Cancelling stops the next payment. Files you already downloaded stay on your computer.</p>
+-          <h3>What is still in progress</h3>
+-          <p id="pricing-in-progress">Public account creation<span id="in-progress-waitlist">, the waiting list form</span> and complete native client onboarding are not finished. No percentage saving, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
++        <aside class="pricing-notes" aria-labelledby="pricing-notes-heading">
++          <div class="pricing-note"><h2 id="pricing-notes-heading">What the price does not cover</h2><p>Your model calls, billed by your own provider. Baltor never asks for a model key.</p></div>
++          <div class="pricing-note"><h3>How usage is counted</h3><p>Your account page shows the same usage record the price is based on.</p></div>
++          <div class="pricing-note"><h3>How to stop paying</h3><p>Cancel from your account page once payment is open. Files you downloaded stay on your computer.</p></div>
++          <div class="pricing-note"><h3>What is still in progress</h3><p id="pricing-in-progress">Public account creation<span id="in-progress-waitlist">, the waiting list form</span> and complete native client onboarding are not finished. No percentage saving, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p></div>
+         </aside>
+       </div>
+-      <section class="pricing-questions reading"><h2>Common questions</h2>
+-        <details><summary>Do I need a model key to use Baltor?</summary><p>No. A Baltor key gives access to permitted material. The model calls happen in your own tools, with your own provider account.</p></details>
+-        <details><summary>What happens to material I already downloaded?</summary><p>It stays where you saved it. Revoking a key or cancelling stops new requests; it does not recall files that were already delivered.</p></details>
+-        <details><summary>Is there a free plan?</summary><p>The part you install is free and open source. Search on our server is free too. Downloads are the measured unit of the paid plan, and an invited account is free while invitations go out in small groups.</p></details>
+-        <details><summary>Can a team share one account?</summary><p>Not today. One account holds one person's keys. Shared accounts and team billing are later work.</p></details>
++      <section class="pricing-questions"><h2>Common questions</h2>
++        <details><summary>Do I need a model key to use Baltor?</summary><p>No. A Baltor key opens the library; your model calls run in your own tools, with your own provider.</p></details>
++        <details><summary>What happens to material I already downloaded?</summary><p>It stays where you saved it. Revoking a key or cancelling stops new requests only.</p></details>
++        <details><summary>Is there a free plan?</summary><p>The part you install is free and open source, and search is free. Downloads are the measured unit of the paid plan, and invited accounts are free.</p></details>
++        <details><summary>Can a team share one account?</summary><p>Not today. One account holds one person's keys; shared accounts and team billing come later.</p></details>
+       </section>
+     </section>
+     <section data-view="login" hidden class="access-layout">
+@@ -164,7 +158,7 @@
+       </div>
+       <section class="panel connection" aria-labelledby="login-heading"><div class="section-heading"><h2 id="login-heading">Sign in with a service key</h2><span class="badge" id="connection-state">Not connected</span></div><form id="connect-form" method="post"><label for="access-token">Service access token</label><input id="access-token" type="password" autocomplete="off" spellcheck="false" required aria-describedby="token-note"><p id="token-note" class="caption">Kept only in this page's memory. Closing or reloading the page disconnects it.</p><button class="primary" id="connect-button" type="submit">Connect</button></form><div id="identity" hidden><dl id="identity-facts"></dl><button id="disconnect" type="button" class="quiet">Disconnect and clear this page</button></div><p id="connection-message" role="status" aria-live="polite"></p><div class="divider"></div><p class="secondary" id="email-signin-limit">Email sign-in is not enabled yet. This form checks real service access; it does not create an account or a subscription.</p></section>
+     </section>
+-    <section data-view="signup" hidden class="reading"><p class="eyebrow">Accounts</p><div id="signup-closed"><h1>Account creation is not open to everyone yet.</h1><p class="lede">Accounts open in small groups. If you already have a service access token, you can sign in and use the workspace now.</p><div class="notice" id="waiting-list"><h2>Ask for an invitation</h2><p id="waiting-list-pending">The waiting list form is being built. Until it is ready, ask the person who runs this service for an invitation. They create your account and issue your first key. This page cannot create an account for you, and it does not collect your email address yet.</p><p>An invitation may carry a discount code for the first months. Paid access is one plan, Baltor Pro, 29 United States dollars each month, and you can cancel it yourself from your account page once payment is open to you.</p></div><div class="notice"><h2>What remains before account creation opens</h2><p>Verified email delivery, customer account provisioning and the complete sign-up journey must pass their integration checks. While the library holds only its first items, we would rather have you on the waiting list than take a subscription you cannot use yet.</p></div></div>
++    <section data-view="signup" hidden class="reading"><p class="eyebrow">Accounts</p><div id="signup-closed"><h1>Account creation is not open to everyone yet.</h1><p class="lede">Accounts open in small groups. If you already have a service access token, you can sign in and use the workspace now.</p><div class="notice" id="waiting-list"><h2>Ask for an invitation</h2><p id="waiting-list-pending">The waiting list form is being built. Until it is ready, ask the person who runs this service for an invitation. They create your account and issue your first key. This page cannot create an account for you, and it does not collect your email address yet.</p><p>An invitation may carry a discount code for the first months. Paid access is one plan, Baltor Pro, at $29 a month, and you can cancel it yourself from your account page once payment is open to you.</p></div><div class="notice"><h2>What remains before account creation opens</h2><p>Verified email delivery, customer account provisioning and the complete sign-up journey must pass their integration checks. While the library holds only its first items, we would rather have you on the waiting list than take a subscription you cannot use yet.</p></div></div>
+       <div id="email-signup" hidden><h1>Create your Baltor account.</h1><p class="lede">Confirm your email before using your account. Creating an account does not start a subscription or give access to your local files.</p><form id="email-signup-form" method="post" class="panel"><label for="signup-email">Email address</label><input id="signup-email" type="email" autocomplete="username" required maxlength="254"><label for="signup-password">Password</label><input id="signup-password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required><p class="caption">Use at least twelve characters and a unique password. The identity provider enforces its password policy.</p><button id="email-signup-button" type="submit" class="primary">Create account and send confirmation</button></form><p id="signup-message" role="status" aria-live="polite"></p></div><div class="actions"><a class="button primary" href="/waitlist" data-page="waitlist" data-nav="waitlist" id="signup-waitlist-link" hidden>Request an invitation</a><a class="button quiet" href="/login" data-page="login">Go to sign-in</a><a href="/docs" data-page="docs">Read the setup guide</a></div>
+     </section>
+     <section data-view="waitlist" hidden class="waitlist-page">
+@@ -221,10 +215,10 @@
+     </section>
+     <section data-view="admin" hidden><div class="page-heading"><div><p class="eyebrow">Administrator access</p><h1>Manage test-access tokens.</h1></div><button type="button" id="refresh-access" class="quiet" disabled>Refresh tokens</button></div><p id="admin-message" role="status" aria-live="polite">Sign in with an administrator service token. Email is not required.</p><a href="/login" data-page="login" id="admin-login">Administrator sign-in</a><div id="admin-controls" hidden><div class="workspace-grid"><section class="panel"><div class="section-heading"><h2>Create a test token</h2><span class="badge" id="token-quota"></span></div><p class="secondary">Tokens share the selected tenant's material and usage. A token is not a separate private account.</p><form id="issue-access" method="post"><label for="token-label">Label</label><input id="token-label" required maxlength="100" placeholder="For example, local tool trial"><label for="token-tenant">Access to tenant</label><select id="token-tenant" required></select><fieldset id="token-scopes"><legend>Allowed operations</legend></fieldset><label for="token-hours">Expires after (hours)</label><input type="number" id="token-hours" min="1" step="1" required><button type="submit" class="primary" id="issue-access-button">Create test token</button></form><section id="issued-access" class="notice" hidden><h3>Save this token now</h3><p class="caption">Shown once. It cannot be recovered from the service. Store it in your secret manager.</p><label for="issued-token">New test-access token</label><input type="password" id="issued-token" readonly autocomplete="off"><div class="actions"><button type="button" id="copy-token" class="quiet">Copy token</button><button type="button" id="clear-token" class="quiet">Clear from this page</button></div></section></section><section class="panel"><h2>Issued test tokens</h2><p class="secondary">Revocation takes effect on the next service request. It does not recall material already downloaded. Bootstrap administrator keys are managed separately.</p><div id="access-list"></div></section></div></div></section>
+     <section data-view="about" hidden class="architecture-page">
+-      <div class="reading"><p class="eyebrow">How it works</p><h1>Big problems.<br>Clear steps.</h1><p class="lede">Start with what you want to achieve. Break the work into steps, give each step relevant expertise and tools, then check the result before moving on.</p><p>The plan can change as you learn more. A step can ask for missing information, try another approach or send unfinished work back for improvement, within the limits you set.</p></div>
++      <div class="reading"><p class="eyebrow">How it works</p><h1>Big problems.<br>Clear steps.</h1><p class="lede">Break the work into steps, give each step the expertise and tools it needs, and check the result before moving on.</p><p>A step can ask for missing information or try another approach, within the limits you set.</p></div>
+       <section class="task-explorer" id="task-breakdown" aria-labelledby="breakdown-heading">
+         <div class="explorer-heading"><div><p class="eyebrow">See what each step needs</p><h2 id="breakdown-heading">Prepare a customer import without changing the original.</h2></div><span class="badge">Example only · no work runs here</span></div>
+-        <p class="secondary">Choose a step to see its information, tools and expected result. The person inspecting the data needs different material from the person checking the finished import.</p>
++        <p class="secondary">Choose a step to see what it gets, what it can do and what it returns.</p>
+         <div class="assignment-tabs" role="tablist" aria-label="Example task steps"><button type="button" role="tab" id="assignment-inspect" aria-controls="assignment-panel" aria-selected="true" data-assignment="inspect"><span>01</span> Understand the input</button><button type="button" role="tab" id="assignment-decide" aria-controls="assignment-panel" aria-selected="false" tabindex="-1" data-assignment="decide"><span>02</span> Choose an approach</button><button type="button" role="tab" id="assignment-build" aria-controls="assignment-panel" aria-selected="false" tabindex="-1" data-assignment="build"><span>03</span> Build or reuse</button><button type="button" role="tab" id="assignment-verify" aria-controls="assignment-panel" aria-selected="false" tabindex="-1" data-assignment="verify"><span>04</span> Check the result</button></div>
+         <p class="sr-only" id="assignment-announcement" role="status" aria-live="polite"></p>
+         <div id="assignment-panel" role="tabpanel" aria-labelledby="assignment-inspect" class="assignment-panel">
+@@ -234,23 +228,23 @@
+         </div>
+         <p class="caption">This is an illustration, not a recorded customer result. Selecting a step does not access your files or call a model.</p>
+       </section>
+-      <section class="context-lifecycle" aria-labelledby="context-lifecycle-heading"><div class="section-title"><p class="eyebrow">Useful information, when it is needed</p><h2 id="context-lifecycle-heading">Give each step a useful starting point.</h2></div><ol class="lifecycle-steps"><li><strong>Find</strong><span>Look for relevant guidance and reusable code</span></li><li><strong>Choose</strong><span>Check that it fits the task and your permissions</span></li><li><strong>Prepare</strong><span>Give the step its selected files and instructions</span></li><li><strong>Work</strong><span>Use an appropriate model, tool or existing code</span></li><li><strong>Check</strong><span>Test the result against your requirements</span></li></ol><p>A useful briefing is not always the shortest one. Start with relevant information and add more when the work reveals a gap.</p><details class="runtime-disclosure"><summary>What if a step needs more information?</summary><p>It can search for additional material or ask a question. Your permissions and remaining budget still apply. New instructions cannot grant access to private files or allow spending by themselves.</p><p>If an action times out, first check whether it happened. Trying again must not send a second email or repeat another change by mistake.</p></details></section>
+-      <section class="execution-section" aria-labelledby="execution-heading"><div class="section-title"><p class="eyebrow">Use what suits the work</p><h2 id="execution-heading">Not every step needs a large model.</h2><p>The goal and quality checks stay the same. The way a step does the work can vary.</p></div><div class="feature-grid"><article><span class="feature-index">Build something new</span><h3>A focused AI workspace</h3><p>Give your chosen development tool a clear brief, selected files and the permissions needed to build or repair the missing pieces.</p></article><article><span class="feature-index">Make a choice</span><h3>A smaller, focused request</h3><p>A decision may need one model request rather than a complete development session. Use a compatible model service you have already configured.</p></article><article><span class="feature-index">Reuse existing work</span><h3>Run code that already fits</h3><p>Use reviewed code when it meets the requirements. That step may need no model call and no newly generated code.</p></article></div><p class="description">Models may run on your machine or through a provider you choose. You supply access; Baltor does not need to install or host the models for you.</p></section>
++      <section class="context-lifecycle" aria-labelledby="context-lifecycle-heading"><div class="section-title"><p class="eyebrow">Useful information, when it is needed</p><h2 id="context-lifecycle-heading">Give each step a useful starting point.</h2></div><ol class="lifecycle-steps"><li><strong>Find</strong><span>Look for relevant guidance and reusable code</span></li><li><strong>Choose</strong><span>Check that it fits the task and your permissions</span></li><li><strong>Prepare</strong><span>Give the step its selected files and instructions</span></li><li><strong>Work</strong><span>Use an appropriate model, tool or existing code</span></li><li><strong>Check</strong><span>Test the result against your requirements</span></li></ol><p>Start with relevant information and add more when the work reveals a gap.</p><details class="runtime-disclosure"><summary>What if a step needs more information?</summary><p>It can search for additional material or ask a question. Your permissions and remaining budget still apply. New instructions cannot grant access to private files or allow spending by themselves.</p><p>If an action times out, first check whether it happened. Trying again must not send a second email or repeat another change by mistake.</p></details></section>
++      <section class="execution-section" aria-labelledby="execution-heading"><div class="section-title"><p class="eyebrow">Use what suits the work</p><h2 id="execution-heading">Not every step needs a large model.</h2><p>The goal and quality checks stay the same. The way a step does the work can vary.</p></div><div class="feature-grid"><article><span class="feature-index">Build something new</span><h3>A focused AI workspace</h3><p>A clear brief, selected files and the permissions to build or repair.</p></article><article><span class="feature-index">Make a choice</span><h3>A smaller, focused request</h3><p>One model request instead of a full session, on a model service you already use.</p></article><article><span class="feature-index">Reuse existing work</span><h3>Run code that already fits</h3><p>Reviewed code that meets the requirements; that step may need no model call.</p></article></div><p class="description">Models run on your machine or through a provider you choose. Baltor does not host them.</p></section>
+       <section class="friction-section" aria-labelledby="friction-heading"><div class="section-title"><p class="eyebrow">Make the effort count</p><h2 id="friction-heading">Is your AI spending effort in the wrong places?</h2><p>These are the questions Baltor is designed to address at each step of the work.</p></div><div class="friction-grid">
+-        <article data-friction="context"><span class="friction-label">Information</span><h3>Too much context for a small task?</h3><p>Match information to the task. Bring in more when it helps, without making every step carry the whole history.</p><span class="friction-benefit">Relevant information, less repetition</span></article>
+-        <article data-friction="model"><span class="friction-label">Model selection</span><h3>An expensive model for every decision?</h3><p>Compare suitable models and reusable code for each step, against your quality and spending requirements.</p><span class="friction-benefit">An approach that fits the work</span></article>
+-        <article data-friction="expertise"><span class="friction-label">Domain knowledge</span><h3>Missing the right domain expertise?</h3><p>Bring relevant methods, examples and checks into the work, with sources and applicability kept visible.</p><span class="friction-benefit">Specific guidance, not generic guesses</span></article>
+-        <article data-friction="reuse"><span class="friction-label">Code reuse</span><h3>Paying to rewrite code that already exists?</h3><p>Find an eligible implementation first. Generate new code for the gaps instead of reproducing a known solution as more output tokens.</p><span class="friction-benefit">Reuse what is already qualified</span></article>
+-        <article data-friction="learning"><span class="friction-label">Improvement</span><h3>Are the same mistakes showing up again?</h3><p>Keep useful results and corrections. Compare proposed improvements on real tasks before making them the default.</p><span class="friction-benefit">Measured improvement, not blind repetition</span></article>
++        <article data-friction="context"><span class="friction-label">Information</span><h3>Too much context for a small task?</h3><p>Match information to the task, without every step carrying the whole history.</p><span class="friction-benefit">Relevant information, less repetition</span></article>
++        <article data-friction="model"><span class="friction-label">Model selection</span><h3>An expensive model for every decision?</h3><p>Choose models and reusable code for each step against your quality and spending limits.</p><span class="friction-benefit">An approach that fits the work</span></article>
++        <article data-friction="expertise"><span class="friction-label">Domain knowledge</span><h3>Missing the right domain expertise?</h3><p>Bring in methods, examples and checks, with their sources visible.</p><span class="friction-benefit">Specific guidance, not generic guesses</span></article>
++        <article data-friction="reuse"><span class="friction-label">Code reuse</span><h3>Paying to rewrite code that already exists?</h3><p>Find working code first, and generate only what is missing.</p><span class="friction-benefit">Reuse what is already qualified</span></article>
++        <article data-friction="learning"><span class="friction-label">Improvement</span><h3>Are the same mistakes showing up again?</h3><p>Keep results and corrections, and test improvements on real tasks first.</p><span class="friction-benefit">Measured improvement, not blind repetition</span></article>
+       </div></section>
+-      <section class="product-section intelligence-section" id="intelligence-layers" aria-labelledby="layers-heading"><div class="section-title"><p class="eyebrow">Building blocks for better solutions</p><h2 id="layers-heading">Put knowledge, code and experience to work.</h2><p>Useful intelligence includes how to approach the work, code that can do it, what happened before, and what you want done differently.</p></div><div class="layer-grid">
++      <section class="product-section intelligence-section" id="intelligence-layers" aria-labelledby="layers-heading"><div class="section-title"><p class="eyebrow">Building blocks for better solutions</p><h2 id="layers-heading">Put knowledge, code and experience to work.</h2><p>How to approach the work, code that can do it, what happened before, and what you want changed.</p></div><div class="layer-grid">
+         <article class="layer-card" data-intelligence-layer="context"><span class="feature-index">01 / Approach</span><h3>Context Intelligence</h3><p>Methods, questions, constraints, examples and output contracts that guide the work.</p><div class="layer-example"><span>For the import task</span><p>A field-definition guide and a checklist for missing values.</p></div></article>
+         <article class="layer-card" data-intelligence-layer="code"><span class="feature-index">02 / Reuse</span><h3>Code Intelligence</h3><p>Reusable functions, tools, packages and workflows with declared inputs, outputs and effects.</p><div class="layer-example"><span>For the import task</span><p>A qualified normalizer with its dependency and verification records.</p></div></article>
+         <article class="layer-card" data-intelligence-layer="history"><span class="feature-index">03 / Experience</span><h3>Runtime History and Solution Intelligence</h3><p>Saved outcomes, failures, repairs, measurements and solution information that can inform a new task.</p><div class="layer-example"><span>For the import task</span><p>A previous import's failed assumptions and the checks that detected them.</p></div></article>
+         <article class="layer-card" data-intelligence-layer="feedback"><span class="feature-index">04 / Guidance</span><h3>User Feedback Intelligence</h3><p>Scoped corrections, priorities and instructions supplied by a person.</p><div class="layer-example"><span>For the import task</span><p>“Keep uncertain matches for review. Never overwrite the original file.”</p></div></article>
+       </div><p class="caption">The four layers describe the broader product. The hosted service currently provides a small Context Intelligence example; it does not yet offer a populated catalogue across every layer.</p></section>
+       <section class="boundary-section"><div class="section-title"><p class="eyebrow">Your tools, with help from Baltor</p><h2>Get useful material. Keep control of your work.</h2></div><div data-deployment-boundary></div></section>
+-      <div class="reading"><div class="notice"><h2>Available today</h2><p>A person with an account can sign in with a service token, search the small example library, download permitted files and view usage. Administrators can create and revoke test tokens.</p><p>The complete example above is still being tested from start to finish. Public account creation, paid subscriptions and automatic setup of every step are not open yet. We have not established token savings or overnight task completion for this release.</p></div><a class="button quiet" id="about-access" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label>Get started</span></a><p><a href="/docs" data-page="docs">Technical setup and architecture</a></p></div>
++      <div class="reading"><div class="notice"><h2>Available today</h2><p>With an account you can sign in, search the library, download permitted files and view your usage.</p><p>The complete example above is still being tested from start to finish. Public account creation, paid subscriptions and automatic setup of every step are not open yet. We have not established token savings or overnight task completion for this release.</p></div><a class="button quiet" id="about-access" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label>Get started</span></a><p><a href="/docs" data-page="docs">Technical setup and architecture</a></p></div>
+     </section>
+     <section data-view="setup" hidden class="start-page">
+       <div class="start-intro"><p class="eyebrow">Get set up</p><h1>Three steps to your first download.</h1><p class="lede">Ask for an account, connect the harness you already use, and let your agent ask for what each step needs.</p></div>
+diff -ru a/src/loop_engine/core/service_runtime/web_assets/service.css b/src/loop_engine/core/service_runtime/web_assets/service.css
+--- a/src/loop_engine/core/service_runtime/web_assets/service.css	2026-09-23 09:40:58.896244296 -0400
++++ b/src/loop_engine/core/service_runtime/web_assets/service.css	2026-09-23 09:40:58.980829900 -0400
+@@ -1,9 +1,9 @@
+ /* Design tokens, September 2026. Every colour, typeface, radius and shadow of the website is one of these, so a design change edits this block
+    and touches no rule. Text colours meet WCAG AA on the grounds they are used on, and the field edge meets 3 to 1 against white and the ground. */
+-:root{color-scheme:light;--bg:#F5F6F8;--ground:#F5F6F8;--paper:#FFFFFF;--band:#FFFFFF;--panel-head:#FAFBFC;--ink:#0A1020;--muted:#3A4456;--subtle:#556070;--border:#E2E6EC;--rule:#E2E6EC;--line-strong:#CBD2DC;--field-edge:#848E9F;--accent:#2E5BFF;--accent-hover:#1C44D6;--button:#2E5BFF;--button-hover:#1C44D6;--button-ink:#FFFFFF;--soft:#EEF2FF;--ok:#0E7A52;--ok-soft:#E6F4EE;--info:#1C44D6;--info-soft:#EEF2FF;--planned:#556070;--planned-soft:#EEF1F5;--error:#B42318;--night:#0A1020;--night-card:#121A2E;--night-rule:#26304A;--night-ink:#E8ECF4;--night-muted:#A3AEC2;--night-accent:#8FA9FF;--night-live:#7FD3A6;--night-live-soft:#143426;--night-building:#A9C0FF;--night-building-soft:#1E2945;--night-planned:#A3AEC2;--night-planned-soft:#1A2338;--code-bg:#060A14;--code-ink:#C9D2E3;--code-rule:#26304A;--dot:#D5DAE2;--shadow:0 1px 2px rgba(10,16,32,.04);--card-shadow:0 16px 40px rgba(10,16,32,.08);--panel-shadow:0 24px 60px rgba(10,16,32,.10),0 2px 6px rgba(10,16,32,.05);--font-ui:Geist,"Helvetica Neue",Helvetica,system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--text-hero:clamp(2.5rem,4.45vw,4rem);--text-h2:clamp(1.875rem,3.05vw,2.75rem);--text-h2-small:clamp(1.75rem,2.8vw,2.5rem);--text-lead:clamp(1.0625rem,1.35vw,1.25rem);--content-max:1312px;--band-gutter:clamp(1rem,4.45vw,4rem);--band-pad:clamp(3rem,7.8vw,7rem);--radius-field:10px;--radius-button:12px;--radius-card:16px;--radius-panel:18px;font-family:var(--font-ui);font-size:16px;line-height:1.55}
++:root{color-scheme:light;--bg:#F5F6F8;--ground:#F5F6F8;--paper:#FFFFFF;--band:#FFFFFF;--panel-head:#FAFBFC;--ink:#0A1020;--muted:#3A4456;--subtle:#556070;--border:#E2E6EC;--rule:#E2E6EC;--line-strong:#CBD2DC;--field-edge:#848E9F;--accent:#2E5BFF;--accent-hover:#1C44D6;--button:#2E5BFF;--button-hover:#1C44D6;--button-ink:#FFFFFF;--soft:#EEF2FF;--ok:#0E7A52;--ok-soft:#E6F4EE;--info:#1C44D6;--info-soft:#EEF2FF;--planned:#556070;--planned-soft:#EEF1F5;--error:#B42318;--night:#0A1020;--night-card:#121A2E;--night-rule:#26304A;--night-ink:#E8ECF4;--night-muted:#A3AEC2;--night-accent:#8FA9FF;--night-live:#7FD3A6;--night-live-soft:#143426;--night-building:#A9C0FF;--night-building-soft:#1E2945;--night-planned:#A3AEC2;--night-planned-soft:#1A2338;--code-bg:#060A14;--code-ink:#C9D2E3;--code-rule:#26304A;--dot:#D5DAE2;--tint:#EEF2FF;--shadow:0 1px 2px rgba(10,16,32,.04);--card-shadow:0 16px 40px rgba(10,16,32,.08);--panel-shadow:0 24px 60px rgba(10,16,32,.10),0 2px 6px rgba(10,16,32,.05);--font-ui:Geist,"Helvetica Neue",Helvetica,system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--text-hero:clamp(2.5rem,4.45vw,4rem);--text-h2:clamp(1.875rem,3.05vw,2.75rem);--text-h2-small:clamp(1.75rem,2.8vw,2.5rem);--text-lead:clamp(1.0625rem,1.35vw,1.25rem);--content-max:1312px;--band-gutter:clamp(1rem,4.45vw,4rem);--band-pad:clamp(3rem,6vw,5.5rem);--radius-field:10px;--radius-button:12px;--radius-card:16px;--radius-panel:18px;font-family:var(--font-ui);font-size:16px;line-height:1.55}
+ .setup-grid{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(0,1.6fr);gap:1.5rem;align-items:start}.setup-steps{display:grid;gap:1.25rem;min-width:0}.setup-summary dd,.setup-steps p a{overflow-wrap:anywhere}.setup-summary dl{display:block}.setup-summary dt{margin-top:1rem}.setup-summary dd{margin:.3rem 0 0}.setup-steps pre{white-space:pre-wrap;overflow-wrap:anywhere}.setup-steps h3{margin-top:1.5rem}.setup-steps details{margin:1.2rem 0}.setup-steps summary{cursor:pointer;min-height:44px;padding:.5rem 0}.protocol-tools{padding-left:1.3rem;overflow-wrap:anywhere}.setup-next{display:flex;gap:1rem;align-items:center;justify-content:space-between;padding:1.3rem 0}.setup-next p{color:var(--muted)}.setup-next .button{flex-shrink:0}[data-view=setup],[data-view=examples],[data-view=security]{overflow-wrap:anywhere}[data-view=setup] .page-heading>*{min-width:0;max-width:100%}.setup-steps button{max-width:100%;white-space:normal}@media(max-width:900px){.setup-grid{grid-template-columns:minmax(0,1fr)}.setup-next{flex-wrap:wrap}}@media(max-width:500px){.setup-steps .panel{padding:1rem}.setup-next .button{white-space:normal;flex-shrink:1}}
+-:root[data-theme=dark]{color-scheme:dark;--bg:#0A1020;--ground:#0A1020;--paper:#121A2E;--band:#0E1627;--panel-head:#0E1627;--ink:#E8ECF4;--muted:#A3AEC2;--subtle:#8B97AD;--border:#26304A;--rule:#26304A;--line-strong:#34405C;--field-edge:#6B7890;--accent:#8FA9FF;--accent-hover:#B4C6FF;--soft:#1E2945;--ok:#7FD3A6;--ok-soft:#143426;--info:#A9C0FF;--info-soft:#1E2945;--planned:#A3AEC2;--planned-soft:#1A2338;--error:#FFABB5;--night:#060A14;--night-card:#121A2E;--code-bg:#060A14;--dot:#1C2538;--shadow:none;--card-shadow:none;--panel-shadow:none}
+-@media(prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--bg:#0A1020;--ground:#0A1020;--paper:#121A2E;--band:#0E1627;--panel-head:#0E1627;--ink:#E8ECF4;--muted:#A3AEC2;--subtle:#8B97AD;--border:#26304A;--rule:#26304A;--line-strong:#34405C;--field-edge:#6B7890;--accent:#8FA9FF;--accent-hover:#B4C6FF;--soft:#1E2945;--ok:#7FD3A6;--ok-soft:#143426;--info:#A9C0FF;--info-soft:#1E2945;--planned:#A3AEC2;--planned-soft:#1A2338;--error:#FFABB5;--night:#060A14;--night-card:#121A2E;--code-bg:#060A14;--dot:#1C2538;--shadow:none;--card-shadow:none;--panel-shadow:none}}
++:root[data-theme=dark]{color-scheme:dark;--bg:#0A1020;--ground:#0A1020;--paper:#121A2E;--band:#0E1627;--panel-head:#0E1627;--ink:#E8ECF4;--muted:#A3AEC2;--subtle:#8B97AD;--border:#26304A;--rule:#26304A;--line-strong:#34405C;--field-edge:#6B7890;--accent:#8FA9FF;--accent-hover:#B4C6FF;--soft:#1E2945;--ok:#7FD3A6;--ok-soft:#143426;--info:#A9C0FF;--info-soft:#1E2945;--planned:#A3AEC2;--planned-soft:#1A2338;--error:#FFABB5;--night:#060A14;--night-card:#121A2E;--code-bg:#060A14;--dot:#1C2538;--tint:#101B35;--shadow:none;--card-shadow:none;--panel-shadow:none}
++@media(prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--bg:#0A1020;--ground:#0A1020;--paper:#121A2E;--band:#0E1627;--panel-head:#0E1627;--ink:#E8ECF4;--muted:#A3AEC2;--subtle:#8B97AD;--border:#26304A;--rule:#26304A;--line-strong:#34405C;--field-edge:#6B7890;--accent:#8FA9FF;--accent-hover:#B4C6FF;--soft:#1E2945;--ok:#7FD3A6;--ok-soft:#143426;--info:#A9C0FF;--info-soft:#1E2945;--planned:#A3AEC2;--planned-soft:#1A2338;--error:#FFABB5;--night:#060A14;--night-card:#121A2E;--code-bg:#060A14;--dot:#1C2538;--tint:#101B35;--shadow:none;--card-shadow:none;--panel-shadow:none}}
+ *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}[hidden]{display:none!important}a{color:var(--accent);text-underline-offset:4px}button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button{cursor:pointer;min-height:44px;border-radius:8px;padding:.6rem .9rem;border:1px solid var(--border);font-weight:600;background:var(--paper);color:var(--ink)}button:disabled{cursor:not-allowed;opacity:.5}button:not(:disabled):hover{border-color:var(--accent)}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.primary{background:var(--accent);color:var(--paper);border-color:var(--accent)}.quiet{background:transparent;color:var(--accent)}.skip{position:absolute;left:1rem;top:-5rem;background:var(--paper);z-index:5;padding:.8rem}.skip:focus{top:1rem}.header{display:flex;align-items:center;gap:2rem;padding:1.1rem 4vw;background:var(--paper);border-bottom:1px solid var(--border)}.brand{display:flex;align-items:center;gap:.65rem;font-size:1.1rem;font-weight:750;text-decoration:none;color:var(--ink);white-space:nowrap}.brand-mark{display:grid;place-items:center;background:var(--ink);color:var(--paper);width:32px;height:32px;border-radius:7px}nav{display:flex;gap:1.5rem;flex:1}nav a{font-size:.9rem;text-decoration:none;color:var(--muted);padding:.5rem 0}nav a[aria-current=page]{color:var(--accent);box-shadow:0 2px var(--accent)}#theme{font-size:.875rem}main{max-width:1400px;margin:auto;padding:3rem 4vw 4rem}.page-heading{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:2.2rem}h1{font-size:clamp(2rem,3.7vw,3.4rem);line-height:1.1;letter-spacing:-.035em;margin:.45rem 0 0;font-weight:650}h2{font-size:1.18rem;margin:0;font-weight:650;letter-spacing:-.015em}h3{font-size:1rem;margin:0 0 .65rem}p{margin:.8rem 0}.eyebrow{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 .65rem}.intro{max-width:365px;color:var(--muted);margin:0}.workspace-grid{display:grid;grid-template-columns:minmax(285px,.8fr) minmax(0,1.7fr);gap:1.25rem;align-items:start}.panel{background:var(--paper);border:1px solid var(--border);border-radius:13px;padding:1.6rem;box-shadow:var(--shadow);min-width:0}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}.badge{font-size:.78rem;color:var(--muted);padding:.28rem .6rem;border-radius:5px;background:var(--bg);border:1px solid var(--border)}.secondary{color:var(--muted);font-size:.95rem}.caption{font-size:.82rem;color:var(--muted)}label{display:block;font-size:.88rem;font-weight:600;margin:.9rem 0 .4rem}input,select{width:100%;min-width:0;border:1px solid var(--border);background:var(--paper);color:var(--ink);border-radius:7px;padding:.65rem .8rem;min-height:44px}input:disabled,select:disabled{background:var(--bg)}#connect-button{width:100%;margin-top:.6rem}.search-row{display:flex;gap:.6rem}.search-row input{flex:1}#search-mode{width:auto;max-width:100%;font-size:.9rem}.divider{height:1px;background:var(--border);margin:1.6rem 0}#copy-endpoint{margin-top:.6rem}.empty{text-align:center;padding:3rem 1rem;color:var(--muted)}.empty h3{color:var(--ink)}.empty p{max-width:410px;margin:0 auto}.empty-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;margin:0 auto 1rem;background:var(--soft);color:var(--accent);font-size:1.5rem}.results{margin-top:1.5rem}.result{border-top:1px solid var(--border);padding:1.2rem 0}.result h3{overflow-wrap:anywhere}.result p{margin:.4rem 0;color:var(--muted)}.result details{font-size:.9rem;margin:.8rem 0}.result summary{cursor:pointer;color:var(--accent)}dl{font-size:.9rem}dt{color:var(--muted);margin-top:.6rem}dd{margin:.15rem 0;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:.85rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;max-height:320px;overflow:auto}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.25rem}.error{color:var(--error)}.reading{max-width:840px;margin:0 auto}.lede{font-size:1.17rem;color:var(--muted);margin:1.8rem 0 2.5rem}.journey{list-style:none;padding:0;margin:0}.journey li{display:grid;grid-template-columns:55px 1fr;gap:1rem;padding:1.8rem 0;border-top:1px solid var(--border)}.journey li>span{font-family:ui-monospace,monospace;color:var(--accent);font-size:1rem}.journey p{color:var(--muted);margin-bottom:0}.notice{padding:1.6rem;background:var(--soft);border-radius:10px;margin:2rem 0}.notice p{margin-bottom:0}.guide-section{margin:2.2rem 0}.guide-section p{color:var(--muted)}footer{border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:1rem;padding:1.5rem 4vw;font-size:.82rem;color:var(--muted)}#billing button{margin:.5rem .5rem .5rem 0}#billing a{display:inline-block;margin:.75rem 0}
+ @media(max-width:900px){.header{flex-wrap:wrap;gap:.75rem 1.2rem}nav{order:3;flex-basis:100%}#theme{margin-left:auto}.page-heading{align-items:start;flex-direction:column;gap:1rem}.intro{max-width:600px}.workspace-grid{grid-template-columns:1fr 1.3fr}.panel{padding:1.2rem}}
+ @media(max-width:680px){main{padding:2rem 1rem}.header{padding:1rem}nav{gap:1.2rem}.workspace-grid,.bottom-grid{grid-template-columns:1fr}.page-heading{margin-bottom:1.4rem}h1{font-size:2.25rem}.connection{order:0}.catalogue{order:1}footer{flex-direction:column;padding:1.5rem 1rem}.search-row{flex-wrap:wrap}.search-row input{flex-basis:100%}.search-row button{width:100%}.journey li{grid-template-columns:35px 1fr}#theme{font-size:.78rem;padding:.5rem}}

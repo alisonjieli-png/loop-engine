@@ -15,7 +15,7 @@ not show them.
 
 ```text
 waiting list
-├── Get started page /connect      the form leads it; /waitlist opens it
+├── waiting list page /waitlist   the form, a headline and what happens next
 ├── POST /api/v1/waitlist          public, no sign-in, four typed refusals
 ├── ServiceWaitlist                the typed versioned record and its states
 ├── GET, POST /api/v1/admin/waitlist   operator listing and one decision
@@ -301,12 +301,14 @@ states and counts. It never holds the address, the link or a credential.
 
 ## What the page offers and when
 
-Since September 22, 2026 the form is not a page of its own. It sits in the
-invitation panel that leads the Get started page, and `/waitlist` opens that
-page. Every public action into the journey carries one label: "Request an
-invitation", opening `/waitlist`, while account creation is closed, and "Get
-started", opening `/connect`, once it is open. One press on the homepage's
-action shows the email field in the first screen, on a phone as well.
+Since September 23, 2026 the form is on a page of its own again, the
+waiting list page at `/waitlist`, with a short headline and what happens after
+you ask. Every public action into the journey says "Get started" and opens
+`/get-started`, the sign-up funnel; until the funnel page is merged, that
+address opens the waiting list page, so one press on the homepage's action
+shows the email field in the first screen, on a phone as well. The guide, Get
+set up at `/setup`, leads its first step with a link to the waiting list page
+while the service keeps a list.
 
 The page makes no offer before the service answers. The invitation panel, the
 form, the link on the registration page and the discount sentence all start
@@ -315,13 +317,13 @@ hidden, and the page shows each one only from the record
 
 | Element | Shown when |
 |---|---|
-| `start-invite`, the invitation panel | `website.waitlist_available` is true and `website.registration_available` is not |
+| `start-invite`, the guide's link to the waiting list page | `website.waitlist_available` is true and `website.registration_available` is not |
 | `waitlist-form`, `signup-waitlist-link` | `website.waitlist_available` is true |
 | `waitlist-discount` | the list is available and `billing.discount_code` is true |
-| `waitlist-closed`, in the operator's panel | anything else, including an unanswered request |
+| `waitlist-closed`, on the waiting list page | anything else, including an unanswered request |
 
 When the service reports registration open, the account creation panel leads
-the page instead. When it reports neither, and until it answers, the
+the guide instead. When it reports neither, and until it answers, the
 operator's panel leads it.
 
 A host that ships this page without a waiting list block therefore offers

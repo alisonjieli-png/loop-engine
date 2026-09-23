@@ -554,8 +554,8 @@ def _attempt(function):
 
 
 def _invitation_section(page):
-    """The invitation panel leading the Get started page since September 22, 2026; empty text when there is none."""
-    marker = '<section class="start-invite"'
+    """The invitation card of the waiting list page, back as a page of its own on September 23, 2026; empty when there is none."""
+    marker = '<section class="panel waitlist-card"'
     return page.split(marker, 1)[1].split("</section>", 1)[0].lower() if marker in page else ""
 
 
@@ -563,11 +563,13 @@ def page_checks(check, _root):
     """The public words: no release stage, and no promise of a date."""
     page = read_packaged_asset("index.html").decode("utf-8")
     section = _invitation_section(page)
-    setup = page.split('<section data-view="setup"', 1)[-1].split('data-get-started-step="connect"', 1)[0] if '<section data-view="setup"' in page else ""
-    check("the_invitation_form_leads_the_get_started_page",
-          bool(section) and '<section class="start-invite"' in setup and 'data-start-access="operator"' in setup)
-    check("KNOWN_WRONG_the_invitation_panel_reader_finds_nothing_on_a_page_without_the_panel",
-          _invitation_section(page.replace('<section class="start-invite"', '<section class="moved-away"')) == "")
+    view = lambda name: page.split('<section data-view="' + name + '"', 1)[-1].split("<section data-view=", 1)[0] if '<section data-view="' + name + '"' in page else ""
+    invite = view("setup").split('<section class="start-invite"', 1)[-1].split("</section>", 1)[0] if '<section class="start-invite"' in view("setup") else ""
+    check("the_invitation_form_leads_the_waiting_list_page_and_get_started_links_to_it",
+          bool(section) and '<section class="panel waitlist-card"' in view("waitlist") and 'id="waitlist-form"' in view("waitlist")
+          and 'href="/waitlist"' in invite and 'data-start-access="operator"' in view("setup") and 'id="waitlist-form"' not in view("setup"))
+    check("KNOWN_WRONG_the_invitation_card_reader_finds_nothing_on_a_page_without_the_card",
+          _invitation_section(page.replace('<section class="panel waitlist-card"', '<section class="moved-away"')) == "")
     found = sorted(word for word in FORBIDDEN_PAGE_WORDS if word in section)
     check("the_waiting_list_words_name_no_release_stage_and_promise_no_date", not found)
     check("KNOWN_WRONG_the_word_guard_finds_a_promise_when_the_words_carry_one",
