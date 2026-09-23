@@ -180,8 +180,9 @@ example_record_types:
     record. The package stores the field but defines no such value.
 
 # Names a guide cites that no runtime module of the package defines: a value
-# in an example measurement's data, or a retired name that only a check still
-# spells, to show that it is refused. Each entry names the repository file that
+# in an example measurement's data, a retired name that only a check still
+# spells, to show that it is refused, or the name of a named check that a guide
+# points a reader to. Each entry names the repository file that
 # holds the name. The check reads that file and refuses an entry whose file is
 # missing or outside the repository, or does not hold that exact name, so a
 # renamed value fails here the same way a renamed package name does.
@@ -217,3 +218,14 @@ repository_file_names:
     file: examples/29_intelligence_service/starter-catalogue/items.json
     meaning: >-
       The near neighbour that search ranks first for that same request.
+  adding_a_process_harness_recipe_needs_no_core_dispatch_edit:
+    file: src/loop_engine/core/harness_recipe_catalog_checks.py
+    meaning: >-
+      The named check that fails when a harness style is spelled in the
+      process runner or the relay. The external harness guide names it so that
+      a reader who adds a recipe knows which check holds that rule.
+  no_fresh_instance_recipe_writes_the_model_credential_to_a_file_or_a_command_line:
+    file: src/loop_engine/core/harness_fresh_instance_checks.py
+    meaning: >-
+      The named check that fails when a fresh instance recipe writes the
+      step's model credential to a file or passes it on a command line.
