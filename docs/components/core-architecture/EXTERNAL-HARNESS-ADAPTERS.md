@@ -98,6 +98,13 @@ three fields under the engine protocol version `external_harness_adapter/v2`:
 | `engine_kind` | One of the ten engine kinds in `STEP_EXECUTOR_ENGINE_KINDS`. A kind is a declaration. It grants no permission, and it does not prove that a step was delegated to a separate process. |
 | `supported_edge_contracts` | The edges the adapter serves, named by their request record type. `harness_request_identity/v3` asks for one model response and is served by `run()`. `step_run_request/v1` asks for one step and is served by `run_step()`; its records and envelope arrive in a later package, and no engine serves it yet. |
 
+The `step_executor` record of the engine slot catalogue,
+`src/loop_engine/data/engine_slots.yaml`, states the same kinds, protocol
+version and edges, the edges through its interaction rows. Until one of the
+two reads the other, the check
+`the_step_executor_slot_record_names_the_contract_kinds_version_and_edges`
+fails when they differ.
+
 `HarnessRegistry.register` checks the declaration before any run. A refusal
 raises `HarnessAdapterRefused`, which carries every reason as a stable code:
 

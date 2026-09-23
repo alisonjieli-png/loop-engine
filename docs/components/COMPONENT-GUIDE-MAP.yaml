@@ -229,3 +229,9 @@ repository_file_names:
     meaning: >-
       The named check that fails when a fresh instance recipe writes the
       step's model credential to a file or passes it on a command line.
+  the_step_executor_slot_record_names_the_contract_kinds_version_and_edges:
+    file: src/loop_engine/core/external_harness_contract_checks.py
+    meaning: >-
+      The named check that fails when the step executor record of the engine
+      slot catalogue and the adapter contract state different engine kinds,
+      protocol versions or edges.

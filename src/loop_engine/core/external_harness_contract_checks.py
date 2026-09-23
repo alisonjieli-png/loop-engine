@@ -273,6 +273,53 @@ def _declarations_are_shaped():
             and info.supported_edge_contracts == (_RESPONSE_EDGE,))
 
 
+def _slot_disagreements(slot, rows) -> tuple:
+    """Every way a step executor slot record differs from the adapter contract.
+
+    ``slot`` is a record of data/engine_slots.yaml as a mapping and ``rows``
+    maps interaction identifiers to rows of data/component_interactions.yaml.
+    The kinds are a closed set, so their order carries no meaning; the edges
+    compare request and result record types exactly."""
+    from .external_harness_contract import (
+        ADAPTER_CONTRACT_VERSION, SERVED_EDGE_CONTRACTS, STEP_EXECUTOR_ENGINE_KINDS)
+    found = []
+    if sorted(slot.get("engine_kinds") or ()) != sorted(STEP_EXECUTOR_ENGINE_KINDS):
+        found.append("engine_kinds")
+    if slot.get("engine_protocol_version") != ADAPTER_CONTRACT_VERSION:
+        found.append("engine_protocol_version")
+    named = [rows.get(name) or {} for name in slot.get("interactions") or ()]
+    edges = sorted((row.get("request_contract"), row.get("result_contract")) for row in named)
+    if edges != sorted((edge, result) for edge, (result, _operation) in SERVED_EDGE_CONTRACTS.items()):
+        found.append("edges")
+    return tuple(found)
+
+
+def _slot_record_matches_the_contract():
+    """The two sources of the step executor slot's kinds and edges agree.
+
+    The adapter contract module and the slot catalogue both state them until
+    one reads the other; a change to either that the other does not repeat
+    fails here. Each known-wrong record changes one field."""
+    from .component_contracts import load_component_resource
+    from .engines.slots import load_engine_slot_catalog
+    slot = next(item for item in load_engine_slot_catalog().slots
+                if item.slot_id == "step_executor").to_dict()
+    rows = {row["interaction_id"]: row for row in load_component_resource(
+        "component_interactions.yaml", "component_interaction_catalog/v1")["interactions"]}
+    edge = next(name for name in slot["interactions"]
+                if rows[name]["request_contract"] == _STEP_EDGE)
+    newer_result = {**rows, edge: {**rows[edge], "result_contract": "step_run_result/v2"}}
+    return (_slot_disagreements(slot, rows) == ()
+            and _slot_disagreements({**slot, "engine_kinds": [*slot["engine_kinds"], "server_database"]},
+                                    rows) == ("engine_kinds",)
+            and _slot_disagreements({**slot, "engine_kinds": slot["engine_kinds"][1:]}, rows)
+            == ("engine_kinds",)
+            and _slot_disagreements({**slot, "engine_protocol_version": "external_harness_adapter/v1"},
+                                    rows) == ("engine_protocol_version",)
+            and _slot_disagreements({**slot, "interactions": [edge]}, rows) == ("edges",)
+            and _slot_disagreements(slot, newer_result) == ("edges",))
+
+
 def run_checks() -> dict:
     """Run every named check and control; one raising check fails only itself."""
     tests = []
@@ -317,6 +364,9 @@ def run_checks() -> dict:
           _binding_needs_the_response_edge)
     check("adapter_contract_declarations_are_shaped_before_registration",
           _declarations_are_shaped)
+    check("the_step_executor_slot_record_names_the_contract_kinds_version_and_edges",
+          _slot_record_matches_the_contract,
+          "data/engine_slots.yaml and core/external_harness_contract.py agree")
     passed = sum(item["passed"] for item in tests)
     return {"module": "core.external_harness_contract_checks", "tests": tests,
             "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
