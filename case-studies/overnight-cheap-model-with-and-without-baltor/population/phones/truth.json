@@ -1,0 +1,580 @@
+{
+ "record_type": "overnight_truth/v1",
+ "family": "phones",
+ "output_columns": [
+  "id",
+  "phone",
+  "review"
+ ],
+ "value_column": "phone",
+ "rows": [
+  {
+   "case_type": "international_with_plus",
+   "variant": "uk_london",
+   "input": "+44 20 7946 0142",
+   "kind": "change",
+   "expected": "+442079460142",
+   "review": "no",
+   "id": "1"
+  },
+  {
+   "case_type": "already_e164",
+   "variant": "with_extension",
+   "input": "+14155550141 ext 7",
+   "kind": "keep",
+   "expected": "+14155550141 ext 7",
+   "review": "no",
+   "id": "2"
+  },
+  {
+   "case_type": "hold_no_area_code",
+   "variant": "seven_digits_with_extension",
+   "input": "555-0112 ext 4",
+   "kind": "hold",
+   "expected": "555-0112 ext 4",
+   "review": "yes",
+   "id": "3"
+  },
+  {
+   "case_type": "international_with_plus",
+   "variant": "uk_manchester",
+   "input": "+44 161 496 0191",
+   "kind": "change",
+   "expected": "+441614960191",
+   "review": "no",
+   "id": "4"
+  },
+  {
+   "case_type": "international_with_plus",
+   "variant": "uk_mobile",
+   "input": "+44 7700 900128",
+   "kind": "change",
+   "expected": "+447700900128",
+   "review": "no",
+   "id": "5"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "plus_one_dashes",
+   "input": "+1-617-555-0104",
+   "kind": "change",
+   "expected": "+16175550104",
+   "review": "no",
+   "id": "6"
+  },
+  {
+   "case_type": "hold_two_numbers",
+   "variant": "slash",
+   "input": "303-555-0149 / 303-555-0167",
+   "kind": "hold",
+   "expected": "303-555-0149 / 303-555-0167",
+   "review": "yes",
+   "id": "7"
+  },
+  {
+   "case_type": "hold_wrong_digit_count",
+   "variant": "eleven_digits_no_leading_one",
+   "input": "212-555-01949",
+   "kind": "hold",
+   "expected": "212-555-01949",
+   "review": "yes",
+   "id": "8"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "parentheses_and_dash",
+   "input": "(416) 555-0144",
+   "kind": "change",
+   "expected": "+14165550144",
+   "review": "no",
+   "id": "9"
+  },
+  {
+   "case_type": "fullwidth_digits",
+   "variant": "fullwidth",
+   "input": "\uff14\uff11\uff15\uff0d\uff15\uff15\uff15\uff0d\uff10\uff11\uff11\uff11",
+   "kind": "change",
+   "expected": "+14155550111",
+   "review": "no",
+   "id": "10"
+  },
+  {
+   "case_type": "hold_invalid_area_code",
+   "variant": "area_code_starts_with_zero",
+   "input": "(015) 555-0119",
+   "kind": "hold",
+   "expected": "(015) 555-0119",
+   "review": "yes",
+   "id": "11"
+  },
+  {
+   "case_type": "hold_placeholder",
+   "variant": "all_zeros",
+   "input": "000-000-0000",
+   "kind": "hold",
+   "expected": "000-000-0000",
+   "review": "yes",
+   "id": "12"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "plus_one_spaces",
+   "input": "+1 514 555 0103",
+   "kind": "change",
+   "expected": "+15145550103",
+   "review": "no",
+   "id": "13"
+  },
+  {
+   "case_type": "trunk_prefix_in_parentheses",
+   "variant": "uk_mobile",
+   "input": "+44 (0)7700 900172",
+   "kind": "change",
+   "expected": "+447700900172",
+   "review": "no",
+   "id": "14"
+  },
+  {
+   "case_type": "extension",
+   "variant": "ext_period",
+   "input": "303-555-0162 ext. 12",
+   "kind": "change",
+   "expected": "+13035550162 ext 12",
+   "review": "no",
+   "id": "15"
+  },
+  {
+   "case_type": "already_e164",
+   "variant": "north_american",
+   "input": "+16135550192",
+   "kind": "keep",
+   "expected": "+16135550192",
+   "review": "no",
+   "id": "16"
+  },
+  {
+   "case_type": "north_american_exit_prefix",
+   "variant": "uk_london",
+   "input": "011 44 20 7946 0143",
+   "kind": "change",
+   "expected": "+442079460143",
+   "review": "no",
+   "id": "17"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "ten_bare_digits",
+   "input": "5125550147",
+   "kind": "change",
+   "expected": "+15125550147",
+   "review": "no",
+   "id": "18"
+  },
+  {
+   "case_type": "already_e164",
+   "variant": "canadian",
+   "input": "+16135550188",
+   "kind": "keep",
+   "expected": "+16135550188",
+   "review": "no",
+   "id": "19"
+  },
+  {
+   "case_type": "hold_invalid_area_code",
+   "variant": "n11_service_code",
+   "input": "(411) 555-0132",
+   "kind": "hold",
+   "expected": "(411) 555-0132",
+   "review": "yes",
+   "id": "20"
+  },
+  {
+   "case_type": "extension",
+   "variant": "upper_case_ext",
+   "input": "(212) 555-0109 EXT 204",
+   "kind": "change",
+   "expected": "+12125550109 ext 204",
+   "review": "no",
+   "id": "21"
+  },
+  {
+   "case_type": "label_text",
+   "variant": "office_international",
+   "input": "Office: +44 20 7946 0117",
+   "kind": "change",
+   "expected": "+442079460117",
+   "review": "no",
+   "id": "22"
+  },
+  {
+   "case_type": "already_e164",
+   "variant": "uk_mobile",
+   "input": "+447700900107",
+   "kind": "keep",
+   "expected": "+447700900107",
+   "review": "no",
+   "id": "23"
+  },
+  {
+   "case_type": "trunk_prefix_after_country_code",
+   "variant": "uk_manchester",
+   "input": "+44 0161 496 0160",
+   "kind": "change",
+   "expected": "+441614960160",
+   "review": "no",
+   "id": "24"
+  },
+  {
+   "case_type": "extension",
+   "variant": "x_marker",
+   "input": "(604) 555-0110 x305",
+   "kind": "change",
+   "expected": "+16045550110 ext 305",
+   "review": "no",
+   "id": "25"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "empty",
+   "input": "",
+   "kind": "keep",
+   "expected": "",
+   "review": "no",
+   "id": "26"
+  },
+  {
+   "case_type": "north_american_exit_prefix",
+   "variant": "uk_mobile",
+   "input": "011-44-7700-900100",
+   "kind": "change",
+   "expected": "+447700900100",
+   "review": "no",
+   "id": "27"
+  },
+  {
+   "case_type": "extension",
+   "variant": "international_x",
+   "input": "+44 20 7946 0193 x12",
+   "kind": "change",
+   "expected": "+442079460193 ext 12",
+   "review": "no",
+   "id": "28"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "eleven_bare_digits",
+   "input": "14165550166",
+   "kind": "change",
+   "expected": "+14165550166",
+   "review": "no",
+   "id": "29"
+  },
+  {
+   "case_type": "hold_no_area_code",
+   "variant": "seven_digits_dash",
+   "input": "555-0124",
+   "kind": "hold",
+   "expected": "555-0124",
+   "review": "yes",
+   "id": "30"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "spaces",
+   "input": "415 555 0198",
+   "kind": "change",
+   "expected": "+14155550198",
+   "review": "no",
+   "id": "31"
+  },
+  {
+   "case_type": "already_e164",
+   "variant": "uk_london",
+   "input": "+442079460174",
+   "kind": "keep",
+   "expected": "+442079460174",
+   "review": "no",
+   "id": "32"
+  },
+  {
+   "case_type": "international_with_plus",
+   "variant": "australia_sydney",
+   "input": "+61 2 5550 0176",
+   "kind": "change",
+   "expected": "+61255500176",
+   "review": "no",
+   "id": "33"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "n_a",
+   "input": "n/a",
+   "kind": "keep",
+   "expected": "n/a",
+   "review": "no",
+   "id": "34"
+  },
+  {
+   "case_type": "exit_prefix_00",
+   "variant": "uk_leeds",
+   "input": "00 44 113 496 0138",
+   "kind": "change",
+   "expected": "+441134960138",
+   "review": "no",
+   "id": "35"
+  },
+  {
+   "case_type": "hold_wrong_digit_count",
+   "variant": "nine_digits",
+   "input": "212-555-018",
+   "kind": "hold",
+   "expected": "212-555-018",
+   "review": "yes",
+   "id": "36"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "upper_case_n_a",
+   "input": "N/A",
+   "kind": "keep",
+   "expected": "N/A",
+   "review": "no",
+   "id": "37"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "surrounding_spaces",
+   "input": " 206-555-0153 ",
+   "kind": "change",
+   "expected": "+12065550153",
+   "review": "no",
+   "id": "38"
+  },
+  {
+   "case_type": "hold_plus_with_impossible_length",
+   "variant": "plus_41_eight_digits",
+   "input": "+415 555 0133",
+   "kind": "hold",
+   "expected": "+415 555 0133",
+   "review": "yes",
+   "id": "39"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "plus_one_parentheses_canada",
+   "input": "+1 (416) 555-0179",
+   "kind": "change",
+   "expected": "+14165550179",
+   "review": "no",
+   "id": "40"
+  },
+  {
+   "case_type": "exit_prefix_00",
+   "variant": "uk_mobile_joined",
+   "input": "0044 7700 900175",
+   "kind": "change",
+   "expected": "+447700900175",
+   "review": "no",
+   "id": "41"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "one_dash",
+   "input": "1-416-555-0126",
+   "kind": "change",
+   "expected": "+14165550126",
+   "review": "no",
+   "id": "42"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "unknown",
+   "input": "unknown",
+   "kind": "keep",
+   "expected": "unknown",
+   "review": "no",
+   "id": "43"
+  },
+  {
+   "case_type": "extension",
+   "variant": "extension_word",
+   "input": "415.555.0184 extension 7",
+   "kind": "change",
+   "expected": "+14155550184 ext 7",
+   "review": "no",
+   "id": "44"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "non_breaking_spaces",
+   "input": "512\u00a0555\u00a00140",
+   "kind": "change",
+   "expected": "+15125550140",
+   "review": "no",
+   "id": "45"
+  },
+  {
+   "case_type": "trunk_prefix_in_parentheses",
+   "variant": "uk_bristol",
+   "input": "+44 (0) 117 496 0196",
+   "kind": "change",
+   "expected": "+441174960196",
+   "review": "no",
+   "id": "46"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "dashes",
+   "input": "416-555-0131",
+   "kind": "change",
+   "expected": "+14165550131",
+   "review": "no",
+   "id": "47"
+  },
+  {
+   "case_type": "label_text",
+   "variant": "tel_colon",
+   "input": "Tel: (415) 555-0178",
+   "kind": "change",
+   "expected": "+14155550178",
+   "review": "no",
+   "id": "48"
+  },
+  {
+   "case_type": "letter_o_for_zero",
+   "variant": "ocr_like",
+   "input": "613-555-01O3",
+   "kind": "alternatives",
+   "expected": "+16135550103",
+   "review": "no",
+   "accepted": [
+    [
+     "613-555-01O3",
+     "yes"
+    ],
+    [
+     "+16135550103",
+     "no"
+    ]
+   ],
+   "id": "49"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "dash",
+   "input": "-",
+   "kind": "keep",
+   "expected": "-",
+   "review": "no",
+   "id": "50"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "dots",
+   "input": "303.555.0137",
+   "kind": "change",
+   "expected": "+13035550137",
+   "review": "no",
+   "id": "51"
+  },
+  {
+   "case_type": "trunk_prefix_after_country_code",
+   "variant": "uk_london",
+   "input": "+44 020 7946 0150",
+   "kind": "change",
+   "expected": "+442079460150",
+   "review": "no",
+   "id": "52"
+  },
+  {
+   "case_type": "trunk_prefix_in_parentheses",
+   "variant": "australia_sydney",
+   "input": "+61 (0)2 5550 0159",
+   "kind": "change",
+   "expected": "+61255500159",
+   "review": "no",
+   "id": "53"
+  },
+  {
+   "case_type": "hold_no_area_code",
+   "variant": "seven_digits_space",
+   "input": "555 0177",
+   "kind": "hold",
+   "expected": "555 0177",
+   "review": "yes",
+   "id": "54"
+  },
+  {
+   "case_type": "extension",
+   "variant": "comma_before_ext",
+   "input": "212-555-0148, ext. 3",
+   "kind": "change",
+   "expected": "+12125550148 ext 3",
+   "review": "no",
+   "id": "55"
+  },
+  {
+   "case_type": "hold_two_numbers",
+   "variant": "or_word",
+   "input": "312-555-0189 or 312-555-0187",
+   "kind": "hold",
+   "expected": "312-555-0189 or 312-555-0187",
+   "review": "yes",
+   "id": "56"
+  },
+  {
+   "case_type": "label_text",
+   "variant": "cell_word",
+   "input": "cell 312.555.0155",
+   "kind": "change",
+   "expected": "+13125550155",
+   "review": "no",
+   "id": "57"
+  },
+  {
+   "case_type": "hold_plus_with_impossible_length",
+   "variant": "plus_1_seven_digits",
+   "input": "+1 555 0135",
+   "kind": "hold",
+   "expected": "+1 555 0135",
+   "review": "yes",
+   "id": "58"
+  },
+  {
+   "case_type": "country_code_one_present",
+   "variant": "one_parentheses",
+   "input": "1 (206) 555-0182",
+   "kind": "change",
+   "expected": "+12065550182",
+   "review": "no",
+   "id": "59"
+  },
+  {
+   "case_type": "national_number_formatted",
+   "variant": "unicode_dashes",
+   "input": "312\u2013555\u20130163",
+   "kind": "change",
+   "expected": "+13125550163",
+   "review": "no",
+   "id": "60"
+  },
+  {
+   "case_type": "hold_invalid_area_code",
+   "variant": "area_code_starts_with_one",
+   "input": "(155) 555-0161",
+   "kind": "hold",
+   "expected": "(155) 555-0161",
+   "review": "yes",
+   "id": "61"
+  },
+  {
+   "case_type": "trunk_prefix_in_parentheses",
+   "variant": "uk_london",
+   "input": "+44 (0)20 7946 0171",
+   "kind": "change",
+   "expected": "+442079460171",
+   "review": "no",
+   "id": "62"
+  }
+ ]
+}

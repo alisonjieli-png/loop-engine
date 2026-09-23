@@ -1,0 +1,2796 @@
+{
+ "record_type": "overnight_item_reference/v1",
+ "thresholds": {
+  "apply_at_or_above": 0.9,
+  "escalate_below": 0.6
+ },
+ "families": {
+  "phones": {
+   "source_operation": "src/loop_engine/code_nodes/text_conformance_operations.py: phone_normalize",
+   "parameters": {
+    "default_country_code": "1",
+    "national_number_length": 10
+   },
+   "primary_metric": "record_accuracy",
+   "primary": 0.709677,
+   "passed": false,
+   "metrics": {
+    "rows": 62,
+    "correct": 44,
+    "record_accuracy": 0.709677,
+    "value_accuracy": 0.709677,
+    "change_recall": 0.684211,
+    "change_precision": 0.666667,
+    "wrong_changes_to_correct_values": 0,
+    "wrong_change_rate_on_correct_values": 0.0,
+    "correct_hold_rate": 0.538462,
+    "guess_rate_on_hold_rows": 0.461538,
+    "missing_rows": 0
+   },
+   "row_labels": {
+    "1": "item_method_gives_the_truth",
+    "2": "item_method_gives_the_truth",
+    "3": "item_method_gives_the_truth",
+    "4": "item_method_gives_the_truth",
+    "5": "item_method_gives_the_truth",
+    "6": "item_method_gives_the_truth",
+    "7": "item_method_gives_the_truth",
+    "8": "item_method_gives_the_truth",
+    "9": "item_method_gives_the_truth",
+    "10": "item_method_gives_a_different_answer",
+    "11": "item_method_gives_a_different_answer",
+    "12": "item_method_gives_a_different_answer",
+    "13": "item_method_gives_the_truth",
+    "14": "item_method_gives_a_different_answer",
+    "15": "item_method_gives_the_truth",
+    "16": "item_method_gives_the_truth",
+    "17": "item_method_gives_a_different_answer",
+    "18": "item_method_gives_the_truth",
+    "19": "item_method_gives_the_truth",
+    "20": "item_method_gives_a_different_answer",
+    "21": "item_method_gives_the_truth",
+    "22": "item_method_gives_a_different_answer",
+    "23": "item_method_gives_the_truth",
+    "24": "item_method_gives_a_different_answer",
+    "25": "item_method_gives_the_truth",
+    "26": "item_method_gives_the_truth",
+    "27": "item_method_gives_a_different_answer",
+    "28": "item_method_gives_the_truth",
+    "29": "item_method_gives_the_truth",
+    "30": "item_method_gives_the_truth",
+    "31": "item_method_gives_the_truth",
+    "32": "item_method_gives_the_truth",
+    "33": "item_method_gives_the_truth",
+    "34": "item_method_gives_the_truth",
+    "35": "item_method_gives_a_different_answer",
+    "36": "item_method_gives_the_truth",
+    "37": "item_method_gives_the_truth",
+    "38": "item_method_gives_the_truth",
+    "39": "item_method_gives_a_different_answer",
+    "40": "item_method_gives_the_truth",
+    "41": "item_method_gives_a_different_answer",
+    "42": "item_method_gives_the_truth",
+    "43": "item_method_gives_the_truth",
+    "44": "item_method_gives_the_truth",
+    "45": "item_method_gives_the_truth",
+    "46": "item_method_gives_a_different_answer",
+    "47": "item_method_gives_the_truth",
+    "48": "item_method_gives_the_truth",
+    "49": "item_method_gives_the_truth",
+    "50": "item_method_gives_the_truth",
+    "51": "item_method_gives_the_truth",
+    "52": "item_method_gives_a_different_answer",
+    "53": "item_method_gives_a_different_answer",
+    "54": "item_method_gives_the_truth",
+    "55": "item_method_gives_the_truth",
+    "56": "item_method_gives_the_truth",
+    "57": "item_method_gives_the_truth",
+    "58": "item_method_gives_a_different_answer",
+    "59": "item_method_gives_the_truth",
+    "60": "item_method_gives_the_truth",
+    "61": "item_method_gives_a_different_answer",
+    "62": "item_method_gives_a_different_answer"
+   },
+   "rows_where_item_method_gives_the_truth": 44,
+   "method_details": [
+    {
+     "id": "1",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "2",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "extension:7",
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "3",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "extension:4",
+      "digit_count_unexpected:7"
+     ]
+    },
+    {
+     "id": "4",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "5",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "6",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "7",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:20"
+     ]
+    },
+    {
+     "id": "8",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:11"
+     ]
+    },
+    {
+     "id": "9",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "10",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "11",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "12",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "13",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "14",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "15",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "extension:12",
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "16",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "17",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:15"
+     ]
+    },
+    {
+     "id": "18",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "19",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "20",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "21",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "extension:204",
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "22",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:12"
+     ]
+    },
+    {
+     "id": "23",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "24",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "25",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "extension:305",
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "26",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "27",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:15"
+     ]
+    },
+    {
+     "id": "28",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "extension:12",
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "29",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "country_code_present"
+     ]
+    },
+    {
+     "id": "30",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:7"
+     ]
+    },
+    {
+     "id": "31",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "32",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "33",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "34",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "35",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:14"
+     ]
+    },
+    {
+     "id": "36",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:9"
+     ]
+    },
+    {
+     "id": "37",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "38",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "39",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "40",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "41",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:14"
+     ]
+    },
+    {
+     "id": "42",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "country_code_present"
+     ]
+    },
+    {
+     "id": "43",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "44",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "extension:7",
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "45",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "46",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "47",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "48",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "49",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:9"
+     ]
+    },
+    {
+     "id": "50",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "51",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "52",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "53",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "54",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:7"
+     ]
+    },
+    {
+     "id": "55",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "extension:3",
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "56",
+     "outcome": "escalated",
+     "confidence": 0.35,
+     "reasons": [
+      "digit_count_unexpected:20"
+     ]
+    },
+    {
+     "id": "57",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "58",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    },
+    {
+     "id": "59",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "country_code_present"
+     ]
+    },
+    {
+     "id": "60",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "61",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "default_country_code_applied"
+     ]
+    },
+    {
+     "id": "62",
+     "outcome": "applied",
+     "confidence": 0.93,
+     "reasons": [
+      "international_prefix_kept"
+     ]
+    }
+   ]
+  },
+  "emails": {
+   "source_operation": "src/loop_engine/code_nodes/field_recovery.py: recover_email",
+   "parameters": {
+    "tables": "the declared default tables"
+   },
+   "primary_metric": "record_accuracy",
+   "primary": 0.614035,
+   "passed": false,
+   "metrics": {
+    "rows": 57,
+    "correct": 35,
+    "record_accuracy": 0.614035,
+    "value_accuracy": 0.77193,
+    "change_recall": 0.6,
+    "change_precision": 0.947368,
+    "wrong_changes_to_correct_values": 0,
+    "wrong_change_rate_on_correct_values": 0.0,
+    "correct_hold_rate": 0.733333,
+    "guess_rate_on_hold_rows": 0.066667,
+    "missing_rows": 0
+   },
+   "row_labels": {
+    "1": "item_method_gives_a_different_answer",
+    "2": "item_method_gives_the_truth",
+    "3": "item_method_gives_a_different_answer",
+    "4": "item_method_gives_the_truth",
+    "5": "item_method_gives_the_truth",
+    "6": "item_method_gives_the_truth",
+    "7": "item_method_gives_the_truth",
+    "8": "item_method_gives_a_different_answer",
+    "9": "item_method_gives_a_different_answer",
+    "10": "item_method_gives_the_truth",
+    "11": "item_method_gives_the_truth",
+    "12": "item_method_gives_the_truth",
+    "13": "item_method_gives_the_truth",
+    "14": "item_method_gives_a_different_answer",
+    "15": "item_method_gives_a_different_answer",
+    "16": "item_method_gives_a_different_answer",
+    "17": "item_method_gives_a_different_answer",
+    "18": "item_method_gives_a_different_answer",
+    "19": "item_method_gives_a_different_answer",
+    "20": "item_method_gives_the_truth",
+    "21": "item_method_gives_a_different_answer",
+    "22": "item_method_gives_the_truth",
+    "23": "item_method_gives_the_truth",
+    "24": "item_method_gives_a_different_answer",
+    "25": "item_method_gives_a_different_answer",
+    "26": "item_method_gives_the_truth",
+    "27": "item_method_gives_the_truth",
+    "28": "item_method_gives_the_truth",
+    "29": "item_method_gives_the_truth",
+    "30": "item_method_gives_the_truth",
+    "31": "item_method_gives_the_truth",
+    "32": "item_method_gives_the_truth",
+    "33": "item_method_gives_a_different_answer",
+    "34": "item_method_gives_a_different_answer",
+    "35": "item_method_gives_a_different_answer",
+    "36": "item_method_gives_the_truth",
+    "37": "item_method_gives_a_different_answer",
+    "38": "item_method_gives_a_different_answer",
+    "39": "item_method_gives_the_truth",
+    "40": "item_method_gives_the_truth",
+    "41": "item_method_gives_the_truth",
+    "42": "item_method_gives_the_truth",
+    "43": "item_method_gives_a_different_answer",
+    "44": "item_method_gives_the_truth",
+    "45": "item_method_gives_the_truth",
+    "46": "item_method_gives_the_truth",
+    "47": "item_method_gives_the_truth",
+    "48": "item_method_gives_a_different_answer",
+    "49": "item_method_gives_a_different_answer",
+    "50": "item_method_gives_the_truth",
+    "51": "item_method_gives_the_truth",
+    "52": "item_method_gives_the_truth",
+    "53": "item_method_gives_the_truth",
+    "54": "item_method_gives_the_truth",
+    "55": "item_method_gives_a_different_answer",
+    "56": "item_method_gives_the_truth",
+    "57": "item_method_gives_the_truth"
+   },
+   "rows_where_item_method_gives_the_truth": 35,
+   "method_details": [
+    {
+     "id": "1",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "2",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "domain:gmail.con->gmail.com"
+     ]
+    },
+    {
+     "id": "3",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "4",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "5",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "symbol_word:at",
+      "symbol_word:dot"
+     ]
+    },
+    {
+     "id": "6",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "7",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "8",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "9",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "10",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "11",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "12",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "domain:hotmial.com->hotmail.com"
+     ]
+    },
+    {
+     "id": "13",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "14",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "symbol_word:[at]",
+      "symbol_word:[dot]",
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "15",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "16",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "17",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "18",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "19",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "20",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "21",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "22",
+     "outcome": "held",
+     "confidence": 0.7,
+     "reasons": [
+      "domain:gmail.co->gmail.com"
+     ]
+    },
+    {
+     "id": "23",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "punctuation:@@"
+     ]
+    },
+    {
+     "id": "24",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "25",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "26",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "27",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "28",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "29",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "domain:outlook.con->outlook.com"
+     ]
+    },
+    {
+     "id": "30",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "31",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "symbol_word:at"
+     ]
+    },
+    {
+     "id": "32",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "punctuation:.com."
+     ]
+    },
+    {
+     "id": "33",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "domain:gmial.com->gmail.com"
+     ]
+    },
+    {
+     "id": "34",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "35",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "36",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "37",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "38",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "39",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "punctuation:.."
+     ]
+    },
+    {
+     "id": "40",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "41",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "punctuation:,com"
+     ]
+    },
+    {
+     "id": "42",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "43",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "44",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "45",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "symbol_word:(at)",
+      "symbol_word:(dot)"
+     ]
+    },
+    {
+     "id": "46",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "symbol_word:dot"
+     ]
+    },
+    {
+     "id": "47",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "48",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "49",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "50",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "domain:yaho.com->yahoo.com"
+     ]
+    },
+    {
+     "id": "51",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "52",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "53",
+     "outcome": "escalated",
+     "confidence": 0.5,
+     "reasons": [
+      "ambiguous_address"
+     ]
+    },
+    {
+     "id": "54",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "valid_address"
+     ]
+    },
+    {
+     "id": "55",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "unrecoverable_shape"
+     ]
+    },
+    {
+     "id": "56",
+     "outcome": "applied",
+     "confidence": 0.97,
+     "reasons": [
+      "email_normalized"
+     ]
+    },
+    {
+     "id": "57",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "symbol_word:at",
+      "symbol_word:dot"
+     ]
+    }
+   ]
+  },
+  "addresses": {
+   "source_operation": "src/loop_engine/code_nodes/address_components.py: extract_components",
+   "parameters": {
+    "parser": "stdlib"
+   },
+   "primary_metric": "record_accuracy",
+   "primary": 0.5625,
+   "passed": false,
+   "metrics": {
+    "rows": 48,
+    "correct": 27,
+    "record_accuracy": 0.5625,
+    "part_accuracy": 0.843854,
+    "part_accuracy_by_part": {
+     "house_number": 0.837209,
+     "street": 0.767442,
+     "unit": 0.906977,
+     "city": 0.813953,
+     "region": 0.837209,
+     "postal_code": 0.930233,
+     "country": 0.813953
+    },
+    "rewritten_parts": 1,
+    "rewritten_part_rate": 0.004739,
+    "correct_hold_rate": 0.8,
+    "unneeded_review_rate": 0.116279,
+    "missing_rows": 0
+   },
+   "row_labels": {
+    "1": "item_method_gives_a_different_answer",
+    "2": "item_method_gives_a_different_answer",
+    "3": "item_method_gives_a_different_answer",
+    "4": "item_method_gives_the_truth",
+    "5": "item_method_gives_the_truth",
+    "6": "item_method_gives_a_different_answer",
+    "7": "item_method_gives_the_truth",
+    "8": "item_method_gives_a_different_answer",
+    "9": "item_method_gives_the_truth",
+    "10": "item_method_gives_the_truth",
+    "11": "item_method_gives_a_different_answer",
+    "12": "item_method_gives_the_truth",
+    "13": "item_method_gives_the_truth",
+    "14": "item_method_gives_a_different_answer",
+    "15": "item_method_gives_a_different_answer",
+    "16": "item_method_gives_a_different_answer",
+    "17": "item_method_gives_the_truth",
+    "18": "item_method_gives_the_truth",
+    "19": "item_method_gives_the_truth",
+    "20": "item_method_gives_a_different_answer",
+    "21": "item_method_gives_the_truth",
+    "22": "item_method_gives_the_truth",
+    "23": "item_method_gives_a_different_answer",
+    "24": "item_method_gives_a_different_answer",
+    "25": "item_method_gives_a_different_answer",
+    "26": "item_method_gives_a_different_answer",
+    "27": "item_method_gives_the_truth",
+    "28": "item_method_gives_the_truth",
+    "29": "item_method_gives_the_truth",
+    "30": "item_method_gives_the_truth",
+    "31": "item_method_gives_the_truth",
+    "32": "item_method_gives_the_truth",
+    "33": "item_method_gives_the_truth",
+    "34": "item_method_gives_a_different_answer",
+    "35": "item_method_gives_a_different_answer",
+    "36": "item_method_gives_a_different_answer",
+    "37": "item_method_gives_a_different_answer",
+    "38": "item_method_gives_the_truth",
+    "39": "item_method_gives_a_different_answer",
+    "40": "item_method_gives_the_truth",
+    "41": "item_method_gives_a_different_answer",
+    "42": "item_method_gives_a_different_answer",
+    "43": "item_method_gives_the_truth",
+    "44": "item_method_gives_the_truth",
+    "45": "item_method_gives_the_truth",
+    "46": "item_method_gives_the_truth",
+    "47": "item_method_gives_the_truth",
+    "48": "item_method_gives_the_truth"
+   },
+   "rows_where_item_method_gives_the_truth": 27,
+   "method_details": [
+    {
+     "id": "1",
+     "confidence": 0.9,
+     "remainder": "",
+     "reasons": []
+    },
+    {
+     "id": "2",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "3",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "street_not_found",
+      "unit_keyword:suite",
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "4",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "5",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:apt",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "6",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "7",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "8",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "9",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "10",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:apt",
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "11",
+     "confidence": 0.9,
+     "remainder": "",
+     "reasons": []
+    },
+    {
+     "id": "12",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "13",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:#",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "14",
+     "confidence": 0.4,
+     "remainder": "United Kingdom",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:GB",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "15",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "16",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:GB",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "17",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:ste",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "18",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "19",
+     "confidence": 0.7,
+     "remainder": "",
+     "reasons": [
+      "city_or_region_ambiguous"
+     ]
+    },
+    {
+     "id": "20",
+     "confidence": 0.4,
+     "remainder": "NS",
+     "reasons": [
+      "house_number_not_found",
+      "street_not_found",
+      "unit_keyword:unit",
+      "postal_pattern:CA",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "21",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:unit",
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "22",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:suite",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "23",
+     "confidence": 0.0,
+     "remainder": "",
+     "reasons": [
+      "empty_address"
+     ]
+    },
+    {
+     "id": "24",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "street_not_found",
+      "unit_keyword:apartment",
+      "postal_pattern:GB",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "25",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found"
+     ]
+    },
+    {
+     "id": "26",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:fl",
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "27",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:GB",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "28",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "29",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:apt",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "30",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:unit",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "31",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:GB"
+     ]
+    },
+    {
+     "id": "32",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:CA",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "33",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "34",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "35",
+     "confidence": 0.9,
+     "remainder": "",
+     "reasons": []
+    },
+    {
+     "id": "36",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "37",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "38",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:US"
+     ]
+    },
+    {
+     "id": "39",
+     "confidence": 0.9,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:apt"
+     ]
+    },
+    {
+     "id": "40",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found"
+     ]
+    },
+    {
+     "id": "41",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:GB"
+     ]
+    },
+    {
+     "id": "42",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "city_or_region_ambiguous"
+     ]
+    },
+    {
+     "id": "43",
+     "confidence": 0.7,
+     "remainder": "",
+     "reasons": [
+      "city_or_region_ambiguous"
+     ]
+    },
+    {
+     "id": "44",
+     "confidence": 0.7,
+     "remainder": "",
+     "reasons": [
+      "city_or_region_ambiguous"
+     ]
+    },
+    {
+     "id": "45",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "postal_pattern:CA"
+     ]
+    },
+    {
+     "id": "46",
+     "confidence": 0.4,
+     "remainder": "",
+     "reasons": [
+      "house_number_not_found",
+      "city_or_region_ambiguous"
+     ]
+    },
+    {
+     "id": "47",
+     "confidence": 0.8,
+     "remainder": "CO   / 80 Cedar Ln, CO 80202",
+     "reasons": [
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    },
+    {
+     "id": "48",
+     "confidence": 0.8,
+     "remainder": "",
+     "reasons": [
+      "unit_keyword:unit",
+      "postal_pattern:US",
+      "country_from_position"
+     ]
+    }
+   ]
+  },
+  "duplicates": {
+   "source_operation": "src/loop_engine/code_nodes/duplicate_detection.py: find_duplicates",
+   "parameters": {
+    "policy": "the default DuplicatePolicy",
+    "comparisons": 60
+   },
+   "primary_metric": "pair_f1",
+   "primary": 0.536585,
+   "passed": false,
+   "metrics": {
+    "rows": 59,
+    "true_duplicate_pairs": 30,
+    "pairs_marked_same": 11,
+    "pairs_marked_review": 15,
+    "pair_precision": 1.0,
+    "pair_recall": 0.366667,
+    "pair_f1": 0.536585,
+    "closure_pair_precision": 1.0,
+    "closure_pair_recall": 0.366667,
+    "closure_pair_f1": 0.536585,
+    "false_merges": 0,
+    "hard_negative_merges": 0,
+    "ambiguous_pairs_marked_same": 0,
+    "correct_hold_rate": 0.0,
+    "true_duplicates_only_marked_review": 15
+   },
+   "pairs_scored": [
+    {
+     "pair": [
+      "1",
+      "20"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "2",
+      "14"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "3",
+      "18"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "4",
+      "6"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "7",
+      "49"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "9",
+      "23"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "9",
+      "44"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "10",
+      "38"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "11",
+      "29"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "12",
+      "54"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "15",
+      "47"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "16",
+      "19"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "17",
+      "22"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "21",
+      "58"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "23",
+      "44"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "24",
+      "56"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "30",
+      "43"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "30",
+      "50"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "32",
+      "39"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "34",
+      "41"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "34",
+      "52"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "35",
+      "36"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "36",
+      "57"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "40",
+      "53"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    },
+    {
+     "pair": [
+      "41",
+      "52"
+     ],
+     "truth": "duplicate",
+     "decision": "review"
+    },
+    {
+     "pair": [
+      "43",
+      "50"
+     ],
+     "truth": "duplicate",
+     "decision": "same"
+    }
+   ]
+  },
+  "names": {
+   "source_operation": "src/loop_engine/code_nodes/text_conformance_operations.py: case_normalize",
+   "parameters": {
+    "catalogs": "the packaged catalogs"
+   },
+   "primary_metric": "record_accuracy",
+   "primary": 0.641509,
+   "passed": false,
+   "metrics": {
+    "rows": 53,
+    "correct": 34,
+    "record_accuracy": 0.641509,
+    "value_accuracy": 0.641509,
+    "change_recall": 0.631579,
+    "change_precision": 0.727273,
+    "wrong_changes_to_correct_values": 3,
+    "wrong_change_rate_on_correct_values": 0.333333,
+    "correct_hold_rate": 0.666667,
+    "guess_rate_on_hold_rows": 0.333333,
+    "missing_rows": 0
+   },
+   "row_labels": {
+    "1": "item_method_gives_a_different_answer",
+    "2": "item_method_gives_a_different_answer",
+    "3": "item_method_gives_the_truth",
+    "4": "item_method_gives_the_truth",
+    "5": "item_method_gives_the_truth",
+    "6": "item_method_gives_the_truth",
+    "7": "item_method_gives_the_truth",
+    "8": "item_method_gives_the_truth",
+    "9": "item_method_gives_the_truth",
+    "10": "item_method_gives_the_truth",
+    "11": "item_method_gives_a_different_answer",
+    "12": "item_method_gives_the_truth",
+    "13": "item_method_gives_a_different_answer",
+    "14": "item_method_gives_the_truth",
+    "15": "item_method_gives_a_different_answer",
+    "16": "item_method_gives_the_truth",
+    "17": "item_method_gives_a_different_answer",
+    "18": "item_method_gives_a_different_answer",
+    "19": "item_method_gives_the_truth",
+    "20": "item_method_gives_the_truth",
+    "21": "item_method_gives_the_truth",
+    "22": "item_method_gives_the_truth",
+    "23": "item_method_gives_the_truth",
+    "24": "item_method_gives_a_different_answer",
+    "25": "item_method_gives_a_different_answer",
+    "26": "item_method_gives_the_truth",
+    "27": "item_method_gives_the_truth",
+    "28": "item_method_gives_the_truth",
+    "29": "item_method_gives_the_truth",
+    "30": "item_method_gives_a_different_answer",
+    "31": "item_method_gives_the_truth",
+    "32": "item_method_gives_the_truth",
+    "33": "item_method_gives_a_different_answer",
+    "34": "item_method_gives_a_different_answer",
+    "35": "item_method_gives_the_truth",
+    "36": "item_method_gives_the_truth",
+    "37": "item_method_gives_the_truth",
+    "38": "item_method_gives_the_truth",
+    "39": "item_method_gives_a_different_answer",
+    "40": "item_method_gives_the_truth",
+    "41": "item_method_gives_a_different_answer",
+    "42": "item_method_gives_the_truth",
+    "43": "item_method_gives_the_truth",
+    "44": "item_method_gives_the_truth",
+    "45": "item_method_gives_a_different_answer",
+    "46": "item_method_gives_a_different_answer",
+    "47": "item_method_gives_the_truth",
+    "48": "item_method_gives_the_truth",
+    "49": "item_method_gives_the_truth",
+    "50": "item_method_gives_a_different_answer",
+    "51": "item_method_gives_a_different_answer",
+    "52": "item_method_gives_a_different_answer",
+    "53": "item_method_gives_the_truth"
+   },
+   "rows_where_item_method_gives_the_truth": 34,
+   "method_details": [
+    {
+     "id": "1",
+     "outcome": "held",
+     "confidence": 0.75,
+     "reasons": [
+      "case_information_absent",
+      "short_token_kept_upper_unverified",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "2",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "no_vowel_token_kept_upper"
+     ]
+    },
+    {
+     "id": "3",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "single_letter_upper",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "4",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "5",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "single_letter_upper",
+      "token_with_digits_kept",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "6",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "legal_suffix_cased:LLC"
+     ]
+    },
+    {
+     "id": "7",
+     "outcome": "held",
+     "confidence": 0.78,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "particle_lowercased_ambiguous"
+     ]
+    },
+    {
+     "id": "8",
+     "outcome": "held",
+     "confidence": 0.78,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "particle_lowercased_ambiguous"
+     ]
+    },
+    {
+     "id": "9",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "apostrophe_prefix_capital"
+     ]
+    },
+    {
+     "id": "10",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "no_letters_or_null_sentinel"
+     ]
+    },
+    {
+     "id": "11",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "token_with_digits_kept",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "12",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "single_letter_upper"
+     ]
+    },
+    {
+     "id": "13",
+     "outcome": "held",
+     "confidence": 0.75,
+     "reasons": [
+      "case_information_absent",
+      "prefix_capital:Mc",
+      "first_letter_capitalized",
+      "short_token_kept_upper_unverified"
+     ]
+    },
+    {
+     "id": "14",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "apostrophe_kept_lower",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "15",
+     "outcome": "held",
+     "confidence": 0.83,
+     "reasons": [
+      "case_information_absent",
+      "short_word_capitalized_unverified",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "16",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "17",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "leading_particle_capitalized"
+     ]
+    },
+    {
+     "id": "18",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "no_vowel_token_kept_upper",
+      "short_word_capitalized_unverified",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "19",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "20",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "apostrophe_prefix_capital"
+     ]
+    },
+    {
+     "id": "21",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "no_vowel_token_kept_upper",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "22",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "apostrophe_kept_lower",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "23",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "apostrophe_prefix_capital",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "24",
+     "outcome": "held",
+     "confidence": 0.8,
+     "reasons": [
+      "case_information_absent",
+      "prefix_capital:Mac",
+      "first_letter_capitalized",
+      "minor_word_lowercased",
+      "legal_suffix_cased:Inc"
+     ]
+    },
+    {
+     "id": "25",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "surname_exception:MacDonald"
+     ]
+    },
+    {
+     "id": "26",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "preserved_token"
+     ]
+    },
+    {
+     "id": "27",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "no_vowel_token_kept_upper",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "28",
+     "outcome": "held",
+     "confidence": 0.8,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "particle_lowercased_ambiguous"
+     ]
+    },
+    {
+     "id": "29",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "surname_exception:McDonald"
+     ]
+    },
+    {
+     "id": "30",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "apostrophe_prefix_capital",
+      "short_word_capitalized_unverified"
+     ]
+    },
+    {
+     "id": "31",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "leading_particle_capitalized",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "32",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "33",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "no_vowel_token_kept_upper"
+     ]
+    },
+    {
+     "id": "34",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "surname_exception:MacKenzie"
+     ]
+    },
+    {
+     "id": "35",
+     "outcome": "held",
+     "confidence": 0.8,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "particle_lowercased_ambiguous"
+     ]
+    },
+    {
+     "id": "36",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "legal_suffix_cased:Inc"
+     ]
+    },
+    {
+     "id": "37",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "minor_word_lowercased"
+     ]
+    },
+    {
+     "id": "38",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "prefix_capital:Mc"
+     ]
+    },
+    {
+     "id": "39",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "leading_particle_capitalized",
+      "first_letter_capitalized",
+      "short_word_capitalized_unverified"
+     ]
+    },
+    {
+     "id": "40",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "surname_exception:Macy",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "41",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "case_information_absent",
+      "token_with_digits_kept",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "42",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "apostrophe_prefix_capital",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "43",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "no_letters_or_null_sentinel"
+     ]
+    },
+    {
+     "id": "44",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "surname_exception:McDonald"
+     ]
+    },
+    {
+     "id": "45",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "first_letter_capitalized",
+      "existing_uppercase_kept"
+     ]
+    },
+    {
+     "id": "46",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "short_word_capitalized_unverified",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "47",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "48",
+     "outcome": "applied",
+     "confidence": 0.92,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "legal_suffix_cased:Corporation",
+      "minor_word_lowercased"
+     ]
+    },
+    {
+     "id": "49",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "existing_internal_capital_kept"
+     ]
+    },
+    {
+     "id": "50",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "first_letter_capitalized"
+     ]
+    },
+    {
+     "id": "51",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "first_letter_capitalized",
+      "short_word_capitalized_unverified"
+     ]
+    },
+    {
+     "id": "52",
+     "outcome": "held",
+     "confidence": 0.85,
+     "reasons": [
+      "case_information_absent",
+      "short_word_capitalized_unverified",
+      "first_letter_capitalized",
+      "preserved_token"
+     ]
+    },
+    {
+     "id": "53",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "no_letters_or_null_sentinel"
+     ]
+    }
+   ]
+  },
+  "websites": {
+   "source_operation": "src/loop_engine/code_nodes/text_conformance_operations.py: website_normalize",
+   "parameters": {
+    "default_scheme": "https",
+    "strip_www": false,
+    "strip_trailing_slash": true
+   },
+   "primary_metric": "record_accuracy",
+   "primary": 0.84375,
+   "passed": false,
+   "metrics": {
+    "rows": 32,
+    "correct": 27,
+    "record_accuracy": 0.84375,
+    "value_accuracy": 0.875,
+    "change_recall": 0.823529,
+    "change_precision": 0.8125,
+    "wrong_changes_to_correct_values": 0,
+    "wrong_change_rate_on_correct_values": 0.0,
+    "correct_hold_rate": 0.833333,
+    "guess_rate_on_hold_rows": 0.166667,
+    "missing_rows": 0
+   },
+   "row_labels": {
+    "1": "item_method_gives_the_truth",
+    "2": "item_method_gives_the_truth",
+    "3": "item_method_gives_a_different_answer",
+    "4": "item_method_gives_the_truth",
+    "5": "item_method_gives_the_truth",
+    "6": "item_method_gives_the_truth",
+    "7": "item_method_gives_the_truth",
+    "8": "item_method_gives_the_truth",
+    "9": "item_method_gives_the_truth",
+    "10": "item_method_gives_the_truth",
+    "11": "item_method_gives_the_truth",
+    "12": "item_method_gives_the_truth",
+    "13": "item_method_gives_the_truth",
+    "14": "item_method_gives_the_truth",
+    "15": "item_method_gives_the_truth",
+    "16": "item_method_gives_the_truth",
+    "17": "item_method_gives_the_truth",
+    "18": "item_method_gives_the_truth",
+    "19": "item_method_gives_a_different_answer",
+    "20": "item_method_gives_the_truth",
+    "21": "item_method_gives_the_truth",
+    "22": "item_method_gives_a_different_answer",
+    "23": "item_method_gives_the_truth",
+    "24": "item_method_gives_a_different_answer",
+    "25": "item_method_gives_the_truth",
+    "26": "item_method_gives_the_truth",
+    "27": "item_method_gives_the_truth",
+    "28": "item_method_gives_the_truth",
+    "29": "item_method_gives_the_truth",
+    "30": "item_method_gives_a_different_answer",
+    "31": "item_method_gives_the_truth",
+    "32": "item_method_gives_the_truth"
+   },
+   "rows_where_item_method_gives_the_truth": 27,
+   "method_details": [
+    {
+     "id": "1",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "scheme_added",
+      "trailing_slash_removed"
+     ]
+    },
+    {
+     "id": "2",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "3",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "4",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "5",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "scheme_added"
+     ]
+    },
+    {
+     "id": "6",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "7",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "8",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "9",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "10",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "scheme_added",
+      "trailing_slash_removed"
+     ]
+    },
+    {
+     "id": "11",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "12",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "13",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "14",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "scheme_added"
+     ]
+    },
+    {
+     "id": "15",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "16",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "invalid_host"
+     ]
+    },
+    {
+     "id": "17",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "18",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": [
+      "null_sentinel"
+     ]
+    },
+    {
+     "id": "19",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "invalid_host"
+     ]
+    },
+    {
+     "id": "20",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "21",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "whitespace_inside_url"
+     ]
+    },
+    {
+     "id": "22",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "23",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "whitespace_inside_url"
+     ]
+    },
+    {
+     "id": "24",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "25",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "26",
+     "outcome": "unchanged",
+     "confidence": 1.0,
+     "reasons": []
+    },
+    {
+     "id": "27",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "28",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "invalid_host"
+     ]
+    },
+    {
+     "id": "29",
+     "outcome": "escalated",
+     "confidence": 0.3,
+     "reasons": [
+      "whitespace_inside_url"
+     ]
+    },
+    {
+     "id": "30",
+     "outcome": "applied",
+     "confidence": 0.9,
+     "reasons": [
+      "scheme_added"
+     ]
+    },
+    {
+     "id": "31",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "host_or_scheme_case_normalized"
+     ]
+    },
+    {
+     "id": "32",
+     "outcome": "applied",
+     "confidence": 0.95,
+     "reasons": [
+      "trailing_slash_removed",
+      "host_or_scheme_case_normalized"
+     ]
+    }
+   ]
+  }
+ }
+}

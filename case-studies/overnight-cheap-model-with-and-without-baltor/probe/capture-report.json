@@ -1,0 +1,62 @@
+[
+ {
+  "arm": "gemma-none",
+  "material_mode": "none",
+  "exit_code": 0,
+  "requests_seen": 1,
+  "system_prompt_chars": 2424,
+  "request_bytes": 6929,
+  "tools": [
+   "read",
+   "bash",
+   "edit",
+   "write"
+  ],
+  "markers_in_request": [
+   false,
+   false
+  ],
+  "markers_in_system_prompt": [
+   false,
+   false
+  ],
+  "agents_file_named_in_system_prompt": false,
+  "leak_markers": [],
+  "max_tokens": 8192,
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "temperature": null
+ },
+ {
+  "arm": "gemma-agents",
+  "material_mode": "agents_file",
+  "exit_code": 0,
+  "requests_seen": 1,
+  "system_prompt_chars": 7902,
+  "request_bytes": 12503,
+  "tools": [
+   "read",
+   "bash",
+   "edit",
+   "write"
+  ],
+  "markers_in_request": [
+   true,
+   true
+  ],
+  "markers_in_system_prompt": [
+   true,
+   true
+  ],
+  "agents_file_named_in_system_prompt": true,
+  "leak_markers": [],
+  "max_tokens": 8192,
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "temperature": null
+ }
+]

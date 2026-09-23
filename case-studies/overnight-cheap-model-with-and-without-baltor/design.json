@@ -1,0 +1,154 @@
+{
+ "record_type": "overnight_cheap_model_design/v1",
+ "frozen_on": "2026-09-23",
+ "question": "Can a cheap model on a customer-supplied endpoint work through a queue of checkable data cleanup steps unattended, one fresh harness process per step, and does an approved Baltor item placed in each step raise its independently checked result on a population where the model without material fails part of the work?",
+ "request_ceiling": 600,
+ "ceiling_covers": "every physical model request of the study: the probe before the freeze, the pilot, every main step attempt, including interrupted and provider outage attempts",
+ "step_request_cap": 10,
+ "step_timeout_seconds": 1200,
+ "repetitions": 3,
+ "order_seed": 20260923,
+ "families": ["phones", "emails", "addresses", "duplicates", "names", "websites"],
+ "provider": {
+  "name": "Ollama Cloud",
+  "endpoint": {"scheme": "https", "host": "ollama.com", "port": 443, "base_path": "/v1", "key_variable": "OLLAMA_API_KEY"},
+  "upstream_timeout_seconds": 900,
+  "authority": "AGENTS.md, commit, push and release authority: model calls through Ollama Cloud with the key already in the environment, within the owner's existing subscription and with no extra purchase (owner, September 22, 2026); the owner, September 23, 2026: prove overnight solving with cheap or local models using Ollama Cloud and a model such as Gemma 4.",
+  "cost": "Covered by the owner's existing Ollama subscription; not metered for each request. No money is spent by this study.",
+  "what_the_customer_supplies": "The endpoint and its key. Baltor runs no model; the same harness configuration can point at Ollama on 127.0.0.1, a server on the local network or Ollama Cloud."
+ },
+ "models": {
+  "cheap": {
+   "id": "gemma4:31b",
+   "family": "gemma4",
+   "parameters": 32682372656,
+   "quantization": "BF16",
+   "context_window_declared": 262144,
+   "capabilities": ["completion", "thinking", "tools", "vision"],
+   "thinking": "The provider's default for this model is off, and the harness sends no thinking or reasoning setting.",
+   "where": "Ollama Cloud, reached directly at https://ollama.com/v1. Nothing runs on this workstation except the harness and the proxy.",
+   "metadata_source": "probe/ollama-model-metadata.json, from the provider's /api/show and /api/tags on September 23, 2026",
+   "selected_by": "probe/probe-gemma4-31b-a1.json: the first candidate in the probe order, and it passed every check"
+  }
+ },
+ "arms": {
+  "gemma-none": {"model": "cheap", "material": "none"},
+  "gemma-agents": {"model": "cheap", "material": "agents_file"}
+ },
+ "material_selection_rule": "For each family, the approved starter catalogue items that the catalogue's own search fixtures (search-queries.json, written on or before September 21, 2026, before this study) name as the expected answer for a query that describes the family's step. The exact approved bytes are copied into material/ with their approval rows, and the runner refuses an item whose bytes differ from its frozen approval.",
+ "material": {
+  "phones": ["normalize_phone_numbers"],
+  "emails": ["normalize_and_recover_email_addresses"],
+  "addresses": ["split_address_lines_into_components"],
+  "duplicates": ["find_duplicate_records_with_blocking_keys", "score_duplicate_pairs_by_weakest_signal"],
+  "names": ["restore_capitalisation_of_names"],
+  "websites": ["normalize_website_addresses"]
+ },
+ "material_queries": {
+  "phones": ["format phone numbers with country code"],
+  "emails": ["fix typos in email domains like gmail.con"],
+  "addresses": ["parse street address into parts"],
+  "duplicates": ["dedupe my contacts csv", "fuzzy match two company records"],
+  "names": ["names are in ALL CAPS fix the casing"],
+  "websites": ["clean URLs lowercase host"]
+ },
+ "harness": {
+  "name": "Pi",
+  "package": "@mariozechner/pi-coding-agent",
+  "version": "0.73.1",
+  "executable": "/home/username/.local/bin/pi",
+  "node": "v22.22.1",
+  "step_path": "/usr/local/bin:/usr/bin:/bin",
+  "step_python": "Python 3.14.4 with its standard library only; no pandas or numpy",
+  "flags": ["--no-session", "--offline", "--no-skills", "--mode", "json", "--provider", "meter", "--model", "<model id>", "-p", "<prompt>"],
+  "tools": "Pi defaults: read, bash, edit, write",
+  "max_tokens": 8192,
+  "pi_settings": {"retry": {"enabled": false}, "compaction": {"enabled": false}},
+  "stop_grace_seconds": 20,
+  "isolation": "A new step folder for every attempt: an empty home folder, PI_CODING_AGENT_DIR set to a new folder holding only models.json and settings.json, the working folder its own git root under parents with no AGENTS.md or CLAUDE.md, an environment built from nothing with a fixed PATH, proxies for other network access pointed at a closed local port, and every model request sent through the counting proxy.",
+  "material_delivery": {"none": "no AGENTS.md", "agents_file": "the item bytes written to AGENTS.md in the working folder; two items are joined with one line break"}
+ },
+ "probe": {
+  "prompt": "You are checking that your tools work. Use your bash tool to run the command `python3 -c \"print(6 * 7)\"`. Then use your write tool to create the file `answer.txt` whose only content is the number that the command printed. Then reply with the single word DONE.",
+  "step_request_cap": 5,
+  "timeout_seconds": 300,
+  "answer_file": "answer.txt",
+  "expected_answer": "42",
+  "required_tools": ["bash", "write"],
+  "candidates": {
+   "gemma4:31b": {"context_window_declared": 262144},
+   "nemotron-3-nano:30b": {"context_window_declared": 262144},
+   "gpt-oss:20b": {"context_window_declared": 131072}
+  },
+  "order": ["gemma4:31b", "nemotron-3-nano:30b", "gpt-oss:20b"],
+  "rule": "Before the freeze, probe the candidates in order and stop at the first one that passes every check: structured tool calls in the provider's responses, the harness ran bash and write, answer.txt holds 42, the harness exit code is 0, and usage is reported for every request. The probe's requests are recorded in the same ledger and count against the ceiling."
+ },
+ "pilot": {
+  "trials": [
+   {"family": "names", "arm": "gemma-none"},
+   {"family": "websites", "arm": "gemma-agents"}
+  ],
+  "rule": "The pilot checks the plumbing with the chosen model on real steps. Its steps are recorded and excluded from results. After the pilot, only harness or recording plumbing may change, and any change is recorded in amendments.json with its reason and the digests before and after. The population, prompts, arms, model, material, step cap, metrics, thresholds and claim rules may not change."
+ },
+ "interruption_drill": {
+  "trial_id": "r1-addresses-gemma-none",
+  "after_completed_requests": 1,
+  "statement": "Once, the runner kills itself with SIGKILL during the fourth main step, after that step's first model response has been received. No clean-up code runs, as after a power cut or an out-of-memory kill. The supervisor restarts the runner after 30 seconds. The resumed runner must stop what is left of the orphaned harness, wait until it has observed the process group end, record the step as an interrupted attempt with every request it used, and run the step again as attempt 2. The interrupted attempt is excluded from results and its requests count against the ceiling."
+ },
+ "supervisor": {
+  "script": "runner/overnight.sh",
+  "restart_wait_seconds": 30,
+  "max_restarts": 5,
+  "statement": "The supervisor restarts the runner after a crash and stops when the runner reports that the plan is complete (0), the budget cannot hold another step (3), a provider outage outlasted the declared wait (4) or the provider key is missing (5)."
+ },
+ "outage_policy": {
+  "wait_seconds": [60, 120, 300, 600, 900],
+  "max_total_wait_seconds": 7200,
+  "statement": "A step with any upstream rate limit, provider error or unreachable upstream is recorded as a provider outage attempt, excluded from results and run again after a wait. Its requests still count toward the ceiling."
+ },
+ "capture_family": "duplicates",
+ "capture_leak_markers": ["CodeGraph", "codegraph", "humanizer", "Astra", "Taedri", "north star"],
+ "metrics": {
+  "phones": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]},
+  "emails": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]},
+  "addresses": {"primary": "record_accuracy", "also": ["part_accuracy", "rewritten_parts", "rewritten_part_rate", "correct_hold_rate", "unneeded_review_rate", "missing_rows"]},
+  "duplicates": {"primary": "pair_f1", "also": ["pair_precision", "pair_recall", "closure_pair_f1", "false_merges", "hard_negative_merges", "correct_hold_rate"]},
+  "names": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]},
+  "websites": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]}
+ },
+ "thresholds": {
+  "phones": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0},
+  "emails": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0},
+  "addresses": {"record_accuracy_at_least": 0.9, "rewritten_parts": 0},
+  "duplicates": {"pair_f1_at_least": 0.9, "hard_negative_merges": 0},
+  "names": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0},
+  "websites": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0}
+ },
+ "comparisons": [["gemma-agents", "gemma-none"]],
+ "claim_decision": {
+  "material_arm": "gemma-agents",
+  "baseline_arm": "gemma-none",
+  "families_needed": 3,
+  "hardness_mean_below": 0.95,
+  "hardness_families_needed": 3
+ },
+ "claim_rules": [
+  "A difference between the two arms on one family is called clear only when every repetition of one arm scores above every repetition of the other on the primary metric. With three repetitions each, this is a one-sided exact permutation probability of 1 in 20.",
+  "Otherwise the difference is reported as not separated, with the means and ranges.",
+  "A statement that the material helps across families needs a clear difference in favour of the material in at least 3 of the 6 families and no clear difference against it. A statement that it hurts needs the reverse. Clear differences in both directions are reported as mixed.",
+  "The population is called hard enough only when the arm without material fails part of the work in at least 3 of the 6 families: a mean primary metric below 0.95, or at least one step that fails the pass rule.",
+  "Steps that end for any reason other than a provider outage or an interruption count, including crashes, timeouts, cap stops and malformed outputs. They score as the scorer scores their output file, or zero when there is none.",
+  "Pooled means across families are description, not a claim."
+ ],
+ "overnight_rules": [
+  "The batch is unattended only when every main step was started by the runner with no human input after the supervisor was started, and the interruption drill was recovered by the resumed runner without human input.",
+  "Every physical request in the ledger must belong to a probe, pilot or main step record, and the ledger total must stay within the ceiling.",
+  "The report separates steps whose output passed the scorer, steps that finished but failed the scorer, and excluded attempts. A step that failed the scorer is never called finished work.",
+  "The model ran on Ollama Cloud. Nothing in this study supports a claim about a model running on local hardware."
+ ],
+ "item_reference": {
+  "script": "runner/item_reference.py",
+  "record": "population/item-reference.json",
+  "statement": "Before any counted call, the repository operation that each item was compiled from was run on every row with no model, under the thresholds of the approved item apply_hold_or_escalate_each_correction. Its per-row result labels each row as one where the item's own method gives the truth or gives a different answer. It is a reference line and a coverage label, not an arm and not a result of Baltor material."
+ }
+}

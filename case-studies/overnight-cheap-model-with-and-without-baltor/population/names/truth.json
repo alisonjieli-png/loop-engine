@@ -1,0 +1,489 @@
+{
+ "record_type": "overnight_truth/v1",
+ "family": "names",
+ "output_columns": [
+  "id",
+  "name",
+  "review"
+ ],
+ "value_column": "name",
+ "rows": [
+  {
+   "case_type": "initials_two_letters",
+   "variant": "company",
+   "input": "AJ HOME SERVICES",
+   "kind": "change",
+   "expected": "AJ Home Services",
+   "review": "no",
+   "id": "1"
+  },
+  {
+   "case_type": "generational_suffix",
+   "variant": "person",
+   "input": "DAVID OKAFOR JR.",
+   "kind": "change",
+   "expected": "David Okafor Jr.",
+   "review": "no",
+   "id": "2"
+  },
+  {
+   "case_type": "single_letters_joined",
+   "variant": "company",
+   "input": "E-Z STORAGE",
+   "kind": "change",
+   "expected": "E-Z Storage",
+   "review": "no",
+   "id": "3"
+  },
+  {
+   "case_type": "ampersand",
+   "variant": "company",
+   "input": "TOWN & COUNTRY REALTY",
+   "kind": "change",
+   "expected": "Town & Country Realty",
+   "review": "no",
+   "id": "4"
+  },
+  {
+   "case_type": "letter_and_digit_token",
+   "variant": "company",
+   "input": "A-1 AUTO REPAIR",
+   "kind": "change",
+   "expected": "A-1 Auto Repair",
+   "review": "no",
+   "id": "5"
+  },
+  {
+   "case_type": "legal_form_llc",
+   "variant": "company",
+   "input": "NORTHWIND TRADERS LLC",
+   "kind": "change",
+   "expected": "Northwind Traders LLC",
+   "review": "no",
+   "id": "6"
+  },
+  {
+   "case_type": "hold_name_particle",
+   "variant": "person",
+   "input": "ANNA VAN DER BERG",
+   "kind": "hold",
+   "expected": "ANNA VAN DER BERG",
+   "review": "yes",
+   "id": "7"
+  },
+  {
+   "case_type": "hold_name_particle",
+   "variant": "person",
+   "input": "JOS\u00c9 DE LA CRUZ",
+   "kind": "hold",
+   "expected": "JOS\u00c9 DE LA CRUZ",
+   "review": "yes",
+   "id": "8"
+  },
+  {
+   "case_type": "apostrophe_prefix_o",
+   "variant": "person",
+   "input": "SEAN O'NEILL",
+   "kind": "change",
+   "expected": "Sean O'Neill",
+   "review": "no",
+   "id": "9"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "dash",
+   "input": "-",
+   "kind": "keep",
+   "expected": "-",
+   "review": "no",
+   "id": "10"
+  },
+  {
+   "case_type": "ordinal_number",
+   "variant": "company",
+   "input": "3RD STREET DELI",
+   "kind": "change",
+   "expected": "3rd Street Deli",
+   "review": "no",
+   "id": "11"
+  },
+  {
+   "case_type": "middle_initial",
+   "variant": "person",
+   "input": "JAMES T. MORROW",
+   "kind": "change",
+   "expected": "James T. Morrow",
+   "review": "no",
+   "id": "12"
+  },
+  {
+   "case_type": "mc_prefix",
+   "variant": "company",
+   "input": "MCMASTER TOOL CO",
+   "kind": "change",
+   "expected": "McMaster Tool Co",
+   "review": "no",
+   "id": "13"
+  },
+  {
+   "case_type": "possessive",
+   "variant": "company",
+   "input": "BOB'S BIKE SHOP",
+   "kind": "change",
+   "expected": "Bob's Bike Shop",
+   "review": "no",
+   "id": "14"
+  },
+  {
+   "case_type": "hyphenated_name",
+   "variant": "person",
+   "input": "LEE-ANN SMITH-JONES",
+   "kind": "change",
+   "expected": "Lee-Ann Smith-Jones",
+   "review": "no",
+   "id": "15"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "standard",
+   "input": "Acme Widgets",
+   "kind": "keep",
+   "expected": "Acme Widgets",
+   "review": "no",
+   "id": "16"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "particle_first",
+   "input": "van Houten Bakery",
+   "kind": "keep",
+   "expected": "van Houten Bakery",
+   "review": "no",
+   "id": "17"
+  },
+  {
+   "case_type": "title_with_period",
+   "variant": "person",
+   "input": "DR. AMY CHEN",
+   "kind": "change",
+   "expected": "Dr. Amy Chen",
+   "review": "no",
+   "id": "18"
+  },
+  {
+   "case_type": "all_small_letters",
+   "variant": "person",
+   "input": "maria gonzalez",
+   "kind": "change",
+   "expected": "Maria Gonzalez",
+   "review": "no",
+   "id": "19"
+  },
+  {
+   "case_type": "apostrophe_prefix_o",
+   "variant": "person",
+   "input": "MARY O'BRIEN",
+   "kind": "change",
+   "expected": "Mary O'Brien",
+   "review": "no",
+   "id": "20"
+  },
+  {
+   "case_type": "initialism_without_vowels",
+   "variant": "company",
+   "input": "JKL CONSULTING GROUP",
+   "kind": "change",
+   "expected": "JKL Consulting Group",
+   "review": "no",
+   "id": "21"
+  },
+  {
+   "case_type": "mac_letters_in_a_word",
+   "variant": "company",
+   "input": "MACK'S DINER",
+   "kind": "change",
+   "expected": "Mack's Diner",
+   "review": "no",
+   "id": "22"
+  },
+  {
+   "case_type": "apostrophe_prefix_d",
+   "variant": "person",
+   "input": "D'ARCY FLYNN",
+   "kind": "change",
+   "expected": "D'Arcy Flynn",
+   "review": "no",
+   "id": "23"
+  },
+  {
+   "case_type": "mac_letters_in_a_word",
+   "variant": "company",
+   "input": "MACHINE TOOLS OF OHIO INC",
+   "kind": "change",
+   "expected": "Machine Tools of Ohio Inc",
+   "review": "no",
+   "id": "24"
+  },
+  {
+   "case_type": "hold_mac_prefix",
+   "variant": "person",
+   "input": "ANGUS MACDONALD",
+   "kind": "hold",
+   "expected": "ANGUS MACDONALD",
+   "review": "yes",
+   "id": "25"
+  },
+  {
+   "case_type": "legal_form_pc",
+   "variant": "company",
+   "input": "HARBOR LIGHT LEGAL PC",
+   "kind": "change",
+   "expected": "Harbor Light Legal PC",
+   "review": "no",
+   "id": "26"
+  },
+  {
+   "case_type": "initialism_without_vowels",
+   "variant": "company",
+   "input": "QRS LOGISTICS",
+   "kind": "change",
+   "expected": "QRS Logistics",
+   "review": "no",
+   "id": "27"
+  },
+  {
+   "case_type": "hold_name_particle",
+   "variant": "person",
+   "input": "JAMAL AL-SAYED",
+   "kind": "hold",
+   "expected": "JAMAL AL-SAYED",
+   "review": "yes",
+   "id": "28"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "mc_prefix",
+   "input": "McDonald Farms",
+   "kind": "keep",
+   "expected": "McDonald Farms",
+   "review": "no",
+   "id": "29"
+  },
+  {
+   "case_type": "possessive_after_prefix",
+   "variant": "company",
+   "input": "O'MALLEY'S PUB",
+   "kind": "change",
+   "expected": "O'Malley's Pub",
+   "review": "no",
+   "id": "30"
+  },
+  {
+   "case_type": "minor_word_first",
+   "variant": "company",
+   "input": "THE CEDAR ROOM",
+   "kind": "change",
+   "expected": "The Cedar Room",
+   "review": "no",
+   "id": "31"
+  },
+  {
+   "case_type": "all_small_letters",
+   "variant": "company",
+   "input": "blue river bakery",
+   "kind": "change",
+   "expected": "Blue River Bakery",
+   "review": "no",
+   "id": "32"
+  },
+  {
+   "case_type": "letters_outside_ascii",
+   "variant": "person",
+   "input": "S\u00d8REN KJ\u00c6R",
+   "kind": "change",
+   "expected": "S\u00f8ren Kj\u00e6r",
+   "review": "no",
+   "id": "33"
+  },
+  {
+   "case_type": "hold_mac_prefix",
+   "variant": "person",
+   "input": "FIONA MACKENZIE",
+   "kind": "hold",
+   "expected": "FIONA MACKENZIE",
+   "review": "yes",
+   "id": "34"
+  },
+  {
+   "case_type": "hold_name_particle",
+   "variant": "person",
+   "input": "MARIA DI NAPOLI",
+   "kind": "hold",
+   "expected": "MARIA DI NAPOLI",
+   "review": "yes",
+   "id": "35"
+  },
+  {
+   "case_type": "legal_form_inc",
+   "variant": "company",
+   "input": "ACME WIDGETS INC",
+   "kind": "change",
+   "expected": "Acme Widgets Inc",
+   "review": "no",
+   "id": "36"
+  },
+  {
+   "case_type": "minor_word_and",
+   "variant": "company",
+   "input": "SMITH AND SONS HARDWARE",
+   "kind": "change",
+   "expected": "Smith and Sons Hardware",
+   "review": "no",
+   "id": "37"
+  },
+  {
+   "case_type": "mc_prefix",
+   "variant": "person",
+   "input": "KATE MCCARTHY",
+   "kind": "change",
+   "expected": "Kate McCarthy",
+   "review": "no",
+   "id": "38"
+  },
+  {
+   "case_type": "minor_word_first",
+   "variant": "company",
+   "input": "FOR PAWS PET CARE",
+   "kind": "change",
+   "expected": "For Paws Pet Care",
+   "review": "no",
+   "id": "39"
+  },
+  {
+   "case_type": "mac_letters_in_a_first_name",
+   "variant": "person",
+   "input": "MACY GRAHAM",
+   "kind": "change",
+   "expected": "Macy Graham",
+   "review": "no",
+   "id": "40"
+  },
+  {
+   "case_type": "ordinal_number",
+   "variant": "company",
+   "input": "21ST CENTURY PLUMBING",
+   "kind": "change",
+   "expected": "21st Century Plumbing",
+   "review": "no",
+   "id": "41"
+  },
+  {
+   "case_type": "all_small_letters_surname_first",
+   "variant": "person",
+   "input": "o'connor, patrick",
+   "kind": "change",
+   "expected": "O'Connor, Patrick",
+   "review": "no",
+   "id": "42"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "n_a",
+   "input": "n/a",
+   "kind": "keep",
+   "expected": "n/a",
+   "review": "no",
+   "id": "43"
+  },
+  {
+   "case_type": "mc_prefix",
+   "variant": "person",
+   "input": "JOHN MCDONALD",
+   "kind": "change",
+   "expected": "John McDonald",
+   "review": "no",
+   "id": "44"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "inconsistent_but_mixed",
+   "input": "amy CHEN",
+   "kind": "keep",
+   "expected": "amy CHEN",
+   "review": "no",
+   "id": "45"
+  },
+  {
+   "case_type": "initialism_with_periods",
+   "variant": "company",
+   "input": "U.S. FREIGHT BROKERS",
+   "kind": "change",
+   "expected": "U.S. Freight Brokers",
+   "review": "no",
+   "id": "46"
+  },
+  {
+   "case_type": "accented_capital",
+   "variant": "person",
+   "input": "\u00c9LODIE MARCHAND",
+   "kind": "change",
+   "expected": "\u00c9lodie Marchand",
+   "review": "no",
+   "id": "47"
+  },
+  {
+   "case_type": "minor_word_of",
+   "variant": "company",
+   "input": "GLOBEX CORPORATION OF AMERICA",
+   "kind": "change",
+   "expected": "Globex Corporation of America",
+   "review": "no",
+   "id": "48"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "inner_capital",
+   "input": "DataBridge Analytics",
+   "kind": "keep",
+   "expected": "DataBridge Analytics",
+   "review": "no",
+   "id": "49"
+  },
+  {
+   "case_type": "mixed_case_kept",
+   "variant": "small_first_letter",
+   "input": "eZone Games",
+   "kind": "keep",
+   "expected": "eZone Games",
+   "review": "no",
+   "id": "50"
+  },
+  {
+   "case_type": "roman_numeral",
+   "variant": "person",
+   "input": "HENRY WALLACE III",
+   "kind": "change",
+   "expected": "Henry Wallace III",
+   "review": "no",
+   "id": "51"
+  },
+  {
+   "case_type": "acronym",
+   "variant": "company",
+   "input": "BAY AREA HVAC SERVICES",
+   "kind": "change",
+   "expected": "Bay Area HVAC Services",
+   "review": "no",
+   "id": "52"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "empty",
+   "input": "",
+   "kind": "keep",
+   "expected": "",
+   "review": "no",
+   "id": "53"
+  }
+ ]
+}

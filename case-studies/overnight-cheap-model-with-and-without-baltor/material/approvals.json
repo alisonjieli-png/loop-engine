@@ -1,0 +1,289 @@
+{
+ "record_type": "overnight_material_snapshot/v1",
+ "catalogue_folder": "examples/29_intelligence_service/starter-catalogue",
+ "catalogue_record_type": "starter_catalogue_independent_review/v2",
+ "catalogue_decision_rule": "An item is approved only when every independent reviewer approves it. One written objection from one reviewer withholds approval and leaves the item a candidate. No producer of an item reviewed that item, and this record does not overturn a verdict.",
+ "repository_revision_at_snapshot": "243a8811d9aeb210fedc6d37578e9c7154887448",
+ "items": [
+  {
+   "identity": "normalize_phone_numbers",
+   "body_digest": "8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef",
+   "body_size_bytes": 2579,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "85f05c9e754d4a1c5e288fc6d74bcf80ed0b8065cf546d1a60c63275389a524e",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "format phone numbers with country code",
+     "expected": "normalize_phone_numbers",
+     "written_by": "author"
+    }
+   ]
+  },
+  {
+   "identity": "normalize_and_recover_email_addresses",
+   "body_digest": "42cd00ff5e56371e874274859786143e8804bc1830cc64c6bcf8fb98257b5253",
+   "body_size_bytes": 2691,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_and_recover_email_addresses",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "4403b31cdd866b97cc21e06892bcdac6314c1123a4165af4d916bc57f5894589",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "fix typos in email domains like gmail.con",
+     "expected": "normalize_and_recover_email_addresses",
+     "written_by": "author"
+    }
+   ]
+  },
+  {
+   "identity": "split_address_lines_into_components",
+   "body_digest": "27cc9e736c19b9599d5430c04ff0ca3f0e26cd8ea11042ab505a2f3416f186b1",
+   "body_size_bytes": 3009,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "3556cf52026dc774e144c745da11fed579b13aa30b61f3e7d067875d97f26775",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "parse street address into parts",
+     "expected": "split_address_lines_into_components",
+     "written_by": "author"
+    }
+   ]
+  },
+  {
+   "identity": "find_duplicate_records_with_blocking_keys",
+   "body_digest": "175d693f77e844140c4431ab1b19c51e0a560dbf90baefdb81575653905644e5",
+   "body_size_bytes": 2722,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#find_duplicate_records_with_blocking_keys",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "678df3671fed5712492c18538ce69b4cec636f429cb6f0461b431e5800432813",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "dedupe my contacts csv",
+     "expected": "find_duplicate_records_with_blocking_keys",
+     "written_by": "reviewer"
+    }
+   ]
+  },
+  {
+   "identity": "score_duplicate_pairs_by_weakest_signal",
+   "body_digest": "b983cf3e13d5ce17198a33d3c1b1d9558c9031392ec46622aa19eeb35d4bfc8e",
+   "body_size_bytes": 2573,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#score_duplicate_pairs_by_weakest_signal",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "0ad0985851a2fb759acd4475bead244e025e374744c3ed5d5f35d516d715e1a0",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "fuzzy match two company records",
+     "expected": "score_duplicate_pairs_by_weakest_signal",
+     "written_by": "author"
+    }
+   ]
+  },
+  {
+   "identity": "restore_capitalisation_of_names",
+   "body_digest": "502eee3c685bbd6d589813feaa719e56ddae12f26e875f23fb6f842a189ae50e",
+   "body_size_bytes": 3627,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#restore_capitalisation_of_names",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "99332e5a5c756df9df35126fe24c28b5265ff8b45a0541ab9373b2b56b060e84",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "names are in ALL CAPS fix the casing",
+     "expected": "restore_capitalisation_of_names",
+     "written_by": "author"
+    }
+   ]
+  },
+  {
+   "identity": "normalize_website_addresses",
+   "body_digest": "327711dbf31097556cd0057770288bd4ef4d1e528a93da2974fbaf9eb2b3e0b6",
+   "body_size_bytes": 2351,
+   "declared_license": "MIT",
+   "outcome": "approved",
+   "approval_state": "carried",
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_website_addresses",
+   "decisions": [
+    {
+     "reviewer_id": "reviewer_one_correctness_and_usefulness",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_two_provenance_licence_safety",
+     "decision": "approve",
+     "reason": ""
+    },
+    {
+     "reviewer_id": "reviewer_three_adversarial",
+     "decision": "approve",
+     "reason": ""
+    }
+   ],
+   "carry": {
+    "reviewed_body_digest": "896e99df8bc1ee06eff77d54974a9991a186264b08f11aea21e6fe4c43c7bdba",
+    "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+    "carried_revision": "565e133661636b0bc9a01c4b85247a8265968802",
+    "decisions_unchanged": true,
+    "reviewed_again": false
+   },
+   "selected_by_queries": [
+    {
+     "query": "clean URLs lowercase host",
+     "expected": "normalize_website_addresses",
+     "written_by": "author"
+    }
+   ]
+  }
+ ]
+}

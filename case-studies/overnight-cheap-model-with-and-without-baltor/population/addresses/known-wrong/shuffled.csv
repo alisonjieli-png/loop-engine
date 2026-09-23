@@ -1,0 +1,49 @@
+id,house_number,street,unit,city,region,postal_code,country,review
+1,905,Granville St,Unit 1402,Vancouver,BC,V6Z1L3,,no
+2,400,W Madison Blvd,Fl 9,Chicago,Illinois,60606,,no
+3,10,High Street,,Bristol,,BS1 4DJ,,no
+4,,P.O. Box 77,,Halifax,NS,B3J 2K9,,no
+5,345,King St W,12,Toronto,ON,M5V 1K4,,no
+6,1500,Boul René-Lévesque O,,Montréal,QC,H3G 1T7,,no
+7,58,Bay St,,Toronto,,,,no
+8,15,Water St,Unit 3,Halifax,NS,B3H 1A1,,no
+9,1509,Pine St,Unit 3,Seattle,WA,98101,United States,no
+10,2211,N Clark St,Apt 3R,Chicago,IL,60614,,no
+11,77,Cedar Ln,#12,Denver,CO,80202,,no
+12,,,,,,,,yes
+13,2211,N Clark St,Apt 3R,Chicago,IL,60614,,no
+14,18,Harbor Rd,Ste 5,Madison,WI,53703,,no
+15,22,Queen Street,Flat 3,Cardiff,,CF10 2BU,United Kingdom,no
+16,,,,,,,,yes
+17,12 1/2,Oak St,,Ithaca,NY,14850,,no
+18,,PO Box 482,,Springfield,IL,62705,,no
+19,,,,,,,,yes
+20,,,,,,,,no
+21,,,,,,,,yes
+22,1200,Rue Sainte-Catherine O,,Montréal,QC,H3B 1K9,Canada,no
+23,4500,US Highway 1,,Princeton,NJ,08540,,no
+24,742,Maple Terrace,,Springfield,,,,no
+25,88,Harbor Blvd,Suite 400,Long Beach,CA,90802,,no
+26,9,Birch Rd,Unit #5,Burlington,VT,05401,,no
+27,16,Rue du Port,,Québec,QC,G1K 4E3,,no
+28,1600,Grand Ave NW,,Washington,DC,20001,,no
+29,221,E 42nd St,,New York,NY,10017,,no
+30,37-02,Main St,,Flushing,NY,11354,,no
+31,845,Oak Avenue,,Portland,OR,97205,,no
+32,5,Mill Lane,,Ashford,Kent,TN24 8AA,,no
+33,,Main Street,,Springfield,,,,no
+34,,,,,,,,no
+35,3100,Lakeview Dr,Suite 200,Austin,TX,78701-2243,,no
+36,,,,,,,,yes
+37,501,W 5th St,Apt. 2,Austin,TX,78701,,no
+38,7,Mill Lane,Apartment 4,Ashford,,TN24 8AA,,no
+39,1188,Avenue of the Americas,,New York,NY,10036,,no
+40,22B,Elm Ave,,Boston,MA,02108,,no
+41,77,Pine Road,,Toronto,ON,M5V 2T6,,no
+42,,Post Office Box 12,,Bangor,ME,04402,,no
+43,400,W Madison St,Floor 9,Chicago,IL,60606,,no
+44,12,N Main St,Apt 4B,Springfield,IL,62704,USA,no
+45,31,Park Row,,Leeds,,LS1 5JL,UK,no
+46,88,Elm St,,Springfield,MA,01103,,no
+47,1509,Pine St,,Seattle,WA,,,no
+48,350,Fifth Ave,,New York,NY,10118,,no

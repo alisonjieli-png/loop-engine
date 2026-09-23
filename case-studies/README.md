@@ -52,5 +52,9 @@ studies, not as case studies.
   a fresh Pi harness for each step, a small, a cheap and a larger model, with
   and without an approved starter catalogue item, scored by a deterministic
   checker.
+- [Overnight batch with a cheap model, with and without Baltor material](overnight-cheap-model-with-and-without-baltor/README.md):
+  `gemma4:31b` on Ollama Cloud works through 36 data cleanup steps unattended,
+  a fresh Pi harness for each step, with and without an approved item, with a
+  declared crash and resume, scored by a deterministic checker.
 
 Use [the case-study template](TEMPLATE.md) for a completed run.

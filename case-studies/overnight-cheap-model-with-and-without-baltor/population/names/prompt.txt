@@ -1,0 +1,17 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: fix the capitalisation in the `name` column. The table has the columns `id` and `name`. Each value is the name of a person or of a company. Some values were typed entirely in capital letters or entirely in small letters.
+
+Write `output.csv` with the columns `id`, `name` and `review`, one row for each input row, in any order:
+- Rewrite a value that is written entirely in capital letters or entirely in small letters in the standard capitalisation of English names: each word starts with a capital letter and continues in small letters, except where the standard written form of that word differs, for example `McDonald`, `O'Brien`, `IBM`, `LLC`, `of` inside a company name, or `3rd`.
+- Keep every other character exactly as it is: spaces, punctuation, accents and word order.
+- Keep a value that already mixes capital and small letters exactly as it is, with `review` set to `no`.
+- Leave an empty value or a null marker such as `n/a` exactly as it is, with `review` set to `no`.
+- When the standard capitalisation of a word in the value cannot be known from the value alone, for example `MACDONALD`, which is written both `MacDonald` and `Macdonald`, do not guess: copy the input value exactly as it is and set `review` to `yes`.
+- Otherwise set `review` to `no`.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.

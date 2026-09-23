@@ -1,0 +1,58 @@
+id,email,review
+1,ines.moreau＠example.com,no
+2,maria.okafor@gmail.con,no
+3,pat.nolan@hotmail.cmo,no
+4,a.b@mail.example.co.uk,no
+5,john.smith at example dot com,no
+6,ana.lopez@example.com; bo.lin@example.com,no
+7,ops+billing@example.org,no
+8,Priya Nair <priya.nair@example.com>,no
+9,ana.ruiz@example.com;,no
+10,info@northwind-traders.co.uk,no
+11,ana silva@example.com,no
+12,dan.reyes@hotmial.com,no
+13,ana.lopez.example.com,no
+14,mary.jones [at] example [dot] org,no
+15,n/a,no
+16,omar.farouk@example.net (work),no
+17,liz.moreau@gmail.cm,no
+18,noor.haddad@exam­ple.com,no
+19,eve.larsen@outlook.comm,no
+20,SALES@GLOBEX.CA,no
+21,.ana.silva@example.com,no
+22,maria.okafor@gmail.co,no
+23,pat.kim@@example.com,no
+24,none,no
+25,"""Nair, Priya"" <priya.nair@example.com>",no
+26,mailto:li.wei@example.com,no
+27,@example.com,no
+28,<omar.haddad@example.org>,no
+29,chris.lee@outlook.con,no
+30,Dana.White@Mail.Example.co.uk,no
+31,wen.zhou at example.com,no
+32,tom.berg@example.com.,no
+33,dana.white@gmial.com,no
+34,,no
+35,jose.garcia@münchen.example,no
+36,bob.chen@example,no
+37,bob.chen @example.net,no
+38,-,no
+39,rosa.diaz@example..com,no
+40,k.nguyen@riverbend.io,no
+41,"ines.costa@example,com",no
+42,info@example.com / sales@example.com,no
+43,sam.ortiz@yahoo.co,no
+44,Info@Harbor-Freight-Supply.com,no
+45,lee.park(at)example(dot)net,no
+46,raj.patel@example dot org,no
+47,ana.lopez@example.com,no
+48,N/A,no
+49,t.brennan@yahoo.cmo,no
+50,eli.stone@yaho.com,no
+51,"sales@globex.ca, support@globex.ca",no
+52,MAILTO:Grace.Ho@Example.org,no
+53,"""john doe""@example.com",no
+54,j.smith@acmewidgets.com,no
+55,noor.ali@exa​mple.com,no
+56,Ana.Lopez@Example.COM,no
+57,sam.okoro AT example DOT com,no

@@ -1,0 +1,15 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: split each address into parts. The table has the columns `id` and `address`; each address is one line of text.
+
+Write `output.csv` with the columns `id`, `house_number`, `street`, `unit`, `city`, `region`, `postal_code`, `country` and `review`, one row for each input row, in any order:
+- Copy each part exactly as it is written in the address, with the same spelling, abbreviations, punctuation inside the part and capital letters. Do not expand, correct or translate anything, and do not add a part that is not written, such as a country that is not named.
+- `street` is the street name with its type and direction, for example `N Main St`. `unit` is an apartment, suite, unit, flat, floor or room with its number, for example `Apt 4B`, `Flat 3` or `#12`. `region` is the state, province or county. A post office box goes in `street`, for example `PO Box 123`, with an empty `house_number`.
+- Leave a part empty when the address does not contain it. For an empty value or a null marker such as `n/a`, leave every part empty and set `review` to `no`.
+- When you cannot tell with certainty which part some words belong to, or the value is not one postal address, set `review` to `yes`. Otherwise set `review` to `no`.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.

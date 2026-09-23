@@ -1,0 +1,300 @@
+{
+ "record_type": "overnight_truth/v1",
+ "family": "websites",
+ "output_columns": [
+  "id",
+  "website",
+  "review"
+ ],
+ "value_column": "website",
+ "rows": [
+  {
+   "case_type": "scheme_added",
+   "variant": "dated_path",
+   "input": "blog.example.net/2026/09/Post-Title/",
+   "kind": "change",
+   "expected": "https://blog.example.net/2026/09/Post-Title",
+   "review": "no",
+   "id": "1"
+  },
+  {
+   "case_type": "trailing_slash",
+   "variant": "reserved_top_level_domain",
+   "input": "https://acme-widgets.example/Catalog/",
+   "kind": "change",
+   "expected": "https://acme-widgets.example/Catalog",
+   "review": "no",
+   "id": "2"
+  },
+  {
+   "case_type": "default_port",
+   "variant": "https_443",
+   "input": "https://example.com:443/",
+   "kind": "change",
+   "expected": "https://example.com",
+   "review": "no",
+   "id": "3"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "empty",
+   "input": "",
+   "kind": "keep",
+   "expected": "",
+   "review": "no",
+   "id": "4"
+  },
+  {
+   "case_type": "scheme_added",
+   "variant": "mixed_case_host",
+   "input": "Example.COM",
+   "kind": "change",
+   "expected": "https://example.com",
+   "review": "no",
+   "id": "5"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "dash",
+   "input": "-",
+   "kind": "keep",
+   "expected": "-",
+   "review": "no",
+   "id": "6"
+  },
+  {
+   "case_type": "already_standard",
+   "variant": "www_kept",
+   "input": "https://www.example.org/About",
+   "kind": "keep",
+   "expected": "https://www.example.org/About",
+   "review": "no",
+   "id": "7"
+  },
+  {
+   "case_type": "already_standard",
+   "variant": "path_case",
+   "input": "https://example.com/Docs/Guide",
+   "kind": "keep",
+   "expected": "https://example.com/Docs/Guide",
+   "review": "no",
+   "id": "8"
+  },
+  {
+   "case_type": "case_of_scheme_and_host",
+   "variant": "percent_encoding_kept",
+   "input": "http://Example.org/Search?Q=Red%20Shoes",
+   "kind": "change",
+   "expected": "http://example.org/Search?Q=Red%20Shoes",
+   "review": "no",
+   "id": "9"
+  },
+  {
+   "case_type": "scheme_added",
+   "variant": "www_and_trailing_slash",
+   "input": "www.Example.org/About/",
+   "kind": "change",
+   "expected": "https://www.example.org/About",
+   "review": "no",
+   "id": "10"
+  },
+  {
+   "case_type": "case_of_scheme_and_host",
+   "variant": "subdomain_path_case_kept",
+   "input": "https://Shop.Example.com/Products/Blue-Widget/",
+   "kind": "change",
+   "expected": "https://shop.example.com/Products/Blue-Widget",
+   "review": "no",
+   "id": "11"
+  },
+  {
+   "case_type": "other_port_kept",
+   "variant": "http_8080",
+   "input": "http://example.com:8080/Admin",
+   "kind": "keep",
+   "expected": "http://example.com:8080/Admin",
+   "review": "no",
+   "id": "12"
+  },
+  {
+   "case_type": "trailing_slash",
+   "variant": "root_path",
+   "input": "https://example.com/",
+   "kind": "change",
+   "expected": "https://example.com",
+   "review": "no",
+   "id": "13"
+  },
+  {
+   "case_type": "scheme_added",
+   "variant": "query_and_fragment_kept",
+   "input": "example.com/path?Ref=ABC#Top",
+   "kind": "change",
+   "expected": "https://example.com/path?Ref=ABC#Top",
+   "review": "no",
+   "id": "14"
+  },
+  {
+   "case_type": "case_of_scheme_and_host",
+   "variant": "upper_case_path_kept",
+   "input": "HTTP://WWW.EXAMPLE.NET/INDEX.HTML",
+   "kind": "change",
+   "expected": "http://www.example.net/INDEX.HTML",
+   "review": "no",
+   "id": "15"
+  },
+  {
+   "case_type": "hold_invalid",
+   "variant": "label_starts_with_hyphen",
+   "input": "https://-example.com",
+   "kind": "hold",
+   "expected": "https://-example.com",
+   "review": "yes",
+   "id": "16"
+  },
+  {
+   "case_type": "other_port_kept",
+   "variant": "with_case_and_trailing_slash",
+   "input": "https://Example.com:8443/Portal/",
+   "kind": "change",
+   "expected": "https://example.com:8443/Portal",
+   "review": "no",
+   "id": "17"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "n_a",
+   "input": "n/a",
+   "kind": "keep",
+   "expected": "n/a",
+   "review": "no",
+   "id": "18"
+  },
+  {
+   "case_type": "already_standard",
+   "variant": "ip_address_host",
+   "input": "http://192.0.2.10/Status",
+   "kind": "keep",
+   "expected": "http://192.0.2.10/Status",
+   "review": "no",
+   "id": "19"
+  },
+  {
+   "case_type": "trailing_slash",
+   "variant": "before_fragment",
+   "input": "https://example.com/docs/#Intro",
+   "kind": "change",
+   "expected": "https://example.com/docs#Intro",
+   "review": "no",
+   "id": "20"
+  },
+  {
+   "case_type": "hold_not_one_address",
+   "variant": "two_addresses",
+   "input": "www.example.com, www.example.org",
+   "kind": "hold",
+   "expected": "www.example.com, www.example.org",
+   "review": "yes",
+   "id": "21"
+  },
+  {
+   "case_type": "default_port",
+   "variant": "http_80",
+   "input": "http://example.com:80/Store",
+   "kind": "change",
+   "expected": "http://example.com/Store",
+   "review": "no",
+   "id": "22"
+  },
+  {
+   "case_type": "hold_not_one_address",
+   "variant": "text",
+   "input": "see our facebook page",
+   "kind": "hold",
+   "expected": "see our facebook page",
+   "review": "yes",
+   "id": "23"
+  },
+  {
+   "case_type": "default_port",
+   "variant": "with_case_and_trailing_slash",
+   "input": "HTTPS://EXAMPLE.ORG:443/Blog/",
+   "kind": "change",
+   "expected": "https://example.org/Blog",
+   "review": "no",
+   "id": "24"
+  },
+  {
+   "case_type": "other_port_kept",
+   "variant": "port_443_with_http",
+   "input": "http://example.org:443/Legacy",
+   "kind": "keep",
+   "expected": "http://example.org:443/Legacy",
+   "review": "no",
+   "id": "25"
+  },
+  {
+   "case_type": "already_standard",
+   "variant": "root",
+   "input": "https://example.com",
+   "kind": "keep",
+   "expected": "https://example.com",
+   "review": "no",
+   "id": "26"
+  },
+  {
+   "case_type": "trailing_slash",
+   "variant": "before_query",
+   "input": "https://example.com/?q=Widgets",
+   "kind": "change",
+   "expected": "https://example.com?q=Widgets",
+   "review": "no",
+   "id": "27"
+  },
+  {
+   "case_type": "hold_invalid",
+   "variant": "empty_label",
+   "input": "https://example..com",
+   "kind": "hold",
+   "expected": "https://example..com",
+   "review": "yes",
+   "id": "28"
+  },
+  {
+   "case_type": "hold_invalid",
+   "variant": "space_inside",
+   "input": "https://exa mple.com",
+   "kind": "hold",
+   "expected": "https://exa mple.com",
+   "review": "yes",
+   "id": "29"
+  },
+  {
+   "case_type": "hold_not_one_address",
+   "variant": "email_address",
+   "input": "mailto:info@example.com",
+   "kind": "hold",
+   "expected": "mailto:info@example.com",
+   "review": "yes",
+   "id": "30"
+  },
+  {
+   "case_type": "surrounding_spaces",
+   "variant": "both_ends",
+   "input": " https://example.net ",
+   "kind": "change",
+   "expected": "https://example.net",
+   "review": "no",
+   "id": "31"
+  },
+  {
+   "case_type": "case_of_scheme_and_host",
+   "variant": "title_case",
+   "input": "Https://Example.Com/About-Us/",
+   "kind": "change",
+   "expected": "https://example.com/About-Us",
+   "review": "no",
+   "id": "32"
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: find duplicate records. The table lists customer companies with the columns `id`, `name`, `address`, `email` and `phone`. Some companies were entered more than once, written differently.
+
+Write `output.csv` with the columns `id_a`, `id_b` and `decision`, one row for each pair of rows that may be the same company at the same location, with the smaller id in `id_a`:
+- Set `decision` to `same` when you are certain that the two rows are the same company at the same location.
+- Set `decision` to `review` when the two rows might be the same company at the same location but you cannot be certain.
+- Do not list a pair that is two different companies, or the same company at two different locations.
+- When three or more rows are the same company at the same location, list every pair among them.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.
