@@ -87,6 +87,130 @@ PYTHONPATH=src python3 -c \
 
 Adapter completion remains separate from independent task acceptance.
 
+## Process harness recipes
+
+The process adapter runs a command-line harness inside Bubblewrap and brokers
+every model request through the canonical gateway. Which harnesses it can
+start is data: the release recipe catalogue
+`src/loop_engine/data/harness_recipes.yaml`, record
+`harness_recipe_catalog/v1`, read by `loop_engine.core.harness_recipes`.
+
+```text
+harness_recipe_catalog/v1
+├── wire_codecs: one harness_wire_codec/v1 per model wire the relay translates
+│   ├── the request paths it answers and how an answer is framed
+│   └── the codec module and its decode and encode functions
+│       (none for the OpenAI chat wire, which the relay serves itself)
+├── recipes: one harness_recipe/v1 per harness style
+│   ├── the module the sandbox mounts, with its SHA-256
+│   ├── prepare(style, config, base) and extract(style, stdout, expected)
+│   ├── the wires it speaks, its instruction file style and its native controls
+│   ├── special cases as data: requires_context_capacity, sandbox_environment
+│   └── distribution: the kind, the pinned version and a digest a qualification bound
+└── fresh_instance_recipes: one harness_fresh_instance_recipe/v1 per launch
+    recipe that starts a harness fresh for one step (see below)
+```
+
+A host `harness.json` names a style from this catalogue and cannot name a
+module or another catalogue. A style the catalogue does not hold, such as the
+`freebuff` embodiment, is refused with the reason `unsupported_style`. When a
+style is bound, the runner verifies the recipe's module and the codec module
+of each wire it declares against their catalogue digests, mounts exactly
+those modules beside the relay, and digests them into the process identity.
+The relay reads the recipe record and its wire records from its private
+configuration, chooses the wire by request path, and names no style.
+
+To add a command-line harness, write one recipe module in
+`src/loop_engine/core` with the two functions above, and add one
+`harness_recipe/v1` record with the module's SHA-256. No edit to the runner or
+the relay is needed; the check
+`adding_a_process_harness_recipe_needs_no_core_dispatch_edit` fails if a style
+is spelled in either file. Editing a recipe module without updating its digest
+makes that recipe refuse to bind and fails
+`every_recipe_names_resolvable_functions_and_its_module_digest`.
+
+```bash
+PYTHONPATH=src python3 -c "from loop_engine.core.harness_recipe_catalog_checks import self_test; print(self_test()['all_passed'])"
+```
+
+The real sandbox run of a fixture recipe, added as one module and one record,
+is part of the Linux process qualification
+(`harness_process_checks.qualification_checks`), which starts processes and is
+kept out of the base self-test.
+
+## Fresh instance recipes
+
+A fresh instance recipe starts the customer's own harness for one step, in
+the customer-side launch mode: a clean environment, an empty home folder, the
+harness's own configuration folder, and the step folder as its own git root.
+The recipe names the command, the environment, where the step's instruction
+file, skills and protocol servers go, and the global locations the harness
+reads. `loop_engine.core.harness_fresh_instances` renders a recipe for one
+step and assesses what one launch loaded; `render_launch` refuses a candidate.
+
+```bash
+PYTHONPATH=src python3 -c "from loop_engine.core.harness_fresh_instance_checks import self_test; print(self_test()['all_passed'])"
+```
+
+`tools/check_harness_fresh_instances.py` proves each recipe offline at its
+pinned version. It starts the real installed harness inside Bubblewrap with
+no network, the real home folder replaced by decoys, and decoy instruction
+files in the folder above the step. A loopback endpoint records the harness's
+first requests and answers no model, so no model is called. Loading counts
+only when a step marker is inside a request the harness sent; an exit, a
+session identifier or a listed tool never counts. Two known-wrong controls
+must fail: the home folder kept, and the step's `AGENTS.md` missing. Each run
+writes a new folder and keeps the earlier ones.
+
+What the recorded runs of September 22 found, at Codex 0.155.1, OpenCode
+1.18.32, Claude Code 2.1.280 and Pi 0.73.1:
+
+| Recipe | Instruction file | Skills | Protocol servers |
+|---|---|---|---|
+| `codex.fresh_instance` | loaded | loaded | loaded |
+| `opencode.fresh_instance` | loaded | loaded | loaded |
+| `claude_code.bare` | loaded | not listed in bare mode | loaded |
+| `claude_code.configuration_folder` | loaded | loaded | loaded |
+| `pi.fresh_instance` | loaded | loaded | not supported without an extension |
+| `zcode.app_server_candidate` | not tested | not tested | not tested |
+
+- Claude Code in bare mode with `--add-dir` loaded the `CLAUDE.md` files of
+  the added folder and of every folder above it, including the home folder's
+  `.claude/CLAUDE.md` when the step sits below the home folder. The bare
+  recipe therefore passes instructions only through
+  `--append-system-prompt-file`, and bare mode lists no skills; they resolve
+  only by name.
+- The Claude Code fallback with its own configuration folder leaked the same
+  home folder file until it excluded the instruction files of every folder
+  above the step, not only the parent's.
+- With `TMPDIR` set to the step's configuration folder, no harness wrote to
+  the shared `/tmp` folder.
+- ZCode is a candidate at source revision
+  `872ad960de7ec172591f7e1952f7849229f94521`. It is not installed here, it is
+  never launched, and no support is claimed until its isolation, cancellation
+  and native loading are tested.
+
+The step's model credential reaches a harness only as a variable of its own
+process. Codex reads it through its provider's `env_key`, OpenCode and Pi
+through a reference to `BALTOR_STEP_MODEL_CREDENTIAL` in their configuration,
+and Claude Code through `ANTHROPIC_API_KEY`. No recipe writes the credential to
+a file or passes it on a command line, and the check
+`no_fresh_instance_recipe_writes_the_model_credential_to_a_file_or_a_command_line`
+fails if one does. The offline check records only whether each request carried
+the probe credential, never its value; every launched recipe delivered it.
+Roadmap S-6.61 plans a local broker that gives each step its own short-lived
+key in place of the customer's key; a recipe would receive that key through
+the same variable.
+
+The brokered text-response runner above goes further: a harness process there
+holds no provider credential at all. Its relay forwards every model request
+over a private socket to the canonical gateway, which alone holds the
+credentials and the model authority.
+
+Loading is proven; use by a model is not. A proof holds for the pinned
+version only; a newer installed version is unqualified until the check runs
+again.
+
 ## SDK references
 
 The package calls follow the current primary documentation:
