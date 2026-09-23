@@ -57,6 +57,14 @@ DESIGN_RELEASE_SLOTS = (
 ORIGINAL_INTERACTION_ROW_COUNT = 7
 ORIGINAL_INTERACTION_ROWS_DIGEST = (
     "19882c2722e368e46dd4475c2d2f91fd3f63725ec04964a6aff652c028e747d9")
+#: A suite that forbidden_paths.json keeps out of the main self-test, used as
+#: the real-data case of the collected-suite check and as proof that the
+#: parked list was read. It is core.ollama_client because its exception is
+#: structural (its suite makes live provider calls), not the retired
+#: in-process capability that packages are collecting again; package F11
+#: collected the first choice, core.capability_directory. If this suite is
+#: ever collected, the desk moves the anchor in the same change.
+PARKED_FIXTURE_SUITE = "core.ollama_client"
 
 
 def _refused(build) -> bool:
@@ -105,7 +113,7 @@ def _suite_rule_holds(base, sources, rules) -> bool:
     main self-test does not fold in, and a suite that does not exist."""
     active = {"implementation_state": "active", "planned_symbols": []}
     parked = _with(base, slot_id="fixture_parked_suite", **active,
-                   conformance_suite="core.capability_directory")
+                   conformance_suite=PARKED_FIXTURE_SUITE)
     adopted = _with(base, slot_id="fixture_adopted", **active)
     listed_as_parked = replace(
         sources, parked_suites=sources.parked_suites | {base.conformance_suite})
@@ -270,9 +278,9 @@ def self_test() -> dict:
     check("every_active_engine_slot_conformance_suite_is_collected",
           _suite_rule_holds(step, sources, SLOT_RULES)
           # Both suite lists were read: the step slot's suite is folded into
-          # the main self-test and the capability directory's is parked.
+          # the main self-test and the parked fixture suite is parked.
           and step.conformance_suite in sources.collected_suites
-          and "core.capability_directory" in sources.parked_suites
+          and PARKED_FIXTURE_SUITE in sources.parked_suites
           and _refused(lambda: _with(step, conformance_suite=""))
           and not [item for item in findings if item.rule == "suite_collection"],
           f"candidate suites not collected: {report['candidate_suites_not_collected']}")
