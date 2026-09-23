@@ -163,8 +163,20 @@ jobs:
           flyctl deploy --app "${FLY_APP}" --primary-region "${FLY_PRIMARY_REGION}" \
             --config fly.toml --image "${exact}" --ha=false --strategy immediate \
             --max-concurrent 1 --deploy-retries 0 --no-public-ips --wait-timeout 5m --yes
-          curl --fail --silent --show-error --max-time 20 \
-            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
+          # The replaced Machine is still starting when flyctl returns, and release 13
+          # failed here because one read came a second too early. The shared gate is
+          # read every five seconds for up to two minutes; it must pass once, and a
+          # gate that never passes still fails the release.
+          ready=false
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error --max-time 20 \
+              "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 5
+          done
+          [[ "${ready}" == true ]]
           echo "Service readiness passed: every required dependency answered. This does not qualify customer onboarding or payments."
 
       - name: Apply the packaged catalogue grants on the one Machine

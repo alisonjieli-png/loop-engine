@@ -135,6 +135,27 @@ def readiness_gate_problems(workflow):
     return problems
 
 
+def deploy_readiness_is_polled(workflow):
+    """The deploy step reads the shared gate in a bounded retry loop, not once.
+
+    A Machine that flyctl has just replaced is still starting when the command
+    returns. Release 13 was deployed and healthy, yet its workflow failed because
+    its only readiness read came a second after the restart. The read must sit
+    inside a loop with a pause and a fixed number of attempts, and the step must
+    fail when no attempt passed.
+    """
+    step = next(row for row in workflow["jobs"]["pilot"]["steps"]
+                if row.get("name") == "Publish and deploy the exact tested image")
+    run = step.get("run", "")
+    loop = re.search(r"for attempt in \$\(seq 1 (\d+)\)", run)
+    pause = re.search(r"\n\s*sleep (\d+)\s*\n", run)
+    gate = run.find(READINESS)
+    # At least a minute in total, so a Machine that is still starting has time to answer.
+    return (loop is not None and pause is not None and gate > loop.start()
+            and int(loop.group(1)) * int(pause.group(1)) >= 60 and int(loop.group(1)) >= 2
+            and '[[ "${ready}" == true ]]' in run[gate:])
+
+
 class FlyDeploymentTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -534,6 +555,19 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertIn('"service", "serve"', dockerfile)
         self.assertIn('"--behind-trusted-tls-proxy"', dockerfile)
 
+
+    def test_the_deploy_step_polls_the_readiness_gate_until_a_deadline(self):
+        self.assertTrue(deploy_readiness_is_polled(self.workflow))
+        step = next(row for row in self.workflow["jobs"]["pilot"]["steps"]
+                    if row.get("name") == "Publish and deploy the exact tested image")
+        single = {**step, "run": step["run"].replace("for attempt in $(seq 1 ", "for attempt in $(seq 1 1) #")}
+        once = copy.deepcopy(self.workflow)
+        once["jobs"]["pilot"]["steps"] = [single if row is step else row for row in self.workflow["jobs"]["pilot"]["steps"]]
+        self.assertFalse(deploy_readiness_is_polled(once), "a single read must be refused")
+        unchecked = {**step, "run": step["run"].replace('[[ "${ready}" == true ]]', "true")}
+        loose = copy.deepcopy(self.workflow)
+        loose["jobs"]["pilot"]["steps"] = [unchecked if row is step else row for row in self.workflow["jobs"]["pilot"]["steps"]]
+        self.assertFalse(deploy_readiness_is_polled(loose), "a loop whose failure is ignored must be refused")
 
 if __name__ == "__main__":
     unittest.main()
