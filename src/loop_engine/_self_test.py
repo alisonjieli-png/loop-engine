@@ -71,6 +71,7 @@ def self_test() -> dict:
         "loop.supervision_policy", "loop.loop_control", "loop.encapsulate", "loop.loop_contract", "catalog.capabilities", "catalog.composite", "catalog.conformance", "catalog.handshake",
         "catalog.protocol", "catalog.query", "catalog.registry", "catalog.stores.package_jsonl", "catalog.stores.sqlite_store", "catalog.stores.in_memory", "catalog.stores.duckdb_store", "catalog.stores.duckdb_files",
         "core.run_history_checks", "core.run_history_authorship", "core.run_history_usage_checks", "core.record_operations_checks", "record_cli", "core.intelligence_layers", "core.external_harness", "core.external_harness_adapters",
+        "core.external_harness_contract",
         "core.harness_process_checks", "core.harness_confinement", "core.harness_semantic", "core.instance_instructions", "core.harness_intelligence", "core.provisioning_server", "core.provisioning_mcp_checks", "core.service_runtime.runtime",
         "core.service_runtime.billing", "core.service_runtime.promotions", "core.service_runtime.stripe_provider", "core.service_runtime.http_checks", "core.service_runtime.refusals", "core.service_runtime.stripe_sessions", "core.decisions.contracts", "core.decisions.jev",
         "core.decisions.system_one", "core.retrieval_backends", "core.node_provisioning", "core.intelligence_tagging", "core.credential_leases", "core.capability_needs", "core.guardrail_intelligence", "core.spawned_provisioning",
