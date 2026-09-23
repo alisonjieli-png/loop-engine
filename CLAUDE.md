@@ -6,9 +6,11 @@
 
 Start with the [context route](docs/context/START-HERE.md). It names the
 newest dated handoff, now the
-[September 22 session handoff](docs/context/SESSION-HANDOFF-2026-09-22.md):
-what is live, how it was released, what was lost and repaired, what is in
-flight and what is open. The
+[September 23 session handoff](docs/context/SESSION-HANDOFF-2026-09-23.md):
+what is live, the owner's website directions of that day, the decisions made
+and why, every line of work at the wrap-up and the ordered work that remains.
+The [September 22 session handoff](docs/context/SESSION-HANDOFF-2026-09-22.md)
+records how releases 12 to 15 were made and what was lost and repaired. The
 [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md) holds the
 working cycle for changes, tests, checkpoints and releases. The north star and
 the ordered initiatives are in

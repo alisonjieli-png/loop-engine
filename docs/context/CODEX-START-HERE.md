@@ -20,7 +20,7 @@ that behavior and does not replace the runtime handshake.
 
 | Need | Current route |
 |---|---|
-| Where the work stands: the verified live state, the release that produced it, the work in flight and the open problems | [September 22 session handoff](SESSION-HANDOFF-2026-09-22.md), the newest dated handoff. Start here after [AGENTS.md](../../AGENTS.md). |
+| Where the work stands: the verified live state, the release that produced it, the work in flight and the open problems | [September 23 session handoff](SESSION-HANDOFF-2026-09-23.md), the newest dated handoff, then the [September 22 session handoff](SESSION-HANDOFF-2026-09-22.md). Start here after [AGENTS.md](../../AGENTS.md). |
 | Current 100,000-package research and separate handbook component artifacts | [Component research index](../research/BALTOR-COMPONENT-RESEARCH-ARTIFACTS-2026-09-23.md) and [Codex side handoff](CODEX-SIDE-RESEARCH-HANDOFF-2026-09-22.md). |
 | Committing, pushing, branching, releasing, what still needs the owner, and the decisions that stand | [Commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority) in AGENTS.md. No other document restates it. |
 | The working cycle, the repairs of September 20 and the private beta definition | [Takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). Its live-state table describes September 20. |

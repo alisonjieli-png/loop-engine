@@ -12,9 +12,11 @@ authority, and only the owner widens it.
 
 ## Current work and evidence
 
-The [September 22 session handoff](docs/context/SESSION-HANDOFF-2026-09-22.md)
-is the newest dated record of what is live, what was repaired and what is in
-flight. The dated records below are earlier snapshots.
+The [September 23 session handoff](docs/context/SESSION-HANDOFF-2026-09-23.md)
+is the newest dated record of what is live, what the owner asked for, what is
+in flight and what remains. The
+[September 22 session handoff](docs/context/SESSION-HANDOFF-2026-09-22.md) and
+the dated records below are earlier snapshots.
 
 The [September 20 checkpoint](docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md)
 records the deployed pilot, benefit-led website, administrator access,
