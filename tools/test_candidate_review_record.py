@@ -34,7 +34,7 @@ Known-wrong records, each refused by the reader
 ```
 
 The committed pilot record is then read with the same reader, and every row is
-compared with the body in the tree.
+compared with the body committed beside it, which the repository history keeps.
 """
 from __future__ import annotations
 
@@ -42,6 +42,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -61,6 +62,21 @@ import test_candidate_review_panel as panel_check  # noqa: E402
 ROOT = HERE.parent
 CATALOGUE = ROOT / "examples/29_intelligence_service/starter-catalogue"
 PILOT_RECORD = CATALOGUE / "reviews-panel-2026-09-22.json"
+GIT_SECONDS = 60
+
+
+def _revisions_that_added(path: Path) -> list:
+    """Every revision in this repository's history that added the file, newest first."""
+    finished = subprocess.run(["git", "-C", str(ROOT), "log", "--diff-filter=A", "--format=%H", "--",
+                               path.relative_to(ROOT).as_posix()],
+                              capture_output=True, text=True, timeout=GIT_SECONDS, check=True)
+    return finished.stdout.split()
+
+
+def _bytes_at(revision: str, relative: str) -> bytes:
+    """The bytes of one file at one revision, read out of the repository history."""
+    return subprocess.run(["git", "-C", str(ROOT), "show", f"{revision}:{relative}"],
+                          capture_output=True, timeout=GIT_SECONDS, check=True).stdout
 
 
 def _fixture_record(scripts: dict, families: tuple, identities=(panel_check.FIRST,)):
@@ -521,7 +537,7 @@ class SerializationTest(unittest.TestCase):
 
 
 class CommittedPilotRecordTest(unittest.TestCase):
-    """The committed pilot record reads with the strict reader and matches the bodies in the tree."""
+    """The committed pilot record reads with the strict reader and matches the bodies committed with it."""
 
     @classmethod
     def setUpClass(cls):
@@ -539,13 +555,25 @@ class CommittedPilotRecordTest(unittest.TestCase):
         kinds = {reviewer["engine_kind"] for reviewer in self.record["reviewers"]}
         self.assertNotIn("fixture", kinds)
 
-    def test_every_judged_row_names_the_body_in_the_tree(self):
+    def test_every_judged_row_names_the_body_committed_with_the_record(self):
+        """Each judged digest is the body that was in the tree when the record was committed.
+
+        Anchoring the catalogue again rewrites the last line of every body, so the tree may
+        hold newer bytes than the reviewers read, and a verdict covers only the bytes it names.
+        The record was committed in one revision with the bodies it judged, and the history
+        keeps that revision, so the bodies are read from it. Each one must hash to the row's
+        digest and name the anchor revision the record names.
+        """
+        revisions = _revisions_that_added(PILOT_RECORD)
+        self.assertEqual(len(revisions), 1, f"the pilot record must be added once, found {revisions}")
+        anchor = self.record["catalogue_source_revision"][:7]
         for row in self.record["rows"]:
             if row["body_sha256"] is None:
                 continue
             with self.subTest(identity=row["identity"]):
-                body = (CATALOGUE / row["body_path"]).read_bytes()
+                body = _bytes_at(revisions[0], f"{self.record['catalogue_folder']}/{row['body_path']}")
                 self.assertEqual(hashlib.sha256(body).hexdigest(), row["body_sha256"])
+                self.assertIn(f"revision {anchor}.", body.decode("utf-8"))
 
     def test_every_approval_meets_the_rule_without_the_producer_family(self):
         family = {reviewer["reviewer_id"]: reviewer["family"] for reviewer in self.record["reviewers"]}

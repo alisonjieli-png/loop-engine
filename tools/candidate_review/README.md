@@ -337,7 +337,7 @@ record with their reasons.
 | `tools/test_candidate_review_engines.py` | The gateway engine keeps provider usage exactly, honours the model policy and is unavailable without its credential variable, and the model listing reads the key only from the environment; the command line engine reads each protocol exactly, sends the prompt on standard input only, and keeps failures apart. |
 | `tools/test_candidate_review_panel.py` | The approval rule, the family exclusion in both the selection and the decision, pre-checks before any call, the kind of body and its criteria in the prompt, answer validation, ceilings, pauses, spent allowances, failures that last a run, the cursor bound to the exact prompt, and secret redaction. |
 | `tools/test_candidate_review_calibration.py` | The committed calibration set, each item's criterion applying to its kind, and the exclusion of a reviewer that approves a known-wrong item or was never measured. |
-| `tools/test_candidate_review_record.py` | The strict reader of the dated record, interrupted dispatches, criteria applied per row, each reviewer's family and installation bound to its calls, each row's pre-checks and licence, its serialization, and the committed pilot record against the bodies in the tree. |
+| `tools/test_candidate_review_record.py` | The strict reader of the dated record, interrupted dispatches, criteria applied per row, each reviewer's family and installation bound to its calls, each row's pre-checks and licence, its serialization, and the committed pilot record against the bodies committed with it, read from the repository history. |
 
 Each file holds mutant controls: with one guard replaced, its known-wrong case
 passes, which proves the case is held by that guard. The pilot evidence folder
