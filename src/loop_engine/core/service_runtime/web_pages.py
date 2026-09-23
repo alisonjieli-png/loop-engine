@@ -30,6 +30,8 @@ WEB_ASSETS = {
     "/account": ("index.html", HTML_MEDIA_TYPE),
     "/admin": ("index.html", HTML_MEDIA_TYPE),
     "/connect": ("index.html", HTML_MEDIA_TYPE),
+    # The guide, Get set up, and the sign-up funnel, Get started. "/connect" above stays the guide's older address.
+    "/setup": ("index.html", HTML_MEDIA_TYPE), "/get-started": ("index.html", HTML_MEDIA_TYPE),
     "/examples": ("index.html", HTML_MEDIA_TYPE),
     "/security": ("index.html", HTML_MEDIA_TYPE),
     # The privacy notice the owner approved on September 22, 2026. Its words are

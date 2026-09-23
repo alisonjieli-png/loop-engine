@@ -23,7 +23,7 @@ try{
      while account creation is closed, "Get started" at /connect while it is open. */
   const liveReport=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json())?.result||{};
   const liveOpen=liveReport.record_type==="service_capabilities/v1"&&liveReport.website?.registration_available===true;
-  const liveLabel=liveOpen?"Get started":"Request an invitation",livePath=liveOpen?"/connect":"/waitlist";
+  const liveLabel="Get started",livePath="/get-started";
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
   const liveHeadline=await page.locator('[data-view="home"] h1').innerText();
   const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
@@ -62,11 +62,20 @@ try{
   check("live_phone_first_screen_holds_the_primary_action_under_a_compact_header",liveFirst.top>=0&&liveFirst.bottom<=liveFirst.viewport&&liveFirst.header<=80);
   if(!liveOpen&&liveReport.website?.waitlist_available===true){
     await phone.locator("#hero-primary").click();
-    const liveField=await phone.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node.getBoundingClientRect();return {path:location.pathname,shown:node.getClientRects().length>0,top:box.top,bottom:box.bottom,viewport:innerHeight};});
-    check("live_invitation_action_lands_on_a_visible_email_field",liveField.path==="/waitlist"&&liveField.shown&&liveField.top>=0&&liveField.bottom<=liveField.viewport);
+    /* The funnel shows the invitation email field itself, or links to the waiting list page that shows it. */
+    let liveField=await phone.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?.getBoundingClientRect();return {path:location.pathname,shown:Boolean(node&&node.getClientRects().length),top:box?.top??-1,bottom:box?.bottom??-1,viewport:innerHeight};});
+    if(!liveField.shown&&await phone.locator('[data-view]:not([hidden]) a[href="/waitlist"]').count()){await phone.locator('[data-view]:not([hidden]) a[href="/waitlist"]').first().click();
+      liveField=await phone.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node.getBoundingClientRect();return {path:location.pathname,shown:node.getClientRects().length>0,top:box.top,bottom:box.bottom,viewport:innerHeight};});}
+    check("live_invitation_action_lands_on_a_visible_email_field",["/get-started","/waitlist"].includes(liveField.path)&&liveField.shown&&liveField.top>=0&&liveField.bottom<=liveField.viewport);
   }
   await phone.close();
-  check("live_navigation_starts_with_how_it_works",(await page.locator("header nav a").first().innerText()).trim()==="How it works");
+  /* The top bar lists the site's pages by name, How it works first, and the primary action "Get started" opens the funnel. The
+     footer's Product group starts with Get started and the guide, Get set up. */
+  const liveBar=await page.locator("header nav a").evaluateAll(links=>links.filter(link=>!link.hidden).map(link=>[link.textContent.trim(),link.getAttribute("href")]));
+  const livePages=["How it works","Library","Pricing","Docs"];
+  check("live_top_bar_lists_the_pages_and_the_get_started_action",JSON.stringify(liveBar.map(([name])=>name).filter(name=>livePages.includes(name)))===JSON.stringify(livePages)
+    &&(await page.locator("#header-primary").innerText()).trim()==="Get started"&&await page.locator("#header-primary").getAttribute("href")==="/get-started");
+  check("live_footer_links_get_started_and_get_set_up",await page.locator('footer #footer-product a[href="/get-started"]').count()===1&&await page.locator('footer #footer-product a[href="/setup"]').count()===1);
   /* The connection entry on the homepage is written by the page script with the deployed address. */
   check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));
   await page.locator('header a[data-page="pricing"]').click();

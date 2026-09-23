@@ -15,28 +15,47 @@ remain explicit operator operations. A billing session is not an entitlement.
 The service's capability record distinguishes configured behavior from live
 provider qualification.
 
-## One call to action
+## One call to action, the guide and the waiting list page
 
-Every public link or button that starts the access journey carries one label
-in each state and opens the Get started page. While account creation is
-closed the label is "Request an invitation" and the address is `/waitlist`;
-while it is open the label is "Get started" and the address is `/connect`. The
-addresses `/connect`, `/get-started` and `/waitlist` open the same page. That
-page leads with one panel, chosen from the service's capabilities record:
-account creation when `website.registration_available` is true, otherwise the
-invitation request form when `website.waitlist_available` is true, and
-otherwise the way to reach the operator. The operator's panel is also the
-careful state, so the served page shows it until the service answers, and
-keeps it when the record is missing or carries a version the page was not
-written for. On a phone of 390 by 844 pixels the invitation email field and
-its button stand in the first screen of that page.
+The owner, September 23, 2026: "Get Setup" is "a guide on how to get setup and
+'get started' is the sign up and registration/pay funnel". So every public
+link or button that starts the access journey says "Get started" and opens
+`/get-started`, the funnel, in every state; the funnel adapts, so no label
+switches. Until the funnel page is merged, `/get-started` opens the waiting
+list page.
+
+Two pages keep page links of their own, each by its own name:
+
+- Get set up, the guide, at `/setup`. The older address `/connect` still
+  opens it. It is not in the signed-out header: a visitor reaches it from the
+  Docs page, the homepage and the footer, and a signed-in person from the
+  header. Its first step leads with one panel, chosen from the service's
+  capabilities record: account creation when `website.registration_available`
+  is true, otherwise a link to the waiting list page when
+  `website.waitlist_available` is true, and otherwise the way to reach the
+  operator. The operator's panel is also the careful state, so the served
+  page shows it until the service answers.
+- Request an invitation, the waiting list page, at `/waitlist`. It holds the
+  invitation form, a short headline and what happens after you ask. On a
+  phone of 390 by 844 pixels the email field and its button stand in the
+  first screen.
 
 The browser checks in `tools/check_service_workspace.mjs` read every public
 page on three real services and report a second label for the same journey,
-an invitation request anywhere but on that journey, and account creation while
-registration is closed. A named check presses the hero action on a service
-that keeps a list and finds the email field in the first screen; the old
-address `/signup#waiting-list` fails it.
+a page link under the wrong name or address, an invitation request anywhere
+but on the invitation journey, and account creation while registration is
+closed. A named check presses the hero action on a service that keeps a list
+and finds the email field in the first screen; the old address
+`/signup#waiting-list` fails it.
+
+The header, signed out, lists How it works, Library, Pricing and Docs, then
+Sign in and "Get started"; signed in, it lists Workspace, Get set up, Library
+and Docs, then Account, Administration for an operator, and Sign out. A
+comment in the header marks where Use cases goes once that page exists. The
+footer holds the brand column and four groups with stable ids,
+`footer-product`, `footer-use-cases`, `footer-documentation` and
+`footer-company`, with comments that mark where the pages still to come go; a
+group shows once it holds a link.
 
 ## The design
 
@@ -65,7 +84,7 @@ standalone summit mark, variation 23, is kept with the
 [brand marks](../../../../../docs/brand/README.md) and is not served.
 
 Every page other than the homepage opens with an introduction band like the
-one on the Get started page: white, the full width of the window, with a rule
+one on the guide: white, the full width of the window, with a rule
 under it.
 
 The typefaces are Geist and Geist Mono from version 1.7.2 of the `geist`
@@ -121,7 +140,7 @@ The same test holds the library count on the homepage to the number of items
 in the manifest, and the connection entry to the reviewed Claude Code recipe in
 `client-recipes.json`. The page is served with the public address in that
 entry. Once the page script has checked the recipe record, it writes the entry
-again with the address of the service that serves the page, as the Get started
+again with the address of the service that serves the page, as the guide
 page shows it.
 
 The six problems, the five steps of how it works and the six kinds of file
