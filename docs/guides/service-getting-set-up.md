@@ -48,6 +48,10 @@ and it expires.
 After you have a password, sign in at `/login`. Your account page is
 `/account`.
 
+The privacy notice at `/privacy` says what the service stores about you, why,
+where and for how long, and how to have it deleted. The footer of every page
+links to it.
+
 ## 2. Create one client token for each client
 
 Open `/account` and find the section named Your client tokens. Create one

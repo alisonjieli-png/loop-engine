@@ -32,6 +32,9 @@ WEB_ASSETS = {
     "/connect": ("index.html", HTML_MEDIA_TYPE),
     "/examples": ("index.html", HTML_MEDIA_TYPE),
     "/security": ("index.html", HTML_MEDIA_TYPE),
+    # The privacy notice the owner approved on September 22, 2026. Its words are
+    # docs/legal/PRIVACY-NOTICE.md, and a browser check compares the two.
+    "/privacy": ("index.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
