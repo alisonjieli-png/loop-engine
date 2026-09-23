@@ -35,6 +35,9 @@ WEB_ASSETS = {
     # The privacy notice the owner approved on September 22, 2026. Its words are
     # docs/legal/PRIVACY-NOTICE.md, and a browser check compares the two.
     "/privacy": ("index.html", HTML_MEDIA_TYPE),
+    # The terms of service the owner approved on September 23, 2026. Their words
+    # are docs/legal/TERMS-OF-SERVICE.md, and a browser check compares the two.
+    "/terms": ("index.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
