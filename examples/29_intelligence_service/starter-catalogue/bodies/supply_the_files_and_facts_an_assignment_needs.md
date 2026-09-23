@@ -40,4 +40,4 @@ An assignment says to follow the existing style in the repository. The worker re
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 565e133.
+Licence: MIT. Written for this catalogue at revision 390643e.

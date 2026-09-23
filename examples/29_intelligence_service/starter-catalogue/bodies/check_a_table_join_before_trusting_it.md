@@ -34,4 +34,4 @@ An orders table is joined to a customers table to add the region. The customers 
 
 - `src/loop_engine/governance/candidates/part-00000.jsonl`: four candidate statements for the data engineer position, with the digests `cd39358d35120bb3`, `806a1b741fc1f7b2`, `802963b5aaf69d15` and `78fdf498d6a705cd`.
 
-Licence state: needs review. A language model generated the four source statements during work in this repository on 23 August 2026, and no person has reviewed them. The example is an illustration that was added during compilation. Compiled from revision 565e133.
+Licence state: needs review. A language model generated the four source statements during work in this repository on 23 August 2026, and no person has reviewed them. The example is an illustration that was added during compilation. Compiled from revision 390643e.

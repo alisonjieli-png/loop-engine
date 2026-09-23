@@ -39,4 +39,4 @@ An agent stops and asks five questions. One asks which Python version is install
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for acquiring missing information.
 - `src/loop_engine/strings/question_engine.py`: the question form named `state_the_unknowns`.
 
-Licence: MIT. Compiled from revision 565e133.
+Licence: MIT. Compiled from revision 390643e.

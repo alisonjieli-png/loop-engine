@@ -32,6 +32,16 @@ describe `97e805f`, whose engine and service source equals `c96b546`.
 Deployed: pilot release 9 (Fly release v11), built from `81f341d`. The
 repository was read, never changed, to write this.
 
+## September 23 research extension
+
+The [functional engine wrapping research](../research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md)
+reviews this design against the current framework and primary sources. It adds
+proposals for semantic replacement, state binding, wrapper control ownership,
+translation losses and shared behavioral qualification. Its status table
+separates current records and bounded implementations from the unfinished
+shared selector. The dated source and deployment observations below remain
+historical; the research activates no new runtime or engine registry.
+
 ## How to read this document
 
 Sections 1 to 3 give the whole idea, the words and where engines sit inside

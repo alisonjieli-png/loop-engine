@@ -819,7 +819,7 @@
      "S-6.28"
     ],
     "id": "S-6.30",
-    "next_local_work": "Build the framework package, then adopt it in the executor, search, email, store, model, identity and billing slots.",
+    "next_local_work": "Complete shared selection and at-use binding using existing records; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md before adopting the framework in executor, compiler, search, email, store, model, identity and billing slots.",
     "phase": 6,
     "status": "building",
     "title": "Engines behind fixed edges: the shared engine framework",
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:35bbce8c0c18cc400cbe0f3e2391670978db04172041311428006ec603544eca"
+ "source_fingerprint": "sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8c9c21f033ad8"
 }

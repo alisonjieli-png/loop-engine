@@ -23,6 +23,18 @@ They activate no compiler, registry or scheduled job. Path construction does
 not prove native discovery. Known incompatible bindings must stop new starts;
 active attempts follow supervisor policy. New semantics may require code.
 
+## Functional engine wrapping research extension
+
+The [functional engine wrapping review](../research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md)
+compares the supplied proposal with primary standards and current source. It
+adds behavioral compatibility, distinct binding dimensions, state transitions,
+translation-loss/approval lineage, retry ownership, credential audience and
+physical-versus-logical accounting. The existing shared engine records and
+component-specific selectors remain the owners. The universal selector and
+layered wrapper execution are still incomplete; no new engine is activated by
+this report. The reported separate four-schema/42-check artifact was not found
+and is not counted as verified evidence.
+
 ## External research
 
 - [Agent Harness compatibility](../research/MADEBYWILD-AGENT-HARNESS-COMPATIBILITY-AND-ADOPTION-2026-09-23.md): exact source, four-provider rendering, five Codex prompt cases and an isolated repeat.
@@ -88,3 +100,15 @@ open, the live host lacks account-email configuration and its required secrets,
 and password/sender qualification is incomplete. A Supabase integration was
 found but is not connected here. No signup activation or email occurred. See
 [the live readiness audit](../verification/SIGNUP-LIVE-READINESS-READONLY-2026-09-23.md).
+
+## Consolidation source and catalogue anchor
+
+Source checkpoint `390643ef42518edcd8df88a1d9b972ea9fe2c104` was retained as
+a reachable commit while merging concurrent documentation from `a1fc743`.
+The source checkpoint is not a release by itself. The starter catalogue now
+pins that source. Existing tooling carried the same 43 approvals with zero
+carry refusals, unchanged reviewer decisions and no new approvals. The six
+rejected and 74 unreviewed items remain withheld. The focused catalogue and
+bundle checks passed 95 tests. The exact combined tree still needs the final
+continuous-integration run before push/release; live catalogue publication
+remains separate and must verify all 43 new body digests.

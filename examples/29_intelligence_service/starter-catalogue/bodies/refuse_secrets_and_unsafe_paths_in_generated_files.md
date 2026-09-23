@@ -39,4 +39,4 @@ A packager checks only that the path text has no `..` part. The export holds a s
 
 - `src/loop_engine/code_nodes/solution_export.py`: `ExportedFile`, the path and content checks used at construction, and the path resolution used by `verify_export`.
 
-Licence: MIT. Compiled from revision 565e133. The checks use only the Python standard library.
+Licence: MIT. Compiled from revision 390643e. The checks use only the Python standard library.

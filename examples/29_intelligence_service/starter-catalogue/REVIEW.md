@@ -142,7 +142,7 @@ what the checks do:
 ```bash
 PYTHONPATH=src python tools/carry_catalogue_approvals.py \
   --catalogue examples/29_intelligence_service/starter-catalogue \
-  --carried-at 2026-09-21
+  --carried-at 2026-09-23
 ```
 
 The comparison is the whole safety property, so it has its own known-wrong
@@ -179,10 +179,28 @@ Remaining steps, not done here and not authorized by this folder:
 - The four other rejected items are repaired against their written reasons and resubmitted, which needs a new review.
 - The 74 items with no verdict are put to an independent review.
 
+## September 23 consolidation source anchor
+
+The current source anchor is revision `390643e`
+(full identity `390643ef42518edcd8df88a1d9b972ea9fe2c104`).
+The source checkpoint stays reachable in the final integration history; it is
+not a release on its own. Of the cited sources, only
+`src/loop_engine/core/external_harness.py` changed from the prior anchor. Its
+sole dependent item, `write_a_task_brief_for_an_agent`, has no review and is
+not served. The source still places authority and acceptance with the caller.
+
+The existing carry tool verified all 43 previously approved bodies and changed
+only their anchor lines. All 43 approvals carried, with zero carry refusals.
+The original reviewer identities, decisions and reviewed-byte digests remain
+in `reviews.json`. No new approval was made. The six rejected and 74 unreviewed
+items remain withheld. The generated manifest contains the same 43 identities
+with their new body digests. Updating this folder does not publish a hosted
+catalogue release; live publication and digest checks are separate operations.
+
 ## How to review one item
 
 1. Open the body from the first column and read it as a customer would.
-2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `565e133` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
+2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `390643ef42518edcd8df88a1d9b972ea9fe2c104` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
 3. Check the licence state and the declared effects in `items.json`.
 4. Write the decision in the approval column: approved with a name and a date, rejected with the reason, or the change that is needed.
 5. After any edit of a body, run the refresh tool and then the checks. Run these commands from the repository root. The first command only reports stale items. The second rewrites the derived fields.

@@ -40,4 +40,4 @@ A key is pasted into a public issue. The team edits the message and considers it
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 565e133.
+Licence: MIT. Written for this catalogue at revision 390643e.
