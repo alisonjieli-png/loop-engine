@@ -15,8 +15,10 @@ from urllib.parse import urlsplit
 OPENCODE_STOP_REASON = "stop"
 
 
-def prepare_opencode_recipe(config, base_url):
+def prepare_opencode_recipe(style, config, base_url):
     """Return argv, local-relay environment and exact private task stdin."""
+    if style != "opencode":
+        raise ValueError("unsupported_opencode_style")
     url = urlsplit(base_url)
     if url.scheme != "http" or url.hostname != "127.0.0.1" or not url.port or url.username or url.password:
         raise ValueError("isolated_loopback_relay_required")
@@ -61,8 +63,10 @@ def prepare_opencode_recipe(config, base_url):
     return argv, environment, prompt
 
 
-def extract_opencode_output(stdout, expected):
+def extract_opencode_output(style, stdout, expected):
     """Require an exact text result, no native tool event and a stop terminal."""
+    if style != "opencode":
+        return ""
     texts = []
     terminal = None
     for line in stdout.split("\n"):

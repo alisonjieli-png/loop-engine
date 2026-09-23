@@ -1,0 +1,517 @@
+# The release catalogue of command-line harness recipes (plan package X1,
+# engine design section 13.7). Package data, never host data: a host
+# harness.json names a style listed here and cannot name a module.
+#
+# Adding a command-line harness is one recipe module in src/loop_engine/core
+# and one harness_recipe/v1 record below. module_sha256 is the SHA-256 of the
+# module file's exact bytes; editing a module without updating its digest
+# makes that recipe refuse to bind, and the check
+# every_recipe_names_resolvable_functions_and_its_module_digest fails.
+#
+# distribution.version is the version each recipe was written and checked
+# against (the pinned embodiment); distribution.sha256 is the digest a
+# qualification bound, or null where none was bound.
+record_type: harness_recipe_catalog/v1
+version: 1.0.0
+wire_codecs:
+  - record_type: harness_wire_codec/v1
+    wire_protocol: openai_chat_completions
+    module: null
+    module_sha256: null
+    decode_function: null
+    encode_function: null
+    request_paths: [/chat/completions, /v1/chat/completions]
+    path_match: exact
+    stream_framing: openai_chat_chunks
+  - record_type: harness_wire_codec/v1
+    wire_protocol: openai_responses
+    module: harness_responses_recipes
+    module_sha256: 13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7
+    decode_function: decode_responses_text_request
+    encode_function: encode_responses_text_events
+    request_paths: [/v1/responses]
+    path_match: exact
+    stream_framing: responses_events
+  - record_type: harness_wire_codec/v1
+    wire_protocol: google_generate_content
+    module: harness_additional_recipes
+    module_sha256: 0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9
+    decode_function: decode_google_request
+    encode_function: encode_google_response
+    request_paths: [/v1beta/models/, /v1/models/]
+    path_match: prefix
+    stream_framing: single_data_event
+  - record_type: harness_wire_codec/v1
+    wire_protocol: anthropic_messages
+    module: harness_lightweight_recipes
+    module_sha256: 34cf33908fc6bbc2ec98280fe9f6535438add10aea8a11c44c84e327ed5c0032
+    decode_function: decode_anthropic_text_request
+    encode_function: encode_anthropic_text_response
+    request_paths: [/v1/messages]
+    path_match: exact
+    stream_framing: none
+recipes:
+  - record_type: harness_recipe/v1
+    style: aider
+    variant: text_response
+    module: harness_builtin_recipes
+    prepare_function: prepare_builtin_recipe
+    extract_function: extract_builtin_output
+    module_sha256: d94b9e671d492dd028be12301cb9904714864e441bf06dc66f177ac6787a5cd2
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment:
+      - {variable: COLUMNS, value_from: maximum_output_bytes}
+    native_controls: &owning_loop
+      ownership:
+        goal_management: owning_loop
+        planning_and_continuation: owning_loop
+        tool_and_resource_use: owning_loop
+        retry_and_fallback: owning_loop
+        context_and_session_state: owning_loop
+        steering_and_queued_work: owning_loop
+        pause_cancellation_and_shutdown: owning_loop
+        completion_and_output_publication: owning_loop
+      reasons: {}
+    distribution: {kind: uvx, version: 0.86.2, sha256: null}
+  - record_type: harness_recipe/v1
+    style: continue
+    variant: text_response
+    module: harness_builtin_recipes
+    prepare_function: prepare_builtin_recipe
+    extract_function: extract_builtin_output
+    module_sha256: d94b9e671d492dd028be12301cb9904714864e441bf06dc66f177ac6787a5cd2
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 1.5.47, sha256: null}
+  - record_type: harness_recipe/v1
+    style: pi
+    variant: text_response
+    module: harness_builtin_recipes
+    prepare_function: prepare_builtin_recipe
+    extract_function: extract_builtin_output
+    module_sha256: d94b9e671d492dd028be12301cb9904714864e441bf06dc66f177ac6787a5cd2
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 0.85.1, sha256: null}
+  - record_type: harness_recipe/v1
+    style: qwen_code
+    variant: text_response
+    module: harness_additional_recipes
+    prepare_function: prepare_recipe
+    extract_function: extract_additional_output
+    module_sha256: 0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9
+    wire_protocols: [openai_chat_completions]
+    instruction_style: qwen_code
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 0.23.1, sha256: null}
+  - record_type: harness_recipe/v1
+    style: gemini_cli
+    variant: text_response
+    module: harness_additional_recipes
+    prepare_function: prepare_recipe
+    extract_function: extract_additional_output
+    module_sha256: 0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9
+    wire_protocols: [google_generate_content]
+    instruction_style: gemini_cli
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 0.59.0, sha256: null}
+  - record_type: harness_recipe/v1
+    style: goose
+    variant: text_response
+    module: harness_goose_recipe
+    prepare_function: prepare_goose_recipe
+    extract_function: extract_goose_output
+    module_sha256: ea27bd4898c44283c727df42529851c0fa521344f9d7c438bd2c7d4aa75b3174
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: binary, version: 1.50.0, sha256: null}
+  - record_type: harness_recipe/v1
+    style: opencode
+    variant: text_response
+    module: harness_opencode_recipe
+    prepare_function: prepare_opencode_recipe
+    extract_function: extract_opencode_output
+    module_sha256: 4a32610e560e43639198bd3e5e36596f207d98ad934f66733b98e1dc61d1edfc
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: binary, version: 1.17.9, sha256: null}
+  - record_type: harness_recipe/v1
+    style: mini_swe_agent
+    variant: text_response
+    module: harness_mini_swe_recipe
+    prepare_function: prepare_mini_swe_recipe
+    extract_function: extract_mini_swe_output
+    module_sha256: ec561046ff4e793fac4b452126c112f4a08c33ce7932e96bd362218e4e53e637
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: uvx, version: 2.4.6, sha256: null}
+  - record_type: harness_recipe/v1
+    style: mistral_vibe
+    variant: text_response
+    module: harness_python_recipes
+    prepare_function: prepare_python_recipe
+    extract_function: extract_python_output
+    module_sha256: 8bd339bc767c996584a2b7960178e7875c82577a7a2948363ded07684e3bd8d2
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: uvx, version: 2.25.0, sha256: null}
+  - record_type: harness_recipe/v1
+    style: gptme
+    variant: text_response
+    module: harness_python_recipes
+    prepare_function: prepare_python_recipe
+    extract_function: extract_python_output
+    module_sha256: 8bd339bc767c996584a2b7960178e7875c82577a7a2948363ded07684e3bd8d2
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: uvx, version: 0.33.0, sha256: null}
+  - record_type: harness_recipe/v1
+    style: cline
+    variant: text_response
+    module: harness_cline_kilo_recipes
+    prepare_function: prepare_cline_kilo_recipe
+    extract_function: extract_cline_kilo_output
+    module_sha256: 80a507014d7bbce140fc3378eafe43210061dcb15fb6dc9c18b78990ca934471
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 3.0.61, sha256: null}
+  - record_type: harness_recipe/v1
+    style: kilo
+    variant: text_response
+    module: harness_cline_kilo_recipes
+    prepare_function: prepare_cline_kilo_recipe
+    extract_function: extract_cline_kilo_output
+    module_sha256: 80a507014d7bbce140fc3378eafe43210061dcb15fb6dc9c18b78990ca934471
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: npx, version: 7.5.16, sha256: null}
+  - record_type: harness_recipe/v1
+    style: nanocode
+    variant: text_response
+    module: harness_lightweight_recipes
+    prepare_function: prepare_lightweight_recipe
+    extract_function: extract_lightweight_output
+    module_sha256: 34cf33908fc6bbc2ec98280fe9f6535438add10aea8a11c44c84e327ed5c0032
+    wire_protocols: [anthropic_messages]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution:
+      kind: local
+      version: git-b009d3dbedf14795a5c10804a5455386563f4b5b
+      sha256: 438c0a4d8281a4be3d91143e2689813f74ccda0079470a05417afaada15b91f5
+  - record_type: harness_recipe/v1
+    style: trae_agent
+    variant: text_response
+    module: harness_lightweight_recipes
+    prepare_function: prepare_trae_semantic_recipe
+    extract_function: extract_lightweight_output
+    module_sha256: 34cf33908fc6bbc2ec98280fe9f6535438add10aea8a11c44c84e327ed5c0032
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: false
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: local, version: 0.1.0, sha256: null}
+  - record_type: harness_recipe/v1
+    style: codex
+    variant: text_response
+    module: harness_responses_recipes
+    prepare_function: prepare_responses_recipe
+    extract_function: extract_responses_output
+    module_sha256: 13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7
+    wire_protocols: [openai_responses]
+    instruction_style: codex
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution:
+      kind: binary
+      version: 0.153.4
+      sha256: 56ef98ab4032d317ab26e9b5e5a175650717351edb16ed9cde0cb6d1734d62da
+  - record_type: harness_recipe/v1
+    style: openinterpreter_rust
+    variant: text_response
+    module: harness_responses_recipes
+    prepare_function: prepare_responses_recipe
+    extract_function: extract_responses_output
+    module_sha256: 13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7
+    wire_protocols: [openai_chat_completions, openai_responses]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution:
+      kind: binary
+      version: 0.0.42
+      sha256: 92935fc1d85d71a99f31af5f3cf67cf3218902f9729ee99f20f825036a898ff6
+  - record_type: harness_recipe/v1
+    style: hermes_agent
+    variant: text_response
+    module: harness_remaining_recipes
+    prepare_function: prepare_remaining_recipe
+    extract_function: extract_remaining_output
+    module_sha256: 0a9102fac50591b151194b2458282df72548137bdec8123b46fe98ec800b364f
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: local, version: 0.21.1, sha256: null}
+  - record_type: harness_recipe/v1
+    style: forgecode
+    variant: text_response
+    module: harness_remaining_recipes
+    prepare_function: prepare_remaining_recipe
+    extract_function: extract_remaining_output
+    module_sha256: 0a9102fac50591b151194b2458282df72548137bdec8123b46fe98ec800b364f
+    wire_protocols: [openai_chat_completions]
+    instruction_style: standard
+    requires_context_capacity: true
+    sandbox_environment: []
+    native_controls: *owning_loop
+    distribution: {kind: binary, version: 2.13.21, sha256: null}
+# How one harness program starts fresh for one step (roadmap S-6.42), in the
+# customer-side launch mode: a clean environment, an empty home folder, the
+# harness's own configuration folder and the step folder as its own git root.
+# tools/check_harness_fresh_instances.py proves each recipe offline at its
+# pinned version; a changed installed version is unqualified until proven
+# again. A candidate is listed for study and makes no support claim.
+fresh_instance_recipes:
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: codex.fresh_instance
+    harness: codex
+    launch_mode: customer_process
+    order: 1
+    candidate: false
+    source: {upstream: "https://github.com/openai/codex", revision: null, licence: Apache-2.0}
+    executable: codex
+    version_arguments: [--version]
+    version_pattern: '^codex-cli (\S+)$'
+    pinned_version: 0.155.1
+    configuration_variable: CODEX_HOME
+    environment:
+      HOME: '{empty_home}'
+      CODEX_HOME: '{configuration_folder}'
+      TMPDIR: '{configuration_folder}'
+      BALTOR_STEP_MODEL_CREDENTIAL: '{model_credential}'
+    arguments: [exec, --ephemeral, --json, '{probe_prompt}']
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+    skills_directory: .agents/skills
+    configuration_writer: codex_configuration_toml
+    global_locations:
+      - .codex/AGENTS.md
+      - .codex/config.toml
+      - .codex/skills/decoy-codex-skill/SKILL.md
+      - .agents/skills/decoy-agents-skill/SKILL.md
+    bundled_items: []
+    material: {instruction_file: loaded, skills: loaded, protocol_servers: loaded}
+    support_claim: material_loading
+    evidence: [docs/research/HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md, artifacts/architecture-audit-2026-09-19/harness-fresh-instance-isolation-3.json]
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: opencode.fresh_instance
+    harness: opencode
+    launch_mode: customer_process
+    order: 1
+    candidate: false
+    source: {upstream: "https://github.com/anomalyco/opencode", revision: null, licence: MIT}
+    executable: opencode
+    version_arguments: [--version]
+    version_pattern: '^(\S+)$'
+    pinned_version: 1.18.32
+    configuration_variable: OPENCODE_CONFIG_DIR
+    environment:
+      HOME: '{empty_home}'
+      OPENCODE_CONFIG_DIR: '{configuration_folder}/config'
+      TMPDIR: '{configuration_folder}'
+      OPENCODE_CONFIG: '{configuration_folder}/model.json'
+      XDG_CONFIG_HOME: '{configuration_folder}/xdg/config'
+      XDG_DATA_HOME: '{configuration_folder}/xdg/data'
+      XDG_CACHE_HOME: '{configuration_folder}/xdg/cache'
+      XDG_STATE_HOME: '{configuration_folder}/xdg/state'
+      OPENCODE_DISABLE_CLAUDE_CODE: '1'
+      OPENCODE_DISABLE_AUTOUPDATE: '1'
+      OPENCODE_DISABLE_MODELS_FETCH: '1'
+      BALTOR_STEP_MODEL_CREDENTIAL: '{model_credential}'
+    arguments: [run, --pure, --format, json, --model, 'step_model/{model_name}', '{probe_prompt}']
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+    skills_directory: .opencode/skills
+    configuration_writer: opencode_configuration
+    global_locations:
+      - .config/opencode/AGENTS.md
+      - .config/opencode/opencode.json
+      - .config/opencode/skills/decoy-opencode-skill/SKILL.md
+      - .claude/CLAUDE.md
+      - .claude/skills/decoy-claude-skill/SKILL.md
+      - .agents/skills/decoy-agents-skill/SKILL.md
+    bundled_items: [customize-opencode]
+    material: {instruction_file: loaded, skills: loaded, protocol_servers: loaded}
+    support_claim: material_loading
+    evidence: [docs/research/HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md, artifacts/architecture-audit-2026-09-19/harness-fresh-instance-isolation-3.json]
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: claude_code.bare
+    harness: claude_code
+    launch_mode: customer_process
+    order: 1
+    candidate: false
+    source: {upstream: "https://github.com/anthropics/claude-code", revision: null, licence: LicenseRef-All-Rights-Reserved}
+    executable: claude
+    version_arguments: [--version]
+    version_pattern: '^(\S+) \(Claude Code\)$'
+    pinned_version: 2.1.280
+    configuration_variable: CLAUDE_CONFIG_DIR
+    environment:
+      HOME: '{empty_home}'
+      CLAUDE_CONFIG_DIR: '{configuration_folder}'
+      TMPDIR: '{configuration_folder}'
+      ANTHROPIC_API_KEY: '{model_credential}'
+      ANTHROPIC_BASE_URL: '{model_origin}'
+      DISABLE_TELEMETRY: '1'
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+      DISABLE_AUTOUPDATER: '1'
+    arguments: [-p, --bare, --no-session-persistence, --output-format, json, --max-turns, '1',
+                --append-system-prompt-file, '{step_folder}/AGENTS.md',
+                --mcp-config, '{configuration_folder}/mcp.json', --strict-mcp-config, '{probe_prompt}']
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+    skills_directory: .claude/skills
+    configuration_writer: claude_code_bare_configuration
+    global_locations:
+      - .claude/CLAUDE.md
+      - .claude/skills/decoy-claude-skill/SKILL.md
+      - .claude.json
+    bundled_items: []
+    material: {instruction_file: loaded, skills: not_supported, protocol_servers: loaded}
+    support_claim: material_loading
+    evidence: [artifacts/architecture-audit-2026-09-19/harness-fresh-instance-isolation-3.json]
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: claude_code.configuration_folder
+    harness: claude_code
+    launch_mode: customer_process
+    order: 2
+    candidate: false
+    source: {upstream: "https://github.com/anthropics/claude-code", revision: null, licence: LicenseRef-All-Rights-Reserved}
+    executable: claude
+    version_arguments: [--version]
+    version_pattern: '^(\S+) \(Claude Code\)$'
+    pinned_version: 2.1.280
+    configuration_variable: CLAUDE_CONFIG_DIR
+    environment:
+      HOME: '{empty_home}'
+      CLAUDE_CONFIG_DIR: '{configuration_folder}'
+      TMPDIR: '{configuration_folder}'
+      ANTHROPIC_API_KEY: '{model_credential}'
+      ANTHROPIC_BASE_URL: '{model_origin}'
+      DISABLE_TELEMETRY: '1'
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1'
+      DISABLE_AUTOUPDATER: '1'
+    arguments: [-p, --no-session-persistence, --output-format, json, --max-turns, '1',
+                --mcp-config, '{configuration_folder}/mcp.json', --strict-mcp-config,
+                --settings, '{configuration_folder}/step-settings.json', '{probe_prompt}']
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+      - {name: CLAUDE.md, body: import_standard_file}
+    skills_directory: .claude/skills
+    configuration_writer: claude_code_configuration_folder
+    global_locations:
+      - .claude/CLAUDE.md
+      - .claude/skills/decoy-claude-skill/SKILL.md
+      - .claude.json
+    bundled_items: []
+    material: {instruction_file: loaded, skills: loaded, protocol_servers: loaded}
+    support_claim: material_loading
+    evidence: [docs/research/HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md, artifacts/architecture-audit-2026-09-19/harness-fresh-instance-isolation-3.json]
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: pi.fresh_instance
+    harness: pi
+    launch_mode: customer_process
+    order: 1
+    candidate: false
+    source: {upstream: "https://github.com/earendil-works/pi", revision: null, licence: MIT}
+    executable: pi
+    version_arguments: [--version]
+    version_pattern: '^(\S+)$'
+    pinned_version: 0.73.1
+    configuration_variable: PI_CODING_AGENT_DIR
+    environment:
+      HOME: '{empty_home}'
+      PI_CODING_AGENT_DIR: '{configuration_folder}'
+      TMPDIR: '{configuration_folder}'
+      PI_OFFLINE: '1'
+      BALTOR_STEP_MODEL_CREDENTIAL: '{model_credential}'
+    arguments: [--offline, --no-session, --model, 'step_model/{model_name}', --no-context-files,
+                --append-system-prompt, '{step_folder}/AGENTS.md', --no-skills, --skill, '{step_skill}',
+                -p, '{probe_prompt}']
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+    skills_directory: .pi/skills
+    configuration_writer: pi_models_json
+    global_locations:
+      - .pi/agent/AGENTS.md
+      - .pi/agent/skills/decoy-pi-skill/SKILL.md
+      - .agents/skills/decoy-agents-skill/SKILL.md
+    bundled_items: []
+    material: {instruction_file: loaded, skills: loaded, protocol_servers: not_supported}
+    support_claim: material_loading
+    evidence: [docs/research/HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md, artifacts/architecture-audit-2026-09-19/harness-fresh-instance-isolation-3.json]
+  - record_type: harness_fresh_instance_recipe/v1
+    recipe_id: zcode.app_server_candidate
+    harness: zcode
+    launch_mode: customer_process
+    order: 1
+    candidate: true
+    source: {upstream: "https://github.com/zai-org/ZCode", revision: 872ad960de7ec172591f7e1952f7849229f94521, licence: Apache-2.0}
+    executable: zcode
+    version_arguments: []
+    version_pattern: null
+    pinned_version: null
+    configuration_variable: null
+    environment:
+      HOME: '{empty_home}'
+    arguments: []
+    instruction_files:
+      - {name: AGENTS.md, body: step_instructions}
+    skills_directory: null
+    configuration_writer: none
+    global_locations:
+      - .zcode/AGENTS.md
+    bundled_items: []
+    material: {instruction_file: not_proven, skills: not_proven, protocol_servers: not_proven}
+    support_claim: none
+    evidence: [docs/research/ZCODE-AND-HARNESS-INTELLIGENCE-MARKET-REVIEW-2026-09-22.md]

@@ -14,8 +14,10 @@ import sys
 from urllib.parse import urlsplit
 
 
-def prepare_mini_swe_recipe(config, base_url):
+def prepare_mini_swe_recipe(style, config, base_url):
     """Return the installed Python invocation, isolated environment and no stdin."""
+    if style != "mini_swe_agent":
+        raise ValueError("unsupported_mini_swe_style")
     url = urlsplit(base_url)
     if url.scheme != "http" or url.hostname != "127.0.0.1" or not url.port or url.username or url.password:
         raise ValueError("isolated_loopback_relay_required")
@@ -88,7 +90,10 @@ def execute_semantic(config_path):
     return 0 if ok else 1
 
 
-def extract_mini_swe_output(stdout, expected):
+def extract_mini_swe_output(style, stdout, expected):
+    """Admit the exact submitted candidate of the semantic profile only."""
+    if style != "mini_swe_agent":
+        return ""
     for line in reversed(stdout.split("\n")):
         if not line.strip():
             continue

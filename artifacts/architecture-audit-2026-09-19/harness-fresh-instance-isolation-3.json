@@ -1,0 +1,813 @@
+{
+ "catalogue_digest": "b582af4fac778d87dd8eeef642dc36f34fbf554c3fb9f53be6ea2ab3b5eadfd6",
+ "finished_at": "2026-09-23T00:51:24+00:00",
+ "model_calls": 0,
+ "record_type": "harness_fresh_instance_run/v1",
+ "results": [
+  {
+   "candidate": false,
+   "controls_failed_as_expected": {
+    "home_folder_kept": true,
+    "instruction_file_missing": true
+   },
+   "executable": "/home/username/.local/lib/node_modules/@openai/codex/bin/codex.js",
+   "harness": "codex",
+   "installed_version": "0.155.1",
+   "launches": {
+    "home_folder_kept": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [
+      "BALTOR-DECOY-GLOBAL-7f809585fe49"
+     ],
+     "elapsed_seconds": 1.228,
+     "exit_code": 1,
+     "first_request_seconds": 0.728,
+     "installed_version": "0.155.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "0.155.1",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [
+      "material from outside the step reached the request"
+     ],
+     "recipe_digest": "24e957fa515e21921963ab38fab42dcc37e44d58d44a465be6fa095fbe623ff5",
+     "recipe_id": "codex.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      37780
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "a8867c39d5f952d35c34145bede3e7ca6c3083752ad8140ec34e1ce9879623d6"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "home_folder_kept",
+     "version_matches_pin": true
+    },
+    "instruction_file_missing": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.176,
+     "exit_code": 1,
+     "first_request_seconds": 0.672,
+     "installed_version": "0.155.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "0.155.1",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [
+      "instruction_file is claimed loaded but its step marker is not in any request"
+     ],
+     "recipe_digest": "24e957fa515e21921963ab38fab42dcc37e44d58d44a465be6fa095fbe623ff5",
+     "recipe_id": "codex.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      37249
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "f19c2e77fae1207c57fe4cff666f123d65a8d72241f77bfd715df8db5241f648"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "instruction_file_missing",
+     "version_matches_pin": true
+    },
+    "recipe": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.226,
+     "exit_code": 1,
+     "first_request_seconds": 0.723,
+     "installed_version": "0.155.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "0.155.1",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "24e957fa515e21921963ab38fab42dcc37e44d58d44a465be6fa095fbe623ff5",
+     "recipe_id": "codex.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      37476
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "45a1a42a2af4d4e6ee5a2a6a1819769fcf5734d9e33c05ae214606229be2d295"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "recipe",
+     "version_matches_pin": true
+    }
+   },
+   "pinned_version": "0.155.1",
+   "recipe_digest": "24e957fa515e21921963ab38fab42dcc37e44d58d44a465be6fa095fbe623ff5",
+   "recipe_id": "codex.fresh_instance",
+   "rung": "material_loaded",
+   "status": "passed",
+   "version_matches_pin": true
+  },
+  {
+   "candidate": false,
+   "controls_failed_as_expected": {
+    "home_folder_kept": true,
+    "instruction_file_missing": true
+   },
+   "executable": "/home/username/.opencode/bin/opencode",
+   "harness": "opencode",
+   "installed_version": "1.18.32",
+   "launches": {
+    "home_folder_kept": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [
+      "BALTOR-DECOY-GLOBAL-6a58b3b325f3"
+     ],
+     "elapsed_seconds": 6.945,
+     "exit_code": 1,
+     "first_request_seconds": 4.548,
+     "installed_version": "1.18.32",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "1.18.32",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [
+      "material from outside the step reached the request"
+     ],
+     "recipe_digest": "b46de424b4038b431e8d4042bdc991fa4b31eeb7279d46e70cc73be1133b7ae4",
+     "recipe_id": "opencode.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      2466,
+      32261
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "53d4c9ba5ba2143d5289c0c955ef6cce9b4661935553159e91bfa82a88022689",
+      "4908e7c7a67bd63ff54e43c8712fb26863a3be589f3d5b6ae52564b8d4b67232"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "home_folder_kept",
+     "version_matches_pin": true
+    },
+    "instruction_file_missing": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 6.728,
+     "exit_code": 1,
+     "first_request_seconds": 4.52,
+     "installed_version": "1.18.32",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "1.18.32",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [
+      "instruction_file is claimed loaded but its step marker is not in any request"
+     ],
+     "recipe_digest": "b46de424b4038b431e8d4042bdc991fa4b31eeb7279d46e70cc73be1133b7ae4",
+     "recipe_id": "opencode.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      2466,
+      31717
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "53d4c9ba5ba2143d5289c0c955ef6cce9b4661935553159e91bfa82a88022689",
+      "3de127ef2d2a88936550475e69d8492120a20dc19f30ff737fb25cf4b9138a31"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "instruction_file_missing",
+     "version_matches_pin": true
+    },
+    "recipe": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 7.068,
+     "exit_code": 1,
+     "first_request_seconds": 4.746,
+     "installed_version": "1.18.32",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "1.18.32",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "b46de424b4038b431e8d4042bdc991fa4b31eeb7279d46e70cc73be1133b7ae4",
+     "recipe_id": "opencode.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      2466,
+      31882
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "53d4c9ba5ba2143d5289c0c955ef6cce9b4661935553159e91bfa82a88022689",
+      "5213c5163355b9c3b0ebab65530a72a724b2c22d2f375d191478400a57c343da"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "recipe",
+     "version_matches_pin": true
+    }
+   },
+   "pinned_version": "1.18.32",
+   "recipe_digest": "b46de424b4038b431e8d4042bdc991fa4b31eeb7279d46e70cc73be1133b7ae4",
+   "recipe_id": "opencode.fresh_instance",
+   "rung": "material_loaded",
+   "status": "passed",
+   "version_matches_pin": true
+  },
+  {
+   "candidate": false,
+   "controls_failed_as_expected": {
+    "home_folder_kept": false,
+    "instruction_file_missing": true
+   },
+   "executable": "/home/username/.local/share/claude/versions/2.1.280",
+   "harness": "claude_code",
+   "installed_version": "2.1.280",
+   "launches": {
+    "home_folder_kept": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.132,
+     "exit_code": 1,
+     "first_request_seconds": 0.624,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "not_supported",
+       "found_in_request": false
+      }
+     },
+     "passed": true,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "7bd106a58b289d07b141c50884c0e5b1f7ef2275dcd8c7c77b328fcee6cf513f",
+     "recipe_id": "claude_code.bare",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      5760,
+      5760
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "f6eda0810d8a638c92a518b4877013439c5dbfc8ac0ac1437c651a08ed5c6c6d",
+      "f6eda0810d8a638c92a518b4877013439c5dbfc8ac0ac1437c651a08ed5c6c6d"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "home_folder_kept",
+     "version_matches_pin": true
+    },
+    "instruction_file_missing": {
+     "connected": false,
+     "credential_delivered": false,
+     "decoys_found": [],
+     "elapsed_seconds": 0.693,
+     "exit_code": 1,
+     "first_request_seconds": null,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "skills": {
+       "declared": "not_supported",
+       "found_in_request": false
+      }
+     },
+     "passed": false,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 0,
+     "protocol_server_listed": false,
+     "reasons": [
+      "no request reached the endpoint; an exit is not loading",
+      "instruction_file is claimed loaded but its step marker is not in any request",
+      "protocol_servers is claimed loaded but its step marker is not in any request"
+     ],
+     "recipe_digest": "7bd106a58b289d07b141c50884c0e5b1f7ef2275dcd8c7c77b328fcee6cf513f",
+     "recipe_id": "claude_code.bare",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [],
+     "request_count": 0,
+     "request_sha256": [],
+     "rung": "none",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "instruction_file_missing",
+     "version_matches_pin": true
+    },
+    "recipe": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.124,
+     "exit_code": 1,
+     "first_request_seconds": 0.617,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "not_supported",
+       "found_in_request": false
+      }
+     },
+     "passed": true,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "7bd106a58b289d07b141c50884c0e5b1f7ef2275dcd8c7c77b328fcee6cf513f",
+     "recipe_id": "claude_code.bare",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      5750,
+      5750
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "7d7cd59960168bf99a26d3adb1bc9dfdda65113ce0beaa846552363bb031fe07",
+      "7d7cd59960168bf99a26d3adb1bc9dfdda65113ce0beaa846552363bb031fe07"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "recipe",
+     "version_matches_pin": true
+    }
+   },
+   "pinned_version": "2.1.280",
+   "recipe_digest": "7bd106a58b289d07b141c50884c0e5b1f7ef2275dcd8c7c77b328fcee6cf513f",
+   "recipe_id": "claude_code.bare",
+   "rung": "material_loaded",
+   "status": "passed",
+   "version_matches_pin": true
+  },
+  {
+   "candidate": false,
+   "controls_failed_as_expected": {
+    "home_folder_kept": false,
+    "instruction_file_missing": true
+   },
+   "executable": "/home/username/.local/share/claude/versions/2.1.280",
+   "harness": "claude_code",
+   "installed_version": "2.1.280",
+   "launches": {
+    "home_folder_kept": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.312,
+     "exit_code": 1,
+     "first_request_seconds": 0.8,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "d801a540448b59cf4e70e3ef35480008bc30c10a67976922df7472e54b1a8468",
+     "recipe_id": "claude_code.configuration_folder",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      63044,
+      63044
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "6c04cb9dbc1b6c6e671d3dd9f1a9952f003a152fb2cacd5ba84770f3fa182d10",
+      "6c04cb9dbc1b6c6e671d3dd9f1a9952f003a152fb2cacd5ba84770f3fa182d10"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "home_folder_kept",
+     "version_matches_pin": true
+    },
+    "instruction_file_missing": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.316,
+     "exit_code": 1,
+     "first_request_seconds": 0.807,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [
+      "instruction_file is claimed loaded but its step marker is not in any request"
+     ],
+     "recipe_digest": "d801a540448b59cf4e70e3ef35480008bc30c10a67976922df7472e54b1a8468",
+     "recipe_id": "claude_code.configuration_folder",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      62760,
+      62760
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "2b67f52f36dad2520da05c237d33ae43daf6e4517a4d4a794d4ec0e48cf731a8",
+      "2b67f52f36dad2520da05c237d33ae43daf6e4517a4d4a794d4ec0e48cf731a8"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "instruction_file_missing",
+     "version_matches_pin": true
+    },
+    "recipe": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 1.375,
+     "exit_code": 1,
+     "first_request_seconds": 0.868,
+     "installed_version": "2.1.280",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "2.1.280",
+     "protocol_server_events": 4,
+     "protocol_server_listed": true,
+     "reasons": [],
+     "recipe_digest": "d801a540448b59cf4e70e3ef35480008bc30c10a67976922df7472e54b1a8468",
+     "recipe_id": "claude_code.configuration_folder",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      62994,
+      62994
+     ],
+     "request_count": 2,
+     "request_sha256": [
+      "f17d0b6e03a390378d9db7519796d10f383740e8ef1b1e62e6a08cba80c0c2be",
+      "f17d0b6e03a390378d9db7519796d10f383740e8ef1b1e62e6a08cba80c0c2be"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "recipe",
+     "version_matches_pin": true
+    }
+   },
+   "pinned_version": "2.1.280",
+   "recipe_digest": "d801a540448b59cf4e70e3ef35480008bc30c10a67976922df7472e54b1a8468",
+   "recipe_id": "claude_code.configuration_folder",
+   "rung": "material_loaded",
+   "status": "passed",
+   "version_matches_pin": true
+  },
+  {
+   "candidate": false,
+   "controls_failed_as_expected": {
+    "home_folder_kept": false,
+    "instruction_file_missing": true
+   },
+   "executable": "/home/username/.local/lib/node_modules/@mariozechner/pi-coding-agent/dist/cli.js",
+   "harness": "pi",
+   "installed_version": "0.73.1",
+   "launches": {
+    "home_folder_kept": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 2.385,
+     "exit_code": 1,
+     "first_request_seconds": 1.904,
+     "installed_version": "0.73.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "not_supported",
+       "found_in_request": false
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "0.73.1",
+     "protocol_server_events": 0,
+     "protocol_server_listed": false,
+     "reasons": [],
+     "recipe_digest": "a2177fd77b720ff30f6ed2060ab0462819f5d823a8b2c5005d5c58a0c37da9f8",
+     "recipe_id": "pi.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      6479
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "54b472bdd27da5e2dd34c7636531fae16d1fe32bf04a6152ecf006310f41e986"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "home_folder_kept",
+     "version_matches_pin": true
+    },
+    "instruction_file_missing": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 2.447,
+     "exit_code": 1,
+     "first_request_seconds": 1.96,
+     "installed_version": "0.73.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": false
+      },
+      "protocol_servers": {
+       "declared": "not_supported",
+       "found_in_request": false
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": false,
+     "pinned_version": "0.73.1",
+     "protocol_server_events": 0,
+     "protocol_server_listed": false,
+     "reasons": [
+      "instruction_file is claimed loaded but its step marker is not in any request"
+     ],
+     "recipe_digest": "a2177fd77b720ff30f6ed2060ab0462819f5d823a8b2c5005d5c58a0c37da9f8",
+     "recipe_id": "pi.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      6563
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "f6577a5faf40047ca5314300e6b55ce70a433c97257695e52fcc50190ec102cd"
+     ],
+     "rung": "material_listed",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "instruction_file_missing",
+     "version_matches_pin": true
+    },
+    "recipe": {
+     "connected": true,
+     "credential_delivered": true,
+     "decoys_found": [],
+     "elapsed_seconds": 2.798,
+     "exit_code": 1,
+     "first_request_seconds": 2.309,
+     "installed_version": "0.73.1",
+     "material": {
+      "instruction_file": {
+       "declared": "loaded",
+       "found_in_request": true
+      },
+      "protocol_servers": {
+       "declared": "not_supported",
+       "found_in_request": false
+      },
+      "skills": {
+       "declared": "loaded",
+       "found_in_request": true
+      }
+     },
+     "passed": true,
+     "pinned_version": "0.73.1",
+     "protocol_server_events": 0,
+     "protocol_server_listed": false,
+     "reasons": [],
+     "recipe_digest": "a2177fd77b720ff30f6ed2060ab0462819f5d823a8b2c5005d5c58a0c37da9f8",
+     "recipe_id": "pi.fresh_instance",
+     "record_type": "harness_fresh_instance_result/v1",
+     "request_bytes": [
+      6459
+     ],
+     "request_count": 1,
+     "request_sha256": [
+      "8a22a722e2d4f1db78317443f6d2bf3debb6c6ac56ee43ddc01d302ed9752eb3"
+     ],
+     "rung": "material_loaded",
+     "timed_out": false,
+     "tmp_file_count": 0,
+     "tmp_files_written": [],
+     "variant": "recipe",
+     "version_matches_pin": true
+    }
+   },
+   "pinned_version": "0.73.1",
+   "recipe_digest": "a2177fd77b720ff30f6ed2060ab0462819f5d823a8b2c5005d5c58a0c37da9f8",
+   "recipe_id": "pi.fresh_instance",
+   "rung": "material_loaded",
+   "status": "passed",
+   "version_matches_pin": true
+  },
+  {
+   "candidate": true,
+   "harness": "zcode",
+   "pinned_version": null,
+   "reason": "candidate recipe: listed for study, no launch and no support claim until isolation, cancellation and native loading are tested",
+   "recipe_digest": "2847d7073afe9305d2c18a26c83cb712859ce1711a03451a4d61bb413d9ce5e1",
+   "recipe_id": "zcode.app_server_candidate",
+   "status": "not_tested"
+  }
+ ],
+ "sandbox": {
+  "home_folder": "replaced by decoys at every recipe global location",
+  "launcher": "bubblewrap",
+  "network": "unshared",
+  "root": "read only",
+  "tmp": "one folder per launch"
+ },
+ "started_at": "2026-09-23T00:50:35+00:00",
+ "summary": {
+  "failed": 0,
+  "not_tested": 1,
+  "passed": 5
+ },
+ "tool_sha256": "b22fde205f16c861f9bcd95696c77d6943086cfc35adf5dd830c003d48f1314a"
+}
