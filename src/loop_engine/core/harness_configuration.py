@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .external_harness import HarnessAdapterInfo, HarnessRegistry, HarnessRunResult
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import valid_harness_id
 from .harness_process import HarnessProcessError, HarnessProcessSpec, HarnessSetupUnavailable
 from .harness_semantic import GatewayHarnessProcessAdapter, HarnessSemanticBinding
@@ -35,12 +36,16 @@ class UnavailableHarnessAdapter:
     reason: str
 
     def info(self) -> HarnessAdapterInfo:
+        # It stands in for the process harness the configuration names, so it
+        # declares that engine's kind and edge; it can never run.
         return HarnessAdapterInfo(
             harness_id=self.harness_id,
             adapter_version="unavailable+" + hashlib.sha256(self.reason.encode()).hexdigest()[:16],
             package_name=self.harness_id, package_version=self.package_version,
             available=False, availability_reason=self.reason,
-            limitations=("not installed on this host: " + self.reason,))
+            limitations=("not installed on this host: " + self.reason,),
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind="text_relay_harness",
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
     def run(self, request, services) -> HarnessRunResult:
         return HarnessRunResult(

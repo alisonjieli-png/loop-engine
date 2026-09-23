@@ -18,6 +18,9 @@ from typing import Mapping, Protocol, Sequence, TYPE_CHECKING
 
 from ..loop.loop_contract import LoopContract
 from .external_harness_accounting import _budget_failure, _validate_gateway_references
+from .external_harness_contract import (
+    MODEL_RESPONSE_EDGE, HarnessAdapterRefused, measured_and_reported_seconds,
+    registration_digest, require_adapter_contract, validate_declared_contract)
 from .external_harness_output import _capture_harness_output
 from .harness_execution_contracts import (
     HarnessExecutionCapabilities, HarnessExecutionRequirements,
@@ -42,7 +45,7 @@ if TYPE_CHECKING:
 # Built-in discovery names, not an exhaustive taxonomy or execution authority.
 HARNESS_IDS = (
     "pydantic_ai", "deep_agents", "openai_agents",
-    "microsoft_agent_framework", "opencode")
+    "microsoft_agent_framework", "opencode", "opencode.raw_host")
 HARNESS_MODES = ("hybrid", "non_deterministic")
 HARNESS_STATUSES = (
     "completed", "failed", "unavailable", "refused", "cancelled",
@@ -425,6 +428,12 @@ class HarnessAdapterInfo:
     available: bool = False
     availability_reason: str = ""
     execution_capabilities: HarnessExecutionCapabilities | None = None
+    #: The engine protocol version, one engine kind of the step executor slot,
+    #: and the edges served, named by request record type. Registration refuses
+    #: a missing or unknown value (core.external_harness_contract); none grants.
+    adapter_contract_version: str = ""
+    engine_kind: str = ""
+    supported_edge_contracts: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         freeze_adapter_info(self)
@@ -434,6 +443,7 @@ class HarnessAdapterInfo:
         if (self.execution_capabilities is not None and not isinstance(
                 self.execution_capabilities, HarnessExecutionCapabilities)):
             raise HarnessError("adapter execution capabilities must be typed")
+        validate_declared_contract(self)
 
 
 @dataclass(frozen=True)
@@ -528,6 +538,8 @@ from .harness_output_limit_binding import (  # noqa: F401  (kept exported here)
 
 
 class ExternalHarnessAdapter(Protocol):
+    """Engine protocol external_harness_adapter/v2: info() and, per declared
+    edge, run() for the model response edge or run_step() for the step edge."""
     def info(self) -> HarnessAdapterInfo: ...
     def run(self, request: HarnessRunRequest,
             services: HarnessServices) -> HarnessRunResult: ...
@@ -539,19 +551,31 @@ class HarnessRegistry:
     def __init__(self, adapters: Sequence[ExternalHarnessAdapter] = ()):
         self._adapters: dict[str, ExternalHarnessAdapter] = {}
         self._registrations: dict[str, HarnessAdapterInfo] = {}
+        self._digests: dict[str, str] = {}
         for adapter in adapters:
             self.register(adapter)
 
     def register(self, adapter: ExternalHarnessAdapter, *,
                  replace: bool = False) -> None:
+        """Refuse, before any run, an adapter outside the contract; a replacement
+        must change the registration digest, so a decision bound to it sees the change."""
         info = adapter.info()
-        if not isinstance(info, HarnessAdapterInfo) or not callable(getattr(adapter, "run", None)):
-            raise HarnessError("adapter must expose typed information and a run operation")
+        if not isinstance(info, HarnessAdapterInfo):
+            raise HarnessError("adapter must expose typed information")
+        require_adapter_contract(adapter, info)
         if info.harness_id in self._adapters and not replace:
-            raise HarnessError(
-                f"adapter {info.harness_id!r} is already registered")
+            raise HarnessAdapterRefused(info.harness_id, ("engine_identifier_already_registered",))
+        digest = registration_digest(adapter, info)
+        if self._digests.get(info.harness_id) == digest:
+            raise HarnessAdapterRefused(info.harness_id, ("replacement_registration_digest_unchanged",))
         self._adapters[info.harness_id] = adapter
         self._registrations[info.harness_id] = info
+        self._digests[info.harness_id] = digest
+
+    def registration_digest(self, harness_id: str) -> str:
+        """The digest a selection decision can bind; a replacement always changes it."""
+        self.get(harness_id)
+        return self._digests[harness_id]
 
     def get(self, harness_id: str) -> ExternalHarnessAdapter:
         if harness_id not in self._adapters:
@@ -577,6 +601,7 @@ def run_external_harness(
     info = adapter.info()
     if not isinstance(info, HarnessAdapterInfo):
         raise HarnessError("adapter information must be typed")
+    require_adapter_contract(adapter, info, edge=MODEL_RESPONSE_EDGE)
     if info.harness_id != request.harness_id:
         raise HarnessError(
             f"adapter {info.harness_id!r} cannot run {request.harness_id!r}")
@@ -697,10 +722,9 @@ def run_external_harness(
             result.error_code = "output_capture_failed"
             result.error = "external harness output capture failed"
             result.output = None
-        elapsed = result.elapsed_seconds
-        if elapsed is None:
-            elapsed = round(time.monotonic() - started, 6)
-            result.elapsed_seconds = elapsed
+        # The envelope's clock is authoritative; the engine's figure is kept apart.
+        result.elapsed_seconds, engine_reported_seconds = measured_and_reported_seconds(
+            started, result.elapsed_seconds)
         exceeded = _budget_failure(request, result)
         if exceeded:
             result.status = "budget_exhausted"
@@ -735,6 +759,7 @@ def run_external_harness(
         active_loop.ledger.record(
             loop_id=active_loop.loop_id, event="custom",
             external_harness_result=result.safe_summary(),
+            engine_reported_seconds=engine_reported_seconds,
             request_digest=request.digest)
         return StepOutcome(
             output=f"external_harness:{result.status}", mode=request.mode,

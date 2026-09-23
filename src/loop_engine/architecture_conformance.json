@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 671,
+ "files_scanned": 691,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
@@ -371,7 +371,7 @@
    {
     "rule": "dependency_direction",
     "file": "core/external_harness_checks.py",
-    "line": 606,
+    "line": 613,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
@@ -389,43 +389,43 @@
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 150,
+    "line": 153,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 180,
+    "line": 183,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 196,
+    "line": 199,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 206,
+    "line": 209,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 236,
+    "line": 239,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_selection_checks.py",
-    "line": 291,
+    "line": 294,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {
     "rule": "dependency_direction",
     "file": "core/harness_semantic_checks.py",
-    "line": 18,
+    "line": 19,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {

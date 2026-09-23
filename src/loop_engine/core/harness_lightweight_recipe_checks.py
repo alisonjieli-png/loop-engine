@@ -53,10 +53,12 @@ def self_test():
               and trae["agents"]["trae_agent"]["enable_lakeview"] is False and trae["mcp_servers"] == {})
         check("trae_exact_allocation_and_one_step", trae["models"]["loop_engine"]["max_tokens"] == 99
               and trae["agents"]["trae_agent"]["max_steps"] == 1)
-        argv, _, _ = prepare_trae_semantic_recipe({**config, "command_prefix": ["/declared/python"]}, "http://127.0.0.1:12345/v1")
+        argv, _, _ = prepare_trae_semantic_recipe("trae_agent", {**config, "command_prefix": ["/declared/python"]}, "http://127.0.0.1:12345/v1")
         sdk = (root / "trae-semantic.py").read_text()
         check("trae_semantic_invokes_upstream_agent_run", "await engine.run(" in sdk and "tool_names=[]" in sdk
               and "client.chat" not in sdk and "max_steps" not in sdk)
+        refused("trae_semantic_profile_refuses_another_style", lambda: prepare_trae_semantic_recipe(
+            "nanocode", {**config, "command_prefix": ["/declared/python"]}, "http://127.0.0.1:12345/v1"))
         check("trae_completion_requires_stopped_text_without_tools", "response.finish_reason == 'stop'" in sdk
               and "not response.tool_calls" in sdk and "bool(response.content)" in sdk)
     request = {"model": "exact-model", "max_tokens": 8192, "system": "System",

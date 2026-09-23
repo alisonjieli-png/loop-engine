@@ -44,6 +44,17 @@ if mode == "instructions":
 base = sys.argv[sys.argv.index("--openai-api-base") + 1]
 model = sys.argv[sys.argv.index("--model") + 1].removeprefix("openai/")
 task = pathlib.Path(sys.argv[sys.argv.index("--message-file") + 1]).read_text()
+if mode == "messages":
+    body = {"model": model, "max_tokens": 16, "messages": [{"role": "user", "content": task}]}
+    try:
+        request = urllib.request.Request(base + "/messages", data=json.dumps(body).encode(),
+                                         headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(request, timeout=3) as response:
+            value = json.load(response)
+        print(value["content"][0]["text"])
+    except Exception:
+        sys.exit(4)
+    sys.exit()
 body = {"model": "foreign" if mode == "bad-model" else model,
         "messages": [{"role": "user", "content": task}], "max_tokens": 99999,
         "metadata": {"inherited_secret": "LE_PROCESS_FIXTURE_SECRET" in os.environ,
@@ -63,8 +74,87 @@ except Exception:
 '''
 
 
+#: A recipe module written by the check itself: adding a harness is this
+#: module plus one catalogue record, with no edit to the runner or the relay.
+_FIXTURE_RECIPE = '''"""Fixture recipe for the offline sandbox check; standard library only."""
+
+
+def prepare_fixture_recipe(style, config, base_url):
+    if style != "check_fixture":
+        raise ValueError("unsupported_fixture_style")
+    return (tuple(config["command_prefix"]) + ("--openai-api-base", base_url, "--model",
+            config["model"], "--message-file", config.get("task_path", "/relay/task.txt")), {}, None)
+
+
+def extract_fixture_output(style, stdout, expected):
+    lines = stdout.strip().splitlines()
+    return expected if style == "check_fixture" and expected and lines and lines[-1] == expected else ""
+'''
+
+
+def _fixture_catalog(folder, wire):
+    """A catalogue holding one fixture recipe that declares one wire."""
+    from .harness_recipes import (HarnessRecipeCatalog, module_file_sha256,
+                                  release_recipe_catalog)
+    release = release_recipe_catalog()
+    module = folder / "harness_fixture_recipe.py"
+    module.write_text(_FIXTURE_RECIPE)
+    codec = next(item for item in release.wire_codecs if item.wire_protocol == wire)
+    if codec.module is not None:
+        source = Path(release.module_directory) / (codec.module + ".py")
+        (folder / source.name).write_bytes(source.read_bytes())
+    recipe = dict(release.recipe("aider").to_dict(), style="check_fixture",
+                  module="harness_fixture_recipe", prepare_function="prepare_fixture_recipe",
+                  extract_function="extract_fixture_output", module_sha256=module_file_sha256(module),
+                  wire_protocols=[wire], sandbox_environment=[],
+                  distribution={"kind": "local", "version": "1.0.0", "sha256": None})
+    return HarnessRecipeCatalog.from_dict({
+        "record_type": "harness_recipe_catalog/v1", "version": "1.0.0",
+        "wire_codecs": [codec.to_dict()], "recipes": [recipe], "fresh_instance_recipes": []},
+        module_directory=str(folder))
+
+
+def _fixture_recipe_checks(check, root, script, software, broker):
+    for wire, mode, name in (
+            ("openai_chat_completions", "text",
+             "a_fixture_recipe_added_as_one_module_and_one_record_runs_through_the_relay"),
+            ("anthropic_messages", "messages",
+             "a_declared_wire_codec_in_another_module_is_mounted_and_decodes_through_the_relay")):
+        folder = root / ("recipes-" + mode)
+        folder.mkdir()
+        catalog = _fixture_catalog(folder, wire)
+        spec = HarnessProcessSpec("process_fixture", "1.0.0", ("/usr/bin/python3", str(script), mode),
+                                  (str(software),), "check_fixture", catalog=catalog)
+        request = HarnessProcessRequest(spec, "private task fixture", "fixture-model", 64, 16,
+                                        5.0, str(root / "work"), socket_directory=str(root.parent))
+        result = run_harness_process(request, broker)
+        wires = [json.loads(item.request_json).get("_harness_wire", {}).get("protocol")
+                 for item in result.exchanges]
+        check(name, result.ok and result.output == "fixture answer" and wires == [wire],
+              f"errors={result.errors} wires={wires}")
+
+
+#: The sandbox checks below, reported as not tested where Bubblewrap is absent.
+SANDBOX_CHECK_NAMES = (
+    "a_fixture_recipe_added_as_one_module_and_one_record_runs_through_the_relay",
+    "a_declared_wire_codec_in_another_module_is_mounted_and_decodes_through_the_relay")
+
+
+def _sandbox_unavailable():
+    """The not-tested record of every sandbox check, when Bubblewrap is absent."""
+    tests = [{"test": name, "passed": None, "not_tested": True, "outcome": "NOT_APPLICABLE",
+              "missing_optional_dependencies": ["bubblewrap"],
+              "detail": "/usr/bin/bwrap is not installed; no process was started"}
+             for name in ("isolated_cli_reaches_explicit_broker_with_private_task",) + SANDBOX_CHECK_NAMES]
+    return {"record_type": "harness_process_checks/v1", "tests": tests, "passed": 0, "total": 0,
+            "not_tested": len(tests), "all_passed": False}
+
+
 def qualification_checks():
     """Linux-only OS qualification; explicitly separate from base self-test."""
+    import shutil
+    if shutil.which("bwrap") != "/usr/bin/bwrap":
+        return _sandbox_unavailable()
     tests = []
     def check(name, passed, detail=""):
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
@@ -118,6 +208,7 @@ def qualification_checks():
         supplied = run_harness_process(request("instructions", instruction_material=(material,)), broker)
         check("instructions_reach_the_actual_native_working_directory_as_read_only_files",
               supplied.ok and supplied.instruction_manifest == ((material.name, material.digest),))
+        _fixture_recipe_checks(check, root, script, software, broker)
 
         calls = len(received)
         wrong = run_harness_process(request("bad-model"), broker)
@@ -228,6 +319,15 @@ def self_test():
     except ValueError:
         refused = True
     check("duplicate_json_fields_are_refused", refused)
+    try:
+        with patch("shutil.which", lambda name: None):
+            absent = qualification_checks()
+    except HarnessProcessError:
+        absent = {"total": None, "tests": []}
+    check("absent_bubblewrap_is_reported_as_not_tested_with_its_dependency",
+          absent["total"] == 0 and absent["tests"] and all(
+              item["not_tested"] is True and item["passed"] is None
+              and item["missing_optional_dependencies"] == ["bubblewrap"] for item in absent["tests"]))
     with tempfile.TemporaryDirectory(prefix="le-contract-") as temporary:
         root = Path(temporary)
         software, work = root / "software", root / "work"

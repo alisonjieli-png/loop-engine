@@ -1,5 +1,5 @@
 record_type: component_folder_map/v1
-version: 1.3.0
+version: 1.5.0
 folders:
   - path: src/loop_engine/core/decisions
     semantic_owner: typed_decision_contracts_and_provider_adapters
@@ -7,6 +7,24 @@ folders:
     forbidden_component_kinds: [new_runtime, intelligence_layer]
     public_boundary: existing_model_gateway_typed_decision_operation
     dependency_direction: application_tools_depend_on_core_decision_contracts_never_reverse
+  - path: src/loop_engine/core/engines
+    semantic_owner: engine_slot_catalogue_selection_evidence_and_measurement_framework
+    allowed_component_kinds: [policy, strategy, preference, result, report_projection]
+    forbidden_component_kinds: [new_runtime, provider, intelligence_layer]
+    public_boundary: engine_slot_catalogue_and_selection_decisions_over_existing_registries
+    dependency_direction: the_framework_reads_existing_registries_and_never_imports_engine_modules
+  - path: src/loop_engine/core/step_execution
+    semantic_owner: step_run_edge_attempt_envelope_and_step_executor_engines
+    allowed_component_kinds: [adapter, result, input_contract, output_contract]
+    forbidden_component_kinds: [new_runtime, intelligence_layer]
+    public_boundary: step_run_request_and_step_run_result_records
+    dependency_direction: step_executor_engines_depend_on_the_step_edge_never_reverse
+  - path: src/loop_engine/catalog
+    semantic_owner: backend_neutral_record_store_contract_and_record_store_engines
+    allowed_component_kinds: [adapter, result, policy]
+    forbidden_component_kinds: [new_runtime, intelligence_layer]
+    public_boundary: catalog_store_protocol_and_the_atomic_write_batch_contract
+    dependency_direction: record_store_engines_depend_on_the_catalog_protocol_never_on_core_services
   - path: src/loop_engine/core/service_runtime
     semantic_owner: durable_tenant_authority_and_authenticated_intelligence_delivery
     allowed_component_kinds: [policy, adapter, provider, artifact, result]

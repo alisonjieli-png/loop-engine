@@ -21,7 +21,7 @@ def self_test():
         task = Path(directory) / "task.txt"
         task.write_text("first line\n\nthird line: exact ✓\n", encoding="utf-8")
         config["task_path"] = str(task)
-        argv, environment, stdin = prepare_opencode_recipe(config, "http://127.0.0.1:23456/v1")
+        argv, environment, stdin = prepare_opencode_recipe("opencode", config, "http://127.0.0.1:23456/v1")
     body = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
     check("opencode_prompt_is_exact_private_stdin", "--file" not in argv
           and stdin == "first line\n\nthird line: exact ✓\n".encode())
@@ -35,10 +35,11 @@ def self_test():
     text = {"type": "text", "part": {"type": "text", "text": "answer"}}
     end = {"type": "step_finish", "part": {"type": "step-finish", "reason": "stop"}}
     stream = json.dumps(text) + "\n" + json.dumps(end)
-    check("opencode_exact_stopped_response_admitted", extract_opencode_output(stream, "answer") == "answer")
-    check("opencode_unterminated_response_refused", not extract_opencode_output(json.dumps(text), "answer"))
+    check("opencode_exact_stopped_response_admitted", extract_opencode_output("opencode", stream, "answer") == "answer")
+    check("opencode_unterminated_response_refused", not extract_opencode_output("opencode", json.dumps(text), "answer"))
     check("opencode_native_tool_event_refused", not extract_opencode_output(
-        stream + '\n{"type":"tool_use","part":{"type":"tool"}}', "answer"))
-    check("opencode_error_after_answer_refused", not extract_opencode_output(stream + '\n{"type":"error"}', "answer"))
-    check("opencode_foreign_content_refused", not extract_opencode_output(stream, "other"))
+        "opencode", stream + '\n{"type":"tool_use","part":{"type":"tool"}}', "answer"))
+    check("opencode_error_after_answer_refused", not extract_opencode_output("opencode", stream + '\n{"type":"error"}', "answer"))
+    check("opencode_foreign_content_refused", not extract_opencode_output("opencode", stream, "other"))
+    check("opencode_functions_refuse_another_style", not extract_opencode_output("kilo", stream, "answer"))
     return {"passed": sum(t["passed"] for t in tests), "total": len(tests), "tests": tests}

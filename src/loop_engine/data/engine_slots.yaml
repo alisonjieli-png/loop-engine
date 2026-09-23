@@ -1,0 +1,2564 @@
+# The engine slot catalogue: one engine_slot/v1 record for every engine slot.
+#
+# An engine slot is the owner's swap point: one functional component's typed
+# socket, where interchangeable engines of declared kinds plug in behind a
+# fixed, versioned edge. The records below come from the three tables of
+# docs/architecture/ENGINES-BEHIND-FIXED-EDGES.md (sections 5.2, 5.3 and 5.4)
+# and, marked roadmap_addition, from roadmap step S-6.61 (one place for the
+# customer's credentials and connections, with scoped access for each step).
+#
+# What each record joins to, read by core/engines/slot_index.py:
+# - work_boundaries: exact rows of core.boundary_registry.BOUNDARIES;
+# - interactions: rows of data/component_interactions.yaml, which hold the
+#   request and result contracts (a slot never restates them), newest first;
+# - component_folder: a row of data/component_folder_map.yaml;
+# - conformance_suite: a suite the main self-test collects;
+# - symbols: dotted paths read from source; planned_symbols do not exist yet.
+#
+# The catalogue lists slots. It installs, enables, selects and runs nothing,
+# and grants no authority. Hosts declare installed engines separately.
+record_type: engine_slot_catalog/v1
+version: 1.0.0
+slots:
+  # Engine side, chosen at run time (design section 5.2).
+  - record_type: engine_slot/v1
+    slot_id: step_executor
+    slot_version: 1.0.0
+    title: Step executor
+    function: >-
+      Perform one step's assignment in a separately started harness instance
+      and return typed outputs to the owning Loop. Completion is never
+      acceptance.
+    design_table: engine_side_run_time
+    inventory_records: [E5, E6, E10, E11, E24, E25]
+    roadmap_steps: [S-6.31, S-6.42]
+    implementation_state: candidate
+    work_boundaries: [external harness execution, assignment harness selection]
+    planned_work_boundaries:
+      - {boundary: delegated step execution, added_by: X3}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.step.execute, core.interaction.step.run_external_harness]
+    unavailable_result: {form: result_status, value: unavailable, answer_exists: true}
+    conformance_suite: core.external_harness
+    component_folder: src/loop_engine/core/step_execution
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: [model_access]
+    engine_protocol: core.external_harness.ExternalHarnessAdapter
+    engine_protocol_version: external_harness_adapter/v2
+    engine_kinds: [agent_protocol_harness, native_protocol_harness, text_relay_harness,
+                   custom_loop_harness, remote_agent, agent_framework_kit, direct_model_step,
+                   in_process_runner, typed_decision_step, structural]
+    engine_kind_groups:
+      delegation: [agent_protocol_harness, native_protocol_harness, text_relay_harness,
+                   custom_loop_harness, remote_agent]
+    native_registry: core.external_harness.HarnessRegistry
+    native_declaration: core.external_harness.HarnessAdapterInfo
+    requirement_comparison: core.harness_execution_contracts.unmet_harness_requirements
+    descriptor_projection: core.external_harness.HarnessRegistry.descriptors
+    factory_table: core.step_execution.engines
+    planned_symbols: [core.external_harness.HarnessRegistry.descriptors, core.step_execution.engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: after_failure_without_effects
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, semantic_response_rejected,
+                    engine_changed_after_selection, effects_uncertain, accounting_uncertain,
+                    shared_provider_failure, evaluation_inconclusive, authority_exhausted,
+                    policy_refused]
+    ranking_objectives: [tokens, elapsed_seconds, priced_cost]
+    evidence_minimum_floor: 10
+    scope_fields: [operation_contract, output_contract, owning_profile, resource_profile,
+                   execution_settings, owning_definition, joined_slot_settings]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+    declaration_source: >-
+      Host settings engines.step_executor, or projected from the embodiment
+      harness.json files and the harness fallback policy; a step that needs
+      delegation is eligible only for the delegating kinds.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.external_harness_checks:adapter_completion_does_not_claim_task_acceptance
+      - core.harness_fallback_checks:fallback_never_resets_call_allowance
+    planned_checks: [a_delegation_claim_cannot_be_met_by_an_in_process_engine,
+                     a_harness_without_a_proven_fresh_instance_is_ineligible_for_one_harness_per_step,
+                     a_semantic_step_without_a_bound_step_executor_is_refused,
+                     a_session_process_never_outlives_its_step_attempt]
+  - record_type: engine_slot/v1
+    slot_id: harness_instruction_files
+    slot_version: 1.0.0
+    title: Harness instruction files
+    function: >-
+      Write the instruction file a harness instance reads before it starts, in
+      the file layout of the bound step engine. File presence is never counted
+      as loading.
+    design_table: engine_side_run_time
+    inventory_records: [E14]
+    roadmap_steps: [S-6.42]
+    implementation_state: candidate
+    work_boundaries: [external harness execution]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.step.write_instruction_file]
+    unavailable_result: {form: typed_refusal, value: unsupported_style, answer_exists: true}
+    conformance_suite: core.instance_instructions
+    component_folder: src/loop_engine/core
+    folder_move_package: L1
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.instance_instructions.InstanceInstructionWriter
+    engine_protocol_version: instance_instruction_writer/v1
+    engine_kinds: [standard_agents_file, harness_specific_file]
+    engine_kind_groups: {}
+    native_registry: core.instance_instructions.STYLE_FILES
+    native_declaration: core.instance_instructions.StyleInstructionFiles
+    requirement_comparison: core.instance_instructions.files_for
+    descriptor_projection: core.instance_instructions.style_descriptors
+    factory_table: core.instance_instructions.STYLE_FILES
+    planned_symbols: [core.instance_instructions.style_descriptors]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: step_executor.instruction_style
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: Derived from the instruction style of the bound step executor engine.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [instruction_style_follows_the_bound_step_engine,
+                     an_instruction_file_is_not_counted_as_loaded_without_an_observation]
+  - record_type: engine_slot/v1
+    slot_id: process_confinement
+    slot_version: 1.0.0
+    title: Process confinement
+    function: >-
+      The sandbox a harness process runs in. A process never starts without
+      an available confinement engine, and the choice never moves to a weaker
+      isolation.
+    design_table: engine_side_run_time
+    inventory_records: [E21]
+    roadmap_steps: [S-6.31]
+    implementation_state: candidate
+    work_boundaries: [external harness execution]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.step.confine_harness_process]
+    unavailable_result: {form: typed_refusal, value: confinement_unavailable, answer_exists: false}
+    conformance_suite: core.harness_process_checks
+    component_folder: src/loop_engine/core
+    folder_move_package: L4
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.process_confinement_engines.ProcessConfinementBackend
+    engine_protocol_version: process_confinement_backend/v1
+    engine_kinds: [linux_namespace_sandbox, egress_proxy_sandbox, container_image,
+                   user_space_kernel_sandbox, remote_sandbox_service]
+    engine_kind_groups: {}
+    native_registry: core.harness_process.run_harness_process
+    native_declaration: core.harness_confinement.ConfinedEnvironment
+    requirement_comparison: ""
+    descriptor_projection: core.process_confinement_engines.describe_confinement
+    factory_table: core.process_confinement_engines
+    planned_symbols: [core.process_confinement_engines.ProcessConfinementBackend,
+                      core.process_confinement_engines.describe_confinement,
+                      core.process_confinement_engines]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: step_executor.isolation
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [resource_profile, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+    declaration_source: Derived from the isolation the bound executor profile declares.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.harness_process_checks:host_configuration_and_credentials_are_not_inherited
+    planned_checks: [harness_process_refuses_without_an_available_confinement_engine]
+  - record_type: engine_slot/v1
+    slot_id: workspace_backend
+    slot_version: 1.0.0
+    title: Workspace backend
+    function: >-
+      Confined file, command and snapshot effects for a Loop. Untrusted code
+      is placed only in a container or remote backend.
+    design_table: engine_side_run_time
+    inventory_records: [E21]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [workspace file write, workspace command]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.workspace.file, core.interaction.workspace.command,
+                   core.interaction.workspace.snapshot]
+    unavailable_result: {form: typed_refusal, value: adapter_not_registered, answer_exists: true}
+    conformance_suite: core.workspace_operations
+    component_folder: src/loop_engine/core
+    folder_move_package: L4
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.workspace_contracts.WorkspaceBackend
+    engine_protocol_version: workspace_backend/v1
+    engine_kinds: [restricted_local, container, remote]
+    engine_kind_groups: {}
+    native_registry: core.workspace_operations.WorkspaceOperationService
+    native_declaration: core.workspace_contracts.WorkspaceSpec
+    requirement_comparison: core.workspace_contracts.WorkspaceBackend.availability
+    descriptor_projection: core.workspace_engines.describe_workspace_backend
+    factory_table: core.workspace_engines
+    planned_symbols: [core.workspace_engines.describe_workspace_backend, core.workspace_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds]
+    evidence_minimum_floor: 10
+    scope_fields: [operation_contract, owning_profile, resource_profile, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: The backend kind in the Loop's workspace declaration.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [untrusted_code_is_never_placed_in_the_restricted_local_backend,
+                     workspace_engine_availability_is_not_runtime_verification]
+  - record_type: engine_slot/v1
+    slot_id: model_access
+    slot_version: 1.0.0
+    title: Model access
+    function: >-
+      One semantic model call through a declared route, each physical attempt
+      in its own Loop, with call and token limits. One engine is one route,
+      and a customer's local endpoint is a route like any other.
+    design_table: engine_side_run_time
+    inventory_records: [E15, E12]
+    roadmap_steps: [S-6.61]
+    implementation_state: candidate
+    work_boundaries: [provider-neutral model routing, model invocation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.model.invoke_route.v2, core.interaction.model.invoke_route.v1]
+    unavailable_result: {form: error_code, value: no_eligible_route, answer_exists: true}
+    conformance_suite: core.model_gateway
+    component_folder: src/loop_engine/core
+    folder_move_package: L3
+    nested_under: [model_call_strategy]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: [step_executor]
+    engine_protocol: core.model_gateway.ProviderAdapter
+    engine_protocol_version: provider_adapter/v1
+    engine_kinds: [cloud_provider_route, organization_endpoint_route, local_endpoint_route,
+                   harness_brokered_response]
+    engine_kind_groups: {}
+    native_registry: core.model_gateway.ModelGateway
+    native_declaration: core.model_routes.ModelRoute
+    requirement_comparison: core.model_routes.screen_route
+    descriptor_projection: core.model_gateway.ModelGateway.descriptors
+    factory_table: core.model_provider_engines
+    planned_symbols: [core.model_gateway.ModelGateway.descriptors, core.model_provider_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: after_failure_without_effects
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, semantic_response_rejected,
+                    engine_changed_after_selection, effects_uncertain, accounting_uncertain,
+                    shared_provider_failure, evaluation_inconclusive, authority_exhausted,
+                    policy_refused]
+    ranking_objectives: [tokens, elapsed_seconds, priced_cost]
+    evidence_minimum_floor: 10
+    scope_fields: [operation_contract, output_contract, thinking_power, joined_slot_settings,
+                   parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: model_gateway_route_plan, host_must_bind: true}
+    declaration_source: >-
+      Projected from models.tiers in the settings file, one scope key for each
+      thinking power; cross-provider fallback only with allow_failover in the
+      run contract.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: overnight_cli.py, constructs: make_adapter}
+    existing_checks:
+      - core.model_gateway:unknown_output_capability_refuses_before_provider_use
+      - core.model_gateway:default_gateway_does_not_enable_cross_provider_failover
+    planned_checks: [no_caller_reaches_a_provider_except_through_model_access,
+                     model_slot_fallback_requires_failover_permission]
+  - record_type: engine_slot/v1
+    slot_id: model_call_strategy
+    slot_version: 1.0.0
+    title: Model call strategy
+    function: >-
+      Decide, before a model call, whether one model answers or several and
+      how their answers combine. Every physical call still goes through model
+      access, and agreement among models is evidence, never acceptance.
+    design_table: engine_side_run_time
+    inventory_records: []
+    roadmap_steps: [S-6.60]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: model call strategy, added_by: M3}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.model.plan_and_combine_calls]
+    unavailable_result: {form: error_code, value: no_eligible_engine, answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/model_call_strategy
+    folder_move_package: ""
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.model_call_strategy.protocol.ModelCallStrategy
+    engine_protocol_version: model_call_strategy/v1
+    engine_kinds: [single_call_strategy, multiple_call_strategy]
+    engine_kind_groups: {}
+    native_registry: core.model_call_strategy.engines
+    native_declaration: core.model_call_strategy.protocol.StrategyDeclaration
+    requirement_comparison: ""
+    descriptor_projection: core.model_call_strategy.engines.describe_strategy
+    factory_table: core.model_call_strategy.engines
+    planned_symbols: [core.model_call_strategy.protocol.ModelCallStrategy,
+                      core.model_call_strategy.engines,
+                      core.model_call_strategy.protocol.StrategyDeclaration,
+                      core.model_call_strategy.engines.describe_strategy]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    accounting_uncertain, authority_exhausted, engine_changed_after_selection,
+                    policy_refused]
+    ranking_objectives: [tokens, elapsed_seconds, priced_cost]
+    evidence_minimum_floor: 10
+    scope_fields: [operation_contract, output_contract, owning_profile, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The step's model call preferences, within the strategies the host
+      installed; the pass-through strategy, exactly one call, is the first
+      engine.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_strategy_that_needs_more_calls_than_the_step_allows_is_refused_before_the_first_call,
+                     agreement_among_models_is_evidence_never_acceptance]
+  - record_type: engine_slot/v1
+    slot_id: typed_decision
+    slot_version: 1.0.0
+    title: Typed decision
+    function: >-
+      A closed-set judgment from a decision endpoint, admitted as a typed
+      answer. A reported confidence is never an accepted outcome.
+    design_table: engine_side_run_time
+    inventory_records: [E16]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [typed decision provider invocation, harness typed decision tool]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.decision.decide_questions]
+    unavailable_result: {form: error_code, value: provider_unavailable, answer_exists: true}
+    conformance_suite: core.decisions.contracts
+    component_folder: src/loop_engine/core/decisions
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.decisions.contracts.DecisionProvider
+    engine_protocol_version: typed_decisions/v1
+    engine_kinds: [decision_endpoint]
+    engine_kind_groups: {}
+    native_registry: core.decisions.configuration.configured_engines
+    native_declaration: core.decisions.configuration.ConfiguredDecisionEngine
+    requirement_comparison: ""
+    descriptor_projection: core.decisions.configuration.describe_decision_engine
+    factory_table: core.decisions.configuration.ADAPTER_FACTORIES
+    planned_symbols: [core.decisions.configuration.describe_decision_engine]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: after_failure_without_effects
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, accounting_uncertain, shared_provider_failure,
+                    authority_exhausted, engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds, priced_cost]
+    evidence_minimum_floor: 10
+    scope_fields: [operation_contract, evaluation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: model_gateway_route_plan, host_must_bind: false}
+    declaration_source: Projected from decision_host_configuration/v2; failover only when declared.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [an_unqualified_decision_endpoint_is_not_selected_by_default,
+                     decision_confidence_is_not_an_accepted_outcome]
+  - record_type: engine_slot/v1
+    slot_id: response_evaluator
+    slot_version: 1.0.0
+    title: Response evaluator
+    function: >-
+      Check an admitted response against an independently registered
+      obligation. It is the only source of an accepted outcome in measurement,
+      so it is derived from the evaluation contract and never ranked.
+    design_table: engine_side_run_time
+    inventory_records: [E12]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [harness response evaluation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.response.evaluate.v2, core.interaction.response.evaluate.v1]
+    unavailable_result: {form: error_code, value: response_evaluator_unavailable, answer_exists: true}
+    conformance_suite: core.harness_response_evaluation
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.harness_response_evaluation.HarnessResponseEvaluator
+    engine_protocol_version: harness_response_evaluator/v1
+    engine_kinds: [deterministic_evaluator, model_led_evaluator, independent_task_verification]
+    engine_kind_groups: {}
+    native_registry: core.harness_response_evaluation.evaluate_response_as_loop
+    native_declaration: core.harness_response_evaluation.ResponseEvaluationContext
+    requirement_comparison: ""
+    descriptor_projection: core.harness_response_evaluation.describe_evaluator
+    factory_table: core.harness_response_evaluation_engines
+    planned_symbols: [core.harness_response_evaluation.describe_evaluator,
+                      core.harness_response_evaluation_engines]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: declaration.evaluation_contract
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, evaluation_inconclusive,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [evaluation_contract, operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+    declaration_source: Derived from the exact evaluation contract the request names.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.harness_selection_checks:missing_evaluator_refuses_before_provider_dispatch
+    planned_checks: [an_engine_cannot_evaluate_its_own_output]
+  - record_type: engine_slot/v1
+    slot_id: retrieval_lexical_stage
+    slot_version: 1.0.0
+    title: Lexical retrieval stage
+    function: >-
+      The word-match stage of search over small cards. Bodies stay behind
+      references and load only after selection.
+    design_table: engine_side_run_time
+    inventory_records: [E18, C11]
+    roadmap_steps: [S-6.32]
+    implementation_state: candidate
+    work_boundaries: [remote intelligence metadata search, intelligence serving,
+                      orientation intelligence search]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.retrieval.lexical_stage]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.retrieval
+    component_folder: src/loop_engine/core
+    folder_move_package: L2
+    nested_under: [catalogue_search_policy]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.retrieval_backends.RetrievalSearchBackend
+    engine_protocol_version: retrieval_search_backend/v1
+    engine_kinds: [in_process_index, store_query, search_server]
+    engine_kind_groups: {}
+    native_registry: core.retrieval.Retriever
+    native_declaration: core.retrieval_backends.RetrievalBackendBinding
+    requirement_comparison: core.capability_directory.CapabilityHandshake
+    descriptor_projection: core.retrieval_engines.retrieval_descriptors
+    factory_table: core.retrieval_engines
+    planned_symbols: [core.retrieval_engines.retrieval_descriptors, core.retrieval_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds]
+    evidence_minimum_floor: 30
+    scope_fields: [operation_contract, catalogue_scope, evaluation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: >-
+      The search section of the settings file on the engine side; the host
+      file on the hosted service, where judged queries allow a floor of thirty.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http.py, constructs: Retriever}
+      - {path: core/retrieval.py, constructs: SqliteFtsBackend}
+      - {path: core/retrieval.py, constructs: LanceDbBackend}
+    existing_checks: []
+    planned_checks: [served_search_uses_the_engine_and_policy_the_host_declared,
+                     hosted_capabilities_name_the_bound_retrieval_engines,
+                     hosted_capabilities_keep_their_retrieval_keys]
+  - record_type: engine_slot/v1
+    slot_id: retrieval_vector_stage
+    slot_version: 1.0.0
+    title: Vector retrieval stage
+    function: >-
+      The similarity stage of search. The exact embedding space, with its
+      model, revision and dimensions, is part of the installation.
+    design_table: engine_side_run_time
+    inventory_records: [E18, C11]
+    roadmap_steps: [S-6.32]
+    implementation_state: candidate
+    work_boundaries: [remote intelligence metadata search, intelligence serving,
+                      orientation intelligence search]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.retrieval.vector_stage]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.retrieval
+    component_folder: src/loop_engine/core
+    folder_move_package: L2
+    nested_under: [catalogue_search_policy]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.retrieval_backends.RetrievalSearchBackend
+    engine_protocol_version: retrieval_search_backend/v1
+    engine_kinds: [hashed_vector, local_embedding_model, vector_database]
+    engine_kind_groups: {}
+    native_registry: core.retrieval.Retriever
+    native_declaration: core.retrieval.EmbeddingSpace
+    requirement_comparison: core.retrieval.require_same_space
+    descriptor_projection: core.retrieval_engines.retrieval_descriptors
+    factory_table: core.retrieval_engines
+    planned_symbols: [core.retrieval_engines.retrieval_descriptors, core.retrieval_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds]
+    evidence_minimum_floor: 30
+    scope_fields: [operation_contract, catalogue_scope, evaluation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: >-
+      The search section of the settings file on the engine side; the host
+      file on the hosted service.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http.py, constructs: Retriever}
+      - {path: core/retrieval.py, constructs: Model2VecBackend}
+    existing_checks: []
+    planned_checks: [equal_dimensions_do_not_establish_embedding_compatibility]
+  - record_type: engine_slot/v1
+    slot_id: retrieval_rerank_stage
+    slot_version: 1.0.0
+    title: Rerank retrieval stage
+    function: >-
+      Reorder the fused candidates of the earlier stages. It is added only
+      when an engine exists and the evaluation shows a gap on held-back
+      queries; with no engine, the candidates pass through unchanged.
+    design_table: engine_side_run_time
+    inventory_records: [E18]
+    roadmap_steps: [S-6.32]
+    implementation_state: planned
+    work_boundaries: [remote intelligence metadata search, intelligence serving]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.retrieval.rerank_stage]
+    unavailable_result: {form: input_passes_through, value: fused_candidates_unchanged,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core
+    folder_move_package: L2
+    nested_under: [catalogue_search_policy]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.retrieval_engines.RetrievalRerankStage
+    engine_protocol_version: retrieval_rerank_stage/v1
+    engine_kinds: [local_reranker, model_judged_ranking]
+    engine_kind_groups: {}
+    native_registry: core.retrieval_backends.STAGES
+    native_declaration: core.retrieval_backends.RetrievalBackendBinding
+    requirement_comparison: ""
+    descriptor_projection: core.retrieval_engines.retrieval_descriptors
+    factory_table: core.retrieval_engines
+    planned_symbols: [core.retrieval_engines.RetrievalRerankStage,
+                      core.retrieval_engines.retrieval_descriptors, core.retrieval_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds]
+    evidence_minimum_floor: 30
+    scope_fields: [operation_contract, catalogue_scope, evaluation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: >-
+      The search section or the host file, once an engine exists; a
+      model-judged ranking engine needs model authority from the owning Loop.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_rerank_stage_cannot_add_candidates_the_earlier_stages_did_not_return]
+  - record_type: engine_slot/v1
+    slot_id: catalogue_search_policy
+    slot_version: 1.0.0
+    title: Catalogue search policy
+    function: >-
+      The matching and ranking strategy applied to catalogue search. It
+      returns ranked, body-free references, and a query with no good match
+      says so.
+    design_table: engine_side_run_time
+    inventory_records: [E18, C11]
+    roadmap_steps: [S-6.32]
+    implementation_state: candidate
+    work_boundaries: [remote intelligence metadata search]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.catalogue.rank_references, core.interaction.catalogue.hosted_search]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.harness_intelligence_search
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: [intelligence_search_retrieval_port]
+    nesting_scope_rule: independent_of_parent
+    nesting_scope_reason: >-
+      The port only narrows which layers a Loop may reach; it does not change
+      how a policy matches or ranks.
+    joined_with: []
+    engine_protocol: core.harness_intelligence_search.CatalogueSearchPolicy
+    engine_protocol_version: harness_intelligence_search_policy/v1
+    engine_kinds: [declared_search_policy]
+    engine_kind_groups: {}
+    native_registry: core.harness_intelligence_search.DEFAULT_SEARCH_POLICY
+    native_declaration: core.harness_intelligence_search.CatalogueSearchPolicy
+    requirement_comparison: ""
+    descriptor_projection: core.harness_intelligence_search.search_policy_descriptors
+    factory_table: core.harness_intelligence_search
+    planned_symbols: [core.harness_intelligence_search.search_policy_descriptors]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: [elapsed_seconds]
+    evidence_minimum_floor: 30
+    scope_fields: [operation_contract, catalogue_scope, evaluation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The host file; switching the served policy needs a recorded comparison.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.harness_intelligence_search:a_policy_names_its_match_mode_and_the_fields_it_reads
+      - core.service_runtime.http_checks:protocol_search_returns_typed_authorized_references_without_bodies
+    planned_checks: [a_query_with_no_good_match_says_so,
+                     switching_search_policy_changes_no_fixed_evaluation_result_without_a_recorded_comparison]
+  - record_type: engine_slot/v1
+    slot_id: record_store
+    slot_version: 1.0.0
+    title: Record store
+    function: >-
+      One backend-neutral durable record contract for intelligence and service
+      state. An unknown commit is never success, and two stores are never
+      written as authorities.
+    design_table: engine_side_run_time
+    inventory_records: [E17, C13]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [managed record operation, remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.store.atomic_write_batch, core.interaction.store.query_records]
+    unavailable_result: {form: handshake_verdict, value: incompatible, answer_exists: true}
+    conformance_suite: catalog.conformance
+    component_folder: src/loop_engine/catalog
+    folder_move_package: ""
+    nested_under: [catalogue_search_policy]
+    nesting_scope_rule: independent_of_parent
+    nesting_scope_reason: >-
+      The store holds the cards every policy ranks; a policy change does not
+      change what the store returns for a query.
+    joined_with: []
+    engine_protocol: catalog.protocol.CatalogStore
+    engine_protocol_version: catalog_store/v1
+    engine_kinds: [embedded_database, file_engine, reference_memory, server_database]
+    engine_kind_groups: {}
+    native_registry: catalog.registry.AdapterRegistry
+    native_declaration: catalog.capabilities.StoreCapabilities
+    requirement_comparison: catalog.handshake.negotiate
+    descriptor_projection: catalog.registry.AdapterRegistry.descriptors
+    factory_table: catalog.record_store_engines
+    planned_symbols: [catalog.registry.AdapterRegistry.descriptors, catalog.record_store_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, catalogue_scope]
+    bindings:
+      - {context: engine_side, selection_phase: host_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: >-
+      The host's store declaration; eligibility for service writes requires an
+      authoritative store with the atomic batch and its read set.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/storage.py, constructs: SQLiteRecordStore}
+      - {path: record_cli.py, constructs: SQLiteRecordStore}
+      - {path: record_cli.py, constructs: PackageJsonlStore}
+    existing_checks:
+      - core.service_runtime.runtime_checks:atomic_batch_conflict_writes_nothing
+      - core.service_runtime.runtime_checks:unknown_commit_is_not_success_and_exact_retry_reconciles_once
+      - core.service_runtime.runtime_checks:atomic_read_set_serializes_two_competing_writers
+    planned_checks: [a_store_without_the_atomic_batch_cannot_serve_service_writes,
+                     a_store_fallback_is_refused_by_the_slot_ceiling,
+                     every_store_engine_passes_the_golden_conformance_suite,
+                     the_store_default_resolves_through_its_factory]
+  - record_type: engine_slot/v1
+    slot_id: similarity_candidate_source
+    slot_version: 1.0.0
+    title: Similarity candidate source
+    function: >-
+      Find prior work that resembles the task, as evidence only. Hits from
+      each source are merged by source role and never reorder engines.
+    design_table: engine_side_run_time
+    inventory_records: [E20]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [task similarity resolution]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.similarity.find_candidates]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.task_similarity_engine
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.task_similarity_engine.SimilarityCandidateSource
+    engine_protocol_version: similarity_candidate_source/v1
+    engine_kinds: [library_source, facet_source]
+    engine_kind_groups: {}
+    native_registry: core.task_similarity_engine.SimilarityEngine
+    native_declaration: core.task_similarity_engine.SimilarityPolicy
+    requirement_comparison: ""
+    descriptor_projection: core.task_similarity_engine.SimilarityEngine.descriptors
+    factory_table: core.task_similarity_engine.SIMILARITY_SOURCE_FACTORIES
+    planned_symbols: [core.task_similarity_engine.SimilarityEngine.descriptors,
+                      core.task_similarity_engine.SIMILARITY_SOURCE_FACTORIES]
+    selection_mode: set_of
+    dispatch_key: source_role
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_reported_failure, engine_changed_after_selection,
+                    policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: The similarity policy's declared sources, one for each source role.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.task_similarity_engine:facet_order_cannot_change_similarity_results
+    planned_checks: [similarity_hits_never_become_engine_selection_evidence]
+  - record_type: engine_slot/v1
+    slot_id: runtime_memory
+    slot_version: 1.0.0
+    title: Runtime Memory
+    function: >-
+      Notes shared by sibling Loops of one run. Runtime Memory is never
+      persistent intelligence and is never visible to another run.
+    design_table: engine_side_run_time
+    inventory_records: [E19]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [runtime memory write]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.runtime_memory.note]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.runtime_memory
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: loop.spawned_runtime_port.RuntimeMemoryService
+    engine_protocol_version: runtime_memory_service/v1
+    engine_kinds: [run_note_board]
+    engine_kind_groups: {}
+    native_registry: core.runtime_memory.RunNoteBoard
+    native_declaration: loop.spawned_runtime_port.SpawnedLoopRuntimeMemoryPort
+    requirement_comparison: ""
+    descriptor_projection: core.runtime_memory.describe_note_board
+    factory_table: core.runtime_memory.RUNTIME_MEMORY_ENGINES
+    planned_symbols: [core.runtime_memory.describe_note_board,
+                      core.runtime_memory.RUNTIME_MEMORY_ENGINES]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: Bound once for each run; switching it off means not binding it.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [runtime_memory_is_not_visible_to_another_run]
+  - record_type: engine_slot/v1
+    slot_id: library_ingestion_source
+    slot_version: 1.0.0
+    title: Library ingestion source
+    function: >-
+      Bring outside harness material into the library as candidates carrying
+      origin, immutable revision, path, source digest, licence evidence and
+      fetch date. A reader never approves its own items.
+    design_table: engine_side_run_time
+    inventory_records: []
+    roadmap_steps: [S-6.40]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: library ingestion, added_by: N1}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.library.read_candidates]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/library_ingestion
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.library_ingestion.protocol.LibrarySourceReader
+    engine_protocol_version: library_source_reader/v1
+    engine_kinds: [offline_preparer, public_repository_reader, skill_directory_reader,
+                   registry_reader]
+    engine_kind_groups: {}
+    native_registry: core.library_ingestion.engines
+    native_declaration: core.library_ingestion.protocol.LibrarySourceDeclaration
+    requirement_comparison: ""
+    descriptor_projection: core.library_ingestion.engines.describe_source
+    factory_table: core.library_ingestion.engines
+    planned_symbols: [core.library_ingestion.protocol.LibrarySourceReader,
+                      core.library_ingestion.engines,
+                      core.library_ingestion.protocol.LibrarySourceDeclaration,
+                      core.library_ingestion.engines.describe_source]
+    selection_mode: set_of
+    dispatch_key: source_kind
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    output_validation_failed, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [source_kind]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The source list of the scheduled ingestion Loop; network authority comes
+      from that Loop's grant, never from a reader.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [every_ingested_item_carries_its_source_provenance,
+                     an_item_without_an_accepted_licence_is_never_imported_verbatim,
+                     an_ingested_item_stays_a_candidate_until_independent_review,
+                     a_duplicate_item_is_merged_not_added]
+  - record_type: engine_slot/v1
+    slot_id: tool_protocol_transport
+    slot_version: 1.0.0
+    title: Tool protocol transport
+    function: >-
+      Reach a registered Model Context Protocol server's tools. A tool call is
+      never retried on another transport.
+    design_table: engine_side_run_time
+    inventory_records: [E22]
+    roadmap_steps: [S-6.61]
+    implementation_state: candidate
+    work_boundaries: [MCP tool discovery, MCP tool operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.tool.call]
+    unavailable_result: {form: result_status, value: unavailable, answer_exists: true}
+    conformance_suite: core.mcp_adapter
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: [step_executor, tool_protocol_gateway]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.mcp_adapter.McpTransport
+    engine_protocol_version: tool_protocol_transport/v1
+    engine_kinds: [in_process, stdio, streamable_http, sse]
+    engine_kind_groups: {}
+    native_registry: core.mcp_adapter.McpRegistry
+    native_declaration: core.mcp_adapter.McpServerSpec
+    requirement_comparison: ""
+    descriptor_projection: core.mcp_adapter.McpRegistry.descriptors
+    factory_table: core.tool_transport_engines
+    planned_symbols: [core.mcp_adapter.McpRegistry.descriptors, core.tool_transport_engines]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: declaration.server_transport
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      Derived from the transport the registered server declaration names; the
+      kinds keep the exact transport identifiers of core.mcp_adapter.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_tool_call_is_never_retried_on_another_transport]
+  - record_type: engine_slot/v1
+    slot_id: intelligence_search_retrieval_port
+    slot_version: 1.0.0
+    title: Intelligence Search and Retrieval port
+    function: >-
+      The public capability group Intelligence Search and Retrieval. The
+      owning Loop selects a step's material before launch, and bodies load
+      only after selection.
+    design_table: engine_side_run_time
+    inventory_records: [E8]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [retrieval tournament, intelligence serving]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.port.intelligence_search]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.intelligence_layers
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: loop.runtime_context.IntelligenceSearchRetrievalPort
+    engine_protocol_version: intelligence_search_retrieval_port/v1
+    engine_kinds: [layered_intelligence_port]
+    engine_kind_groups: {}
+    native_registry: loop.runtime_context.LoopRuntimeContext
+    native_declaration: loop.runtime_context.IntelligenceSearchRetrievalPort
+    requirement_comparison: ""
+    descriptor_projection: loop.runtime_context.IntelligenceSearchRetrievalPort.descriptor
+    factory_table: loop.runtime_context.PUBLIC_PORT_ENGINES
+    planned_symbols: [loop.runtime_context.IntelligenceSearchRetrievalPort.descriptor,
+                      loop.runtime_context.PUBLIC_PORT_ENGINES]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [owning_profile, operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: public_capability_port, host_must_bind: false}
+    declaration_source: Bound when the owning Loop's runtime context is built; derive only narrows.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.boundary_registry:three_public_capability_groups_map_to_real_boundaries
+    planned_checks: []
+  - record_type: engine_slot/v1
+    slot_id: web_research_port
+    slot_version: 1.0.0
+    title: Web Research port
+    function: >-
+      The public capability group Web Research. It reports unavailable on the
+      main line; turning it on is a recorded owner decision.
+    design_table: engine_side_run_time
+    inventory_records: [E8]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [custom plugin invocation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.port.web_research]
+    unavailable_result: {form: result_status, value: unavailable, answer_exists: false}
+    conformance_suite: core.web_search
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.web_research_engines.WebResearchBackend
+    engine_protocol_version: web_research_backend/v1
+    engine_kinds: [plain_request, search_service, scripted_browser, browser_service,
+                   harness_browser_plugin, custom_browser]
+    engine_kind_groups: {}
+    native_registry: loop.runtime_context.WebResearchPort
+    native_declaration: core.web_search.WebSearchAuthority
+    requirement_comparison: ""
+    descriptor_projection: core.web_research_engines.describe_web_research_engine
+    factory_table: core.web_research_engines
+    planned_symbols: [core.web_research_engines.WebResearchBackend,
+                      core.web_research_engines.describe_web_research_engine,
+                      core.web_research_engines]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [owning_profile, operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: public_capability_port, host_must_bind: false}
+    declaration_source: >-
+      A recorded owner decision turns the port on; network authority comes
+      from the owning Loop's grant.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [the_web_research_port_reports_unavailable_on_main]
+  - record_type: engine_slot/v1
+    slot_id: custom_plugins_port
+    slot_version: 1.0.0
+    title: Custom Plugins port
+    function: >-
+      The public capability group Custom Plugins: registered capability
+      surfaces reached through the capability handshake. Skills are admitted
+      content, not engines.
+    design_table: engine_side_run_time
+    inventory_records: [E8, E22]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [custom plugin invocation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.port.custom_plugin_call]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.capability_directory
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.capability_directory.CapabilityDirectory
+    engine_protocol_version: custom_plugins_port/v1
+    engine_kinds: [registered_capability_surface, plugin_bundle]
+    engine_kind_groups: {}
+    native_registry: core.capability_directory.CapabilityDirectory
+    native_declaration: core.capability_directory.CapabilityHandshake
+    requirement_comparison: ""
+    descriptor_projection: core.capability_directory.CapabilityDirectory.descriptors
+    factory_table: core.capability_directory.default_directory
+    planned_symbols: [core.capability_directory.CapabilityDirectory.descriptors]
+    selection_mode: set_of
+    dispatch_key: operation
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [owning_profile, operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: public_capability_port, host_must_bind: false}
+    declaration_source: The registered capability surfaces, dispatched by operation.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [public_capability_groups_map_to_collected_boundaries]
+  - record_type: engine_slot/v1
+    slot_id: ranking_strategy
+    slot_version: 1.0.0
+    title: Ranking strategy
+    function: >-
+      Order already-eligible engines for every other slot. Its own order comes
+      from a declared policy that ends with the declared order and is never
+      ranked by evidence, so selection needs no selection to start.
+    design_table: engine_side_run_time
+    inventory_records: [E23, E12]
+    roadmap_steps: [S-6.30]
+    implementation_state: candidate
+    work_boundaries: [configuration preference resolution, assignment harness selection]
+    planned_work_boundaries:
+      - {boundary: component engine selection, added_by: F3}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.ranking.order_eligible_choices]
+    unavailable_result: {form: result_status, value: abstained, answer_exists: true}
+    conformance_suite: core.configuration_preferences
+    component_folder: src/loop_engine/core/engines
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.configuration_preferences.PreferenceEngineBinding
+    engine_protocol_version: preference_engine/v1
+    engine_kinds: [declared_ordering, proposal_ordering, evidence_ordering]
+    engine_kind_groups: {}
+    native_registry: core.configuration_preferences.MetaPreferencePolicy
+    native_declaration: core.configuration_preferences.PreferenceEngineBinding
+    requirement_comparison: ""
+    descriptor_projection: core.configuration_preferences.PreferenceEngineBinding.descriptor_record
+    factory_table: core.configuration_preferences
+    planned_symbols: [core.configuration_preferences.PreferenceEngineBinding.descriptor_record]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: after_failure_without_effects
+    failure_kinds: [engine_unavailable, engine_reported_failure, output_validation_failed,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, owning_definition]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+    declaration_source: >-
+      The declared meta preference policy of each slot configuration, which
+      must end with the declared-order engine.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.configuration_preference_checks:preference_cannot_restore_a_hard_rejected_harness
+      - core.configuration_preference_checks:active_selector_cycle_refuses_without_fallback
+    planned_checks: [ranking_policy_must_end_with_the_declared_order,
+                     engine_selection_needs_no_selection_to_start]
+  - record_type: engine_slot/v1
+    slot_id: configuration_setter
+    slot_version: 1.0.0
+    title: Configuration setter
+    function: >-
+      Apply one checked configuration change. Enabling or disabling an engine
+      changes only its installation flag, and a setting that carries
+      authority is refused.
+    design_table: engine_side_run_time
+    inventory_records: [E23]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [authorized in-memory configuration update]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.configuration.apply_change]
+    unavailable_result: {form: result_status, value: rejected, answer_exists: true}
+    conformance_suite: core.configuration_setters
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.configuration_setters.ConfigurationSetterBackend
+    engine_protocol_version: configuration_setter/v1
+    engine_kinds: [in_memory_field_setter, file_setter, command_setter, remote_setter]
+    engine_kind_groups: {}
+    native_registry: core.configuration_setters.ConfigurationSetterContext
+    native_declaration: core.configuration_capabilities.ConfigurationSettingSpec
+    requirement_comparison: ""
+    descriptor_projection: core.configuration_setters.describe_setter
+    factory_table: core.configuration_setters
+    planned_symbols: [core.configuration_setters.ConfigurationSetterBackend,
+                      core.configuration_setters.describe_setter]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: declaration.setting_target
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, effects_uncertain,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: Derived from the setter the configuration target declares.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.configuration_setters:configuration_setter_uses_canonical_loop
+    planned_checks: [enable_and_disable_change_only_the_installation_flag,
+                     installation_settings_carry_no_authority]
+  - record_type: engine_slot/v1
+    slot_id: run_history_export
+    slot_version: 1.0.0
+    title: Run History export
+    function: >-
+      Export saved runs for outside tools, with each attempt's measured
+      duration and without prompt text or secrets.
+    design_table: engine_side_run_time
+    inventory_records: []
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [OpenTelemetry export]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.history.export_attempts]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.otel_export
+    component_folder: src/loop_engine/core
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.otel_export.SpanExporter
+    engine_protocol_version: run_history_exporter/v1
+    engine_kinds: [trace_span_exporter, trajectory_exporter]
+    engine_kind_groups: {}
+    native_registry: core.run_history_export_engines
+    native_declaration: core.otel_export.OtelSpanRecord
+    requirement_comparison: ""
+    descriptor_projection: core.run_history_export_engines.describe_exporter
+    factory_table: core.run_history_export_engines
+    planned_symbols: [core.run_history_export_engines,
+                      core.run_history_export_engines.describe_exporter]
+    selection_mode: set_of
+    dispatch_key: destination
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_reported_failure, output_validation_failed,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [destination]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: The export destinations a host declares, one engine for each destination.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [an_exported_attempt_span_has_its_measured_duration,
+                     exported_spans_carry_no_prompt_or_secret]
+  # Chosen when the hosted service starts (design section 5.3).
+  - record_type: engine_slot/v1
+    slot_id: browser_identity_provider
+    slot_version: 1.0.0
+    title: Browser identity provider
+    function: >-
+      Verify a browser access token and map issuer and subject to a durable
+      tenant. The protocol endpoint never accepts a browser token.
+    design_table: hosted_service_start
+    inventory_records: [C7d]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.verify_browser_identity]
+    unavailable_result: {form: typed_refusal, value: browser_identity_unavailable,
+                         answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.browser_identity.BrowserIdentityAdapter
+    engine_protocol_version: browser_identity/v1
+    engine_kinds: [hosted_identity_provider]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.service_runtime.browser_identity.BrowserIdentityConfiguration
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_identity.describe
+    factory_table: core.service_runtime.service_engine_identity
+    planned_symbols: [core.service_runtime.service_engine_identity.describe,
+                      core.service_runtime.service_engine_identity]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: Projected from browser_identity.provider_profile in the host file.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http_entrypoint.py, constructs: BrowserIdentityAdapter}
+    existing_checks:
+      - core.service_runtime.browser_identity_checks:activation_rejects_client_supplied_tenant_and_authority
+    planned_checks: [removed_browser_identity_protocol_check_is_detected,
+                     a_host_block_selects_its_engine_by_provider_profile_without_a_loader_edit,
+                     an_unknown_provider_profile_stops_the_host_before_it_serves]
+  - record_type: engine_slot/v1
+    slot_id: credential_authentication
+    slot_version: 1.0.0
+    title: Credential authentication
+    function: >-
+      Turn one bearer credential into one in-process principal, rechecked at
+      every use. The mode is chosen by the credential's form and the route,
+      never ranked.
+    design_table: hosted_service_start
+    inventory_records: [C7a, C7b, C7c, C7e]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.authenticate_key.v2,
+                   core.interaction.service.authenticate_key.v1]
+    unavailable_result: {form: typed_refusal, value: unauthorized, answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.http_auth.ServiceHttpAuthentication
+    engine_protocol_version: service_http_authentication/v1
+    engine_kinds: [host_key, personal_client_key, administrator_session, external_token]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http_auth.ServiceHttpAuthenticator
+    native_declaration: core.service_runtime.http_auth.ServiceHttpAuthentication
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_authentication.describe
+    factory_table: core.service_runtime.service_engine_authentication
+    planned_symbols: [core.service_runtime.service_engine_authentication.describe,
+                      core.service_runtime.service_engine_authentication]
+    selection_mode: set_of
+    dispatch_key: credential_form_and_route
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The authentication modes the host file enables.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.runtime_checks:key_revocation_invalidates_previously_issued_principals
+      - core.service_runtime.access_checks:removed_key_version_change_is_detected
+    planned_checks: [a_mode_the_host_did_not_enable_cannot_authenticate]
+  - record_type: engine_slot/v1
+    slot_id: account_email_delivery
+    slot_version: 1.0.0
+    title: Account email delivery
+    function: >-
+      Sign-up and recovery email that stays on the service's own domain. The
+      answer is the same whether or not the address has an account, and an
+      uncertain send is reconciled, never repeated.
+    design_table: hosted_service_start
+    inventory_records: [C8]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.account_signup_email,
+                   core.interaction.service.account_recovery_email]
+    unavailable_result: {form: typed_refusal, value: account_email_unavailable, answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.account_email.AccountEmailAdapter
+    engine_protocol_version: account_email/v1
+    engine_kinds: [identity_link_and_mail_service, identity_provider_mail]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.service_runtime.account_email.AccountEmailConfiguration
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_account_email.describe
+    factory_table: core.service_runtime.service_engine_account_email
+    planned_symbols: [core.service_runtime.service_engine_account_email.describe,
+                      core.service_runtime.service_engine_account_email]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: before_dispatch_only
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: Projected from the account_email block of the host file.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http_entrypoint.py, constructs: AccountEmailAdapter}
+    existing_checks: []
+    planned_checks: [an_uncertain_send_blocks_every_fallback]
+  - record_type: engine_slot/v1
+    slot_id: payment_provider
+    slot_version: 1.0.0
+    title: Payment provider
+    function: >-
+      Checkout and portal sessions, one provider customer for each account,
+      and verified subscription events turned into the entitlement. The
+      provider is never switched during a request.
+    design_table: hosted_service_start
+    inventory_records: [C9a, C9b]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.billing_session]
+    unavailable_result: {form: typed_refusal, value: billing_sessions_not_installed,
+                         answer_exists: true}
+    conformance_suite: core.service_runtime.stripe_sessions
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.service_engine_billing.BillingProvider
+    engine_protocol_version: billing_provider/v1
+    engine_kinds: [hosted_payment_provider]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.service_runtime.stripe_sessions.StripeSessionConfiguration
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_billing.describe
+    factory_table: core.service_runtime.service_engine_billing
+    planned_symbols: [core.service_runtime.service_engine_billing.BillingProvider,
+                      core.service_runtime.service_engine_billing.describe,
+                      core.service_runtime.service_engine_billing]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: The billing block of the host file; live and test mode are settings of one engine.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http_entrypoint.py, constructs: StripeSubscriptionReader}
+      - {path: core/service_runtime/http_entrypoint.py, constructs: StripeEventProcessor}
+      - {path: core/service_runtime/http_entrypoint.py, constructs: StripeSessionAdapter}
+    existing_checks:
+      - core.service_runtime.http_boundary_checks:webhook_does_not_accept_unsigned_or_wrongly_signed_subscription_authority
+      - core.service_runtime.stripe_session_checks:removed_customer_search_before_creation_is_detected
+    planned_checks: [removed_webhook_signature_check_is_detected,
+                     live_account_engine_refuses_a_test_key,
+                     a_billing_provider_is_never_switched_during_a_request,
+                     the_billing_surface_names_the_methods_the_transport_already_calls]
+  - record_type: engine_slot/v1
+    slot_id: usage_export
+    slot_version: 1.0.0
+    title: Usage export
+    function: >-
+      Send metered usage to a billing system. A meter event is an external
+      effect that needs its own authority in the host file, which choosing the
+      engine never grants.
+    design_table: hosted_service_start
+    inventory_records: []
+    roadmap_steps: []
+    implementation_state: planned
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.export_usage]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.service_engine_usage_export.UsageExporter
+    engine_protocol_version: usage_exporter/v1
+    engine_kinds: [no_export, provider_meter_events]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.service_engine_usage_export
+    native_declaration: core.service_runtime.service_engine_usage_export.UsageExportDeclaration
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_usage_export.describe
+    factory_table: core.service_runtime.service_engine_usage_export
+    planned_symbols: [core.service_runtime.service_engine_usage_export.UsageExporter,
+                      core.service_runtime.service_engine_usage_export,
+                      core.service_runtime.service_engine_usage_export.UsageExportDeclaration,
+                      core.service_runtime.service_engine_usage_export.describe]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, engine_reported_failure,
+                    effects_uncertain, engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: >-
+      The host file; the no-export engine comes first, and a provider meter
+      engine only when a priced overage exists.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_meter_event_is_sent_once_per_usage_record]
+  - record_type: engine_slot/v1
+    slot_id: catalogue_body_store
+    slot_version: 1.0.0
+    title: Catalogue body store
+    function: >-
+      Hand exact approved bytes to delivery. A body read is bound to its
+      expected digest before any metering.
+    design_table: hosted_service_start
+    inventory_records: [C10]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.read_approved_body]
+    unavailable_result: {form: typed_refusal, value: item_unavailable, answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.service_engine_body_store.BodyReader
+    engine_protocol_version: catalogue_body_reader/v1
+    engine_kinds: [image_files, private_object_storage]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http_entrypoint.load_host_manifest
+    native_declaration: core.provisioning_server.ProvisioningItemBinding
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_body_store.describe
+    factory_table: core.service_runtime.service_engine_body_store
+    planned_symbols: [core.service_runtime.service_engine_body_store.BodyReader,
+                      core.service_runtime.service_engine_body_store.describe,
+                      core.service_runtime.service_engine_body_store]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, output_validation_failed,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, catalogue_scope]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The host manifest; files in the image until private object storage (D-05).
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.http_checks:selected_digest_mismatch_refuses_before_body_read_and_metering
+    planned_checks: [body_store_engine_switch_serves_identical_digests]
+  - record_type: engine_slot/v1
+    slot_id: catalogue_qualification_resolver
+    slot_version: 1.0.0
+    title: Catalogue qualification resolver
+    function: >-
+      Decide whether an item binding is approved for serving. Host attestation
+      is never reported as independent qualification.
+    design_table: hosted_service_start
+    inventory_records: [C10]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.resolve_item_qualification]
+    unavailable_result: {form: result_status, value: unknown, answer_exists: true}
+    conformance_suite: core.provisioning_server
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.provisioning_server.ProvisioningQualificationResolver
+    engine_protocol_version: provisioning_qualification_resolver/v1
+    engine_kinds: [host_attestation, independent_authority]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http_entrypoint.load_host_manifest
+    native_declaration: core.provisioning_server.ProvisioningQualification
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_qualification.describe
+    factory_table: core.service_runtime.service_engine_qualification
+    planned_symbols: [core.service_runtime.service_engine_qualification.describe,
+                      core.service_runtime.service_engine_qualification]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, catalogue_scope]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The qualification basis the host manifest declares.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.http_boundary_checks:host_review_is_bound_to_exact_bytes_not_only_an_item_name
+    planned_checks: [host_attestation_is_never_reported_as_independent_qualification]
+  - record_type: engine_slot/v1
+    slot_id: protocol_endpoint
+    slot_version: 1.0.0
+    title: Protocol endpoint
+    function: >-
+      Let a native harness list and call the five service tools under one
+      exact protocol version, checked at initialization and on every later
+      request. A version is never downgraded.
+    design_table: hosted_service_start
+    inventory_records: [C12]
+    roadmap_steps: [S-6.43]
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.protocol_tool_call]
+    unavailable_result: {form: typed_refusal, value: unsupported_protocol_version,
+                         answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.service_engine_protocol.ProtocolServerFactory
+    engine_protocol_version: protocol_server_factory/v1
+    engine_kinds: [protocol_server_version]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.provisioning_mcp.ProvisioningMcpProfile
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_protocol.describe
+    factory_table: core.service_runtime.service_engine_protocol
+    planned_symbols: [core.service_runtime.service_engine_protocol.ProtocolServerFactory,
+                      core.service_runtime.service_engine_protocol.describe,
+                      core.service_runtime.service_engine_protocol]
+    selection_mode: set_of
+    dispatch_key: protocol_version
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The protocol versions the host serves, each selected only by exact negotiation.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.protocol_checks:initialize_for_an_unsupported_version_is_answered_with_a_supported_version
+      - core.service_runtime.protocol_checks:a_request_naming_an_unsupported_version_is_refused_before_any_effect
+    planned_checks: [a_second_protocol_version_is_selected_only_by_exact_negotiation]
+  - record_type: engine_slot/v1
+    slot_id: request_limit_state
+    slot_version: 1.0.0
+    title: Request limit state
+    function: >-
+      Count failed attempts for each client address. A host with more than one
+      machine needs a shared limit engine, never the in-process tables.
+    design_table: hosted_service_start
+    inventory_records: [C14]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.count_failed_attempt]
+    unavailable_result: {form: typed_refusal, value: public_binding_without_request_limits,
+                         answer_exists: false}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.request_limits.FailedAttemptLimiter
+    engine_protocol_version: service_failed_attempt_limit/v1
+    engine_kinds: [in_process_tables, shared_store, proxy_limit]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.service_runtime.request_limits.ServiceRequestLimits
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_request_limits.describe
+    factory_table: core.service_runtime.service_engine_request_limits
+    planned_symbols: [core.service_runtime.service_engine_request_limits.describe,
+                      core.service_runtime.service_engine_request_limits]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: The request_limits section of the host file's http block.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.request_limit_checks:a_caller_controlled_header_is_the_known_wrong_case
+      - core.service_runtime.capacity_checks:the_real_serve_command_stops_before_it_serves_the_public_without_the_limit
+    planned_checks: [multi_machine_service_refuses_an_in_process_limit_engine]
+  - record_type: engine_slot/v1
+    slot_id: failure_journal
+    slot_version: 1.0.0
+    title: Failure journal
+    function: >-
+      A searchable reference for each refusal, with alive kept apart from
+      ready.
+    design_table: hosted_service_start
+    inventory_records: [C15]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.journal_failure]
+    unavailable_result: {form: empty_result_with_reason, value: no_eligible_engine,
+                         answer_exists: false}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.observability.ServiceFailureJournal
+    engine_protocol_version: service_observability_policy/v1
+    engine_kinds: [in_service_journal]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http.ServiceHttpApplication
+    native_declaration: core.service_runtime.observability.ServiceObservabilityPolicy
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_observability.describe
+    factory_table: core.service_runtime.service_engine_observability
+    planned_symbols: [core.service_runtime.service_engine_observability.describe,
+                      core.service_runtime.service_engine_observability]
+    selection_mode: set_of
+    dispatch_key: failure_sink
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_reported_failure, engine_changed_after_selection,
+                    policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: false}
+    declaration_source: The observability policy of the host file; zero or more sinks.
+    retired_engines: []
+    known_direct_construction_sites:
+      - {path: core/service_runtime/http_entrypoint.py, constructs: ServiceFailureJournal}
+    existing_checks: []
+    planned_checks: [the_health_route_serves_the_version_the_release_gate_expects]
+  - record_type: engine_slot/v1
+    slot_id: secret_resolver
+    slot_version: 1.0.0
+    title: Service secret resolver
+    function: >-
+      Resolve a configured reference to one of the hosted service's own
+      credentials without ever recording it. The reference scheme picks the
+      engine, and there is no fallback to a less protected source.
+    design_table: hosted_service_start
+    inventory_records: [C16]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: [remote intelligence service operation]
+    planned_work_boundaries: []
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.service.resolve_secret_reference]
+    unavailable_result: {form: typed_refusal, value: configured_secret_unavailable,
+                         answer_exists: true}
+    conformance_suite: core.service_runtime.http_checks
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.service_runtime.http_entrypoint.environment_secret
+    engine_protocol_version: secret_resolver/v1
+    engine_kinds: [environment_reference, external_secret_manager]
+    engine_kind_groups: {}
+    native_registry: core.service_runtime.http_entrypoint.load_host_application
+    native_declaration: core.service_runtime.http_entrypoint.ENVIRONMENT_REFERENCE_PREFIX
+    requirement_comparison: ""
+    descriptor_projection: core.service_runtime.service_engine_secrets.describe
+    factory_table: core.service_runtime.service_engine_secrets
+    planned_symbols: [core.service_runtime.service_engine_secrets.describe,
+                      core.service_runtime.service_engine_secrets]
+    selection_mode: set_of
+    dispatch_key: reference_scheme
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: hosted_service, selection_phase: host_start,
+         binding_site: service_application_attribute, host_must_bind: true}
+    declaration_source: The reference scheme each host setting names.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.service_runtime.browser_identity_checks:server_secret_cannot_be_serialized_as_a_publishable_key
+    planned_checks: [no_secret_resolver_writes_a_value_to_a_record_event_or_measurement,
+                     a_secret_resolver_has_no_fallback]
+  # Chosen at release time by the operator (design section 5.4).
+  - record_type: engine_slot/v1
+    slot_id: domain_name_records
+    slot_version: 1.0.0
+    title: Domain name records
+    function: Map each hostname to the service and carry certificate and mail records.
+    design_table: release_time
+    inventory_records: [C1]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      Chosen by the operator when a release is prepared. Changing a record or
+      a name server delegation needs the owner's confirmation, so there is no
+      automatic fallback and no run-time boundary.
+    release_edge: Hostname to address or canonical name; the service answers only its allowed hosts.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [authoritative_zone, proxied_zone]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [every_served_hostname_has_a_saved_evidence_record]
+  - record_type: engine_slot/v1
+    slot_id: edge_proxy
+    slot_version: 1.0.0
+    title: Edge proxy
+    function: Terminate encrypted connections, route, check health and cap concurrency.
+    design_table: release_time
+    inventory_records: [C2]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      Chosen by the operator when a release is prepared; a proxy change moves
+      which header carries the client address, so it is never switched at run
+      time.
+    release_edge: Plain traffic to the service port with the original host name.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [platform_proxy, content_network_proxy]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: []
+  - record_type: engine_slot/v1
+    slot_id: compute_host
+    slot_version: 1.0.0
+    title: Compute host
+    function: Run the one service process beside its one volume.
+    design_table: release_time
+    inventory_records: [C3]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      Chosen by the operator when a release is prepared; destroying an
+      application or a volume needs the owner's confirmation, so there is no
+      automatic fallback.
+    release_edge: Image by digest, command, service port, the data volume and environment secrets.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [machine_platform, container_service, serverless_function]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: []
+  - record_type: engine_slot/v1
+    slot_id: web_server_process
+    slot_version: 1.0.0
+    title: Web server process
+    function: Host the application object of the hosted service.
+    design_table: release_time
+    inventory_records: [C5]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      Chosen by the operator when a release is prepared and qualified with the
+      serve command; it is not switched while the service runs.
+    release_edge: The create_app function and the serve command, with proxy headers off.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [asynchronous_python_web_server, serverless_function]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: []
+  - record_type: engine_slot/v1
+    slot_id: release_executor
+    slot_version: 1.0.0
+    title: Release executor
+    function: Build from a checked commit, deploy by digest and keep the previous digest.
+    design_table: release_time
+    inventory_records: [C18]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      The release itself is the operator's decision; it runs only from a
+      committed revision whose checks passed and is never chosen at run time.
+    release_edge: >-
+      The release record, pilot_release_record/v1 today, and a second version
+      that names every bound engine and its digest.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [guarded_workflow, local_build_by_digest]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_release_record_names_every_bound_engine_and_its_digest]
+  - record_type: engine_slot/v1
+    slot_id: web_page_delivery
+    slot_version: 1.0.0
+    title: Web page delivery
+    function: The public site, the account pages, the workspace and the administrator dashboard.
+    design_table: release_time
+    inventory_records: [C6]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      Chosen by the operator when a release is prepared; the pages ship with
+      the release that serves them.
+    release_edge: The page table of the service, the client recipes and strict page headers.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [service_process_pages, static_content_network]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The release record, with an engines map in its planned second version.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: []
+  - record_type: engine_slot/v1
+    slot_id: customer_client_recipe
+    slot_version: 1.0.0
+    title: Customer client recipe
+    function: Tell each supported harness how to reach the protocol endpoint with its service token.
+    design_table: release_time
+    inventory_records: [C19]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      The recipes ship with the release that serves them; adding a client is
+      one recipe row and no page code change.
+    release_edge: The website client recipes record, version two.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/service_runtime
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [client_recipe_row]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: set_of
+    dispatch_key: client
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The client recipe rows of the release.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [adding_a_client_is_one_recipe_row_and_no_page_code_change]
+  - record_type: engine_slot/v1
+    slot_id: material_install_layout
+    slot_version: 1.0.0
+    title: Material install layout
+    function: Install selected material where a harness discovers it.
+    design_table: release_time
+    inventory_records: [C19]
+    roadmap_steps: []
+    implementation_state: candidate
+    work_boundaries: []
+    planned_work_boundaries: []
+    release_reason: >-
+      The layouts ship with the installer tool of a release; offered,
+      fetched, installed and used stay separate facts.
+    release_edge: A harness bundle rendering record (planned), one layout for each harness.
+    interactions: []
+    unavailable_result: {form: release_refused, value: engine_not_bound, answer_exists: false}
+    conformance_suite: ""
+    component_folder: ""
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: ""
+    engine_protocol_version: ""
+    engine_kinds: [harness_layout]
+    engine_kind_groups: {}
+    native_registry: ""
+    native_declaration: ""
+    requirement_comparison: ""
+    descriptor_projection: ""
+    factory_table: ""
+    planned_symbols: []
+    selection_mode: set_of
+    dispatch_key: harness_layout
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: []
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: []
+    bindings:
+      - {context: release, selection_phase: release, binding_site: release_record,
+         host_must_bind: true}
+    declaration_source: The layout rows of the installer tool.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [offered_fetched_installed_and_used_are_recorded_as_separate_facts]
+  # The customer's credentials and connections (roadmap S-6.61).
+  # A local broker holds the customer's keys and protocol connections. Each
+  # step's harness gets scoped, expiring access through it; a raw credential
+  # reaches one process only where the host declared that weaker delivery.
+  - record_type: engine_slot/v1
+    slot_id: local_credential_source
+    slot_version: 1.0.0
+    title: Local credential source
+    function: >-
+      Hold the customer's provider and tool credentials on the customer's
+      machine and resolve one reference at the moment of use, without ever
+      recording the value. The hosted service never receives these
+      credentials.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.61]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: local credential broker operation, added_by: S-6.61}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.broker.resolve_credential_reference]
+    unavailable_result: {form: typed_refusal, value: configured_secret_unavailable,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/credential_broker
+    folder_move_package: ""
+    nested_under: [model_access, step_credential_delivery, tool_protocol_gateway]
+    nesting_scope_rule: independent_of_parent
+    nesting_scope_reason: >-
+      A reference resolves the same way whichever slot asks; its scheme alone
+      picks the source, and the asking slot never sees the value.
+    joined_with: []
+    engine_protocol: core.credential_broker.protocol.CredentialSource
+    engine_protocol_version: credential_source/v1
+    engine_kinds: [operating_system_keychain, runtime_environment_variable, owner_only_file,
+                   external_secret_manager]
+    engine_kind_groups: {}
+    native_registry: core.credential_broker.engines
+    native_declaration: core.credential_leases.HeldCredential
+    requirement_comparison: ""
+    descriptor_projection: core.credential_broker.engines.describe_source
+    factory_table: core.credential_broker.engines
+    planned_symbols: [core.credential_broker.protocol.CredentialSource,
+                      core.credential_broker.engines,
+                      core.credential_broker.engines.describe_source]
+    selection_mode: set_of
+    dispatch_key: reference_scheme
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      The customer's broker configuration: the operating system keychain by
+      default, and an environment variable or an owner-only file only for a
+      reference the customer chose to keep there.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_step_never_receives_a_credential_it_was_not_granted,
+                     no_credential_reaches_a_command_line_a_step_folder_a_log_or_run_history,
+                     an_absent_credential_stops_the_call_and_is_never_answered_from_another_source]
+  - record_type: engine_slot/v1
+    slot_id: step_credential_delivery
+    slot_version: 1.0.0
+    title: Step credential delivery
+    function: >-
+      Give one step's harness process access to exactly the credentials its
+      step was granted: through the broker by default, which keeps every
+      value, or, only where the host declared it for that harness, by direct
+      delivery to that one process, recorded as a weaker isolation level.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.61, S-6.8]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: step credential delivery, added_by: S-6.61}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.broker.grant_step_credential]
+    unavailable_result: {form: typed_refusal, value: credential_delivery_unavailable,
+                         answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/credential_broker
+    folder_move_package: ""
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.credential_broker.protocol.CredentialDelivery
+    engine_protocol_version: step_credential_delivery/v1
+    engine_kinds: [broker_relay_socket, broker_loopback_virtual_key, native_harness_account,
+                   empty_environment_variable, private_file_removed_at_step_end]
+    engine_kind_groups:
+      weaker_isolation: [native_harness_account, empty_environment_variable,
+                         private_file_removed_at_step_end]
+    native_registry: core.credential_broker.engines
+    native_declaration: core.credential_leases.Lease
+    requirement_comparison: ""
+    descriptor_projection: core.credential_broker.engines.describe_delivery
+    factory_table: core.credential_broker.engines
+    planned_symbols: [core.credential_broker.protocol.CredentialDelivery,
+                      core.credential_broker.engines,
+                      core.credential_broker.engines.describe_delivery]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: step_executor.credential_surface
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, authority_exhausted,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, resource_profile, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      Derived from the credential surfaces the bound step executor declares; a
+      direct delivery kind is eligible only when the host installed it for
+      that harness.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_virtual_key_stops_working_when_its_step_ends,
+                     a_step_that_reads_another_steps_key_is_refused,
+                     a_direct_delivery_never_uses_the_command_line_or_the_step_folder,
+                     a_weaker_delivery_is_recorded_as_a_weaker_isolation_level]
+  - record_type: engine_slot/v1
+    slot_id: tool_protocol_gateway
+    slot_version: 1.0.0
+    title: Tool protocol gateway
+    function: >-
+      Give each harness one protocol server entry that exposes only the
+      servers and tools its step may use, while the broker holds every
+      upstream connection and its credential.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.61]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: step tool protocol gateway, added_by: S-6.61}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.broker.open_step_tool_gateway]
+    unavailable_result: {form: result_status, value: unavailable, answer_exists: false}
+    conformance_suite: ""
+    component_folder: src/loop_engine/core/credential_broker
+    folder_move_package: ""
+    nested_under: [step_executor]
+    nesting_scope_rule: parent_installation_in_scope
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.credential_broker.protocol.ToolProtocolGateway
+    engine_protocol_version: tool_protocol_gateway/v1
+    engine_kinds: [broker_protocol_gateway, native_harness_connection]
+    engine_kind_groups:
+      weaker_isolation: [native_harness_connection]
+    native_registry: core.credential_broker.engines
+    native_declaration: core.mcp_adapter.McpDiscoveryPolicy
+    requirement_comparison: ""
+    descriptor_projection: core.credential_broker.engines.describe_gateway
+    factory_table: core.credential_broker.engines
+    planned_symbols: [core.credential_broker.protocol.ToolProtocolGateway,
+                      core.credential_broker.engines,
+                      core.credential_broker.engines.describe_gateway]
+    selection_mode: derived
+    dispatch_key: ""
+    derived_from: step_executor.tool_surface
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, capability_requirement_unsatisfied, effects_uncertain,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract, parent_installation]
+    bindings:
+      - {context: engine_side, selection_phase: per_attempt,
+         binding_site: runtime_context_internal_binding, host_must_bind: false}
+    declaration_source: >-
+      Derived from the tool surface the bound step executor declares: a fixed
+      standard input shim, a confined local address, or a native tool
+      callback.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks: []
+    planned_checks: [a_gateway_lists_only_the_tools_the_step_may_use,
+                     a_tool_token_is_never_forwarded_to_another_server,
+                     a_tool_effect_is_never_replayed_after_an_uncertain_reply]

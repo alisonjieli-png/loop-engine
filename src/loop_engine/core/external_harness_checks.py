@@ -15,6 +15,7 @@ from .external_harness import (
     ModelOutputLimit, StaticModelOutputResolver, _budget_failure,
     resolve_harness_output_limit, run_external_harness,
 )
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import (
     HarnessExecutionCapabilities, HarnessExecutionRequirements,
     harness_loop_identity, plain_harness_json,
@@ -22,6 +23,12 @@ from .harness_execution_contracts import (
 
 
 from pathlib import Path
+
+#: The adapter contract the local fixtures declare: in-process kits, and the
+#: brokered fixtures that stand in for a text relay engine.
+_KIT = {"adapter_contract_version": ADAPTER_CONTRACT_VERSION, "engine_kind": "agent_framework_kit",
+        "supported_edge_contracts": (MODEL_RESPONSE_EDGE,)}
+_RELAY = {**_KIT, "engine_kind": "text_relay_harness"}
 
 
 def run_checks() -> dict:
@@ -166,7 +173,7 @@ def run_checks() -> dict:
             return HarnessAdapterInfo(
                 "deep_agents", "protocol-fixture/v1", "not-imported",
                 available=True,
-                limitations=("no provider integration is exercised",))
+                limitations=("no provider integration is exercised",), **_KIT)
 
         def run(self, active_request, active_services):
             self.calls += 1
@@ -189,7 +196,7 @@ def run_checks() -> dict:
             return HarnessAdapterInfo(
                 "deep_agents", "protocol-fixture/v1", "not-imported",
                 available=True,
-                limitations=("local protocol fixture only",))
+                limitations=("local protocol fixture only",), **_KIT)
 
         def run(self, active_request, active_services):
             self.calls += 1
@@ -295,7 +302,7 @@ def run_checks() -> dict:
         def info(self):
             return HarnessAdapterInfo(
                 "host_supplied_solver", self.version, "not-imported", available=True,
-                execution_capabilities=HarnessExecutionCapabilities())
+                execution_capabilities=HarnessExecutionCapabilities(), **_KIT)
 
     class NamedPractitionerAdapter(RegisteredAdapter):
         def __init__(self, harness_id):
@@ -305,7 +312,7 @@ def run_checks() -> dict:
         def info(self):
             return HarnessAdapterInfo(
                 self.harness_id, self.version, "not-imported", available=True,
-                execution_capabilities=HarnessExecutionCapabilities())
+                execution_capabilities=HarnessExecutionCapabilities(), **_KIT)
 
     custom = RegisteredAdapter()
     custom_request = replace(one_call_request, harness_id="host_supplied_solver")
@@ -684,7 +691,8 @@ def _gateway_binding_checks(check, rejects):
         @staticmethod
         def info():
             return HarnessAdapterInfo("host_gateway", "fixture/v1", "not-imported", available=True,
-                execution_capabilities=HarnessExecutionCapabilities(supported_features=("model_routes",)))
+                execution_capabilities=HarnessExecutionCapabilities(supported_features=("model_routes",)),
+                **_RELAY)
 
         def run(self, current, services):
             if self.remembered is None:

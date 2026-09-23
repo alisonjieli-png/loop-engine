@@ -113,10 +113,23 @@ binding. Installation is not automatic during discovery or execution. Linux
 Bubblewrap and the declared sandbox backend must be available. Unsupported
 configurations refuse rather than silently changing execution mode.
 
+## Add a command-line harness
+
+A `harness.json` names a style from the release recipe catalogue,
+`src/loop_engine/data/harness_recipes.yaml`. Adding a harness is one recipe
+module in `src/loop_engine/core` and one `harness_recipe/v1` record with that
+module's SHA-256; the process runner and its relay need no edit. A style the
+catalogue does not list is refused as `unsupported_style`. The catalogue's
+fresh instance recipes and the offline check that proves them are described
+in the [external harness adapters guide](../docs/components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md).
+
 ## Source and evidence locations
 
 | Purpose | Full filesystem path |
 |---|---|
+| Release recipe catalogue | `/home/username/loop-engine/src/loop_engine/data/harness_recipes.yaml` |
+| Catalogue reader | `/home/username/loop-engine/src/loop_engine/core/harness_recipes.py` |
+| Offline fresh instance check | `/home/username/loop-engine/tools/check_harness_fresh_instances.py` |
 | Explicit configuration loader | `/home/username/loop-engine/src/loop_engine/core/harness_configuration.py` |
 | Canonical semantic binding | `/home/username/loop-engine/src/loop_engine/core/harness_semantic.py` |
 | Process confinement and cancellation | `/home/username/loop-engine/src/loop_engine/core/harness_process.py` |

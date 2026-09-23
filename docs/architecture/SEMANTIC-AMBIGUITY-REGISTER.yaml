@@ -239,6 +239,16 @@ findings:
     resolution: Move behavior to benchmark_evidence and retain the old module only as an import facade.
     representation_decision: separate benchmark execution from evidence comparison.
     status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-025
+    subsystem: engines_behind_fixed_edges
+    collision: The word engine names Loop Engine (the owner's local engine), an implementation behind an engine slot, and, in the record store's native declaration, the database software under an adapter.
+    evidence:
+      - terminology.yaml#vocabulary.Loop Engine
+      - loop_engine.core.engines.records:EngineDescriptor
+      - loop_engine.catalog.capabilities:StoreCapabilities
+    resolution: Technical documents write engine for an implementation only with its slot or identifier; Loop Engine keeps the owner's definition; StoreCapabilities.engine is pinned software inside the local.sqlite engine and is never copied into engine_id or engine_version.
+    representation_decision: one qualified term, engine (of an engine slot), beside the unchanged proper name; no rename of the owner's text.
+    status: IMPLEMENTED_PARTIALLY
 
 verified_clear:
   - MemoryQuery and IntelligenceQuery have distinct lifecycle and cross-layer contracts.

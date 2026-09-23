@@ -3,6 +3,9 @@
 The caller owns Loop identity, model grants, budgets, and the broker callback.
 This internal adapter provides isolated CLI mechanics only. It never discovers
 credentials, selects a provider, qualifies a harness, or accepts a task result.
+Which harness styles exist, which module prepares and reads each one, which
+wire its relay translates and its special cases all come from the recipe
+catalogue (``harness_recipes``); this runner names no style.
 """
 from __future__ import annotations
 
@@ -23,6 +26,8 @@ import time
 from typing import Callable
 
 from .harness_confinement import default_confined_environment
+from .harness_recipes import (HarnessRecipeCatalog, HarnessRecipeError, TEXT_RESPONSE_VARIANT,
+                              release_recipe_catalog, resolve_recipe_function)
 
 
 class HarnessProcessError(ValueError):
@@ -85,13 +90,21 @@ def _absolute(value):
 
 @dataclass(frozen=True)
 class HarnessProcessSpec:
-    """Explicit installed software, with frozen command and mount identities."""
+    """Explicit installed software, with frozen command and mount identities.
+
+    ``style`` must name a text response recipe of ``catalog``, the release
+    catalogue unless a check supplies a fixture one; a host file cannot
+    supply a catalogue. Binding verifies the recipe's module and the codec
+    module of each wire it declares against their catalogue digests."""
     harness_id: str
     package_version: str
     command_prefix: tuple[str, ...]
     read_only_paths: tuple[str, ...]
     style: str
+    catalog: object = field(default=None, repr=False, compare=False)
     software_identities: tuple[tuple[str, str], ...] = field(init=False)
+    recipe: object = field(init=False, repr=False, compare=False)
+    recipe_modules: tuple = field(init=False, repr=False)
 
     def __post_init__(self):
         from .harness_execution_contracts import valid_harness_id
@@ -108,11 +121,19 @@ class HarnessProcessSpec:
             path = _absolute(value)
             if len(path.parts) < 4 or path.parts[1] in ("etc", "proc", "dev", "run", "sys"):
                 raise HarnessProcessError("software mount is too broad")
-        if self.style not in (
-                "aider", "continue", "pi", "qwen_code", "gemini_cli", "goose", "opencode",
-                "mini_swe_agent", "mistral_vibe", "gptme", "cline", "kilo",
-                "nanocode", "trae_agent", "codex", "openinterpreter_rust", "hermes_agent", "forgecode"):
+        catalog = self.catalog if self.catalog is not None else release_recipe_catalog()
+        if not isinstance(catalog, HarnessRecipeCatalog):
+            raise HarnessProcessError("a harness process reads a typed recipe catalogue")
+        recipe = catalog.recipe(self.style)
+        if recipe is None or recipe.variant != TEXT_RESPONSE_VARIANT:
             raise HarnessSetupUnavailable('unsupported_style')
+        try:
+            modules = catalog.mounted_modules(recipe)
+        except HarnessRecipeError as exc:
+            raise HarnessProcessError(f"harness recipe modules are refused: {exc}") from exc
+        object.__setattr__(self, "catalog", catalog)
+        object.__setattr__(self, "recipe", recipe)
+        object.__setattr__(self, "recipe_modules", modules)
         if not executable.is_file() or not os.access(executable, os.X_OK):
             raise HarnessSetupUnavailable('executable_unavailable')
         paths = list(self.read_only_paths)
@@ -126,14 +147,20 @@ class HarnessProcessSpec:
 
     @property
     def digest(self):
-        return _sha(_json({"record_type": "harness_process_spec/v1", "harness_id": self.harness_id,
+        return _sha(_json({"record_type": "harness_process_spec/v2", "harness_id": self.harness_id,
             "package_version": self.package_version, "command_prefix": self.command_prefix,
             "read_only_paths": self.read_only_paths, "style": self.style,
-            "software_identities": self.software_identities}).encode())
+            "software_identities": self.software_identities,
+            "recipe_digest": self.recipe.digest,
+            "wire_codec_digests": [wire.digest for wire in self.catalog.wires_for(self.recipe)]}).encode())
 
     def validate_unchanged(self):
         if any(_path_digest(Path(path)) != digest for path, digest in self.software_identities):
             raise HarnessProcessError("installed harness software changed after binding")
+        try:
+            self.catalog.mounted_modules(self.recipe)
+        except HarnessRecipeError as exc:
+            raise HarnessProcessError("harness recipe module changed after binding") from exc
 
 
 @dataclass(frozen=True)
@@ -178,8 +205,8 @@ class HarnessProcessRequest:
         if self.context_capacity is not None and (
                 type(self.context_capacity) is not int or self.context_capacity < 1):
             raise HarnessProcessError("context capacity must be explicitly source-backed")
-        if self.spec.style == "pi" and self.context_capacity is None:
-            raise HarnessProcessError("Pi model configuration needs an explicit context capacity")
+        if self.spec.recipe.requires_context_capacity and self.context_capacity is None:
+            raise HarnessProcessError("this harness recipe needs an explicit source-backed context capacity")
         if len(self.prompt.encode("utf-8")) > self.maximum_request_bytes:
             raise HarnessProcessError("private task exceeds request byte allowance")
         if sum(len(item.body.encode("utf-8")) for item in material) > self.maximum_request_bytes:
@@ -243,7 +270,53 @@ def _write_private(path, value):
         handle.write(value)
 
 
-def _sandbox(request, run, socket_path):
+#: What the sandbox runs: the standard library relay, which prepares the
+#: selected recipe and serves its model wire.
+RELAY_COMMAND = ("/usr/bin/python3", "/relay/run.py")
+
+
+@dataclass(frozen=True)
+class SandboxLaunch:
+    """One sandbox start: the bound spec, the run's private files and the command.
+
+    ``run_directory`` holds ``work/``, ``config.json`` and ``task.txt``;
+    ``request_values`` supplies the request numbers a recipe may copy into
+    its sandbox environment, as (name, value) pairs."""
+    spec: HarnessProcessSpec
+    run_directory: str
+    socket_path: str
+    instruction_material: tuple = ()
+    request_values: tuple = ()
+    command: tuple = RELAY_COMMAND
+
+    def __post_init__(self):
+        if not isinstance(self.spec, HarnessProcessSpec):
+            raise HarnessProcessError("a sandbox start needs a bound harness process spec")
+        _absolute(self.run_directory)
+        _absolute(self.socket_path)
+        if (not isinstance(self.command, tuple) or not self.command
+                or any(not isinstance(part, str) or not part for part in self.command)):
+            raise HarnessProcessError("the sandbox command must be an explicit tuple")
+
+
+def recipe_environment(spec: HarnessProcessSpec, request_values):
+    """The confined environment plus the recipe's own declared variables."""
+    values = dict(request_values)
+    switches = {}
+    for variable, source in spec.recipe.sandbox_environment:
+        if type(values.get(source)) is not int:
+            raise HarnessProcessError(f"the recipe needs the request value {source}")
+        switches[variable] = str(values[source])
+    return default_confined_environment().with_switches(**switches)
+
+
+def sandbox_arguments(launch: SandboxLaunch) -> list:
+    """The complete Bubblewrap command line for one harness process start.
+
+    Only the selected recipe's module and the codec module of each wire it
+    declares are mounted beside the relay, so no other recipe is importable
+    inside the sandbox."""
+    run = Path(launch.run_directory)
     relay = Path(__file__).with_name("harness_process_relay.py")
     args = ["/usr/bin/bwrap", "--unshare-all", "--die-with-parent", "--new-session", "--clearenv",
             "--ro-bind", "/usr", "/usr", "--symlink", "usr/bin", "/bin",
@@ -252,96 +325,81 @@ def _sandbox(request, run, socket_path):
     for path in ("/etc/ssl", "/etc/ld.so.cache", "/etc/passwd", "/etc/group"):
         if Path(path).exists():
             args += ["--ro-bind", path, path]
-    for path in request.spec.read_only_paths:
+    for path in launch.spec.read_only_paths:
         args += ["--ro-bind", path, path]
     args += ["--bind", str(run / "work"), "/work", "--ro-bind", str(relay), "/relay/run.py",
              "--ro-bind", str(run / "config.json"), "/relay/config.json",
              "--ro-bind", str(run / "task.txt"), "/relay/task.txt",
-             "--ro-bind", str(socket_path), "/relay/broker.sock"]
-    for item in request.instruction_material:
+             "--ro-bind", str(launch.socket_path), "/relay/broker.sock"]
+    for item in launch.instruction_material:
         args += ["--ro-bind", str(run / "work" / item.name), "/work/" + item.name]
-    additional = Path(__file__).with_name("harness_additional_recipes.py")
-    args += ["--ro-bind", str(additional), "/relay/harness_additional_recipes.py"]
-    goose = Path(__file__).with_name("harness_goose_recipe.py")
-    args += ["--ro-bind", str(goose), "/relay/harness_goose_recipe.py"]
-    opencode = Path(__file__).with_name("harness_opencode_recipe.py")
-    args += ["--ro-bind", str(opencode), "/relay/harness_opencode_recipe.py"]
-    for module in ("harness_mini_swe_recipe.py", "harness_python_recipes.py", "harness_cline_kilo_recipes.py",
-                   "harness_lightweight_recipes.py", "harness_responses_recipes.py", "harness_remaining_recipes.py"):
-        args += ["--ro-bind", str(Path(__file__).with_name(module)), "/relay/" + module]
+    for module in launch.spec.recipe_modules:
+        args += ["--ro-bind", module.path, "/relay/" + module.module + ".py"]
     # The sandbox's own layout and consent switches are a typed, digest-bound
     # record; see harness_confinement for what each variable means.
-    args += default_confined_environment().setenv_arguments()
-    if request.spec.style == "aider":
-        args += ["--setenv", "COLUMNS", str(request.maximum_output_bytes)]
-    return args + ["--chdir", "/work", "--", "/usr/bin/python3", "/relay/run.py"]
+    args += recipe_environment(launch.spec, launch.request_values).setenv_arguments()
+    return args + ["--chdir", "/work", "--", *launch.command]
+
+
+def _request_values(request) -> tuple:
+    return tuple((name, getattr(request, name)) for name in (
+        "maximum_output_bytes", "maximum_request_bytes", "output_capacity",
+        "output_allowance", "context_capacity"))
+
+
+def _sandbox(request, run, socket_path):
+    return sandbox_arguments(SandboxLaunch(
+        spec=request.spec, run_directory=str(run), socket_path=str(socket_path),
+        instruction_material=request.instruction_material,
+        request_values=_request_values(request)))
+
+
+def _extract(spec, stdout, last_response):
+    """Admit output through the extract function the spec's recipe names."""
+    choices = (last_response or {}).get("choices", [])
+    expected = choices[-1].get("message", {}).get("content") if choices else None
+    extract = resolve_recipe_function(spec.catalog, spec.recipe.module, spec.recipe.extract_function)
+    return extract(spec.style, stdout, expected)
 
 
 def _output(style, stdout, last_response):
-    if style in ("hermes_agent", "forgecode"):
-        from .harness_remaining_recipes import extract_remaining_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_remaining_output(style, stdout, expected)
-    if style in ("codex", "openinterpreter_rust"):
-        from .harness_responses_recipes import extract_responses_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_responses_output(style, stdout, expected)
-    if style in ("nanocode", "trae_agent"):
-        from .harness_lightweight_recipes import extract_lightweight_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_lightweight_output(style, stdout, expected)
-    if style in ("mini_swe_agent", "mistral_vibe", "gptme", "cline", "kilo"):
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        if style == "mini_swe_agent":
-            from .harness_mini_swe_recipe import extract_mini_swe_output
-            return extract_mini_swe_output(stdout, expected)
-        if style in ("mistral_vibe", "gptme"):
-            from .harness_python_recipes import extract_python_output
-            return extract_python_output(style, stdout, expected)
-        from .harness_cline_kilo_recipes import extract_cline_kilo_output
-        return extract_cline_kilo_output(style, stdout, expected)
-    if style == "opencode":
-        from .harness_opencode_recipe import extract_opencode_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_opencode_output(stdout, expected)
-    if style == "goose":
-        from .harness_goose_recipe import extract_goose_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_goose_output(stdout, expected)
-    if style in ("qwen_code", "gemini_cli"):
-        from .harness_additional_recipes import extract_additional_output
-        choices = (last_response or {}).get("choices", [])
-        expected = choices[-1].get("message", {}).get("content") if choices else None
-        return extract_additional_output(style, stdout, expected)
-    choices = (last_response or {}).get("choices", [])
-    content = choices[-1].get("message", {}).get("content") if choices else None
-    if not isinstance(content, str) or not content:
+    """Release-catalogue extraction by style; a style it lacks admits nothing."""
+    catalog = release_recipe_catalog()
+    recipe = catalog.recipe(style)
+    if recipe is None or recipe.variant != TEXT_RESPONSE_VARIANT:
         return ""
-    if style == "continue":
-        value = json.loads(stdout)
-        if isinstance(value, dict) and value.get("status") == "success" and value.get("response") == content:
-            return value["response"]
-        # Continue returns valid JSON assistant output directly without a wrapper.
-        if isinstance(value, (dict, list)) and value == json.loads(content):
-            return stdout.strip()
-    elif style == "aider":
-        if content in stdout:
-            start = stdout.rfind(content)
-            return stdout[start:start + len(content)]
-    elif style == "pi":
-        for line in reversed(stdout.splitlines()):
-            value = json.loads(line)
-            if value.get("type") == "message_end" and value.get("message", {}).get("role") == "assistant":
-                message = value["message"]
-                actual = "".join(item["text"] for item in message.get("content", []) if item.get("type") == "text")
-                return actual if actual == content and message.get("stopReason") == "stop" else ""
-    return ""
+    choices = (last_response or {}).get("choices", [])
+    expected = choices[-1].get("message", {}).get("content") if choices else None
+    return resolve_recipe_function(catalog, recipe.module, recipe.extract_function)(
+        style, stdout, expected)
+
+
+def _relay_configuration(request) -> dict:
+    """The private configuration the relay reads: limits, the recipe record
+    and the codec records of the wires it declares."""
+    config = {name: getattr(request, name) for name in (
+        "model", "output_capacity", "output_allowance", "timeout_seconds", "maximum_request_bytes",
+        "maximum_response_bytes", "context_capacity")}
+    config.update(command_prefix=request.spec.command_prefix, style=request.spec.style,
+                  package_version=request.spec.package_version,
+                  recipe=request.spec.recipe.to_dict(),
+                  wire_codecs=[wire.to_dict() for wire in request.spec.catalog.wires_for(request.spec.recipe)])
+    return config
+
+
+def _identity_payload(request, run, instruction_manifest) -> dict:
+    """What the process identity digests: the spec, the request limits, the
+    relay and exactly the recipe and codec modules this run mounts."""
+    return {"spec": request.spec.digest, "model": request.model,
+            "output_capacity": request.output_capacity, "output_allowance": request.output_allowance,
+            "prompt_digest": _sha(request.prompt.encode()), "context_capacity": request.context_capacity,
+            "timeout_seconds": request.timeout_seconds, "run": str(run),
+            "instruction_manifest": instruction_manifest,
+            "relay_digest": _path_digest(Path(__file__).with_name("harness_process_relay.py")),
+            "confined_environment_digest": recipe_environment(
+                request.spec, _request_values(request)).content_digest,
+            "recipe_module_digests": {module.module: _path_digest(Path(module.path))
+                                      for module in request.spec.recipe_modules}}
 
 
 def run_harness_process(request: HarnessProcessRequest,
@@ -364,26 +422,9 @@ def run_harness_process(request: HarnessProcessRequest,
     for item in request.instruction_material:
         _write_private(run / "work" / item.name, item.body.encode("utf-8"))
     instruction_manifest = tuple((item.name, item.digest) for item in request.instruction_material)
-    config = {name: getattr(request, name) for name in (
-        "model", "output_capacity", "output_allowance", "timeout_seconds", "maximum_request_bytes",
-        "maximum_response_bytes", "context_capacity")}
-    config.update(command_prefix=request.spec.command_prefix, style=request.spec.style,
-                  package_version=request.spec.package_version)
-    _write_private(run / "config.json", _json(config).encode())
+    _write_private(run / "config.json", _json(_relay_configuration(request)).encode())
     _write_private(run / "task.txt", request.prompt.encode())
-    identity = _sha(_json({"spec": request.spec.digest, "model": request.model,
-        "output_capacity": request.output_capacity, "output_allowance": request.output_allowance,
-        "prompt_digest": _sha(request.prompt.encode()), "context_capacity": request.context_capacity,
-        "timeout_seconds": request.timeout_seconds, "run": str(run),
-        "instruction_manifest": instruction_manifest,
-        "relay_digest": _path_digest(Path(__file__).with_name("harness_process_relay.py")),
-        "codec_digest": _path_digest(Path(__file__).with_name("harness_additional_recipes.py")),
-        "goose_recipe_digest": _path_digest(Path(__file__).with_name("harness_goose_recipe.py")),
-        "opencode_recipe_digest": _path_digest(Path(__file__).with_name("harness_opencode_recipe.py")),
-        "other_recipe_digests": {name: _path_digest(Path(__file__).with_name(name)) for name in (
-            "harness_mini_swe_recipe.py", "harness_python_recipes.py", "harness_cline_kilo_recipes.py",
-            "harness_lightweight_recipes.py", "harness_responses_recipes.py",
-            "harness_remaining_recipes.py")}}).encode())
+    identity = _sha(_json(_identity_payload(request, run, instruction_manifest)).encode())
     errors, exchanges, buffers = [], [], [bytearray(), bytearray()]
     truncated, expired, stop = [False, False], threading.Event(), threading.Event()
     last_response, history_size = None, 0
@@ -500,7 +541,7 @@ def run_harness_process(request: HarnessProcessRequest,
     output = ""
     if not expired.is_set() and proc.returncode == 0 and not any(truncated):
         try:
-            output = _output(request.spec.style, stdout, last_response)
+            output = _extract(request.spec, stdout, last_response)
         except (ValueError, TypeError, KeyError, RecursionError):
             errors.append("invalid_harness_output")
     if expired.is_set():

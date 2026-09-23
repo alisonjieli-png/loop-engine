@@ -19,6 +19,7 @@ from .external_harness import (
     HarnessRegistry, HarnessRunRequest, HarnessRunResult, HarnessRuntimeBinding,
     HarnessServices, ModelOutputLimit, run_external_harness,
 )
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import HarnessExecutionCapabilities
 from .instance_instructions import InstanceInstructionWriter
 from .harness_fallback import (
@@ -113,6 +114,10 @@ class HarnessSemanticBinding:
             raise ValueError('fallback order must start with the selected harness')
         object.__setattr__(self, '_alternatives', tuple(
             (item, self.registry.get(item), self.registry.get(item).info()) for item in ids))
+        if any(MODEL_RESPONSE_EDGE not in info.supported_edge_contracts
+               for _item, _adapter, info in self._alternatives):
+            # A step engine in the same registry never answers a semantic call.
+            raise ValueError('a harness realization alternative must serve the model response edge')
         if self.layering is not None:
             from .harness_layering import LayeredHarnessBinding
             layering = self.layering
@@ -609,7 +614,9 @@ class GatewayHarnessProcessAdapter:
                                     'private_prompt_channel', 'private_raw_events',
                                     'process_tree_cancellation', 'model_routes'),
                 enforced_limits=('model_calls', 'total_tokens', 'maximum_output', 'wall_time'),
-                isolation='os_sandbox', evidence_refs=('harness_process_checks',)))
+                isolation='os_sandbox', evidence_refs=('harness_process_checks',)),
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind='text_relay_harness',
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
     def run(self, request: HarnessRunRequest, services: HarnessServices):
         from .harness_process import HarnessProcessRequest, run_harness_process

@@ -9,16 +9,26 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from importlib.resources import files
 
 import yaml
 
+from ..loop.loop_role import LOOP_RELATIONSHIP_KINDS
 from ..ontology.records import ObjectIdentity
 
 
 class LoopComponentError(ValueError):
     """A passive component definition, reference, or ontology is invalid."""
+
+
+#: The closed list of installed component catalogs this loader reads. The
+#: engine slot catalogue is the index of every engine slot (see
+#: ``core/engines/slots.py``); adding a file here is a reviewed change.
+COMPONENT_RESOURCE_FILES = (
+    "component_interactions.yaml", "component_folder_map.yaml",
+    "engine_slots.yaml")
 
 
 def component_payload_digest(value: object) -> str:
@@ -49,8 +59,7 @@ def load_component_ontology() -> dict:
 def load_component_resource(
         filename: str, expected_record_type: str) -> dict:
     """Load one installed component catalog with an exact record type."""
-    if filename not in (
-            "component_interactions.yaml", "component_folder_map.yaml"):
+    if filename not in COMPONENT_RESOURCE_FILES:
         raise LoopComponentError("component resource name is not registered")
     path = files("loop_engine").joinpath("data", filename)
     value = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -58,6 +67,82 @@ def load_component_resource(
             or value.get("record_type") != expected_record_type):
         raise LoopComponentError("component resource contract is invalid")
     return value
+
+
+#: The one record shape of an interaction row in
+#: ``component_interaction_catalog/v1``, in the order the catalogue writes it.
+#: A row with any other key, or without one of these, is refused; a new field
+#: would need a new catalogue version so that an older release refuses it.
+INTERACTION_FIELDS = (
+    "interaction_id", "producer_kind", "consumer_kind", "operation",
+    "request_contract", "result_contract", "relationship", "delivery",
+    "scheduling", "retry", "timeout", "cancellation", "compatibility",
+    "context_handoff", "authority_transfer", "privacy", "failure", "repair",
+    "verification", "run_history", "implementation_state")
+#: Implementation states an interaction row may declare. The third value is
+#: the spelling one of the seven original rows already carries.
+INTERACTION_STATES = (
+    "active", "candidate", "existing_runtime_partial_component_mapping")
+_CONTRACT_FIELDS = ("request_contract", "result_contract")
+_KIND_FIELDS = ("producer_kind", "consumer_kind")
+_VERSIONED_CONTRACT = re.compile(r"[a-z][a-z0-9_]*/v[1-9][0-9]*")
+_TOKEN = re.compile(r"[a-z][a-z0-9_]*")
+_INTERACTION_ID = re.compile(r"[a-z][a-z0-9_.-]{0,95}")
+
+
+def interaction_row_errors(row, ontology=None) -> tuple[str, ...]:
+    """Name every way one interaction row breaks the catalogue contract.
+
+    Contracts must be exact ``name/vN`` identifiers, both ends must be
+    component kinds the ontology knows, the relationship must be one of the
+    Loop relationship kinds, and the row must carry exactly the declared
+    fields. Nothing is read, imported, or executed.
+    """
+    if not isinstance(row, dict):
+        return ("row_is_not_a_mapping",)
+    ontology = ontology or load_component_ontology()
+    errors = [f"unknown_field:{key}" for key in sorted(set(row) - set(INTERACTION_FIELDS))]
+    errors += [f"missing_field:{key}" for key in INTERACTION_FIELDS if key not in row]
+    for key in INTERACTION_FIELDS:
+        value = row.get(key)
+        if key in row and (type(value) is not str or not value.strip()):
+            errors.append(f"empty_or_untyped:{key}")
+    if errors:
+        return tuple(errors)
+    if not _INTERACTION_ID.fullmatch(row["interaction_id"]):
+        errors.append("interaction_id_is_not_an_identifier")
+    errors += [f"contract_not_exactly_versioned:{key}" for key in _CONTRACT_FIELDS
+               if not _VERSIONED_CONTRACT.fullmatch(row[key])]
+    errors += [f"unknown_component_kind:{key}" for key in _KIND_FIELDS
+               if row[key] not in ontology["component_kinds"]]
+    if row["relationship"] not in LOOP_RELATIONSHIP_KINDS:
+        errors.append("unknown_relationship")
+    if row["implementation_state"] not in INTERACTION_STATES:
+        errors.append("unknown_implementation_state")
+    errors += [f"not_a_token:{key}" for key in INTERACTION_FIELDS
+               if key not in (("interaction_id",) + _CONTRACT_FIELDS)
+               and not _TOKEN.fullmatch(row[key])]
+    return tuple(errors)
+
+
+def interaction_catalog_errors(catalog, ontology=None) -> tuple[str, ...]:
+    """Validate the whole interaction catalogue before any reader uses it."""
+    if (not isinstance(catalog, dict)
+            or catalog.get("record_type") != "component_interaction_catalog/v1"
+            or set(catalog) != {"record_type", "version", "interactions"}
+            or not isinstance(catalog.get("interactions"), list)):
+        return ("catalog_contract_is_invalid",)
+    ontology = ontology or load_component_ontology()
+    errors = []
+    seen = set()
+    for index, row in enumerate(catalog["interactions"]):
+        identity = row.get("interaction_id") if isinstance(row, dict) else None
+        if identity in seen:
+            errors.append(f"duplicate_interaction:{identity}")
+        seen.add(identity)
+        errors += [f"{identity or index}:{error}"
+                   for error in interaction_row_errors(row, ontology)]
+    return tuple(errors)
 
 
 @dataclass(frozen=True)
@@ -231,6 +316,34 @@ def self_test() -> dict:
         "component_interactions.yaml", "component_interaction_catalog/v1")
     folders = load_component_resource(
         "component_folder_map.yaml", "component_folder_map/v1")
+    ontology = load_component_ontology()
+    first = dict(interactions["interactions"][0])
+    # Known-wrong rows: each must be refused, and the installed catalogue
+    # must not be. A reader that let any of these through would accept an
+    # edge whose contract cannot be versioned or whose ends are not
+    # components the ontology knows.
+    wrong_rows = {
+        "contract_without_version": {**first, "request_contract": "practitioner_step_and_state"},
+        "result_without_version": {**first, "result_contract": "selected_context_components/"},
+        "unknown_producer_kind": {**first, "producer_kind": "engine_slot"},
+        "unknown_consumer_kind": {**first, "consumer_kind": "harness"},
+        "unknown_relationship": {**first, "relationship": "owned_by"},
+        "unknown_state": {**first, "implementation_state": "shipped"},
+        "extra_field": {**first, "request_version": "v1"},
+        "missing_field": {key: value for key, value in first.items() if key != "privacy"},
+        "field_not_a_token": {**first, "operation": "Select Context"},
+        "identifier_not_an_identifier": {**first, "interaction_id": "Context Selection"},
+        "untyped_field": {**first, "retry": 3},
+    }
+    refused_rows = sorted(name for name, row in wrong_rows.items()
+                          if interaction_row_errors(row, ontology))
+    duplicated = {**interactions, "interactions": [first, first]}
+    extra_catalog_key = {**interactions, "owner": "fixture"}
+    unregistered_refused = False
+    try:
+        load_component_resource("forbidden_paths.json", "forbidden_paths/v1")
+    except LoopComponentError:
+        unregistered_refused = True
     tests = [{
         "test": "static_component_is_inert_and_content_addressed",
         "passed": (not static.permissions and not static.effects
@@ -246,10 +359,20 @@ def self_test() -> dict:
         "detail": reference.identity.content_digest,
     }, {
         "test": "component_interactions_are_unique_and_typed",
-        "passed": len({item["interaction_id"]
-                       for item in interactions["interactions"]})
-        == len(interactions["interactions"]),
-        "detail": "machine interaction catalog loaded",
+        "passed": (len({item["interaction_id"]
+                        for item in interactions["interactions"]})
+                   == len(interactions["interactions"])
+                   and not interaction_catalog_errors(interactions, ontology)
+                   and bool(interaction_catalog_errors(duplicated, ontology))
+                   and bool(interaction_catalog_errors(extra_catalog_key, ontology))
+                   and refused_rows == sorted(wrong_rows)),
+        "detail": (f"{len(interactions['interactions'])} rows typed; refused "
+                   f"{refused_rows}; installed errors "
+                   f"{list(interaction_catalog_errors(interactions, ontology))[:3]}"),
+    }, {
+        "test": "component_resource_names_are_a_closed_list",
+        "passed": unregistered_refused,
+        "detail": "a data file outside the registered names is refused before reading",
     }, {
         "test": "component_folder_owners_are_unique",
         "passed": len({item["path"] for item in folders["folders"]})

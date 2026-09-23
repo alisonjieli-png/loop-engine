@@ -12,8 +12,10 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 
-def prepare_goose_recipe(config, base_url):
+def prepare_goose_recipe(style, config, base_url):
     """Return argv, environment overrides and the private prompt stdin bytes."""
+    if style != "goose":
+        raise ValueError("unsupported_goose_style")
     base = urlsplit(base_url)
     if (base.scheme != "http" or base.hostname != "127.0.0.1" or not base.port
             or base.username or base.password or base.query or base.fragment):
@@ -45,9 +47,9 @@ def prepare_goose_recipe(config, base_url):
                      "--output-format", "stream-json"), environment, prompt
 
 
-def extract_goose_output(stdout, expected):
+def extract_goose_output(style, stdout, expected):
     """Require complete output and the final assistant's exact broker text."""
-    if not isinstance(expected, str) or not expected:
+    if style != "goose" or not isinstance(expected, str) or not expected:
         return ""
     final_text = None
     complete = False
