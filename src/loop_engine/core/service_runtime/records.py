@@ -89,6 +89,17 @@ def scopes(values):
     return tuple(values)
 
 
+def usage_items(reads):
+    """The usage record's items, which the account page shows as a table.
+
+    `reads` maps each item identity to the times of its recorded reads. Each usage row already holds the item and the
+    time, so nothing new is stored to report them. The result names each item once, with the number of its recorded
+    reads and the time of the latest, most recent first and then by identity.
+    """
+    return sorted(({"item_identity": identity, "records": len(times), "last_used_at": max(times)} for identity, times in reads.items()),
+                  key=lambda item: (-item["last_used_at"], item["item_identity"]))
+
+
 @dataclass(frozen=True)
 class ServiceRuntimeConfig:
     database_path: str

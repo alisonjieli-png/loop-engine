@@ -342,6 +342,13 @@ curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" \
 `records` is how many body reads were recorded. `totals` is the same count by
 unit. `durability` is `durable` when the count is written to durable storage.
 
+The current source also lists `items`, which the deployed reply above was
+recorded before: one entry for each item read, with `item_identity`, `records`
+for that item and `last_used_at`, the time of its latest recorded read in
+seconds since 1970-01-01 UTC, most recent first. An account with no reads has
+an empty list. The account page shows this list as a table of item, downloads
+and last use, with the whole record under a disclosure for developers.
+
 ### The same read twice, measured once
 
 **Local.** Verified on 2026-09-21, in this order:

@@ -78,6 +78,13 @@ labels, fact rows divided by rules and pills for states. They show the same
 data as before. The sidebar and the example figures of the dashboard design
 wait for the account data they would need.
 
+The account page shows recorded usage as a table: one row for each item, with
+its number of recorded downloads and the time of the latest, read from the
+`items` of the usage record. The table is drawn only from the record version
+the page was written for, and an account without downloads sees a sentence
+instead of an empty table. The raw record stays under a disclosure for
+developers.
+
 ## The homepage demonstration
 
 The opening message says why a fresh harness for each step helps, and the

@@ -1515,6 +1515,106 @@ try {
   check("account_route_retains_same_in_memory_connection",(await page.locator("#account-facts").innerText()).includes("alpha"));
   await page.click("#refresh-usage"); await page.waitForFunction(()=>document.querySelector("#usage").textContent.includes("record_type"));
   check("usage_is_read_from_durable_service_state",JSON.parse(await page.locator("#usage").textContent()).records===1);
+  /* Recorded usage as a table. The account page shows one row for each item, with its number of recorded downloads and the time
+     of the latest, in the order the service gives, and keeps the raw record behind a closed disclosure for developers. The rows
+     are compared with a separate read of the same service record and with what this run did: the item downloaded above is
+     downloaded once more here, through the service and with a new request, so its row must say 2. A record version the page was
+     not written for is shown only as the raw record. The empty state is read below, on a service where nothing was downloaded.
+     The page showed the raw record as its only view until September 23. Two removed-guard controls serve that view again and
+     draw a table from a record version the page was not written for. */
+  const usageRecord=async (base,token)=>(await (await page.request.get(base+"/api/v1/usage",{headers:{Authorization:"Bearer "+token}})).json()).result;
+  const usageShown=target=>target.evaluate(()=>{const table=document.querySelector("#usage-view table"),raw=document.getElementById("usage-raw");
+    return {columns:table?[...table.querySelectorAll("thead th")].map(cell=>cell.textContent.trim()):[],
+      rows:table?[...table.querySelectorAll("tbody tr")].map(row=>{const cells=[...row.children];return {item:cells[0]?.textContent.trim()||"",count:cells[1]?.textContent.trim()||"",
+        when:cells[2]?.querySelector("time")?.getAttribute("datetime")||"",text:cells[2]?.textContent.trim()||""};}):[],
+      note:[...document.querySelectorAll("#usage-view p")].map(node=>node.textContent.trim()).join(" "),
+      raw:{shown:Boolean(raw&&!raw.hidden),open:raw?.open===true,text:document.getElementById("usage")?.textContent||""}};});
+  const rawRecord=shown=>{try{return JSON.parse(shown.raw.text);}catch(_){return null;}};
+  const behindDisclosure=(shown,record)=>shown.raw.shown&&!shown.raw.open&&sameValue(rawRecord(shown),record);
+  const usageTableProblems=(shown,record,counts)=>{const items=Array.isArray(record?.items)?record.items:null;
+    return [...(JSON.stringify(shown.columns)===JSON.stringify(["Item","Downloads","Last used"])?[]:["the table columns are "+JSON.stringify(shown.columns)]),
+      ...(items?[]:["the service record lists no items"]),
+      ...(items&&JSON.stringify(shown.rows.map(row=>[row.item,row.count,row.when]))!==JSON.stringify(items.map(item=>[item.item_identity,String(item.records),new Date(item.last_used_at*1000).toISOString()]))?["the rows are not the items of the service record, in its order"]:[]),
+      ...Object.entries(counts).filter(([item,count])=>!shown.rows.some(row=>row.item===item&&row.count===String(count))).map(([item,count])=>item+" does not show "+count+" downloads"),
+      ...shown.rows.filter(row=>!row.text||/^[\d.\s]+$/.test(row.text)).map(row=>row.item+" shows no readable time"),
+      ...(behindDisclosure(shown,record)?[]:["the raw record is not kept behind a closed disclosure"])];};
+  const plantedUsage={record_type:"durable_tenant_usage/v1",tenant_id:"planted",records:3,totals:{provisioned_item:3},durability:"durable",
+    items:[{item_identity:"first.item",records:2,last_used_at:1758600000},{item_identity:"second.item",records:1,last_used_at:1758500000}]};
+  const plantedShown={columns:["Item","Downloads","Last used"],note:"",raw:{shown:true,open:false,text:JSON.stringify(plantedUsage,null,2)},
+    rows:plantedUsage.items.map(item=>({item:item.item_identity,count:String(item.records),when:new Date(item.last_used_at*1000).toISOString(),text:"Sep 23, 2025, 4:00 AM"}))};
+  check("usage_table_check_rejects_raw_text_a_wrong_count_a_missing_or_moved_row_and_an_open_record",
+    usageTableProblems(plantedShown,plantedUsage,{"first.item":2}).length===0
+    &&usageTableProblems({...plantedShown,columns:[],rows:[]},plantedUsage,{}).length>0
+    &&usageTableProblems({...plantedShown,rows:plantedShown.rows.map(row=>({...row,count:"1"}))},plantedUsage,{}).length>0
+    &&usageTableProblems({...plantedShown,rows:plantedShown.rows.slice(1)},plantedUsage,{}).length>0
+    &&usageTableProblems({...plantedShown,rows:[...plantedShown.rows].reverse()},plantedUsage,{}).length>0
+    &&usageTableProblems({...plantedShown,rows:plantedShown.rows.map(row=>({...row,text:String(1758600000)}))},plantedUsage,{}).length>0
+    &&usageTableProblems({...plantedShown,raw:{...plantedShown.raw,open:true}},plantedUsage,{}).length>0
+    &&usageTableProblems(plantedShown,{...plantedUsage,items:undefined},{}).length>0);
+  const searched=await page.request.post(fixture.base+"/api/v1/retrieval",{headers:{Authorization:"Bearer "+fixture.token},
+    data:{record_type:"service_retrieval_request/v1",query:"Alpha",mode:"lexical",top_n:10}});
+  const downloaded=(await searched.json()).result.hits[0];
+  const secondRead=await page.request.post(fixture.base+"/api/v1/download",{headers:{Authorization:"Bearer "+fixture.token},
+    data:{record_type:"service_provisioning_request/v1",operation:"read",identity:downloaded.reference.identity,expected_digest:downloaded.reference.body_digest,request_id:"usage-table-second-download"}});
+  const refreshUsage=async (target,shown)=>{await target.click("#refresh-usage");await target.waitForFunction(text=>document.querySelector("#usage")?.textContent.includes(text),shown);};
+  const usageChecks=["usage_panel_shows_each_item_with_its_count_and_last_use","usage_panel_refuses_a_record_version_it_was_not_written_for","usage_table_fits_small_screens_and_enlarged_text"];
+  const usageScenarioChecks={filled:[usageChecks[0],usageChecks[2]],other_version:[usageChecks[1]]};
+  const usageScenarios={
+    filled:async (opened,note)=>{
+      await refreshUsage(opened,'"records": 2');
+      const shown=await usageShown(opened),record=await usageRecord(fixture.base,fixture.token),problems=usageTableProblems(shown,record,{[downloaded.reference.identity]:2});
+      note(usageChecks[0],secondRead.status()===200&&record.records===2&&problems.length===0,{problems,records:record.records,status:secondRead.status()});
+      /* The table stands in three columns on a wide card and as one block for each row on a narrow one, so neither a phone nor
+         enlarged text moves the page sideways. A box counts as far as it can be seen: a box inside an ancestor that clips it,
+         such as the column headings kept for screen readers in a one pixel box, or a code block that scrolls inside itself,
+         reaches no further than that ancestor. */
+      const fits=[];
+      for(const width of [1440,390,320]){
+        await opened.setViewportSize({width,height:1000});
+        for(const size of ["","200%"]){
+          await opened.evaluate(value=>document.documentElement.style.fontSize=value,size);
+          fits.push({width,size:size||"100%",...await opened.evaluate(()=>{
+            const seenRight=node=>{let right=node.getBoundingClientRect().right;for(let item=node.parentElement;item&&item!==document.documentElement;item=item.parentElement){const style=getComputedStyle(item);if(style.overflowX!=="visible"||style.clip!=="auto")right=Math.min(right,item.getBoundingClientRect().right);}return right;};
+            return {overflow:document.documentElement.scrollWidth>innerWidth+1,
+              wide:[...document.querySelectorAll("#account-usage *")].filter(node=>node.getBoundingClientRect().width&&seenRight(node)>innerWidth+1).map(node=>node.tagName+"."+String(node.className)).slice(0,6)};})});
+        }
+        await opened.evaluate(()=>document.documentElement.style.fontSize="");
+      }
+      await opened.setViewportSize({width:1440,height:1000});
+      note(usageChecks[2],shown.rows.length>0&&fits.length===6&&fits.every(item=>!item.overflow&&item.wide.length===0),{rows:shown.rows.length,problems:fits.filter(item=>item.overflow||item.wide.length)});},
+    other_version:async (opened,note)=>{
+      await opened.route("**/api/v1/usage",async route=>{const response=await route.fetch(),body=await response.json();body.result.record_type="durable_tenant_usage/v2";await route.fulfill({response,json:body});});
+      await refreshUsage(opened,"durable_tenant_usage/v2");
+      const shown=await usageShown(opened);await opened.unroute("**/api/v1/usage");
+      note(usageChecks[1],shown.columns.length===0&&shown.rows.length===0&&/not written for/i.test(shown.note)&&shown.raw.shown&&!shown.raw.open,{note:shown.note,raw:shown.raw.shown});}};
+  /* A signed-in account page on the first service. A removed-guard control changes one served file, the page script unless it
+     names another, in memory only. */
+  const openAccount=async mutation=>{
+    const opened=await context.newPage(),state={applied:false,errors:[]},path=mutation?.path||"/assets/service.js";
+    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+    if(mutation)await opened.route(url=>url.origin===new URL(fixture.base).origin&&url.pathname===path,async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+    await opened.goto(fixture.base+"/");await opened.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+    await headerLink(opened,"login");await opened.fill("#access-token",fixture.token);await opened.click("#connect-button");
+    await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");await headerLink(opened,"account");return {page:opened,state};};
+  for(const name of Object.keys(usageScenarios)){
+    const noted=new Set(),{page:opened}=await openAccount(null);
+    try{await usageScenarios[name](opened,(checkName,passed,detail)=>{noted.add(checkName);check(checkName,passed,detail);});}
+    catch(error){for(const checkName of usageScenarioChecks[name].filter(checkName=>!noted.has(checkName)))check(checkName,false,{error:safeError(error)});}
+    await opened.close();
+  }
+  const usageControls=[
+    {name:"show_the_usage_record_as_raw_text_again",scenario:"filled",find:'renderUsage(await request("/api/v1/usage"));',
+     replacement:'$("usage").textContent = JSON.stringify(await request("/api/v1/usage"), null, 2);',expected:[usageChecks[0]]},
+    {name:"draw_a_table_from_a_usage_record_version_the_page_was_not_written_for",scenario:"other_version",find:"value?.record_type === USAGE_RECORD_TYPE && ",replacement:"",expected:[usageChecks[1]]},
+    {name:"keep_three_usage_columns_on_a_narrow_card",scenario:"filled",path:"/assets/architecture.css",find:"@container (max-width:26em){",replacement:"@container (max-width:0em){",expected:[usageChecks[2]]}];
+  for(const control of usageControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openAccount({path:control.path,find:control.find,replacement:control.replacement});applied=state.applied;await usageScenarios[control.scenario](changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
   await page.click("#refresh-billing"); await page.waitForFunction(()=>document.querySelector("#billing").textContent.includes("unavailable"));
   check("unconfigured_billing_is_not_a_fake_purchase_flow",await page.locator("#billing button").count()===0);
   await headerLink(page,"workspace");
@@ -1550,6 +1650,14 @@ try {
   check("disconnect_clears_identity_results_and_controls",await page.locator(".result").count()===0&&await page.locator("#query").isDisabled()&&await page.locator("#identity-facts").innerText()==="");
   await page.goto(fixture.billing_base+"/login"); await page.fill("#access-token",fixture.billing_token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   await headerLink(page,"account");
+  /* Nothing was downloaded on this service, so its usage record lists no item, and the panel says so in words instead of
+     drawing an empty table. The raw record is still behind the closed disclosure. */
+  await refreshUsage(page,"record_type");
+  const emptyShown=await usageShown(page),emptyRecord=await usageRecord(fixture.billing_base,fixture.billing_token);
+  const emptyProblems=[...(emptyRecord.records===0&&Array.isArray(emptyRecord.items)&&emptyRecord.items.length===0?[]:["the service record is not an empty list of items"]),
+    ...(emptyShown.columns.length===0&&emptyShown.rows.length===0?[]:["a table is drawn"]),...(/no downloads/i.test(emptyShown.note)?[]:["the panel does not say that nothing is recorded"]),
+    ...(behindDisclosure(emptyShown,emptyRecord)?[]:["the raw record is not kept behind a closed disclosure"])];
+  check("usage_panel_says_plainly_when_nothing_is_recorded",emptyProblems.length===0,{problems:emptyProblems,note:emptyShown.note});
   await page.click("#refresh-billing"); await page.waitForSelector("#billing button");
   check("configured_billing_offers_only_host_defined_plans",await page.locator("#billing button").count()===3&&(await page.locator("#billing").innerText()).includes("Basic service"));
   await page.getByRole("button",{name:"Choose Basic service",exact:true}).click(); await page.waitForSelector("#billing-message a");

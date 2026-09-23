@@ -98,12 +98,17 @@
     document.querySelectorAll("[data-signed-in]").forEach(item => { item.hidden = !signedIn; });
     document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });
   };
+  /* The usage panel says in words what it holds until a usage record is drawn, and keeps no raw record while it does. */
+  const showUsageNote = (text, error = false) => {
+    $("usage-view").replaceChildren(element("p", text, error ? "usage-note error" : "usage-note"));
+    $("usage-raw").hidden = true; $("usage-raw").open = false; $("usage").textContent = "";
+  };
   function disconnect() {
     generation++; token = ""; principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
     $("access-token").value = ""; $("identity").hidden = true; $("connect-form").hidden = false; $("connection-state").textContent = "Not connected";
     ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = true; });
     $("results").replaceChildren(element("p", "Connect to search permitted material.", "empty")); $("identity-facts").replaceChildren();
-    $("usage").textContent = "Connect to inspect your permitted usage records."; $("billing").textContent = "Connect to check this service's billing configuration.";
+    showUsageNote("Sign in to see the downloads recorded for your account."); $("billing").textContent = "Connect to check this service's billing configuration.";
     $("result-count").textContent = "Connect to search"; $("query").value = ""; message("search-message", ""); message("billing-message", "");
     $("account-facts").replaceChildren(); $("account-state").textContent = "Not connected";
     $("account-note").textContent = "Sign in to see your service identity, usage and available subscription settings.";
@@ -212,7 +217,7 @@
       $("workspace-access").textContent = value.principal.tenant_id; $("workspace-access-note").textContent = "Connected. Search returns only material permitted for this identity.";
       $("workspace-access-link").textContent = "Manage this connection"; $("account-access-link").textContent = "Disconnect or change account";
       $("identity").hidden = false; $("connect-form").hidden = true; $("connection-state").textContent = "Connected";
-      showSignedIn(true);
+      showSignedIn(true); showUsageNote("Select Refresh to see the downloads recorded for this account.");
       ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = false; });
       $("result-count").textContent = "Ready"; message("connection-message", "Access confirmed for this tenant.");
       const administrator = value.principal.scopes.includes("access:manage");
@@ -332,9 +337,41 @@
     catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : error.message, true); }
     finally { $("search-button").disabled = !token; }
   });
+  /* Recorded usage, item by item: one row for each item, with its number of recorded downloads and the time of the latest, in
+     the order the service gives. The table is drawn only from the record version this page was written against, with a list of
+     items it can read; any other record is left to the raw view. The raw record always stays behind the disclosure below the
+     table, for developers. Every value is written as text, never as markup. */
+  const USAGE_RECORD_TYPE = "durable_tenant_usage/v1";
+  const usageTime = new Intl.DateTimeFormat(undefined, {dateStyle:"medium", timeStyle:"short"});
+  const usageItems = value => value?.record_type === USAGE_RECORD_TYPE && Array.isArray(value.items)
+    && value.items.every(row => typeof row?.item_identity === "string" && row.item_identity !== "" && Number.isInteger(row.records) && row.records > 0 && Number.isFinite(row.last_used_at))
+    ? value.items : null;
+  function renderUsage(value) {
+    const rows = usageItems(value), view = $("usage-view");
+    $("usage").textContent = JSON.stringify(value, null, 2); $("usage-raw").hidden = false;
+    if (!rows) { view.replaceChildren(element("p", "This service answered with a usage record this page was not written for, so no table is shown. The raw record is below.", "usage-note")); return; }
+    if (!rows.length) { view.replaceChildren(element("p", "No downloads are recorded for this account yet. Searching is free, and each item your tools download appears here.", "usage-empty")); return; }
+    const labels = ["Item", "Downloads", "Last used"], total = rows.reduce((sum, row) => sum + row.records, 0);
+    const table = element("table", "", "usage-table"), head = document.createElement("thead"), heading = document.createElement("tr"), body = document.createElement("tbody");
+    for (const label of labels) { const cell = element("th", label); cell.scope = "col"; heading.append(cell); }
+    head.append(heading);
+    for (const row of rows) {
+      const line = document.createElement("tr"), when = new Date(row.last_used_at * 1000), time = element("time", usageTime.format(when));
+      time.dateTime = when.toISOString();
+      const cells = [element("td", "", "usage-item"), element("td", String(row.records), "usage-count"), element("td", "", "usage-when")];
+      // A long item name may break after an underscore or a dot, where a reader expects it, and not inside a word.
+      row.item_identity.split(/(?<=[_.])/).forEach((part, index) => { if (index) cells[0].append(document.createElement("wbr")); cells[0].append(part); });
+      cells[2].append(time);
+      cells.forEach((cell, index) => { cell.dataset.label = labels[index]; line.append(cell); });
+      body.append(line);
+    }
+    table.append(element("caption", "Downloads recorded for this account, item by item", "sr-only"), head, body);
+    view.replaceChildren(element("p", total + (total === 1 ? " download of " : " downloads of ") + rows.length + (rows.length === 1 ? " item." : " items."), "usage-summary"), table);
+  }
   $("refresh-usage").addEventListener("click", async () => {
-    try { $("usage").textContent = JSON.stringify(await request("/api/v1/usage"), null, 2); }
-    catch (error) { $("usage").textContent = error.message; }
+    const epoch = generation;
+    try { renderUsage(await request("/api/v1/usage")); }
+    catch (error) { if (epoch === generation) showUsageNote(error.name === "AbortError" ? "The usage request timed out. You can refresh again." : error.message, true); }
   });
   async function createSession(operation, options, plan, button) {
     const key = JSON.stringify([operation, options.policy_digest, plan]), epoch = generation;

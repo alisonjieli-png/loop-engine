@@ -451,7 +451,30 @@ main:has(> [data-view="setup"]:not([hidden])){max-width:none;padding:0}
 #account-facts dt,#account-facts dd{padding:.625rem 0;border-top:1px solid var(--border)}
 #account-facts dt{color:var(--subtle);font-size:.875rem}
 #account-facts dd{font-family:var(--font-mono);font-size:.875rem}
-[data-view="account"] #usage{margin:1rem 0 0;padding:1rem 1.25rem;background:var(--panel-head);border:1px solid var(--border);border-radius:12px;font-family:var(--font-mono);font-size:.8125rem}
+/* Recorded usage, item by item: a table in the style of the account facts, with muted column labels and rows divided by rules.
+   The raw record stays under a disclosure for developers. When the card is too narrow for three columns, on a phone or with
+   enlarged text, each row stands as a block that names its own columns, as the table of the privacy notice does. */
+#account-usage{container-type:inline-size}
+.usage-summary,.usage-note{margin:1rem 0 0;color:var(--muted);font-size:.9375rem}
+.usage-empty{margin:1rem 0 0;padding:1rem 1.25rem;border:1px solid var(--border);border-radius:12px;background:var(--panel-head);color:var(--muted);font-size:.9375rem}
+.usage-table{width:100%;margin:.75rem 0 0;border-collapse:collapse;font-size:.875rem}
+.usage-table th{padding:.5rem 1rem .5rem 0;border-bottom:1px solid var(--border);color:var(--subtle);font-size:.8125rem;font-weight:600;text-align:left;white-space:nowrap}
+.usage-table td{padding:.625rem 1rem .625rem 0;border-bottom:1px solid var(--border);vertical-align:top}
+.usage-table th:last-child,.usage-table td:last-child{padding-right:0}
+.usage-table .usage-item{font-family:var(--font-mono);font-size:.8125rem;overflow-wrap:anywhere}
+.usage-table th:nth-child(2),.usage-table .usage-count{text-align:right;font-variant-numeric:tabular-nums}
+.usage-table .usage-when{color:var(--muted);white-space:nowrap}
+.usage-raw{margin-top:1rem}
+.usage-raw summary{padding:.625rem 0;cursor:pointer;color:var(--accent);font-weight:600}
+[data-view="account"] #usage{margin:.25rem 0 0;padding:1rem 1.25rem;background:var(--panel-head);border:1px solid var(--border);border-radius:12px;font-family:var(--font-mono);font-size:.8125rem}
+@container (max-width:26em){
+  .usage-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .usage-table,.usage-table tbody,.usage-table tr,.usage-table td{display:block;width:100%}
+  .usage-table tr{padding:.625rem 0;border-bottom:1px solid var(--border)}
+  .usage-table td,.usage-table .usage-count{padding:.125rem 0;border:0;text-align:left}
+  .usage-table .usage-when{white-space:normal}
+  .usage-table td::before{content:attr(data-label);display:block;color:var(--subtle);font-family:var(--font-ui);font-size:.75rem;font-weight:600}
+}
 
 /* Inner pages open with an introduction band, as the Get started page does: white, the full width of the window, with a rule
    under it, and the page's own content follows on the ground. The band is painted by an outset border image, which widens the

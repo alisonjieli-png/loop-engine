@@ -495,6 +495,31 @@ def run_checks():
                 and one["metering_acknowledgment"]["durability"] == "durable" and usage["records"] == 1)
     check("exact_body_retry_has_one_durable_usage_record_after_restart", meter)
 
+    def usage_by_item(folder):
+        # The account page shows usage item by item: each item read, how many reads were recorded for it and when the
+        # latest was, most recent first. An exact retry is the same read and adds nothing; another tenant sees none of it.
+        runtime, app, key, other, clock, _ = fixture(folder)
+        second = item_from_body(HarnessIntelligenceDraft("skill.second", "skill", "Second reviewed fixture",
+            "context_intelligence", "context:second", "MIT"), "second body")
+        app.catalogue.register(second)
+        first = ProvisioningItemBinding.from_item(app.catalogue.items["skill.fixture"])
+        runtime.set_grants("tenant-a", (ProvisioningGrant("tenant-a", first, True),
+                                        ProvisioningGrant("tenant-a", ProvisioningItemBinding.from_item(second), True)))
+        app.body_reader = lambda item: {"skill.fixture": "fixture body", "skill.second": "second body"}[item.identity]
+        app.invoke(key.key, "read", identity="skill.fixture", request_id="one")
+        clock[0] = 1100
+        app.invoke(key.key, "read", identity="skill.second", request_id="two")
+        clock[0] = 1200
+        app.invoke(key.key, "read", identity="skill.fixture", request_id="three")
+        app.invoke(key.key, "read", identity="skill.fixture", request_id="three")
+        reopened = ServiceRuntime(runtime.config, clock=lambda: 1300)
+        usage = reopened.usage_for(reopened.authenticate_key(key.key))
+        return (usage["records"] == 3 and usage["items"] == [
+                    {"item_identity": "skill.fixture", "records": 2, "last_used_at": 1200},
+                    {"item_identity": "skill.second", "records": 1, "last_used_at": 1100}]
+                and reopened.usage_for(reopened.authenticate_key(other.key))["items"] == [])
+    check("usage_lists_each_item_with_its_count_and_latest_read_most_recent_first", usage_by_item)
+
     def changed_usage(folder):
         from ..provisioning_server import ProvisioningMeterRequest
         runtime, app, key, _, _, _ = fixture(folder)

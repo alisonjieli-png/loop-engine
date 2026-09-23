@@ -29,7 +29,7 @@ from .records import (
     ServiceCommitUnknown, ServicePrincipal, ServiceRuntimeConfig, ServiceRuntimeError,
     SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration,
     billing_customer_request_differs_only_by_provider_account, billing_customer_search_can_show_the_previous_attempt,
-    canonical, digest, identifier, scopes,
+    canonical, digest, identifier, scopes, usage_items,
 )
 from .storage import ServiceCatalogBinding
 from .catalogue_grants import release_following_grants, release_following_payload as _follows
@@ -787,12 +787,12 @@ class ServiceRuntime:
             if USAGE_READ_SCOPE not in current.scopes:
                 raise ServiceRuntimeError("scope_required")
             rows = self._catalog.rows(store, USAGE, current.tenant_id)
-            totals = {}
-            for row in rows:
-                value = self._payload(row, USAGE)
+            totals, reads = {}, {}
+            for value in (self._payload(row, USAGE) for row in rows):
                 totals[value["unit"]] = totals.get(value["unit"], 0) + value["quantity"]
-            return {"record_type": "durable_tenant_usage/v1", "tenant_id": current.tenant_id,
-                    "records": len(rows), "totals": totals, "durability": "durable"}
+                reads.setdefault(value["item_identity"], []).append(value["at"])
+            return {"record_type": "durable_tenant_usage/v1", "tenant_id": current.tenant_id, "records": len(rows),
+                    "totals": totals, "durability": "durable", "items": usage_items(reads)}
 
 
 def self_test():
