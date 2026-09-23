@@ -248,6 +248,7 @@ MODULE_MAP = {
         "context_catalog",
         "context_classification", "context_ontology",
         "code_intelligence_assets", "code_intelligence_asset_checks", "event_vocabulary", "duckdb_catalog",
+        "live_dependency_checks",
         "artifact_constraints",
         "independent_evidence",
         "differential_verification", "differential_drivers",
