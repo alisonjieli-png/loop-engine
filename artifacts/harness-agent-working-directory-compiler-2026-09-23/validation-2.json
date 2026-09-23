@@ -1,0 +1,146 @@
+{
+  "record_type": "working_directory_compiler_draft_validation/v1",
+  "component": "Harness Working Directory Compiler",
+  "jsonschema_version": "4.26.0",
+  "draft_only": true,
+  "schemas": {
+    "native-client-layout-profile-v2.schema.json": "b9e1c768c53ce18a0fb9c8b1e5a55106963c8777b616e5611f9558152cdb5205",
+    "native-material-install-preview-v2.schema.json": "9f73efac16be5d79b761d39880469f191944168aabcd36222bad7160dd07251f"
+  },
+  "fixture_index_digest": "27bdfbcad0c08e7b9710c300fbf64cbf6639fbc46958297b075bec9a84e5e785",
+  "passed": true,
+  "cases": [
+    {
+      "fixture": "fixtures/01-candidate-profile-valid.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/02-preview-plan-valid.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/03-refused-plan-valid.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/04-profile-traversal-invalid.json",
+      "passed": true,
+      "schema_valid": false,
+      "schema_errors": [
+        {
+          "path": [
+            "locations",
+            0,
+            "directory_segments",
+            0
+          ],
+          "validator": "pattern"
+        }
+      ],
+      "semantic_errors": [],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/05-old-profile-version-invalid.json",
+      "passed": true,
+      "schema_valid": false,
+      "schema_errors": [
+        {
+          "path": [
+            "record_type"
+          ],
+          "validator": "const"
+        }
+      ],
+      "semantic_errors": [],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/06-constructor-is-not-discovery.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "evidence_stage_not_supported"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/07-new-semantics-need-engine.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "engine_semantics_unsupported"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/08-runtime-version-mismatch.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "client_binding_mismatch"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/09-known-bad-binding-disabled.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "binding_disabled"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/10-two-packages-one-target.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "path_collision"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/11-worker-authority-escalation.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "authority_exceeded"
+      ],
+      "establishes_native_qualification": false
+    },
+    {
+      "fixture": "fixtures/12-required-capability-omitted.json",
+      "passed": true,
+      "schema_valid": true,
+      "schema_errors": [],
+      "semantic_errors": [
+        "required_capability_unavailable"
+      ],
+      "establishes_native_qualification": false
+    }
+  ],
+  "limits": [
+    "Schema and synthetic semantic checks only; no runtime registry or writer imports this validator",
+    "Host admission/qualification facts are synthetic test assumptions, not actual decisions",
+    "No native client, probe command, model, scheduling service or file installation ran"
+  ]
+}

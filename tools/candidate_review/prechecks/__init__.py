@@ -108,6 +108,9 @@ def result_of(kind: str, engine_id: str, version: str, findings) -> PrecheckResu
 
 def run_prechecks(request, engines: Mapping, context: PrecheckContext) -> PrecheckOutcome:
     """Run every engine of every kind and fail closed when a kind was not decided."""
+    binding = body_binding_findings(request)
+    if binding:
+        return PrecheckOutcome((refused("format", "candidate_request_integrity", "1", binding),))
     results = []
     for kind in PRECHECK_KINDS:
         completed = False
@@ -135,3 +138,25 @@ def run_prechecks(request, engines: Mapping, context: PrecheckContext) -> Preche
             results.append(PrecheckResult(kind, NO_ENGINE, "", REFUSED, (PrecheckFinding(
                 "precheck_kind_unavailable", f"no {kind} engine completed, so the {kind} pre-check was not decided"),)))
     return PrecheckOutcome(tuple(results))
+
+
+def body_binding_findings(request) -> list:
+    """The fixed request edge checks identity before any replaceable pre-check or reviewer runs.
+
+    The expected values come from the selected item reference, not from remeasuring
+    and overwriting its declaration. Calibration producers explicitly bind their
+    altered bodies before submitting them through this same edge.
+    """
+    reference = request.item.get("reference")
+    reference = reference if type(reference) is dict else {}
+    findings = []
+    declared_size = reference.get("size_bytes")
+    if type(declared_size) is not int or declared_size != request.body_size_bytes:
+        findings.append(("body_size_mismatch", "the body byte count differs from its declared size"))
+    declared_digest = reference.get("digest")
+    if type(declared_digest) is not str or declared_digest != request.body_sha256:
+        findings.append(("body_digest_mismatch", "the body bytes differ from their declared digest"))
+    from ..native import NativePackageReviewRequest
+    if isinstance(request, NativePackageReviewRequest):
+        findings.extend(request.package_binding_findings())
+    return findings

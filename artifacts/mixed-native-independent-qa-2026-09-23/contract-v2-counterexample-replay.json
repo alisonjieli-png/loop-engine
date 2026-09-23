@@ -1,0 +1,201 @@
+{
+  "provider_calls": 0,
+  "approvals": 0,
+  "rows": [
+    {
+      "identity": "audit_functional_dependency_rows",
+      "case": "integral_number",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "violations": [
+            {
+              "dependent_variants": [
+                [
+                  "x"
+                ],
+                [
+                  "y"
+                ]
+              ],
+              "determinant": [
+                1
+              ],
+              "row_indices": [
+                0,
+                1
+              ]
+            }
+          ]
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "case": "integral_number",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "bins": [
+            {
+              "item_ids": [
+                "a",
+                "d"
+              ],
+              "used": 8
+            },
+            {
+              "item_ids": [
+                "b",
+                "c"
+              ],
+              "used": 8
+            }
+          ]
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "case": "integral_number",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "values": [
+            20,
+            "literal",
+            false
+          ]
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "case": "integral_number",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "duration": 7,
+          "schedule": [
+            {
+              "finish": 3,
+              "id": "a",
+              "start": 0
+            },
+            {
+              "finish": 5,
+              "id": "b",
+              "start": 0
+            },
+            {
+              "finish": 7,
+              "id": "c",
+              "start": 5
+            }
+          ]
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "case": "integral_number",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "decisions": [
+            {
+              "allowed": false,
+              "id": "a",
+              "tokens_after": {
+                "denominator": 1,
+                "numerator": 1
+              }
+            },
+            {
+              "allowed": true,
+              "id": "b",
+              "tokens_after": {
+                "denominator": 1,
+                "numerator": 0
+              }
+            },
+            {
+              "allowed": false,
+              "id": "c",
+              "tokens_after": {
+                "denominator": 2,
+                "numerator": 1
+              }
+            },
+            {
+              "allowed": true,
+              "id": "d",
+              "tokens_after": {
+                "denominator": 1,
+                "numerator": 0
+              }
+            }
+          ]
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "case": "unselected_nested_value",
+      "passed": true,
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "violations": []
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      }
+    }
+  ]
+}

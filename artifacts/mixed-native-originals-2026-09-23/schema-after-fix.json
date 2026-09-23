@@ -1,0 +1,13 @@
+{
+  "case": {
+    "tasks": [
+      {
+        "id": "task\n",
+        "duration": 1,
+        "depends_on": []
+      }
+    ]
+  },
+  "schema_accepted_invalid_identifier": false,
+  "passed": true
+}

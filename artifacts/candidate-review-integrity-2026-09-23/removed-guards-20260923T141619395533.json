@@ -1,0 +1,158 @@
+{
+  "created_at": "2026-09-23T14:16:19.395533+00:00",
+  "model_calls": 0,
+  "source_mutations": 0,
+  "sources": {
+    "tools/candidate_review/prechecks/__init__.py": "1c6401718fe8c5030d768b5c0dc6d90d6bf35c7eff77d4cb326738849af10a88",
+    "tools/candidate_review/reviewers/command_line.py": "5cd6dc80c6985c53d0add030e5025518865d77577ce0498f13151619dd4aced8",
+    "tools/candidate_review/panel.py": "feb1ce9292849fb34d8920b3006c841e657ed2d4e2514c78c3b57ef80cf71ce5",
+    "tools/test_candidate_review_integrity.py": "50570029e8243a98065685d3de4b2cadccc07a208fd776ff612bc5ca4b67dd7d"
+  },
+  "results": [
+    {
+      "guard": "body_digest",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_same_length_changed_bytes_are_refused (test_candidate_review_integrity.CandidateBodyBindingTest.test_same_length_changed_bytes_are_refused) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.011s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_same_length_changed_bytes_are_refused (test_candidate_review_integrity.CandidateBodyBindingTest.test_same_length_changed_bytes_are_refused) ... FAIL\n\n======================================================================\nFAIL: test_same_length_changed_bytes_are_refused (test_candidate_review_integrity.CandidateBodyBindingTest.test_same_length_changed_bytes_are_refused)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 44, in test_same_length_changed_bytes_are_refused\n    self.assertIn(\"body_digest_mismatch\", _codes(result))\nAssertionError: 'body_digest_mismatch' not found in set()\n\n----------------------------------------------------------------------\nRan 1 test in 0.047s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "body_size",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.003s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 5,
+        "errors": 0,
+        "output": "test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) ... \n  test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2424) ... FAIL\n  test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=None) ... FAIL\n  test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=True) ... FAIL\n  test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2423.0) ... FAIL\n  test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size='100') ... FAIL\n\n======================================================================\nFAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2424)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 53, in test_declared_byte_size_must_be_an_exact_nonnegative_integer\n    self.assertIn(\"body_size_mismatch\", _codes(result))\nAssertionError: 'body_size_mismatch' not found in set()\n\n======================================================================\nFAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=None)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 53, in test_declared_byte_size_must_be_an_exact_nonnegative_integer\n    self.assertIn(\"body_size_mismatch\", _codes(result))\nAssertionError: 'body_size_mismatch' not found in set()\n\n======================================================================\nFAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=True)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 53, in test_declared_byte_size_must_be_an_exact_nonnegative_integer\n    self.assertIn(\"body_size_mismatch\", _codes(result))\nAssertionError: 'body_size_mismatch' not found in set()\n\n======================================================================\nFAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2423.0)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 53, in test_declared_byte_size_must_be_an_exact_nonnegative_integer\n    self.assertIn(\"body_size_mismatch\", _codes(result))\nAssertionError: 'body_size_mismatch' not found in set()\n\n======================================================================\nFAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size='100')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 53, in test_declared_byte_size_must_be_an_exact_nonnegative_integer\n    self.assertIn(\"body_size_mismatch\", _codes(result))\nAssertionError: 'body_size_mismatch' not found in set()\n\n----------------------------------------------------------------------\nRan 1 test in 0.179s\n\nFAILED (failures=5)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "codex_reported_identity",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_codex_does_not_promote_requested_model_to_reported_identity (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_does_not_promote_requested_model_to_reported_identity) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_codex_does_not_promote_requested_model_to_reported_identity (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_does_not_promote_requested_model_to_reported_identity) ... FAIL\n\n======================================================================\nFAIL: test_codex_does_not_promote_requested_model_to_reported_identity (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_does_not_promote_requested_model_to_reported_identity)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 112, in test_codex_does_not_promote_requested_model_to_reported_identity\n    self.assertEqual(attempt.reported_model, \"\")\nAssertionError: 'gpt-6-sol' != ''\n- gpt-6-sol\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "claude_unknown_usage",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_claude_missing_usage_stays_unknown_even_when_no_model_used (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_usage_stays_unknown_even_when_no_model_used) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_claude_missing_usage_stays_unknown_even_when_no_model_used (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_usage_stays_unknown_even_when_no_model_used) ... FAIL\n\n======================================================================\nFAIL: test_claude_missing_usage_stays_unknown_even_when_no_model_used (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_usage_stays_unknown_even_when_no_model_used)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 122, in test_claude_missing_usage_stays_unknown_even_when_no_model_used\n    self.assertEqual(attempt.usage, reviewers.UNKNOWN_USAGE)\nAssertionError: Usage(input_tokens=0, output_tokens=0, reasoning_output_toke[61 chars]ted') != Usage(input_tokens=None, output_tokens=None, reasoning_outpu[53 chars]own')\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "claude_multiple_models",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_claude_missing_and_mismatched_reported_identity_do_not_count (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_claude_missing_and_mismatched_reported_identity_do_not_count (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) ... \n  test_claude_missing_and_mismatched_reported_identity_do_not_count (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) (models={'claude-opus-5-5': {}, 'another-model': {}}) ... FAIL\n\n======================================================================\nFAIL: test_claude_missing_and_mismatched_reported_identity_do_not_count (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) (models={'claude-opus-5-5': {}, 'another-model': {}})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 147, in test_claude_missing_and_mismatched_reported_identity_do_not_count\n    self.assertEqual(attempt.outcome, reviewers.MODEL_IDENTITY_MISMATCH)\nAssertionError: 'answered' != 'model_identity_mismatch'\n- answered\n+ model_identity_mismatch\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "codex_availability",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_codex_without_identity_reporting_is_unavailable_before_a_review_call (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_without_identity_reporting_is_unavailable_before_a_review_call) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.022s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_codex_without_identity_reporting_is_unavailable_before_a_review_call (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_without_identity_reporting_is_unavailable_before_a_review_call) ... FAIL\n\n======================================================================\nFAIL: test_codex_without_identity_reporting_is_unavailable_before_a_review_call (test_candidate_review_integrity.CommandReportedFactsTest.test_codex_without_identity_reporting_is_unavailable_before_a_review_call)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 100, in test_codex_without_identity_reporting_is_unavailable_before_a_review_call\n    self.assertFalse(available.available)\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 1 test in 0.021s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "claude_process_exit",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_claude_nonzero_exit_never_counts_a_success_shaped_response (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_nonzero_exit_never_counts_a_success_shaped_response) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_claude_nonzero_exit_never_counts_a_success_shaped_response (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_nonzero_exit_never_counts_a_success_shaped_response) ... FAIL\n\n======================================================================\nFAIL: test_claude_nonzero_exit_never_counts_a_success_shaped_response (test_candidate_review_integrity.CommandReportedFactsTest.test_claude_nonzero_exit_never_counts_a_success_shaped_response)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 92, in test_claude_nonzero_exit_never_counts_a_success_shaped_response\n    self.assertNotEqual(result.outcome, reviewers.ANSWERED)\nAssertionError: 'answered' == 'answered'\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "fixed_panel_identity",
+      "baseline": {
+        "passed": true,
+        "tests_run": 1,
+        "failures": 0,
+        "errors": 0,
+        "output": "test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine (test_candidate_review_integrity.FixedPanelIdentityTest.test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.089s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "tests_run": 1,
+        "failures": 1,
+        "errors": 0,
+        "output": "test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine (test_candidate_review_integrity.FixedPanelIdentityTest.test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine) ... FAIL\n\n======================================================================\nFAIL: test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine (test_candidate_review_integrity.FixedPanelIdentityTest.test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py\", line 169, in test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine\n    self.assertNotEqual(_only(result).outcome, \"approved\")\nAssertionError: 'approved' == 'approved'\n\n----------------------------------------------------------------------\nRan 1 test in 0.041s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    }
+  ],
+  "all_detected": true
+}

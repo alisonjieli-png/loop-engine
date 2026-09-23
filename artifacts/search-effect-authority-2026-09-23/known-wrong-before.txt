@@ -1,0 +1,214 @@
+test_disabled_tenant_is_refused (tools.test_search_effect_authority.SearchEffectAuthority.test_disabled_tenant_is_refused) ... ok
+test_effect_selection_does_not_broaden_grants_or_scopes (tools.test_search_effect_authority.SearchEffectAuthority.test_effect_selection_does_not_broaden_grants_or_scopes) ... FAIL
+test_inflight_grant_change_still_refuses_selected_metadata (tools.test_search_effect_authority.SearchEffectAuthority.test_inflight_grant_change_still_refuses_selected_metadata) ... FAIL
+test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) ... 
+  test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) (fields={'authority_effects': []}) ... FAIL
+  test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) (fields={'authority_effects': ['reads_fs']}) ... FAIL
+test_protocol_schema_and_calls_share_the_same_selection (tools.test_search_effect_authority.SearchEffectAuthority.test_protocol_schema_and_calls_share_the_same_selection) ... ERROR
+test_request_version_is_advertised_and_old_or_future_requests_refuse (tools.test_search_effect_authority.SearchEffectAuthority.test_request_version_is_advertised_and_old_or_future_requests_refuse) ... FAIL
+test_search_can_select_an_authorized_effectful_item (tools.test_search_effect_authority.SearchEffectAuthority.test_search_can_select_an_authorized_effectful_item) ... FAIL
+test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) ... 
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=['not_an_effect']) ... FAIL
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=['spawns_process', 'spawns_process']) ... FAIL
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects='spawns_process') ... FAIL
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=[True]) ... FAIL
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=[{}]) ... FAIL
+  test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=None) ... FAIL
+test_unknown_authority_and_tenant_fields_are_not_selectors (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_authority_and_tenant_fields_are_not_selectors) ... ok
+test_unrelated_query_and_unchanged_ranking (tools.test_search_effect_authority.SearchEffectAuthority.test_unrelated_query_and_unchanged_ranking) ... FAIL
+
+======================================================================
+ERROR: test_protocol_schema_and_calls_share_the_same_selection (tools.test_search_effect_authority.SearchEffectAuthority.test_protocol_schema_and_calls_share_the_same_selection)
+----------------------------------------------------------------------
+  + Exception Group Traceback (most recent call last):
+  |   File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 157, in test_protocol_schema_and_calls_share_the_same_selection
+  |     asyncio.run(exercise())
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+  |     return runner.run(main)
+  |            ^^^^^^^^^^^^^^^^
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+  |     return self._loop.run_until_complete(task)
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+  |     return future.result()
+  |            ^^^^^^^^^^^^^^^
+  |   File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 142, in exercise
+  |     async with _protocol_client(self.base, self.fixture, mode) as client:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/contextlib.py", line 231, in __aexit__
+  |     await self.gen.athrow(value)
+  |   File "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/protocol_checks.py", line 41, in _protocol_client
+  |     async with Client(streamable_http_client(base + "/mcp", http_client=http), mode=mode) as client:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/mcp/client/client.py", line 475, in __aexit__
+  |     await self._exit_stack.__aexit__(exc_type, exc_val, exc_tb)
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/contextlib.py", line 754, in __aexit__
+  |     raise exc_details[1]
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/contextlib.py", line 737, in __aexit__
+  |     cb_suppress = await cb(*exc_details)
+  |                   ^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/contextlib.py", line 231, in __aexit__
+  |     await self.gen.athrow(value)
+  |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/mcp/client/streamable_http.py", line 736, in streamable_http_client
+  |     anyio.create_task_group() as tg,
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 815, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Exception Group Traceback (most recent call last):
+    |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/mcp/client/streamable_http.py", line 753, in streamable_http_client
+    |     yield read_stream, write_stream
+    |   File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/contextlib.py", line 737, in __aexit__
+    |     cb_suppress = await cb(*exc_details)
+    |                   ^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/mcp/client/session.py", line 514, in __aexit__
+    |     result = await self._task_group.__aexit__(exc_type, exc_val, exc_tb)
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/username/.le-codex-build/search-effects/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 815, in __aexit__
+    |     raise BaseExceptionGroup(
+    | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+    +-+---------------- 1 ----------------
+      | Traceback (most recent call last):
+      |   File "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/protocol_checks.py", line 42, in _protocol_client
+      |     yield client
+      |   File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 145, in exercise
+      |     self.assertEqual(search.input_schema["properties"]["authority_effects"]["type"], "array")
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+      | KeyError: 'authority_effects'
+      +------------------------------------
+
+======================================================================
+FAIL: test_effect_selection_does_not_broaden_grants_or_scopes (tools.test_search_effect_authority.SearchEffectAuthority.test_effect_selection_does_not_broaden_grants_or_scopes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 103, in test_effect_selection_does_not_broaden_grants_or_scopes
+    self.assertEqual(no_grants.status_code, 200)
+AssertionError: 400 != 200
+
+======================================================================
+FAIL: test_inflight_grant_change_still_refuses_selected_metadata (tools.test_search_effect_authority.SearchEffectAuthority.test_inflight_grant_change_still_refuses_selected_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 136, in test_inflight_grant_change_still_refuses_selected_metadata
+    self.assertEqual(result.json()["error"]["code"], "disclosure_grant_changed")
+AssertionError: 'unknown_request_field' != 'disclosure_grant_changed'
+- unknown_request_field
++ disclosure_grant_changed
+
+
+======================================================================
+FAIL: test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) (fields={'authority_effects': []})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 73, in test_omitted_empty_or_insufficient_effects_remain_withheld
+    self.assertEqual(result.status_code, 200)
+AssertionError: 400 != 200
+
+======================================================================
+FAIL: test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) (fields={'authority_effects': ['reads_fs']})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 73, in test_omitted_empty_or_insufficient_effects_remain_withheld
+    self.assertEqual(result.status_code, 200)
+AssertionError: 400 != 200
+
+======================================================================
+FAIL: test_request_version_is_advertised_and_old_or_future_requests_refuse (tools.test_search_effect_authority.SearchEffectAuthority.test_request_version_is_advertised_and_old_or_future_requests_refuse)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 91, in test_request_version_is_advertised_and_old_or_future_requests_refuse
+    self.assertEqual(RETRIEVAL_REQUEST_VERSION, "service_retrieval_request/v2")
+AssertionError: 'service_retrieval_request/v1' != 'service_retrieval_request/v2'
+- service_retrieval_request/v1
+?                            ^
++ service_retrieval_request/v2
+?                            ^
+
+
+======================================================================
+FAIL: test_search_can_select_an_authorized_effectful_item (tools.test_search_effect_authority.SearchEffectAuthority.test_search_can_select_an_authorized_effectful_item)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 61, in test_search_can_select_an_authorized_effectful_item
+    self.assertEqual(found.status_code, 200, found.text)
+AssertionError: 400 != 200 : {"record_type":"service_http_error/v1","error":{"code":"unknown_request_field","message":"The request carried a field this service does not know.","next_action":"Remove the field the refusal names and send only the documented fields."},"effect_commitment":"not_asserted","automatic_retry":false,"request_reference":"ref_b4ruc6gyrd3omcbipl64zgqxcy"}
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=['not_an_effect'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=['spawns_process', 'spawns_process'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects='spawns_process')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=[True])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=[{}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) (effects=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 82, in test_unknown_and_malformed_effects_refuse_before_indexing
+    self.assertEqual(result.json()["error"]["code"], "invalid_request")
+AssertionError: 'unknown_request_field' != 'invalid_request'
+- unknown_request_field
++ invalid_request
+
+
+======================================================================
+FAIL: test_unrelated_query_and_unchanged_ranking (tools.test_search_effect_authority.SearchEffectAuthority.test_unrelated_query_and_unchanged_ranking)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/search-effects/tools/test_search_effect_authority.py", line 120, in test_unrelated_query_and_unchanged_ranking
+    self.assertEqual(result.status_code, 200)
+AssertionError: 400 != 200
+
+----------------------------------------------------------------------
+Ran 10 tests in 2.863s
+
+FAILED (failures=13, errors=1)

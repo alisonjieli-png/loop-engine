@@ -7,6 +7,9 @@ Two output protocols are read exactly:
   completed turn's usage as the command line reported it. With its tools
   switched off by the installation's arguments, one turn is one model response;
   retries inside the command line are not visible, which the call record says.
+  This qualified event subset does not report the answering model, so a
+  completed response cannot count as a reviewer verdict. Requested identity
+  is never substituted for missing reported identity.
 - ``claude_print_json``: ``claude -p --output-format json`` prints one JSON
   result with the answer, the usage and the models used. A result that used no
   model (for example a refused login) records zero physical calls.
@@ -47,6 +50,7 @@ CODEX_PROTOCOL, CLAUDE_PROTOCOL = "codex_exec_jsonl", "claude_print_json"
 VERSION_TIMEOUT_SECONDS = 30.0
 ONE_TURN = "one completed turn reported by the command line; retries inside it are not visible"
 NO_MODEL_USED = "the command line reports that no model was used"
+CODEX_MODEL_UNREPORTED = "the codex_exec_jsonl protocol does not report the answering model"
 #: Words in a command line's error text, checked in this order, and the outcome each one names.
 ERROR_WORDS = (
     (USAGE_LIMIT_REACHED, ("usage limit", "quota", "insufficient_quota", "out of credits", "credit balance")),
@@ -97,7 +101,8 @@ def read_codex(stdout: str, stderr: str, returncode: int, installation, command:
                       COMMAND_LINE_REPORTED)
     text = answers[-1] if answers and type(answers[-1]) is str else ""
     if returncode == 0 and text.strip() and usages and not errors:
-        return ReviewerAttempt(ANSWERED, text, usage, 1, elapsed, None, installation.model, command, "", ONE_TURN)
+        return ReviewerAttempt(MODEL_IDENTITY_MISMATCH, "", usage, 1, elapsed, None, "", command,
+                               CODEX_MODEL_UNREPORTED, ONE_TURN)
     detail = " ".join(errors + [stderr]).strip() or f"the command exited with {returncode} and no answer"
     return failed(classify(detail), command, detail[:300], physical_model_calls=1 if usages else None,
                   elapsed_seconds=elapsed, usage=usage)
@@ -123,12 +128,12 @@ def read_claude(stdout: str, stderr: str, returncode: int, installation, command
         else UNKNOWN_USAGE
     physical = 0 if no_model else (1 if models else None)
     basis = NO_MODEL_USED if no_model else ONE_TURN
-    if value.get("is_error") is not False:
+    if returncode != 0 or value.get("is_error") is not False:
         detail = str(value.get("result") or "") + " " + stderr
         return failed(classify(detail), command, detail.strip()[:300], physical_model_calls=physical,
-                      elapsed_seconds=elapsed, usage=usage if not no_model else Usage(0, 0, source=COMMAND_LINE_REPORTED))
+                      elapsed_seconds=elapsed, usage=usage)
     answer = value.get("result")
-    if installation.model not in models:
+    if set(models) != {installation.model}:
         return failed(MODEL_IDENTITY_MISMATCH, command, f"the command line reports the models {sorted(models)}",
                       physical_model_calls=physical, elapsed_seconds=elapsed, usage=usage,
                       reported_model=",".join(sorted(models)))
@@ -199,7 +204,9 @@ class CommandLineReviewer:
         lines = (finished.stdout or finished.stderr).strip().splitlines()
         if finished.returncode != 0 or not lines:
             return Availability(False, "the version could not be read", "", {}, ENGINE_UNAVAILABLE)
-        return Availability(True, "", lines[0][:200], {"model": self.installation.model})
+        if self.reader is read_codex:
+            return Availability(False, CODEX_MODEL_UNREPORTED, lines[0][:200], {}, MODEL_IDENTITY_MISMATCH)
+        return Availability(True, "", lines[0][:200], {})
 
     def review(self, prompt, allowance) -> ReviewerAttempt:
         executable = self._resolved()

@@ -1,0 +1,12 @@
+tools/build_documentation_index.py:211:43: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:292:52: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:386:47: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:424:31: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:481:17: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:563:15: UP031 Use format specifiers instead of percent format
+tools/build_documentation_index.py:573:11: UP031 Use format specifiers instead of percent format
+tools/check_service_documentation.py:179:13: S102 Use of `exec` detected
+tools/check_service_documentation.py:420:56: UP031 Use format specifiers instead of percent format
+tools/check_service_documentation.py:424:48: UP031 Use format specifiers instead of percent format
+tools/check_service_documentation.py:478:18: UP031 Use format specifiers instead of percent format
+Found 55 errors (44 fixed, 11 remaining).

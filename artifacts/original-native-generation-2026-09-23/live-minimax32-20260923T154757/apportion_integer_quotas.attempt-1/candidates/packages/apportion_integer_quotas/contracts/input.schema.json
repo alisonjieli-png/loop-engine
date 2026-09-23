@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/apportion_integer_quotas/input.schema.json",
+  "title": "apportion_integer_quotas input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["target", "weights"],
+  "properties": {
+    "target": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Non-negative integer sample size to allocate. Stored as int64-safe."
+    },
+    "weights": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "minLength": 1,
+        "pattern": "^(?!\\s).+(?<!\\s)$"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    }
+  },
+  "$defs": {
+    "byteCeiling": {
+      "description": "The entire stdin payload must be at most 1048576 UTF-8 bytes.",
+      "type": "integer",
+      "const": 1048576
+    }
+  }
+}

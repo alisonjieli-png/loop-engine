@@ -1,0 +1,51 @@
+......................................E..............................
+======================================================================
+ERROR: test_duplicate_json_fields_refuse_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_json_fields_refuse_before_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/service_runtime/catalogue_bundle.py", line 67, in strict_json
+    value = json.loads(payload, object_pairs_hook=unique,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/__init__.py", line 359, in loads
+    return cls(**kw).decode(s)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/json/decoder.py", line 354, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/service_runtime/catalogue_bundle.py", line 63, in unique
+    raise ValueError("duplicate field")
+ValueError: duplicate field
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/prepare_harness_candidates.py", line 177, in _input_record
+    value = strict_json(raw, "proposals_unreadable")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/service_runtime/catalogue_bundle.py", line 70, in strict_json
+    _refuse(code, "the bundle holds text that is not one strict JSON object")
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/service_runtime/catalogue_bundle.py", line 49, in _refuse
+    raise ServiceRuntimeError(code, message)
+loop_engine.core.service_runtime.records.ServiceRuntimeError: the bundle holds text that is not one strict JSON object
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_prepare_native_harness_candidates.py", line 202, in test_duplicate_json_fields_refuse_before_output
+    prepare(PreparationRequest(self.repository, self.fixture.input, self.output, True))
+  File "/home/username/.le-codex-build/import-owner-repair/tools/prepare_harness_candidates.py", line 294, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/tools/prepare_harness_candidates.py", line 179, in _input_record
+    _refuse("proposals_unreadable")
+  File "/home/username/.le-codex-build/import-owner-repair/tools/prepare_harness_candidates.py", line 73, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+prepare_harness_candidates.PreparationError: proposals_unreadable
+
+----------------------------------------------------------------------
+Ran 69 tests in 4.488s
+
+FAILED (errors=1)

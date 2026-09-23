@@ -39,6 +39,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from loop_engine.catalog.query import IntelligenceQuery  # noqa: E402
@@ -59,7 +60,7 @@ from loop_engine.core.library_ingestion.selection import select_engines  # noqa:
 from loop_engine.core.library_ingestion.source_declarations import (  # noqa: E402
     GITHUB_ENGINE, load_sources, read_sources)
 from loop_engine.core.library_ingestion.staging_rows import populations  # noqa: E402
-from stage_intelligence_candidates import (  # noqa: E402
+from tools.stage_intelligence_candidates import (  # noqa: E402
     CandidateStageRequest, compile_candidates, review_search, stage_candidates)
 
 RUN_REPORT_RECORD_TYPE = "library_ingestion_run_report/v1"

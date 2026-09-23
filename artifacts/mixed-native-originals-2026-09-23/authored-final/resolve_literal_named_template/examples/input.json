@@ -1,0 +1,6 @@
+{
+  "template": "Hello ${who}",
+  "variables": {
+    "who": "${later}"
+  }
+}

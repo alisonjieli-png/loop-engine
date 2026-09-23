@@ -54,6 +54,27 @@ WEB_ASSETS = {
     "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript"),
     "/assets/service.js": ("service.js", "text/javascript"),
     "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
+    # The Documentation view. `documentation-index.json` decides which pages exist, their order, titles and
+    # addresses; `tools/build_documentation_index.py` builds each page's body under `docs/` from the Markdown
+    # guide the index names, and `tools/check_documentation_index.py` fails when this table, the index and the
+    # built bodies disagree. Every page address opens the one page, so each keeps the site's header and footer.
+    "/docs/what-baltor-is": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/your-account": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/searching-and-retrieving": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/usage-and-what-you-pay-for": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/troubleshooting": ("index.html", HTML_MEDIA_TYPE),
+    "/docs/serving-and-connections": ("index.html", HTML_MEDIA_TYPE),
+    # The setup guide is the Get set up page. This older documentation address opens it too.
+    "/docs/getting-set-up": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/documentation-index.json": ("documentation-index.json", "application/json"),
+    "/assets/documentation.js": ("documentation.js", "text/javascript"),
+    "/assets/documentation.css": ("documentation.css", "text/css"),
+    "/assets/docs/what-baltor-is.html": ("docs/what-baltor-is.html", HTML_MEDIA_TYPE),
+    "/assets/docs/your-account.html": ("docs/your-account.html", HTML_MEDIA_TYPE),
+    "/assets/docs/searching-and-retrieving.html": ("docs/searching-and-retrieving.html", HTML_MEDIA_TYPE),
+    "/assets/docs/usage-and-what-you-pay-for.html": ("docs/usage-and-what-you-pay-for.html", HTML_MEDIA_TYPE),
+    "/assets/docs/troubleshooting.html": ("docs/troubleshooting.html", HTML_MEDIA_TYPE),
+    "/assets/docs/serving-and-connections.html": ("docs/serving-and-connections.html", HTML_MEDIA_TYPE),
     # The typefaces of the website, Geist and Geist Mono, served from this origin so that no
     # visitor's address reaches a font provider. Their licence travels in the notices below.
     "/assets/geist.woff2": ("geist.woff2", "font/woff2"),

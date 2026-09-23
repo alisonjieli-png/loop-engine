@@ -21,12 +21,41 @@ from .records import digest, read_part, read_record, refuse, sha256_hex, text_fi
 from .verdicts import APPROVE, DECISIONS, REJECT
 
 CALIBRATION_SET_RECORD = "candidate_review_calibration_set/v1"
+CALIBRATION_RESULT_RECORD = "candidate_review_calibration_result/v2"
 ITEM_FIELDS = ("identity", "base_identity", "expected_decision", "criterion_id", "defect", "replacements",
                "reference_overrides")
 OVERRIDABLE = ("declared_effects", "purpose")
 FAILED_CALIBRATION, CALIBRATION_INCOMPLETE = "failed_calibration", "calibration_incomplete"
 LIMITS = ("A fixed set of planted defects measures whether a reviewer catches those defect classes. It does not "
-          "estimate how often the reviewer errs on real candidates.")
+          "estimate how often the reviewer errs on real candidates. An expected-approve control rejection is "
+          "only a label disagreement until the control has complete admission eligibility evidence, including "
+          "applicable native-loading evidence; it is not an empirical false-refusal measurement.")
+
+
+@dataclass(frozen=True)
+class CalibrationInputs:
+    """Host-selected controls and exact requests, supplied separately from an untrusted export."""
+
+    control_set: object
+    requests: tuple
+    instructions: object
+
+
+def installation_result(expected: dict, answers: dict) -> dict:
+    """The single eligibility rule shared by live evaluation and export reconstruction."""
+    if set(answers) - set(expected) or any(value not in DECISIONS for value in answers.values()):
+        refuse("calibration_decision_invalid", "calibration decisions name only controls and known decisions")
+    wrong = [identity for identity, decision in expected.items() if decision == REJECT]
+    good = [identity for identity, decision in expected.items() if decision == APPROVE]
+    false_approvals = sorted(identity for identity in wrong if answers.get(identity) == APPROVE)
+    unanswered = sorted(set(expected) - set(answers))
+    status = FAILED_CALIBRATION if false_approvals else (CALIBRATION_INCOMPLETE if unanswered else "qualified")
+    return {"decisions": dict(sorted(answers.items())),
+            "correct": sum(expected[identity] == decision for identity, decision in answers.items()),
+            "false_approvals": false_approvals,
+            "false_refusals": sorted(identity for identity in good if answers.get(identity) == REJECT),
+            "known_wrong_without_a_verdict": sorted(identity for identity in wrong if identity not in answers),
+            "controls_without_a_verdict": unanswered, "status": status}
 
 
 @dataclass(frozen=True)
@@ -119,8 +148,7 @@ def evaluate(calibration: CalibrationSet, result) -> dict:
     expected = {item.identity: item.expected_decision for item in calibration.items}
     # Every installation the run could ask counts, whether or not the run reached it: a reviewer the
     # calibration never measured is not trusted with real candidates.
-    asked = {identity: set() for identity, probe in result.availability.items()
-             if probe.available and identity not in result.ineligible}
+    asked = {identity: set() for identity in set(result.availability) | set(result.ineligible)}
     for call in result.calls:
         asked.setdefault(call["installation_id"], set()).add(call["identity"])
     for item in result.items:
@@ -133,17 +161,9 @@ def evaluate(calibration: CalibrationSet, result) -> dict:
     installations = {}
     for installation_id in sorted(asked):
         answers = decided.get(installation_id, {})
-        wrong = [identity for identity, decision in expected.items() if decision == REJECT]
-        good = [identity for identity, decision in expected.items() if decision == APPROVE]
-        false_approvals = sorted(identity for identity in wrong if answers.get(identity) == APPROVE)
-        unanswered = sorted(identity for identity in wrong if identity not in answers)
-        false_refusals = sorted(identity for identity in good if answers.get(identity) == REJECT)
-        correct = sum(1 for identity, decision in answers.items() if expected.get(identity) == decision)
-        status = FAILED_CALIBRATION if false_approvals else (CALIBRATION_INCOMPLETE if unanswered else "qualified")
-        installations[installation_id] = {"decisions": dict(sorted(answers.items())), "correct": correct,
-                                          "false_approvals": false_approvals, "false_refusals": false_refusals,
-                                          "known_wrong_without_a_verdict": unanswered, "status": status}
-    return {"set_sha256": calibration.sha256, "purpose": calibration.purpose,
+        installations[installation_id] = installation_result(expected, answers)
+    return {"record_type": CALIBRATION_RESULT_RECORD,
+            "set_sha256": calibration.sha256, "purpose": calibration.purpose,
             "items": [item.to_dict() for item in calibration.items], "run_id": result.run_id,
             "installations": installations,
             "excluded": {installation_id: row["status"] for installation_id, row in installations.items()

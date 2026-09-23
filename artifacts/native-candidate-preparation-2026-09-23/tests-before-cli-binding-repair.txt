@@ -1,0 +1,44 @@
+test_documented_script_invocation_works_without_repository_on_pythonpath (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_documented_script_invocation_works_without_repository_on_pythonpath) ... FAIL
+test_script_refusal_is_typed_json_without_traceback (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_script_refusal_is_typed_json_without_traceback) ... FAIL
+
+======================================================================
+FAIL: test_documented_script_invocation_works_without_repository_on_pythonpath (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_documented_script_invocation_works_without_repository_on_pythonpath)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 206, in test_documented_script_invocation_works_without_repository_on_pythonpath
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 358, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 348, in main
+    report = prepare(PreparationRequest(options.repository, options.proposals,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 294, in prepare
+    return prepare_native(request, record, raw, revision, source_digests, license_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/native_harness_candidates.py", line 159, in prepare_native
+    preparation._checked_source(request.repository, revision, relative, digest)
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 145, in _checked_source
+    current = _regular_source(repository, relative).read_bytes()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 114, in _regular_source
+    _refuse("source_missing_or_escaped", relative)
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 69, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: source_missing_or_escaped: LICENSE
+
+
+======================================================================
+FAIL: test_script_refusal_is_typed_json_without_traceback (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_script_refusal_is_typed_json_without_traceback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 218, in test_script_refusal_is_typed_json_without_traceback
+    self.assertEqual(result.stderr, "")
+AssertionError: 'Traceback (most recent call last):\n  Fil[1562 chars]ch\n' != ''
+Diff is 1628 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.450s
+
+FAILED (failures=2)

@@ -1,0 +1,1901 @@
+{
+  "record_type": "original_native_method_verification/v1",
+  "passed": true,
+  "sandbox": {
+    "engine": "bubblewrap",
+    "network": "unshare-all",
+    "home_mounted": false,
+    "mounted_inputs": [
+      "read-only /usr",
+      "one candidate script",
+      "synthetic input",
+      "trusted resource-limit runner"
+    ],
+    "cpu_seconds": 2,
+    "address_space_bytes": 268435456,
+    "wall_timeout_seconds": 4,
+    "environment": "clearenv, HOME=/tmp, PATH=/usr/bin:/bin",
+    "execution": "python3 -I -S -B"
+  },
+  "packages": [
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "script_sha256": "b0e17802ec7da2b902b8f380489a7eeca4fdca51adc031a3456f2a86fa783568",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "itertools"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 2,
+            "uncovered": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [
+              {
+                "assignment": {
+                  "x": true
+                },
+                "rule_ids": [
+                  "a",
+                  "b"
+                ]
+              }
+            ],
+            "unambiguous_count": 0,
+            "uncovered": [
+              {
+                "x": false
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "script_sha256": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": [
+              {
+                "dependent_variants": [
+                  [
+                    "x"
+                  ],
+                  [
+                    "y"
+                  ]
+                ],
+                "determinant": [
+                  1
+                ],
+                "row_indices": [
+                  0,
+                  1
+                ]
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "script_sha256": "e971347d2b0c59fd43b9368995b7836416cad32c80d57378f75cb89f1f234b06",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [],
+            "compatible": true
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "changed_type",
+                "field": "age"
+              },
+              {
+                "code": "new_required_field",
+                "field": "name"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "extra_field_constrained",
+                "field": "x"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "script_sha256": "9f84e058c0f65b37d7275c197e0e80a0670160cadcaef80d2db2f549dbd72cca",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "itertools"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "0",
+                "b": "0",
+                "c": "0"
+              },
+              {
+                "a": "0",
+                "b": "1",
+                "c": "1"
+              },
+              {
+                "a": "1",
+                "b": "0",
+                "c": "1"
+              },
+              {
+                "a": "1",
+                "b": "1",
+                "c": "0"
+              }
+            ],
+            "covered_pairs": 12,
+            "total_pairs": 12
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "x",
+                "b": "z"
+              },
+              {
+                "a": "y",
+                "b": "z"
+              }
+            ],
+            "covered_pairs": 2,
+            "total_pairs": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "script_sha256": "339672c2df402a197ced971111f9998fdb8367fd02f76bfe136fd3377e88d6a7",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 2,
+            "frames_hex": [
+              "616263",
+              ""
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 0,
+            "frames_hex": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "script_sha256": "8f080aa48538dcb346b2743983855f440947874d1951bfe8373e807dc3b06d47",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "ast",
+        "fractions"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 2,
+            "numerator": 1
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 1,
+            "numerator": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "script_sha256": "bb10dce38ac6e06b0c595cb12dce777f18248e0921bca5d64f5215884a2b2d20",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "a",
+                "b"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "x"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "script_sha256": "308c686ca8e9e9bf105d137bb001aff149d0cc402e7913688583add91450745e",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": [
+              {
+                "item_ids": [
+                  "a",
+                  "d"
+                ],
+                "used": 8
+              },
+              {
+                "item_ids": [
+                  "b",
+                  "c"
+                ],
+                "used": 8
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "script_sha256": "01ec4acb9514b2c485aa4eac884cae4e281bff2fa5757e661f182872aa21040d",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              20,
+              "literal",
+              false
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              [
+                1,
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "script_sha256": "26091b7b72f150f098dfdce2a421b272271927bd2d93ca8c360440ae5586ca49",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello ${later}"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "a/a"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "script_sha256": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "graphlib"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 7,
+            "schedule": [
+              {
+                "finish": 3,
+                "id": "a",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "b",
+                "start": 0
+              },
+              {
+                "finish": 7,
+                "id": "c",
+                "start": 5
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 0,
+            "schedule": [
+              {
+                "finish": 0,
+                "id": "z",
+                "start": 0
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "script_sha256": "108436f5b87b7b931caf4947cca9ce7e8afdb61d006b4b9ed25de4c402d42a43",
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "fractions"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": false,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "b",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              },
+              {
+                "allowed": false,
+                "id": "c",
+                "tokens_after": {
+                  "denominator": 2,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "d",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": true,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "mutants": [
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "mutation": {
+        "before": "elif len(decisions) > 1:",
+        "after": "elif False:"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 2,
+            "uncovered": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 1,
+            "uncovered": [
+              {
+                "x": false
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "mutation": {
+        "before": "if len(group[\"dependent_variants\"]) > 1]",
+        "after": "if False]"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "mutation": {
+        "before": "add(\"changed_type\", field)",
+        "after": "pass"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [],
+            "compatible": true
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "new_required_field",
+                "field": "name"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "extra_field_constrained",
+                "field": "x"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "mutation": {
+        "before": "uncovered -= coverage[best]",
+        "after": "uncovered.clear()"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "0",
+                "b": "0",
+                "c": "0"
+              }
+            ],
+            "covered_pairs": 12,
+            "total_pairs": 12
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "x",
+                "b": "z"
+              }
+            ],
+            "covered_pairs": 2,
+            "total_pairs": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "mutation": {
+        "before": "need(size <= 1024 and offset + size <= len(data))",
+        "after": "need(size <= 1024)"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 2,
+            "frames_hex": [
+              "616263",
+              ""
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 0,
+            "frames_hex": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 0,
+          "output": {
+            "count": 1,
+            "frames_hex": [
+              "61"
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "mutation": {
+        "before": "result = left + right",
+        "after": "result = left - right"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 6,
+            "numerator": 1
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 1,
+            "numerator": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "mutation": {
+        "before": "len(group) > 1 or (group[0], group[0]) in edge_set",
+        "after": "len(group) > 1"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "a",
+                "b"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "x"
+              ]
+            ],
+            "cyclic_components": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "mutation": {
+        "before": "target = next((bucket for bucket in bins if bucket[\"used\"] + item[\"size\"] <= value[\"capacity\"]), None)",
+        "after": "target = None"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": [
+              {
+                "item_ids": [
+                  "a"
+                ],
+                "used": 6
+              },
+              {
+                "item_ids": [
+                  "b"
+                ],
+                "used": 4
+              },
+              {
+                "item_ids": [
+                  "c"
+                ],
+                "used": 4
+              },
+              {
+                "item_ids": [
+                  "d"
+                ],
+                "used": 2
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "mutation": {
+        "before": "encoded.replace(\"~1\", \"/\").replace(\"~0\", \"~\")",
+        "after": "encoded.replace(\"~0\", \"~\").replace(\"~1\", \"/\")"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": false,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              [
+                1,
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "mutation": {
+        "before": "need(names_used == set(value[\"variables\"]))",
+        "after": "need(names_used <= set(value[\"variables\"]))"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello ${later}"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "a/a"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "mutation": {
+        "before": "start = max((finishes[parent]",
+        "after": "start = min((finishes[parent]"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 5,
+            "schedule": [
+              {
+                "finish": 3,
+                "id": "a",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "b",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "c",
+                "start": 3
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 0,
+            "schedule": [
+              {
+                "finish": 0,
+                "id": "z",
+                "start": 0
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "mutation": {
+        "before": "previous) * value[\"refill_per_second\"], 1000)",
+        "after": "previous) * value[\"refill_per_second\"], 1)"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": false,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "b",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "c",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 2
+                }
+              },
+              {
+                "allowed": true,
+                "id": "d",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 2
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": true,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "model_calls": 0,
+  "independent_approval": false,
+  "native_harness_loading_proven": false
+}

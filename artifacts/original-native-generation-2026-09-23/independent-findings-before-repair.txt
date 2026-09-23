@@ -1,0 +1,65 @@
+FFFFEF
+======================================================================
+ERROR: test_rejected_physical_attempt_identity_is_retained_without_requested_fallback (tools.test_generate_original_native_candidates.GenerationTest.test_rejected_physical_attempt_identity_is_retained_without_requested_fallback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 300, in test_rejected_physical_attempt_identity_is_retained_without_requested_fallback
+    self.assertEqual(data['reported_model'],'reported-other-model')
+                     ~~~~^^^^^^^^^^^^^^^^^^
+KeyError: 'reported_model'
+
+======================================================================
+FAIL: test_changed_prepared_metadata_or_specification_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_changed_prepared_metadata_or_specification_refuses_resume) (name='items.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 288, in test_changed_prepared_metadata_or_specification_refuses_resume
+    with self.assertRaisesRegex(ValueError,'saved_prepared_tree_changed'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_changed_prepared_metadata_or_specification_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_changed_prepared_metadata_or_specification_refuses_resume) (name='items.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 288, in test_changed_prepared_metadata_or_specification_refuses_resume
+    with self.assertRaisesRegex(ValueError,'saved_prepared_tree_changed'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_changed_prepared_metadata_or_specification_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_changed_prepared_metadata_or_specification_refuses_resume) (name='specifications-001.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 288, in test_changed_prepared_metadata_or_specification_refuses_resume
+    with self.assertRaisesRegex(ValueError,'saved_prepared_tree_changed'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_changed_prepared_metadata_or_specification_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_changed_prepared_metadata_or_specification_refuses_resume) (name='preparation-report.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 288, in test_changed_prepared_metadata_or_specification_refuses_resume
+    with self.assertRaisesRegex(ValueError,'saved_prepared_tree_changed'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_error_body_preserves_reported_usage_and_unknown_model (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_error_body_preserves_reported_usage_and_unknown_model)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 65, in test_error_body_preserves_reported_usage_and_unknown_model
+    self.assertEqual((result.prompt_tokens, result.eval_tokens), (11, 7))
+AssertionError: Tuples differ: (None, None) != (11, 7)
+
+First differing element 0:
+None
+11
+
+- (None, None)
++ (11, 7)
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.198s
+
+FAILED (failures=5, errors=1)

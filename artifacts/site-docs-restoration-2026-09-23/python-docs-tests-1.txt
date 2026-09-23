@@ -1,0 +1,53 @@
+test_complete_current_docs_pass (tools.test_documentation_index.DocumentationAgreement.test_complete_current_docs_pass) ... ok
+test_removed_guards_have_discriminating_known_wrong_cases (tools.test_documentation_index.DocumentationAgreement.test_removed_guards_have_discriminating_known_wrong_cases) ... ok
+test_alias_objects_are_typed_refusals (tools.test_documentation_index.IndexContract.test_alias_objects_are_typed_refusals) ... ok
+test_current_index_is_valid (tools.test_documentation_index.IndexContract.test_current_index_is_valid) ... ok
+test_duplicate_json_members_are_refused (tools.test_documentation_index.IndexContract.test_duplicate_json_members_are_refused) ... ok
+test_foreign_body_and_duplicate_page_are_refused (tools.test_documentation_index.IndexContract.test_foreign_body_and_duplicate_page_are_refused) ... ok
+test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) ... ok
+test_trailing_newline_identity_and_invalid_date_are_refused (tools.test_documentation_index.IndexContract.test_trailing_newline_identity_and_invalid_date_are_refused) ... ok
+test_unknown_version_and_fields_are_refused (tools.test_documentation_index.IndexContract.test_unknown_version_and_fields_are_refused) ... ok
+test_a_client_command_no_recipe_publishes_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_client_command_no_recipe_publishes_is_refused) ... ok
+test_a_command_the_interface_does_not_have_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_command_the_interface_does_not_have_is_refused) ... ok
+test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused)
+The pages restored from the documentation branch are held like the first four. ... ok
+test_a_field_name_the_source_does_not_use_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_field_name_the_source_does_not_use_is_refused) ... ok
+test_a_missing_page_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_missing_page_is_refused) ... ok
+test_a_page_address_the_page_table_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_address_the_page_table_stops_serving_is_refused)
+The website addresses live in the page table, not in the transport. ... ok
+test_a_page_promises_a_status_for_a_refusal_with_no_raise_site (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_for_a_refusal_with_no_raise_site)
+Known-wrong: a promise this check cannot hold to the source at all. ... ok
+test_a_page_promises_a_status_the_service_does_not_answer (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_the_service_does_not_answer)
+Known-wrong: the refusal is real and the status beside it is not. ... ok
+test_a_record_version_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_record_version_the_source_does_not_declare_is_refused) ... ok
+test_a_refusal_code_no_source_raises_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_no_source_raises_is_refused) ... ok
+test_a_refusal_code_the_source_stops_raising_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_the_source_stops_raising_is_refused)
+The real drift case: the page is untouched and the source renames a code. ... ok
+test_a_scope_outside_the_vocabulary_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_scope_outside_the_vocabulary_is_refused) ... ok
+test_a_served_recipe_that_no_page_documents_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_served_recipe_that_no_page_documents_is_refused) ... ok
+test_a_status_is_read_from_the_position_or_the_keyword (tools.test_service_documentation.ServiceDocumentationCheck.test_a_status_is_read_from_the_position_or_the_keyword)
+A `status=` keyword must not silently fall back to the class default. ... ok
+test_an_address_the_service_does_not_serve_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_does_not_serve_is_refused) ... ok
+test_an_address_the_service_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_stops_serving_is_refused) ... ok
+test_every_customer_page_the_guides_index_lists_is_held_to_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_every_customer_page_the_guides_index_lists_is_held_to_the_source)
+A customer page the index lists and this check skips could say anything. ... ok
+test_every_documented_page_exists (tools.test_service_documentation.ServiceDocumentationCheck.test_every_documented_page_exists) ... ok
+test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not) ... ok
+test_the_committed_pages_match_the_committed_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_committed_pages_match_the_committed_source) ... ok
+test_the_default_status_of_a_transport_refusal_is_read_from_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_default_status_of_a_transport_refusal_is_read_from_the_source)
+Known-wrong: the transport refusal's default status moves, and every ... ok
+test_the_page_reader_separates_tables_blocks_and_spans (tools.test_service_documentation.ServiceDocumentationCheck.test_the_page_reader_separates_tables_blocks_and_spans) ... ok
+test_the_privacy_notice_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_privacy_notice_address_is_held_to_the_page_table)
+The setup guide names the privacy notice address, so the page table must keep serving it. ... ok
+test_the_service_changes_the_status_a_refusal_answers_with (tools.test_service_documentation.ServiceDocumentationCheck.test_the_service_changes_the_status_a_refusal_answers_with)
+Known-wrong: the source moves and the untouched pages become false. ... ok
+test_the_source_reader_finds_a_real_service_surface (tools.test_service_documentation.ServiceDocumentationCheck.test_the_source_reader_finds_a_real_service_surface) ... ok
+test_the_status_guard_holds_a_real_number_of_rows (tools.test_service_documentation.ServiceDocumentationCheck.test_the_status_guard_holds_a_real_number_of_rows)
+A guard that read no row would let every status case above pass. ... ok
+test_the_terms_of_service_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_terms_of_service_address_is_held_to_the_page_table)
+The setup guide names the terms of service address, so the page table must keep serving it. ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 32.920s
+
+OK

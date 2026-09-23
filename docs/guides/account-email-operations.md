@@ -11,6 +11,32 @@ page of this service. Nothing in the identity provider's own email templates,
 sender settings or redirect list has to change, which matters because
 engineering has no permission to change them.
 
+Sign-up is email first since September 23, 2026. The website sends the
+address alone; a request that carries a password is refused. The provider's
+interface needs a password to create a user, so the service generates a new
+random one for each request, from 51 random bytes, sends it in that one
+request and keeps it nowhere. The temporary password is 72 ASCII bytes, covering
+every minimum this configuration accepts. The person chooses their own password on the page
+the link opens, `/auth/confirm`, before that page opens the account:
+
+```text
+Sign-up journey
+├── /signup or /get-started: the person types an email address
+├── POST /api/v1/account/signup {record_type: service_account_signup_request/v2, email}
+│   └── the service asks the provider for a link with a generated password, then mails its own message
+├── The message links to /auth/confirm?token_hash=...&type=signup
+├── /auth/confirm reads the token, removes it from the address bar and the history at once
+├── The person chooses a password (at least minimum_password_length, typed twice)
+│   └── on submit: verifyOtp(token_hash, type), then updateUser(password), at the identity provider
+└── Only then: POST /api/v1/account/activate and the signed-in Get started page
+```
+
+Recovery uses the same page: the sign-in page asks
+`POST /api/v1/account/recovery` for a link, and the message leads to
+`/auth/confirm?token_hash=...&type=recovery` and the same choose-a-password
+step. The link is used only when the person submits the form, so a mail
+scanner that opens the link does not use it up.
+
 The code is `src/loop_engine/core/service_runtime/account_email.py`. Its
 behavior, its refusals and its two allowances are described in the
 [service runtime README](../../src/loop_engine/core/service_runtime/README.md#public-sign-up-and-password-recovery-email).
@@ -38,10 +64,21 @@ and with loopback listeners for the two real transport functions:
 - A generated link that names another address or another action is refused
   and never put in a message.
 
+- Email-first sign-up: request version 2 carries the address alone, version 1
+  and any request with a password are refused before any provider request, and
+  the generated password never appears in an answer, a log record, a stored
+  file, the printed form of a record or a message. Each has a removed-guard
+  control in `account_email_checks.py`.
+- The website's `/auth/confirm` view, the recovery form on the sign-in page and
+  the Get started funnel at `/get-started`, driven in a real browser against the
+  identity project stand-in in `tools/check_service_workspace.mjs`. Its shared
+  `signup_session_boundary_checks.mjs` scenarios cover account switching and
+  disconnects before and after the password update. The pending confirmation
+  is invalidated when the service connection changes; late replies cannot
+  activate a different or disconnected page.
+
 Planned behavior, not done here:
 
-- The website's `/auth/confirm` view. The service serves the page; the view
-  itself belongs to the website work.
 - A live send through the mail provider. The sender domain checks and the
   domain mail policy are separate work, recorded in the roadmap.
 - Any record that a message was asked for or sent. The service stores none.
@@ -59,16 +96,24 @@ Read them before switching sign-up on.
   reads no field of a refusal body, so the property does not depend on which
   shape the provider uses; what is unverified is the list of statuses the
   provider really answers with.
-- What the provider does for an address that has an account but has never
-  confirmed it is unknown. Two behaviors are reported in public: the pending
-  password is kept, or a fresh link is returned that invalidates the earlier
-  one. Supabase issue 29347 reports the first for the provider's own public
-  sign-up route, not for the administration interface this service uses, and
-  it is open with no maintainer answer. If the pending password were replaced,
-  an unauthenticated caller could set the password of any unconfirmed account,
-  and the real owner would confirm it by opening the newest message. Observe
-  this against the project with a reserved address and save the answer beside
-  the existing probe before `signup_enabled` is set to true.
+- Observed on September 23, 2026, no longer open: for an address that has
+  never been confirmed, a second sign-up link from the administration interface
+  keeps the first password and makes the first link unusable (`otp_expired`).
+  The record is
+  [identity-unconfirmed-signup-probe-1.json](../../artifacts/architecture-audit-2026-09-19/identity-unconfirmed-signup-probe-1.json).
+  So whoever registers an address first sets its pending password, and the
+  owner confirming later would activate it. Email-first sign-up removes the
+  first path: the service never takes a password from a caller, and the one it
+  generates is random and kept nowhere. The choose-a-password step replaces
+  whatever password the account held before the account opens. The provider's
+  own public sign-up is the remaining path, because it takes a password from
+  anyone who holds the public key, so it is closed before registration opens.
+- Whether closing the provider's public sign-up also stops the administration
+  interface from creating a user is not established. If it did, every sign-up
+  would be answered like an ineligible address and receive the notice message
+  instead of a link. Check it with a reserved address after closing the route
+  and before opening registration: the message must hold an `/auth/confirm`
+  link.
 - A refusal that this release cannot explain, such as a password the provider's
   own password policy rejects, is answered exactly like an address that is not
   eligible: status 202 and the notice message. This is deliberate, because
@@ -122,7 +167,7 @@ serves anything.
 | `signup_enabled` | Switches `POST /api/v1/account/signup` on. Default false. |
 | `recovery_enabled` | Switches `POST /api/v1/account/recovery` on. Default false. |
 | `allow_network` | Network authority for both operations. Both stay closed while it is false. |
-| `minimum_password_length` | From 8 to 72. The service also refuses a password of more than 72 bytes and a password equal to the address. |
+| `minimum_password_length` | From 8 to 72. The shortest password the `/auth/confirm` page accepts; `GET /api/v1/account/identity` publishes it. The page also refuses more than 72 bytes and the address itself. The identity provider applies its own minimum as well. |
 | `attempts_for_each_address` | Attempts allowed from one client address inside the window. |
 | `attempts_for_each_email` | Attempts allowed for one email address inside the window. |
 | `attempt_window_seconds` | The window both allowances use, from 1 second to one day. |
@@ -201,10 +246,11 @@ To switch one operation on:
    a message is accepted by the service and refused or filtered later.
 2. State the client address source in `http.request_limits`, as shown above.
    Without it the service refuses to start with either Boolean true.
-3. For sign-up only: observe what the identity provider answers for an address
-   that has an account but has never confirmed it, and save that observation
-   beside the existing probe. Read "What is not established" below before this
-   step. Recovery does not depend on it.
+3. For sign-up only: close the identity provider's own public sign-up
+   ("Allow new users to sign up" off in the project's authentication
+   settings), which only the owner can reach. Then send one sign-up to a
+   reserved address through the service and confirm that the message holds an
+   `/auth/confirm` link, as "What is not established" explains.
 4. For sign-up only: set `browser_identity.registration_enabled` and
    `browser_identity.email_signup_enabled` to true. The service refuses to
    start when sign-up is open and account creation is closed.
@@ -226,7 +272,7 @@ for example during a rollback.
 
 ```text
 POST /api/v1/account/signup
-  {"record_type": "service_account_signup_request/v1", "email": ..., "password": ...}
+  {"record_type": "service_account_signup_request/v2", "email": ...}
   -> 202 {"record_type": "service_http_result/v1", "operation": "account_signup",
           "result": {"record_type": "service_account_signup_result/v1",
                      "status": "confirmation_sent"}}
@@ -260,8 +306,8 @@ address, a password, a link, a token hash, a provider message or a key.
 |---|---|---|---|
 | `account_email_unavailable` | 404 | The host file has no `account_email` block. | Add the block and restart. |
 | `account_signup_unavailable`, `account_recovery_unavailable` | 503 | The operation is switched off, or `allow_network` is false. | Set the Booleans and restart. |
-| `invalid_account_signup`, `invalid_account_recovery` | 400 | The request body is not the exact record this release reads. | The caller sends the documented record. |
-| `invalid_email_address`, `invalid_password`, `password_matches_the_email_address` | 400 | The address or the password is refused by the rules above. | Nothing. The caller corrects the input. |
+| `invalid_account_signup`, `invalid_account_recovery` | 400 | The request body is not the exact record this release reads, including a sign-up that carries a password or uses version 1. | The caller sends the documented record. |
+| `invalid_email_address` | 400 | The address is refused by the rules above. | Nothing. The caller corrects the input. |
 | `failed_attempt_limit_reached` | 429 | The client address or the email address is over its allowance. | Nothing, or raise the allowance in the host file. |
 | `account_email_secret_unavailable` | 503 | An environment reference is not set. | Set it on the platform and restart. |
 | `account_email_secret_unusable` | 503 | The value does not start with the prefix that slot needs. | Put the right kind of key in that slot. |

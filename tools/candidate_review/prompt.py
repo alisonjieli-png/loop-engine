@@ -42,6 +42,9 @@ def _kind(request) -> str:
 
 
 def build_prompt(request, installation, instructions) -> ReviewPrompt:
+    from .native import NativePackageReviewRequest
+    if isinstance(request, NativePackageReviewRequest):
+        return build_native_prompt(request, installation, instructions)
     system = "\n\n".join((instructions.every_reviewer(), "Your lens: " + instructions.lens(installation.lens),
                           instructions.answer()))
     criteria = "\n".join(f"- {criterion.criterion_id}: {criterion.quote}" for criterion in request.applicable_criteria)
@@ -68,3 +71,31 @@ def build_prompt(request, installation, instructions) -> ReviewPrompt:
     return ReviewPrompt(system=system, user=user, sha256=digest({"system": system, "user": user}),
                         estimated_input_tokens=estimate_tokens(user, system), identity=request.identity,
                         body_sha256=request.body_sha256)
+
+
+def build_native_prompt(request, installation, instructions) -> ReviewPrompt:
+    """Keep every exact payload separate; the verdict digest identifies the canonical package document."""
+    system = "\n\n".join((instructions.every_reviewer(), "Your lens: " + instructions.lens(installation.lens),
+                           instructions.answer()))
+    criteria = "\n".join(f"- {item.criterion_id}: {item.quote}" for item in request.applicable_criteria)
+    tree = "\n".join(f"- {file.entry.path} | {file.entry.role} | {file.entry.media_type} | "
+                     f"{file.entry.size_bytes} bytes | {file.entry.digest}" for file in request.files)
+    parts = ["Review subject: complete original native harness package.",
+             f"Subject record type: {request.to_record()['record_type']}",
+             f"Package identity: {request.identity}; canonical package digest: {request.body_sha256}",
+             f"Producer: {request.producer.producer_identity}; family: {request.producer.family}",
+             "Exact complete file tree:\n" + tree, "Written native package criteria:\n" + criteria,
+             "Item declaration:\n" + json.dumps(request.item, sort_keys=True, ensure_ascii=False),
+             "Canonical package document:\n" + request.body_text]
+    for source in request.cited_sources:
+        parts.append(f"Cited source {source.path} at {source.revision}:\n" + _block("SOURCE", source.sha256, source.text))
+    for file in request.files:
+        if file.text is None:
+            parts.append(f"BINARY FILE NOT TEXT-REVIEWED: {file.entry.path}; digest {file.entry.digest}. "
+                         "Do not approve without separate declared binary verification.")
+        else:
+            parts.append(f"Exact file {file.entry.path}:\n" + _block("FILE", file.entry.digest, file.text))
+    parts.append("Return one JSON verdict with body_sha256 equal to the canonical package digest: " + request.body_sha256)
+    user = "\n\n".join(parts)
+    return ReviewPrompt(system, user, digest({"system": system, "user": user}), estimate_tokens(user, system),
+                        request.identity, request.body_sha256)

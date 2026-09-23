@@ -1,0 +1,13 @@
+{
+  "record_type": "signup_readonly_sender_readiness/v1",
+  "observed_at": "2026-09-23T18:01:40.351751+00:00",
+  "method": "GET",
+  "url": "https://api.resend.com/domains",
+  "credential_reference": "resend-send",
+  "emails_sent": 0,
+  "mutations": 0,
+  "oauth_refreshed": false,
+  "secret_values_recorded": false,
+  "http_status": 401,
+  "unavailable_gate": "saved_sending_credential_does_not_establish_sender_configuration_access"
+}

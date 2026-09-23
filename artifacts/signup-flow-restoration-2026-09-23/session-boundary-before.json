@@ -1,0 +1,14 @@
+{
+  "record_type": "signup_session_boundary_checks/v1",
+  "scope": "real browser; loopback identity and email stand-in only",
+  "checks": [
+    {
+      "name": "session_boundary_probe_completed",
+      "passed": false,
+      "detail": {
+        "error": "Error: signup fixture refused"
+      }
+    }
+  ],
+  "passed": false
+}

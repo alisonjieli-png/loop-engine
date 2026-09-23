@@ -1,6 +1,7 @@
-"""Prepare bounded, offline harness skill candidates from pinned local sources.
+"""Prepare bounded, offline harness candidates from pinned local sources.
 
-The input is ``harness_candidate_batch_proposals/v1``. Its source revision must
+The input is ``harness_candidate_batch_proposals/v1`` for individual bodies, or
+version two for complete native packages. Its source revision must
 be this checkout's HEAD; every named source and the MIT licence file must have
 the declared SHA-256 digest and the same bytes at that revision. This tool
 creates only a new candidate catalogue folder. It neither judges the authored
@@ -23,11 +24,21 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+import sys
+
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    # File-path invocation is a launcher; contracts belong to the canonical module.
+    from tools.prepare_harness_candidates import main as canonical_main
+    raise SystemExit(canonical_main())
 
 from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft, item_from_body
 from loop_engine.core.intelligence_tagging import TagSet
+from loop_engine.core.service_runtime.catalogue_bundle import strict_json
+from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
 INPUT_TYPE = "harness_candidate_batch_proposals/v1"
+NATIVE_INPUT_TYPE = "harness_candidate_batch_proposals/v2"
 ITEMS_TYPE = "starter_catalogue_candidate_items/v2"
 SPECIFICATIONS_TYPE = "candidate_intelligence_specifications/v1"
 REPORT_TYPE = "harness_candidate_preparation_report/v1"
@@ -163,11 +174,11 @@ def _input_record(request: PreparationRequest) -> tuple[dict, bytes]:
         _refuse("proposals_too_large")
     raw = request.proposals.read_bytes()
     try:
-        value = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+        value = strict_json(raw, "proposals_unreadable")
+    except ServiceRuntimeError:
         _refuse("proposals_unreadable")
     _object(value, INPUT_FIELDS, "unsupported_proposal_contract")
-    if value["record_type"] != INPUT_TYPE:
+    if value["record_type"] not in (INPUT_TYPE, NATIVE_INPUT_TYPE):
         _refuse("unsupported_proposal_contract")
     return value, raw
 
@@ -282,6 +293,10 @@ def prepare(request: PreparationRequest) -> dict:
     output = _output_path(request.output)
     record, raw = _input_record(request)
     revision, source_digests, license_name = _validated_sources(repository, record)
+    if record["record_type"] == NATIVE_INPUT_TYPE:
+        from tools.native_harness_candidates import prepare_native
+        native_request = PreparationRequest(repository, request.proposals, output, True)
+        return prepare_native(native_request, record, raw, revision, source_digests, license_name)
     bodies, rows, items = _compile(record, revision, source_digests, license_name)
     # A concurrent edit after the first read cannot silently change the
     # evidence the output claims. The commit remains the ultimate source.
@@ -327,7 +342,7 @@ def prepare(request: PreparationRequest) -> dict:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
-        description="Prepare an offline, candidate-only harness skill batch.",
+        description="Prepare an offline, candidate-only harness batch of bodies or complete native packages.",
         epilog="Input format and limits: tools/PREPARE-HARNESS-CANDIDATES.md")
     parser.add_argument("--repository", type=Path, required=True)
     parser.add_argument("--proposals", type=Path, required=True)
@@ -342,7 +357,3 @@ def main(argv=None) -> int:
         return 1
     print(json.dumps(report))
     return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

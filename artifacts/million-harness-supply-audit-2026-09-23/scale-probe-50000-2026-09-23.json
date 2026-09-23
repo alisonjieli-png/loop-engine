@@ -1,0 +1,33 @@
+{
+  "address_space_ceiling_mib": 768,
+  "elapsed_seconds": 0.741,
+  "items_jsonl_bytes": 13100000,
+  "items_jsonl_sha256": "bddad03123749ec5a834f695d164a80e031a4d465583dab003e41f568b1bec1f",
+  "limitations": "Synthetic metadata only; no blobs, rights, approval, active release, native use or task benefit.",
+  "observed_bundle_counts": {
+    "active_release_credit": 0,
+    "distinct_file_sha256": 1,
+    "inputs": [
+      {
+        "active_release_proven": false,
+        "blobs_verified": false,
+        "header_sha256": "97a95fd68cc48ed7da9c2ad15bc445e22355e14c349d44a2d2971368751cc610",
+        "items": 50000
+      }
+    ],
+    "logical_records": 50000,
+    "physical_file_paths": 50000
+  },
+  "observed_local_counts": {
+    "logical_package_records": 212,
+    "packaged_host_items": 43,
+    "recorded_approved": 43
+  },
+  "peak_child_rss_kib": 43432,
+  "record_type": "harness_supply_scale_probe/v1",
+  "report_sha256": "c494338efd6e03705e7b2ae3a8e263960d6878d1912da8162db3c126e65a1121",
+  "repository_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "synthetic_bundle_items": 50000,
+  "synthetic_distinct_file_digests": 1,
+  "synthetic_item_file_paths": 50000
+}

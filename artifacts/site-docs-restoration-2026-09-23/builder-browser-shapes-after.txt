@@ -1,0 +1,6 @@
+test_builder_rejects_shapes_the_browser_cannot_render (tools.test_documentation_index.IndexContract.test_builder_rejects_shapes_the_browser_cannot_render) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK

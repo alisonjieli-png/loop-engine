@@ -1,0 +1,18 @@
+{
+  "provider_calls": 0,
+  "original_coherent_failure": {
+    "accepted": false,
+    "code": "excluded_calibration_reviewer_decided"
+  },
+  "both_exclusion_projections_removed": {
+    "accepted": false,
+    "code": "calibration_inconsistent"
+  },
+  "false_approvals_retained": [
+    "control_38d4",
+    "control_9bb0",
+    "control_c902",
+    "control_e137"
+  ],
+  "candidate_decision_from_failed_reviewer": true
+}

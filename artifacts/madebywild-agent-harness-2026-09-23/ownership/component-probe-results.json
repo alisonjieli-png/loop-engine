@@ -1,0 +1,120 @@
+{
+  "record_type": "upstream_component_probe_results/v1",
+  "upstream_commit": "2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17",
+  "scope": "Isolated component source fixtures; native renderer is stubbed; writer plan injected; no CLI lifecycle, network, model, registry fetch, or real workspace effects",
+  "results": [
+    {
+      "id": "unmanaged_existing_file_refused",
+      "verified": true,
+      "diagnostics": [
+        "OUTPUT_COLLISION_UNMANAGED"
+      ]
+    },
+    {
+      "id": "managed_drift_updates_without_old_byte_check",
+      "verified": true,
+      "operation": {
+        "type": "update",
+        "path": "AGENTS.md",
+        "provider": "codex",
+        "reason": "content drift or source changed"
+      },
+      "rendered_digest": "b60b935389f7cf68e7877a80a4ded0dfc93e248b8807932536e1de0f771d259b",
+      "lock_unchanged_despite_disk_drift": true
+    },
+    {
+      "id": "stale_managed_changed_file_deleted",
+      "verified": true,
+      "operation": {
+        "type": "delete",
+        "path": "AGENTS.md",
+        "reason": "stale managed artifact"
+      }
+    },
+    {
+      "id": "collisions_and_parent_traversal_refused",
+      "verified": true,
+      "same_bytes_same_provider_owner_merge": true,
+      "different_bytes_collision": true,
+      "cross_provider_identical_collision": true
+    },
+    {
+      "id": "post_plan_creation_overwritten",
+      "verified": true,
+      "scope": "Injected precomputed plan preserves real apply method, simulates concurrent creator between plan and effect"
+    },
+    {
+      "id": "parent_symlink_not_confined_to_workspace",
+      "verified": true,
+      "scope": "Both workspace and sibling are disposable scratch directories; no host files affected"
+    },
+    {
+      "id": "batch_failure_leaves_prior_output",
+      "verified": true,
+      "earlier_write_survived": true,
+      "lock_not_written": true
+    },
+    {
+      "id": "failed_delete_reported_pruned_and_ownership_removed",
+      "verified": true,
+      "injection": "Only fs.rm of exact scratch stale path throws EACCES",
+      "actual_file_remains": true
+    },
+    {
+      "id": "stale_managed_path_now_directory_removed_recursively",
+      "verified": true,
+      "scope": "Explicitly listed managed path changed to a scratch directory"
+    },
+    {
+      "id": "raw_substitution_and_order",
+      "verified": true,
+      "literal_canary_materialized": true,
+      "unescaped_json_value_changes_structure": true,
+      "order_result": "chosen / {{CANARY}}",
+      "unresolved_severity": "warning"
+    },
+    {
+      "id": "behavior_inherited_property_accepted",
+      "verified": true,
+      "undeclared_default": "toString",
+      "undeclared_config": "constructor",
+      "resolved_type": "function",
+      "diagnostics": []
+    },
+    {
+      "id": "registry_skill_binary_utf8_round_trip_changes_bytes",
+      "verified": true,
+      "input_hex": "00ff8041",
+      "output_hex": "00efbfbdefbfbd41",
+      "raw_sha256": "3507b01e644277ad3cd10dadd6e33cb801151e62e3cb899a67409ef701d6079c",
+      "recorded_sha256": "4839a988c55c7f060de8ddf8eaa73896a2e603fe3a2cbc943f934e2dec642555",
+      "record_is_decoded_text_hash": true
+    },
+    {
+      "id": "registry_credential_in_clone_argv",
+      "verified": true,
+      "credential_source": "Harmless synthetic canary only",
+      "argv_contains_authorization": true,
+      "error_redacts_known_token_and_header": true,
+      "git_executed": false
+    },
+    {
+      "id": "preset_inheritance_is_selective",
+      "verified": true,
+      "inherited_operations": [
+        "add_prompt_section"
+      ],
+      "child_overrides_skill": true,
+      "parent_hook_not_inherited": true,
+      "cycle_refused": true
+    },
+    {
+      "id": "explicit_migration_bumps_unmapped_old_version",
+      "verified": true,
+      "normal_parser_refuses_v0": true,
+      "explicit_migration_accepts_shape_compatible_v0": true,
+      "named_migration_chain": false,
+      "newer_version_refused": true
+    }
+  ]
+}

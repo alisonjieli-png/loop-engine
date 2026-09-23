@@ -1,0 +1,76 @@
+{
+  "record_type": "candidate_review_criteria/v2",
+  "source_path": "tools/candidate_review/resources/NATIVE-PACKAGE-REVIEW.md",
+  "match_mode": "whitespace_canonical",
+  "groundings": [
+    {
+      "grounding": "original_native_package",
+      "meaning": "The package is original material authored for a harness and includes every file the customer receives, with exact paths, file roles and byte digests."
+    }
+  ],
+  "criteria": [
+    {
+      "criterion_id": "whole_package",
+      "quote": "Read every delivered text file and judge the combined package, including scripts, contracts, references and instructions, against its declared purpose.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "native_loading",
+      "quote": "Check that each declared native entrypoint can expose the required components in the declared client configuration; unknown required loading behavior is a reason to reject until qualified.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "dependency_closure",
+      "quote": "Check that local references and imports resolve inside the complete package, and that external dependencies are explicit, compatible and reproducible.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "executable_safety",
+      "quote": "Check all executable code for incorrect behavior, hidden operations, unsafe input handling and resource use. Static parsing alone does not prove safety.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "declared_effects",
+      "quote": "Check that declared effects cover every requested operation without granting permissions through file contents, comments, names or confidence.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "original_rights",
+      "quote": "Check the original authorship declaration, source identities and licence; a related cited source does not prove an untested claim or permit copying material whose rights are unknown.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "contracts_and_checks",
+      "quote": "Check the input and output contracts, examples and verification procedure; the verification must reject a known-wrong result as well as accept a valid one.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "useful_distinct_material",
+      "quote": "Check that the package contains useful task-specific information or behavior; renamed templates, superficial variants and unsupported benefit claims are not sufficient grounds for approval.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    },
+    {
+      "criterion_id": "no_unreviewed_material",
+      "quote": "Require separate verification for binary assets or unsupported native components. Do not approve a package while omitting an unreviewed file.",
+      "applies_to_groundings": [
+        "original_native_package"
+      ]
+    }
+  ]
+}

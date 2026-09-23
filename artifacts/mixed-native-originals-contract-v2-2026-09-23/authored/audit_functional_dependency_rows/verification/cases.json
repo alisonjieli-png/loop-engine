@@ -1,0 +1,187 @@
+[
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": 1,
+          "b": "x"
+        },
+        {
+          "a": 1,
+          "b": "y"
+        },
+        {
+          "a": 2,
+          "b": "z"
+        }
+      ]
+    },
+    "expected": {
+      "violations": [
+        {
+          "determinant": [
+            1
+          ],
+          "dependent_variants": [
+            [
+              "x"
+            ],
+            [
+              "y"
+            ]
+          ],
+          "row_indices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": true,
+          "b": "x"
+        },
+        {
+          "a": 1,
+          "b": "y"
+        }
+      ]
+    },
+    "expected": {
+      "violations": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": 1
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "a"
+      ],
+      "rows": []
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": "x",
+          "b": 1,
+          "unused": {
+            "nested": true
+          }
+        }
+      ]
+    },
+    "expected": {
+      "violations": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": "x",
+          "b": {
+            "nested": true
+          }
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "determinants": [
+        "a"
+      ],
+      "dependents": [
+        "b"
+      ],
+      "rows": [
+        {
+          "a": 1.0,
+          "b": "x"
+        },
+        {
+          "a": 1,
+          "b": "y"
+        }
+      ]
+    },
+    "expected": {
+      "violations": [
+        {
+          "determinant": [
+            1
+          ],
+          "dependent_variants": [
+            [
+              "x"
+            ],
+            [
+              "y"
+            ]
+          ],
+          "row_indices": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "expected_exit": 0
+  }
+]

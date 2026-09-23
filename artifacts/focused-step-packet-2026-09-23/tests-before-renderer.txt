@@ -1,0 +1,213 @@
+test_caller_mutation_cannot_change_loaded_brief (test_render_packet.PacketTests) ... ERROR
+test_candidate_cannot_claim_execution_authority (test_render_packet.PacketTests) ... ERROR
+test_claude_native_alias_and_exact_manifest (test_render_packet.PacketTests) ... ERROR
+test_destination_traversal_and_existing_folder_refused (test_render_packet.PacketTests) ... ERROR
+test_edited_context_manifest_metadata_and_extra_file_refused (test_render_packet.PacketTests) ... ERROR
+test_empty_first_actions_are_refused (test_render_packet.PacketTests) ... ERROR
+test_essential_assignment_is_inline_and_state_is_passive (test_render_packet.PacketTests) ... ERROR
+test_missing_objective_is_refused (test_render_packet.PacketTests) ... ERROR
+test_output_contract_is_required (test_render_packet.PacketTests) ... ERROR
+test_rehashed_tampered_packet_refused_against_external_binding (test_render_packet.PacketTests) ... ERROR
+test_run_bound_state_and_unknown_native_client_are_refused (test_render_packet.PacketTests) ... ERROR
+test_schema_mismatch_and_remote_reference_are_refused (test_render_packet.PacketTests) ... ERROR
+test_secret_and_oversized_context_are_refused (test_render_packet.PacketTests) ... ERROR
+test_stale_context_state_run_and_digest_refused_before_write (test_render_packet.PacketTests) ... ERROR
+test_symlink_parent_and_payload_refused (test_render_packet.PacketTests) ... ERROR
+test_unknown_record_version_and_fields_are_refused (test_render_packet.PacketTests) ... ERROR
+
+======================================================================
+ERROR: test_caller_mutation_cannot_change_loaded_brief (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 129, in test_caller_mutation_cannot_change_loaded_brief
+    brief = self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_candidate_cannot_claim_execution_authority (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 91, in test_candidate_cannot_claim_execution_authority
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_claude_native_alias_and_exact_manifest (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 119, in test_claude_native_alias_and_exact_manifest
+    brief = self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_destination_traversal_and_existing_folder_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 147, in test_destination_traversal_and_existing_folder_refused
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_edited_context_manifest_metadata_and_extra_file_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 178, in test_edited_context_manifest_metadata_and_extra_file_refused
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_empty_first_actions_are_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 52, in test_empty_first_actions_are_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_essential_assignment_is_inline_and_state_is_passive (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 104, in test_essential_assignment_is_inline_and_state_is_passive
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_missing_objective_is_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 46, in test_missing_objective_is_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_output_contract_is_required (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 66, in test_output_contract_is_required
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_rehashed_tampered_packet_refused_against_external_binding (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 195, in test_rehashed_tampered_packet_refused_against_external_binding
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_run_bound_state_and_unknown_native_client_are_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 97, in test_run_bound_state_and_unknown_native_client_are_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_schema_mismatch_and_remote_reference_are_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 73, in test_schema_mismatch_and_remote_reference_are_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_secret_and_oversized_context_are_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 84, in test_secret_and_oversized_context_are_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_stale_context_state_run_and_digest_refused_before_write (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 136, in test_stale_context_state_run_and_digest_refused_before_write
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_symlink_parent_and_payload_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 158, in test_symlink_parent_and_payload_refused
+    brief = self.brief()
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+======================================================================
+ERROR: test_unknown_record_version_and_fields_are_refused (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 60, in test_unknown_record_version_and_fields_are_refused
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 40, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 9, in load_brief
+    raise NotImplementedError("renderer not implemented")
+NotImplementedError: renderer not implemented
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.003s
+
+FAILED (errors=16)

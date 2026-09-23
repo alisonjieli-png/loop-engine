@@ -1,0 +1,6 @@
+{
+  "known_good": "https://baltor-pilot.fly.dev/mcp",
+  "old_rule_rejects_known_good": true,
+  "diagnostic": "release-21-codex-trial-word-diagnostic.json",
+  "known_wrong": "Join the private pilot."
+}

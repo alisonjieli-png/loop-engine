@@ -1,0 +1,13 @@
+test_each_part_says_whether_it_is_recorded_or_being_built (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_each_part_says_whether_it_is_recorded_or_being_built) ... ok
+test_the_connection_entry_is_the_reviewed_recipe_with_the_public_address (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_connection_entry_is_the_reviewed_recipe_with_the_public_address) ... ok
+test_the_download_is_the_chosen_reference_with_its_digest (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_download_is_the_chosen_reference_with_its_digest) ... ok
+test_the_folder_places_the_download_and_holds_files_that_are_not_markdown (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_folder_places_the_download_and_holds_files_that_are_not_markdown) ... ok
+test_the_library_count_is_this_release_manifest_count (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_library_count_is_this_release_manifest_count) ... ok
+test_the_search_shows_what_this_release_library_returns (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_search_shows_what_this_release_library_returns) ... ok
+test_the_step_chooses_no_item_a_recorded_measurement_found_harmful (tools.test_homepage_demonstration.HomepageDemonstrationTest.test_the_step_chooses_no_item_a_recorded_measurement_found_harmful) ... ok
+test_opening_does_not_promise_that_context_never_drifts (tools.test_homepage_demonstration.HomepageOpeningClaimTest.test_opening_does_not_promise_that_context_never_drifts) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 5.682s
+
+OK

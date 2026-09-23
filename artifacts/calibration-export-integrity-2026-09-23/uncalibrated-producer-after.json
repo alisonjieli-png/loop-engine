@@ -1,0 +1,38 @@
+{
+  "model_calls": 0,
+  "fixture_only": true,
+  "calibration_openai_calls": 0,
+  "calibration_ineligible": {
+    "a-openai": "producer_family"
+  },
+  "evaluated_excluded": {
+    "a-openai": "calibration_incomplete"
+  },
+  "calibration_status_for_openai": {
+    "decisions": {},
+    "correct": 0,
+    "false_approvals": [],
+    "false_refusals": [],
+    "known_wrong_without_a_verdict": [
+      "control_38d4",
+      "control_9bb0",
+      "control_c902",
+      "control_e137"
+    ],
+    "controls_without_a_verdict": [
+      "control_38d4",
+      "control_71af",
+      "control_9bb0",
+      "control_c902",
+      "control_e137"
+    ],
+    "status": "calibration_incomplete"
+  },
+  "candidate_openai_calls": 0,
+  "candidate_outcome": "approved",
+  "candidate_reviewers": [
+    "b-zhipu",
+    "c-alibaba",
+    "d-minimax"
+  ]
+}

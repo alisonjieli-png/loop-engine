@@ -1,0 +1,47 @@
+{
+  "record_type": "signup_integration_survival/v1",
+  "baseline_tree": "e441fa68ee2549e85981f00247b665a24506ef7f",
+  "checks": [
+    {
+      "name": "_search_unchanged",
+      "passed": true
+    },
+    {
+      "name": "_validate_search_unchanged",
+      "passed": true
+    },
+    {
+      "name": "_verify_search_snapshot_unchanged",
+      "passed": true
+    },
+    {
+      "name": "http_retrieval_schema_unchanged",
+      "passed": true
+    },
+    {
+      "name": "http_provisioning_schema_unchanged",
+      "passed": true
+    },
+    {
+      "name": "header_preserved",
+      "passed": true
+    },
+    {
+      "name": "footer_preserved",
+      "passed": true
+    },
+    {
+      "name": "terms_preserved",
+      "passed": true
+    },
+    {
+      "name": "docs_preserved",
+      "passed": true
+    },
+    {
+      "name": "asset_and_page_owner_preserved",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

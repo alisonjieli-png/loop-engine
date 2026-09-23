@@ -1,0 +1,9 @@
+{
+  "exit_code": 0,
+  "model_calls": 0,
+  "sandbox": "network namespace, clear environment, read-only host, two bounded writable analysis directories",
+  "probe_sha256": "16c76e9b18942f774222ce3e19a0d9124da39813c97fd14ccfae9cc955e15b76",
+  "same_provider_outputs": true,
+  "same_control_outputs": true,
+  "same_source_files": true
+}

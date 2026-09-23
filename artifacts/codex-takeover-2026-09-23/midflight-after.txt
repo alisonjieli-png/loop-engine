@@ -1,0 +1,6 @@
+test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant (tools.test_catalogue_midflight_oracle.CatalogueMidflightOracleTest.test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.810s
+
+OK

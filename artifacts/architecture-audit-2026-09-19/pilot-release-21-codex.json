@@ -1,0 +1,68 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 21,
+  "source_revision": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "continuous_integration_run": 35886642550,
+  "deployment_workflow_run": 35888814908,
+  "image_digest": "sha256:4c82835554d45d22efa6a56753da2039a51e34278f1e6e5c3408524984b56857",
+  "deployed_at": "2026-09-23T16:28:55Z",
+  "deploy_setting_after": "false",
+  "rollback_fly_release": 20,
+  "rollback_image_digest": "sha256:6eb2aa26dfca3e08ff09013d0c1bda4414115e7b4e65c0ed991e6423edfd4cc4",
+  "live_checks": {
+    "hostnames_http200": 8,
+    "same_capabilities": true,
+    "required_health_checks_passed": true,
+    "website_original": [
+      98,
+      98,
+      98,
+      97
+    ],
+    "website_original_denominator": 98,
+    "technical_hostname_successor": [
+      99,
+      99
+    ],
+    "catalogue": [
+      6,
+      6
+    ],
+    "service": [
+      19,
+      19
+    ],
+    "asset_conditional_and_head": [
+      4,
+      4
+    ],
+    "concurrency4_asset_gets": [
+      16,
+      16
+    ],
+    "additional_hostname_browser": {
+      "demo.baltor.ai": [
+        99,
+        99
+      ],
+      "examples.baltor.ai": [
+        99,
+        99
+      ],
+      "docs.baltor.ai": [
+        99,
+        99
+      ],
+      "status.baltor.ai": [
+        99,
+        99
+      ]
+    }
+  },
+  "failure_preserved": "technical_hostname_retired_word_false_positive_in_own_origin",
+  "new_registration_open": false,
+  "limits": [
+    "One bounded observation, not a capacity guarantee.",
+    "New documentation pages, signup funnel, unreviewed catalogue and generation infrastructure are not deployed in this release."
+  ]
+}

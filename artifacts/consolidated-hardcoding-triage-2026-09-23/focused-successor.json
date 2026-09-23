@@ -1,0 +1,108 @@
+{
+  "summary": {
+    "record_type": "hardcoding_audit_summary/v1",
+    "schema_version": "hardcoding_audit/v1",
+    "repository_root_ref": "/home/username/.le-codex-build/integration",
+    "files_scanned": 51,
+    "files_by_type": {
+      ".json": 34,
+      ".md": 7,
+      ".mjs": 2,
+      ".py": 8
+    },
+    "literal_candidates_scanned": 4949,
+    "findings": 375,
+    "unsuppressed_findings": 340,
+    "suppressed_findings": 35,
+    "by_classification": {
+      "CLOSED_CONTROLLED_VOCABULARY": 92,
+      "DEPLOYMENT_CONFIGURATION": 120,
+      "LOOP_PROFILE_SETTING": 70,
+      "OPTIONAL_PARAMETER_WITH_DEFAULT": 44,
+      "RESOURCE_OR_TEMPLATE": 1,
+      "STRATEGY_OR_PROVIDER_BINDING": 13
+    },
+    "by_severity": {
+      "high": 1,
+      "medium": 339
+    },
+    "by_owner": {
+      "tools/build_documentation_index.py": 19,
+      "tools/candidate_review": 217,
+      "tools/generate_original_native_candidates.py": 103,
+      "tools/resources": 1
+    },
+    "by_subsystem": {
+      "tools/build_documentation_index.py": 19,
+      "tools/candidate_review": 217,
+      "tools/generate_original_native_candidates.py": 103,
+      "tools/resources": 1
+    },
+    "by_proposed_abstraction": {
+      "admitted_strategy_or_provider_binding": 13,
+      "enum_literal_or_terminology_authority": 92,
+      "typed_optional_parameter_and_default": 44,
+      "typed_runtime_settings": 120,
+      "versioned_loop_profile_setting": 70,
+      "versioned_resource_bundle": 1
+    },
+    "prompt_resource_findings": 1,
+    "string_state_findings": 12,
+    "configuration_findings": 190,
+    "skipped_files": [
+      {
+        "path": "docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json",
+        "reason": "excluded_by_allowlist:GENERATED_EVIDENCE_RECORD"
+      },
+      {
+        "path": "docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json",
+        "reason": "excluded_by_allowlist:GENERATED_EVIDENCE_RECORD"
+      }
+    ],
+    "allowlist_problems": []
+  },
+  "blocking": [
+    {
+      "finding_id": "hardcoding.6f5b08707df506d0111f2aef",
+      "schema_version": "hardcoding_audit/v1",
+      "repository_snapshot_id": "hardcoding_source.sha256_d0131693f11321253d6b64c1efb1973cb79e13ef3468b21fbe906545f38e36b6",
+      "path": "tools/resources/original-native-generation-prompt-v1.json",
+      "symbol_ref": "system",
+      "start_line": null,
+      "end_line": null,
+      "syntactic_context": "structured_scalar",
+      "semantic_context": "source_resource",
+      "literal_kind": "string",
+      "literal_preview": "'Write one original, complete, candidate-only harness package for the supplied focused task method.\\nThe host owns identity, effect permissions, file paths, ...",
+      "literal_digest": "8e29ebe20716d8deb5903d2ca20a08902345f687b4420b3b174c221da4b32dd0",
+      "sensitive_value_redacted": false,
+      "occurrence_group_id": null,
+      "reference_count": 1,
+      "affected_callers": [],
+      "affected_contracts": [],
+      "classification": "RESOURCE_OR_TEMPLATE",
+      "secondary_tags": [
+        "prompt_like_text"
+      ],
+      "proposed_abstraction_kind": "versioned_resource_bundle",
+      "proposed_authority_ref": "current Context Intelligence or prompt-resource authority",
+      "proposed_parameter_scope": null,
+      "owner": "tools.resources.original-native-generation-prompt-v1.json:system",
+      "change_frequency_estimate": "versioned_or_rare",
+      "blast_radius": "local",
+      "security_risk": "low",
+      "compatibility_risk": "low",
+      "behavior_risk": "high",
+      "testability": "schema_parse_and_fixture",
+      "severity": "high",
+      "confidence": 0.91,
+      "rationale": "Long executable instructions need versioned identity and typed slots.",
+      "evidence_refs": [
+        "tools/resources/original-native-generation-prompt-v1.json:system"
+      ],
+      "suggested_next_action": "Review the owner and migrate through the proposed typed abstraction.",
+      "suppressed": false,
+      "suppression_ref": null
+    }
+  ]
+}

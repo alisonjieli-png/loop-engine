@@ -1,0 +1,6 @@
+error: patch failed: docs/RECORDS-INDEX.md:6
+error: docs/RECORDS-INDEX.md: patch does not apply
+error: patch failed: src/loop_engine/core/service_runtime/web_assets/index.html:319
+error: src/loop_engine/core/service_runtime/web_assets/index.html: patch does not apply
+error: patch failed: src/loop_engine/core/service_runtime/web_assets/service.js:14
+error: src/loop_engine/core/service_runtime/web_assets/service.js: patch does not apply

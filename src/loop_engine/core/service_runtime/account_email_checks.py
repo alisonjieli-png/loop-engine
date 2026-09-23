@@ -8,24 +8,39 @@ and the ignored proxy settings are observed rather than asserted. The service
 is also driven through its ASGI interface with a chosen client address, the way
 the request limit checks drive it. A removed-guard control reruns a scenario
 with the guard patched away and requires that scenario's own predicate to fail.
+
+`IdentityProjectStandIn` holds one identity project as the saved probes
+observed it, behind the same injected transports. The sign-up checks use it to
+play an address registered first by someone else, and the browser checks in
+`tools/check_service_workspace.mjs` serve it over a loopback socket with
+`serving_identity_project`, so the website's choose-a-password page talks to
+the same project the service asked for the link.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import io
 import json
+import logging
 import os
 import re
+import secrets
 import threading
 import time
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
+import uuid
 
 from . import account_email as module
 from .account_email import (
-    CONFIGURATION_RECORD_TYPE, CONFIRMATION_SENT, GENERATE_LINK_PATH, IDENTITY_SECRET_PREFIX,
-    MAIL_SECRET_PREFIX, MAIL_SEND_PATH, PROVIDER_PROFILE, RECOVERY_ACTION, RECOVERY_RESULT_VERSION, RECOVERY_SENT,
-    SERVICE_REFUSAL_STATUSES, SIGNUP_ACTION, SIGNUP_RESULT_VERSION, AccountEmailAdapter, AccountEmailConfiguration,
-    AccountEmailError, AccountMailRequest, IdentityLinkRequest, PreparedAccountRequest, ProviderAnswer,
-    counted_email_key, email_address, generate_identity_link, password_for_signup, send_account_mail,
+    CONFIGURATION_RECORD_TYPE, CONFIRM_PAGE, CONFIRMATION_SENT, GENERATE_LINK_PATH, GENERATED_PASSWORD_GROUPS,
+    IDENTITY_SECRET_PREFIX, MAIL_SECRET_PREFIX, MAIL_SEND_PATH, MAXIMUM_PASSWORD_BYTES, PROVIDER_PROFILE,
+    RECOVERY_ACTION, RECOVERY_RESULT_VERSION, RECOVERY_SENT, SERVICE_REFUSAL_STATUSES, SIGNUP_ACTION,
+    SIGNUP_RESULT_VERSION, AccountEmailAdapter, AccountEmailConfiguration, AccountEmailError, AccountMailRequest,
+    IdentityLinkRequest, PreparedAccountRequest, ProviderAnswer, counted_email_key, email_address,
+    generate_identity_link, generated_signup_password, send_account_mail,
 )
 from .http import ServiceHttpApplication
 from .http_auth import HttpAuthenticationError
@@ -43,6 +58,8 @@ DISPLAY_NAME = "Baltor"
 # machine, a real mailbox or a real credential.
 FIRST, SECOND = "198.51.100.10", "198.51.100.20"
 NEW_ADDRESS, KNOWN_ADDRESS = "new.person@example.com", "known.person@example.com"
+#: A password a caller chose. Sign-up refuses a request that carries one, and
+#: no request this service makes, answer it gives or record it keeps holds it.
 SIGNUP_SECRET_VALUE = "a-long-enough-chosen-phrase"
 IDENTITY_KEY_REFERENCE, MAIL_KEY_REFERENCE = "env:FIXTURE_IDENTITY_KEY", "env:FIXTURE_MAIL_KEY"
 IDENTITY_KEY_VALUE = IDENTITY_SECRET_PREFIX + "FIXTURE_ONLY_NOT_A_REAL_KEY"
@@ -51,9 +68,18 @@ TOKEN_HASH_VALUE = "pkce_fixture0token0hash0value"
 # The link the identity provider generates for itself. This service never
 # reads it and never puts it in a message.
 PROVIDER_LINK = IDENTITY_ORIGIN + "/auth/v1/verify?token=provider-owned&type=signup"
-SIGNUP_REQUEST = {"record_type": "service_account_signup_request/v1", "email": NEW_ADDRESS,
-                  "password": SIGNUP_SECRET_VALUE}
+SIGNUP_REQUEST = {"record_type": "service_account_signup_request/v2", "email": NEW_ADDRESS}
+#: The retired version 1 record, which carried a password the caller chose. It
+#: is refused, and a host that records request bodies never keeps it.
+RETIRED_SIGNUP_REQUEST = {"record_type": "service_account_signup_request/v1", "email": NEW_ADDRESS,
+                          "password": SIGNUP_SECRET_VALUE}
 RECOVERY_REQUEST = {"record_type": "service_account_recovery_request/v1", "email": NEW_ADDRESS}
+#: The password the wire checks put in one identity request, in the shape the
+#: adapter generates. Only the transport checks send it.
+WIRE_PASSWORD = "generated-fixture-wire-password-Aa1-"
+#: What `availability` publishes for a host that opens both operations with the
+#: default minimum password length.
+BOTH_OPEN = {"signup_available": True, "recovery_available": True, "minimum_password_length": 12}
 
 
 def _secrets(reference):
@@ -239,18 +265,25 @@ def _address_and_password_checks(check):
                 "a@" + "b" * 250 + ".co", "x" * 65 + "@b.co", 7, None, "a@b.co\n")
     check("an_address_this_service_cannot_read_is_refused_before_any_provider_request",
           all(_refused(lambda row=row: email_address(row)) == "invalid_email_address" for row in unusable))
-    check("a_password_is_refused_when_it_is_short_over_the_block_limit_or_the_address_itself",
-          password_for_signup(SIGNUP_SECRET_VALUE, NEW_ADDRESS, 12) == SIGNUP_SECRET_VALUE
-          and _refused(lambda: password_for_signup("short", NEW_ADDRESS, 12)) == "invalid_password"
-          and _refused(lambda: password_for_signup("x" * 73, NEW_ADDRESS, 12)) == "invalid_password"
-          and _refused(lambda: password_for_signup("long enough\tvalue", NEW_ADDRESS, 12)) == "invalid_password"
-          and _refused(lambda: password_for_signup(NEW_ADDRESS, NEW_ADDRESS, 12))
-          == "password_matches_the_email_address"
-          and _refused(lambda: password_for_signup(" NEW.Person@EXAMPLE.com ", NEW_ADDRESS, 12))
-          == "password_matches_the_email_address")
+    check("a_generated_password_meets_any_character_rule_and_the_length_ceiling",
+          _generated_passwords_are_usable([generated_signup_password() for _each in range(64)]))
     check("the_counted_email_key_keeps_no_address",
           len(counted_email_key(NEW_ADDRESS)) == 64 and NEW_ADDRESS not in counted_email_key(NEW_ADDRESS)
           and counted_email_key(NEW_ADDRESS) != counted_email_key(KNOWN_ADDRESS))
+
+
+def _generated_passwords_are_usable(passwords):
+    """Every password is long, within the byte ceiling, plain, and holds each character group.
+
+    A password the identity project's own policy refused would be answered
+    like an ineligible address, so the person would receive the notice
+    message instead of a link. Each group is therefore always present.
+    """
+    return bool(passwords) and all(
+        isinstance(value, str) and value.isascii() and value.isprintable() and not any(c.isspace() for c in value)
+        and 43 + len(GENERATED_PASSWORD_GROUPS) <= len(value.encode("utf-8")) <= MAXIMUM_PASSWORD_BYTES
+        and all(any(character in group for character in value) for group in GENERATED_PASSWORD_GROUPS)
+        for value in passwords)
 
 
 def _same_answer(provider_answer, fields=None, action=SIGNUP_ACTION):
@@ -293,11 +326,11 @@ def _delivery_checks(check):
     mail_request, mail_secret = new_provider.mail_requests[0]
     check("each_provider_request_is_bound_to_its_own_fixed_origin_key_and_fields",
           request.url == IDENTITY_ORIGIN + GENERATE_LINK_PATH and request.action == SIGNUP_ACTION
-          and request.email == NEW_ADDRESS and request.password == SIGNUP_SECRET_VALUE
+          and request.email == NEW_ADDRESS and _generated_passwords_are_usable([request.password])
           and secret == IDENTITY_KEY_VALUE and mail_secret == MAIL_KEY_VALUE
           and mail_request.url == MAIL_ORIGIN + MAIL_SEND_PATH
           and mail_request.sender == DISPLAY_NAME + " <accounts@auth.example.com>"
-          and mail_request.recipient == NEW_ADDRESS and SIGNUP_SECRET_VALUE not in mail_request.text_body)
+          and mail_request.recipient == NEW_ADDRESS and request.password not in mail_request.text_body)
     recovery, recovery_provider = _same_answer(_link_answer(action=RECOVERY_ACTION),
                                                RECOVERY_REQUEST, RECOVERY_ACTION)
     missing, missing_provider = _same_answer(_ineligible(RECOVERY_ACTION), RECOVERY_REQUEST, RECOVERY_ACTION)
@@ -361,13 +394,14 @@ def _unknown_outcome_checks(check):
           all(row[3] == 503 for row in outcomes.values()))
     closed = _Provider()
     adapter = _adapter(closed, _settings(signup_enabled=False))
-    open_recovery = _adapter(_Provider(), _settings(allow_network=False))
+    open_recovery = _adapter(_Provider(), _settings(allow_network=False, minimum_password_length=16))
     check("a_closed_operation_refuses_with_a_stable_code_and_makes_no_provider_request",
           _refused(lambda: _answer_for(adapter, SIGNUP_REQUEST)) == "account_signup_unavailable"
           and _refused(lambda: _answer_for(open_recovery, RECOVERY_REQUEST, RECOVERY_ACTION))
           == "account_recovery_unavailable"
-          and adapter.availability() == {"signup_available": False, "recovery_available": True}
-          and open_recovery.availability() == {"signup_available": False, "recovery_available": False}
+          and adapter.availability() == {**BOTH_OPEN, "signup_available": False}
+          and open_recovery.availability() == {"signup_available": False, "recovery_available": False,
+                                               "minimum_password_length": 16}
           and (closed.identity_requests, closed.mail_requests) == ([], []))
     wrong_key, missing_key = _Provider(), _Provider()
     swapped = _adapter(wrong_key, secret_resolver=lambda reference: MAIL_KEY_VALUE)
@@ -379,15 +413,17 @@ def _unknown_outcome_checks(check):
 
 
 def _malformed_checks(check):
-    adapter = _adapter(_Provider())
+    provider = _Provider()
+    adapter = _adapter(provider)
     malformed = ({}, {"record_type": "service_account_signup_request/v1", "email": NEW_ADDRESS},
-                 {**SIGNUP_REQUEST, "extra": 1}, {**SIGNUP_REQUEST, "record_type": "service_account_signup_request/v2"},
-                 {**SIGNUP_REQUEST, "email": "not an address"}, {**SIGNUP_REQUEST, "password": "short"},
+                 {**SIGNUP_REQUEST, "extra": 1}, {**SIGNUP_REQUEST, "record_type": "service_account_signup_request/v3"},
+                 {**SIGNUP_REQUEST, "email": "not an address"}, {"record_type": SIGNUP_REQUEST["record_type"]},
                  [SIGNUP_REQUEST], None, {"record_type": "service_account_recovery_request/v1", "email": NEW_ADDRESS})
     codes = [_refused(lambda row=row: adapter.prepare(SIGNUP_ACTION, row, FIRST)) for row in malformed]
     check("a_request_this_release_does_not_understand_is_refused_before_any_provider_request",
           all(code for code in codes) and codes[4] == "invalid_email_address"
-          and codes[5] == "invalid_password" and codes[0] == codes[1] == codes[2] == "invalid_account_signup")
+          and codes[0] == codes[1] == codes[2] == codes[3] == codes[5] == "invalid_account_signup"
+          and (provider.identity_requests, provider.mail_requests) == ([], []))
     extra = {"record_type": "service_account_recovery_request/v1", "email": NEW_ADDRESS, "password": "anything here"}
     check("a_recovery_request_carries_no_password_and_an_unknown_route_is_refused",
           _refused(lambda: adapter.prepare(RECOVERY_ACTION, extra, FIRST)) == "invalid_account_recovery"
@@ -402,13 +438,13 @@ def _no_secret_checks(check):
     _answer_for(adapter, SIGNUP_REQUEST)
     identity_request = provider.identity_requests[0][0]
     mail_request = provider.mail_requests[0][0]
-    prepared = PreparedAccountRequest(SIGNUP_ACTION, NEW_ADDRESS, SIGNUP_SECRET_VALUE)
+    prepared = PreparedAccountRequest(SIGNUP_ACTION, NEW_ADDRESS)
     printed = " ".join((repr(identity_request), repr(mail_request), repr(prepared), repr(adapter.configuration),
                         str(identity_request), str(mail_request)))
-    secrets = (SIGNUP_SECRET_VALUE, NEW_ADDRESS, TOKEN_HASH_VALUE, IDENTITY_KEY_VALUE, MAIL_KEY_VALUE,
-               IDENTITY_KEY_REFERENCE, MAIL_KEY_REFERENCE)
+    hidden = (identity_request.password, NEW_ADDRESS, TOKEN_HASH_VALUE, IDENTITY_KEY_VALUE, MAIL_KEY_VALUE,
+              IDENTITY_KEY_REFERENCE, MAIL_KEY_REFERENCE)
     check("no_address_password_token_or_key_appears_in_the_printed_form_of_a_record",
-          not any(value in printed for value in secrets))
+          not any(value in printed for value in hidden))
     talkative = ProviderAnswer(500, {"msg": SIGNUP_SECRET_VALUE + " " + TOKEN_HASH_VALUE + " " + PROVIDER_LINK})
     code, message = "", ""
     try:
@@ -418,7 +454,7 @@ def _no_secret_checks(check):
         message = " ".join((str(error), repr(error), json.dumps(error.details), json.dumps(error.headers)))
     check("a_refusal_carries_a_code_and_never_the_provider_message_or_a_secret",
           code == "identity_link_unavailable" and message
-          and not any(value in message for value in (*secrets, PROVIDER_LINK)))
+          and not any(value in message for value in (*hidden, SIGNUP_SECRET_VALUE, PROVIDER_LINK)))
 
 
 def _limit_checks(check):
@@ -479,6 +515,7 @@ class _IdentityStandIn:
 
     class configuration:
         project_url = IDENTITY_ORIGIN
+        email_signup_enabled = True
 
     def __init__(self, runtime):
         self.runtime = runtime
@@ -530,13 +567,23 @@ def _service_checks(check, root):
                   and new.json()["result"] == {"record_type": SIGNUP_RESULT_VERSION, "status": CONFIRMATION_SENT}
                   and new.json()["operation"] == "account_signup" and new.headers["cache-control"] == "no-store"
                   and len(provider.mail_requests) == 3)
+            generated = [request.password for request, _secret in provider.identity_requests]
             check("the_answer_carries_no_address_password_token_or_link",
-                  not any(value in new.text for value in (SIGNUP_SECRET_VALUE, NEW_ADDRESS, TOKEN_HASH_VALUE,
-                                                          PROVIDER_LINK, IDENTITY_KEY_VALUE, MAIL_KEY_VALUE)))
+                  len(generated) == 3 and all(generated)
+                  and not any(value in new.text + existing.text + unread.text
+                              for value in (*generated, NEW_ADDRESS, TOKEN_HASH_VALUE, PROVIDER_LINK,
+                                            IDENTITY_KEY_VALUE, MAIL_KEY_VALUE)))
             identity = client.get("/api/v1/account/identity").json()["result"]
             check("the_identity_route_reports_whether_sign_up_and_recovery_are_available",
                   identity["signup_available"] is True and identity["recovery_available"] is True
+                  and identity["minimum_password_length"] == 12
                   and identity["redirect_url"] == base + "/auth/callback")
+            retired = client.post("/api/v1/account/signup", json=RETIRED_SIGNUP_REQUEST)
+            chosen = client.post("/api/v1/account/signup", json={**SIGNUP_REQUEST, "password": SIGNUP_SECRET_VALUE})
+            check("the_real_route_refuses_a_sign_up_that_carries_a_password_and_asks_no_provider",
+                  retired.status_code == chosen.status_code == 400
+                  and retired.json()["error"]["code"] == chosen.json()["error"]["code"] == "invalid_account_signup"
+                  and SIGNUP_SECRET_VALUE not in retired.text + chosen.text and len(provider.identity_requests) == 3)
             malformed = client.post("/api/v1/account/signup", json={"record_type": "another/v1"})
             page = client.get("/auth/confirm")
             # Another method on the same path is not this route, so only the exact method reaches a
@@ -584,6 +631,7 @@ def _service_checks(check, root):
           and switched_off.json()["error"]["code"] == "account_signup_unavailable"
           and without.status_code == 404 and without.json()["error"]["code"] == "account_email_unavailable"
           and identity["signup_available"] is False and identity["recovery_available"] is False
+          and "minimum_password_length" not in identity
           and (quiet.identity_requests, quiet.mail_requests) == ([], []))
     fixture = _fixture(root, "boundary")
     check("an_adapter_that_speaks_another_account_email_boundary_is_refused_before_the_routes_are_served",
@@ -687,7 +735,7 @@ class _Listener:
 
 
 def _identity_request(origin, timeout_seconds=3.0, maximum_response_bytes=65_536):
-    return IdentityLinkRequest(origin + GENERATE_LINK_PATH, SIGNUP_ACTION, NEW_ADDRESS, SIGNUP_SECRET_VALUE,
+    return IdentityLinkRequest(origin + GENERATE_LINK_PATH, SIGNUP_ACTION, NEW_ADDRESS, WIRE_PASSWORD,
                                timeout_seconds, maximum_response_bytes)
 
 
@@ -700,7 +748,7 @@ def _transport_checks(check):
         check("the_identity_request_carries_the_documented_fields_and_the_server_key",
               answer == ProviderAnswer(200, {"hashed_token": TOKEN_HASH_VALUE})
               and seen["path"] == GENERATE_LINK_PATH and sent == {"type": SIGNUP_ACTION, "email": NEW_ADDRESS,
-                                                                  "password": SIGNUP_SECRET_VALUE}
+                                                                  "password": WIRE_PASSWORD}
               and "redirect_to" not in sent
               and seen["headers"]["apikey"] == IDENTITY_KEY_VALUE
               and seen["headers"]["authorization"] == "Bearer " + IDENTITY_KEY_VALUE)
@@ -739,13 +787,13 @@ def _transport_checks(check):
               _reaches_through_proxy_settings(listener))
         check("a_wire_record_refuses_another_path_a_query_and_the_wrong_action",
               _refuses(lambda: IdentityLinkRequest(listener.origin + "/auth/v1/token", SIGNUP_ACTION, NEW_ADDRESS,
-                                                   SIGNUP_SECRET_VALUE, 3.0, 65_536))
+                                                   WIRE_PASSWORD, 3.0, 65_536))
               and _refuses(lambda: IdentityLinkRequest(listener.origin + GENERATE_LINK_PATH + "?a=b", SIGNUP_ACTION,
-                                                       NEW_ADDRESS, SIGNUP_SECRET_VALUE, 3.0, 65_536))
+                                                       NEW_ADDRESS, WIRE_PASSWORD, 3.0, 65_536))
               and _refuses(lambda: IdentityLinkRequest(listener.origin + GENERATE_LINK_PATH, "invite", NEW_ADDRESS,
-                                                       SIGNUP_SECRET_VALUE, 3.0, 65_536))
+                                                       WIRE_PASSWORD, 3.0, 65_536))
               and _refuses(lambda: IdentityLinkRequest(listener.origin + GENERATE_LINK_PATH, RECOVERY_ACTION,
-                                                       NEW_ADDRESS, SIGNUP_SECRET_VALUE, 3.0, 65_536))
+                                                       NEW_ADDRESS, WIRE_PASSWORD, 3.0, 65_536))
               and _refuses(lambda: AccountMailRequest(listener.origin + "/send", "a@b.co", NEW_ADDRESS, "s", "b",
                                                       3.0, 65_536))
               and _refuses(lambda: generate_identity_link({"url": listener.origin}, IDENTITY_KEY_VALUE))
@@ -828,7 +876,7 @@ def _host_file_checks(check, root):
     check("the_documented_host_block_installs_the_adapter_through_the_real_host_loader",
           application.account_email is not None
           and application.account_email.protocol_version == "account_email/v1"
-          and application.account_email.availability() == {"signup_available": True, "recovery_available": True}
+          and application.account_email.availability() == BOTH_OPEN
           and application.account_email.transport_basis == "provider_https"
           and application.account_email.public_base_url == ORIGIN
           and application.account_email.display_name == DISPLAY_NAME
@@ -860,7 +908,7 @@ def _host_file_checks(check, root):
           # because a person who already has an account may need a new password.
           and load("recovery_only", browser_identity=closed_registration,
                    account_email=_host_block(signup_enabled=False)).account_email.availability()
-          == {"signup_available": False, "recovery_available": True})
+          == {**BOTH_OPEN, "signup_available": False})
     from . import http_entrypoint as entrypoint
     with patch.object(entrypoint, "signup_matches_the_browser_identity",
                       lambda settings, browser_identity: True):
@@ -996,6 +1044,502 @@ def _mutant_controls(check):
         second.close()
 
 
+def _stamp(moment):
+    return moment.strftime("%Y-%m-%dT%H:%M:%SZ") if moment else None
+
+
+class IdentityProjectStandIn:
+    """One identity project, as the saved probes observed it, behind the adapter's two transports.
+
+    `generate_link` and `send_mail` have the signature of the adapter's two
+    injected transports. `public_signup` is the provider's own public sign-up,
+    which stays open until the owner closes it; a check calls it the way
+    someone who registers an address first could. `verify`, `set_password` and
+    `sign_in` are what the website's identity library asks the project for.
+
+    What each rule rests on:
+
+    - The answer to a generated link follows the probe of September 21, 2026,
+      `artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json`.
+    - A second sign-up link for an address that is not confirmed keeps the
+      first password, and the earlier link stops working; a used link cannot
+      be used again. Observed on September 23, 2026,
+      `identity-unconfirmed-signup-probe-1.json` in the same folder.
+    - A confirmed address refuses a new sign-up link, which the service
+      answers like any ineligible address, and a recovery link for an address
+      with no account is refused. Both follow the provider's published error
+      codes and were not probed here.
+    - A recovery link confirms an address that was never confirmed, and a new
+      password ends the account's other sessions. Both are read from the
+      provider's published source and were not probed here.
+
+    Passwords are compared and never printed; the printed form holds counts.
+    """
+
+    def __init__(self, session_factory=None):
+        self.users, self.sessions, self.messages, self.link_requests = {}, {}, [], []
+        self.calls, self.issuer = {}, ""
+        self._session_factory = session_factory or (lambda project, user: "session-" + secrets.token_urlsafe(24))
+        self._lock = threading.RLock()
+
+    def __repr__(self):
+        return "IdentityProjectStandIn(users=%d, messages=%d)" % (len(self.users), len(self.messages))
+
+    def _called(self, name):
+        self.calls[name] = self.calls.get(name, 0) + 1
+
+    def _new_user(self, address, password):
+        now = datetime.now(timezone.utc)
+        user = {"id": str(uuid.uuid4()), "email": address, "password": password, "confirmed_at": None,
+                "created_at": now, "tokens": {SIGNUP_ACTION: None, RECOVERY_ACTION: None}}
+        self.users[address] = user
+        return user
+
+    def generate_link(self, request, secret):
+        """The administration interface the service calls: record the request and answer it."""
+        with self._lock:
+            self._called("generate_link")
+            self.link_requests.append((request, secret))
+            user = self.users.get(request.email)
+            if request.action == SIGNUP_ACTION:
+                if user is not None and user["confirmed_at"]:
+                    return ProviderAnswer(422, {"code": 422, "error_code": "email_exists",
+                                                "msg": "A user with this email address has already been registered"})
+                # An address that is not confirmed keeps its first password.
+                user = user or self._new_user(request.email, request.password)
+            elif user is None:
+                return ProviderAnswer(404, {"code": 404, "error_code": "user_not_found", "msg": "User not found"})
+            token = user["tokens"][request.action] = secrets.token_hex(28)
+            return ProviderAnswer(200, {"action_link": "stand-in-provider-link", "email_otp": "000000",
+                                        "hashed_token": token, "verification_type": request.action,
+                                        "redirect_to": "", "id": user["id"], "email": user["email"],
+                                        "confirmation_sent_at": _stamp(datetime.now(timezone.utc))})
+
+    def send_mail(self, request, secret):
+        """The mail provider's send interface: keep the message for the address it names."""
+        with self._lock:
+            self._called("send_mail")
+            self.messages.append({"to": request.recipient, "subject": request.subject, "text": request.text_body})
+            return ProviderAnswer(200, {"id": str(uuid.uuid4())})
+
+    def public_signup(self, address, password):
+        """The provider's own public sign-up, which anyone holding the public key can call while it is open."""
+        with self._lock:
+            self._called("public_signup")
+            user = self.users.get(address) or self._new_user(address, password)
+            if not user["confirmed_at"]:
+                user["tokens"][SIGNUP_ACTION] = secrets.token_hex(28)
+            return user["id"]
+
+    def verify(self, token_hash, action):
+        """Exchange one link for a session, or None for a used, replaced or unknown link."""
+        with self._lock:
+            self._called("verify")
+            if action not in (SIGNUP_ACTION, RECOVERY_ACTION) or not isinstance(token_hash, str) or not token_hash:
+                return None
+            for user in self.users.values():
+                if user["tokens"][action] and secrets.compare_digest(user["tokens"][action], token_hash):
+                    user["tokens"][action] = None
+                    user["confirmed_at"] = user["confirmed_at"] or datetime.now(timezone.utc) - timedelta(seconds=1)
+                    return self._open(user)
+            return None
+
+    def _open(self, user):
+        session = self._session_factory(self, user)
+        self.sessions[session] = user["email"]
+        return session
+
+    def set_password(self, session, password):
+        """Replace the password of the account a session belongs to, and end its other sessions."""
+        with self._lock:
+            self._called("set_password")
+            address = self.sessions.get(session)
+            if (address is None or not isinstance(password, str)
+                    or not 6 <= len(password.encode("utf-8")) <= MAXIMUM_PASSWORD_BYTES):
+                return False
+            self.users[address]["password"] = password
+            for other in [key for key, owner in self.sessions.items() if owner == address and key != session]:
+                del self.sessions[other]
+            return True
+
+    def sign_in(self, address, password):
+        """A session for a confirmed address and its current password, or None."""
+        with self._lock:
+            self._called("sign_in")
+            user = self.users.get(address)
+            if (user is None or not user["confirmed_at"] or not isinstance(password, str)
+                    or not secrets.compare_digest(user["password"].encode("utf-8"), password.encode("utf-8"))):
+                return None
+            return self._open(user)
+
+    def user_record(self, session):
+        """The user as the provider's user address answers it for one session, or None."""
+        with self._lock:
+            user = self.users.get(self.sessions.get(session, ""))
+            if user is None:
+                return None
+            return {"id": user["id"], "aud": "authenticated", "role": "authenticated", "email": user["email"],
+                    "email_confirmed_at": _stamp(user["confirmed_at"]), "confirmed_at": _stamp(user["confirmed_at"]),
+                    "is_anonymous": False, "app_metadata": {"provider": "email", "providers": ["email"]},
+                    "user_metadata": {}, "identities": [], "created_at": _stamp(user["created_at"]),
+                    "updated_at": _stamp(datetime.now(timezone.utc))}
+
+    def links_to(self, address):
+        """Every link to this service's page sent to one address, oldest first, as (token hash, type)."""
+        found = []
+        for message in self.messages:
+            if message["to"] != address:
+                continue
+            for word in message["text"].split():
+                parts = urlsplit(word)
+                if parts.path == CONFIRM_PAGE:
+                    query = parse_qs(parts.query)
+                    found.append((query.get("token_hash", [""])[0], query.get("type", [""])[0]))
+        return found
+
+
+def _json_answer(handler, status, value, origin):
+    body = b"" if value is None else json.dumps(value).encode("utf-8")
+    handler.send_response(status)
+    handler.send_header("Access-Control-Allow-Origin", origin or "*")
+    handler.send_header("Vary", "Origin")
+    if value is not None:
+        handler.send_header("Content-Type", "application/json")
+    handler.send_header("Content-Length", str(len(body)))
+    handler.end_headers()
+    handler.wfile.write(body)
+
+
+def _session_answer(project, session):
+    return {"access_token": session, "token_type": "bearer", "expires_in": 3600,
+            "expires_at": int(time.time()) + 3600, "refresh_token": "stand-in-" + secrets.token_urlsafe(12),
+            "user": project.user_record(session)}
+
+
+@contextmanager
+def serving_identity_project(project, public_keys):
+    """Serve one stand-in project over a loopback socket, as the website's identity library calls it.
+
+    It answers the addresses that library uses, `/auth/v1/verify`,
+    `/auth/v1/user`, `/auth/v1/token`, `/auth/v1/signup` and `/auth/v1/logout`,
+    the key set the service reads at `/auth/v1/.well-known/jwks.json`, and one
+    address for the checks alone, `/stand-in/outbox`, which returns the
+    messages sent to one address. Every answer names the calling page's origin
+    as allowed, as the provider does for a browser. It yields the origin.
+    """
+    class Handler(BaseHTTPRequestHandler):
+        def _origin(self):
+            return self.headers.get("Origin", "")
+
+        def _read(self):
+            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                value = json.loads(self.rfile.read(length) or b"{}")
+            except ValueError:
+                value = {}
+            return value if isinstance(value, dict) else {}
+
+        def _session(self):
+            header = self.headers.get("Authorization", "")
+            return header[7:] if header.startswith("Bearer ") else ""
+
+        def do_OPTIONS(self):
+            self.send_response(204)
+            self.send_header("Access-Control-Allow-Origin", self._origin() or "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", self.headers.get("Access-Control-Request-Headers", "*"))
+            self.send_header("Access-Control-Max-Age", "600")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        def do_GET(self):
+            parts = urlsplit(self.path)
+            if parts.path == "/auth/v1/.well-known/jwks.json":
+                return _json_answer(self, 200, {"keys": public_keys}, self._origin())
+            if parts.path == "/auth/v1/user":
+                user = project.user_record(self._session())
+                return _json_answer(self, 200 if user else 401, user or {"code": 401, "error_code": "bad_jwt",
+                                                                         "msg": "invalid JWT"}, self._origin())
+            if parts.path == "/stand-in/outbox":
+                address = parse_qs(parts.query).get("to", [""])[0]
+                return _json_answer(self, 200, {"messages": [row for row in project.messages if row["to"] == address],
+                                                "calls": dict(project.calls)}, self._origin())
+            return _json_answer(self, 404, {"code": 404, "msg": "not found"}, self._origin())
+
+        def do_POST(self):
+            parts, fields = urlsplit(self.path), self._read()
+            if parts.path == "/auth/v1/verify":
+                session = project.verify(fields.get("token_hash"), fields.get("type"))
+                return _json_answer(self, 200 if session else 403, _session_answer(project, session) if session else
+                                    {"code": 403, "error_code": "otp_expired",
+                                     "msg": "Email link is invalid or has expired"}, self._origin())
+            if parts.path == "/auth/v1/token" and parse_qs(parts.query).get("grant_type") == ["password"]:
+                session = project.sign_in(fields.get("email"), fields.get("password"))
+                return _json_answer(self, 200 if session else 400, _session_answer(project, session) if session else
+                                    {"code": 400, "error_code": "invalid_credentials",
+                                     "msg": "Invalid login credentials"}, self._origin())
+            if parts.path == "/auth/v1/signup":
+                project.public_signup(fields.get("email"), fields.get("password"))
+                return _json_answer(self, 200, {"id": project.users[fields.get("email")]["id"]}, self._origin())
+            if parts.path == "/auth/v1/logout":
+                return _json_answer(self, 204, None, self._origin())
+            return _json_answer(self, 404, {"code": 404, "msg": "not found"}, self._origin())
+
+        def do_PUT(self):
+            if urlsplit(self.path).path != "/auth/v1/user":
+                return _json_answer(self, 404, {"code": 404, "msg": "not found"}, self._origin())
+            session, fields = self._session(), self._read()
+            if project.set_password(session, fields.get("password")):
+                return _json_answer(self, 200, project.user_record(session), self._origin())
+            return _json_answer(self, 422, {"code": 422, "error_code": "weak_password",
+                                            "msg": "Password should be at least 6 characters."}, self._origin())
+
+        def log_message(self, *_arguments):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    worker = threading.Thread(target=server.serve_forever, daemon=True)
+    worker.start()
+    origin = "http://127.0.0.1:%d" % server.server_port
+    project.issuer = origin + "/auth/v1"
+    try:
+        yield origin
+    finally:
+        server.shutdown()
+        server.server_close()
+        worker.join(3)
+
+
+OWNER_ADDRESS = "owner.person@example.com"
+#: The password the person who registers the owner's address first chooses,
+#: and the one the owner chooses on the page the newest link opens.
+FIRST_REGISTRANT_PASSWORD, OWNER_PASSWORD = "first-registrant-password-1", "owner-chosen-password-22"
+
+
+def _signup_request(address, **extra):
+    return {"record_type": SIGNUP_REQUEST["record_type"], "email": address, **extra}
+
+
+def _registered_first_by_someone_else(first_route):
+    """Who can open an address that someone else registered first, at each moment of the owner's journey.
+
+    `first_route` is how the other person registers the owner's address: this
+    service's sign-up route, or the identity provider's own public sign-up
+    while it is open. The other person then knows every password it sent,
+    everything the service answered, and whatever the same code yields when it
+    runs it: three fresh generated passwords. The owner asks this service for
+    sign-up, opens the newest link, and chooses a password, which this plays
+    with the project's `verify` and `set_password` as the website does.
+    """
+    project = IdentityProjectStandIn()
+    adapter = AccountEmailAdapter(_settings(), _secrets, public_base_url=ORIGIN,
+        address_limits=ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE), display_name=DISPLAY_NAME,
+        identity_transport=project.generate_link, mail_transport=project.send_mail)
+    known, refusals = {FIRST_REGISTRANT_PASSWORD}, []
+    if first_route == "service":
+        for fields in (dict(RETIRED_SIGNUP_REQUEST, email=OWNER_ADDRESS, password=FIRST_REGISTRANT_PASSWORD),
+                       _signup_request(OWNER_ADDRESS, password=FIRST_REGISTRANT_PASSWORD)):
+            refusals.append(_refused(lambda fields=fields: adapter.prepare(SIGNUP_ACTION, fields, FIRST)))
+        known.add(json.dumps(_answer_for(adapter, _signup_request(OWNER_ADDRESS))))
+    else:
+        project.public_signup(OWNER_ADDRESS, FIRST_REGISTRANT_PASSWORD)
+    known.update(module.generated_signup_password() for _each in range(3))
+    _answer_for(adapter, _signup_request(OWNER_ADDRESS), address=SECOND)
+
+    def opened():
+        return any(project.sign_in(OWNER_ADDRESS, value) for value in known)
+    moments = {"before_confirmation": opened()}
+    links = project.links_to(OWNER_ADDRESS)
+    earlier_refused = all(project.verify(*link) is None for link in links[:-1])
+    session = project.verify(*links[-1]) if links else None
+    moments["after_confirmation"] = opened()
+    chosen = project.set_password(session, OWNER_PASSWORD)
+    moments["after_the_owner_chose_a_password"] = opened()
+    return {"moments": moments, "refusals": refusals, "earlier_links_refused": earlier_refused,
+            "confirmed": session is not None and chosen, "owner_signs_in": project.sign_in(OWNER_ADDRESS, OWNER_PASSWORD)
+            is not None, "links": links, "project": project, "adapter": adapter}
+
+
+def _service_registration_opens_nothing_for_the_first_registrant():
+    played = _registered_first_by_someone_else("service")
+    return (played["refusals"] == ["invalid_account_signup"] * 2 and not any(played["moments"].values())
+            and played["earlier_links_refused"] and len(played["links"]) == 2 and played["confirmed"]
+            and played["owner_signs_in"])
+
+
+def _recovery_opens_the_same_page_and_the_same_step():
+    """A recovery link leads to the page a sign-up link leads to, and ends at a password the owner chooses."""
+    played = _registered_first_by_someone_else("service")
+    project, adapter = played["project"], played["adapter"]
+    _answer_for(adapter, {**RECOVERY_REQUEST, "email": OWNER_ADDRESS}, RECOVERY_ACTION, address=SECOND)
+    message = project.messages[-1]["text"]
+    link = next((word for word in message.split() if urlsplit(word).path == CONFIRM_PAGE), "")
+    token_hash, kind = project.links_to(OWNER_ADDRESS)[-1]
+    session = project.verify(token_hash, kind)
+    replaced = project.set_password(session, OWNER_PASSWORD + "-new")
+    return (link.startswith(ORIGIN + CONFIRM_PAGE + "?token_hash=") and link.endswith("&type=recovery")
+            and kind == RECOVERY_ACTION and replaced
+            and project.sign_in(OWNER_ADDRESS, OWNER_PASSWORD + "-new") is not None
+            and project.sign_in(OWNER_ADDRESS, OWNER_PASSWORD) is None
+            and project.verify(token_hash, kind) is None)
+
+
+def _password_carrying_sign_up_is_refused():
+    """The retired record and the current record with a password are both refused before anything is counted."""
+    provider = _Provider()
+    adapter = _adapter(provider)
+    codes = [_refused(lambda row=row: adapter.prepare(SIGNUP_ACTION, row, FIRST))
+             for row in (RETIRED_SIGNUP_REQUEST, {**SIGNUP_REQUEST, "password": SIGNUP_SECRET_VALUE},
+                         {**SIGNUP_REQUEST, "new_password": SIGNUP_SECRET_VALUE})]
+    return (codes == ["invalid_account_signup"] * 3 and not provider.identity_requests
+            and counted_email_key(NEW_ADDRESS) not in adapter.email_attempts._failures)
+
+
+def _each_sign_up_gets_its_own_password():
+    """Three sign-ups, two for one address, carry three different usable passwords that no caller sent."""
+    provider = _Provider()
+    adapter = _adapter(provider)
+    for address in (NEW_ADDRESS, NEW_ADDRESS, KNOWN_ADDRESS):
+        _answer_for(adapter, _signup_request(address))
+    sent = [request.password for request, _secret in provider.identity_requests]
+    return (len(sent) == len(set(sent)) == 3 and _generated_passwords_are_usable(sent)
+            and SIGNUP_SECRET_VALUE not in sent)
+
+
+def _registration_report(root, name):
+    """What three services report as account creation: sign-up open, sign-up closed, no account email."""
+    fixture = _fixture(root, name)
+    reports = []
+    for account_email in (_adapter(_Provider()), _adapter(_Provider(), _settings(signup_enabled=False)), None):
+        application = _shut(ServiceHttpApplication(fixture.runtime, fixture.provisioning, _loopback_configuration(),
+                            browser_identity=_IdentityStandIn(fixture.runtime), account_email=account_email))
+        reports.append(application.capabilities()["website"]["registration_available"])
+    return tuple(reports)
+
+
+def _files_text(root):
+    """Every byte under one folder, as text an operator could read."""
+    return "\n".join(path.read_bytes().decode("latin-1") for path in sorted(root.rglob("*")) if path.is_file())
+
+
+def _generated_password_places(root, name):
+    """Run sign-ups through the real route and name every place a generated password was seen.
+
+    The places a caller or an operator can read are searched: the answers and
+    their headers, every record any logger made at any level, anything written
+    to standard output or error, every file the service keeps with request
+    bodies recorded, the printed form of the adapter and its two tables, and
+    the messages sent. Only the request to the identity provider may hold it.
+    """
+    import httpx
+    from .observability import ServiceObservabilityPolicy
+    fixture = _fixture(root, name)
+    provider, logged, printed = _Provider(), [], io.StringIO()
+
+    def keep(_logger, record):
+        try:
+            logged.append(" ".join((str(record.msg), repr(record.args), record.getMessage(),
+                                    str(record.exc_text or ""), repr(record.exc_info or ""))))
+        except Exception as error:
+            logged.append("unreadable log record " + type(error).__name__)
+
+    def build(configuration):
+        adapter = AccountEmailAdapter(_settings(allow_loopback=True), _secrets,
+            public_base_url=configuration.public_base_url, address_limits=configuration.request_limits,
+            display_name=configuration.display_name, identity_transport=provider.identity,
+            mail_transport=provider.mail)
+        return ServiceHttpApplication(fixture.runtime, fixture.provisioning, configuration,
+            browser_identity=_IdentityStandIn(fixture.runtime), account_email=adapter,
+            observability=ServiceObservabilityPolicy(payload_capture="metadata_and_request_body"))
+    limits = ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=50, window_seconds=600)
+    with patch.object(logging.Logger, "isEnabledFor", lambda self, level: True), \
+            patch.object(logging.Logger, "callHandlers", keep), redirect_stdout(printed), redirect_stderr(printed):
+        with running_http(fixture, application_factory=build, request_limits=limits) as (base, service):
+            with httpx.Client(base_url=base, trust_env=False, timeout=5) as client:
+                answers = [client.post(module.SIGNUP_PATH, json=_signup_request(address))
+                           for address in (NEW_ADDRESS, KNOWN_ADDRESS)]
+                answers.append(client.post(module.SIGNUP_PATH, json={**SIGNUP_REQUEST, "unexpected": True}))
+            adapter = service.account_email
+            state = " ".join(repr(value) for value in (vars(adapter), vars(adapter.address_attempts),
+                                                       vars(adapter.email_attempts), adapter))
+    generated = [request.password for request, _secret in provider.identity_requests]
+    places = {"answers": " ".join(answer.text + json.dumps(dict(answer.headers)) for answer in answers),
+              "logs": "\n".join(logged), "printed": printed.getvalue(), "files": _files_text(root / name),
+              "adapter": state, "messages": "".join(provider.sent_bodies)}
+    seen = sorted(place for place, text in places.items() if any(value in text for value in generated))
+    return {"generated": len(generated), "accepted": [answer.status_code for answer in answers], "seen": seen,
+            "logged_records": len(logged)}
+
+
+def _password_stays_hidden(root, name):
+    places = _generated_password_places(root, name)
+    return places["generated"] == 2 and places["accepted"] == [202, 202, 400] and places["seen"] == []
+
+
+def _telling_generator(record):
+    """A generator that also hands each password to `record`, for the controls below."""
+    real = module.generated_signup_password
+
+    def generated():
+        value = real()
+        record(value)
+        return value
+    return generated
+
+
+def _email_first_signup_checks(check, root):
+    """Sign-up takes an address alone; each check has a control that removes its guard."""
+    check("a_sign_up_request_carrying_a_password_is_refused_before_anything_is_counted",
+          _password_carrying_sign_up_is_refused())
+    with patch.dict(module.REQUEST_FIELDS, {SIGNUP_ACTION: frozenset({"record_type", "email", "password"})}):
+        check("removed_no_password_field_rule_is_detected", not _password_carrying_sign_up_is_refused())
+    check("each_sign_up_gets_a_new_password_that_no_caller_sent", _each_sign_up_gets_its_own_password())
+    constant = "Constant-password-Aa1-" + "x" * 30
+    with patch.object(module, "generated_signup_password", lambda: constant):
+        check("removed_random_password_rule_is_detected", not _each_sign_up_gets_its_own_password())
+    check("an_address_registered_first_through_this_service_never_opens_with_a_password_the_registrant_knows",
+          _service_registration_opens_nothing_for_the_first_registrant())
+    # The person who registers first runs the same code. A generator that
+    # returns what that person's own run returns lets them in once the owner
+    # confirms the address.
+    with patch.object(module, "generated_signup_password", lambda: constant):
+        check("removed_unguessable_password_rule_lets_the_first_registrant_in",
+              not _service_registration_opens_nothing_for_the_first_registrant())
+    provider_route = _registered_first_by_someone_else("provider")
+    # The provider's own public sign-up takes a password from anyone, so a
+    # password chosen first opens the account from the moment the owner
+    # confirms the address until the owner chooses theirs. The website asks
+    # for the password before it opens the account, and the owner closes that
+    # route at the provider; this check keeps the reason for both in view.
+    check("with_the_provider_public_sign_up_open_a_password_chosen_first_lasts_until_the_owner_chooses_one",
+          provider_route["moments"] == {"before_confirmation": False, "after_confirmation": True,
+                                        "after_the_owner_chose_a_password": False}
+          and provider_route["confirmed"] and provider_route["owner_signs_in"])
+    check("a_recovery_link_opens_the_same_page_and_ends_at_a_password_the_owner_chooses",
+          _recovery_opens_the_same_page_and_the_same_step())
+    check("the_generated_password_is_never_answered_stored_printed_or_logged",
+          _password_stays_hidden(root, "hidden"))
+    seen = []
+    with patch.object(module, "generated_signup_password",
+                      _telling_generator(lambda value: logging.getLogger(module.__name__).debug("made %s", value))):
+        check("a_generated_password_written_to_a_log_is_found", not _password_stays_hidden(root, "logged"))
+    original = AccountEmailAdapter.deliver
+
+    def telling(self, prepared):
+        result = original(self, prepared)
+        return {**result, "password": seen[-1]} if seen else result
+    with patch.object(module, "generated_signup_password", _telling_generator(seen.append)), \
+            patch.object(AccountEmailAdapter, "deliver", telling):
+        check("a_generated_password_put_in_the_answer_is_found", not _password_stays_hidden(root, "answered"))
+    check("registration_is_reported_open_only_when_this_service_can_send_the_sign_up_link",
+          _registration_report(root, "registration-open") == (True, False, False))
+    with patch.object(ServiceHttpApplication, "registration_available",
+                      lambda self: self.browser_identity is not None
+                      and self.browser_identity.configuration.email_signup_enabled):
+        check("removed_sign_up_link_rule_for_registration_is_detected",
+              _registration_report(root, "registration-mutant") != (True, False, False))
+
+
 def run_checks(check, root):
     _configuration_checks(check)
     _address_and_password_checks(check)
@@ -1008,3 +1552,4 @@ def run_checks(check, root):
     _transport_checks(check)
     _host_file_checks(check, root / "host-file")
     _mutant_controls(check)
+    _email_first_signup_checks(check, root / "email-first")

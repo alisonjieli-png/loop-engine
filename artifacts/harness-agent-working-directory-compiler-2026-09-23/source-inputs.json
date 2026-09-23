@@ -1,0 +1,74 @@
+{
+  "record_type": "compiler_profile_adjudication_sources/v1",
+  "checked_at": "2026-09-23T16:40:41.959041+00:00",
+  "records": [
+    {
+      "source_repository": "/home/username/loop-engine",
+      "source_relative_path": "docs/architecture/HARNESS-WORKING-DIRECTORY-COMPILER-2026-09-23.md",
+      "snapshot_path": "source-inputs/HARNESS-WORKING-DIRECTORY-COMPILER-2026-09-23.md",
+      "sha256": "46b8a36489dd7a519e1bc96cccd0e2e0077c332675f458988097d0c68c658c1c",
+      "state": "untracked concurrent source document read only; snapshot for dated adjudication"
+    },
+    {
+      "source_repository": "/home/username/loop-engine",
+      "source_relative_path": "docs/research/HARNESS-FILE-STANDARDS-FLEXIBILITY-2026-09-23.md",
+      "snapshot_path": "source-inputs/HARNESS-FILE-STANDARDS-FLEXIBILITY-2026-09-23.md",
+      "sha256": "39757454b202f815728ac5f7c7d8fc63cc990c72826071e8d677dcde84b726b9",
+      "state": "untracked concurrent source document read only; snapshot for dated adjudication"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "tools/install_selected_material.py",
+      "sha256": "ebbaed67ff2c2332560e1b779cc199b150795ede555ce87e3b606836a1994267",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/engines/records.py",
+      "sha256": "619c22f2287833ba26f59df77d2a8cc3d8514d07a74081c8af12a7011b24d4fd",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/engines/README.md",
+      "sha256": "d9e21209edd6f28b3f5433b25a60543bced36aa2d0e05fa68b8af3bbaae3a0a1",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/data/engine_slots.yaml",
+      "sha256": "f1cda4b6ed4326dae0dc2beb46eeecad2fc4d4383dd67cb16d2c3400bd07ea82",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/instance_instructions.py",
+      "sha256": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/node_provisioning.py",
+      "sha256": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/harness_fresh_instances.py",
+      "sha256": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "state": "read only"
+    },
+    {
+      "source_repository": "integration checkout",
+      "source_relative_path": "src/loop_engine/core/facets.py",
+      "sha256": "7c9d043ed04eda8e81d13a315905c996499adfb6fb0808f9c4e3ba86323b07d9",
+      "state": "read only"
+    }
+  ]
+}

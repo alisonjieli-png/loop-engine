@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "causal_status": {
+      "const": "unproven"
+    },
+    "missing_evidence": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "observed_sequence": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "ordered_event_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "ordered_event_ids",
+    "observed_sequence",
+    "causal_status",
+    "missing_evidence"
+  ],
+  "type": "object"
+}

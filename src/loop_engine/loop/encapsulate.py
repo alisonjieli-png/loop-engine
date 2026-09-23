@@ -169,7 +169,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
                   ledger: "LoopLedger | None" = None,
                   llm_thinking_power: str = "medium",
                   semantic_call_id: str = "",
-                  owner_loop_id: str = "") -> dict:
+                  owner_loop_id: str = "", request_route=None) -> dict:
     """EVERY MODEL CALL IS A LOOP (owner, 2026-08-24).
 
     The other encapsulators pin deterministic-only and assert zero semantic
@@ -183,6 +183,16 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     ``model.invocation.completed`` or ``.failed`` after — with whatever
     provider-reported usage the result carries. A raising call still leaves
     its failure as evidence before the error surfaces."""
+    request_binding = {}
+    if request_route is not None:
+        from ..core.model_routes import ModelRoute
+        if not isinstance(request_route, ModelRoute) or any(
+                type(value) is not str or not value.strip()
+                for value in (request_route.provider, request_route.model, request_route.name)):
+            raise LoopError("request_route must be an exact typed model route")
+        request_binding = {"request_model_binding": {
+            "record_type": "model_request_binding/v1", "provider": request_route.provider,
+            "model": request_route.model, "route": request_route.name}}
     for name, value in (("semantic_call_id", semantic_call_id),
                         ("owner_loop_id", owner_loop_id)):
         if not isinstance(value, str):
@@ -223,7 +233,7 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     lg = loop.ledger
     lg.record(loop_id=loop.loop_id, event="model_boundary_deferred",
               objective=objective[:120], semantic_call_id=semantic_call_id,
-              owner_loop_id=semantic_owner_loop_id)
+              owner_loop_id=semantic_owner_loop_id, **request_binding)
     holder: dict = {}
 
     def handler(lp: Loop, step: str, context: dict) -> StepOutcome:

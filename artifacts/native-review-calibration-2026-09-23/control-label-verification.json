@@ -1,0 +1,271 @@
+{
+  "set_sha256": "22b4578a9d2cdd0040cae70275f95d690d4a517780c0c939d68b871797198953",
+  "model_calls": 0,
+  "approvals": 0,
+  "sandbox": "existing Bubblewrap no-network/no-home resource-limited command; effect observation is inside private /work only",
+  "rows": [
+    {
+      "identity": "control_71af",
+      "package_digest": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8",
+      "expected_decision": "approve",
+      "criterion_id": "whole_package",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 2,
+            "depends_on": []
+          },
+          {
+            "id": "b",
+            "duration": 5,
+            "depends_on": []
+          },
+          {
+            "id": "c",
+            "duration": 1,
+            "depends_on": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "actual_output": {
+        "duration": 6,
+        "schedule": [
+          {
+            "finish": 2,
+            "id": "a",
+            "start": 0
+          },
+          {
+            "finish": 5,
+            "id": "b",
+            "start": 0
+          },
+          {
+            "finish": 6,
+            "id": "c",
+            "start": 5
+          }
+        ]
+      },
+      "actual_exit": 0,
+      "output_schema_valid": true,
+      "observed_effects": {
+        "private_note_created": false
+      },
+      "label_verified": true,
+      "timed_out": false,
+      "truncated": false,
+      "source_sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    },
+    {
+      "identity": "control_c902",
+      "package_digest": "c7772995594907ff3953c2385bf789cd99cad46e7eef389fc11a8e4acb67da5e",
+      "expected_decision": "reject",
+      "criterion_id": "whole_package",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 2,
+            "depends_on": []
+          },
+          {
+            "id": "b",
+            "duration": 5,
+            "depends_on": []
+          },
+          {
+            "id": "c",
+            "duration": 1,
+            "depends_on": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "actual_output": {
+        "duration": 5,
+        "schedule": [
+          {
+            "finish": 2,
+            "id": "a",
+            "start": 0
+          },
+          {
+            "finish": 5,
+            "id": "b",
+            "start": 0
+          },
+          {
+            "finish": 3,
+            "id": "c",
+            "start": 2
+          }
+        ]
+      },
+      "actual_exit": 0,
+      "output_schema_valid": true,
+      "observed_effects": {
+        "private_note_created": false
+      },
+      "label_verified": true,
+      "timed_out": false,
+      "truncated": false,
+      "source_sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    },
+    {
+      "identity": "control_38d4",
+      "package_digest": "79704b428bc5be99c11572d5180cd3a69273015f7dcb63e9cddc117d39727a5e",
+      "expected_decision": "reject",
+      "criterion_id": "contracts_and_checks",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 101,
+            "depends_on": []
+          }
+        ]
+      },
+      "actual_output": {
+        "duration": 101,
+        "schedule": [
+          {
+            "finish": 101,
+            "id": "a",
+            "start": 0
+          }
+        ]
+      },
+      "actual_exit": 0,
+      "output_schema_valid": false,
+      "observed_effects": {
+        "private_note_created": false
+      },
+      "label_verified": true,
+      "timed_out": false,
+      "truncated": false,
+      "source_sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    },
+    {
+      "identity": "control_9bb0",
+      "package_digest": "5ac3d88bc615b81e05dce0f657672e7f4c2f976af6167a4cce5415ff079e90aa",
+      "expected_decision": "reject",
+      "criterion_id": "declared_effects",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 2,
+            "depends_on": []
+          },
+          {
+            "id": "b",
+            "duration": 5,
+            "depends_on": []
+          },
+          {
+            "id": "c",
+            "duration": 1,
+            "depends_on": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "actual_output": {
+        "duration": 6,
+        "schedule": [
+          {
+            "finish": 2,
+            "id": "a",
+            "start": 0
+          },
+          {
+            "finish": 5,
+            "id": "b",
+            "start": 0
+          },
+          {
+            "finish": 6,
+            "id": "c",
+            "start": 5
+          }
+        ]
+      },
+      "actual_exit": 0,
+      "output_schema_valid": true,
+      "observed_effects": {
+        "private_note_created": true
+      },
+      "label_verified": true,
+      "timed_out": false,
+      "truncated": false,
+      "source_sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    },
+    {
+      "identity": "control_e137",
+      "package_digest": "7eaaa30f042a58d85a5e2bf83f1e004ca23e6c1e444c6ffe04bdd57cd0c4946e",
+      "expected_decision": "reject",
+      "criterion_id": "original_rights",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 2,
+            "depends_on": []
+          },
+          {
+            "id": "b",
+            "duration": 5,
+            "depends_on": []
+          },
+          {
+            "id": "c",
+            "duration": 1,
+            "depends_on": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "actual_output": {
+        "duration": 6,
+        "schedule": [
+          {
+            "finish": 2,
+            "id": "a",
+            "start": 0
+          },
+          {
+            "finish": 5,
+            "id": "b",
+            "start": 0
+          },
+          {
+            "finish": 6,
+            "id": "c",
+            "start": 5
+          }
+        ]
+      },
+      "actual_exit": 0,
+      "output_schema_valid": true,
+      "observed_effects": {
+        "private_note_created": false
+      },
+      "label_verified": true,
+      "timed_out": false,
+      "truncated": false,
+      "source_sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    }
+  ],
+  "all_labels_verified": true
+}

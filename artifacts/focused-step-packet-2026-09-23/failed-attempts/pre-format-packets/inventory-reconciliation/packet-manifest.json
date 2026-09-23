@@ -1,0 +1,46 @@
+{
+  "brief_sha256": "60ad912497a45eac53bba1c813199f6e5302bfcfab233ad859a77569b3d2666e",
+  "context_version": 2,
+  "files": {
+    "AGENTS.md": {
+      "sha256": "8814e7c0c129e6e3969e8f32b4a9d9d18e19cd6f908e3c404c8a86c50e9ee2dd",
+      "size_bytes": 4034
+    },
+    "checklist.md": {
+      "sha256": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+      "size_bytes": 1130
+    },
+    "input.json": {
+      "sha256": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+      "size_bytes": 182
+    },
+    "input.schema.json": {
+      "sha256": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+      "size_bytes": 835
+    },
+    "node_context.md": {
+      "sha256": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+      "size_bytes": 2311
+    },
+    "output.schema.json": {
+      "sha256": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+      "size_bytes": 635
+    },
+    "run-state.json": {
+      "sha256": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+      "size_bytes": 603
+    },
+    "task.json": {
+      "sha256": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54",
+      "size_bytes": 463
+    }
+  },
+  "harness_style": "codex",
+  "packet_content_sha256": "992b89deb7cf4cd51f6bee98ae245498e53d2fd7ca954a806421e6630b305f9c",
+  "persistent_library_items_added": 0,
+  "record_type": "focused_step_packet_candidate/v1",
+  "run_id": "inventory-demo",
+  "state": "candidate",
+  "state_version": 3,
+  "step_id": "reconcile-stock"
+}

@@ -1,0 +1,68 @@
+{
+  "record_type": "harness_candidate_batch_proposals/v2",
+  "source_revision": "<exact checkout HEAD, 40 hexadecimal characters>",
+  "license": {
+    "expression": "MIT",
+    "path": "LICENSE",
+    "sha256": "<exact root LICENSE SHA-256>"
+  },
+  "sources": {
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "<exact committed source SHA-256>"
+  },
+  "proposals": [
+    {
+      "id": "example_native_manifest",
+      "title": "Contract example only",
+      "purpose": "Illustrate the complete native proposal contract; this incomplete example is not an admission candidate.",
+      "sources": [
+        "src/loop_engine/core/service_runtime/catalogue_packages.py"
+      ],
+      "layer": "code",
+      "family": "harness_plugin",
+      "search_tags": [
+        "focused assignment",
+        "task context",
+        "first steps",
+        "brief checker"
+      ],
+      "tags": {
+        "language": [
+          "en"
+        ],
+        "domain": [
+          "software"
+        ]
+      },
+      "symbols": [
+        "check_brief"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "claude"
+      ],
+      "dependencies": [
+        "Linux",
+        "/usr/bin/python3 >=3.10, trusted immutable host interpreter"
+      ],
+      "producer": {
+        "producer_identity": "Codex live_baltor_review task",
+        "family": "openai",
+        "method_identity": "codex_native_plugin_context_candidate/v1"
+      },
+      "files": [
+        {
+          "path": ".claude-plugin/plugin.json",
+          "digest": "761c680c56909384b0a1e9cee7a072a134f8ac77b7c200229f102a72cf175c42",
+          "size_bytes": 233,
+          "media_type": "application/json",
+          "role": "plugin_manifest",
+          "content_base64": "ewogICJuYW1lIjogImJhbHRvci1mb2N1c2VkLWJyaWVmLWNhbmRpZGF0ZSIsCiAgInZlcnNpb24iOiAiMC4xLjAiLAogICJkZXNjcmlwdGlvbiI6ICJDYW5kaWRhdGUtb25seSBmb2N1c2VkLXN0ZXAgYnJpZWZpbmcgaG9vaywgY29udHJhY3QgY2hlY2tlciwgY29tbWFuZCBhbmQgcmV2aWV3ZXIgYWdlbnQuIiwKICAiYXV0aG9yIjogeyJuYW1lIjogIkJhbHRvci5BSSJ9LAogICJsaWNlbnNlIjogIk1JVCIKfQo="
+        }
+      ]
+    }
+  ]
+}

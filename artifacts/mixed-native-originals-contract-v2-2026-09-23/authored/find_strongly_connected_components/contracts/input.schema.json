@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "vertices": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+      },
+      "minItems": 1,
+      "maxItems": 60,
+      "uniqueItems": true
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "minItems": 0,
+      "maxItems": 300,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "vertices",
+    "edges"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,41 @@
+{
+  "provider_calls": 0,
+  "results": [
+    {
+      "guard": "ollama_reported_model",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "failures": 4,
+        "errors": 0,
+        "output": "FFFF\n======================================================================\nFAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='missing')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 69, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage\n    self.assertFalse(result.ok)\nAssertionError: True is not false\n\n======================================================================\nFAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model=None)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 69, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage\n    self.assertFalse(result.ok)\nAssertionError: True is not false\n\n======================================================================\nFAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 69, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage\n    self.assertFalse(result.ok)\nAssertionError: True is not false\n\n======================================================================\nFAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='another-model')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 69, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage\n    self.assertFalse(result.ok)\nAssertionError: True is not false\n\n----------------------------------------------------------------------\nRan 1 test in 0.007s\n\nFAILED (failures=4)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "gateway_reported_model",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.049s\n\nOK\n"
+      },
+      "removed_guard": {
+        "passed": false,
+        "failures": 3,
+        "errors": 0,
+        "output": "FFF\n======================================================================\nFAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model='missing')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 81, in test_gateway_never_fills_missing_null_or_empty_identity\n    self.assertEqual(result.ok, model == MODEL)\nAssertionError: True != False\n\n======================================================================\nFAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model=None)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 81, in test_gateway_never_fills_missing_null_or_empty_identity\n    self.assertEqual(result.ok, model == MODEL)\nAssertionError: True != False\n\n======================================================================\nFAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model='')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py\", line 81, in test_gateway_never_fills_missing_null_or_empty_identity\n    self.assertEqual(result.ok, model == MODEL)\nAssertionError: True != False\n\n----------------------------------------------------------------------\nRan 1 test in 0.009s\n\nFAILED (failures=3)\n"
+      },
+      "detected": true
+    }
+  ],
+  "sources": {
+    "loop_engine.core.ollama_client": "2b007fa0f4122237fda16f1c90736e6d4546216548d55a087dfedb65d06acc50",
+    "loop_engine.core.model_gateway": "16fa0f6c4b1c7a67cbbbb729f62bdcf038e05313f92a29b0b71d973e9542bb55"
+  }
+}

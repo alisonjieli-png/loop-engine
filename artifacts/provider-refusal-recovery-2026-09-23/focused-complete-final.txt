@@ -1,0 +1,11 @@
+....{"diagnostic_code":null,"elapsed_seconds":0.004,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.074,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.106,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.128,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":2,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":"stage_evidence_degraded","elapsed_seconds":0.131,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.134,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+.
+----------------------------------------------------------------------
+Ran 5 tests in 0.679s
+
+OK

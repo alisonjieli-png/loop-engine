@@ -1,0 +1,20 @@
+{
+  "old": {
+    "fields": {
+      "age": "integer"
+    },
+    "required": [
+      "age"
+    ],
+    "allow_extra": false
+  },
+  "new": {
+    "fields": {
+      "age": "number"
+    },
+    "required": [
+      "age"
+    ],
+    "allow_extra": false
+  }
+}

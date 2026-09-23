@@ -37,7 +37,7 @@ secret patterns first and a secret-shaped value is replaced.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 import threading
 import time
@@ -51,7 +51,7 @@ from .records import (
     CALL_RECORD, DISPATCH_RECORD, RUN_END_RECORD, RUN_RECORD, VERDICT_RECORD, CandidateReviewError, digest, refuse,
 )
 from .reviewers import (
-    ANSWERED, AUTHENTICATION_UNAVAILABLE, ENGINE_UNAVAILABLE, MODEL_NOT_FOUND, PROVIDER_FAILED, RATE_LIMITED,
+    ANSWERED, AUTHENTICATION_UNAVAILABLE, ENGINE_UNAVAILABLE, MODEL_IDENTITY_MISMATCH, MODEL_NOT_FOUND, PROVIDER_FAILED, RATE_LIMITED,
     REFUSED_BY_ROUTE_POLICY, USAGE_LIMIT_REACHED, CallAllowance, failed,
 )
 from .verdicts import APPROVE, JSON_ONLY, REJECT, parse_verdict
@@ -93,7 +93,8 @@ def review_key(installation, request, prompt) -> str:
     The prompt is part of the key because a verdict answers the words its
     reviewer read. A changed prompt is a new review, and the ledger keeps both."""
     return digest({"installation_sha256": installation.sha256, "request_sha256": request.request_sha256,
-                   "prompt_sha256": prompt.sha256})
+                   "prompt_sha256": prompt.sha256, "record_type": VERDICT_RECORD,
+                   "request_record_type": request.to_record()["record_type"]})
 
 
 def distinct_families(members, family_of) -> int:
@@ -107,6 +108,11 @@ def producer_family_excluded(installation, producer) -> bool:
 def counts_toward_approval(family: str, producer_family: str) -> bool:
     """An approval counts only from a family that did not produce the item. A mutant control replaces this."""
     return family != producer_family
+
+
+def answering_model_matches(installation, attempt) -> bool:
+    """Every engine must report the exact configured reviewer identity before its answer can count."""
+    return type(attempt.reported_model) is str and attempt.reported_model == installation.model
 
 
 def _timestamp(seconds: float) -> str:
@@ -319,10 +325,10 @@ class ReviewPanel:
                               budget.to_dict(), round(state.pause_total, 3))
 
     def _ineligible(self, installation, run_request) -> str:
-        if not installation.enabled:
-            return DISABLED
         if installation.installation_id in run_request.excluded_installations:
             return run_request.excluded_installations[installation.installation_id]
+        if not installation.enabled:
+            return DISABLED
         if installation.engine_kind == FIXTURE_ENGINE_KIND and not run_request.fixture_run:
             return FIXTURE_OUTSIDE_FIXTURE_RUN
         if installation.installation_id not in self.reviewers:
@@ -442,6 +448,7 @@ class ReviewPanel:
                 "record_type": DISPATCH_RECORD, "run_id": run_request.run_id, "sequence": sequence,
                 "review_key": key, "installation_id": installation.installation_id, "identity": request.identity,
                 "body_sha256": request.body_sha256, "request_sha256": request.request_sha256,
+                "request_record_type": request.to_record()["record_type"],
                 "dispatched_at": _timestamp(started)})
             try:
                 attempt = engine.review(prompt, allowance)
@@ -451,6 +458,9 @@ class ReviewPanel:
             except Exception as error:  # noqa: BLE001 - an engine defect is recorded, never read as a verdict
                 attempt = failed(PROVIDER_FAILED, installation.installation_id, type(error).__name__,
                                  physical_model_calls=None)
+            if attempt.outcome == ANSWERED and not answering_model_matches(installation, attempt):
+                attempt = replace(attempt, outcome=MODEL_IDENTITY_MISMATCH, text="",
+                                  error_detail="reviewer_answering_model_mismatch")
             content, error_code = None, ""
             if attempt.outcome == ANSWERED:
                 content, error_code = parse_verdict(attempt.text, body_sha256=request.body_sha256,
@@ -471,6 +481,8 @@ class ReviewPanel:
                 "record_type": CALL_RECORD, "run_id": run_request.run_id, "sequence": sequence, "review_key": key,
                 "installation_id": installation.installation_id, "installation_sha256": installation.sha256,
                 "engine_kind": installation.engine_kind, "family": installation.family, "model": installation.model,
+                "reported_model": attempt.reported_model,
+                "request_record_type": request.to_record()["record_type"],
                 "model_version": dict(probe.model_version) if probe else {},
                 "engine_version": probe.engine_version if probe else "",
                 "route_or_command": attempt.route_or_command, "identity": request.identity,
@@ -490,6 +502,8 @@ class ReviewPanel:
                     "review_key": key, "installation_id": installation.installation_id,
                     "family": installation.family, "identity": request.identity,
                     "body_sha256": request.body_sha256, "request_sha256": request.request_sha256,
+                    "reported_model": attempt.reported_model,
+                    "request_record_type": request.to_record()["record_type"],
                     **content.to_dict()})
             self.ledger.complete(call, verdict)
             with state.lock:

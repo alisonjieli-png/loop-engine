@@ -1,0 +1,101 @@
+[
+  {
+    "input": {
+      "factors": {
+        "a": [
+          "0",
+          "1"
+        ],
+        "b": [
+          "0",
+          "1"
+        ],
+        "c": [
+          "0",
+          "1"
+        ]
+      }
+    },
+    "expected": {
+      "cases": [
+        {
+          "a": "0",
+          "b": "0",
+          "c": "0"
+        },
+        {
+          "a": "0",
+          "b": "1",
+          "c": "1"
+        },
+        {
+          "a": "1",
+          "b": "0",
+          "c": "1"
+        },
+        {
+          "a": "1",
+          "b": "1",
+          "c": "0"
+        }
+      ],
+      "total_pairs": 12,
+      "covered_pairs": 12
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "factors": {
+        "a": [
+          "x",
+          "y"
+        ],
+        "b": [
+          "z"
+        ]
+      }
+    },
+    "expected": {
+      "cases": [
+        {
+          "a": "x",
+          "b": "z"
+        },
+        {
+          "a": "y",
+          "b": "z"
+        }
+      ],
+      "total_pairs": 2,
+      "covered_pairs": 2
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "factors": {
+        "a": [
+          "x",
+          "x"
+        ],
+        "b": [
+          "z"
+        ]
+      }
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "factors": {
+        "a": [
+          "x"
+        ]
+      }
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

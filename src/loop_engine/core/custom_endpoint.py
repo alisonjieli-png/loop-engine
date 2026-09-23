@@ -475,20 +475,39 @@ def _ndjson_objects(response):
             yield chunk
 
 
-def _ollama_stream_body(response, default_model: str) -> dict:
+def _response_model(value) -> str:
+    """A model identity exists only when the provider supplied a string."""
+    return value if type(value) is str and value.strip() else ""
+
+
+def _stream_model(chunk: dict, reported: str, invalid: bool) -> tuple[str, bool]:
+    """Retain one actual stream identity; a conflicting chunk cannot erase it."""
+    if invalid:
+        return "", True
+    if "model" not in chunk:
+        return reported, False
+    observed = _response_model(chunk["model"])
+    if not observed or (reported and observed != reported):
+        return "", True
+    return observed, False
+
+
+def _ollama_stream_body(response) -> dict:
     """Join an Ollama NDJSON stream into the non-streamed ``/api/chat`` shape.
 
-    Content and thinking deltas are joined; ``done``, ``done_reason``, the
-    model, and the counts come from the final line. A stream that ends
+    Content and thinking deltas are joined; ``done``, ``done_reason`` and
+    counts come from the final line. Model identity must be supplied by
+    at least one chunk, and all supplied identities must agree. A stream that ends
     without a ``done: true`` line is reported as not done, never as a
     complete answer.
     """
     text_parts: list[str] = []
     thinking_parts: list[str] = []
     final: dict = {}
-    reported_model = default_model
+    reported_model, invalid_model = "", False
     for chunk in _ndjson_objects(response):
-        reported_model = str(chunk.get("model") or reported_model)
+        reported_model, invalid_model = _stream_model(
+            chunk, reported_model, invalid_model)
         message = chunk.get("message")
         if isinstance(message, dict):
             content = message.get("content")
@@ -505,12 +524,13 @@ def _ollama_stream_body(response, default_model: str) -> dict:
             break
     body = {
         "model": reported_model,
+        "_model_identity_invalid": invalid_model,
         "message": {"role": "assistant", "content": "".join(text_parts),
                     "thinking": "".join(thinking_parts)},
         "done": final.get("done", False) if final else False,
         "done_reason": str(final.get("done_reason", "") or ""),
-        "prompt_eval_count": final.get("prompt_eval_count", 0),
-        "eval_count": final.get("eval_count", 0),
+        "prompt_eval_count": final.get("prompt_eval_count"),
+        "eval_count": final.get("eval_count"),
         "_streamed": True,
     }
     if final.get("error") is not None:
@@ -576,11 +596,11 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
         ep.chat_url, data=json.dumps(payload).encode(), headers=headers)
     if ep.wire == "ollama":
         with _endpoint_opener(ep).open(req, timeout=timeout) as response:
-            return _ollama_stream_body(response, ep.model)
+            return _ollama_stream_body(response)
     text_parts: list[str] = []
     reasoning_parts: list[str] = []
     finish_reason = ""
-    reported_model = ep.model
+    reported_model, invalid_model = "", False
     usage: dict = {}
     saw_done = False
     with _endpoint_opener(ep).open(
@@ -595,7 +615,8 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
                 continue
             if not isinstance(chunk, dict):
                 continue
-            reported_model = str(chunk.get("model") or reported_model)
+            reported_model, invalid_model = _stream_model(
+                chunk, reported_model, invalid_model)
             content, reasoning, finish = _sse_chunk_text(chunk)
             text_parts.extend(content)
             reasoning_parts.extend(reasoning)
@@ -607,6 +628,7 @@ def _chat_streamed(ep: CustomEndpoint, payload: dict, headers: dict,
         usage = {}
     return {
         "model": reported_model,
+        "_model_identity_invalid": invalid_model,
         "choices": [{"index": 0, "message": {
             "role": "assistant", "content": "".join(text_parts)},
             "finish_reason": finish_reason}],
@@ -782,7 +804,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
     _claim_call_slot(ep.name)
     if ep.credential_missing:
         return ChatResult(
-            text="", model=ep.model, ok=False,
+            text="", model="", ok=False,
             error=f"missing_credential: {ep.credential_env} is not set; no "
                   "request was sent", physical_requests=0)
     if ep.wire == "ollama":
@@ -823,7 +845,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                     # answered in the provider's place: the provider was
                     # not reached, whatever the status said.
                     return ChatResult(
-                        text="", model=ep.model, ok=False,
+                        text="", model="", ok=False,
                         error="invalid_response_body: endpoint answered "
                               "with a body that is not JSON",
                         response_received=True,
@@ -845,7 +867,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                     learned_this_call = True
                     continue
                 return ChatResult(
-                    text="", model=ep.model, ok=False,
+                    text="", model="", ok=False,
                     error="gateway_timeout: origin did not finish before the "
                           f"proxy read timeout (HTTP {e.code}); a shorter "
                           "owner-set output ceiling may complete within the "
@@ -854,7 +876,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                     physical_requests=physical_requests)
             stated = (f" (retry after {retry_after:g}s)"
                       if retry_after is not None else "")
-            return ChatResult(text="", model=ep.model, ok=False,
+            return ChatResult(text="", model="", ok=False,
                               error=f"HTTP {e.code}{stated}: {detail}",
                               retry_after_seconds=retry_after,
                               physical_requests=physical_requests)
@@ -862,7 +884,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
             # The connection ended inside the body (IncompleteRead, a bad
             # status line): a response began and did not finish. Never
             # raised out of the adapter.
-            return ChatResult(text="", model=ep.model, ok=False,
+            return ChatResult(text="", model="", ok=False,
                               error="incomplete_response: "
                                     f"{type(e).__name__}: {str(e)[:200]}",
                               response_received=True,
@@ -874,14 +896,14 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                 use_streaming = True
                 learned_this_call = True
                 continue
-            return ChatResult(text="", model=ep.model, ok=False,
+            return ChatResult(text="", model="", ok=False,
                               error=f"{type(e).__name__}: {str(e)[:250]}",
                               physical_requests=physical_requests)
         break
 
     if not isinstance(body, dict):
         return ChatResult(
-            text="", model=ep.model, ok=False,
+            text="", model="", ok=False,
             error="invalid_response_body: endpoint answered with JSON that "
                   "is not an object", response_received=True,
             physical_requests=physical_requests)
@@ -892,7 +914,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
             (body.get("message") or {}).get("content")):
         # The endpoint refused inside a 200 body; classify its words the
         # way a refusal status would be, never as an empty answer.
-        return ChatResult(text="", model=str(body.get("model", ep.model)),
+        return ChatResult(text="", model=_response_model(body.get("model")),
                           ok=False, error=_redacted(body_error, ep.api_key),
                           response_received=True,
                           delivered_by_stream=bool(body.get("_streamed")),
@@ -923,8 +945,12 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         reasoning_present = bool(str(body.get("_reasoning") or "").strip())
     output_limit_reached = response_reached_output_limit(
         done_reason, e_tok, int(max_tokens))
+    reported_model = _response_model(body.get("model"))
+    identity_invalid = bool(body.get("_model_identity_invalid")) or reported_model != ep.model
     error = ""
-    if output_limit_reached:
+    if identity_invalid:
+        error = "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    elif output_limit_reached:
         error = (
             "output_limit_reached: endpoint stopped at its declared output "
             "ceiling")
@@ -936,10 +962,10 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
             "final response content")
     elif not text:
         error = "empty_response: endpoint returned no final response content"
-    return ChatResult(text=str(text), model=str(body.get("model", ep.model)),
+    return ChatResult(text=str(text), model=reported_model,
                       prompt_tokens=p_tok, eval_tokens=e_tok,
                       ok=bool(text) and not output_limit_reached
-                      and done is not False,
+                      and done is not False and not identity_invalid,
                       num_predict_used=int(max_tokens), error=error,
                       response_received=True, done=done,
                       done_reason=done_reason,
@@ -982,8 +1008,8 @@ def make_adapter(ep: CustomEndpoint):
                     max_tokens or None, capability)
             except (UnknownModelOutputLimit,
                     ModelOutputLimitMismatch) as exc:
-                return ChatResult("", model or ep.model, ok=False,
-                                  error=str(exc))
+                return ChatResult("", "", ok=False,
+                                  error=str(exc), physical_requests=0)
             return _chat_once(
                 ep, prompt, system=system, max_tokens=maximum,
                 temperature=temperature, timeout=timeout or ep.timeout,
@@ -998,7 +1024,7 @@ def make_adapter(ep: CustomEndpoint):
             del backoff, floor_frac
             if max_attempts != 1:
                 return ChatResult(
-                    "", model or ep.model, ok=False,
+                    "", "", ok=False, physical_requests=0,
                     error="physical model retries require an explicit outer "
                           "call budget")
             return _Adapter.chat(

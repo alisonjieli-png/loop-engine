@@ -1,0 +1,1096 @@
+{
+  "external_harness": {
+    "tests": [
+      {
+        "test": "contract_only_model_authorization_is_explicit",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_request_digest_is_stable_and_full_length",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_resolved_output_capability_precedes_run_identity",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_output_maximum_is_bound_to_exact_provider_and_model",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_known_physical_usage_is_preserved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_completion_does_not_claim_task_acceptance",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_missing_call_accounting_remains_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_incomplete_accounting_fails_the_budget_contract",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_physical_calls_over_the_ceiling_are_rejected",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_secret_shaped_metadata_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_credential_names_are_refused_but_budget_names_are_allowed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unresolved_output_maximum_remains_unknown_until_resolution",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_failed_adapter_crosses_the_physical_runner_boundary_once",
+        "passed": true,
+        "detail": "This is a local protocol fixture, not provider integration proof."
+      },
+      {
+        "test": "contract_only_every_external_harness_result_has_an_owning_loop_outcome_vector",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_available_adapter_requires_context_artifact_manager_before_execution",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_small_adapter_output_is_stored_then_kept_inline",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_large_adapter_output_is_stored_then_replaced_by_typed_reference",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unresolvable_adapter_artifact_reference_fails_closed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_arbitrary_adapter_identifier_requires_explicit_host_registration",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_registration_version_drift_requires_explicit_replacement",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_path_and_import_shaped_adapter_identifiers_are_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_new_host_adapter_executes_through_the_same_loop_runtime",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_0_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_1_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_2_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_3_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_4_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_5_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_6_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_7_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_8_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_9_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_10_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_11_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_12_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_13_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unsupported_mechanic_14_refused_before_adapter_run",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unknown_profile_version_refused_without_dispatch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_requested_exact_practitioner_profile_is_resolved",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_custom_opencode_codex_and_pi_share_the_outcome_vector_boundary",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_WrongModelAdapter_cannot_return_completion",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_WrongVersionAdapter_cannot_return_completion",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_harness_adapter_cannot_self_grade_or_self_accept_its_vector",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_exception_text_not_published",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_small_harness_output_detached_from_producer",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_returned_output_mutation_cannot_change_producer",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unregistered_adapter_error_code_not_published",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_result_envelope_and_nested_output_detached_from_retained_adapter_result",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_consumer_result_mutation_cannot_change_retained_adapter_result",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_returned_adapter_error_and_code_are_redacted_in_actual_result_and_history",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_exception_retains_unknown_call_and_token_accounting",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_exception_names_type_in_memory_and_summary",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_postconstruction_invalid_accounting_is_revalidated_before_acceptance",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_availability_requires_a_literal_boolean",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_adapter_description_sequences_are_detached_from_caller_aliases",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_secret_access_is_refused_before_all_four_direct_sdk_runner_boundaries",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_nested_request_and_metadata_are_detached_and_digest_stable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_nested_request_cannot_be_mutated_in_place",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_identity_binds_full_contract_visibility_and_requirements",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_0_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_1_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_2_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_3_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_4_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_non_plain_input_5_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_nested_credential_metadata_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_authority_requires_boolean_true_and_refs_are_sequences",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_sdk_prompt_preserves_nested_json_without_silent_truncation",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_negative_nonfinite_and_boolean_usage_are_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_post_run_budget_assessment_does_not_claim_preemptive_enforcement",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unbounded_calls_are_explicit_and_invalid_finite_limits_still_refuse",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_allocation_keeps_capacity_and_selected_allowance_separate",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_allocation_refuses_wrong_provider_model_route_and_capacity",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_late_capacity_resolution_preserves_and_checks_the_allocation",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_unbounded_call_authority_preserves_unknown_counts_without_a_fake_zero",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_authorized_model_identities_are_typed_unique_and_bind_requested_routes",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_capacity_and_allocation_cannot_rebind_a_route_to_another_authorized_model",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_gateway_physical_call_is_recorded_once_in_shared_canonical_history",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_gateway_reference_cannot_reuse_an_earlier_harness_attempt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_gateway_reference_refuses_forged_identity_status_and_usage",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_gateway_reference_refuses_another_owner_or_duplicate_physical_reference",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_gateway_reference_preserves_unknown_usage_without_duplicate_events",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "contract_only_an_instance_is_given_its_instruction_file_before_the_adapter_runs",
+        "passed": true,
+        "detail": "e23938562afb8646"
+      },
+      {
+        "test": "contract_only_the_instructions_on_disk_recompute_to_the_digest_the_run_recorded",
+        "passed": true,
+        "detail": "e23938562afb8646"
+      },
+      {
+        "test": "contract_only_instructions_that_name_an_effect_outside_the_declared_ones_refuse_the_dispatch",
+        "passed": true,
+        "detail": "['not_an_effect'] is not drawn from the declared effects ('pure', 'reads_fs', 'w"
+      },
+      {
+        "test": "contract_only_explicit_fallback_keeps_actual_calls_and_primary_result_identity",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "passed": 86,
+    "total": 86,
+    "all_passed": true
+  },
+  "semantic_harness": {
+    "tests": [
+      {
+        "test": "missing_artifact_authority_refuses_before_a_session_starts",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "every_semantic_call_uses_selected_harness",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "harness_packet_preserves_original_system_and_prompt",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "every_harness_realization_receives_the_owning_vector_policy",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "harness_completion_only_sets_the_mechanical_execution_axis",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "shared_session_charges_actual_gateway_calls",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "brokered_gateway_events_are_not_double_imported",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "semantic_identities_survive_the_harness_boundary",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "stage_exposure_preserves_both_engine_and_actual_prompt_identities",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "envelope_missing_cannot_bypass_stage_identity",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "envelope_wrong_target_cannot_bypass_stage_identity",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "envelope_untyped_cannot_bypass_stage_identity",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "whole_run_budget_blocks_before_another_harness_dispatch",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "replacement_adapter_requires_a_new_binding",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "fit_window_allocates_window_minus_measured_input",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "explicit_allocation_is_never_overwritten",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "prompt_filling_the_window_is_refused_not_truncated",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "an_uninstalled_harness_refuses_by_default_and_registers_as_unavailable_when_allowed",
+        "passed": true,
+        "detail": "executable_unavailable"
+      },
+      {
+        "test": "a_malformed_declaration_refuses_even_when_unavailability_is_allowed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_fallback_order_keeps_an_uninstalled_alternative_as_unavailable",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "the_same_order_refuses_without_the_allowance",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "semantic_harness_instances_declare_only_the_effects_they_hold",
+        "passed": true,
+        "detail": "reads_fs, writes_fs"
+      }
+    ],
+    "passed": 22,
+    "total": 22,
+    "all_passed": true
+  },
+  "model_gateway": {
+    "record_type": "model_gateway_contract_test/v2",
+    "scope": "offline_contract_only",
+    "provider_integration_proven": false,
+    "tests": [
+      {
+        "test": "route_separation_excludes_named_routes_and_never_reuses_an_excluded_one",
+        "passed": true,
+        "detail": "error='no model route is permitted after route separation excluded contract.unknown'"
+      },
+      {
+        "test": "a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation",
+        "passed": true,
+        "detail": "the execution phase is timed; a refused invocation is a failed record with unknown tokens"
+      },
+      {
+        "test": "unknown_output_capability_refuses_before_provider_use",
+        "passed": true,
+        "detail": "this is a contract refusal, not a provider integration test"
+      },
+      {
+        "test": "context_window_preflight_refuses_before_provider_use",
+        "passed": true,
+        "detail": "an explicit caller ceiling that cannot fit is refused rather than quietly shrunk; max_context=100"
+      },
+      {
+        "test": "default_output_maximum_is_never_reduced_to_context_room",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "missing_credential_is_not_an_authentication_failure",
+        "passed": true,
+        "detail": "a keyless provider is skipped by failover, not fatal to it"
+      },
+      {
+        "test": "invalid_explicit_output_values_are_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "provider_descriptions_carry_references_not_secret_values",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "operating_profile_controls_gateway_route_locality",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "an_unspecified_output_limit_remains_unspecified_until_capability_resolution",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "authentication_failure_does_not_silently_fail_over",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "default_gateway_does_not_enable_cross_provider_failover",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "default_route_discovery_selects_only_one_provider",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "payment_failure_can_fail_over_to_another_authorized_provider",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "failover_attempts_share_one_logical_semantic_call_in_run_history",
+        "passed": true,
+        "detail": "logical identity is shared; physical attempt Loop IDs remain exact"
+      },
+      {
+        "test": "separate_gateway_invocations_receive_distinct_semantic_call_ids",
+        "passed": true,
+        "detail": "one gateway invocation is one logical semantic call"
+      },
+      {
+        "test": "output_limit_is_typed_and_can_fail_over",
+        "passed": true,
+        "detail": "a partial HTTP 200 is evidence, not a successful model answer"
+      },
+      {
+        "test": "network_transport_failures_have_specific_codes",
+        "passed": true,
+        "detail": "routing and DNS failures remain distinct from model rejection"
+      },
+      {
+        "test": "spawned_gateway_inherits_spawning_depth_without_reparenting",
+        "passed": true,
+        "detail": "practitioner -> spawned stage -> candidate -> route -> attempt"
+      },
+      {
+        "test": "starting_gateway_has_no_implicit_depth_ceiling",
+        "passed": true,
+        "detail": "starting gateway uses no product-imposed recursion ceiling"
+      },
+      {
+        "test": "a_response_without_usage_reports_unknown_not_zero",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_response_without_usage_carries_a_typed_diagnostic",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "passed": 22,
+    "total": 22,
+    "all_passed": true
+  },
+  "custom_endpoint": {
+    "module": "core.custom_endpoint_checks",
+    "tests": [
+      {
+        "test": "the_ollama_wire_streams_as_newline_delimited_json_and_joins_the_deltas",
+        "passed": true,
+        "detail": "online"
+      },
+      {
+        "test": "a_stream_that_ends_without_a_done_line_is_incomplete_not_an_answer",
+        "passed": true,
+        "detail": "incomplete_response: endpoint response did not finish"
+      },
+      {
+        "test": "a_proxy_that_reframes_the_stream_as_sse_still_parses",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "auto_mode_learns_that_this_endpoint_needs_streaming_and_streams_first_next_time",
+        "passed": true,
+        "detail": " / requests 2 then 1"
+      },
+      {
+        "test": "learned_modes_can_be_forgotten",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_refusal_inside_a_200_body_is_classified_by_its_words_not_as_an_empty_answer",
+        "passed": true,
+        "detail": "provider_error_body: model 'gpt-oss:20b' not found, try pulling it first"
+      },
+      {
+        "test": "a_200_body_that_names_a_status_is_classified_by_that_status",
+        "passed": true,
+        "detail": "HTTP 429: Rate limit reached"
+      },
+      {
+        "test": "a_page_that_is_not_json_is_an_invalid_body_the_provider_did_not_send",
+        "passed": true,
+        "detail": "invalid_response_body: endpoint answered with a body that is not JSON"
+      },
+      {
+        "test": "json_that_is_not_an_object_is_an_invalid_body_too",
+        "passed": true,
+        "detail": "invalid_response_body: endpoint answered with JSON that is not an object"
+      },
+      {
+        "test": "a_refusal_that_states_a_wait_carries_it_in_seconds_and_in_the_error_text",
+        "passed": true,
+        "detail": "HTTP 429 (retry after 120s): {\"error\":\"rate limit exceeded\"}"
+      },
+      {
+        "test": "a_spent_weekly_allowance_states_no_wait_and_is_not_a_throttle",
+        "passed": true,
+        "detail": "HTTP 429: {\"error\":\"you have reached your weekly usage limit, add usage credits (ref: 4013)\"}"
+      },
+      {
+        "test": "an_http_date_retry_after_reads_as_a_non_negative_wait",
+        "passed": true,
+        "detail": "HTTP 503 (retry after 0s): "
+      },
+      {
+        "test": "an_unreadable_retry_after_is_unstated_not_guessed",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "the_ollama_wire_sends_think_false_by_default_true_on_request_and_nothing_for_the_model_default",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "an_unrecognized_think_spelling_is_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_refused_listing_says_how_it_was_refused_and_the_compatible_call_lists_nothing",
+        "passed": true,
+        "detail": "HTTP 401: {\"error\":\"unauthorized\"}"
+      },
+      {
+        "test": "a_listing_that_names_other_models_is_obtained_and_says_the_model_is_absent",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "an_openai_wire_listing_reads_its_data_rows",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_listing_that_is_not_json_is_an_invalid_body",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_listing_that_carries_an_error_is_refused_by_its_words",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "listing_records_are_json_plain",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_declared_but_unset_credential_refuses_before_any_request_as_the_built_ins_do",
+        "passed": true,
+        "detail": "missing_credential: CHECKS_BOX_KEY is not set; no request was sent"
+      },
+      {
+        "test": "a_declared_variable_that_holds_a_key_or_a_keyless_scheme_is_not_missing",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "an_openai_stream_cut_before_its_stop_reason_or_done_sentinel_is_incomplete",
+        "passed": true,
+        "detail": "incomplete_response: endpoint response did not finish"
+      },
+      {
+        "test": "a_connection_that_ends_inside_the_body_is_an_incomplete_response_never_a_raise",
+        "passed": true,
+        "detail": "incomplete_response: IncompleteRead: IncompleteRead(7 bytes read)"
+      },
+      {
+        "test": "the_result_counts_the_http_requests_one_attempt_opened",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "a_server_that_echoes_the_key_cannot_put_it_in_a_record",
+        "passed": true,
+        "detail": "HTTP 401: {\"error\":\"invalid key <redacted> sent as Bearer <redacted>\"}"
+      },
+      {
+        "test": "a_base_that_names_the_chat_path_the_api_prefix_or_the_root_composes_the_same_urls",
+        "passed": true,
+        "detail": "{}"
+      },
+      {
+        "test": "the_environment_declaration_accepts_think_and_a_key_variable_name",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "key_and_key_env_together_are_refused",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "openai_buffer_missing_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_null_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_empty_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_integer_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_object_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_wrong_reported_identity_is_preserved_and_refused",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_buffer_genuine_identity_and_explicit_zero_usage_survive",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "openai_buffer_absent_usage_stays_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "openai_stream_missing_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_null_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_empty_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_integer_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_object_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_wrong_reported_identity_is_preserved_and_refused",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_genuine_identity_and_explicit_zero_usage_survive",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "openai_stream_absent_usage_stays_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "openai_stream_changed_identity_cannot_be_overwritten",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_malformed_identity_cannot_be_overwritten",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "openai_stream_one_genuine_identity_may_precede_usage_chunk",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ollama_buffer_missing_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_null_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_empty_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_integer_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_object_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_wrong_reported_identity_is_preserved_and_refused",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_buffer_genuine_identity_and_explicit_zero_usage_survive",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ollama_buffer_absent_usage_stays_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ollama_stream_missing_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_null_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_empty_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_integer_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_object_reported_identity_is_not_the_request",
+        "passed": true,
+        "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_wrong_reported_identity_is_preserved_and_refused",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_genuine_identity_and_explicit_zero_usage_survive",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ollama_stream_absent_usage_stays_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "ollama_stream_changed_identity_cannot_be_overwritten",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_malformed_identity_cannot_be_overwritten",
+        "passed": true,
+        "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+      },
+      {
+        "test": "ollama_stream_one_genuine_identity_may_precede_usage_chunk",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "custom_endpoint_preflight_refusal_has_no_answering_model",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "custom_endpoint_capacity_and_retry_refusals_have_no_answering_model_or_request",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "passed": 70,
+    "total": 70,
+    "all_passed": true
+  },
+  "encapsulate": {
+    "tests": [
+      {
+        "test": "deterministic_check_runs_as_practitioner_loop",
+        "passed": true,
+        "detail": "loop loop1: 5 beats, 0 calls, value 42"
+      },
+      {
+        "test": "encapsulated_check_spawns_on_shared_ledger",
+        "passed": true,
+        "detail": "spawned Loop loop2 from loop1"
+      },
+      {
+        "test": "raising_check_leaves_evidence_then_raises",
+        "passed": true,
+        "detail": "ZeroDivisionError recorded before raise"
+      },
+      {
+        "test": "settings_pinned_deterministic_only",
+        "passed": true,
+        "detail": "no semantic mode appears anywhere in the run"
+      },
+      {
+        "test": "solution_component_runs_as_loop_with_fallback",
+        "passed": true,
+        "detail": "primary crash -> fallback served inside the loop envelope"
+      },
+      {
+        "test": "reference_practitioner_runs_one_stage_loop_per_canonical_node",
+        "passed": true,
+        "detail": "starting loop1 + 13 stage loops, 13 spawns / 13 returns, 0 semantic calls"
+      },
+      {
+        "test": "stage_loops_stay_clamped_and_templates_stay_registered",
+        "passed": true,
+        "detail": "stage spawned_loops make no semantic calls; unregistered template raises"
+      },
+      {
+        "test": "component_walks_its_whole_fallback_chain_then_fails_closed",
+        "passed": true,
+        "detail": "two arms failed, the third served; an exhausted chain raises"
+      },
+      {
+        "test": "the_model_boundary_crosses_a_loop_that_permits_one_semantic_call",
+        "passed": true,
+        "detail": "request+completion recorded; a raising call records failure first"
+      },
+      {
+        "test": "unanswered_provider_requests_keep_usage_unknown",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "test": "model_boundary_preserves_positive_missing_partial_and_zero_usage",
+        "passed": true,
+        "detail": "None remains unknown while provider-reported zero remains zero"
+      }
+    ],
+    "passed": 11,
+    "total": 11,
+    "all_passed": true
+  }
+}

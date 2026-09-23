@@ -1,0 +1,68 @@
+{
+  "all_match": true,
+  "rows": [
+    {
+      "path": "tools/candidate_review/calibration.py",
+      "before_sha256": "f23bc9247081c07c9ab4149d8dfbb61fcbc8a8274e700d8fba19f1387ab96a68",
+      "after_sha256": "ed5f063e1eb3fb3277278258e7190b94f59f137ce2d96f8f947a64428161f271",
+      "observed_sha256": "ed5f063e1eb3fb3277278258e7190b94f59f137ce2d96f8f947a64428161f271",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/candidate_review/panel.py",
+      "before_sha256": "8cfe1ef1acaa58c1d1ee77d575b1a133a5b9d4a3f81953b3764a114d24a4e3ac",
+      "after_sha256": "0f9bbc04a93fbcac87162be6f947d8d6db339e309d56bcfca0d9744e9173733c",
+      "observed_sha256": "0f9bbc04a93fbcac87162be6f947d8d6db339e309d56bcfca0d9744e9173733c",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/candidate_review/records.py",
+      "before_sha256": "65171d5b06cb1e6f9e9022d0eeb5ca4ca2c9411033789ccab3e99b09b395723e",
+      "after_sha256": "665c29d22295dbc708737094dd5a6b59ff545034e6daa1829644502f3580da56",
+      "observed_sha256": "665c29d22295dbc708737094dd5a6b59ff545034e6daa1829644502f3580da56",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/candidate_review/review_record.py",
+      "before_sha256": "0b3107ae8a0f83c102c425c1ecb84fcbf505e88c5ed50ce0bfc3048a48a3ff55",
+      "after_sha256": "5a5cd4999fd44ae1b089a49b53564c42687d8d04cc4d5045b2927a787a74efe9",
+      "observed_sha256": "5a5cd4999fd44ae1b089a49b53564c42687d8d04cc4d5045b2927a787a74efe9",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/review_catalogue_candidates.py",
+      "before_sha256": "64e53d102e319d0a391b96e69cf404495bf76b9c41199af7106a1f8896726956",
+      "after_sha256": "70398e24b9e940c01c1921c38763cfd18caf4cb31ac8ef8cb5fe11abc448ad4b",
+      "observed_sha256": "70398e24b9e940c01c1921c38763cfd18caf4cb31ac8ef8cb5fe11abc448ad4b",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/test_candidate_review_native.py",
+      "before_sha256": "33bbc0a34651451da385069c0e5d4592b8a895c12e5693e83fee36c32ba42eba",
+      "after_sha256": "7870d20eb16faeda9b43d6197bb306ca5bf723d7fec8c0ad5f61b9adf0778d94",
+      "observed_sha256": "7870d20eb16faeda9b43d6197bb306ca5bf723d7fec8c0ad5f61b9adf0778d94",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/test_candidate_review_native_calibration.py",
+      "before_sha256": "813ff32f938915cccf9fb7e76e686d7f0d62e513d5f405e7a925167f7d7af0b9",
+      "after_sha256": "851478c464c235708b79751c7ac22b829e3d33b80dd8d0a816559919d21eeb6a",
+      "observed_sha256": "851478c464c235708b79751c7ac22b829e3d33b80dd8d0a816559919d21eeb6a",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/test_candidate_review_record.py",
+      "before_sha256": "0cf4c52e09eb58fe9fa620e43c2b449822b8ac28b1a58b33e92982b3817184e0",
+      "after_sha256": "9fc866ff50bf9a96f2c08d5d3cf61029e1858caf0c8a7c26bca04180f7a80f8e",
+      "observed_sha256": "9fc866ff50bf9a96f2c08d5d3cf61029e1858caf0c8a7c26bca04180f7a80f8e",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/candidate_review/calibration_record.py",
+      "before_sha256": null,
+      "after_sha256": "47c8673579a279546aeda0b4d3768858297a689f2f630930542dd609f10469f1",
+      "observed_sha256": "47c8673579a279546aeda0b4d3768858297a689f2f630930542dd609f10469f1",
+      "matches_frozen": true
+    }
+  ]
+}

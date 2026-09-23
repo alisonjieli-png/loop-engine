@@ -1,0 +1,37 @@
+[
+  {
+    "path": "devtools/embodiment_lab/tests/test_task_database_trial_offline.py",
+    "before_sha256": "ee9fe051c6ba773a8a59070306699886801a3f1359b8305db49d342f71d3df3b",
+    "after_sha256": "7c3601d2148be60c5c5fe07d21bb89c62415894d99c9fc676b6a8f6842fdad04"
+  },
+  {
+    "path": "src/loop_engine/core/external_harness.py",
+    "before_sha256": "76c6a6f4f78145b4a22aea3afa8dcabcf1e04ce64be7cfcb0d89bba0e1490509",
+    "after_sha256": "759ff89a6c9084cb3826fe1a51c0e5f1515ab20a8ff2fc21dcd3fb8a6bc613a7"
+  },
+  {
+    "path": "src/loop_engine/core/external_harness_accounting.py",
+    "before_sha256": "155ef3eff4ef849d25b67494f09d6e5f3ba997eb1aa9426b2d9c75fc7f0917e0",
+    "after_sha256": "5226890f0589529159fd19aec6869d449c41e095c35d5584d0a7e48e34ed82a3"
+  },
+  {
+    "path": "src/loop_engine/core/harness_semantic.py",
+    "before_sha256": "7b22a76a58efa1e56aeb7139c4ddb216a907f2124f84a97638ecc5564a7db0ca",
+    "after_sha256": "41a6b9a6f4c8c5c3027c8940ec34d67885a212ab1817872040c7ed1da96f3ebc"
+  },
+  {
+    "path": "src/loop_engine/core/model_gateway.py",
+    "before_sha256": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b",
+    "after_sha256": "769965d1f809a3b25e4801e939155bed4ba5323f8b6cb48306a431fe91c7614f"
+  },
+  {
+    "path": "src/loop_engine/loop/encapsulate.py",
+    "before_sha256": "388b16985bf46db7e26ade0dd1f8dfd2de6141b905aa496e334b5c2ee6e9e9cc",
+    "after_sha256": "ea89b57e8ef73402b55e73320fccbd86713c385a6d0cdc233a81be09c2844e35"
+  },
+  {
+    "path": "tools/test_provider_refusal_recovery.py",
+    "before_sha256": null,
+    "after_sha256": "1f6a7cffa20fad5c5a64c1dcd4e5db6fc71358cc7e55d9c7b39059701c059745"
+  }
+]

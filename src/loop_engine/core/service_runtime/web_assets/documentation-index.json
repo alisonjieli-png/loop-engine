@@ -1,0 +1,88 @@
+{
+  "record_type": "website_documentation_index/v1",
+  "reviewed_at": "2026-09-23",
+  "sections": [
+    {
+      "id": "start-here",
+      "title": "Start here",
+      "pages": [
+        {
+          "id": "get-set-up",
+          "title": "Get set up",
+          "summary": "Connect your client and make a first search.",
+          "address": "/setup",
+          "repository_path": "docs/guides/service-getting-set-up.md",
+          "aliases": [
+            "/docs/getting-set-up"
+          ]
+        },
+        {
+          "id": "what-baltor-is",
+          "title": "What Baltor is",
+          "summary": "The library, the local engine and your models.",
+          "address": "/docs/what-baltor-is",
+          "body": "/assets/docs/what-baltor-is.html",
+          "repository_path": "docs/guides/service-what-baltor-is.md"
+        },
+        {
+          "id": "your-account",
+          "title": "Your account",
+          "summary": "Accounts, personal tokens and access.",
+          "address": "/docs/your-account",
+          "body": "/assets/docs/your-account.html",
+          "repository_path": "docs/guides/service-your-account.md"
+        }
+      ]
+    },
+    {
+      "id": "use-the-service",
+      "title": "Use the service",
+      "pages": [
+        {
+          "id": "searching-and-retrieving",
+          "title": "Searching and retrieving",
+          "summary": "Find, inspect and download selected material.",
+          "address": "/docs/searching-and-retrieving",
+          "body": "/assets/docs/searching-and-retrieving.html",
+          "repository_path": "docs/guides/service-searching-and-retrieving.md"
+        },
+        {
+          "id": "usage-and-what-you-pay-for",
+          "title": "Usage and what you pay for",
+          "summary": "The plan, downloads and usage records.",
+          "address": "/docs/usage-and-what-you-pay-for",
+          "body": "/assets/docs/usage-and-what-you-pay-for.html",
+          "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "title": "When something refuses",
+      "pages": [
+        {
+          "id": "troubleshooting",
+          "title": "Troubleshooting",
+          "summary": "Understand a refusal and choose the next step.",
+          "address": "/docs/troubleshooting",
+          "body": "/assets/docs/troubleshooting.html",
+          "repository_path": "docs/guides/service-troubleshooting.md"
+        }
+      ]
+    },
+    {
+      "id": "reference",
+      "title": "Reference",
+      "pages": [
+        {
+          "id": "serving-and-connections",
+          "title": "Serving and connections",
+          "summary": "Protocol versions and API request shapes.",
+          "address": "/docs/serving-and-connections",
+          "body": "/assets/docs/serving-and-connections.html",
+          "repository_path": "docs/guides/service-serving-and-connections.md"
+        }
+      ]
+    }
+  ]
+}

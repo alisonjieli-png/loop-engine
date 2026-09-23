@@ -1,0 +1,35 @@
+.F.F..F
+======================================================================
+FAIL: test_gateway_adapter_exception_never_fabricates_reported_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_adapter_exception_never_fabricates_reported_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 94, in test_gateway_adapter_exception_never_fabricates_reported_identity
+    self.assertEqual(result.attempts[-1].model,'')
+AssertionError: 'glm-5.3' != ''
+- glm-5.3
+
+
+======================================================================
+FAIL: test_malformed_unanswered_and_preflight_results_do_not_claim_requested_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_malformed_unanswered_and_preflight_results_do_not_claim_requested_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 69, in test_malformed_unanswered_and_preflight_results_do_not_claim_requested_identity
+    self.assertEqual(result.model,'')
+AssertionError: 'glm-5.3' != ''
+- glm-5.3
+
+
+======================================================================
+FAIL: test_transport_errors_preserve_unknown_answering_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_transport_errors_preserve_unknown_answering_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 85, in test_transport_errors_preserve_unknown_answering_identity
+    self.assertEqual(result.model,'')
+AssertionError: 'glm-5.3' != ''
+- glm-5.3
+
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.044s
+
+FAILED (failures=3)

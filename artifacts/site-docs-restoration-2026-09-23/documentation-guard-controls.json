@@ -1,0 +1,41 @@
+{
+  "source_digest": "b6d4d344a7833dbed6d504bb9de5f4b5907b505dceba4279f3dd48ae6372ea66",
+  "checks": [
+    {
+      "guard": "coverage",
+      "expected_finding": "customer_coverage",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "alias",
+      "expected_finding": "alias_view",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "route",
+      "expected_finding": "route",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "extra_route",
+      "expected_finding": "unlisted_route",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "freshness",
+      "expected_finding": "stale_pages",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "terminology",
+      "expected_finding": "terminology",
+      "control_detected_removed_guard": true
+    },
+    {
+      "guard": "facts",
+      "expected_finding": "refusal_status",
+      "control_detected_removed_guard": true
+    }
+  ],
+  "passed": true
+}

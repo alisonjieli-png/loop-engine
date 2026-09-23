@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Accepted SessionStart hook input subset",
+  "description": "Other client metadata is accepted but never echoed or dereferenced.",
+  "type": "object",
+  "required": [
+    "hook_event_name",
+    "source"
+  ],
+  "properties": {
+    "hook_event_name": {
+      "const": "SessionStart"
+    },
+    "source": {
+      "enum": [
+        "startup",
+        "resume",
+        "clear",
+        "compact"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

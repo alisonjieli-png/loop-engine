@@ -1,0 +1,256 @@
+{
+  "baseline": [
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 16,
+        "row": 33
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport re\nimport tempfile\nimport time\nimport unittest\nfrom dataclasses import asdict\nfrom html.parser import HTMLParser\nfrom pathlib import Path\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 35
+            },
+            "location": {
+              "column": 1,
+              "row": 23
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 23
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 23,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "UP031",
+      "end_location": {
+        "column": 43,
+        "row": 137
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": null,
+      "location": {
+        "column": 25,
+        "row": 137
+      },
+      "message": "Use format specifiers instead of percent format",
+      "name": "printf-string-formatting",
+      "noqa_row": 137,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 72,
+        "row": 273
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "    import httpx\n\n    from loop_engine.core.service_runtime.http_entrypoint import (\n        configure_host,\n        load_host_application,\n    )\n    from loop_engine.core.service_runtime.http_test_fixtures import running_http\n    from loop_engine.core.service_runtime.records import TenantKeyIssue\n",
+            "end_location": {
+              "column": 1,
+              "row": 274
+            },
+            "location": {
+              "column": 1,
+              "row": 270
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 5,
+        "row": 270
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 270,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "FURB192",
+      "end_location": {
+        "column": 115,
+        "row": 380
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "min(harmful)",
+            "end_location": {
+              "column": 115,
+              "row": 380
+            },
+            "location": {
+              "column": 97,
+              "row": 380
+            }
+          }
+        ],
+        "message": "Replace with `min`"
+      },
+      "location": {
+        "column": 97,
+        "row": 380
+      },
+      "message": "Prefer `min` over `sorted()` to compute the minimum value in a sequence",
+      "name": "sorted-min-max",
+      "noqa_row": 380,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/sorted-min-max"
+    }
+  ],
+  "current": [
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 16,
+        "row": 33
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport re\nimport tempfile\nimport time\nimport unittest\nfrom dataclasses import asdict\nfrom html.parser import HTMLParser\nfrom pathlib import Path\n\n",
+            "end_location": {
+              "column": 1,
+              "row": 35
+            },
+            "location": {
+              "column": 1,
+              "row": 23
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 1,
+        "row": 23
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 23,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "UP031",
+      "end_location": {
+        "column": 43,
+        "row": 137
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": null,
+      "location": {
+        "column": 25,
+        "row": 137
+      },
+      "message": "Use format specifiers instead of percent format",
+      "name": "printf-string-formatting",
+      "noqa_row": 137,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+    },
+    {
+      "cell": null,
+      "code": "I001",
+      "end_location": {
+        "column": 72,
+        "row": 273
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "safe",
+        "edits": [
+          {
+            "content": "    import httpx\n\n    from loop_engine.core.service_runtime.http_entrypoint import (\n        configure_host,\n        load_host_application,\n    )\n    from loop_engine.core.service_runtime.http_test_fixtures import running_http\n    from loop_engine.core.service_runtime.records import TenantKeyIssue\n",
+            "end_location": {
+              "column": 1,
+              "row": 274
+            },
+            "location": {
+              "column": 1,
+              "row": 270
+            }
+          }
+        ],
+        "message": "Organize imports"
+      },
+      "location": {
+        "column": 5,
+        "row": 270
+      },
+      "message": "Import block is un-sorted or un-formatted",
+      "name": "unsorted-imports",
+      "noqa_row": 270,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+    },
+    {
+      "cell": null,
+      "code": "FURB192",
+      "end_location": {
+        "column": 115,
+        "row": 403
+      },
+      "filename": "/home/username/.le-codex-review-20260923/tools/test_homepage_demonstration.py",
+      "fix": {
+        "applicability": "unsafe",
+        "edits": [
+          {
+            "content": "min(harmful)",
+            "end_location": {
+              "column": 115,
+              "row": 403
+            },
+            "location": {
+              "column": 97,
+              "row": 403
+            }
+          }
+        ],
+        "message": "Replace with `min`"
+      },
+      "location": {
+        "column": 97,
+        "row": 403
+      },
+      "message": "Prefer `min` over `sorted()` to compute the minimum value in a sequence",
+      "name": "sorted-min-max",
+      "noqa_row": 403,
+      "severity": "error",
+      "url": "https://docs.astral.sh/ruff/rules/sorted-min-max"
+    }
+  ],
+  "new_code_or_message_findings": false,
+  "editorial_renderer_exit_code": 0
+}

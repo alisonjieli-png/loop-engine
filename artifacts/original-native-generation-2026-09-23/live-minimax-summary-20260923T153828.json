@@ -1,0 +1,76 @@
+{
+  "record_type": "original_native_alternative_smoke_report/v1",
+  "started_at": "2026-09-23T15:38:28Z",
+  "predecessor": "live-smoke-20260923T153131",
+  "run_path": "live-minimax-20260923T153828",
+  "plan_sha256": "23646f43d9f836ff4cf16f43af44791b9f7ed6ed2bc2d16f8760f60f966f497c",
+  "source_revision": "9f7cd80495e454ea6dac0a7ffafcf74a49113bd6",
+  "source_implementations": {
+    "generate_original_native_candidates.py": "6293bcbdbb6c0109e5d93e738d001d2431c881ba4cf0c3a4a5c3d4cc0bde2db1",
+    "model_gateway.py": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b",
+    "native_harness_candidates.py": "d348b1e40cf6b43f9a345a5e4ad0c9f010e3edc873e321bb7447a6de64624f27",
+    "ollama_client.py": "a81402bbfd7fbeb8c8d5c21c95bf4ef76901f07c76309b270f1eb64bff703f3c",
+    "prepare_harness_candidates.py": "ded71c80bce93f6bfed6ac0cf42d6100a7b6b0d7868672cc48f04c20aa4923e5"
+  },
+  "requested_model": "minimax-m3",
+  "producer_family_declared": "minimax",
+  "call_ceiling": 2,
+  "physical_provider_attempts": 2,
+  "output_allocation_tokens": 8192,
+  "timeout_seconds": 600,
+  "strict_total_token_ceiling": null,
+  "total_input_tokens_reported": 2753,
+  "total_output_tokens_reported": 16384,
+  "total_tokens_reported": 19137,
+  "cost_state": "unknown",
+  "prepared_candidate_packages": 0,
+  "prepared_payload_files": 0,
+  "stop_reason": "call_ceiling_reached",
+  "attempts": [
+    {
+      "method_id": "minimum_cost_unique_assignment",
+      "status": "failed",
+      "error_code": "output_limit_reached",
+      "reported_model": "minimax-m3",
+      "input_tokens": 1378,
+      "output_tokens": 8192,
+      "elapsed_seconds": 78.58351,
+      "saved_gateway_result_text_bytes": 0,
+      "provider_partial_text_available": false,
+      "planned_files_seen_in_provider_output": null,
+      "reasoning_only_exhaustion": null
+    },
+    {
+      "method_id": "apportion_integer_quotas",
+      "status": "failed",
+      "error_code": "output_limit_reached",
+      "reported_model": "minimax-m3",
+      "input_tokens": 1375,
+      "output_tokens": 8192,
+      "elapsed_seconds": 50.386089,
+      "saved_gateway_result_text_bytes": 0,
+      "provider_partial_text_available": false,
+      "planned_files_seen_in_provider_output": null,
+      "reasoning_only_exhaustion": null
+    }
+  ],
+  "code_executed": false,
+  "approvals": 0,
+  "catalogue_mutations": 0,
+  "automatic_retry": false,
+  "automatic_failover": false,
+  "evidence_sha256": {
+    "live-minimax-20260923T153828/apportion_integer_quotas.attempt-1/response.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "live-minimax-20260923T153828/cursor.json": "13d647e3c613c8bf8e7fc0a4c0899ef3c7e76d09863022af804fa50b2b937072",
+    "live-minimax-20260923T153828/journal.jsonl": "09d1c998485e42237829f4dc21986788a6303d68a908e6115719c6d1c9671c40",
+    "live-minimax-20260923T153828/minimum_cost_unique_assignment.attempt-1/response.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "live-minimax-20260923T153828/run.json": "2253861ae14966c7a9dbaad99f665ebf3e7d148a9673933e097d3ecd763ab093"
+  },
+  "limitations": [
+    "Both attempts were classified output_limit_reached; completeness of the provider final text is unknown because the gateway result does not expose failed attempt text.",
+    "The saved zero-byte response is the available gateway result text, not evidence that the provider generated zero text.",
+    "This campaign changed model,timeout andallocation; it is not a controlled head-to-head model benchmark.",
+    "No scale-throughput estimate or quality claim is justified by two failed preparations.",
+    "Known reported usage for this MiniMax campaign does not replace unknown usage from the prior GLM timeout."
+  ]
+}

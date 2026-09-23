@@ -1,0 +1,29 @@
+{
+  "kind": "independent_offline_boundary_checks",
+  "reviewer": "root; not renderer author",
+  "source_sha256": "6f9e28c6a30c3f409182805fd5c6c65b00d7104398bdca38025f43aa6fda7762",
+  "checks": [
+    {
+      "check": "fifo_replacing_context",
+      "refused": true,
+      "reason": "only bounded regular files are accepted"
+    },
+    {
+      "check": "extra_directory",
+      "refused": true,
+      "reason": "missing or unexpected packet file"
+    },
+    {
+      "check": "extra_fifo",
+      "refused": true,
+      "reason": "missing or unexpected packet file"
+    },
+    {
+      "check": "forged_typed_assignment",
+      "refused": true,
+      "reason": "brief typed fields differ from its sealed bytes"
+    }
+  ],
+  "admission_granted": false,
+  "model_calls": 0
+}

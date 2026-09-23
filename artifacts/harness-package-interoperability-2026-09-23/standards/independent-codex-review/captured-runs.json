@@ -1,0 +1,74 @@
+[
+  {
+    "index": 0,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 1,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 2,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 3,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 4,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 5,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input",
+      "-c",
+      "project_doc_max_bytes=512"
+    ],
+    "stderr_lines": 1
+  },
+  {
+    "index": 6,
+    "top_level_type": "list",
+    "top_level_keys": [],
+    "command_arguments": [
+      "debug",
+      "prompt-input"
+    ],
+    "stderr_lines": 1
+  }
+]

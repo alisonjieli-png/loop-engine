@@ -1,0 +1,5 @@
+{
+  "failure": "The QA fixture used default route purpose counted_generation instead of generation. The real gateway correctly refused it.",
+  "classification": "QA fixture defect, not product defect",
+  "provider_calls": 0
+}

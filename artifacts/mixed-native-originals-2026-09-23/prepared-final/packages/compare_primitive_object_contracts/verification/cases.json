@@ -1,0 +1,108 @@
+[
+  {
+    "input": {
+      "old": {
+        "fields": {
+          "age": "integer"
+        },
+        "required": [
+          "age"
+        ],
+        "allow_extra": false
+      },
+      "new": {
+        "fields": {
+          "age": "number"
+        },
+        "required": [
+          "age"
+        ],
+        "allow_extra": false
+      }
+    },
+    "expected": {
+      "compatible": true,
+      "breaking_changes": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "old": {
+        "fields": {
+          "age": "number"
+        },
+        "required": [],
+        "allow_extra": false
+      },
+      "new": {
+        "fields": {
+          "age": "integer",
+          "name": "string"
+        },
+        "required": [
+          "name"
+        ],
+        "allow_extra": false
+      }
+    },
+    "expected": {
+      "compatible": false,
+      "breaking_changes": [
+        {
+          "code": "changed_type",
+          "field": "age"
+        },
+        {
+          "code": "new_required_field",
+          "field": "name"
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "old": {
+        "fields": {},
+        "required": [],
+        "allow_extra": true
+      },
+      "new": {
+        "fields": {
+          "x": "string"
+        },
+        "required": [],
+        "allow_extra": true
+      }
+    },
+    "expected": {
+      "compatible": false,
+      "breaking_changes": [
+        {
+          "code": "extra_field_constrained",
+          "field": "x"
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "old": {
+        "fields": {},
+        "required": [
+          "missing"
+        ],
+        "allow_extra": false
+      },
+      "new": {
+        "fields": {},
+        "required": [],
+        "allow_extra": false
+      }
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

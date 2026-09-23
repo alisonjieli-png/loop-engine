@@ -450,17 +450,20 @@ def _payload_capture_checks(check, root):
 def _credential_body_checks(check, root):
     """A body that carries a credential stays out of the record, whatever the host chose.
 
-    Sign-up carries the password of a new account, and promotion redemption
-    carries a code that grants paid access to whoever holds it. Body capture was
-    written before either address reached this transport, and on September 22,
-    2026 it kept their bodies as it keeps any other, so a host that captured
-    bodies stored a password and a code as plain text. Both refusals must still
-    be recorded, only without the body, and a body that carries no credential
-    must still be kept, so the host's choice holds everywhere else.
+    Sign-up carried the password of a new account until September 23, 2026.
+    It now takes an address alone and refuses a request that carries a
+    password, but a caller can still send the retired record, and its refused
+    body holds that password. Promotion redemption carries a code that grants
+    paid access to whoever holds it. Body capture was written before either
+    address reached this transport, and on September 22, 2026 it kept their
+    bodies as it keeps any other, so a host that captured bodies stored a
+    password and a code as plain text. Both refusals must still be recorded,
+    only without the body, and a body that carries no credential must still be
+    kept, so the host's choice holds everywhere else.
     """
     import httpx
     from .account_email import SIGNUP_PATH, AccountEmailAdapter
-    from .account_email_checks import SIGNUP_REQUEST, SIGNUP_SECRET_VALUE, _Provider, _secrets, _settings
+    from .account_email_checks import RETIRED_SIGNUP_REQUEST, SIGNUP_SECRET_VALUE, _Provider, _secrets, _settings
     from .http import PROMOTION_REDEMPTION_PATH, ServiceHttpApplication
     from .promotion_checks import GUESSED_BODY, PREFIX
     from .promotions import PromotionPolicy, PromotionRedemption
@@ -481,7 +484,7 @@ def _credential_body_checks(check, root):
     limits = ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=50, window_seconds=600)
     with running_http(fixture, application_factory=build, request_limits=limits) as (base, service):
         with httpx.Client(base_url=base, trust_env=False, timeout=5) as client:
-            signup = client.post(SIGNUP_PATH, json={**SIGNUP_REQUEST, "unexpected": True})
+            signup = client.post(SIGNUP_PATH, json=RETIRED_SIGNUP_REQUEST)
             redemption = client.post(PROMOTION_REDEMPTION_PATH, headers=fixture.headers(), json={
                 "record_type": "service_promotion_redemption_request/v1", "code": code,
                 "request_id": "credential-body"})

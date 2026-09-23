@@ -1,0 +1,73 @@
+{
+ "index_digest": "c904bfe3b31ce470baa44425facc0f1fbb77388692b6e9bc31368dfcd1b20eae",
+ "pages": {
+  "searching-and-retrieving": {
+   "body_address": "/assets/docs/searching-and-retrieving.html",
+   "body_digest": "b0fc654fa1585ce1af3945210ed846d071a774ea4d1c8a55aa9e7ab7fb69195b",
+   "heading": "Searching and retrieving",
+   "id": "searching-and-retrieving",
+   "kind_line": "Kind: customer guide to selection, references, manifests and exact-byte downloads.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-searching-and-retrieving.md",
+   "source_digest": "eb547489f54dcc873a37b073bcfd55e715d2bda1ca89e32363c88dd53f6e1eac",
+   "title": "Searching and retrieving"
+  },
+  "serving-and-connections": {
+   "body_address": "/assets/docs/serving-and-connections.html",
+   "body_digest": "aaf654fc1a525d2226993480030fada2e56f3b9a9b996950e8b09e5f9fde7334",
+   "heading": "Serving and connections",
+   "id": "serving-and-connections",
+   "kind_line": "Kind: technical reference for the published protocol, direct interface and refusal codes.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-serving-and-connections.md",
+   "source_digest": "06ede1c1f54e0bba36f5b9d1aa2fac692fb3d4914ccb152c6de434e9539928a9",
+   "title": "Serving and connections"
+  },
+  "troubleshooting": {
+   "body_address": "/assets/docs/troubleshooting.html",
+   "body_digest": "b2370d5ce36aca856d391b8d12d63353850da49b2c3063af243837f9c5f445d8",
+   "heading": "Troubleshooting",
+   "id": "troubleshooting",
+   "kind_line": "Kind: customer guide to connection, access, selection and uncertain download outcomes.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-troubleshooting.md",
+   "source_digest": "1bf56ad52c22e6b147558908b349732f5877860c3db351091fde43eae2e3c836",
+   "title": "Troubleshooting"
+  },
+  "usage-and-what-you-pay-for": {
+   "body_address": "/assets/docs/usage-and-what-you-pay-for.html",
+   "body_digest": "91d87cb7d51ee4e7498f391346035cac9011803c04634c4c0ba19522868d7ca6",
+   "heading": "Usage and what you pay for",
+   "id": "usage-and-what-you-pay-for",
+   "kind_line": "Kind: customer guide to the plan, download usage and uncertain outcomes.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md",
+   "source_digest": "18dc7fc3ea511f42f4b49a0f5eeab5418cfca983523af27db5061fd3290787b1",
+   "title": "Usage and what you pay for"
+  },
+  "what-baltor-is": {
+   "body_address": "/assets/docs/what-baltor-is.html",
+   "body_digest": "aa0d31453e9114c430d9ef1e101f64a2e1d1794c7ba1c65b1a7fa110d6e341d1",
+   "heading": "What Baltor is",
+   "id": "what-baltor-is",
+   "kind_line": "Kind: customer guide to the hosted library, the local engine and their current boundaries.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-what-baltor-is.md",
+   "source_digest": "2b6665c0aa23bb26070719c8a7e69a183efe55b632a42a31d626aba80fb44f15",
+   "title": "What Baltor is"
+  },
+  "your-account": {
+   "body_address": "/assets/docs/your-account.html",
+   "body_digest": "248f86b38e32a5acd70a6d8c2bd0d2de380c47bea225c6673a802278b45412c8",
+   "heading": "Your account",
+   "id": "your-account",
+   "kind_line": "Kind: customer guide to sign-in, personal client tokens and access decisions.",
+   "record_type": "website_documentation_page/v1",
+   "repository_path": "docs/guides/service-your-account.md",
+   "source_digest": "90e68f2f8704ddb0a8382f364a3db7edf6a45152303335a33f03f2cabbb7a0f5",
+   "title": "Your account"
+  }
+ },
+ "record_type": "website_documentation_pages/v1",
+ "reviewed_at": "2026-09-23"
+}

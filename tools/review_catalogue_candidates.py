@@ -30,6 +30,8 @@ import sys
 import time
 
 HERE = Path(__file__).resolve().parent
+if str(HERE.parent) not in sys.path:
+    sys.path.insert(0, str(HERE.parent))
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
@@ -77,6 +79,8 @@ def _write_record(path: Path, value: dict, replace: bool) -> None:
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--catalogue", type=Path, required=True, help="The candidate catalogue folder.")
+    parser.add_argument("--content-profile", choices=("starter", "native-original"), default="starter",
+                        help="The exact content and review criteria profile; native-original reads complete v3 packages.")
     parser.add_argument("--repository", type=Path, default=Path.cwd(), help="The repository root.")
     parser.add_argument("--panel", type=Path, default=RESOURCES / "panel.json")
     parser.add_argument("--criteria", type=Path, default=RESOURCES / "criteria.json")
@@ -110,15 +114,25 @@ def _parser() -> argparse.ArgumentParser:
 def run(options) -> dict:
     repository = options.repository.resolve()
     configuration = config.PanelConfiguration.from_dict(_json(options.panel))
-    criteria_record = _json(options.criteria)
-    criteria = config.compile_criteria(criteria_record, (repository / criteria_record["source_path"]).read_text(
-        encoding="utf-8"))
-    producer_record = _json(options.producers)
-    producers = config.ProducerDeclaration.from_dict(
-        producer_record, (repository / producer_record["evidence"]["path"]).read_text(encoding="utf-8"),
-        configuration.families)
-    instructions = config.load_instructions(options.instructions)
-    catalogue = StarterCatalogue.load(options.catalogue, repository)
+    if options.content_profile == "native-original":
+        from candidate_review import native, native_profile
+        if (options.criteria != RESOURCES / "criteria.json" or options.producers != RESOURCES / "producer-starter-catalogue.json"
+                or options.instructions != RESOURCES / "REVIEWER-INSTRUCTIONS.md"):
+            refuse("native_review_profile_mismatch", "native-original selects its own criteria, instructions and per-item producers")
+        criteria, instructions = native_profile.resources()
+        catalogue = native.NativeCatalogue.load(options.catalogue, repository)
+        configuration = native_profile.configuration(configuration, population_size=len(catalogue.identities()))
+        producers = catalogue.producer_declaration(configuration.families)
+    else:
+        criteria_record = _json(options.criteria)
+        criteria = config.compile_criteria(criteria_record, (repository / criteria_record["source_path"]).read_text(
+            encoding="utf-8"))
+        producer_record = _json(options.producers)
+        producers = config.ProducerDeclaration.from_dict(
+            producer_record, (repository / producer_record["evidence"]["path"]).read_text(encoding="utf-8"),
+            configuration.families)
+        instructions = config.load_instructions(options.instructions)
+        catalogue = StarterCatalogue.load(options.catalogue, repository)
     if options.identity:
         selection = review_record.PopulationSelection(review_record.EXPLICIT_LIST, "", tuple(options.identity),
                                                       tuple(options.identity))
@@ -129,6 +143,16 @@ def run(options) -> dict:
                                                                         seed=options.seed))
     requests = tuple(catalogue.request(identity, producers.producer_for(identity), criteria, instructions.sha256)
                      for identity in selection.selected)
+    chosen, pairs = None, ()
+    if options.calibrate:
+        if options.content_profile == "native-original":
+            from candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet
+            calibration_path = (DEFAULT_SET if options.calibration_set == RESOURCES / "calibration-set.json"
+                                else options.calibration_set)
+            chosen = NativeCalibrationSet.load(calibration_path, repository, criteria)
+        else:
+            chosen = calibration_module.CalibrationSet.from_dict(_json(options.calibration_set), criteria.ids)
+        pairs = chosen.requests(catalogue, producers, criteria, instructions.sha256)
     listing = {"record_type": "ollama_model_versions/v1", "ok": False, "models": {},
                "error": "model calls were not authorized, so the provider listing was not read"}
     if options.authorize_model_calls:
@@ -143,8 +167,6 @@ def run(options) -> dict:
     calls_left, tokens_left = options.call_ceiling, options.token_ceiling
     report, calibration_requests, excluded, calibration_result = None, (), {}, None
     if options.calibrate:
-        chosen = calibration_module.CalibrationSet.from_dict(_json(options.calibration_set), criteria.ids)
-        pairs = chosen.requests(catalogue, producers, criteria, instructions.sha256)
         calibration_requests = tuple(request.request_sha256 for _item, request in pairs)
         calibration_result = panel.run(PanelRunRequest(
             run_id=run_id + "-calibration", requests=tuple(request for _item, request in pairs),
@@ -178,7 +200,9 @@ def run(options) -> dict:
             result, ledger, catalogue=catalogue, configuration=configuration, criteria=criteria,
             instructions=instructions, producers=producers, population=selection, recorded_at=options.recorded_at,
             record_path=relative, calibration_report=report, calibration_requests=calibration_requests)
-        review_record.read_panel_review_record(record)
+        review_record.read_panel_review_record(record, calibration_inputs=(
+            calibration_module.CalibrationInputs(chosen, tuple(request for _item, request in pairs), instructions)
+            if chosen is not None else None))
         _write_record(path, record, options.replace_record)
         summary["record"] = relative
     return summary

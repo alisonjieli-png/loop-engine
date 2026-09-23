@@ -1,0 +1,451 @@
+{
+  "records": [
+    {
+      "identity": "adjudicate-model-disagreement-with-external-checks",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "audit-as-of-data-visibility",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "audit-measurement-units",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "audit-semantic-loss-in-protocol-fallback",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "build-a-project-decision-provenance-map",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "challenge-retrieval-with-hard-negatives",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "check-rate-denominators",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "compare-model-context-pairs-on-frozen-cases",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "define-time-zone-reporting-window",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "design-a-bounded-product-experiment",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "explain-engine-selection-from-eligible-evidence",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "map-independent-acceptance-evidence",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "map-observed-customer-journey-friction",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "match-a-product-claim-to-verified-capability",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "normalize-vendor-offers-for-one-decision",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "rebuild-state-from-ordered-events",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "reconcile-snapshot-changes",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "reconstruct-causality-across-clock-skewed-records",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "screen-a-study-for-a-product-decision",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "separate-recurring-support-causes-from-repeat-contacts",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "separate-shared-build-cache-from-task-state",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "trace-numeric-rounding",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "triage-support-requests-against-approved-policy",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "validate-aggregate-grain",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+    },
+    {
+      "identity": "adjudicate-a-protocol-tool-effect-request",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "audit-a-model-specific-skill-rendering",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "audit-resource-capacity-by-interval",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "bridge-forecast-driver-changes",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "carry-a-sales-promise-into-delivery",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "compare-acquisition-channels-for-one-segment",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "compile-a-native-material-placement-plan",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "design-catalogue-withdrawal-checks",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "gate-a-product-launch-across-teams",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "prepare-a-support-escalation-packet",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "qualify-a-partner-integration-proposal",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "qualify-an-invited-pilot-cohort",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconcile-inventory-availability",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconcile-native-material-use-evidence",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconcile-order-fulfillment-quantities",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconcile-record-flow-across-stages",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconstruct-a-buyer-decision-path",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "reconstruct-service-clock-from-status-intervals",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "revalidate-output-allocation-on-model-fallback",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "scope-a-step-credential-lease-to-physical-use",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "specify-an-isolated-harness-startup-probe",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "synthesize-discovery-interviews-with-counterexamples",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "trace-field-lineage-to-a-measure",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "validate-source-to-target-field-map",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json"
+    },
+    {
+      "identity": "audit-a-published-guide-against-a-release",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "audit-sampling-frame-coverage",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "audit-service-measure-against-agreement",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "bound-obsolete-stock-by-support-horizon",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "challenge-a-survey-instrument-for-contamination",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "check-prerequisite-order-in-a-task-guide",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "compare-satisfaction-waves-by-respondent-mix",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "contrast-described-and-observed-workflows",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "define-a-user-operation-performance-envelope",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "derive-state-transition-tests-from-a-contract",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "diagnose-process-constraint-from-flow",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "establish-milestone-readiness-from-evidence",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "explain-a-service-charge-from-effective-rules",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "map-system-output-to-permitted-consumers",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "propagate-a-plan-change-through-commitments",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "qualify-a-prebuilt-application-against-required-seams",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "reconcile-account-difference-to-postings",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "test-aggregate-trend-for-subgroup-reversal",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "test-control-operation-on-a-bounded-sample",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "verify-resolution-against-original-symptom",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json"
+    },
+    {
+      "identity": "allocate-scarce-stock-by-promised-service",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "balance-project-duty-coverage",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "classify-ambiguous-posting-account",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "compare-distribution-paths-with-failure-costs",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "explain-work-package-cost-variance",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "map-repair-support-requirements-to-assets",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "reconcile-return-credit-to-original-sale",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "reconcile-subcontractor-delivery-to-obligations",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "screen-payable-for-document-mismatch",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "trace-resource-request-to-funding-window",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "trace-statement-line-to-ledger",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "track-customer-promises-through-case-updates",
+      "kind": "advisory_skill",
+      "source_manifest": "artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json"
+    },
+    {
+      "identity": "baltor.context.profile-one-csv.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "baltor.context.repair-one-failing-test.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "baltor.tool.audit-csv-structure.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "baltor.tool.audit-jsonl-identities.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "baltor.tool.inventory-file-digests.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "baltor.connection.json-shape-stdio.v1",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json"
+    },
+    {
+      "identity": "audit-join-cardinality",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/candidate-items.json"
+    },
+    {
+      "identity": "audit-zip-package",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/candidate-items.json"
+    },
+    {
+      "identity": "audit-text-encoding",
+      "kind": "mixed_candidate",
+      "source_manifest": "artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/candidate-items.json"
+    }
+  ],
+  "count": 89,
+  "purpose": "Exclude existing logical identities and inspect related methods before original authoring."
+}

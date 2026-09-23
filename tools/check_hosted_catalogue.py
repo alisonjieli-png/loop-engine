@@ -107,7 +107,7 @@ def main():
         check("no_rejected_item_is_registered", not (set(served + withheld) & set(rejected)))
         found = set()
         for query in queries:
-            status, result = request("/api/v1/retrieval", {"record_type": "service_retrieval_request/v1",
+            status, result = request("/api/v1/retrieval", {"record_type": "service_retrieval_request/v2",
                 "query": query, "mode": "lexical", "top_n": 50})
             if status != 200:
                 raise RuntimeError(f"the search for {query!r} was refused with status {status}")

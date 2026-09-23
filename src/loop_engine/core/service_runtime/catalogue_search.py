@@ -47,7 +47,7 @@ INDEX_RECORD_TYPE = "catalogue_view_index/v1"
 #: The same limits and token rule as `core.retrieval.SqliteFtsBackend`.
 LEXICAL_TERMS = 12
 VECTOR_DIMENSIONS = 512
-#: The retrieval modes the service offers, as `service_retrieval_request/v1` names them.
+#: The retrieval modes the service offers, as `service_retrieval_request/v2` names them.
 SEARCH_MODES = ("lexical", "hybrid")
 LEXICAL_MODE, HYBRID_MODE = SEARCH_MODES
 _TOKEN = re.compile(r"[a-z0-9]+")

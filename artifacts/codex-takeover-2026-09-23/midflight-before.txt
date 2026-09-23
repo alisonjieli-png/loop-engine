@@ -1,0 +1,14 @@
+test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant (tools.test_catalogue_midflight_oracle.CatalogueMidflightOracleTest.test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant) ... FAIL
+
+======================================================================
+FAIL: test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant (tools.test_catalogue_midflight_oracle.CatalogueMidflightOracleTest.test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/integration/tools/test_catalogue_midflight_oracle.py", line 42, in test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant
+    self.assertTrue(observed["a_request_in_flight_finishes_on_the_view_it_started_with"])
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.806s
+
+FAILED (failures=1)

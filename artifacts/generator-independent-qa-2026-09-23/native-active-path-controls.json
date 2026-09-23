@@ -1,0 +1,28 @@
+{
+  "record_type": "native_profile_independent_qa/v1",
+  "checks": [
+    {
+      "path": "opencode.json",
+      "style": "opencode",
+      "declared_role": "other",
+      "declared_effects": [],
+      "refused": false,
+      "codes": [],
+      "expected": "native_required_component_unqualified",
+      "defect_reproduced": true
+    },
+    {
+      "path": ".pi/settings.json",
+      "style": "pi",
+      "declared_role": "other",
+      "declared_effects": [],
+      "refused": false,
+      "codes": [],
+      "expected": "native_required_component_unqualified",
+      "defect_reproduced": true
+    }
+  ],
+  "provider_calls": 0,
+  "package_execution": false,
+  "approval": false
+}

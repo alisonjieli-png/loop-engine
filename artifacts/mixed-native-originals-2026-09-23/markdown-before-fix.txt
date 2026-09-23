@@ -1,0 +1,16 @@
+markdownlint-cli2 v0.23.2 (markdownlint v0.41.1)
+Finding: artifacts/mixed-native-originals-2026-09-23/prepared/packages/**/AGENTS.md
+Linting: 12 files
+Summary: 12 issues in 12 files
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/audit_boolean_rule_coverage/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/audit_functional_dependency_rows/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/compare_primitive_object_contracts/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/cover_pairwise_configuration_values/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/decode_u16_length_prefixed_frames/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/evaluate_bounded_rational_expression/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/find_strongly_connected_components/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/pack_first_fit_decreasing_batches/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/project_json_pointer_values/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/resolve_literal_named_template/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/schedule_dag_earliest_times/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]
+artifacts/mixed-native-originals-2026-09-23/prepared/packages/simulate_exact_token_bucket/AGENTS.md:18:1 error MD029/ol-prefix Ordered list item prefix [Expected: 1; Actual: 4; Style: 1/1/1]

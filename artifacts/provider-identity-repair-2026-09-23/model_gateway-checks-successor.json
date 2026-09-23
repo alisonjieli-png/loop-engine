@@ -1,0 +1,120 @@
+{
+  "record_type": "model_gateway_contract_test/v2",
+  "scope": "offline_contract_only",
+  "provider_integration_proven": false,
+  "tests": [
+    {
+      "test": "route_separation_excludes_named_routes_and_never_reuses_an_excluded_one",
+      "passed": true,
+      "detail": "error='no model route is permitted after route separation excluded contract.unknown'"
+    },
+    {
+      "test": "a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation",
+      "passed": true,
+      "detail": "the execution phase is timed; a refused invocation is a failed record with unknown tokens"
+    },
+    {
+      "test": "unknown_output_capability_refuses_before_provider_use",
+      "passed": true,
+      "detail": "this is a contract refusal, not a provider integration test"
+    },
+    {
+      "test": "context_window_preflight_refuses_before_provider_use",
+      "passed": true,
+      "detail": "an explicit caller ceiling that cannot fit is refused rather than quietly shrunk; max_context=100"
+    },
+    {
+      "test": "default_output_maximum_is_never_reduced_to_context_room",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "missing_credential_is_not_an_authentication_failure",
+      "passed": true,
+      "detail": "a keyless provider is skipped by failover, not fatal to it"
+    },
+    {
+      "test": "invalid_explicit_output_values_are_refused",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "provider_descriptions_carry_references_not_secret_values",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "operating_profile_controls_gateway_route_locality",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "an_unspecified_output_limit_remains_unspecified_until_capability_resolution",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "authentication_failure_does_not_silently_fail_over",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "default_gateway_does_not_enable_cross_provider_failover",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "default_route_discovery_selects_only_one_provider",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "payment_failure_can_fail_over_to_another_authorized_provider",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "failover_attempts_share_one_logical_semantic_call_in_run_history",
+      "passed": true,
+      "detail": "logical identity is shared; physical attempt Loop IDs remain exact"
+    },
+    {
+      "test": "separate_gateway_invocations_receive_distinct_semantic_call_ids",
+      "passed": true,
+      "detail": "one gateway invocation is one logical semantic call"
+    },
+    {
+      "test": "output_limit_is_typed_and_can_fail_over",
+      "passed": true,
+      "detail": "a partial HTTP 200 is evidence, not a successful model answer"
+    },
+    {
+      "test": "network_transport_failures_have_specific_codes",
+      "passed": true,
+      "detail": "routing and DNS failures remain distinct from model rejection"
+    },
+    {
+      "test": "spawned_gateway_inherits_spawning_depth_without_reparenting",
+      "passed": true,
+      "detail": "practitioner -> spawned stage -> candidate -> route -> attempt"
+    },
+    {
+      "test": "starting_gateway_has_no_implicit_depth_ceiling",
+      "passed": true,
+      "detail": "starting gateway uses no product-imposed recursion ceiling"
+    },
+    {
+      "test": "a_response_without_usage_reports_unknown_not_zero",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_response_without_usage_carries_a_typed_diagnostic",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "passed": 22,
+  "total": 22,
+  "all_passed": true
+}

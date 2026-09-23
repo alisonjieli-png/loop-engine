@@ -1,0 +1,76 @@
+{
+  "record_type": "native_original_contract_successor/v1",
+  "predecessor": "artifacts/mixed-native-originals-2026-09-23/prepared-final/items.json",
+  "current": "prepared/items.json",
+  "logical_candidates": 12,
+  "new_logical_count_credit": 0,
+  "payload_paths": 96,
+  "distinct_payload_digests": 85,
+  "approved": 0,
+  "hosted": 0,
+  "provider_calls": 0,
+  "producer_family": "openai",
+  "producer_method": "codex_original_mixed_native_authoring/v2",
+  "versions": [
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "prior_package_digest": "e15774569b995286404c81f2e55c2ecb839fd5ebc8a9525f6b7049a3e04162b9",
+      "current_package_digest": "40435845ac4fbd44f900e1ca510e6f52586820efdefbd8a43773f78b3f92c6c1"
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "prior_package_digest": "0120acc6744d56b69447e2dc40f740e8b248ee5c2a631f46b654eab9f254063f",
+      "current_package_digest": "92ba637a50df7401643057c77559f40a251dc16bb3d2c6cbabca0e9c6cb7b1e8"
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "prior_package_digest": "7181cdf967db138e7f50f20cb2590bb34a8c90c5aef5362fe73f55874f147380",
+      "current_package_digest": "134844ff557b925036ae89e4aeeb1130cc4dbad470047d5043d0187917d5924d"
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "prior_package_digest": "29dd6f93a9cf962b36aca0f171e474e7e8860b676f2ec7bbff2412577ce91abc",
+      "current_package_digest": "ea822e9358f6ea955eefefb00a3c8bce946a9661a61224e5937d4ae9e42446fb"
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "prior_package_digest": "4dda3bfacd5440295ac5cb56ffb537cffdbd826ef877ce7ee2b1b2597222bbc6",
+      "current_package_digest": "f3be7548acee44c337172edb71fc7e9a0b01f234b6d8cf652903ff5747a5b915"
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "prior_package_digest": "d8793e1f11a24a99807e636e4d909984573201adda323182d1c7bbe4dc36b5c0",
+      "current_package_digest": "ed342d8ed805c097f3c7048b800d2a51d2148bf6d75d672edccbf391c620b25f"
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "prior_package_digest": "94ba49ea3fd8d276bd5610003fd3a2c170714826c2ecef63118aa470f97fdb99",
+      "current_package_digest": "23612e33fba8bfb43fb64a3c2a668ca7642e9cfa9bcbf480d71b10adad00ecd1"
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "prior_package_digest": "fdb931f908c53467f270d024699d04992b941cd35cb89441d6c4bfff1e10797f",
+      "current_package_digest": "a0831262c6cae1b2bd0cc2b97a4e5e868bd18ef5b21085d88f3965dd822c4406"
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "prior_package_digest": "939b4b57e86d635f32042270485863245231213d0cfc05a3a28b93e5a74802ef",
+      "current_package_digest": "6f3ad636002b1eab767e7690be8b68b1398fed1dc009dd6a2a5f1299fe57a087"
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "prior_package_digest": "31c2d135a962bb0acd7ee8b0b164ec3fc465d9b8aace8745ef47ba66699cf2b7",
+      "current_package_digest": "0167e74e7d178f4b6fe1d21bb2b8750e996d19236507268941c443c5d4e2f61f"
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "prior_package_digest": "03ea8b8016d6352eb36453c6e53455c0d691988bb559c006a5f7c10246d8484c",
+      "current_package_digest": "8aef9a5ec06c3e79a7b5a95eb354ff039084fe99cf9f513292f9483c350fad86"
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "prior_package_digest": "2a5ea1551bb2506236816334110ac5094ca5a2ea2c39e9f1630b48c45b5ab76e",
+      "current_package_digest": "13262ec6716013a2ceaa2536796b556f634b73628758a57b4e2e21f9e1716a88"
+    }
+  ]
+}

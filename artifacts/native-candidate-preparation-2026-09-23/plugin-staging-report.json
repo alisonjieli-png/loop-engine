@@ -1,0 +1,30 @@
+{
+  "record_type": "candidate_intelligence_staging_report/v1",
+  "records": 1,
+  "families": {
+    "harness_plugin": 1
+  },
+  "layers": {
+    "code": 1
+  },
+  "batch_digest": "c49bc58032567bfa16f75511dfc4ad72f1f06e5ae4026a658203b0f0c934ffce",
+  "committed": true,
+  "hosted_publication": false,
+  "independent_qualification": false,
+  "review_search": {
+    "normal_search_hits": 0,
+    "normal_search_excluded": 1,
+    "probes": [
+      {
+        "expected_identity": "native.fixture.focused_brief_plugin",
+        "returned": [
+          "native.fixture.focused_brief_plugin"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 24.779,
+        "physical_model_calls": 0
+      }
+    ],
+    "limits": "Title-derived lexical smoke probes on authored candidates, not a held-out relevance or task-success benchmark"
+  }
+}

@@ -1171,7 +1171,7 @@ class ModelGateway:
                         # A dispatched callback may have spent tokens before raising.
                         # Preserve its physical occurrence and unknown usage.
                         value = SimpleNamespace(
-                            text="", model=route.model, ok=False,
+                            text="", model="", ok=False,
                             error="provider invocation failed", response_received=False,
                             prompt_tokens=None, eval_tokens=None)
                     try:
@@ -1186,7 +1186,7 @@ class ModelGateway:
                     parent=loop,
                     llm_thinking_power=current_power,
                     semantic_call_id=semantic_call_id,
-                    owner_loop_id=owner_loop_id)
+                    owner_loop_id=owner_loop_id, request_route=route)
                 provider_result = call["value"]
                 raw_text = str(getattr(provider_result, "text", "") or "")
                 text, embedded_reasoning = extract_final_answer(raw_text)
@@ -1234,8 +1234,8 @@ class ModelGateway:
                     or provider_done is not None)
                 transport_succeeded = getattr(provider_result, "ok", False) is True
                 transport_ok = bool(transport_succeeded and raw_text.strip())
-                reported_model = str(
-                    getattr(provider_result, "model", "") or route.model)
+                model_value = getattr(provider_result, "model", "")
+                reported_model = model_value if type(model_value) is str else ""
                 identity_ok = reported_model == route.model
                 provider_error = str(getattr(provider_result, "error", "") or "")
                 declared_attempts = getattr(provider_result, "attempts", 1)

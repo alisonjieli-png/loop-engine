@@ -1,0 +1,934 @@
+{
+  "record_type": "original_native_generation_plan/v1",
+  "source_revision": "9f7cd80495e454ea6dac0a7ffafcf74a49113bd6",
+  "license": {
+    "expression": "MIT",
+    "path": "LICENSE",
+    "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+  },
+  "sources": {
+    "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json": "dcb47286f854ae417ae33f695fdc567415953e343b8d45aec73803354a045b91"
+  },
+  "methods": [
+    {
+      "id": "minimum_cost_unique_assignment",
+      "title": "Minimum-cost unique assignment",
+      "purpose": "Choose a minimum-total-cost one-to-one matching from a supplied square integer cost matrix of size 1 to 9.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "minimum-cost unique assignment",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "minimum_cost_unique_assignment"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Choose a minimum-total-cost one-to-one matching from a supplied square integer cost matrix of size 1 to 9. Use bounded dynamic programming over column subsets, not a factorial enumeration. Return the selected column for each row and total cost. Ties use the lexicographically smallest assignment. Negative integer costs are allowed. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "[[1,2],[2,100]] must choose [1,0] with total4; a greedy first-row choice is wrong. Reject ragged matrices, booleans, more than9 rows, and nonintegers.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/minimum_cost_unique_assignment.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_minimum_cost_unique_assignment.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: trace-resource-request-to-funding-window: this new primitive solves a bounded supplied-cost assignment; it does not infer project needs, funding or employee suitability."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 21467, occupation 13-1082.00: Identify project needs such as resources, staff, or finances by reviewing project objectives and schedules. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: trace-resource-request-to-funding-window: this new primitive solves a bounded supplied-cost assignment; it does not infer project needs, funding or employee suitability."
+    },
+    {
+      "id": "apportion_integer_quotas",
+      "title": "Apportion integer quotas",
+      "purpose": "Allocate an integer target sample count among nonnegative integer group weights using Hamilton largest remainders with exact Fraction arithmetic.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "apportion integer quotas",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "data"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "apportion_integer_quotas"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Allocate an integer target sample count among nonnegative integer group weights using Hamilton largest remainders with exact Fraction arithmetic. IDs are unique nonempty strings. Floor ideal quotas, distribute remaining slots by descending fractional remainder and then ascending ID. Target may exceed the summed weights because weights are proportions, not capacities. Refuse all-zero weights when target is positive. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "Weights a=1,b=1,c=1 with target2 must produce a=1,b=1,c=0. Quotas always sum to target. Zero target returns zero allocations. Reject duplicate IDs, negative values and booleans.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/apportion_integer_quotas.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_apportion_integer_quotas.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: trace-numeric-rounding: this adds an exact integer allocation algorithm with a global sum invariant rather than a general rounding audit."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 21825, occupation 15-2051.00: Apply sampling techniques to determine groups to be surveyed or use complete enumeration methods. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: trace-numeric-rounding: this adds an exact integer allocation algorithm with a global sum invariant rather than a general rounding audit."
+    },
+    {
+      "id": "fit_weighted_isotonic_sequence",
+      "title": "Fit a weighted nondecreasing sequence",
+      "purpose": "Compute the exact weighted least-squares nondecreasing fit for up to64 integer observations and positive integer weights using pooled adjacent violators.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "fit a weighted nondecreasing sequence",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "data"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "fit_weighted_isotonic_sequence"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Compute the exact weighted least-squares nondecreasing fit for up to64 integer observations and positive integer weights using pooled adjacent violators. Use Fraction for block sums/weights and output reduced numerator/denominator strings, fitted block ranges and fitted values. No causal or forecasting claim. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "Values[3,1,2],weights[1,1,1] fit[2,2,2]; values[3,1],weights[1,3] fit[3/2,3/2]. Already nondecreasing values are unchanged. Refuse zero/negative weights, length mismatch and booleans.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/fit_weighted_isotonic_sequence.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_fit_weighted_isotonic_sequence.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: test-aggregate-trend-for-subgroup-reversal: this is a bounded monotone numerical optimizer; it does not analyze subgroup confounding."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 21837, occupation 15-2051.00: Test, validate, and reformulate models to ensure accurate prediction of outcomes of interest. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: test-aggregate-trend-for-subgroup-reversal: this is a bounded monotone numerical optimizer; it does not analyze subgroup confounding."
+    },
+    {
+      "id": "check_common_release_deadline_schedule",
+      "title": "Check a common-release deadline schedule",
+      "purpose": "For one nonpreemptive server and jobs all released at time0, order by increasing integer deadline then ID; compute cumulative integer processing time and every missed deadline.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "check a common-release deadline schedule",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "check_common_release_deadline_schedule"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "For one nonpreemptive server and jobs all released at time0, order by increasing integer deadline then ID; compute cumulative integer processing time and every missed deadline. Processing times are nonnegative. Report feasibility only for this declared common-release model. Reject release times other than0 rather than silently applying the theorem outside its scope. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "Jobs(a,duration2,deadline3),(b,duration1,deadline1) must order b,a and be feasible; deadline0 with duration1 is infeasible. Zero-duration jobs are supported. Reject duplicate IDs and nonzero release times.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/check_common_release_deadline_schedule.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_check_common_release_deadline_schedule.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: schedule_dag_earliest_times is a separate concurrently authored package: this method checks single-server deadline feasibility without a dependency graph."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 21473, occupation 13-1082.00: Plan, schedule, or coordinate project activities to meet deadlines. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: schedule_dag_earliest_times is a separate concurrently authored package: this method checks single-server deadline feasibility without a dependency graph."
+    },
+    {
+      "id": "simulate_supplied_single_server_queue",
+      "title": "Simulate a supplied single-server queue",
+      "purpose": "Replay supplied FIFO arrivals and service durations for a single server with empty initial state.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "simulate a supplied single-server queue",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "simulate_supplied_single_server_queue"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Replay supplied FIFO arrivals and service durations for a single server with empty initial state. Require nondecreasing integer arrival times and nonnegative service durations. Compute each start=max(arrival,previous_finish), finish=start+duration and wait=start-arrival. Equal arrivals retain input order. No stochastic arrival assumption or performance guarantee. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "Arrivals[0,1,5],durations[3,2,1] yield starts[0,3,5],finishes[3,5,6],waits[0,2,0]. Reject reordered arrivals; do not sort them silently. All-zero durations yield zero waiting.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/simulate_supplied_single_server_queue.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_simulate_supplied_single_server_queue.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: diagnose-process-constraint-from-flow: this is deterministic FIFO trace computation from supplied arrivals, not diagnosis or a statistical queueing model."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 8937, occupation 13-1081.00: Review logistics performance with customers against targets, benchmarks, and service agreements. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: diagnose-process-constraint-from-flow: this is deterministic FIFO trace computation from supplied arrivals, not diagnosis or a statistical queueing model."
+    },
+    {
+      "id": "select_exact_weighted_median",
+      "title": "Select an exact weighted median",
+      "purpose": "Find the lower weighted median of up to256 integer values with positive integer weights.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "select an exact weighted median",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "data"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "select_exact_weighted_median"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Find the lower weighted median of up to256 integer values with positive integer weights. Combine equal values, sort values, and return the first value whose cumulative weight is at least half of total weight. Return total weight and counts strictly below/equal/above. Do not interpolate or call it a confidence interval. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "Values[1,4],weights[1,1] return1 under the explicit lower convention; values[1,4,9],weights[1,3,1] return4. Reject empty arrays, mismatched lengths, zero/negative weights and booleans.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/select_exact_weighted_median.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_select_exact_weighted_median.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: compare-satisfaction-waves-by-respondent-mix: this computes one explicitly defined weighted statistic, without comparing populations or adjusting selection bias."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 5433, occupation 13-1161.00: Collect and analyze data on customer demographics, preferences, needs, and buying habits to identify potential markets and factors affecting product demand. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: compare-satisfaction-waves-by-respondent-mix: this computes one explicitly defined weighted statistic, without comparing populations or adjusting selection bias."
+    },
+    {
+      "id": "align_sequences_by_exact_lcs",
+      "title": "Align sequences by an exact common subsequence",
+      "purpose": "Compute an exact longest common subsequence of two arrays of at most128 bounded strings using dynamic programming.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "align sequences by an exact common subsequence",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "align_sequences_by_exact_lcs"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Compute an exact longest common subsequence of two arrays of at most128 bounded strings using dynamic programming. Return matching index pairs and unmatched indices. At a mismatch with equal continuation lengths, advance the first sequence index. This tie rule is part of the contract. Do not substitute a heuristic similarity matcher. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "[A,B,C] vs[B,A,C] yields matching pairs[[1,0],[2,2]] under the tie rule. Empty sequence works. Repeated values are matched by indices; output indices strictly increase and values match. Reject oversized arrays.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/align_sequences_by_exact_lcs.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_align_sequences_by_exact_lcs.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: reconcile-snapshot-changes: this aligns ordered repeated tokens through an exact subsequence contract, not keyed record reconciliation."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 3967, occupation 27-3042.00: Maintain records and files of work and revisions. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: reconcile-snapshot-changes: this aligns ordered repeated tokens through an exact subsequence contract, not keyed record reconciliation."
+    },
+    {
+      "id": "compute_bounded_edit_distance",
+      "title": "Compute bounded Unicode edit distance",
+      "purpose": "Compute Levenshtein distance on Unicode code points for two strings of at most256 code points with insertion,deletion,substitution cost1.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "compute bounded unicode edit distance",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "compute_bounded_edit_distance"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Compute Levenshtein distance on Unicode code points for two strings of at most256 code points with insertion,deletion,substitution cost1. Use two-row dynamic programming. Do not normalize case, Unicode forms or punctuation silently. Return distance and source lengths only; never automatically merge identities based on the score. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "kitten vs sitting has distance3; empty vs abc has3; A vs a has1; composed e-acute vs e plus combining acute differs unless identical code points. Reject nonstrings and excessive lengths.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/compute_bounded_edit_distance.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_compute_bounded_edit_distance.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: find_duplicate_records_with_blocking_keys: this supplies a bounded string-distance primitive, not an identity matching or record-merging decision."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 3969, occupation 27-3042.00: Confer with customer representatives, vendors, plant executives, or publisher to establish technical specifications and to determine subject material to be developed for publication. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: find_duplicate_records_with_blocking_keys: this supplies a bounded string-distance primitive, not an identity matching or record-merging decision."
+    },
+    {
+      "id": "parse_declared_fixed_width_text",
+      "title": "Parse declared fixed-width text records",
+      "purpose": "Parse a supplied text line using an ordered field schema of unique names,positive integer Unicode-code-point widths and a trim boolean.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "parse declared fixed-width text records",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "parse_declared_fixed_width_text"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Parse a supplied text line using an ordered field schema of unique names,positive integer Unicode-code-point widths and a trim boolean. Require exact total line length. Return field values and start/end offsets; optional trimming affects returned value only, never offsets. Reject tabs,newlines and control characters. Do not interpret digits as numbers or guess missing widths. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "LineAB0012 with fields code width2 trimfalse and count width4 trimfalse yields AB and0012 with offsets[0,2] and[2,6]. Unicode widths count code points. Refuse duplicate names, extra/short input and boolean width.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/parse_declared_fixed_width_text.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_parse_declared_fixed_width_text.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: validate-source-to-target-field-map: this is deterministic extraction by explicit fixed-width positions, not semantic field mapping."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 21521, occupation 13-2011.00: Develop, implement, modify, and document recordkeeping and accounting systems, making use of current computer technology. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: validate-source-to-target-field-map: this is deterministic extraction by explicit fixed-width positions, not semantic field mapping."
+    },
+    {
+      "id": "evaluate_three_valued_predicates",
+      "title": "Evaluate bounded three-valued predicates",
+      "purpose": "Evaluate a supplied bounded expression tree with operations literal,and,or,not over true,false,unknown using strong Kleene logic.",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json"
+      ],
+      "layer": "code",
+      "family": "original_native_tool",
+      "search_tags": [
+        "evaluate bounded three-valued predicates",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "tags": {
+        "domain": [
+          "software"
+        ],
+        "language": [
+          "en"
+        ]
+      },
+      "symbols": [
+        "evaluate_three_valued_predicates"
+      ],
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "kind": "tool",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "brief": "Evaluate a supplied bounded expression tree with operations literal,and,or,not over true,false,unknown using strong Kleene logic. Maximum depth16 and at most256 expression objects. Exact operation fields only, no eval,code execution,field lookup or network. Return the truth value and visited count. Unknown is a distinct string value, not false. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references.",
+      "acceptance": [
+        "false AND unknown is false; true OR unknown is true; NOT unknown is unknown; true AND unknown is unknown. Reject extra fields, unrecognized operations, cyclic non-JSON input representations and depth17.",
+        "The current host supplies effect authority. This package does not grant itself permissions or claim independent approval.",
+        "No omitted helper, placeholder implementation, automatic dependency installation or external reference is required to run the bundled examples."
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Native root instructions for this exact method and its first actions. Reference the exact bundled tool, contracts and tests."
+        },
+        {
+          "path": "CLAUDE.md",
+          "role": "instruction_file",
+          "media_type": "text/markdown",
+          "purpose": "Exactly @AGENTS.md followed by a newline, importing the canonical native instructions."
+        },
+        {
+          "path": "tools/evaluate_three_valued_predicates.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete bounded implementation. Implement a complete Python3.10+ standard-library-only CLI. Read one UTF-8 JSON object from stdin with a 1MiB byte ceiling, reject duplicate keys and nonfinite numbers, and emit one bounded JSON object on stdout. Do not read arbitrary paths, write files, open network connections, run subprocesses, or use eval/exec. Return structured refused status with a stable error code for invalid input; no tracebacks or echoed private values. The native instructions explain the task, first action, example invocation, contracts, tests, refusal cases and read-only nature. Generated tests use unittest and subprocess only to invoke this exact bundled CLI under a caller-provided sandbox; they do not install dependencies. Use independent expected examples and a deliberately wrong algorithm example in references."
+        },
+        {
+          "path": "contracts/input.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 for every accepted input field and documented size constraints."
+        },
+        {
+          "path": "contracts/output.schema.json",
+          "role": "configuration",
+          "media_type": "application/json",
+          "purpose": "Closed JSON Schema draft2020-12 covering success and refused output; no remote refs."
+        },
+        {
+          "path": "tests/test_evaluate_three_valued_predicates.py",
+          "role": "executable_tool",
+          "media_type": "text/x-python",
+          "purpose": "Complete unittest checks for supplied acceptance examples, invalid inputs, resource ceilings and a known-wrong algorithm."
+        },
+        {
+          "path": "references/acceptance.md",
+          "role": "skill_reference",
+          "media_type": "text/markdown",
+          "purpose": "State exact mathematical/algorithm contract, limitations, independent examples and nearest prior distinction: audit_boolean_rule_coverage is a separate concurrently authored package: this evaluates explicit three-valued trees; it does not enumerate Boolean rule coverage."
+        }
+      ],
+      "opportunity": "O*NET 31.0 task 3477, occupation 15-1211.00: Develop, document, and revise system design procedures, test procedures, and quality standards. Original narrower computational method; task text is opportunity provenance only. Nearest existing relationship: audit_boolean_rule_coverage is a separate concurrently authored package: this evaluates explicit three-valued trees; it does not enumerate Boolean rule coverage."
+    }
+  ]
+}

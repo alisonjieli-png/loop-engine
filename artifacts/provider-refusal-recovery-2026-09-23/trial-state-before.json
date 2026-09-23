@@ -1,0 +1,40 @@
+{
+  "record_type": "task_database_trial/v1",
+  "task_id": "T-PAGE",
+  "configuration": {
+    "harness": "native_gateway",
+    "temperature": 0.0,
+    "output_allocation_tokens": 16384,
+    "context_delivery": "bounded_inline",
+    "harness_fallback": "none",
+    "mode": "non_deterministic",
+    "provider": "page_fixture",
+    "model": "fixture-model",
+    "route": "fixture.route",
+    "provider_failover": false,
+    "max_model_calls": null,
+    "max_passes": null
+  },
+  "status": "finished",
+  "task_accepted": false,
+  "model_calls": null,
+  "engine_terminal": "NO_PROGRESS",
+  "engine_solved": false,
+  "failure_code": "NO_PROGRESS",
+  "provider_failure_codes": [
+    "invalid_response_body"
+  ],
+  "model_call_accounting_complete": false,
+  "model_calls_known_subtotal": 1,
+  "history_integrity": {
+    "intact": true,
+    "broken_at": [],
+    "events": 125
+  },
+  "delivered_artifacts": 0,
+  "resolution_status": "CONSTRAINT_REPORT",
+  "original_task_evaluation_eligible": false,
+  "campaign_acceptance": "best_available_resolution_review_required_not_task_acceptance",
+  "elapsed_seconds": 0.36165279103443027,
+  "path": "/tmp/campaign-trial-page-abzr5h2f/campaign/trials/T-PAGE-df695145/0-attempt-0"
+}

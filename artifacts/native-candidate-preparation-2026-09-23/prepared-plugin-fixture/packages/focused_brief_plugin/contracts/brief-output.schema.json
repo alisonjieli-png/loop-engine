@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Focused step brief candidate result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "structure_valid",
+    "input_sha256",
+    "unresolved_question_count",
+    "issues",
+    "scope",
+    "authority_granted",
+    "semantic_review_required"
+  ],
+  "properties": {
+    "record_type": {
+      "const": "baltor_step_brief_check/v1"
+    },
+    "structure_valid": {
+      "type": "boolean"
+    },
+    "input_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unresolved_question_count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 32
+    },
+    "issues": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "field"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "field": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      }
+    },
+    "scope": {
+      "const": "structure_and_declared_output_check_coverage"
+    },
+    "authority_granted": {
+      "const": false
+    },
+    "semantic_review_required": {
+      "const": true
+    }
+  }
+}

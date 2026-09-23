@@ -1,0 +1,27 @@
+{
+  "provider_calls": 0,
+  "approvals": 0,
+  "input_bytes": 20520,
+  "input_schema_valid": true,
+  "input_sha256": "e58e56723a08d4e76e6aa4cd1a673020bee58738949369bd600f289d21368278",
+  "recipe": {
+    "template": "${a}",
+    "repetitions": 2048,
+    "variable": "a",
+    "replacement_character": "\ud83d\ude42",
+    "replacement_length": 1024
+  },
+  "result": {
+    "expected_exit": 2,
+    "actual_exit": 2,
+    "output": {
+      "error": "invalid_input"
+    },
+    "schema_valid": true,
+    "timed_out": false,
+    "truncated": false,
+    "stderr": "",
+    "passed": true
+  },
+  "limitation": "The prior resource probe crossed the input byte ceiling; this successor stays inside the input and field limits."
+}

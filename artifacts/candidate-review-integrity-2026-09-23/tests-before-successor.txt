@@ -1,0 +1,23 @@
+test_claude_nonzero_exit_never_counts_a_success_shaped_response (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_nonzero_exit_never_counts_a_success_shaped_response) ... FAIL
+test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine (tools.test_candidate_review_integrity.FixedPanelIdentityTest.test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine) ... FAIL
+
+======================================================================
+FAIL: test_claude_nonzero_exit_never_counts_a_success_shaped_response (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_nonzero_exit_never_counts_a_success_shaped_response)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 92, in test_claude_nonzero_exit_never_counts_a_success_shaped_response
+    self.assertNotEqual(result.outcome, reviewers.ANSWERED)
+AssertionError: 'answered' == 'answered'
+
+======================================================================
+FAIL: test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine (tools.test_candidate_review_integrity.FixedPanelIdentityTest.test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 169, in test_unreported_or_wrong_model_cannot_satisfy_quorum_through_a_swapped_engine
+    self.assertNotEqual(_only(result).outcome, "approved")
+AssertionError: 'approved' == 'approved'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.080s
+
+FAILED (failures=2)

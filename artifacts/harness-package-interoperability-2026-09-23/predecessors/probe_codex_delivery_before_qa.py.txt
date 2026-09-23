@@ -1,0 +1,177 @@
+"""Observe native task delivery failures without calling a model.
+
+Temporary workspaces, empty configuration and controlled canaries only.
+This research probe does not install packages, accept tasks or grant effects.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PACKET = ROOT.parent / "focused-step-packet-2026-09-23" / "packets" / "inventory-reconciliation"
+FIXTURE = ROOT.parent / "focused-step-packet-2026-09-23" / "fixtures" / "inventory-reconciliation.json"
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def strings(value):
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        return "\n".join(strings(item) for item in value.values())
+    if isinstance(value, list):
+        return "\n".join(strings(item) for item in value)
+    return ""
+
+
+def snapshot(root):
+    return {str(p.relative_to(root)): sha(p.read_bytes())
+            for p in sorted(root.rglob("*")) if p.is_file()}
+
+
+def main():
+    executable = shutil.which("codex")
+    if executable is None:
+        raise SystemExit("Codex unavailable; no qualification inferred")
+    version = subprocess.run([executable, "--version"], check=True,
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+    fixture = json.loads(FIXTURE.read_text())
+    assignment = fixture["assignment"]
+    markers = {
+        "objective": assignment["objective"],
+        "first_action": fixture["first_actions"][0],
+        "state_identity": fixture["state"]["state_id"],
+        "output_contract": assignment["output_contract_refs"][0],
+    }
+    launch_assignment = "\n".join((
+        "Offline prompt construction only; do not execute work.",
+        "Objective: " + markers["objective"],
+        "First action: " + markers["first_action"],
+        "State identity: " + markers["state_identity"],
+        "Output contract: " + markers["output_contract"],
+    ))
+    manifest = json.loads((PACKET / "packet-manifest.json").read_text())
+    for name, expected in manifest["files"].items():
+        raw = (PACKET / name).read_bytes()
+        if sha(raw) != expected["sha256"] or len(raw) != expected["size_bytes"]:
+            raise SystemExit("Source packet changed; refuse probe")
+    cases = (
+        "clean_native_entrypoint",
+        "override_shadows_entrypoint",
+        "pointer_only_does_not_import_context",
+        "ancestor_consumes_combined_budget",
+        "explicit_launch_without_entrypoint",
+        "reduced_budget_truncates_obligations",
+        "skill_metadata_is_not_skill_body",
+    )
+    observations = []
+    for case in cases:
+        with tempfile.TemporaryDirectory(prefix="baltor-delivery-probe-") as tmp:
+            base = Path(tmp)
+            for ancestor in base.parents:
+                if any((ancestor / name).exists() for name in ("AGENTS.md", "AGENTS.override.md")):
+                    raise SystemExit("Uncontrolled ancestor instruction found")
+            project = base / "project"
+            project.mkdir()
+            (project / ".git").mkdir()
+            work = project / "step" if case == "ancestor_consumes_combined_budget" else project / "work"
+            shutil.copytree(PACKET, work)
+            home = base / "home"
+            configuration = base / "configuration"
+            home.mkdir()
+            configuration.mkdir()
+            (configuration / "config.toml").write_text(
+                'web_search = "disabled"\n[skills.bundled]\nenabled = false\n')
+            prompt = "Inspect the prepared focused assignment. Do not run tools."
+            overrides = []
+            extra_markers = {}
+            if case == "override_shadows_entrypoint":
+                extra_markers["override"] = "BALTOR_OVERRIDE_REPLACED_TASK_73921"
+                (work / "AGENTS.override.md").write_text("# Controlled override\n\n" + extra_markers["override"] + "\n")
+            elif case == "pointer_only_does_not_import_context":
+                (work / "AGENTS.md").write_text("# Pointer-only control\n\n@node_context.md\nRead task.json and run-state.json.\n")
+            elif case == "ancestor_consumes_combined_budget":
+                extra_markers["ancestor"] = "BALTOR_ANCESTOR_BUDGET_63820"
+                (project / "AGENTS.md").write_text("# Controlled parent\n\n" + extra_markers["ancestor"] + "\n" + "background text\n" * 2600)
+            elif case == "explicit_launch_without_entrypoint":
+                (work / "AGENTS.md").unlink()
+                prompt = launch_assignment
+            elif case == "reduced_budget_truncates_obligations":
+                overrides = ["-c", "project_doc_max_bytes=512"]
+            elif case == "skill_metadata_is_not_skill_body":
+                extra_markers = {"skill_description": "BALTOR_SKILL_DESCRIPTION_59271",
+                                 "skill_body": "BALTOR_SKILL_BODY_94862",
+                                 "unregistered_tool_body": "BALTOR_UNREGISTERED_TOOL_45871"}
+                skill = work / ".agents" / "skills" / "task-delivery-probe"
+                skill.mkdir(parents=True)
+                (skill / "SKILL.md").write_text(
+                    "---\nname: task-delivery-probe\ndescription: " + extra_markers["skill_description"]
+                    + "\n---\n\n# Probe procedure\n\n" + extra_markers["skill_body"] + "\n")
+                (work / "unregistered_tool.py").write_text('# ' + extra_markers["unregistered_tool_body"] + '\n')
+            before = snapshot(project)
+            environment = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": str(home),
+                           "CODEX_HOME": str(configuration), "TERM": "dumb",
+                           "HTTP_PROXY": "http://127.0.0.1:9", "HTTPS_PROXY": "http://127.0.0.1:9",
+                           "ALL_PROXY": "http://127.0.0.1:9"}
+            command = [executable, "debug", "prompt-input", *overrides, prompt]
+            result = subprocess.run(command, cwd=work, env=environment,
+                                    capture_output=True, text=True, timeout=35, check=False)
+            parse_error = False
+            try:
+                visible = strings(json.loads(result.stdout))
+            except ValueError:
+                visible = ""
+                parse_error = True
+            found = {name: marker in visible for name, marker in markers.items()}
+            extras = {name: marker in visible for name, marker in extra_markers.items()}
+            if case in ("clean_native_entrypoint", "explicit_launch_without_entrypoint"):
+                expected = all(found.values())
+            elif case in ("override_shadows_entrypoint", "pointer_only_does_not_import_context", "ancestor_consumes_combined_budget"):
+                expected = not any(found.values()) and all(extras.values())
+            elif case == "reduced_budget_truncates_obligations":
+                expected = found["objective"] and not found["state_identity"]
+            else:
+                expected = all(found.values()) and extras == {
+                    "skill_description": True, "skill_body": False, "unregistered_tool_body": False}
+            observations.append({"case": case, "exit_code": result.returncode, "parse_error": parse_error,
+                                 "assignment_markers_visible": found, "other_markers_visible": extras,
+                                 "workspace_unchanged": before == snapshot(project),
+                                 "control_observed": result.returncode == 0 and not parse_error and expected,
+                                 "prompt_output_sha256": sha(result.stdout.encode()),
+                                 "input_files": before, "stderr_present": bool(result.stderr)})
+    report = {
+        "record_type": "harness_delivery_research_probe/v1",
+        "created_at": datetime.now(timezone.utc).isoformat(), "client": version,
+        "probe_source_sha256": sha(Path(__file__).read_bytes()),
+        "packet_manifest_sha256": sha((PACKET / "packet-manifest.json").read_bytes()),
+        "model_calls": 0, "command": "codex debug prompt-input", "observations": observations,
+        "all_controls_observed": all(row["control_observed"] for row in observations),
+        "limits": ["Prompt construction only, no model use or accepted task.",
+                   "Closed proxy settings are not an operating-system network sandbox.",
+                   "Explicit assignment visibility does not authorize conflicting inherited instructions.",
+                   "Repeated process starts test fresh sessions, not hot reload or resume.",
+                   "Fixture files, not private customer inputs, were placed on the debug command line."]}
+    output = ROOT / ("codex-delivery-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + ".json")
+    with output.open("x") as stream:
+        json.dump(report, stream, indent=2)
+        stream.write("\n")
+    print(output)
+    print(json.dumps({"all_controls_observed": report["all_controls_observed"],
+                      "cases": [{"case": row["case"], "visible": row["assignment_markers_visible"],
+                                 "extra": row["other_markers_visible"], "observed": row["control_observed"]}
+                                for row in observations]}, indent=2))
+    if not report["all_controls_observed"]:
+        raise SystemExit("At least one expectation differed; preserve and inspect the observation")
+
+
+if __name__ == "__main__":
+    main()

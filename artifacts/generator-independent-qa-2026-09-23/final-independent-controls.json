@@ -1,0 +1,49 @@
+{
+  "record_type": "generation_successor_independent_controls/v1",
+  "checks": [
+    {
+      "case": "non_json",
+      "actual_model": "",
+      "ok": false,
+      "passed": true
+    },
+    {
+      "case": "non_object_json",
+      "actual_model": "",
+      "ok": false,
+      "passed": true
+    },
+    {
+      "case": "failed_actual_model_preserved",
+      "candidate_count": 0,
+      "reported_model": "reported-other-model",
+      "attempt_provider": "ollama_cloud",
+      "provider_request_digest": "1000d391282965bef48412d0b7a45b08ec6bc9cda4da66bd8e42ea6fcf128219",
+      "usage": [
+        11,
+        7
+      ],
+      "passed": true
+    },
+    {
+      "case": "changed_gateway_fingerprint_refuses_resume",
+      "bound_files": [
+        "generate_original_native_candidates.py",
+        "model_gateway.py",
+        "native_harness_candidates.py",
+        "prepare_harness_candidates.py",
+        "test_generate_original_native_candidates.py"
+      ],
+      "refusal": "resume_binding_changed",
+      "fixture_calls": 1,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "provider_calls": 0,
+  "source_sha256": {
+    "tools/generate_original_native_candidates.py": "6293bcbdbb6c0109e5d93e738d001d2431c881ba4cf0c3a4a5c3d4cc0bde2db1",
+    "src/loop_engine/core/ollama_client.py": "a81402bbfd7fbeb8c8d5c21c95bf4ef76901f07c76309b270f1eb64bff703f3c",
+    "src/loop_engine/core/model_gateway.py": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b"
+  }
+}

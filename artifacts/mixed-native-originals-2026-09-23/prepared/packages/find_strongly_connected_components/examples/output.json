@@ -1,0 +1,17 @@
+{
+  "components": [
+    [
+      "a",
+      "b"
+    ],
+    [
+      "c"
+    ]
+  ],
+  "cyclic_components": [
+    [
+      "a",
+      "b"
+    ]
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "record_type": "documentation_search_effect_gap/v1",
+  "scope": "local fixture only",
+  "scenario": "search_can_select_an_authorized_effectful_item",
+  "owner": "core service retrieval/provisioning boundary; root records S-6.40/44",
+  "plain_search": {
+    "status": 200,
+    "body": {
+      "record_type": "service_http_result/v1",
+      "operation": "retrieval",
+      "result": {
+        "record_type": "service_retrieval_result/v1",
+        "hits": [],
+        "mode": "lexical",
+        "bodies_loaded": false,
+        "backend": {
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false,
+          "scope": "authorized_catalogue_metadata",
+          "returns_bodies": false,
+          "index": "one_reusable_index_for_each_catalogue_view",
+          "filters": "declared_filterable_public_attributes"
+        },
+        "catalogue_release": null,
+        "limitations": [
+          "Hash vectors measure character similarity, not learned semantic understanding.",
+          "Distribution references do not grant local code execution or independent Code admission."
+        ]
+      },
+      "execution": {
+        "runtime_type": "Loop",
+        "loop_id": "loop1",
+        "profile": "intelligence.search@1.0.0",
+        "mode": "deterministic",
+        "model_calls": 0,
+        "definition_digest": "74156e87dfc1676e5b6b97871711734c9ca1a7e6177c6ff1451bd07055c87bbf"
+      }
+    }
+  },
+  "search_with_authority": {
+    "status": 400,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "unknown_request_field",
+        "message": "The request carried a field this service does not know.",
+        "next_action": "Remove the field the refusal names and send only the documented fields."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_n2frnltylmjrqjevodqvs5qwtu"
+    }
+  },
+  "authorized_list": {
+    "status": 200,
+    "body": {
+      "record_type": "service_http_result/v1",
+      "operation": "list",
+      "result": {
+        "record_type": "provisioning_list/v2",
+        "tenant_id": "alpha",
+        "entitlement": "bodies",
+        "items": [
+          {
+            "record_type": "harness_intelligence_item/v1",
+            "identity": "docs.effect.example",
+            "kind": "tool",
+            "purpose": "Zebrafish deterministic planner",
+            "digest": "793ae88822a1a96fa2bfa91f0606c20d58712bcaddf71cd20cd7ed255674b02a",
+            "source_layer": "harness_local",
+            "source_ref": "fixture:docs.effect.example/v1",
+            "family": "harness",
+            "size_bytes": 31,
+            "license": "MIT",
+            "declared_effects": [
+              "spawns_process"
+            ],
+            "styles": [],
+            "tags": {
+              "record_type": "intelligence_tags/v1"
+            },
+            "exposure": "metadata_only",
+            "availability": "remote",
+            "body_included": false,
+            "qualification_basis": "host_attested",
+            "metering_policy": "required",
+            "body_allowed": true
+          }
+        ],
+        "withheld": [],
+        "metered": false
+      },
+      "execution": {
+        "runtime_type": "Loop",
+        "loop_id": "loop1",
+        "profile": "practitioner.code_execution@1.0.0",
+        "mode": "deterministic",
+        "model_calls": 0,
+        "definition_digest": "c86c2f6fd572a2b5ed12086985e62d19f210fd2ae0b7112220f38d3c9e8edb56"
+      }
+    }
+  }
+}

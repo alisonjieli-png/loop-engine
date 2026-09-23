@@ -1,0 +1,401 @@
+{
+  "files": 9,
+  "issues": 23,
+  "findings": {
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/AGENTS.md": [
+      {
+        "lineNumber": 20,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 20,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 37,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 38,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 39,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 39,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 59,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 60,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 61,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 61,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 97,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 98,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 12,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "- Only these synthetic observa...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 15,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "First actions:",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 16,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 16,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "1. Confirm that every event ha...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 19,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "Current state snapshot (data, ...",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 20,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 99,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "- Every supplied event identit...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      }
+    ],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/checklist.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/CLAUDE.md": [
+      {
+        "lineNumber": 1,
+        "ruleNames": [
+          "MD041",
+          "first-line-heading",
+          "first-line-h1"
+        ],
+        "ruleDescription": "First line in a file should be a top-level heading",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md041.md",
+        "errorDetail": null,
+        "errorContext": "@AGENTS.md",
+        "errorRange": null,
+        "fixInfo": null,
+        "severity": "error"
+      }
+    ],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/node_context.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/AGENTS.md": [
+      {
+        "lineNumber": 20,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 20,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 37,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 38,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 39,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 39,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 51,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 52,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 53,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```json",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 53,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 91,
+        "ruleNames": [
+          "MD031",
+          "blanks-around-fences"
+        ],
+        "ruleDescription": "Fenced code blocks should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md031.md",
+        "errorDetail": null,
+        "errorContext": "```",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 92,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 12,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "- All quantities belong to the...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 15,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "First actions:",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 16,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 16,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "1. Check that every movement u...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 19,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "Current state snapshot (data, ...",
+        "errorRange": null,
+        "fixInfo": {
+          "lineNumber": 20,
+          "insertText": "\n"
+        },
+        "severity": "error"
+      },
+      {
+        "lineNumber": 93,
+        "ruleNames": [
+          "MD032",
+          "blanks-around-lists"
+        ],
+        "ruleDescription": "Lists should be surrounded by blank lines",
+        "ruleInformation": "https://github.com/DavidAnson/markdownlint/blob/v0.41.1/doc/md032.md",
+        "errorDetail": null,
+        "errorContext": "- The output SKU equals the su...",
+        "errorRange": null,
+        "fixInfo": {
+          "insertText": "\n"
+        },
+        "severity": "error"
+      }
+    ],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/checklist.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/node_context.md": [],
+    "artifacts/focused-step-packet-2026-09-23/README.md": [],
+    "docs/verification/FOCUSED-STEP-CONTEXT-PACKET-2026-09-23.md": []
+  }
+}

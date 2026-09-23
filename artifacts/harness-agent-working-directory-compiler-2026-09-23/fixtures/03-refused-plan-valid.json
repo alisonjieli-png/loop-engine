@@ -1,0 +1,220 @@
+{
+  "name": "03-refused-plan-valid",
+  "schema": "plan",
+  "record": {
+    "record_type": "native_material_install_preview/v2",
+    "component": "Harness Working Directory Compiler",
+    "draft_status": "research_only_not_runtime_admitted",
+    "plan_id": "fixture_plan",
+    "status": "refused",
+    "bindings": {
+      "profile_digest": "ea712b4b4ce295c7a73c86aef2e3f0be9c10df22bfe74a819ca562aee5ecbe24",
+      "assignment_digest": "390e0f32ad595b25ed84448e681955790ca4212ef7ca1d00b5ab1c956b0a850d",
+      "selection_digest": "d0ff27c9cfcf6c1f20ad9d9600a2f07c8c9ab25a4d80db8a3b382a8e9fb36867",
+      "authority_digest": "62b6602ba7be358b658ec9c91ba450d5e99a7fd34ea8db0cb31cebca5b867a55",
+      "workspace_state_digest": "c4f8fda6631f27e6e6a307bb0f2c593b1d7c328edb533c744555871a04b5e503",
+      "engine_descriptor_digest": "2982b1075b414372b745c0ccd376ff6776a9a64dd6ac1c157de96ca3e7bdde40",
+      "engine_installation_digest": "938f314a5585b3539cf78cd6feeb79158841dfc1b062afa127ebb7bc5ffd649d",
+      "host_policy_digest": "84c05f5b0695426117bf8d0e63a0aaf7e8a816620da479231484d6aba35b7873"
+    },
+    "client_binding": {
+      "client_kind": "synthetic_cli",
+      "interface": "cli",
+      "exact_version": "fixture-1.0.0",
+      "operating_system": "linux",
+      "architecture": "x86_64",
+      "executable_digest": "84f0830dd690c0bd024941bb7f77cd4efb2d2ffb727ba026270f5d7d13db5585",
+      "effective_configuration_digest": "4cb278ea5c1e32735981b16dd8f67ec68c521d4d8d37d38f0dd18bad5adbcaee"
+    },
+    "engine": {
+      "slot_id": "material_install_layout",
+      "engine_ref": "fixture.compiler@1.0.0"
+    },
+    "files": [],
+    "required_capabilities": [
+      "skill.discovery"
+    ],
+    "resolved_capabilities": [
+      {
+        "capability_id": "skill.discovery",
+        "outcome": "supported",
+        "evidence": {
+          "ref": "fixture:synthetic capability assumption",
+          "digest": "fd68a5af6d7ae5de6e72bd03d1bfcf67fc37eee83425c59b937c0e8a5575560b"
+        }
+      }
+    ],
+    "required_effects": {
+      "installation": [
+        "writes_fs"
+      ],
+      "worker": [
+        "reads_fs"
+      ]
+    },
+    "runtime_handshake": {
+      "state": "refused",
+      "selected_profile_record_type": "native_client_layout_profile/v2",
+      "selected_plan_record_type": "native_material_install_preview/v2",
+      "observation": null
+    },
+    "launch_eligibility": "refused",
+    "reasons": [
+      "client_version_mismatch"
+    ],
+    "writes_performed": false,
+    "authority_granted": false
+  },
+  "context": {
+    "profile": {
+      "record_type": "native_client_layout_profile/v2",
+      "component": "Harness Working Directory Compiler",
+      "draft_status": "research_only_not_runtime_admitted",
+      "profile_id": "fixture_layout",
+      "profile_revision": "fixture-1",
+      "client_binding": {
+        "client_kind": "synthetic_cli",
+        "interface": "cli",
+        "exact_version": "fixture-1.0.0",
+        "operating_system": "linux",
+        "architecture": "x86_64",
+        "executable_digest": "84f0830dd690c0bd024941bb7f77cd4efb2d2ffb727ba026270f5d7d13db5585",
+        "effective_configuration_digest": "4cb278ea5c1e32735981b16dd8f67ec68c521d4d8d37d38f0dd18bad5adbcaee"
+      },
+      "compiler_contract_versions": [
+        "native_material_install_preview/v2"
+      ],
+      "locations": [
+        {
+          "served_kind": "skill",
+          "file_role": "skill_definition",
+          "directory_segments": [
+            ".fixture",
+            "skills"
+          ],
+          "append_native_name": true,
+          "file_path_policy": "preserve_package_relative_path",
+          "file_name": null,
+          "rendering_operation": "copy_exact_bytes",
+          "scope": "attempt_project",
+          "activation": "on_demand",
+          "precedence_rule": {
+            "ref": "fixture:fixture precedence",
+            "digest": "48322da3f88cc61bad0c0c7c079e1d9febc8ad184cdf246107ca9f33bd02c43e"
+          },
+          "trust_requirement": "isolated_untrusted",
+          "native_probe_recipe": null
+        }
+      ],
+      "unplaced_roles": [
+        {
+          "role": "instruction_file",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "skill_script",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "skill_reference",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "skill_asset",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "subagent_definition",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "command",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "hook",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "protocol_server_configuration",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "plugin_manifest",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "executable_tool",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "configuration",
+          "reason": "fixture does not support this role"
+        },
+        {
+          "role": "other",
+          "reason": "fixture does not support this role"
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_id": "path_construction",
+          "kind": "path_constructor",
+          "artifact": {
+            "ref": "fixture:fixture path construction",
+            "digest": "e72ec18447be1f5367e62d70021729c2dbb8f8b2eac0c4c095678618ffe96692"
+          },
+          "observed_client_binding": null,
+          "observed_at": "2026-09-23T18:00:00Z"
+        }
+      ],
+      "evidence_claim": {
+        "stage": "paths_constructed",
+        "evidence_ids": [
+          "path_construction"
+        ]
+      },
+      "independent_qualification": null,
+      "unsupported_role_policy": "refuse"
+    },
+    "expected_bindings": {
+      "profile_digest": "ea712b4b4ce295c7a73c86aef2e3f0be9c10df22bfe74a819ca562aee5ecbe24",
+      "assignment_digest": "390e0f32ad595b25ed84448e681955790ca4212ef7ca1d00b5ab1c956b0a850d",
+      "selection_digest": "d0ff27c9cfcf6c1f20ad9d9600a2f07c8c9ab25a4d80db8a3b382a8e9fb36867",
+      "authority_digest": "62b6602ba7be358b658ec9c91ba450d5e99a7fd34ea8db0cb31cebca5b867a55",
+      "workspace_state_digest": "c4f8fda6631f27e6e6a307bb0f2c593b1d7c328edb533c744555871a04b5e503",
+      "engine_descriptor_digest": "2982b1075b414372b745c0ccd376ff6776a9a64dd6ac1c157de96ca3e7bdde40",
+      "engine_installation_digest": "938f314a5585b3539cf78cd6feeb79158841dfc1b062afa127ebb7bc5ffd649d",
+      "host_policy_digest": "84c05f5b0695426117bf8d0e63a0aaf7e8a816620da479231484d6aba35b7873"
+    },
+    "engine_supported_operations": [
+      "copy_exact_bytes"
+    ],
+    "authorized_effects": {
+      "installation": [
+        "writes_fs"
+      ],
+      "worker": [
+        "reads_fs"
+      ]
+    },
+    "actual_client_binding": {
+      "client_kind": "synthetic_cli",
+      "interface": "cli",
+      "exact_version": "fixture-1.0.0",
+      "operating_system": "linux",
+      "architecture": "x86_64",
+      "executable_digest": "84f0830dd690c0bd024941bb7f77cd4efb2d2ffb727ba026270f5d7d13db5585",
+      "effective_configuration_digest": "4cb278ea5c1e32735981b16dd8f67ec68c521d4d8d37d38f0dd18bad5adbcaee"
+    },
+    "host_policy_future_starts_allowed": false,
+    "host_independent_qualification_verified": false,
+    "required_capabilities": [
+      "skill.discovery"
+    ],
+    "notice": "Synthetic test assumptions only; never native or admission evidence"
+  },
+  "expected_schema_valid": true,
+  "expected_semantic_errors": [],
+  "note": "A correctly typed refusal is valid output, not successful compilation."
+}

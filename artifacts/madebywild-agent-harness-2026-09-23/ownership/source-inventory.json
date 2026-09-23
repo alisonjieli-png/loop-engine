@@ -1,0 +1,130 @@
+{
+  "record_type": "pinned_upstream_source_audit/v1",
+  "retrieved_at_utc": "2026-09-23T16:20:19.901366+00:00",
+  "repository": "https://github.com/madebywild/agent-harness",
+  "commit": "2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17",
+  "tag": "v2.1.0",
+  "framework_version": "2.1.0",
+  "root_private_package_version": "1.7.0",
+  "license": "MIT",
+  "sources": [
+    {
+      "path": "LICENSE",
+      "sha256": "69ec152064d1cc9c676ab1f580fa2faab938ee8b20e5f5943838713a08d5b07b",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/LICENSE"
+    },
+    {
+      "path": "package.json",
+      "sha256": "5068b12c0bbb61dfad4b58e10bcdbacabb0a1461677dbb7fe44237800bf259c2",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/package.json"
+    },
+    {
+      "path": "packages/toolkit/package.json",
+      "sha256": "4352f69b598397f47a86971bdd7b3171c0599cf7201ae59772be191e02a054c7",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/package.json"
+    },
+    {
+      "path": "packages/manifest-schema/package.json",
+      "sha256": "1f2e1ce34b62a32650dff5f9248521bfdaf43b99346a5760035cc7b7263b023c",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/manifest-schema/package.json"
+    },
+    {
+      "path": "packages/toolkit/src/planner.ts",
+      "sha256": "be08b31714fad852f3fc437355eca563d9dfd7b735f721e8a0837647c1c2113a",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/planner.ts"
+    },
+    {
+      "path": "packages/toolkit/src/engine.ts",
+      "sha256": "d7a6828400ba08b3b70d377e29e0ef7355e2fb6782d51ad8504c292c8a19f82e",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/engine.ts"
+    },
+    {
+      "path": "packages/toolkit/src/repository.ts",
+      "sha256": "3c8508a75500ee7f4c14fdd7bd26de47b8c0d756178dbb49443e168bb9b21377",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/repository.ts"
+    },
+    {
+      "path": "packages/toolkit/src/utils.ts",
+      "sha256": "880be200265c9e90f72a7258f108004c4c2272df63be827d0d3cccbb07b25935",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/utils.ts"
+    },
+    {
+      "path": "packages/toolkit/src/loader.ts",
+      "sha256": "c0cf4bc597674ab8a8b83b789ca50ad21f1efd774ccf1dbb3443394b1d100976",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/loader.ts"
+    },
+    {
+      "path": "packages/toolkit/src/entity-registries.ts",
+      "sha256": "492432c167d55fbcfc7b051d56f7d18acc27325555c23dcd8f183d626541e524",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/entity-registries.ts"
+    },
+    {
+      "path": "packages/toolkit/src/engine/entities.ts",
+      "sha256": "fbebae9316a984bfe1b2eb5dd6c87076e0a0273396361d89c0ca066afb2863e5",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/engine/entities.ts"
+    },
+    {
+      "path": "packages/toolkit/src/engine/presets.ts",
+      "sha256": "42189f292770c420820b40ab413bf5f002805551d2cd373b8a96a59eb01b7542",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/engine/presets.ts"
+    },
+    {
+      "path": "packages/toolkit/src/presets.ts",
+      "sha256": "c377bf5e7fc54f3be9615f3a8b2b37a976372677bcca16ae24374b5a6af12e9d",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/presets.ts"
+    },
+    {
+      "path": "packages/toolkit/src/env.ts",
+      "sha256": "e2c3b38967a35bf950dad55302314c0aad489ae144f5d4d8d81a0e6a47fa6c09",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/env.ts"
+    },
+    {
+      "path": "packages/toolkit/src/behavior.ts",
+      "sha256": "7a874a70fdcb7ccc20f361e1119563e152eef038eaa3785798f34e553021f064",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/behavior.ts"
+    },
+    {
+      "path": "packages/toolkit/src/versioning/migrate.ts",
+      "sha256": "3a59bbe9f2f3b9593d57c86298b81094c7a5f8b51dadf890dd42e0dcb0ffa878",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/versioning/migrate.ts"
+    },
+    {
+      "path": "packages/toolkit/src/versioning/registry.ts",
+      "sha256": "79f12d82df90d49a03309aa30e112701f0f6dd294e69063ae6e8f2fc60f1f856",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/toolkit/src/versioning/registry.ts"
+    },
+    {
+      "path": "packages/manifest-schema/src/index.ts",
+      "sha256": "3b462429b90562ebdd0a132abc2367555e77df7cc1931985e1a0f6c2f9bb36a1",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/manifest-schema/src/index.ts"
+    },
+    {
+      "path": "packages/manifest-schema/src/versioning.ts",
+      "sha256": "1c6ef216a3cbf8667c46d5f8ff3d79190ec923012e049577263c85718df151b6",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/packages/manifest-schema/src/versioning.ts"
+    },
+    {
+      "path": "docs/environment-variables.md",
+      "sha256": "3d33437bdb7ed66480175be8b77bb974f6d2258b871dc7caf0d973375eb5383a",
+      "url": "https://github.com/madebywild/agent-harness/blob/2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17/docs/environment-variables.md"
+    }
+  ],
+  "execution": {
+    "native_node": "22.22.1",
+    "typescript": "5.9.3",
+    "zod": "4.4.3",
+    "yaml": "2.8.2",
+    "network": "unshared",
+    "filesystem": "read-only except isolated ownership-probe scratch",
+    "environment": "cleared",
+    "max_heap_mb": 128,
+    "timeout_seconds": 30,
+    "upstream_cli": false,
+    "upstream_lifecycle_scripts": false,
+    "actual_credentials": false,
+    "actual_registry_fetch": false,
+    "model_calls": 0,
+    "native_harness_calls": 0,
+    "component_checks": 15
+  }
+}

@@ -947,18 +947,28 @@ message. `GET /api/v1/account/identity` reports `signup_available` and
 
 The link in the message is
 `<public origin>/auth/confirm?token_hash=<value>&type=signup` or
-`&type=recovery`. The website's `/auth/confirm` view gives that token hash to
-the identity library's `verifyOtp`. For sign-up it then calls
-`POST /api/v1/account/activate`. For recovery it asks for a new password,
-calls `updateUser`, and then activates. The link that the identity provider
-generates for itself is never read and never appears in a message.
+`&type=recovery`. The website's `/auth/confirm` view reads the token hash,
+removes it from the address bar and the history at once, and asks for a new
+password first. On submit it gives the token hash to the identity library's
+`verifyOtp`, sets the chosen password with `updateUser`, and only then calls
+`POST /api/v1/account/activate`, for sign-up and recovery alike. The link that
+the identity provider generates for itself is never read and never appears in
+a message.
+
+Sign-up is email first. `service_account_signup_request/v2` carries the
+address alone, and the retired version 1, which carried a caller's password,
+is refused. The provider's interface needs a password to create a user, so
+the adapter generates one for each request with `generated_signup_password`
+and keeps it nowhere. The probe of September 23, 2026,
+`artifacts/architecture-audit-2026-09-19/identity-unconfirmed-signup-probe-1.json`,
+showed why: a second sign-up link for an address that is not confirmed keeps
+the first password. `GET /api/v1/account/identity` also publishes
+`minimum_password_length`, the shortest password the confirmation page takes.
 
 ### What this adapter refuses
 
-- A password shorter than `minimum_password_length`, longer than 72 bytes, or
-  equal to the email address. The length ceiling is a service rule, so that a
-  password cannot be silently shortened later by a hash function with a block
-  limit.
+- A sign-up request that carries a password, in any field or in the retired
+  version 1 record, before anything is counted or asked of a provider.
 - An address that is not printable ASCII with one `@`, a local part of at most
   64 characters and a domain of at least two labels. An address written with
   the letters of another script can look the same as one written with Latin
@@ -1026,20 +1036,14 @@ either operation without a stated source is refused before the service starts.
   notice to that address. The two allowances bound how often that can happen.
 - The sign-up and recovery routes are public. The service does not know who
   asked, only the address the request came from.
-- What the identity provider answers for an address that has an account but
-  has never been confirmed is not established. Two behaviors are reported in
-  public: that the pending password is kept, and that a fresh link is returned
-  which invalidates the earlier one. Supabase issue 29347 reports the first
-  for the provider's own public sign-up route, not for the administration
-  interface this service uses, and it is open with no maintainer answer. If
-  the pending password were replaced, an unauthenticated caller could set the
-  password of any unconfirmed account and the real owner would confirm it by
-  opening the newest message. The saved probe,
-  `artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json`,
-  did not cover this case. Observe it against the project and save the answer
-  before `signup_enabled` is set to true. Nothing in the generated link answer
-  tells this service whether the address already existed, so there is no guard
-  to add until that observation exists.
+- For an address that has never been confirmed, a second sign-up link keeps
+  the first password and makes the earlier link unusable, as observed on
+  September 23, 2026. The service therefore never takes a password from a
+  caller, and the confirmation page replaces the password before the account
+  opens. The identity provider's own public sign-up still takes a password from
+  anyone who holds the public key until the owner closes it; until then a
+  password chosen first opens an address from its confirmation to the moment
+  its owner submits a new password on the same page.
 - A refusal this release cannot explain is indistinguishable, to the caller,
   from an address that is not eligible. That is deliberate. The operator's
   signal for such a refusal is the identity provider's own log, not this
@@ -1487,3 +1491,20 @@ separate owner authority and live qualification. A failed webhook write is
 not proof that access changed; return a retryable failure and reconcile the
 same event. The host still needs an operated retry worker, monitoring, backup,
 restore, and periodic reconciliation for missed notifications.
+
+## Search effect selection
+
+Hosted metadata search accepts `service_retrieval_request/v2`. The optional
+`authority_effects` field uses the provisioning list's array shape and the
+canonical effect vocabulary. Omitted or empty selection considers material
+with no declared effects. Unknown values, duplicate entries and malformed
+arrays refuse before ranking, including when the query has no candidates.
+The public capabilities name the exact request version, and the protocol
+tool publishes the current input schema. Version 1 HTTP requests are refused.
+
+Search forwards the selection to the existing authorized provisioning list
+for candidate identities. Account state, metadata scope, exact grants, item
+qualification and final snapshot checks remain authoritative. The selector
+never changes grants, body access or local execution permissions. Search
+reads no body, records no download usage and calls no model. Its index and
+ranking algorithm are unchanged.

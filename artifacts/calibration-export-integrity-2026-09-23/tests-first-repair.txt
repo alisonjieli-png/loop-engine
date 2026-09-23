@@ -1,0 +1,59 @@
+........F................................................F.......................FE...........................
+======================================================================
+ERROR: test_the_identity_comparison_is_what_refuses_calls_of_one_family (tools.test_candidate_review_record.ReviewerIdentityTest.test_the_identity_comparison_is_what_refuses_calls_of_one_family)
+Mutant control: with the comparison removed, three families are counted from one family's calls.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 354, in test_the_identity_comparison_is_what_refuses_calls_of_one_family
+    self.assertEqual(_row(_read(record))["outcome"], panel_module.APPROVED)
+                          ^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 104, in _read
+    return review_record.read_panel_review_record(value, allow_fixture=allow_fixture)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/tools/candidate_review/review_record.py", line 323, in read_panel_review_record
+    refuse("record_configuration_mismatch", "a reviewer differs from the declared panel installation")
+  File "/home/username/.le-codex-build/import-owner-repair/tools/candidate_review/records.py", line 42, in refuse
+    raise CandidateReviewError(code, message)
+candidate_review.records.CandidateReviewError: record_configuration_mismatch: a reviewer differs from the declared panel installation
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='label')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 105, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_approval_by_the_producer_family_is_refused (tools.test_candidate_review_record.ReaderTest.test_an_approval_by_the_producer_family_is_refused)
+The reviewer and its calls both name the producer's family, so the family rule itself refuses it.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 137, in test_an_approval_by_the_producer_family_is_refused
+    _refused(self, record, "producer_family_approved")
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 114, in _refused
+    test.assertEqual(caught.exception.code, code, str(caught.exception))
+AssertionError: 'record_configuration_mismatch' != 'producer_family_approved'
+- record_configuration_mismatch
++ producer_family_approved
+ : record_configuration_mismatch: a reviewer differs from the declared panel installation
+
+======================================================================
+FAIL: test_one_reviewer_counted_twice_toward_a_quorum_is_refused (tools.test_candidate_review_record.ReviewerIdentityTest.test_one_reviewer_counted_twice_toward_a_quorum_is_refused)
+Known-wrong case: under a policy of four approvals from three families, three reviewers with one
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 346, in test_one_reviewer_counted_twice_toward_a_quorum_is_refused
+    _refused(self, record, "reviewer_decided_twice")
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_record.py", line 114, in _refused
+    test.assertEqual(caught.exception.code, code, str(caught.exception))
+AssertionError: 'record_configuration_mismatch' != 'reviewer_decided_twice'
+- record_configuration_mismatch
++ reviewer_decided_twice
+ : record_configuration_mismatch: the policy differs from the declared panel configuration
+
+----------------------------------------------------------------------
+Ran 110 tests in 2.995s
+
+FAILED (failures=3, errors=1)

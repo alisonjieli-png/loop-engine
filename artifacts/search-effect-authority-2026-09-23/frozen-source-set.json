@@ -1,0 +1,86 @@
+{
+  "record_type": "search_effect_candidate_source_set/v1",
+  "base": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "files": [
+    {
+      "path": "docs/architecture/ENGINES-BEHIND-FIXED-EDGES.md",
+      "sha256": "7a67c62ce7789a016f82b616fc01d30e58158944b31481408a4f34f290a6c9ef"
+    },
+    {
+      "path": "docs/components/service-runtime/README.md",
+      "sha256": "722be7b9c83cc99c4017fa62358aba39fe3a6f3295bb5af599961382529742cc"
+    },
+    {
+      "path": "docs/standards/SERVICE-INTERFACE-CONVENTIONS.md",
+      "sha256": "9446ef34a9493e701fa7db743c80a2a5de6750ea6f22989705f9370757a76050"
+    },
+    {
+      "path": "docs/verification/SEARCH-EFFECT-AUTHORITY-REPAIR-2026-09-23.md",
+      "sha256": "f1c4e072e32c2262925ce91b62d3586214b4107cae0ee86439569fee6ceeeddd"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/README.md",
+      "sha256": "0d11b5b2f9c64f4f06ada03b25b9eb7a7046b49ea4ec6dcb3531f7b43494eb15"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/browser_identity_checks.py",
+      "sha256": "a6223c9f39334dc9cca09152d00df1c20ae466c090cd01b95caa3e276e863f28"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/catalogue_search.py",
+      "sha256": "910b06c3a9a35703f9b34f74649e8cf15538482feaa77e212fed690cdd9a6ef8"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/http.py",
+      "sha256": "e113363d2271270c8fafc17e80fbd2a187171f49637692c3a8fde265026ee759"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.js",
+      "sha256": "4aaebbce0bace6b4def93bf49ffdf1169879ddb6979742857abfb2dcec74f935"
+    },
+    {
+      "path": "src/loop_engine/data/component_interactions.yaml",
+      "sha256": "9d4d39f97e8d128b31136341d6c61cb3b4bc8c4870cbb92fa6985f94a51dbfb4"
+    },
+    {
+      "path": "tools/check_client_journey_in_containers.py",
+      "sha256": "e4fefe9fb7f98f10d5494dfff3670e071832066084f69fc7ce8741cb0effa898"
+    },
+    {
+      "path": "tools/check_fly_service_container.py",
+      "sha256": "06a5246547a34276771cccb22ce9a76f055c36dc79c3e0d22ffb52b6614de7f0"
+    },
+    {
+      "path": "tools/check_hosted_administrator.py",
+      "sha256": "46246d9136f195ca021b1d6b51284551fd2a67eaea40f27779750ae43af67fbb"
+    },
+    {
+      "path": "tools/check_hosted_catalogue.py",
+      "sha256": "156c73deab9a20f843d7695e41b4e5b0c4de54ebf4f6299250ab986aabe45444"
+    },
+    {
+      "path": "tools/check_hosted_service.py",
+      "sha256": "aeec4ec52adf9e3051e940039516bee846751e1093f9bc66a22389c43344dabc"
+    },
+    {
+      "path": "tools/check_service_workspace.mjs",
+      "sha256": "58d3191f681a60e86212fe4e30e7f4365b013ec6ef37a5f4f02a40b595d53766"
+    },
+    {
+      "path": "tools/measure_service_latency.py",
+      "sha256": "6e2fa2b38dd86b77bb1ea33195e4c0b3bbc3ac248cc1b6296bf4eb0093ceb3b2"
+    },
+    {
+      "path": "tools/test_homepage_demonstration.py",
+      "sha256": "71057956dff584b0a47be1d96e1a307ce3178b46b0bcf719f31a879112c17d96"
+    },
+    {
+      "path": "tools/test_search_effect_authority.py",
+      "sha256": "5da5398c17afbe254ea7b6a2dfa20c0d4dbfc7a14961fc4b48505f562992c383"
+    },
+    {
+      "path": "tools/test_service_documentation.py",
+      "sha256": "1c8744b86f2b5390c44895fd1eb8d644c5b5b43c27fd6017d41516b45391e681"
+    }
+  ]
+}

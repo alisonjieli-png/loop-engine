@@ -1,0 +1,20 @@
+{
+  "record_type": "original_native_generation_allocation_comparison/v1",
+  "started_at": "20260923T154757",
+  "predecessor": "live-minimax-20260923T153828",
+  "decision": "Both preceding MiniMax requests reached their 8192-token allocation. This separately authorized campaign keeps the same frozen plan, model and 600-second timeout, and raises the explicit output allocation to32768tokens. It does not repeat either prior campaign in place.",
+  "model": "minimax-m3",
+  "family": "minimax",
+  "call_ceiling": 2,
+  "timeout_seconds": 600,
+  "output_allocation_tokens": 32768,
+  "strict_total_token_ceiling": null,
+  "existing_subscription_only": true,
+  "automatic_retry": false,
+  "automatic_failover": false,
+  "output": "artifacts/original-native-generation-2026-09-23/live-minimax32-20260923T154757",
+  "plan_sha256": "23646f43d9f836ff4cf16f43af44791b9f7ed6ed2bc2d16f8760f60f966f497c",
+  "generated_code_executed": false,
+  "approvals_granted": 0,
+  "catalogue_writes": 0
+}

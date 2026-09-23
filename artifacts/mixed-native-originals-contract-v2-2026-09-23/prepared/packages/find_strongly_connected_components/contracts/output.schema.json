@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+        },
+        "minItems": 1,
+        "maxItems": 60,
+        "uniqueItems": true
+      },
+      "minItems": 1,
+      "maxItems": 60
+    },
+    "cyclic_components": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+        },
+        "minItems": 1,
+        "maxItems": 60,
+        "uniqueItems": true
+      },
+      "minItems": 0,
+      "maxItems": 60
+    }
+  },
+  "required": [
+    "components",
+    "cyclic_components"
+  ],
+  "additionalProperties": false
+}

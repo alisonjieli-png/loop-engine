@@ -283,15 +283,18 @@ for event in ({"type": "thread.started", "thread_id": "t"}, {"type": "turn.start
 class CommandLineEngineTest(unittest.TestCase):
     """The Codex and Claude Code command lines, each read by its own output protocol."""
 
-    def test_codex_output_is_read_exactly(self):
+    def test_codex_usage_is_read_without_inventing_the_answering_model(self):
         with tempfile.TemporaryDirectory() as directory:
             engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SUCCESS))
             availability = engine.availability()
-            self.assertTrue(availability.available, availability.reason)
+            self.assertFalse(availability.available)
+            self.assertEqual(availability.reason_code, reviewers.MODEL_IDENTITY_MISMATCH)
             self.assertEqual(availability.engine_version, "codex-cli 0.0.1-fake")
             attempt = engine.review(PROMPT, ALLOWANCE)
-        self.assertEqual(attempt.outcome, reviewers.ANSWERED)
-        self.assertEqual(attempt.text, "the answer")
+        self.assertEqual(attempt.outcome, reviewers.MODEL_IDENTITY_MISMATCH)
+        self.assertEqual(attempt.text, "")
+        self.assertEqual(attempt.reported_model, "")
+        self.assertEqual(availability.model_version, {})
         self.assertEqual((attempt.usage.input_tokens, attempt.usage.output_tokens,
                           attempt.usage.reasoning_output_tokens, attempt.usage.cached_input_tokens),
                          (20000, 300, 100, 15000))

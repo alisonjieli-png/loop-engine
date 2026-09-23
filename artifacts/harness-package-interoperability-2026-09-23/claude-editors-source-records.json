@@ -1,0 +1,303 @@
+{
+  "record_kind": "research_source_inventory",
+  "version": 1,
+  "created_at": "2026-09-23T13:50:12.136069+00:00",
+  "report_path": "docs/research/HARNESS-PACKAGES-CLAUDE-AND-EDITORS-2026-09-23.md",
+  "report_sha256": "e654155700ede12c5d271a6e2f6667ec0aa12fbb429edca8a7b4cdf696b56aa1",
+  "scope": [
+    "claude_code_cli",
+    "claude_agent_sdk",
+    "gemini_cli",
+    "copilot_cli",
+    "copilot_cloud_agent",
+    "vscode_selected_harness",
+    "cursor",
+    "cline"
+  ],
+  "model_calls": 0,
+  "installs": 0,
+  "user_configuration_changes": 0,
+  "documentation_sources": [
+    {
+      "title": "Claude Code memory reference",
+      "url": "https://code.claude.com/docs/en/memory",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Claude Code skill reference",
+      "url": "https://code.claude.com/docs/en/skills",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Claude Code plugin reference",
+      "url": "https://code.claude.com/docs/en/plugins-reference",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Claude Code CLI reference",
+      "url": "https://code.claude.com/docs/en/cli-reference",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Agent SDK system-prompt documentation",
+      "url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini context files",
+      "url": "https://geminicli.com/docs/cli/gemini-md/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini skills",
+      "url": "https://geminicli.com/docs/cli/skills/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini extension reference",
+      "url": "https://geminicli.com/docs/extensions/reference/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini headless reference",
+      "url": "https://geminicli.com/docs/cli/headless/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini session management",
+      "url": "https://geminicli.com/docs/cli/session-management/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Gemini trusted folders",
+      "url": "https://geminicli.com/docs/cli/trusted-folders/",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot CLI instruction guide",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot CLI reference",
+      "url": "https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot CLI skills",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot plugin authoring",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-creating",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot custom-agent configuration",
+      "url": "https://docs.github.com/en/copilot/reference/custom-agents-configuration",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot on GitHub instructions",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Copilot hook reference",
+      "url": "https://docs.github.com/en/copilot/reference/hooks-reference",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "VS Code custom instructions",
+      "url": "https://code.visualstudio.com/docs/agent-customization/custom-instructions",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor rules",
+      "url": "https://prod.cursor.com/docs/rules",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor skills",
+      "url": "https://prod.cursor.com/docs/skills",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor plugin reference",
+      "url": "https://prod.cursor.com/docs/reference/plugins",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor hooks",
+      "url": "https://prod.cursor.com/docs/hooks",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor third-party hooks",
+      "url": "https://prod.cursor.com/docs/reference/third-party-hooks",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Claude hook events",
+      "url": "https://code.claude.com/docs/en/hooks#hook-events",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cursor headless CLI",
+      "url": "https://prod.cursor.com/docs/cli/headless",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cline rules",
+      "url": "https://docs.cline.bot/customization/cline-rules",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cline skills",
+      "url": "https://docs.cline.bot/customization/skills",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cline CLI reference",
+      "url": "https://docs.cline.bot/cli/cli-reference",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    },
+    {
+      "title": "Cline 3.36 hook announcement",
+      "url": "https://cline.bot/blog/cline-v3-36-hooks",
+      "retrieved_on": "2026-09-23",
+      "retrieval_method": "web open or find against official documentation",
+      "evidence_kind": "mutable_primary_documentation",
+      "native_execution_observed_for_this_source": false
+    }
+  ],
+  "local_links": [
+    {
+      "path": "../../artifacts/focused-step-packet-2026-09-23/README.md",
+      "exists": true
+    },
+    {
+      "path": "../../artifacts/harness-plugin-context-2026-09-23/README.md",
+      "exists": true
+    }
+  ],
+  "prior_local_evidence_versions": {
+    "claude_code": "2.1.280",
+    "codex": "0.155.1"
+  },
+  "disputed_or_incomplete": [
+    {
+      "subject": "Copilot CLI absolute instruction imports",
+      "state": "conflicting_documentation",
+      "conservative_choice": "confined relative imports; qualify installed version"
+    },
+    {
+      "subject": "Cursor hook response precedence",
+      "state": "main reference and compatibility page differ in precision",
+      "conservative_choice": "test each output field with conflicting hooks"
+    },
+    {
+      "subject": "Cursor compatibility claim that Claude lacks SubagentStart",
+      "state": "stale compared with current Claude hook reference",
+      "conservative_choice": "do not infer full event parity"
+    },
+    {
+      "subject": "Cline current hook directory/schema parity across surfaces",
+      "state": "not qualified; current hook page did not expose substantive content",
+      "conservative_choice": "pin source and client before executable delivery"
+    }
+  ],
+  "admission_status": "not_an_admission_record",
+  "limits": [
+    "URLs are mutable and retrieved page bodies are not archived here.",
+    "Source compatibility does not establish loaded input, executed tool behavior or accepted task results."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "record_type": "working_directory_compiler_research_fixtures/v1",
+  "component": "Harness Working Directory Compiler",
+  "draft_status": "research_only_not_runtime_admitted",
+  "cases": [
+    {
+      "path": "fixtures/01-candidate-profile-valid.json",
+      "sha256": "6f9d1967c4719c1f03e9ab244b6eacebfc3271f84482b6894e89a795eecf7c12"
+    },
+    {
+      "path": "fixtures/02-preview-plan-valid.json",
+      "sha256": "0d034bb068aed7dc38f631d870cce9eb1d509fecd2f7886a1b16f98d9a4ba4e5"
+    },
+    {
+      "path": "fixtures/03-refused-plan-valid.json",
+      "sha256": "8b42401900dc5c7f7b554ff6fe932641bc574d4d257a5e307c870df69a6af358"
+    },
+    {
+      "path": "fixtures/04-profile-traversal-invalid.json",
+      "sha256": "3d6887bb70cf3a32151829b94e7590b7eb6503e79cc7149d540ba145555b952a"
+    },
+    {
+      "path": "fixtures/05-old-profile-version-invalid.json",
+      "sha256": "c46fc7d4464ce126e339c560d6a93cfa6aa2f8645020cfd0505a8ebb32bec4ad"
+    },
+    {
+      "path": "fixtures/06-constructor-is-not-discovery.json",
+      "sha256": "911396985fd3f0322b2d67b24fc72c8013258365156223258c9ab5077fa6ecd5"
+    },
+    {
+      "path": "fixtures/07-new-semantics-need-engine.json",
+      "sha256": "91bb96c7094aa706725466f4256f19e5c5b0444ed11d6e624bd54350334c25ad"
+    },
+    {
+      "path": "fixtures/08-runtime-version-mismatch.json",
+      "sha256": "a4d33fbee51992697c9b38a1d5172ba76f85973bfd1acbfb78d840d4a5bb8132"
+    },
+    {
+      "path": "fixtures/09-known-bad-binding-disabled.json",
+      "sha256": "4593a567da402f3e25a1aef39f2cae6418c1dc6b6977ef61dec3accda983608e"
+    },
+    {
+      "path": "fixtures/10-two-packages-one-target.json",
+      "sha256": "41ac12e650564e62e79ac26c179fba569ca23267204c18a3631293ce25b1596e"
+    },
+    {
+      "path": "fixtures/11-worker-authority-escalation.json",
+      "sha256": "cf38f254f30faafd94972f57ad1e7df99506a42da840954c19894d649766f903"
+    },
+    {
+      "path": "fixtures/12-required-capability-omitted.json",
+      "sha256": "f9879fb43cce4e89ef774a131183750cf300ba23ef0b093316ef7f3db2fb4eca"
+    }
+  ]
+}

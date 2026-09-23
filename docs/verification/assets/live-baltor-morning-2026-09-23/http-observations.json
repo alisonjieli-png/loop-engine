@@ -1,0 +1,752 @@
+{
+  "record_type": "public_http_observations/v1",
+  "source_revision": "abcad4f8",
+  "observations": [
+    {
+      "url": "https://baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.142777+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/"
+    },
+    {
+      "url": "https://baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.143314+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/api/v1/capabilities",
+      "public_record": {
+        "record_type": "service_http_result/v1",
+        "operation": "capabilities",
+        "result": {
+          "record_type": "service_capabilities/v1",
+          "api_version": "v1",
+          "website": {
+            "display_name": "Baltor",
+            "registration_available": false,
+            "browser_identity_available": true,
+            "access_profile": "operator_provisioned",
+            "access_administration_available": true,
+            "client_access_available": true,
+            "promotion_redemption_available": false,
+            "promotion_redemption_endpoint": "/api/v1/account/promotion",
+            "waitlist_available": true
+          },
+          "protocol": {
+            "transport": "streamable_http",
+            "versions": [
+              "2025-11-25",
+              "2026-07-28"
+            ],
+            "handshake_versions": [
+              "2025-11-25"
+            ],
+            "per_request_versions": [
+              "2026-07-28"
+            ],
+            "sdk_version": "2.2.0",
+            "session_state": "stateless",
+            "oauth_resource_metadata": false,
+            "oauth_authorization_server_installed": false,
+            "external_authorization_flow_qualified": false
+          },
+          "authentication": {
+            "record_type": "service_http_authentication/v1",
+            "modes": [
+              "host_key"
+            ],
+            "issuer": null,
+            "audience": null,
+            "algorithms": [],
+            "required_scopes": [],
+            "key_cache_seconds": 60,
+            "maximum_key_set_bytes": 262144,
+            "issues_tokens": false,
+            "external_provider_qualified": false
+          },
+          "operation_scopes": {
+            "metadata_and_search": "provisioning:metadata",
+            "body_and_download": "provisioning:read",
+            "usage": "usage:read",
+            "billing_sessions": "billing:manage"
+          },
+          "retrieval": {
+            "modes": [
+              "lexical",
+              "hybrid"
+            ],
+            "lexical_backend": "sqlite_fts5",
+            "vector_backend": "deterministic_character_hash",
+            "semantic_embedding_model_installed": false,
+            "scope": "authorized_catalogue_metadata",
+            "returns_bodies": false,
+            "index": "one_reusable_index_for_each_catalogue_view",
+            "filters": "declared_filterable_public_attributes"
+          },
+          "delivery": {
+            "inline_body_bytes": 16384,
+            "download_bytes": 1048576,
+            "download_endpoint": "/api/v1/download",
+            "requires_reauthorization": true,
+            "body_format": "utf8_text",
+            "package_files": "download_by_path"
+          },
+          "limits": {
+            "request_bytes": 65536,
+            "response_bytes": 262144,
+            "search_results": 50,
+            "concurrent_operations": 8,
+            "concurrent_operations_for_each_account": 4,
+            "concurrent_operations_waiting_on_another_service": 4,
+            "request_nesting_depth": 64,
+            "failed_attempts_per_address": {
+              "record_type": "service_failed_attempt_limit/v1",
+              "active": true,
+              "counted": [
+                "refused_authentication",
+                "refused_account_activation",
+                "refused_promotion_redemption"
+              ],
+              "failures_allowed": 30,
+              "window_seconds": 60,
+              "client_address_source": "header",
+              "ipv6_prefix_bits": 64,
+              "refusal_code": "failed_attempt_limit_reached",
+              "state": "memory_of_one_service_process"
+            }
+          },
+          "billing": {
+            "webhook": true,
+            "checkout": true,
+            "portal": true,
+            "discount_code": false,
+            "plans_endpoint": "/api/v1/billing/plans"
+          },
+          "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"
+        }
+      }
+    },
+    {
+      "url": "https://baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.143608+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/api/v1/health",
+      "public_record": {
+        "record_type": "service_http_result/v1",
+        "operation": "health",
+        "result": {
+          "record_type": "service_health/v2",
+          "alive": true,
+          "ready": true,
+          "readiness_checked": true,
+          "checks": [
+            {
+              "name": "durable_store_answers",
+              "required": true,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "volume_has_write_headroom",
+              "required": true,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "authentication_mode_installed",
+              "required": true,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "catalogue_registered",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "interface_page_readable",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "browser_identity_installed",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "billing_sessions_installed",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "billing_webhook_installed",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "billing_policy_current",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "retention_sweep_current",
+              "required": false,
+              "passed": true,
+              "code": ""
+            },
+            {
+              "name": "catalogue_view_current",
+              "required": false,
+              "passed": true,
+              "code": ""
+            }
+          ],
+          "service_version": "0.1.0",
+          "release_reference": "",
+          "failure_records_enabled": true,
+          "payload_capture": "metadata_only",
+          "deployed_provider_qualification": false,
+          "catalogue_release": {
+            "record_type": "service_catalogue_view/v1",
+            "source": "store",
+            "release_id": "c824a1d2e2228d2caf9005057efd1085277393391d65d8a6dbdbf4743aeb6753",
+            "content_digest": "0233d919b523f3fbe983d1eb9bebecddda02ba2d1f3be34324f513beef0660b4",
+            "items": 43,
+            "withdrawn_left_out": 0,
+            "schema_digest": "73dba47d06b51a0f5cc1c63cef020ea858c627a54b3715e847af9fefcedd2be0",
+            "catalogue_state_revision": 13,
+            "built_at": 1790160421,
+            "refresher": {
+              "interval_seconds": 60,
+              "last_checked_at": 1790167382,
+              "last_failure_code": null,
+              "swaps": 0,
+              "last_swap_seconds": null
+            }
+          }
+        }
+      }
+    },
+    {
+      "url": "https://www.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.609935+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://www.baltor.ai/"
+    },
+    {
+      "url": "https://www.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.616157+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://www.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://www.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:49.963152+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://www.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://app.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:50.267298+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://app.baltor.ai/"
+    },
+    {
+      "url": "https://app.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:50.309583+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://app.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://app.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:50.549362+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://app.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://baltor-pilot.fly.dev/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:50.791090+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor-pilot.fly.dev/"
+    },
+    {
+      "url": "https://baltor-pilot.fly.dev/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:50.873120+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor-pilot.fly.dev/api/v1/capabilities"
+    },
+    {
+      "url": "https://baltor-pilot.fly.dev/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.116935+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor-pilot.fly.dev/api/v1/health"
+    },
+    {
+      "url": "https://demo.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.241582+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://demo.baltor.ai/"
+    },
+    {
+      "url": "https://demo.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.449626+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://demo.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://demo.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.571523+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://demo.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://examples.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.829651+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://examples.baltor.ai/"
+    },
+    {
+      "url": "https://examples.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:51.988076+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://examples.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://examples.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.155125+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://examples.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://docs.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.302558+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://docs.baltor.ai/"
+    },
+    {
+      "url": "https://docs.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.387832+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://docs.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://docs.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.497729+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://docs.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://status.baltor.ai/",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.645957+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://status.baltor.ai/"
+    },
+    {
+      "url": "https://status.baltor.ai/api/v1/capabilities",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.652404+00:00",
+      "status": 200,
+      "bytes": 2570,
+      "sha256": "0f252acfc217529fcd6eaf91c8cac0fb36b437ff4d16dd995ddc98570af93fc2",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://status.baltor.ai/api/v1/capabilities"
+    },
+    {
+      "url": "https://status.baltor.ai/api/v1/health",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.734058+00:00",
+      "status": 200,
+      "bytes": 1703,
+      "sha256": "7f91bc5c9b12045490fb56ea11c28f520356f37eeae3d81580306f8aaf53ce72",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://status.baltor.ai/api/v1/health"
+    },
+    {
+      "url": "https://baltor.ai/blog",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.871402+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "82c91b057845f9d5e6b47b0a89a042a121b741100a6f17cb996fbd278d46ac2c",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/blog"
+    },
+    {
+      "url": "https://baltor.ai/team",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.871609+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "0a5001e7ccee30c15aa952c0eb85a4a2ab5deba937eb43f5dd7bf961a99d8c00",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/team"
+    },
+    {
+      "url": "https://baltor.ai/about",
+      "method": "GET",
+      "at": "2026-09-23T12:43:52.991924+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "94a87f9f9003d0d106ded37113f20784cff1679ad577f7941e4f692b40984ff9",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/about"
+    },
+    {
+      "url": "https://baltor.ai/docs",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.012588+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/docs"
+    },
+    {
+      "url": "https://baltor.ai/status",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.015831+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "9578be1257476c3165d81044cb49cba75ebd7b867ecc13d4b3c1320bfeff3d84",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/status"
+    },
+    {
+      "url": "https://baltor.ai/demo",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.132826+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "1ebf4d126e5871ae3f954df65278b9e7583fc596b8a47cb82059d763eab55f95",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/demo"
+    },
+    {
+      "url": "https://baltor.ai/examples",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.155840+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/examples"
+    },
+    {
+      "url": "https://baltor.ai/pricing",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.238936+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/pricing"
+    },
+    {
+      "url": "https://baltor.ai/signup",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.278787+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/signup"
+    },
+    {
+      "url": "https://baltor.ai/waitlist",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.406370+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/waitlist"
+    },
+    {
+      "url": "https://baltor.ai/connect",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.491406+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/connect"
+    },
+    {
+      "url": "https://baltor.ai/login",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.507701+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/login"
+    },
+    {
+      "url": "https://baltor.ai/account",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.635511+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/account"
+    },
+    {
+      "url": "https://baltor.ai/app",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.730219+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/app"
+    },
+    {
+      "url": "https://baltor.ai/privacy",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.739927+00:00",
+      "status": 200,
+      "bytes": 89815,
+      "sha256": "6aea8df54287382b1ca1aed1ad7dae35d18788b1fc55a5c7dd17eecdca68369e",
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/privacy"
+    },
+    {
+      "url": "https://baltor.ai/terms",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.887853+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "4e1f855c4b15a5005be94f9b0046f023f7ab18be08cd3820eb92fa191f218f8a",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/terms"
+    },
+    {
+      "url": "https://baltor.ai/support",
+      "method": "GET",
+      "at": "2026-09-23T12:43:53.982646+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "86317fe7b5ab5643f80204f45f39c7c4acbbf67e974fe3f0a9716d3796503ba7",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/support"
+    },
+    {
+      "url": "https://baltor.ai/robots.txt",
+      "method": "GET",
+      "at": "2026-09-23T12:43:54.015371+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "324c4ccf61cd863d1fb3afd6ccdd3733d293b8ee15cc4c02f0ca16e240e78f18",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/robots.txt"
+    },
+    {
+      "url": "https://baltor.ai/sitemap.xml",
+      "method": "GET",
+      "at": "2026-09-23T12:43:54.029551+00:00",
+      "status": 404,
+      "bytes": 349,
+      "sha256": "cece86c4b68f7149da09d7699345f07da54f57b4510832d4679d335355559cdd",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/sitemap.xml"
+    },
+    {
+      "url": "https://baltor.ai/api/v1/account/identity",
+      "method": "GET",
+      "at": "2026-09-23T12:43:54.116739+00:00",
+      "status": 200,
+      "bytes": 580,
+      "sha256": "68735ce87840efc126c7cff55a73adf5573aa0ac310ba39ec82a4a2efa3e75b6",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/api/v1/account/identity",
+      "public_record": {
+        "record_type": "service_http_result/v1",
+        "operation": "identity",
+        "result": {
+          "record_type": "browser_identity_public_configuration/v1",
+          "provider_profile": "supabase_user/v1",
+          "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+          "publishable_key": "sb_publishable_eA94MOpSdlDjYO3Wt3Dz-Q_msn3s-yR",
+          "registration_enabled": false,
+          "email_signup_enabled": false,
+          "passwords_owned_by": "configured_identity_provider",
+          "session_persistence": "page_memory",
+          "model_keys_requested": false,
+          "signup_available": false,
+          "recovery_available": false,
+          "redirect_url": "https://baltor-pilot.fly.dev/auth/callback"
+        }
+      }
+    },
+    {
+      "url": "https://baltor.ai/",
+      "method": "HEAD",
+      "at": "2026-09-23T12:43:54.142328+00:00",
+      "status": 404,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/"
+    },
+    {
+      "url": "https://baltor.ai/pricing",
+      "method": "HEAD",
+      "at": "2026-09-23T12:43:54.152122+00:00",
+      "status": 404,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/pricing"
+    },
+    {
+      "url": "https://baltor.ai/api/v1/health",
+      "method": "HEAD",
+      "at": "2026-09-23T12:43:54.232728+00:00",
+      "status": 404,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "final_url": "https://baltor.ai/api/v1/health"
+    }
+  ]
+}

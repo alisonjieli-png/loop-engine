@@ -1,0 +1,14 @@
+test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not) ... FAIL
+
+======================================================================
+FAIL: test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 85, in test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not
+    self.assertEqual(facts["refusal_statuses"].get("documentation_helper_refusal"), {400})
+AssertionError: None != {400}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.716s
+
+FAILED (failures=1)

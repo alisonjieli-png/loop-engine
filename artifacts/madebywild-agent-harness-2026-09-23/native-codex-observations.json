@@ -1,0 +1,90 @@
+{
+  "schema": "baltor.research-native-observations/v1",
+  "created_at": "2026-09-23T16:10:32.866141+00:00",
+  "runtime": "codex-cli 0.155.1",
+  "model_calls": 0,
+  "renderer_report_sha256": "5ada4233b9d8e9ac411a5c14939a0814e14c09a2a874fdc67d0fe7eebdf5e287",
+  "observations": [
+    {
+      "case": "empty",
+      "exit_code": 0,
+      "valid_json": true,
+      "description_visible": false,
+      "body_visible": false,
+      "reviewer_visible": false,
+      "reviewer_body_visible": false,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"/tmp\" (codex_home: AbsolutePathBuf(\"<temporary>/configuration\"))\n",
+      "stdout_sha256": "56f82b3fb011678fe9805d7593b5a47afba798163d35a78da4a12c023a504138",
+      "workspace_unchanged": true,
+      "inputs": {}
+    },
+    {
+      "case": "upstream_codex_skill",
+      "exit_code": 0,
+      "valid_json": true,
+      "description_visible": true,
+      "body_visible": false,
+      "reviewer_visible": false,
+      "reviewer_body_visible": false,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"/tmp\" (codex_home: AbsolutePathBuf(\"<temporary>/configuration\"))\n",
+      "stdout_sha256": "5a30b22044715b920291d8bf88da4df19bec5cf968299bbef34b690eaa45047c",
+      "workspace_unchanged": true,
+      "inputs": {
+        ".codex/skills/sample/SKILL.md": "47ab503a65d520e2c826c20f09b0ddfe3921c127f42ef285164c71ec19af7672",
+        ".codex/skills/sample/scripts/sample.py": "544e4d4b8233a2d6a6ffb9f92ef461222fafc3f703ef15a69828e33b7e4e478e"
+      }
+    },
+    {
+      "case": "shared_agents_skill",
+      "exit_code": 0,
+      "valid_json": true,
+      "description_visible": true,
+      "body_visible": false,
+      "reviewer_visible": false,
+      "reviewer_body_visible": false,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"/tmp\" (codex_home: AbsolutePathBuf(\"<temporary>/configuration\"))\n",
+      "stdout_sha256": "47f957aff9b3b7718eb9e3e13c85e6153455b64a803b89475914b7fa7cb6b8fe",
+      "workspace_unchanged": true,
+      "inputs": {
+        ".agents/skills/sample/SKILL.md": "47ab503a65d520e2c826c20f09b0ddfe3921c127f42ef285164c71ec19af7672",
+        ".agents/skills/sample/scripts/sample.py": "544e4d4b8233a2d6a6ffb9f92ef461222fafc3f703ef15a69828e33b7e4e478e"
+      }
+    },
+    {
+      "case": "upstream_inline_subagent",
+      "exit_code": 0,
+      "valid_json": true,
+      "description_visible": false,
+      "body_visible": false,
+      "reviewer_visible": false,
+      "reviewer_body_visible": false,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"/tmp\" (codex_home: AbsolutePathBuf(\"<temporary>/configuration\"))\n",
+      "stdout_sha256": "0082e78bf7281979bd90fd5e711368d68f45cf0c19c8c843615e57c3f514e8b4",
+      "workspace_unchanged": true,
+      "inputs": {
+        ".codex/config.toml": "3131dd42eb476e1bec20470ddc8fc341f58e3403f375b47df02b84b374c94196"
+      }
+    },
+    {
+      "case": "native_config_file_subagent",
+      "exit_code": 0,
+      "valid_json": true,
+      "description_visible": false,
+      "body_visible": false,
+      "reviewer_visible": false,
+      "reviewer_body_visible": false,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"/tmp\" (codex_home: AbsolutePathBuf(\"<temporary>/configuration\"))\n",
+      "stdout_sha256": "6f76884ace4d44887454f2862936b36430adbd4f1d78caff05946b8891f7d39a",
+      "workspace_unchanged": true,
+      "inputs": {
+        ".codex/reviewer.toml": "ddaf5a35fec536586d378ea7979bece904fce7bcf317f8a8bc3d8c95d2524eca",
+        ".codex/config.toml": "abdb7e48241d5adde5fadf0f5948b04856ba066956b956e444d1f3778dee5c6d"
+      }
+    }
+  ],
+  "limitations": [
+    "Prompt construction, not model task execution or subagent spawning.",
+    "No native MCP servers or hooks were started.",
+    "Closed proxy settings are not an operating-system sandbox."
+  ]
+}

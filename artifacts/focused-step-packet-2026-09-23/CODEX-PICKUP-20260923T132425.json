@@ -1,0 +1,98 @@
+{
+  "record_type": "focused_step_native_debug_probe/v1",
+  "client": "codex-cli 0.155.1",
+  "created_at": "2026-09-23T13:24:25.040381+00:00",
+  "command": "codex debug prompt-input",
+  "model_calls": 0,
+  "observations": [
+    {
+      "fixture": "incident-timeline",
+      "source_style": "claude_code",
+      "tested_style": "codex",
+      "expected_binding": {
+        "brief_sha256": "e9b0acc74ade8359aabc8b4e90c896b07a171711fc2a85977a38120e2f53d44f",
+        "context_version": 1,
+        "harness_style": "claude_code",
+        "packet_content_sha256": "9e1a3d15417081143c2e2fbc6d225478f28a2735a11ed6c89bea70fa1094bb36",
+        "run_id": "incident-demo",
+        "state_version": 1,
+        "step_id": "order-events"
+      },
+      "cases": [
+        {
+          "case": "entrypoint_present",
+          "exit_code": 0,
+          "markers_visible": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stderr_present": true,
+          "prompt_output_sha256": "055cd4fbf7acc7ac43a80ad238c9d22d33b7f0b42feaaf1bb5f8992d8c2e8379"
+        },
+        {
+          "case": "entrypoint_removed_auxiliary_files_retained",
+          "exit_code": 0,
+          "markers_visible": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "stderr_present": true,
+          "prompt_output_sha256": "4badac163d8f71d529c057aa7820c6a175fafb72302248afcd23f6bcb5848809"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "fixture": "inventory-reconciliation",
+      "source_style": "codex",
+      "tested_style": "codex",
+      "expected_binding": {
+        "brief_sha256": "60ad912497a45eac53bba1c813199f6e5302bfcfab233ad859a77569b3d2666e",
+        "context_version": 2,
+        "harness_style": "codex",
+        "packet_content_sha256": "6b92cfc42f80a79c898bbb0dc48aeec34135153c940131380b32330039bb838c",
+        "run_id": "inventory-demo",
+        "state_version": 3,
+        "step_id": "reconcile-stock"
+      },
+      "cases": [
+        {
+          "case": "entrypoint_present",
+          "exit_code": 0,
+          "markers_visible": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stderr_present": true,
+          "prompt_output_sha256": "fd1262a8058aa06d29536ca4c71debb318f8e3457c9a02e3751ef5d9694dbda4"
+        },
+        {
+          "case": "entrypoint_removed_auxiliary_files_retained",
+          "exit_code": 0,
+          "markers_visible": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "stderr_present": true,
+          "prompt_output_sha256": "625129a51ffb1aa520dc461202ca620abd12fca3051d0248ac5b6b36bbe1c1b5"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "limits": [
+    "Debug prompt composition only; no model use or accepted task work.",
+    "Both shared AGENTS.md files tested through Codex only; Claude import remains untested.",
+    "Closed proxy configuration is not an operating-system network sandbox.",
+    "Auxiliary filenames alone did not load the task markers in this Codex configuration."
+  ]
+}

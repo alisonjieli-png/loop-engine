@@ -197,7 +197,7 @@ class HarnessRunRequest:
 
 @dataclass(frozen=True)
 class HarnessModelCall:
-    """One physical model attempt reported by an external harness."""
+    """One physical attempt; a failed canonical call may have an unknown reported model."""
 
     provider: str
     model: str
@@ -212,8 +212,11 @@ class HarnessModelCall:
     route_id: str = ""
 
     def __post_init__(self) -> None:
-        if not self.provider.strip() or not self.model.strip():
-            raise HarnessError("model-call records need provider and model")
+        if type(self.provider) is not str or not self.provider.strip() or type(self.model) is not str:
+            raise HarnessError("model-call records need a provider and a textual reported model")
+        if not self.model.strip() and (self.model != "" or self.ok is not False
+                or not self.gateway_loop_id or type(self.error_code) is not str or not self.error_code.strip()):
+            raise HarnessError("unknown reported model requires a failed typed canonical gateway observation")
         if self.provider in HARNESS_IDS:
             raise HarnessError(
                 "model-call provider must name the provider, not the harness")
@@ -694,14 +697,15 @@ def run_external_harness(
         result.error = "external harness reported an error" if result.error else ""
         authorized = {(item.provider_id, item.model_id, item.route_id)
                       for item in request.authorized_model_identities}
-        if any(((call.provider, call.model, call.route_id) not in authorized
-                if authorized else (call.provider, call.model)
-                != (request.provider_id, request.model_id)) for call in result.model_calls):
-            raise HarnessError(
-                "adapter model-call identity does not match the request")
-        _validate_gateway_references(
+        canonical_requested = _validate_gateway_references(
             result.model_calls, active_loop.ledger.events[event_start:],
             {active_loop.loop_id, getattr(parent, "loop_id", active_loop.loop_id)})
+        call_identities = [(call.provider, call.model, call.route_id) if call.model else
+                           canonical_requested[call.gateway_loop_id] for call in result.model_calls]
+        if any((identity not in authorized if authorized else identity[:2]
+                != (request.provider_id, request.model_id)) for identity in call_identities):
+            raise HarnessError(
+                "adapter model-call identity does not match the request")
         result.capability_evaluation = {
             "satisfied": True, "requirements": request.execution_requirements.to_dict(),
             "declared": (info.execution_capabilities.to_dict()

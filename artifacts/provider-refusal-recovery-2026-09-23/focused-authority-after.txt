@@ -1,0 +1,16 @@
+F...
+======================================================================
+FAIL: test_failed_unknown_call_is_still_checked_against_requested_model_authority (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py", line 66, in test_failed_unknown_call_is_still_checked_against_requested_model_authority
+    self.assertEqual(accepted.error_code, 'invalid_response_body')
+AssertionError: 'context_artifact_manager_required' != 'invalid_response_body'
+- context_artifact_manager_required
++ invalid_response_body
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+FAILED (failures=1)

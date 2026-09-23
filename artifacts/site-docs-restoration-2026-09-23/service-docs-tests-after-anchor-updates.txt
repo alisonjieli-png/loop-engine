@@ -1,0 +1,80 @@
+test_a_client_command_no_recipe_publishes_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_client_command_no_recipe_publishes_is_refused) ... ok
+test_a_command_the_interface_does_not_have_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_command_the_interface_does_not_have_is_refused) ... ok
+test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused)
+The pages restored from the documentation branch are held like the first four. ... ok
+test_a_field_name_the_source_does_not_use_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_field_name_the_source_does_not_use_is_refused) ... ok
+test_a_missing_page_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_missing_page_is_refused) ... ok
+test_a_page_address_the_page_table_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_address_the_page_table_stops_serving_is_refused)
+The website addresses live in the page table, not in the transport. ... ok
+test_a_page_promises_a_status_for_a_refusal_with_no_raise_site (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_for_a_refusal_with_no_raise_site)
+Known-wrong: a promise this check cannot hold to the source at all. ... ok
+test_a_page_promises_a_status_the_service_does_not_answer (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_the_service_does_not_answer)
+Known-wrong: the refusal is real and the status beside it is not. ... ok
+test_a_record_version_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_record_version_the_source_does_not_declare_is_refused) ... ok
+test_a_refusal_code_no_source_raises_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_no_source_raises_is_refused) ... ok
+test_a_refusal_code_the_source_stops_raising_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_the_source_stops_raising_is_refused)
+The real drift case: the page is untouched and the source renames a code. ... FAIL
+test_a_scope_outside_the_vocabulary_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_scope_outside_the_vocabulary_is_refused) ... ok
+test_a_served_recipe_that_no_page_documents_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_served_recipe_that_no_page_documents_is_refused) ... ok
+test_a_status_is_read_from_the_position_or_the_keyword (tools.test_service_documentation.ServiceDocumentationCheck.test_a_status_is_read_from_the_position_or_the_keyword)
+A `status=` keyword must not silently fall back to the class default. ... ok
+test_an_address_the_service_does_not_serve_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_does_not_serve_is_refused) ... ok
+test_an_address_the_service_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_stops_serving_is_refused) ... ok
+test_every_customer_page_the_guides_index_lists_is_held_to_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_every_customer_page_the_guides_index_lists_is_held_to_the_source)
+A customer page the index lists and this check skips could say anything. ... ok
+test_every_documented_page_exists (tools.test_service_documentation.ServiceDocumentationCheck.test_every_documented_page_exists) ... ok
+test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not) ... ok
+test_the_committed_pages_match_the_committed_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_committed_pages_match_the_committed_source) ... ok
+test_the_default_status_of_a_transport_refusal_is_read_from_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_default_status_of_a_transport_refusal_is_read_from_the_source)
+Known-wrong: the transport refusal's default status moves, and every ... FAIL
+test_the_page_reader_separates_tables_blocks_and_spans (tools.test_service_documentation.ServiceDocumentationCheck.test_the_page_reader_separates_tables_blocks_and_spans) ... ok
+test_the_privacy_notice_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_privacy_notice_address_is_held_to_the_page_table)
+The setup guide names the privacy notice address, so the page table must keep serving it. ... FAIL
+test_the_service_changes_the_status_a_refusal_answers_with (tools.test_service_documentation.ServiceDocumentationCheck.test_the_service_changes_the_status_a_refusal_answers_with)
+Known-wrong: the source moves and the untouched pages become false. ... ok
+test_the_source_reader_finds_a_real_service_surface (tools.test_service_documentation.ServiceDocumentationCheck.test_the_source_reader_finds_a_real_service_surface) ... ok
+test_the_status_guard_holds_a_real_number_of_rows (tools.test_service_documentation.ServiceDocumentationCheck.test_the_status_guard_holds_a_real_number_of_rows)
+A guard that read no row would let every status case above pass. ... ok
+test_the_terms_of_service_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_terms_of_service_address_is_held_to_the_page_table)
+The setup guide names the terms of service address, so the page table must keep serving it. ... FAIL
+
+======================================================================
+FAIL: test_a_refusal_code_the_source_stops_raising_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_the_source_stops_raising_is_refused)
+The real drift case: the page is untouched and the source renames a code.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 143, in test_a_refusal_code_the_source_stops_raising_is_refused
+    self.assertIn("refusal_code", self.kinds(report))
+AssertionError: 'refusal_code' not found in []
+
+======================================================================
+FAIL: test_the_default_status_of_a_transport_refusal_is_read_from_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_default_status_of_a_transport_refusal_is_read_from_the_source)
+Known-wrong: the transport refusal's default status moves, and every
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 307, in test_the_default_status_of_a_transport_refusal_is_read_from_the_source
+    self.assertIn("invalid_json 400", self.values(report))
+AssertionError: 'invalid_json 400' not found in ['nesting_limit_exceeded 400', 'nesting_limit_exceeded 400', 'package_file_requires_download 400', 'protocol_version_header_malformed 400', 'protocol_version_header_malformed 400', 'protocol_version_header_missing 400', 'protocol_version_header_missing 400', 'protocol_version_header_repeated 400', 'protocol_version_header_repeated 400', 'unknown_request_field 400', 'unknown_request_field 400', 'unsupported_protocol_version 400', 'unsupported_protocol_version 400']
+
+======================================================================
+FAIL: test_the_privacy_notice_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_privacy_notice_address_is_held_to_the_page_table)
+The setup guide names the privacy notice address, so the page table must keep serving it.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 187, in test_the_privacy_notice_address_is_held_to_the_page_table
+    self.assertIn("address", self.kinds(report))
+AssertionError: 'address' not found in []
+
+======================================================================
+FAIL: test_the_terms_of_service_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_terms_of_service_address_is_held_to_the_page_table)
+The setup guide names the terms of service address, so the page table must keep serving it.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 198, in test_the_terms_of_service_address_is_held_to_the_page_table
+    self.assertIn("address", self.kinds(report))
+AssertionError: 'address' not found in []
+
+----------------------------------------------------------------------
+Ran 27 tests in 29.533s
+
+FAILED (failures=4)

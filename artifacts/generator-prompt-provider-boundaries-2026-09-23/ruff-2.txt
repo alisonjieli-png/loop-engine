@@ -1,0 +1,51 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tools/generate_original_native_candidates.py:27:1
+   |
+25 |       sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+26 |
+27 | / from loop_engine.core.model_call_records import default_secret_patterns
+28 | | from loop_engine.core.model_capabilities import ModelOutputAllocation
+29 | | from loop_engine.core.model_gateway import (
+30 | |     ModelGateway,
+31 | |     ModelGatewayConfig,
+32 | |     ModelGatewayRequest,
+33 | |     builtin_provider_specs,
+34 | | )
+35 | | from loop_engine.core.model_routes import ModelRoute, screen_route
+36 | | from loop_engine.core.model_token_preflight import ProviderTokenBound
+37 | | from loop_engine.core.service_runtime.catalogue_packages import (
+38 | |     CataloguePackage,
+39 | |     placement_path,
+40 | | )
+41 | | from loop_engine.core.workspace_local import _atomic_write
+42 | | from loop_engine.strings.prompt_fragments import PromptResourceBundle, PromptResourceComponent
+43 | | from tools import native_harness_candidates as native
+44 | | from tools import prepare_harness_candidates as factory
+   | |_______________________________________________________^
+45 |
+46 |   PLAN_TYPE = "original_native_generation_plan/v1"
+   |
+help: Organize imports
+   |
+41 | from loop_engine.core.workspace_local import _atomic_write
+   - from loop_engine.strings.prompt_fragments import PromptResourceBundle, PromptResourceComponent
+42 + from loop_engine.strings.prompt_fragments import (
+43 +     PromptResourceBundle,
+44 +     PromptResourceComponent,
+45 + )
+46 | from tools import native_harness_candidates as native
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> tools/generate_original_native_candidates.py:182:12
+    |
+180 |     try:
+181 |         present = bool(resolver())
+182 |     except Exception:
+    |            ^^^^^^^^^
+183 |         refuse("provider_credential_unavailable")
+184 |     if not present:
+    |
+
+Found 2 errors.
+[*] 1 fixable with the `--fix` option.

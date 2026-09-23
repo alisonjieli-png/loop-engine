@@ -114,7 +114,7 @@ def main():
         check("owner_can_list_selected_identity", status == 200 and any(row["identity"] == args.identity for row in listing["result"]["items"]))
         status, listing = request("/api/v1/provisioning", isolated, provision())
         check("isolated_tenant_has_no_owner_grants", status == 200 and listing["result"]["items"] == [])
-        status, search = request("/api/v1/retrieval", owner, {"record_type": "service_retrieval_request/v1",
+        status, search = request("/api/v1/retrieval", owner, {"record_type": "service_retrieval_request/v2",
                                 "query": args.query, "mode": "lexical", "top_n": 3})
         check("search_returns_references_without_loading_bodies", status == 200 and search["result"]["hits"]
               and search["result"]["bodies_loaded"] is False)

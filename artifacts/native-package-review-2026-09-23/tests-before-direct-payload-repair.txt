@@ -1,0 +1,14 @@
+test_directly_replaced_payload_does_not_bypass_the_fixed_package_binding (tools.test_candidate_review_native.NativePrecheckTest.test_directly_replaced_payload_does_not_bypass_the_fixed_package_binding) ... FAIL
+
+======================================================================
+FAIL: test_directly_replaced_payload_does_not_bypass_the_fixed_package_binding (tools.test_candidate_review_native.NativePrecheckTest.test_directly_replaced_payload_does_not_bypass_the_fixed_package_binding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 161, in test_directly_replaced_payload_does_not_bypass_the_fixed_package_binding
+    self.assertIn("native_payload_binding_invalid", codes(outcome))
+AssertionError: 'native_payload_binding_invalid' not found in set()
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+FAILED (failures=1)

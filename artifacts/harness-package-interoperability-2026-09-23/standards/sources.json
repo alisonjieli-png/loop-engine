@@ -1,0 +1,210 @@
+{
+  "record_type": "harness_package_standards_research_sources/v1",
+  "research_date": "2026-09-23",
+  "checkout_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "native_client_runs": 0,
+  "model_calls": 0,
+  "production_mutations": 0,
+  "sources": [
+    {
+      "url": "https://agents.md/",
+      "title": "AGENTS.md",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agentskills.io/specification",
+      "title": "Agent Skills",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agent-plugins.org/specification",
+      "title": "Agent Plugins 1.0.0",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28",
+      "title": "Model Context Protocol 2026-07-28",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/extensions/skills/overview",
+      "title": "Skills over Model Context Protocol",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agentclientprotocol.com/protocol/v1/session-setup",
+      "title": "Agent Client Protocol version 1",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://a2a-protocol.org/v1.0.0/specification/",
+      "title": "Agent2Agent 1.0.0",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12",
+      "title": "JSON Schema 2020-12",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://github.com/agentplugins/agent-plugins-spec/blob/main/spec/1.1.0.md",
+      "title": "1.1.0 document",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agent-plugins.org/compatible-clients",
+      "title": "compatible-client directory",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://code.claude.com/docs/en/plugins-reference",
+      "title": "Claude Code plugin reference",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://developers.openai.com/plugins/build/plugins",
+      "title": "OpenAI package guide",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://developers.openai.com/plugins/guides/submit-claude-plugin",
+      "title": "Conversion guide",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/resources",
+      "title": "Resources specification",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "title": "tools specification",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning",
+      "title": "versioning page",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/specification/2026-07-28/changelog",
+      "title": "change record",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://github.com/modelcontextprotocol/ext-skills/blob/main/specification/stable/skills.mdx",
+      "title": "Extension specification",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://github.com/modelcontextprotocol/ext-skills",
+      "title": "repository status",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://modelcontextprotocol.io/extensions/client-matrix",
+      "title": "extension support matrix",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://developers.openai.com/plugins/build/skills",
+      "title": "OpenAI skill import workflow",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agentclientprotocol.com/protocol/v1/content",
+      "title": "Content specification",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://agentclientprotocol.com/protocol/v1/prompt-turn",
+      "title": "prompt turn",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12/json-schema-core",
+      "title": "Core",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    },
+    {
+      "url": "https://json-schema.org/draft/2020-12/json-schema-validation",
+      "title": "validation vocabulary",
+      "retrieved_on": "2026-09-23",
+      "source_kind": "official_primary_documentation",
+      "access": "opened_with_web_tool",
+      "evidence_scope": "documented_interface_not_native_qualification"
+    }
+  ]
+}

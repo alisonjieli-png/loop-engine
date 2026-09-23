@@ -1,9 +1,14 @@
-# Prepare offline harness skill candidates
+# Prepare offline harness candidates
 
 `prepare_harness_candidates.py` turns authored proposals into a new candidate
-folder. It reads only local, committed Loop Engine source files. It makes no
-network or model call. It does not stage, approve, install, serve or publish an
-item.
+folder. It reads authored payloads from the proposal document and verifies their
+cited, committed Loop Engine source files. It makes no network or model call.
+It does not stage, approve, install, serve or publish an item.
+
+Version two of the proposal contract prepares complete original native packages.
+Use it for instruction files, scripts, tools, contracts, plugins, commands,
+hooks, configuration and binary supporting assets. It preserves their bytes and
+relative folders. It does not turn each file into a separate library item.
 
 The source revision must equal `git rev-parse HEAD`. Every cited source and
 the repository `LICENSE` file must have the same bytes in the checkout and at
@@ -75,3 +80,68 @@ its exact body digest. The existing host release builder is the only current
 path from an approved item to a served body. A partial output left by a write
 failure remains visible and cannot be overwritten by a retry. Use a new output
 name after investigating the failure.
+
+## Complete native packages
+
+`harness_candidate_batch_proposals/v2` keeps the same outer fields as version one.
+Each proposal keeps `id`, `title`, `purpose`, `sources`, `layer`, `family`,
+`search_tags` and `tags`. It removes `body` and requires all the following fields:
+
+- `kind`: an existing harness item kind, normally `tool`, `skill` or
+  `instruction_file`. A plugin is a `tool` package with native file roles; this
+  does not create another runtime type or intelligence layer.
+- `symbols`, `declared_effects`, `styles`, `dependencies`: explicit string lists,
+  empty when none are declared. Dependencies are declarations, not installed or
+  independently resolved requirements.
+- `producer`: `producer_identity`, model `family` and a versioned
+  `method_identity`, for example `codex_original_native_authoring/v1`.
+- `files`: one to 64 records, each with `path`, `digest`, `size_bytes`,
+  `media_type`, `role`, and `content_base64`. The content is strict base64 of the
+  exact bytes. Paths, digests, bounds and roles use the existing
+  `CataloguePackageFile` contract. Hidden native paths such as
+  `.claude-plugin/plugin.json` are allowed; `.git`, traversal, symlinks,
+  case collisions and file/directory collisions are refused.
+
+The existing package bounds are 8 MiB per file and 32 MiB per package. The
+proposal document remains bounded to 64 MiB, so smaller batches should be used
+for larger packages. A declared executable role requires `spawns_process` in
+the item effects, but still grants no permission to execute it. Roles and
+effects are authored declarations; independent review must catch misleading
+declarations and undeclared behavior. Known secret patterns are refused in
+payload bytes, but this cannot detect every secret.
+
+The [worked input shape](../artifacts/native-candidate-preparation-2026-09-23/proposal-contract-example.json)
+uses placeholder source bindings. Replace the revision and digests with exact
+values before running it. The root MIT licence and every cited grounding source
+must still match the current committed revision. The producer declaration and
+rights metadata remain pending independent review; they are not approval.
+
+Output uses `starter_catalogue_candidate_items/v3` and
+`candidate_intelligence_specifications/v3`. Each item has one canonical
+`CataloguePackage` document in `bodies/<identity>.package.json` and its complete
+tree under `packages/<identity>/`. The package document binds every file's bytes
+and role. Exact duplicate package digests in a batch are refused even when the
+proposed identity or title differs. Near duplicates still require the independent
+review pipeline; this check is not a semantic novelty test.
+
+The existing candidate staging tool accepts the population with an explicit
+`--package-root` pointing to the prepared folder. It checks the complete file
+inventory, bytes, canonical package document and source provenance again before
+the existing atomic catalogue write. It stores candidate metadata and references
+to that immutable tree; keep the prepared folder with the staging database.
+
+```bash
+PYTHONPATH=src python3 tools/stage_intelligence_candidates.py \
+  --specifications candidate-batch-001/specifications-001.json \
+  --package-root candidate-batch-001 \
+  --database candidate-review-001.sqlite --namespace original.batch001 \
+  --authorize-isolated-staging --export candidate-export-001.json \
+  --report candidate-staging-001.json
+```
+
+Old readers refuse the new record version. The existing single-body reviewer
+must be extended to review all package files, producer method and dependencies
+before these native items can be admitted. A package manifest alone is not the
+tool's contents. Preparation and staging do not generate review records or
+publish the package. Concurrent hostile filesystem mutation and a native harness
+loading the output are outside this preparer's qualification.

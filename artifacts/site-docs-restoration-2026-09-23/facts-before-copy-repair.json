@@ -1,0 +1,16 @@
+{
+ "facts_checked": 667,
+ "findings": [],
+ "pages": [
+  "docs/guides/service-getting-set-up.md",
+  "docs/guides/service-searching-and-retrieving.md",
+  "docs/guides/service-serving-and-connections.md",
+  "docs/guides/service-troubleshooting.md",
+  "docs/guides/service-what-baltor-is.md",
+  "docs/guides/service-your-account.md",
+  "docs/guides/service-usage-and-what-you-pay-for.md"
+ ],
+ "passed": true,
+ "record_type": "service_documentation_check/v1",
+ "repository": "/home/username/.le-codex-build/site-docs"
+}

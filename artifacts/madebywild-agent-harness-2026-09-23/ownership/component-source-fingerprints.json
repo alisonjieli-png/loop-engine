@@ -1,0 +1,123 @@
+{
+  "record_type": "upstream_component_probe_build/v1",
+  "dependency": "typescript@5.9.3,zod@4.4.3,yaml@2.8.2",
+  "records": [
+    {
+      "path": "packages/toolkit/src/utils.ts",
+      "sha256": "880be200265c9e90f72a7258f108004c4c2272df63be827d0d3cccbb07b25935"
+    },
+    {
+      "compiled": "utils.mjs",
+      "sha256": "1c3d850c32436a65e648f5a66b14433ba53645c097d4a76d581b3e7512a46cc9",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/paths.ts",
+      "sha256": "9acb18111d07dcd500abca7c9e38d84bf228f62d4720112efd017f5e52a42bf4"
+    },
+    {
+      "compiled": "paths.mjs",
+      "sha256": "22fbe276b8009fe9c850e0446b651675afd101fd08eeb7ddd8751b4fa3d522d4",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/env.ts",
+      "sha256": "e2c3b38967a35bf950dad55302314c0aad489ae144f5d4d8d81a0e6a47fa6c09"
+    },
+    {
+      "compiled": "env.mjs",
+      "sha256": "2dd7ffd1af4ec5db076e2095347e013ba05c2577b5f3f85630306f28939b4643",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/behavior.ts",
+      "sha256": "7a874a70fdcb7ccc20f361e1119563e152eef038eaa3785798f34e553021f064"
+    },
+    {
+      "compiled": "behavior.mjs",
+      "sha256": "39de4e632bb95f28d326363752fc42a1a31d44039e48830d06fe3ab7051b9e34",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/repository.ts",
+      "sha256": "3c8508a75500ee7f4c14fdd7bd26de47b8c0d756178dbb49443e168bb9b21377"
+    },
+    {
+      "compiled": "repository.mjs",
+      "sha256": "58e20aba3a53d14a1df9f9f5e5d48e077e3d28ffc4ba3521e1e0de064f69fede",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/planner.ts",
+      "sha256": "be08b31714fad852f3fc437355eca563d9dfd7b735f721e8a0837647c1c2113a"
+    },
+    {
+      "compiled": "planner.mjs",
+      "sha256": "ba6a094c7eb617a90d23b67a98f51aac112eaca30df52e35158a05fe6fc190a5",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/manifest-schema/src/index.ts",
+      "sha256": "3b462429b90562ebdd0a132abc2367555e77df7cc1931985e1a0f6c2f9bb36a1"
+    },
+    {
+      "compiled": "manifest.mjs",
+      "sha256": "95eb1772ec6e8d57f08e08a3470cd5fc507bcf3808aabeb8338a452fe5fbbf6a",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/manifest-schema/src/versioning.ts",
+      "sha256": "1c6ef216a3cbf8667c46d5f8ff3d79190ec923012e049577263c85718df151b6"
+    },
+    {
+      "compiled": "schema-versioning.mjs",
+      "sha256": "bed3e9f3968a0397c9eed8218b657f5f88cfb35ebb8ebb174b36fcd725a249c7",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/versioning/registry.ts",
+      "sha256": "79f12d82df90d49a03309aa30e112701f0f6dd294e69063ae6e8f2fc60f1f856"
+    },
+    {
+      "compiled": "migration-registry.mjs",
+      "sha256": "6a34e509e02db27cdb3ad51f469a8fda65fce1f05f8fb4653d14f0978a079e18",
+      "scope": "Full module; type erasure and import location changes only"
+    },
+    {
+      "path": "packages/toolkit/src/engine.ts",
+      "sha256": "d7a6828400ba08b3b70d377e29e0ef7355e2fb6782d51ad8504c292c8a19f82e"
+    },
+    {
+      "compiled": "writer.mjs",
+      "sha256": "d79090c6dff956e6ac1dd30d6aed0fe785cd08c23dd58b46fbd96ca355d2b8ef",
+      "scope": "Exact HarnessEngine.apply body in fixture wrapper; injected precomputed plan"
+    },
+    {
+      "path": "packages/toolkit/src/entity-registries.ts",
+      "sha256": "492432c167d55fbcfc7b051d56f7d18acc27325555c23dcd8f183d626541e524"
+    },
+    {
+      "compiled": "registry-probe.mjs",
+      "sha256": "4d320915f85831c29ed6090e914912119970b217b22ceeb848be398c30a42d7d",
+      "scope": "Exact registry reader and clone-argument/error helpers; network fetch is excluded"
+    },
+    {
+      "path": "packages/toolkit/src/presets.ts",
+      "sha256": "c377bf5e7fc54f3be9615f3a8b2b37a976372677bcca16ae24374b5a6af12e9d"
+    },
+    {
+      "compiled": "presets-probe.mjs",
+      "sha256": "5e7a8741300010c886975b62bdabc85a01e363e2a15af6b9831b6d05d68470b6",
+      "scope": "Exact private inheritance helpers, exported for fixtures"
+    },
+    {
+      "path": "packages/toolkit/src/versioning/migrate.ts",
+      "sha256": "3a59bbe9f2f3b9593d57c86298b81094c7a5f8b51dadf890dd42e0dcb0ffa878"
+    },
+    {
+      "compiled": "migration-probe.mjs",
+      "sha256": "9c27d54cc8b537d0f012fbdbebafc6d02c28e9d4f01f5447b3e2624aa6593728",
+      "scope": "Exact private version migration and parse helper; doctor/file migration excluded"
+    }
+  ]
+}

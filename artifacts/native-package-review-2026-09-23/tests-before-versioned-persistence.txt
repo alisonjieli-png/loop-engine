@@ -1,0 +1,34 @@
+test_complete_native_package_and_reported_identity_survive_record_roundtrip (tools.test_candidate_review_native.NativeReviewPersistenceTest.test_complete_native_package_and_reported_identity_survive_record_roundtrip) ... ERROR
+test_old_review_records_cannot_be_resumed_or_admitted_by_current_reader (tools.test_candidate_review_native.NativeReviewPersistenceTest.test_old_review_records_cannot_be_resumed_or_admitted_by_current_reader) ... FAIL
+
+======================================================================
+ERROR: test_complete_native_package_and_reported_identity_survive_record_roundtrip (tools.test_candidate_review_native.NativeReviewPersistenceTest.test_complete_native_package_and_reported_identity_survive_record_roundtrip)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 234, in test_complete_native_package_and_reported_identity_survive_record_roundtrip
+    result, record = native_run(directory)
+                     ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 221, in native_run
+    instance = panel.ReviewPanel(configuration, criteria, instructions, reviewers, native_profile.engines(configuration), ledger)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/review-integrity/tools/candidate_review/panel.py", line 270, in __init__
+    self.patterns = secret_patterns(configuration.engine_settings("builtin_secret_patterns"))
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/review-integrity/tools/candidate_review/configuration.py", line 298, in engine_settings
+    return thawed(self.precheck_settings[engine_id])
+                  ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+KeyError: 'builtin_secret_patterns'
+
+======================================================================
+FAIL: test_old_review_records_cannot_be_resumed_or_admitted_by_current_reader (tools.test_candidate_review_native.NativeReviewPersistenceTest.test_old_review_records_cannot_be_resumed_or_admitted_by_current_reader)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 247, in test_old_review_records_cannot_be_resumed_or_admitted_by_current_reader
+    with self.assertRaises(CandidateReviewError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.132s
+
+FAILED (failures=1, errors=1)

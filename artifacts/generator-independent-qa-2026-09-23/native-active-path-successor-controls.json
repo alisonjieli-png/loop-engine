@@ -1,0 +1,38 @@
+{
+  "record_type": "native_profile_independent_qa/v1",
+  "source_sha256": "304a7e1d92d85290ac46aba86b9e3c809491d6280382aa2a8f263a818a356107",
+  "checks": [
+    {
+      "path": "opencode.json",
+      "style": "opencode",
+      "refused": true,
+      "codes": [
+        "native_activation_path_unqualified"
+      ],
+      "expected_refusal": true,
+      "passed": true
+    },
+    {
+      "path": ".pi/settings.json",
+      "style": "pi",
+      "refused": true,
+      "codes": [
+        "native_activation_path_unqualified"
+      ],
+      "expected_refusal": true,
+      "passed": true
+    },
+    {
+      "path": "examples/input.json",
+      "style": "pi",
+      "refused": false,
+      "codes": [],
+      "expected_refusal": false,
+      "passed": true
+    }
+  ],
+  "provider_calls": 0,
+  "package_execution": false,
+  "approval": false,
+  "passed": true
+}

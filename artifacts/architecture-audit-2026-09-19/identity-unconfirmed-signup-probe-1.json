@@ -1,0 +1,69 @@
+{
+ "record_type": "identity_unconfirmed_signup_probe/v1",
+ "observed_at": "2026-09-23T12:44:57Z",
+ "project_origin": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+ "interface": "POST /auth/v1/admin/generate_link type signup, as account_email.py calls it",
+ "cases": {
+  "confirm_with_second_link": {
+   "first_link_status": 200,
+   "second_link_status": 200,
+   "same_user_both_times": true,
+   "second_answer_fields": [
+    "app_metadata",
+    "aud",
+    "confirmation_sent_at",
+    "created_at",
+    "email",
+    "id",
+    "identities",
+    "is_anonymous",
+    "phone",
+    "redirect_to",
+    "role",
+    "updated_at",
+    "user_metadata",
+    "verification_type"
+   ],
+   "verify_status": 200,
+   "verify_returned_a_session": true,
+   "verify_error_code": null,
+   "first_link_after_second_was_used_status": 403,
+   "sign_in_with_first_password": 200,
+   "sign_in_with_second_password": 400
+  },
+  "confirm_with_first_link": {
+   "first_link_status": 200,
+   "second_link_status": 200,
+   "same_user_both_times": true,
+   "second_answer_fields": [
+    "app_metadata",
+    "aud",
+    "confirmation_sent_at",
+    "created_at",
+    "email",
+    "id",
+    "identities",
+    "is_anonymous",
+    "phone",
+    "redirect_to",
+    "role",
+    "updated_at",
+    "user_metadata",
+    "verification_type"
+   ],
+   "verify_status": 403,
+   "verify_returned_a_session": false,
+   "verify_error_code": "otp_expired",
+   "sign_in_with_first_password": 400,
+   "sign_in_with_second_password": 400
+  }
+ },
+ "cleanup": {
+  "users_created": 2,
+  "deleted_statuses": [
+   200,
+   200
+  ]
+ },
+ "finding": "kept: the pending password stays; a second request does not change it"
+}

@@ -1,0 +1,7 @@
+subject=O=CloudFlare, Inc., OU=CloudFlare Origin CA, CN=CloudFlare Origin Certificate
+issuer=C=US, O=CloudFlare, Inc., OU=CloudFlare Origin SSL Certificate Authority, L=San Francisco, ST=California
+notBefore=Jun  2 13:57:00 2026 GMT
+notAfter=May 29 13:57:00 2041 GMT
+sha256 Fingerprint=0F:C6:9C:F1:C7:2A:BE:55:2E:9F:B3:CF:A9:6D:B9:97:4D:7B:D9:33:94:C2:0D:21:9D:4C:05:1A:1A:92:39:01
+X509v3 Subject Alternative Name: 
+    DNS:*.iamretarded.net, DNS:iamretarded.net

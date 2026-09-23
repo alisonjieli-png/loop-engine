@@ -1,0 +1,188 @@
+{
+  "provider_calls": 0,
+  "approvals": 0,
+  "rows": [
+    {
+      "identity": "audit_functional_dependency_rows",
+      "changed_path": [
+        "rows",
+        0,
+        "a"
+      ],
+      "input": {
+        "determinants": [
+          "a"
+        ],
+        "dependents": [
+          "b"
+        ],
+        "rows": [
+          {
+            "a": 1.0,
+            "b": "x"
+          },
+          {
+            "a": 1,
+            "b": "y"
+          },
+          {
+            "a": 2,
+            "b": "z"
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "semantic_match_to_original_example": false,
+      "script_sha256": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403"
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "changed_path": [
+        "capacity"
+      ],
+      "input": {
+        "capacity": 8.0,
+        "items": [
+          {
+            "id": "a",
+            "size": 6
+          },
+          {
+            "id": "b",
+            "size": 4
+          },
+          {
+            "id": "c",
+            "size": 4
+          },
+          {
+            "id": "d",
+            "size": 2
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "semantic_match_to_original_example": false,
+      "script_sha256": "308c686ca8e9e9bf105d137bb001aff149d0cc402e7913688583add91450745e"
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "changed_path": [
+        "document",
+        "a/b",
+        0
+      ],
+      "input": {
+        "document": {
+          "a/b": [
+            10.0,
+            20
+          ],
+          "~1": "literal",
+          "": false
+        },
+        "pointers": [
+          "/a~1b/1",
+          "/~01",
+          "/"
+        ]
+      },
+      "input_schema_valid": true,
+      "actual_exit": 0,
+      "output": {
+        "values": [
+          20,
+          "literal",
+          false
+        ]
+      },
+      "semantic_match_to_original_example": true,
+      "script_sha256": "01ec4acb9514b2c485aa4eac884cae4e281bff2fa5757e661f182872aa21040d"
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "changed_path": [
+        "tasks",
+        0,
+        "duration"
+      ],
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 3.0,
+            "depends_on": []
+          },
+          {
+            "id": "b",
+            "duration": 5,
+            "depends_on": []
+          },
+          {
+            "id": "c",
+            "duration": 2,
+            "depends_on": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "semantic_match_to_original_example": false,
+      "script_sha256": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393"
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "changed_path": [
+        "capacity"
+      ],
+      "input": {
+        "capacity": 3.0,
+        "initial_tokens": 1,
+        "refill_per_second": 1,
+        "requests": [
+          {
+            "id": "a",
+            "at_ms": 0,
+            "tokens": 2
+          },
+          {
+            "id": "b",
+            "at_ms": 1000,
+            "tokens": 2
+          },
+          {
+            "id": "c",
+            "at_ms": 1500,
+            "tokens": 1
+          },
+          {
+            "id": "d",
+            "at_ms": 2000,
+            "tokens": 1
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "semantic_match_to_original_example": false,
+      "script_sha256": "108436f5b87b7b931caf4947cca9ce7e8afdb61d006b4b9ed25de4c402d42a43"
+    }
+  ]
+}

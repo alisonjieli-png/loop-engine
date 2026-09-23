@@ -44,3 +44,34 @@ fieldset{border:1px solid var(--border);border-radius:8px;margin:1.2rem 0;paddin
 /* The workspace holds long single words, such as an address, a method name or an exact reference. At
    enlarged text on a narrow screen they pushed the page sideways, so they break instead. */
 .caption{overflow-wrap:anywhere}input{max-width:100%}
+/* The Get started funnel and the page a message link opens. One light band, 64 pixels of padding on a wide screen and 40 on a
+   phone, no dark band. On a wide screen the five steps stand on the left and the card for the current step on the right, so
+   the heading, the price, the steps and the first step's field and button share the first screen. On a phone the card comes
+   first, so its field and button stay in the first screen and the steps follow. */
+main:has(> [data-view="start"]:not([hidden])),main:has(> [data-view="confirm"]:not([hidden])){max-width:none;padding:0}
+.funnel-band{padding:64px max(var(--band-gutter),calc((100% - var(--content-max)) / 2));background:var(--ground)}
+.funnel-head{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem}.funnel-head>*{margin:0}
+.funnel-head h1{font-size:clamp(2rem,3.2vw,2.75rem);line-height:1.08;letter-spacing:-.035em}
+.funnel-price{color:var(--muted);font-size:var(--text-lead)}
+.funnel-layout{display:grid;grid-template-columns:minmax(0,20rem) minmax(0,36rem);grid-template-areas:"steps card";gap:3rem;align-items:start}
+.funnel-steps{grid-area:steps;display:flex;flex-direction:column;gap:.25rem;list-style:none;margin:0;padding:0}
+.funnel-steps li{display:flex;align-items:flex-start;gap:.875rem;padding:.75rem 1rem;border:1px solid transparent;border-radius:12px}
+.funnel-steps li.is-current{background:var(--paper);border-color:var(--line-strong)}
+.funnel-step-number{display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;border:1.5px solid var(--line-strong);border-radius:999px;color:var(--muted);font-size:.8125rem;font-weight:700}
+.funnel-steps li.is-current .funnel-step-number{background:var(--button);border-color:var(--button);color:var(--button-ink)}
+.funnel-steps li.is-done .funnel-step-number{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.funnel-step-text{display:flex;flex-direction:column;gap:.125rem;min-width:0}.funnel-step-text strong{font-size:1rem;font-weight:600}
+.funnel-step-text>span{color:var(--subtle);font-size:.875rem}.funnel-step-text a{text-decoration:none}
+.funnel-card{grid-area:card;min-width:0;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);overflow-wrap:anywhere}
+.funnel-card-step{margin:0;color:var(--subtle);font-family:var(--font-mono);font-size:.8125rem}
+.funnel-card h2,.funnel-card h1{margin:.25rem 0 .5rem;font-size:1.5rem;line-height:1.2;letter-spacing:-.02em}
+.funnel-panel>p:not(.funnel-card-step),.funnel-card>div>p:not(.funnel-card-step){margin:.5rem 0;color:var(--muted)}
+.funnel-card form{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+.funnel-card label{margin:.25rem 0 0;font-size:.9375rem;font-weight:600}.funnel-card input{min-height:48px;padding:.65rem .875rem}
+.funnel-card .signup-consent{margin:.25rem 0;color:var(--muted);font-size:.9rem}
+.funnel-card form button,.funnel-panel>.button,.funnel-card>div>.button,.funnel-actions>*{align-self:flex-start;min-height:52px;padding:0 1.6rem;border-radius:var(--radius-button);font-size:1.0625rem}
+.funnel-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}.funnel-panel>.button,.funnel-card>div>.button{margin-top:.75rem}
+.funnel-card [role=status]:not(:empty){margin:1rem 0 0}.funnel-signin{margin:1.25rem 0 0;font-size:.9375rem;color:var(--muted)}
+.confirm-card{max-width:36rem;margin:0 auto}.confirm-card h1{font-size:clamp(1.75rem,2.6vw,2.25rem)}
+@media(max-width:860px){.funnel-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"card" "steps";gap:2rem}}
+@media(max-width:600px){.funnel-band{padding:40px 1rem}.funnel-head{margin-bottom:1.25rem}.funnel-head h1{font-size:1.875rem}.funnel-price{font-size:1rem}.funnel-card{padding:1.25rem}.funnel-card h2,.funnel-card h1{font-size:1.375rem}.funnel-card form button,.funnel-panel>.button,.funnel-card>div>.button,.funnel-actions>*{width:100%;justify-content:center}}

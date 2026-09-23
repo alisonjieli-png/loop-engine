@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-23T16:54:03.024190+00:00",
+  "model_calls": 0,
+  "credentials_sent": false,
+  "rows": [
+    {
+      "url": "https://ai.tacticalengineering.net/v1/models",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'ai.tacticalengineering.net'. (_ssl.c:1081)>"
+    },
+    {
+      "url": "https://ai.tacticalengineering.net/hermes/v1/models",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'ai.tacticalengineering.net'. (_ssl.c:1081)>"
+    }
+  ]
+}

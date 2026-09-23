@@ -1,0 +1,132 @@
+[
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "a",
+          "duration": 3,
+          "depends_on": []
+        },
+        {
+          "id": "b",
+          "duration": 5,
+          "depends_on": []
+        },
+        {
+          "id": "c",
+          "duration": 2,
+          "depends_on": [
+            "a",
+            "b"
+          ]
+        }
+      ]
+    },
+    "expected": {
+      "duration": 7,
+      "schedule": [
+        {
+          "id": "a",
+          "start": 0,
+          "finish": 3
+        },
+        {
+          "id": "b",
+          "start": 0,
+          "finish": 5
+        },
+        {
+          "id": "c",
+          "start": 5,
+          "finish": 7
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "z",
+          "duration": 0,
+          "depends_on": []
+        }
+      ]
+    },
+    "expected": {
+      "duration": 0,
+      "schedule": [
+        {
+          "id": "z",
+          "start": 0,
+          "finish": 0
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "a",
+          "duration": 1,
+          "depends_on": [
+            "a"
+          ]
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "a",
+          "duration": true,
+          "depends_on": []
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "a",
+          "duration": 1.0,
+          "depends_on": []
+        }
+      ]
+    },
+    "expected": {
+      "duration": 1,
+      "schedule": [
+        {
+          "id": "a",
+          "start": 0,
+          "finish": 1
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "tasks": [
+        {
+          "id": "a",
+          "duration": 1.5,
+          "depends_on": []
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

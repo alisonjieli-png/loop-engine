@@ -1,0 +1,113 @@
+FFFFFFFFFFF
+======================================================================
+FAIL: test_export_rederives_failed_status_when_both_exclusion_lists_are_deleted (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_rederives_failed_status_when_both_exclusion_lists_are_deleted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 70, in test_export_rederives_failed_status_when_both_exclusion_lists_are_deleted
+    with self.assertRaises(CandidateReviewError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='set_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='label')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='missing_call')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='duplicate_call')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='decision')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='invalid_answer')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='missing_installation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_export_refuses_control_labels_calls_and_summary_tampering (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_export_refuses_control_labels_calls_and_summary_tampering) (kind='unknown_installation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 90, in test_export_refuses_control_labels_calls_and_summary_tampering
+    with self.subTest(kind=kind), self.assertRaises(CandidateReviewError):
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_unavailable_skipped_and_zero_call_installations_are_incomplete (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_unavailable_skipped_and_zero_call_installations_are_incomplete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 102, in test_unavailable_skipped_and_zero_call_installations_are_incomplete
+    self.assertEqual(report["excluded"], {name: calibration.CALIBRATION_INCOMPLETE
+AssertionError: {'zero-calls': 'calibration_incomplete'} != {'unavailable': 'calibration_incomplete', '[109 chars]ete'}
++ {'disabled': 'calibration_incomplete',
++  'producer': 'calibration_incomplete',
++  'unavailable': 'calibration_incomplete',
+- {'zero-calls': 'calibration_incomplete'}
+? ^
+
++  'zero-calls': 'calibration_incomplete'}
+? ^
+
+
+======================================================================
+FAIL: test_missing_benign_control_verdict_stays_incomplete (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_missing_benign_control_verdict_stays_incomplete)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 110, in test_missing_benign_control_verdict_stays_incomplete
+    self.assertEqual(report["excluded"], {"reviewer": calibration.CALIBRATION_INCOMPLETE})
+AssertionError: {} != {'reviewer': 'calibration_incomplete'}
+- {}
++ {'reviewer': 'calibration_incomplete'}
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.391s
+
+FAILED (failures=11)

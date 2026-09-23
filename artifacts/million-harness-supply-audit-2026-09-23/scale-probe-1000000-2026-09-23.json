@@ -1,0 +1,28 @@
+{
+  "address_space_ceiling_mib": 768,
+  "audit_seconds": 14.755,
+  "generation_seconds": 5.116,
+  "items_jsonl_bytes_total": 264000000,
+  "items_jsonl_sha256_by_bundle": [
+    "09dd6dbd3a0c7ef245be7c88f5c7713896899570d7f3b4ecdbad4f2f937cdf08",
+    "09f9217caa22a2b6efb02912a247e116ba8d4d39d90cbc65527225df66fc484a",
+    "2169d2758f09d83a8921ea7b5fb6e79cb0d3e3c235e5de297aa048c0125d2998",
+    "3e8127a4150bb52430ae42bbd4fc4087c536532f57a11b11425e39fd8add04da",
+    "a4eef940e8e17ffa21707bca4baef30caf043409caa1b1625e090c9e217fc5bb"
+  ],
+  "items_per_bundle": 200000,
+  "limitations": "Disposable synthetic metadata only; no blobs, rights, approval, active release, native use or task benefit.",
+  "observed_bundle_counts": {
+    "active_release_credit": 0,
+    "distinct_file_sha256": 1,
+    "logical_records": 1000000,
+    "physical_file_paths": 1000000
+  },
+  "peak_child_rss_kib": 43420,
+  "record_type": "harness_supply_scale_probe/v1",
+  "report_sha256": "09db63305b378661f8a404a2907e6bc31f0a2900d43feae521c0a86ab34f053b",
+  "repository_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "synthetic_bundle_items": 1000000,
+  "synthetic_bundles": 5,
+  "synthetic_distinct_file_digests": 1
+}

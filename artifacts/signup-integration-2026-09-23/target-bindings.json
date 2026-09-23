@@ -1,0 +1,136 @@
+{
+  "record_type": "signup_integration_target_bindings/v1",
+  "baseline_tree": "e441fa68ee2549e85981f00247b665a24506ef7f",
+  "files": [
+    {
+      "path": "docs/guides/account-email-operations.md",
+      "before_sha256": "ce447de3888fa65ed82c5df110a38d0cec19dbda376e3e5e2f79943bd3912d89",
+      "after_sha256": "9a1a55a6a0033fc4571786d10ccd7c4b243d3dc34fb3e444255144bac9925873"
+    },
+    {
+      "path": "docs/guides/public-website-content-and-domain.md",
+      "before_sha256": "9aff803e07a3cd9a28b209457c9793d6e2c46c9b4017d192b3bbbb8c47dbf89f",
+      "after_sha256": "178000673322c5399ee27987e8905d5108b57f117be7d8f89b8347004a4212b9"
+    },
+    {
+      "path": "docs/guides/service-getting-set-up.md",
+      "before_sha256": "da11c01b1f2b33642f7ffe5fa1386a39ea410994be129aa9155992269155c41b",
+      "after_sha256": "a3a38ae2403254adba54827918b1b55132d1a64a0135174f1e473ca0a4ef5816"
+    },
+    {
+      "path": "docs/guides/service-your-account.md",
+      "before_sha256": "b9fa3e47f527d9a66dfbd8d968f0f9d71630d58f20bd402db9c42c20f4d380e2",
+      "after_sha256": "90e68f2f8704ddb0a8382f364a3db7edf6a45152303335a33f03f2cabbb7a0f5"
+    },
+    {
+      "path": "docs/verification/HANDOFF-signup-2026-09-23.md",
+      "before_sha256": null,
+      "after_sha256": "b24c2f387d3df7795886b21172f164b8420fb8d0010e809d7c53ec30eb63dbdd"
+    },
+    {
+      "path": "docs/verification/SIGNUP-FLOW-RESTORED-2026-09-23.md",
+      "before_sha256": null,
+      "after_sha256": "2a46ff9116cac3ed4fc161a67b14cbeb7b7751096f7e2973ba325edbdf5752c9"
+    },
+    {
+      "path": "docs/verification/SIGNUP-INDEPENDENT-QA-2026-09-23.md",
+      "before_sha256": null,
+      "after_sha256": "73ea6082276d44efa62ae6af7870391a519902f71b22d73fc8a0c998e2ea6740"
+    },
+    {
+      "path": "docs/verification/SIGNUP-INTEGRATION-2026-09-23.md",
+      "before_sha256": null,
+      "after_sha256": "62eb8c1010b495afe22cbe782d4eb1e5e81181bb0df6b9ff6bdf930e0270dc69"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/README.md",
+      "before_sha256": "0d11b5b2f9c64f4f06ada03b25b9eb7a7046b49ea4ec6dcb3531f7b43494eb15",
+      "after_sha256": "bb5336a72d48319216c9df415527371b8eef416661303e589e408ce5453289c7"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/access.py",
+      "before_sha256": "31375ab566d809304f17ca804a868aa91549b9717d546c2af59849a93685b738",
+      "after_sha256": "81d3e6ed63aabcdd8bee0d5f0079ae8f8196224a57df12be446282a977f845e1"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/account_email.py",
+      "before_sha256": "9b3bb2657dc1eb8cdb61b047035f63c0634900b79b62796160483ed48add8c91",
+      "after_sha256": "e69470446ee5e518c7cb8beb419e75fe3de5914bd1feada3974fc6f52a105b36"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/account_email_checks.py",
+      "before_sha256": "a86dd940614925698a691e5bb49a118e7b13e3db4ba5f30ddca0d4da2493997c",
+      "after_sha256": "8b05fa2803196385c265f46ee312787edc6e9060f0246d7bab7b645abefb1bfb"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/documentation_pages.json",
+      "before_sha256": "d263ead25e9a9bb75af543b245620a36c0bb7468014951e05c1cc4ab7960fddd",
+      "after_sha256": "5e3e9fc9cc5366d3fcebf85bf570da675cdc6d0931da141014f65e19b9864d6a"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/http.py",
+      "before_sha256": "e113363d2271270c8fafc17e80fbd2a187171f49637692c3a8fde265026ee759",
+      "after_sha256": "50ed4f75be9d468e5295cd56198b6cc37f47990b02d469430c4201534097ec18"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/observability_checks.py",
+      "before_sha256": "a0bf3676dfaa1db15b14b7c209221882d1237724ae86b3221efa3fb9428f4fcb",
+      "after_sha256": "424f24299a93c1f3155d2a0af5ae233f4d10548125cc61fc7236945a47df2508"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/README.md",
+      "before_sha256": "fa0f5553825e4b487742abcda4731e427354de3ac45e253daeeafc3ba04f4020",
+      "after_sha256": "3ac09cb1f8a4d725b7e058ce74de5f450bbfb6ead6df8ef1e2a174262b6c3432"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/your-account.html",
+      "before_sha256": "e27f87b80e56005d30ba33dc5301f03c23f5f6d65e8f13cea623473feace82fa",
+      "after_sha256": "248f86b38e32a5acd70a6d8c2bd0d2de380c47bea225c6673a802278b45412c8"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/index.html",
+      "before_sha256": "d65d151f7f1556ed3fb3bb4b44102d7a7ca8d2f73fb9f41a237f63f110ba26aa",
+      "after_sha256": "a05e8886a75b0e60b96934fb7d508eb2779d3fc172dad846d3fb31b1d1df2645"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.css",
+      "before_sha256": "fe88e43abb127be2195fb94640bcf70d81156cf83ed4cbfd4412782c48425695",
+      "after_sha256": "d67c3c90a2b54408186e5ac539720722ba43aa82e3a1e85dcc73528b68d4030c"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.js",
+      "before_sha256": "a0797990b346349e9f7b6e2182759acbd02442f0e1faf4d2fc86049fd2f9f1e4",
+      "after_sha256": "105d762c93228467fee8d8ab65cd86fbf191dee3add693d01291c26316fb0bdf"
+    },
+    {
+      "path": "src/loop_engine/data/component_interactions.yaml",
+      "before_sha256": "9d4d39f97e8d128b31136341d6c61cb3b4bc8c4870cbb92fa6985f94a51dbfb4",
+      "after_sha256": "66a415d82047b8e82e306ae1667cf0e0d883c6a60a2587b3e21f4120e6858542"
+    },
+    {
+      "path": "tools/check_hosted_website.mjs",
+      "before_sha256": "24cccd8a34b405fb809603f216625954c099e8d4f9e7595af3a8fe766e7fe493",
+      "after_sha256": "7f92bca993702aa8e7f60dca8e42c80d07e4f0053a5cfcd6a1d04fa1b37d1c41"
+    },
+    {
+      "path": "tools/check_service_workspace.mjs",
+      "before_sha256": "729ba7a8934cdf72009fce6d05810ee877ae8f2a1251135de80403085e31d6c6",
+      "after_sha256": "e48fb4c84596bd1e53b6584c974d5f3c354eb87549eeacb7295757d603bf8914"
+    },
+    {
+      "path": "tools/check_signup_session_boundaries.mjs",
+      "before_sha256": null,
+      "after_sha256": "97d4b495e3e2df49531b7e87b53dbffe7cd78673cc64c88f2daeade7dbae208d"
+    },
+    {
+      "path": "tools/signup_session_boundary_checks.mjs",
+      "before_sha256": null,
+      "after_sha256": "2ba22b45350a2f3c9566db4a57fae74904a2e5c68ea2ffb49d027e21e00e2bdb"
+    },
+    {
+      "path": "tools/test_email_signup_password_policy.py",
+      "before_sha256": null,
+      "after_sha256": "8642f584d85f72e2ac78758e3a257ff3142b6ca9afc36eb7b0b6e1fdbec7423d"
+    }
+  ]
+}

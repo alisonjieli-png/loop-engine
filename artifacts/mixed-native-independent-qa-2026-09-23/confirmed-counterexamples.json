@@ -1,0 +1,69 @@
+{
+  "provider_calls": 0,
+  "independent_approval": false,
+  "sandbox": "existing no-network no-home bubblewrap runner",
+  "cases": [
+    {
+      "identity": "schedule_dag_earliest_times",
+      "label": "schema-valid integral number is refused",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 1.0,
+            "depends_on": []
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": false,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": false
+      },
+      "script_sha256": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393"
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "label": "schema-invalid unselected object is accepted",
+      "input": {
+        "determinants": [
+          "a"
+        ],
+        "dependents": [
+          "b"
+        ],
+        "rows": [
+          {
+            "a": "x",
+            "b": 1,
+            "unused": {
+              "nested": true
+            }
+          }
+        ]
+      },
+      "input_schema_valid": false,
+      "observed": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "violations": []
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      },
+      "script_sha256": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403"
+    }
+  ]
+}

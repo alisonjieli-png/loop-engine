@@ -1,0 +1,48 @@
+{
+  "record_type": "documentation_search_effect_gap/v1",
+  "scope": "local fixture only",
+  "scenario": "search_can_select_an_authorized_effectful_item",
+  "owner": "core service retrieval/provisioning boundary; root records S-6.40/44",
+  "plain_search": {
+    "status": 404,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "route_unavailable",
+        "message": "This service has no page or interface at that address.",
+        "next_action": "Check the address against the setup guide, or start again from the home page."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_bupxs7afrajpfkbkb4rm6vr37e"
+    }
+  },
+  "search_with_authority": {
+    "status": 404,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "route_unavailable",
+        "message": "This service has no page or interface at that address.",
+        "next_action": "Check the address against the setup guide, or start again from the home page."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_mmfoaa2ueaddatq6jfh6o2gaja"
+    }
+  },
+  "authorized_list": {
+    "status": 400,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "unsupported_version",
+        "message": "The record version in this request is not one this release accepts.",
+        "next_action": "Send the record version the setup guide names. Do not reuse an older version."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_ltl4hvaueodinivzo5uiv25ngu"
+    }
+  }
+}

@@ -1,0 +1,185 @@
+{
+  "record_type": "native_numeric_boundary_controls/v1",
+  "checks": [
+    {
+      "literal": "1.0",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "output": {
+        "duration": 1,
+        "schedule": [
+          {
+            "finish": 1,
+            "id": "a",
+            "start": 0
+          }
+        ]
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1e0",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "output": {
+        "duration": 1,
+        "schedule": [
+          {
+            "finish": 1,
+            "id": "a",
+            "start": 0
+          }
+        ]
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "true",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1.5",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1e1000000000",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "0e1000000000",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1e-1000000000",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1.0000000000000001",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1000000000.0",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "output": {
+        "duration": 1000000000,
+        "schedule": [
+          {
+            "finish": 1000000000,
+            "id": "a",
+            "start": 0
+          }
+        ]
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1000000001.0",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "literal": "1e309",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    },
+    {
+      "case": "rational_grammar_still_refuses_floating_literal",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "output": {
+        "error": "invalid_input"
+      },
+      "timed_out": false,
+      "passed": true
+    }
+  ],
+  "guards": [
+    {
+      "name": "decimal_classification_before_binary_rounding",
+      "detected": true,
+      "mutant": {
+        "expected_exit": 2,
+        "actual_exit": 0,
+        "output": {
+          "duration": 1,
+          "schedule": [
+            {
+              "finish": 1,
+              "id": "a",
+              "start": 0
+            }
+          ]
+        },
+        "timed_out": false,
+        "passed": false
+      }
+    },
+    {
+      "name": "selected_columns_still_require_scalars",
+      "detected": true,
+      "mutant": {
+        "expected_exit": 2,
+        "actual_exit": 0,
+        "output": {
+          "violations": []
+        },
+        "timed_out": false,
+        "passed": false
+      }
+    }
+  ],
+  "script_sha256": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809",
+  "provider_calls": 0,
+  "approval": false,
+  "passed": true
+}

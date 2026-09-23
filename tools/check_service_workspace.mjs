@@ -1,5 +1,6 @@
 /* Real browser + HTTP + durable-domain checks. Providers are local fixtures.
    Removed-guard controls change the served page script in memory only, never a source file. */
+import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
@@ -14,7 +15,7 @@ const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/
 const sameOriginAsset=(value,origin,path,requireVersion=true)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&(url.search===""?!requireVersion:url.search==="?v="+assetDigest(path));}catch(_){return false;}};
 const assetRoute=(path,origin)=>url=>(origin?[origin]:serviceOrigins).some(base=>sameOriginAsset(url.href,base,path,false));
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png","-start-open-desktop.png","-start-open-mobile.png","-start-closed-desktop.png","-start-closed-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -52,7 +53,7 @@ const program=`from contextlib import ExitStack
 from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
-import json,sys,time
+import json,sys,time,uuid
 from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture,running_http
 from loop_engine.core.service_runtime.access_checks import prepared
 from loop_engine.core.service_runtime.http import ServiceHttpApplication
@@ -60,6 +61,9 @@ from loop_engine.core.service_runtime.stripe_session_checks import fixture
 from loop_engine.core.service_runtime.stripe_session_transport_checks import _application
 from loop_engine.core.service_runtime.http_test_fixtures import running_key_set
 from loop_engine.core.service_runtime.browser_identity import BrowserIdentityAdapter,BrowserIdentityConfiguration
+from loop_engine.core.service_runtime.account_email import AccountEmailAdapter
+from loop_engine.core.service_runtime.account_email_checks import IdentityProjectStandIn,serving_identity_project,_settings as account_settings,_secrets as account_secrets
+from loop_engine.core.service_runtime.request_limits import SOCKET_PEER_SOURCE,ServiceRequestLimits
 from loop_engine.core.service_runtime.access import ServiceAccessAdministration,ServiceClientAccessPolicy
 from loop_engine.core.service_runtime.waitlist import ServiceWaitlist,WaitlistPolicy
 from loop_engine.core.service_runtime.records import ACCESS_MANAGE_SCOPE,TenantKeyIssue,TenantRegistration
@@ -69,7 +73,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import jwt
 with ExitStack() as stack:
     root=Path(stack.enter_context(TemporaryDirectory(prefix="service-browser-")))
-    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir(); (root/"browse").mkdir(); (root/"selling").mkdir()
+    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir(); (root/"browse").mkdir(); (root/"selling").mkdir(); (root/"confirm").mkdir()
     held=prepared(root/"intelligence")
     factory=lambda config:ServiceHttpApplication(held.runtime,held.provisioning,config,access_administration=held.administration)
     base,_=stack.enter_context(running_http(held,application_factory=factory,display_name="Baltor"))
@@ -88,14 +92,34 @@ with ExitStack() as stack:
     account_operator=account.runtime.issue_key(TenantKeyIssue("operator","browser waiting list operator"))
     waiting=ServiceWaitlist(account.runtime,WaitlistPolicy(writes_authorized=True,accepted_for_each_source=3))
     account_base,_=stack.enter_context(running_http(account,application_factory=lambda config:ServiceHttpApplication(account.runtime,account.provisioning,config,browser_identity=identity,client_access=manager,waitlist=waiting),display_name="Baltor"))
+    # Account creation is open only where this service sends the sign-up link itself, so every service that reports registration open carries an
+    # account email adapter. Its two transports are one identity project stand-in, and its client address source is stated, as the adapter requires.
+    stated=ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE,failures_allowed=100,window_seconds=600)
+    def account_email(config,project,origin):
+        return AccountEmailAdapter(account_settings(identity_origin=origin,mail_origin=origin,allow_loopback=True,attempts_for_each_address=200,attempts_for_each_email=20),account_secrets,public_base_url=config.public_base_url,address_limits=config.request_limits,display_name=config.display_name,identity_transport=project.generate_link,mail_transport=project.send_mail)
+    quiet_project=IdentityProjectStandIn()
     # A fourth real service whose own configuration opens email sign-up, so the page is compared with a service that reports registration, not with a rewritten reply.
     signups=HttpDomainFixture(root/"signups",operator_access=False)
     signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
-    signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity),display_name="Baltor"))
+    signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity,account_email=account_email(config,quiet_project,provider)),display_name="Baltor",request_limits=stated))
     # A sixth real service that opens email sign-up and takes payment, so the one public state that says payment is open is compared with a service that reports both, not with a rewritten reply.
     selling=fixture(root/"selling")
     selling_identity=BrowserIdentityAdapter(selling.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-selling",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",transport=lambda _:user)
-    checkout_signup_base,_=stack.enter_context(running_http(selling,application_factory=lambda config:replace(_application(selling,config),browser_identity=selling_identity),display_name="Baltor"))
+    checkout_signup_base,_=stack.enter_context(running_http(selling,application_factory=lambda config:replace(_application(selling,config),browser_identity=selling_identity,account_email=account_email(config,quiet_project,provider)),display_name="Baltor",request_limits=stated))
+    # A seventh real service for the whole sign-up journey. Its browser identity and its account email speak to one identity project stand-in, served
+    # over a loopback socket, so the address the Get started page sends, the link in the message, the password the confirmation page sets and the
+    # sign-in that follows all meet the same project. The stand-in keeps the first password of an address that is not confirmed, as the probe of
+    # September 23, 2026 observed, and its public sign-up plays the provider's own route that the owner is closing.
+    confirm=HttpDomainFixture(root/"confirm",operator_access=False)
+    stand_in_key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+    def stand_in_session(project,user):
+        return jwt.encode({"iss":project.issuer,"aud":"authenticated","sub":user["id"],"exp":int(time.time())+1800,"iat":int(time.time()),"role":"authenticated","is_anonymous":False,"email":user["email"],"session_id":str(uuid.uuid4())},stand_in_key,algorithm="RS256",headers={"kid":"stand-in"})
+    project=IdentityProjectStandIn(session_factory=stand_in_session)
+    confirm_identity_origin=stack.enter_context(serving_identity_project(project,[{**json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(stand_in_key.public_key())),"kid":"stand-in","alg":"RS256","use":"sig"}]))
+    confirm_identity=BrowserIdentityAdapter(confirm.runtime,BrowserIdentityConfiguration(confirm_identity_origin,"fixture:publishable","browser-confirm",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(confirm.bindings["skill.alpha"],))
+    confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin)),display_name="Baltor",request_limits=stated))
+    # An invited account on the billing service: an operator grant, the way an invitation gives paid access. The other account has none.
+    billing.runtime.set_operator_entitlement("beta",valid_until=int(time.time())+30*86400,evidence_ref="browser fixture invitation")
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
@@ -116,7 +140,7 @@ with ExitStack() as stack:
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key}),flush=True)
     sys.stdin.readline()
 `;
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
@@ -127,7 +151,7 @@ const checks=[],errors=[],network=[]; let browser;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
@@ -178,10 +202,10 @@ const waitingNote="Invitation only while we open in small groups";
 const openNote="Account creation is open";
 /* The access card that leads the Get started page and the invitation card of the waiting list page are the journey itself. */
 const publicActions=target=>target.evaluate(()=>{
-  const lead=document.getElementById("start-access"),card=document.getElementById("waitlist-card"),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+  const lead=document.getElementById("start-access"),card=document.getElementById("waitlist-card"),funnel=document.querySelector('[data-view="start"] .funnel-card'),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
   return [...document.querySelectorAll("header a, header button, footer a, [data-view]:not([hidden]) a, [data-view]:not([hidden]) button")].filter(shown)
     .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",
-      lead:Boolean((lead&&lead.contains(node))||(card&&card.contains(node))),account:Boolean(node.closest('[data-view="signup"]')),pageLink:node.dataset.nav||""}));
+      lead:Boolean((lead&&lead.contains(node))||(card&&card.contains(node))||(funnel&&funnel.contains(node))),account:Boolean(node.closest('[data-view="signup"]')),pageLink:node.dataset.nav||""}));
 });
 const accessActionProblems=(actions,registrationOpen)=>{const label=stateLabel(registrationOpen),path=statePath(registrationOpen);return [
   ...actions.filter(action=>opensTheJourney(action.href)&&action.text!==label).map(action=>"an action that opens the sign-up funnel says "+JSON.stringify(action.text)),
@@ -231,10 +255,14 @@ const openGetStarted=async target=>{await openGuide(target);return startLead(tar
 const pressThePrimaryAction=async (target,width,height)=>{
   const label=((await target.locator("#hero-primary").textContent())||"").replace(/[↗→]/g,"").trim();
   await target.locator("#hero-primary").click();
-  return {width,height,label,...await target.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?node.getBoundingClientRect():null;
+  const entryPath=new URL(target.url()).pathname;
+  const invitation=target.locator("#funnel-invite");
+  const offered=await invitation.isVisible()&&await invitation.getAttribute("href")==="/waitlist";
+  if(offered)await invitation.click();
+  return {width,height,label,entryPath,offered,...await target.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?node.getBoundingClientRect():null;
     return {path:location.pathname,shown:Boolean(node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"),top:box?Math.round(box.top):-1,bottom:box?Math.round(box.bottom):-1,viewport:innerHeight};})};
 };
-const landsOnTheField=item=>item.label===accessLabels.closed&&item.path===accessPaths.closed&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
+const landsOnTheField=item=>item.label===accessLabels.closed&&item.entryPath===accessPaths.closed&&item.path==="/waitlist"&&item.offered&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
 /* The first screen on a phone: where the hero's primary action stands, how tall the header is, and whether the page scrolls sideways. */
 const firstScreen=target=>target.evaluate(()=>{const box=document.getElementById("hero-primary")?.getBoundingClientRect()||{top:-1,bottom:-1};
   return {top:Math.round(box.top),bottom:Math.round(box.bottom),viewport:innerHeight,width:innerWidth,header:Math.round(document.querySelector("header")?.getBoundingClientRect().height||0),overflow:document.documentElement.scrollWidth>innerWidth+1};});
@@ -456,7 +484,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin,fixture.confirm_base,fixture.confirm_identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -870,7 +898,7 @@ try {
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  const servedFiles=["/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -1018,14 +1046,13 @@ try {
   check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   check("get_started_page_carries_the_copyable_connection_settings",await page.locator('#client-tabs[role="tablist"] [role="tab"]').count()===recipeRecord.recipes.length&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
-  // The guide's older address, /connect, opens the same guide; the funnel's address, /get-started, opens the funnel's page, which
-  // until the funnel is merged is the waiting list page.
-  const shownViews=()=>page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view));
+  // The guide aliases stay on setup; Get started now opens the dedicated funnel.
+  const guideShownViews=()=>page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view));
   await page.evaluate(()=>{history.pushState({},"","/connect");dispatchEvent(new PopStateEvent("popstate"));});
-  const aliasViews=await shownViews();
+  const aliasViews=await guideShownViews();
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
-  const funnelViews=await shownViews();
-  check("get_started_address_opens_the_same_page",JSON.stringify(aliasViews)===JSON.stringify(["setup"])&&JSON.stringify(funnelViews)===JSON.stringify(["waitlist"]),{aliasViews,funnelViews});
+  const funnelViews=await guideShownViews();
+  check("guide_alias_and_funnel_open_distinct_views",JSON.stringify(aliasViews)===JSON.stringify(["setup"])&&JSON.stringify(funnelViews)===JSON.stringify(["start"]),{aliasViews,funnelViews});
   for(const address of ["/setup","/get-started","/connect","/waitlist"]){const served=await page.request.get(fixture.base+address);check("guide_and_funnel_addresses_are_served_"+address.slice(1),served.status()===200&&(served.headers()["content-type"]||"").startsWith("text/html"),{status:served.status()});}
   await page.goto(fixture.base+"/");
   await headerLink(page,"pricing");
@@ -1839,7 +1866,7 @@ try {
     &&usageTableProblems({...plantedShown,raw:{...plantedShown.raw,open:true}},plantedUsage,{}).length>0
     &&usageTableProblems(plantedShown,{...plantedUsage,items:undefined},{}).length>0);
   const searched=await page.request.post(fixture.base+"/api/v1/retrieval",{headers:{Authorization:"Bearer "+fixture.token},
-    data:{record_type:"service_retrieval_request/v1",query:"Alpha",mode:"lexical",top_n:10}});
+    data:{record_type:"service_retrieval_request/v2",query:"Alpha",mode:"lexical",top_n:10}});
   const downloaded=(await searched.json()).result.hits[0];
   const secondRead=await page.request.post(fixture.base+"/api/v1/download",{headers:{Authorization:"Bearer "+fixture.token},
     data:{record_type:"service_provisioning_request/v1",operation:"read",identity:downloaded.reference.identity,expected_digest:downloaded.reference.body_digest,request_id:"usage-table-second-download"}});
@@ -2024,6 +2051,202 @@ try {
   await signOutFromHeader(page);releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
+  /* Email-first sign-up, the page a message link opens, and the Get started funnel. Every service here is real. The identity project
+     behind the sign-up service is the stand-in from account_email_checks.py, served over a loopback socket: it keeps the first password of
+     an address that is not confirmed, as the probe of September 23, 2026 observed, and its public sign-up plays the provider's own route,
+     which the owner is closing. Every rule below has a removed-guard control that serves changed page bytes in memory, for that control
+     run only, and must fail the rule's own named check. */
+  const standIn=fixture.confirm_identity_origin;
+  const outbox=async (target,address)=>(await (await target.request.get(standIn+"/stand-in/outbox?to="+encodeURIComponent(address))).json());
+  const newestLink=async (target,address)=>{const box=await outbox(target,address);return (box.messages.at(-1)?.text||"").split(/\s+/).find(word=>word.includes("/auth/confirm?"))||"";};
+  const standInSignIn=async (target,address,password)=>(await target.request.post(standIn+"/auth/v1/token?grant_type=password",{data:{email:address,password}})).status();
+  let journeyCount=0;
+  const journeyAddress=name=>"journey-"+name+"-"+(++journeyCount)+"-"+randomBytes(3).toString("hex")+"@example.invalid";
+  /* A fresh context for one scenario. A control passes its mutation, and every context the scenario opens serves that one file changed in
+     memory; the tracker records whether the change applied. */
+  const openJourney=async (mutation,viewport={width:1440,height:900},tracker={applied:false})=>{
+    const opened=await browser.newContext({viewport,reducedMotion:"reduce"});await opened.route("**/*",localOnly);
+    if(mutation)await opened.route(url=>url.pathname===mutation.path&&url.origin!==standIn,async route=>{
+      const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);
+      if(changed!==source)tracker.applied=true;await route.fulfill({response,body:changed});});
+    const target=await opened.newPage();target.on("pageerror",error=>{if(!mutation)errors.push(safeError(error.message));});
+    return {context:opened,page:target};
+  };
+  const shownViews=target=>target.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view));
+  /* The whole journey for an address that someone else registered first, through the provider's own public sign-up. */
+  const signUpJourney=async (target,note)=>{
+    const address=journeyAddress("owner"),chosenFirst="first-registrant-"+randomBytes(6).toString("hex"),owner="owner-chosen-"+randomBytes(8).toString("hex");
+    const preRegistered=(await target.request.post(standIn+"/auth/v1/signup",{data:{email:address,password:chosenFirst}})).status();
+    const sent=[];target.on("request",request=>{const url=new URL(request.url());if(request.method()!=="GET"||url.origin===standIn)sent.push({method:request.method(),path:url.pathname,origin:url.origin,body:request.postData()||""});});
+    await target.goto(fixture.confirm_base+"/get-started");
+    await target.waitForFunction(()=>document.getElementById("funnel")?.dataset.funnelState==="register",null,{timeout:10000}).catch(()=>{});
+    await target.fill("#funnel-email",address);await target.click("#funnel-signup-button");
+    await target.waitForFunction(()=>/^Check your email/.test(document.getElementById("funnel-signup-message")?.textContent||""),null,{timeout:10000}).catch(()=>{});
+    const signups=sent.filter(item=>item.path==="/api/v1/account/signup"),providerSignups=sent.filter(item=>item.origin===standIn&&item.path==="/auth/v1/signup");
+    let body={};try{body=JSON.parse(signups[0]?.body||"{}");}catch(_){}
+    note("sign_up_sends_the_address_alone_to_this_service_and_never_calls_the_provider_sign_up",preRegistered===200&&signups.length===1
+      &&JSON.stringify(body)===JSON.stringify({record_type:"service_account_signup_request/v2",email:address})&&providerSignups.length===0
+      &&await target.evaluate(()=>document.querySelector('[data-funnel-step="confirm"]')?.getAttribute("aria-current"))==="step",{sent:sent.map(item=>item.method+" "+item.path)});
+    const link=await newestLink(target,address),token=link?new URL(link).searchParams.get("token_hash")||"":"";
+    if(!link)return {address,owner,link:"",signedIn:false};
+    await target.goto(link);
+    await target.waitForFunction(()=>document.querySelector('[data-view="confirm"]')?.hidden===false,null,{timeout:10000}).catch(()=>{});
+    const opened=await target.evaluate(token=>({path:location.pathname,search:location.search,inAddress:location.href.includes(token),inText:document.body.innerText.includes(token),
+      form:Boolean(document.getElementById("confirm-form")?.getClientRects().length),connected:document.getElementById("connection-state")?.textContent||"",stored:localStorage.length+sessionStorage.length}),token);
+    const views=await shownViews(target);
+    note("the_confirmation_page_clears_the_token_from_the_address_and_asks_for_a_password_first",Boolean(token)&&opened.path==="/auth/confirm"&&opened.search===""
+      &&!opened.inAddress&&!opened.inText&&JSON.stringify(views)===JSON.stringify(["confirm"])&&opened.form&&opened.connected==="Not connected"&&opened.stored===0,{opened,views});
+    await target.fill("#confirm-password",owner);await target.fill("#confirm-password-again",owner);await target.click("#confirm-button");
+    await target.waitForFunction(()=>document.getElementById("connection-state")?.textContent==="Connected"||document.getElementById("confirm-message")?.classList.contains("error"),null,{timeout:15000}).catch(()=>{});
+    await target.waitForFunction(()=>location.pathname!=="/auth/confirm",null,{timeout:5000}).catch(()=>{});
+    const order=sent.map(item=>item.method+" "+item.path),verified=order.indexOf("POST /auth/v1/verify"),chosen=order.indexOf("PUT /auth/v1/user"),activated=order.indexOf("POST /api/v1/account/activate");
+    const after={path:new URL(target.url()).pathname,views:await shownViews(target),connected:await target.locator("#connection-state").textContent(),
+      funnel:await target.evaluate(()=>({state:document.getElementById("funnel")?.dataset.funnelState,title:document.getElementById("funnel-plan-title")?.textContent,subscribe:!document.getElementById("funnel-subscribe")?.hidden}))};
+    note("the_new_password_is_set_before_the_account_opens",verified>=0&&chosen>verified&&activated>chosen&&after.connected==="Connected"&&after.path==="/get-started"
+      &&JSON.stringify(after.views)===JSON.stringify(["start"]),{order,after});
+    note("a_password_chosen_first_by_someone_else_no_longer_opens_the_account",await standInSignIn(target,address,chosenFirst)===400&&await standInSignIn(target,address,owner)===200);
+    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Payment is not open yet"&&after.funnel.subscribe===false,after.funnel);
+    return {address,owner,link,signedIn:after.connected==="Connected"};
+  };
+  /* A used link says so plainly, changes nothing and offers a way to ask for another. */
+  const usedLink=async (target,note,journey)=>{
+    await target.goto(journey.link);
+    await target.waitForFunction(()=>document.querySelector('[data-view="confirm"]')?.hidden===false,null,{timeout:10000}).catch(()=>{});
+    const password="another-try-"+randomBytes(6).toString("hex");
+    await target.fill("#confirm-password",password);await target.fill("#confirm-password-again",password);await target.click("#confirm-button");
+    await target.waitForFunction(()=>document.getElementById("confirm-unusable")?.hidden===false||document.getElementById("confirm-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
+    const shown=await target.evaluate(()=>({unusable:document.getElementById("confirm-unusable")?.hidden===false,form:document.getElementById("confirm-password-step")?.hidden===false,
+      heading:document.querySelector("#confirm-unusable h1")?.textContent||"",newLink:document.getElementById("confirm-new-link")?.getAttribute("href"),connected:document.getElementById("connection-state")?.textContent}));
+    note("a_used_link_says_so_plainly_and_offers_a_new_one",shown.unusable&&!shown.form&&shown.heading==="This link cannot be used."&&shown.newLink==="/signup"&&shown.connected==="Not connected"
+      &&await standInSignIn(target,journey.address,password)===400&&await standInSignIn(target,journey.address,journey.owner)===200,shown);
+  };
+  /* Recovery asks this service for a link to the same page and ends at a password the owner chooses. */
+  const recoveryJourney=async (target,note,journey)=>{
+    await target.goto(fixture.confirm_base+"/login");
+    await target.waitForSelector("#email-recovery:not([hidden])",{timeout:10000}).catch(()=>{});
+    await target.fill("#recovery-email",journey.address);await target.click("#recovery-button");
+    await target.waitForFunction(()=>/^Check your email/.test(document.getElementById("recovery-message")?.textContent||""),null,{timeout:10000}).catch(()=>{});
+    const link=await newestLink(target,journey.address),kind=link?new URL(link).searchParams.get("type"):"";
+    if(link){await target.goto(link);await target.waitForFunction(()=>document.querySelector('[data-view="confirm"]')?.hidden===false,null,{timeout:10000}).catch(()=>{});}
+    const page3=await target.evaluate(()=>({path:location.pathname,search:location.search,heading:document.getElementById("confirm-heading")?.textContent||"",form:document.getElementById("confirm-password-step")?.hidden===false,step:document.getElementById("confirm-step")?.hidden}));
+    const renewed="renewed-owner-"+randomBytes(8).toString("hex");
+    if(page3.form){await target.fill("#confirm-password",renewed);await target.fill("#confirm-password-again",renewed);await target.click("#confirm-button");
+      await target.waitForFunction(()=>document.getElementById("connection-state")?.textContent==="Connected"||document.getElementById("confirm-message")?.classList.contains("error"),null,{timeout:15000}).catch(()=>{});
+      await target.waitForFunction(()=>location.pathname!=="/auth/confirm",null,{timeout:5000}).catch(()=>{});}
+    note("recovery_reaches_the_same_choose_a_password_page",kind==="recovery"&&page3.path==="/auth/confirm"&&page3.search===""&&page3.heading==="Choose a new password."&&page3.form&&page3.step===true
+      &&new URL(target.url()).pathname==="/account"&&await standInSignIn(target,journey.address,renewed)===200&&await standInSignIn(target,journey.address,journey.owner)===400,{kind,page3});
+    journey.owner=renewed;
+  };
+  /* The funnel as a visitor and as a signed-in account sees it. */
+  const funnelFacts=target=>target.evaluate(()=>{
+    const view=document.querySelector('[data-view="start"]'),shown=node=>Boolean(node&&node.getClientRects().length>0);
+    const box=node=>{if(!shown(node))return null;const rect=node.getBoundingClientRect();return {top:Math.round(rect.top),bottom:Math.round(rect.bottom)};};
+    const consent=document.getElementById("funnel-consent");
+    return {path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),state:document.getElementById("funnel")?.dataset.funnelState||"",
+      primaries:[...(view?.querySelectorAll(".primary")||[])].filter(shown).map(node=>({id:node.id,text:node.textContent.trim(),href:node.getAttribute("href")})),
+      steps:[...document.querySelectorAll("[data-funnel-step] strong")].map(node=>node.textContent.trim()),setup:document.getElementById("funnel-setup-link")?.getAttribute("href"),
+      price:document.querySelector(".funnel-price")?.textContent||"",form:shown(document.getElementById("funnel-signup-form")),
+      consent:shown(consent)?{text:consent.textContent.replace(/\s+/g," ").trim(),links:[...consent.querySelectorAll("a")].map(link=>link.getAttribute("href"))}:null,
+      title:document.getElementById("funnel-plan-title")?.textContent||"",subscribe:shown(document.getElementById("funnel-subscribe")),
+      heading:box(document.getElementById("funnel-title")),priceBox:box(document.querySelector(".funnel-price")),lastStep:box(document.querySelector('[data-funnel-step="setup"]')),
+      field:box(document.getElementById("funnel-email")),action:box(document.getElementById("funnel-signup-button"))||box(document.getElementById("funnel-invite")),
+      viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};
+  });
+  const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Baltor Pro","Get set up"];
+  const funnelProblems=(facts,open,waitingList=false)=>[...(facts.path==="/get-started"&&JSON.stringify(facts.views)===JSON.stringify(["start"])?[]:["the page is not the funnel alone"]),
+    ...(facts.state===(open?"register":"invite")?[]:["the card is "+JSON.stringify(facts.state)]),
+    ...(facts.primaries.length===1?[]:[facts.primaries.length+" primary actions"]),
+    ...(open?(facts.primaries[0]?.id==="funnel-signup-button"&&facts.form&&facts.consent?.text===consentWords&&JSON.stringify(facts.consent?.links)===JSON.stringify(["/terms","/privacy"])?[]:["the account form, its one action or its consent sentence is missing"])
+      :(facts.primaries[0]?.id==="funnel-invite"&&facts.primaries[0]?.text===(waitingList?"Request an invitation":"Sign in")&&facts.primaries[0]?.href===(waitingList?"/waitlist":"/login")&&!facts.form&&!facts.consent?[]:["the invitation action is missing or account creation is offered"])),
+    ...(JSON.stringify(facts.steps)===JSON.stringify([open?openSteps[0]:waitingList?"Get an invitation":"Sign in",...openSteps.slice(1)])&&facts.setup==="/setup"?[]:["the five steps read "+JSON.stringify(facts.steps)]),
+    ...(facts.price.includes("$29 a month")&&facts.price.includes("search is free")?[]:["the price line reads "+JSON.stringify(facts.price)])];
+  /* The first screen: at 1440 by 900 the heading, the price, all five steps and the first step's action; at 390 by 844 the heading and the
+     first step's field and action. The steps may follow on a phone. */
+  const firstScreenProblems=(facts,wide,open)=>[...(facts.overflow?["the page scrolls sideways"]:[]),
+    ...[["heading",facts.heading],["price",wide?facts.priceBox:facts.heading],["last step",wide?facts.lastStep:facts.heading],["field",open?facts.field:facts.action],["action",facts.action]]
+      .filter(([,box])=>!box||box.bottom>facts.viewport).map(([name,box])=>name+(box?" ends at "+box.bottom:" is not shown"))];
+  const funnelScreenshot=async (base,open,wide,screenshot)=>{
+    const {context:opened,page:target}=await openJourney(null,wide?{width:1440,height:900}:{width:390,height:844});
+    await target.goto(base+"/get-started");
+    await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
+    await target.waitForFunction(want=>document.getElementById("funnel")?.dataset.funnelState===want,open?"register":"invite",{timeout:5000}).catch(()=>{});
+    await target.screenshot({path:output.replace(/\.json$/,screenshot)});
+    await opened.close();
+  };
+  const funnelScenario=(base,open,waitingList=false)=>async (target,note)=>{
+    await target.goto(base+"/get-started");
+    await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
+    await target.waitForFunction(want=>document.getElementById("funnel")?.dataset.funnelState===want,open?"register":"invite",{timeout:5000}).catch(()=>{});
+    const facts=await funnelFacts(target);
+    note(open?"get_started_funnel_offers_account_creation_while_registration_is_open":waitingList?"get_started_funnel_offers_the_configured_waiting_list":"get_started_funnel_offers_sign_in_when_registration_and_waiting_list_are_closed",funnelProblems(facts,open,waitingList).length===0,{problems:funnelProblems(facts,open,waitingList)});
+    for(const [wide,size] of [[true,{width:1440,height:900}],[false,{width:390,height:844}]]){
+      await target.setViewportSize(size);const sized=await funnelFacts(target);
+      note("get_started_funnel_first_step_fits_the_first_screen_"+(open?"open":"closed")+"_"+size.width,firstScreenProblems(sized,wide,open).length===0,{problems:firstScreenProblems(sized,wide,open)});
+    }
+  };
+  const signedInFunnel=(credential,covered)=>async (target,note)=>{
+    await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
+    await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
+    await target.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
+    const facts=await funnelFacts(target);
+    if(covered){note("get_started_funnel_tells_an_invited_account_the_invitation_covers_it",facts.state==="plan"&&facts.title==="Your invitation covers Baltor Pro"&&!facts.subscribe
+      &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup",facts);return;}
+    let link="";
+    if(facts.subscribe){await target.click("#funnel-subscribe");
+      await target.waitForFunction(()=>document.querySelector("#funnel-plan-message a")!==null||document.getElementById("funnel-plan-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
+      link=await target.evaluate(()=>document.querySelector("#funnel-plan-message a")?.href||"");}
+    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Baltor Pro"&&facts.subscribe&&facts.primaries.length===1
+      &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $29 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
+  };
+  /* A scenario that needs a second visit opens a second context, as a person opening the link on another device would. */
+  const inSecondContext=async (mutation,tracker,run)=>{const {context:later,page:second}=await openJourney(mutation,undefined,tracker);try{await run(second);}finally{await later.close();}};
+  const journeyScenarios={
+    sign_up:(target,note)=>signUpJourney(target,note),
+    used_link:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>usedLink(second,note,journey));},
+    recovery:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>recoveryJourney(second,note,journey));},
+    funnel_open:funnelScenario(fixture.confirm_base,true),funnel_closed:funnelScenario(fixture.base,false),funnel_waitlist:funnelScenario(fixture.account_base,false,true),
+    invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false)};
+  for(const name of Object.keys(journeyScenarios)){
+    const {context:opened,page:target}=await openJourney(null);
+    try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
+    await opened.close();
+  }
+  /* The funnel in both states at both sizes. */
+  for(const [base,open] of [[fixture.confirm_base,true],[fixture.base,false]])for(const wide of [true,false])
+    await funnelScreenshot(base,open,wide,"-start-"+(open?"open":"closed")+"-"+(wide?"desktop":"mobile")+".png");
+  const journeyControls=[
+    {name:"call_the_provider_sign_up_from_the_page",scenario:"sign_up",path:"/assets/service.js",find:"try { await requestAccountLink(\"signup\", $(field).value.trim()); message(status, signupSent); sent(); }",
+     replacement:"try { await identityClient.auth.signUp({email:$(field).value.trim(),password:$(field).value.trim()}); message(status, signupSent); sent(); }",expected:["sign_up_sends_the_address_alone_to_this_service_and_never_calls_the_provider_sign_up"]},
+    {name:"keep_the_token_in_the_address",scenario:"sign_up",path:"/assets/service.js",find:'history.replaceState({}, "", "/auth/confirm");',replacement:"",expected:["the_confirmation_page_clears_the_token_from_the_address_and_asks_for_a_password_first"]},
+    {name:"open_the_account_without_a_new_password",scenario:"sign_up",path:"/assets/service.js",find:"const updated = await client.auth.updateUser({password});",replacement:"const updated = {error:null};",
+     expected:["the_new_password_is_set_before_the_account_opens","a_password_chosen_first_by_someone_else_no_longer_opens_the_account"]},
+    {name:"offer_payment_while_checkout_is_closed",scenario:"sign_up",path:"/assets/service.js",find:"(checkout ? funnelPlans.checkout : funnelPlans.unpaid)",replacement:"funnelPlans.checkout",expected:["get_started_funnel_offers_no_payment_while_checkout_is_closed"]},
+    {name:"take_a_used_link_for_a_sign_in",scenario:"used_link",path:"/assets/service.js",find:"if (verified.error || !verified.data?.session) { showConfirmation(); message(\"confirm-message\", \"\"); return; }",replacement:"",expected:["a_used_link_says_so_plainly_and_offers_a_new_one"]},
+    {name:"refuse_recovery_links",scenario:"recovery",path:"/assets/service.js",find:'const confirmTypes = ["signup", "recovery"];',replacement:'const confirmTypes = ["signup"];',expected:["recovery_reaches_the_same_choose_a_password_page"]},
+    {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'registrationOpen ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
+    {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'registrationOpen ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_waiting_list_are_closed"]},
+    {name:"push_the_first_step_below_the_first_screen_open",scenario:"funnel_open",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_open_1440","get_started_funnel_first_step_fits_the_first_screen_open_390"]},
+    {name:"push_the_first_step_below_the_first_screen_closed",scenario:"funnel_closed",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_closed_1440","get_started_funnel_first_step_fits_the_first_screen_closed_390"]},
+    {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_an_invited_account_the_invitation_covers_it"]},
+    {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
+  for(const control of journeyControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let problem="";const tracker={applied:false},mutation={path:control.path,find:control.find,replacement:control.replacement};
+    const {context:opened,page:target}=await openJourney(mutation,undefined,tracker);
+    try{await journeyScenarios[control.scenario](target,note,mutation,tracker);}catch(error){problem=safeError(error);}
+    await opened.close();
+    const applied=tracker.applied,missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
+  }
+  await runSignupSessionBoundaries(browser,fixture,check);
+  for(const [name,expected] of [["omit_invalidation",["a_stale_confirmation_never_changes_the_new_sessions_password"]],
+    ["omit_async_guards",["disconnect_during_verify_never_reactivates_the_page","disconnect_during_password_never_reactivates_the_page"]]]){
+    const failed=[];const {mutationApplied}=await runSignupSessionBoundaries(browser,fixture,(name,passed)=>{if(!passed)failed.push(name);},name);
+    const detected=mutationApplied&&expected.every(name=>failed.includes(name));
+    mutants.push({name:"signup_session_"+name,applied:mutationApplied,detected,required_checks:expected,failed_checks:failed,missed_checks:expected.filter(name=>!failed.includes(name))});
+    check("signup_session_guard_removal_detected_"+name,detected,{failed});
+  }
   /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
      form leads the waiting list page, a page of its own again since September 23, 2026, which every page reaches through the one
      primary action of the header, "Request an invitation" at /waitlist while account creation is closed. The Get started page
@@ -2035,7 +2258,9 @@ try {
   check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
   await page.goto(fixture.account_base+"/pricing"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
   await page.locator("#header-primary").click();
-  check("a_service_with_a_waiting_list_opens_the_invitation_form_from_the_header",new URL(page.url()).pathname===accessPaths.closed&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
+  const enteredFunnel=new URL(page.url()).pathname===accessPaths.closed&&await page.locator("#funnel-invite").isVisible();
+  if(enteredFunnel)await page.locator("#funnel-invite").click();
+  check("a_service_with_a_waiting_list_opens_the_invitation_form_from_the_header",enteredFunnel&&new URL(page.url()).pathname==="/waitlist"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
   const invitationPage=async target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
     form:Boolean(document.querySelector('[data-view="waitlist"] #waitlist-form')?.getClientRects().length),formOnGetStarted:Boolean(document.querySelector('[data-view="setup"] #waitlist-form'))}));
   const ownInvitationPage=state=>JSON.stringify(state.views)===JSON.stringify(["waitlist"])&&state.title.endsWith("| Request an invitation")&&state.form&&!state.formOnGetStarted;
@@ -2523,12 +2748,13 @@ finally{
   if(browser)await browser.close(); child.stdin.end("\n");
   await new Promise(resolve=>{if(child.exitCode!==null)return resolve();const timer=setTimeout(()=>{child.kill("SIGTERM");resolve();},5000);child.once("exit",()=>{clearTimeout(timer);resolve();});}); lines.close();
 }
-const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
+const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py','account_email.py','account_email_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
 /* Version 2 of this report carries the removed-guard controls, and all_passed is true only when every check passed and every control was detected. Version 1 had neither. */
 const result={record_type:"service_workspace_browser_checks/v2",scope:"real browser and loopback service; provider fixtures only; every page asset is served by the service",external_provider_calls:0,
   /* What the check supplied instead of the running system, named on the face of the report. Offered,
      fetched, loaded and used are separate facts, and so is substituted. */
   harness_substitutions:["a removed-guard control answers /assets/catalogue-browser.js with changed bytes, in memory, for that control run only",
-    "the held download checks wrap crypto.subtle.digest in the page so one measurement can be held, which puts the sign-out inside the window the guard defends"],
+    "the held download checks wrap crypto.subtle.digest in the page so one measurement can be held, which puts the sign-out inside the window the guard defends",
+    "the sign-up journey's identity project is the stand-in from account_email_checks.py on a loopback socket, and its mail provider is the same stand-in's outbox"],
   checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
 writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,mutants_detected:result.mutants_detected,mutants:mutants.length,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;

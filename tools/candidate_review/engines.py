@@ -8,6 +8,15 @@ A named check keeps this table and the configuration's vocabulary equal.
 from __future__ import annotations
 
 from .configuration import FIXTURE_ENGINE_KIND
+from .native_prechecks import (
+    NativeDuplicateRules,
+    NativeEffectsRules,
+    NativeFormatRules,
+    NativeLicenceRules,
+    NativeMinHashRules,
+    NativeSafetyRules,
+    NativeSecretRules,
+)
 from .prechecks.agent_skills_reference import AgentSkillsReference
 from .prechecks.duplicates import ExactShingleJaccard
 from .prechecks.effects import EffectRules
@@ -31,6 +40,13 @@ PRECHECK_ENGINE_FACTORIES = {
     "builtin_secret_patterns": SecretPatterns,
     "exact_shingle_jaccard": ExactShingleJaccard,
     "datasketch_minhash_lsh": DatasketchMinHash,
+    "native_licence_rules": NativeLicenceRules,
+    "native_format_rules": NativeFormatRules,
+    "native_safety_rules": NativeSafetyRules,
+    "native_effects_rules": NativeEffectsRules,
+    "native_secret_rules": NativeSecretRules,
+    "native_duplicate_rules": NativeDuplicateRules,
+    "native_minhash_rules": NativeMinHashRules,
 }
 #: The engines that need no external program and no optional library, so they are always available.
 BUILTIN_PRECHECK_ENGINES = frozenset({"builtin_licence_rules", "builtin_format_rules", "builtin_static_rules",

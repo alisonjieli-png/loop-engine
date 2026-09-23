@@ -1,0 +1,19 @@
+{
+  "events": [
+    {
+      "at": "2026-09-22T14:04:00Z",
+      "id": "alert",
+      "observation": "Error-rate alert fired."
+    },
+    {
+      "at": "2026-09-22T14:00:00Z",
+      "id": "deploy",
+      "observation": "Release deployment completed."
+    },
+    {
+      "at": "2026-09-22T14:07:00Z",
+      "id": "recovery",
+      "observation": "Error-rate alert cleared with no recorded intervention."
+    }
+  ]
+}

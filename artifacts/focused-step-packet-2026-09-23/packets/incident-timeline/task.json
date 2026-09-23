@@ -1,0 +1,15 @@
+{
+  "dependency_ids": [],
+  "effects": [],
+  "harness_style": "claude_code",
+  "kind": "reason",
+  "mode": "deterministic",
+  "model_calls_authorized": false,
+  "node_id": "order-events",
+  "objective": "Order the supplied incident observations by time and identify what they do and do not establish about the cause.",
+  "output_contract_refs": [
+    "incident_timeline/v1"
+  ],
+  "record_type": "node_assignment/v3",
+  "required_capabilities": []
+}

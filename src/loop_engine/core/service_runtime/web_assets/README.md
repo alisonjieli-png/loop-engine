@@ -21,8 +21,11 @@ The owner, September 23, 2026: "Get Setup" is "a guide on how to get setup and
 'get started' is the sign up and registration/pay funnel". So every public
 link or button that starts the access journey says "Get started" and opens
 `/get-started`, the funnel, in every state; the funnel adapts, so no label
-switches. Until the funnel page is merged, `/get-started` opens the waiting
-list page.
+switches. The served funnel accepts an email when registration is open,
+offers the configured waiting list when closed, and otherwise offers sign-in.
+Its confirmation page clears link tokens from the address, verifies the link,
+sets the password and then activates the account. A session change invalidates
+a pending confirmation; late replies cannot reconnect a disconnected page.
 
 Two pages keep page links of their own, each by its own name:
 
@@ -155,3 +158,15 @@ hold the rules these pages follow. Every page, header entry and footer link is
 listed in `web_site_map.json` beside `web_pages.py`, and the measured rules in
 `web_layout_standard.json`. A page, link or section leaves the website only
 with a dated removal row in that record.
+
+## Customer documentation
+
+The versioned `documentation-index.json` supplies the four sections and seven
+entries at `/docs`. Six bodies are built from the customer Markdown guides;
+the setup entry opens `/setup`. `documentation.js` validates the index and
+rebuilds each body's allowed markup. `documentation.css` provides the index,
+page navigation and contents list using the website's design tokens.
+
+Use [the documentation maintenance guide](../../../../../docs/guides/website-documentation-view.md)
+for source ownership, rebuilding, route checks and browser acceptance. The
+bodies and index are public static files; they contain no account credentials.

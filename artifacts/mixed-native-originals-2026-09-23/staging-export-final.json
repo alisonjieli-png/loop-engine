@@ -1,0 +1,1686 @@
+{
+  "record_type": "catalog_export/v1",
+  "records": [
+    {
+      "record_id": "original.mixed_native.schedule_dag_earliest_times",
+      "record_version": "0d618b8c1700518ae3b9d0605ab82977c00914d623d1f2ea262bb9e38d51bbd5",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "1ddbc780a547ef821bc8c309c565f1f49ca0945006c1142013575cb2aa81b75f",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "schedule dag earliest times",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Schedule earliest times in a dependency graph"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/schedule_dag_earliest_times.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "ed050bedfee782064c5bc3e596f40bbaa13c341f33a79a0eeba67b17cdb6a786",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2326
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 1027
+            },
+            {
+              "digest": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 870
+            },
+            {
+              "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 274
+            },
+            {
+              "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 238
+            },
+            {
+              "digest": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393",
+              "media_type": "text/x-python",
+              "path": "tools/schedule_dag_earliest_times.py",
+              "role": "executable_tool",
+              "size_bytes": 2699
+            },
+            {
+              "digest": "b4980ff0916179f69bbfc9716ce3d06a773293ff354b7705dcd7b9679b5ceeff",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1487
+            }
+          ]
+        },
+        "package_digest": "03ea8b8016d6352eb36453c6e53455c0d691988bb559c006a5f7c10246d8484c",
+        "package_root": "packages/schedule_dag_earliest_times",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Schedule earliest times in a dependency graph\n\nCompute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.\n",
+        "title": "Schedule earliest times in a dependency graph"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.cover_pairwise_configuration_values",
+      "record_version": "59fee4fe597dda2fab487842ffc2d2cdff5d5efb3200b9dcee6c3608e7e34c65",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "f87f62fbaa138f6a4d47847264da180747bdd9e782a46b95e51317ca7f47f97c",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "cover pairwise configuration values",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Cover pairs of configuration values"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/cover_pairwise_configuration_values.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "545b4f87957c6b6a0e5e9ebefa1b26cd1d1d3dff9ba71120582b98b0d79b5d88",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2357
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "4e2b69af12234d15966e3bfae43675f99ed5a23b5067507ef90c06a74713e919",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 646
+            },
+            {
+              "digest": "b7345153e76ccbb6a1d431f1c6cfeb981c0a42858a0f2e5c3a60206500e51bcb",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 814
+            },
+            {
+              "digest": "5c75983ace5afa7dd0b7ffe0d46526ba6e66e6e294aab442ce4177064c168345",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 139
+            },
+            {
+              "digest": "ba3ca3f7a86967e77892716bab040bb15fb1f076e43aa5602c68b263d8db0b35",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 304
+            },
+            {
+              "digest": "9f84e058c0f65b37d7275c197e0e80a0670160cadcaef80d2db2f549dbd72cca",
+              "media_type": "text/x-python",
+              "path": "tools/cover_pairwise_configuration_values.py",
+              "role": "executable_tool",
+              "size_bytes": 2798
+            },
+            {
+              "digest": "76408bd9ae42322985a9c800c3444785d808e9f4654b00bb97a6ea5647dc0b1e",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1402
+            }
+          ]
+        },
+        "package_digest": "29dd6f93a9cf962b36aca0f171e474e7e8860b676f2ec7bbff2412577ce91abc",
+        "package_root": "packages/cover_pairwise_configuration_values",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Construct deterministic test rows that cover every pair of values across two to six independent configuration factors.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Cover pairs of configuration values\n\nConstruct deterministic test rows that cover every pair of values across two to six independent configuration factors.\n",
+        "title": "Cover pairs of configuration values"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.compare_primitive_object_contracts",
+      "record_version": "7f26e71aa48c61ae451bd315b332756ddda4d6f12834c9bc536798a00e3a5669",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "7994d4011cb3707d88786a2dca88cc80baa0ca4bd8c09b2ff551a314c2ddda86",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "compare primitive object contracts",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Compare primitive object input contracts"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/compare_primitive_object_contracts.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "2c0a1b307d8428561757c9ad547d58801ca70cb303d52b36049bab734c1145cf",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2380
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "782de48439be2f1b0e8d500599cecadf066548ace83cfdbd45fcb17d9fb0ba9a",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 2115
+            },
+            {
+              "digest": "eae89d0bc6ce007d543fc366baab4cf47c158f0017d1e4dbaa739f1afc7506ab",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 852
+            },
+            {
+              "digest": "a4a6cc149fefe7c054671580e3e5f59c40e4a2f02c05daf1af6b0bd17b4dc834",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 250
+            },
+            {
+              "digest": "4755dd338cf0284d8b40ce2857839e118c9faf5059c955345d9590196c82a6d5",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 51
+            },
+            {
+              "digest": "e971347d2b0c59fd43b9368995b7836416cad32c80d57378f75cb89f1f234b06",
+              "media_type": "text/x-python",
+              "path": "tools/compare_primitive_object_contracts.py",
+              "role": "executable_tool",
+              "size_bytes": 3161
+            },
+            {
+              "digest": "793be146d18d6c9d6950305d9b28df6390f2614fe26c293012fe948fd339acce",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1845
+            }
+          ]
+        },
+        "package_digest": "7181cdf967db138e7f50f20cb2590bb34a8c90c5aef5362fe73f55874f147380",
+        "package_root": "packages/compare_primitive_object_contracts",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Find when a proposed primitive-field object contract would reject a value admitted by the prior contract.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Compare primitive object input contracts\n\nFind when a proposed primitive-field object contract would reject a value admitted by the prior contract.\n",
+        "title": "Compare primitive object input contracts"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.pack_first_fit_decreasing_batches",
+      "record_version": "e4801cb36bc1f3ff5f1ec2d70b37cb7aa9280684739a1b8a01b2fb446ffd7837",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "ea06010e98bdde4736827d8efae04e09b5308694c69e07445895021d4e86ceb5",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "pack first fit decreasing batches",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Pack items with first fit decreasing"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/pack_first_fit_decreasing_batches.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "254106a57efb564b89c9910923f9291adb0f3735fb3dfe3b85d73345d603590c",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2338
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "4f813398c2dd954cd9c14fa9b7c820454761c0b0f2821926da774828c60c07ce",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 816
+            },
+            {
+              "digest": "ec9e1830bb383a0a2e795790348f9469ccc6c4ac62f5b508ff9a34611b7974b7",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 871
+            },
+            {
+              "digest": "c8dc906670ecdfd9b4a5f8aa4285836073ef3deca9536be02f699fd15bece426",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 221
+            },
+            {
+              "digest": "6a902051293c396710bc11d75f93930f79afac5e537e54f45589057d4177182f",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 185
+            },
+            {
+              "digest": "308c686ca8e9e9bf105d137bb001aff149d0cc402e7913688583add91450745e",
+              "media_type": "text/x-python",
+              "path": "tools/pack_first_fit_decreasing_batches.py",
+              "role": "executable_tool",
+              "size_bytes": 2514
+            },
+            {
+              "digest": "9e95d4e1e3d9b22f6bc5e3265b0fd0e9e48be7008df0c93ac0f9130c175e7628",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1053
+            }
+          ]
+        },
+        "package_digest": "fdb931f908c53467f270d024699d04992b941cd35cb89441d6c4bfff1e10797f",
+        "package_root": "packages/pack_first_fit_decreasing_batches",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Group positive integer item sizes into capacity-bounded batches using deterministic first fit decreasing.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Pack items with first fit decreasing\n\nGroup positive integer item sizes into capacity-bounded batches using deterministic first fit decreasing.\n",
+        "title": "Pack items with first fit decreasing"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.audit_functional_dependency_rows",
+      "record_version": "06bfeb07d7f98bda906ec7a6917ff6f457d6b0c667f7bd29e0e087b705e89aa5",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "c59de308ed46ec8e80c2d158ac5c028dfd64cb514256c59d91affbf3962342ed",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "audit functional dependency rows",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Audit a declared functional dependency"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/audit_functional_dependency_rows.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "4cba61ecdcf24fe4e7fa85825bd18eb7a67793f63feceead84ccf337fa70b614",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2375
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "7a6510c175984134b1dfc3301d54e64711b56b7488fabcf721e1cc7be6833a43",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 1006
+            },
+            {
+              "digest": "c9b38b3b5be9ecca52fd66bb9af89e0b2856d91e2c4ba526e897a57b63c3c404",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 1588
+            },
+            {
+              "digest": "3373c627b6b641a893f663203c347a9ce18db3af44891b32de6dc664833a9279",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 209
+            },
+            {
+              "digest": "b8e44054fb1d639adcf355dde5b15020e24de0c5f720c79d8c2db38fc70a751d",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 240
+            },
+            {
+              "digest": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403",
+              "media_type": "text/x-python",
+              "path": "tools/audit_functional_dependency_rows.py",
+              "role": "executable_tool",
+              "size_bytes": 3028
+            },
+            {
+              "digest": "5f466dda3d2f22c68a24df3e95da922d702a8d936646c02944ee9f8149797ad0",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1417
+            }
+          ]
+        },
+        "package_digest": "0120acc6744d56b69447e2dc40f740e8b248ee5c2a631f46b654eab9f254063f",
+        "package_root": "packages/audit_functional_dependency_rows",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Report determinant groups that map to more than one distinct dependent value tuple in supplied rows.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Audit a declared functional dependency\n\nReport determinant groups that map to more than one distinct dependent value tuple in supplied rows.\n",
+        "title": "Audit a declared functional dependency"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.find_strongly_connected_components",
+      "record_version": "4797c7a372a3f0aed1ed7d7aefd7f71adeb63b2739e7baffcd5ce073eb7216b6",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "0c25de924bc8e0b1c63f9a815f7f8eada8b49a9fce6b5f3e3d8d4c9d23705cb2",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "find strongly connected components",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Find mutually reachable graph components"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/find_strongly_connected_components.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "4edac81bba49a9eec7737d3d3dd4a1b61909f5ab697b836bb107593b4c69c822",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2367
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "c8aff0f097a2fe94732bb7d6ab2866f4d41b129f0d05c2f3fe45687a0b6ae32a",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 754
+            },
+            {
+              "digest": "c3a9832cbf0081e6d43cd1e3cf28f2ced5be628ebc084974917f28bed5306f57",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 891
+            },
+            {
+              "digest": "f12740e4a0b6513c1ab5308b2056b160eed768b37d72fcfe757b855792e3e4b2",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 169
+            },
+            {
+              "digest": "8edffba35f638d49e3609d266c07deb2b28fb340d3816f48d8fe061d9794276d",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 145
+            },
+            {
+              "digest": "bb10dce38ac6e06b0c595cb12dce777f18248e0921bca5d64f5215884a2b2d20",
+              "media_type": "text/x-python",
+              "path": "tools/find_strongly_connected_components.py",
+              "role": "executable_tool",
+              "size_bytes": 3276
+            },
+            {
+              "digest": "b7efff902cdb3ebd0bca58d82aa50358c86ee47909f467afba0c45589df2da91",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1193
+            }
+          ]
+        },
+        "package_digest": "94ba49ea3fd8d276bd5610003fd3a2c170714826c2ecef63118aa470f97fdb99",
+        "package_root": "packages/find_strongly_connected_components",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Partition a bounded directed graph into strongly connected components and identify cyclic components including self-loops.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Find mutually reachable graph components\n\nPartition a bounded directed graph into strongly connected components and identify cyclic components including self-loops.\n",
+        "title": "Find mutually reachable graph components"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.simulate_exact_token_bucket",
+      "record_version": "f48c3e3e7477762e00d0288cc0604f76f5a96206c2a1a594a776d0d75a4ce3eb",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "3672022f1adaa566ea3c8675b526da66308c47a440da1545d6aa44da6ae8dd9f",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "simulate exact token bucket",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Simulate an exact token bucket"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/simulate_exact_token_bucket.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "e44f521dbe10b452ffd88490db3a49da9dc4c064de5206effcc8f35412ad7845",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2348
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "bb10ddb8e813018e9143bd722dfff87768660c1e8df9400553588e4d16c1a407",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 1210
+            },
+            {
+              "digest": "e3a3e646aaca967509ddc7ba720e7ef3252d6260138388cfe18fed47be988cb3",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 1124
+            },
+            {
+              "digest": "3aef16af4e7dd97414e68e4ed17387e2a8e8b2c751080f62fdace25de511892a",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 362
+            },
+            {
+              "digest": "06d58ce37b03bbceb6c14862e718af53966db52b70234d641113aac1792a0f1f",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 562
+            },
+            {
+              "digest": "108436f5b87b7b931caf4947cca9ce7e8afdb61d006b4b9ed25de4c402d42a43",
+              "media_type": "text/x-python",
+              "path": "tools/simulate_exact_token_bucket.py",
+              "role": "executable_tool",
+              "size_bytes": 2923
+            },
+            {
+              "digest": "de0d4a9484031210445be39dbdd1dae144219eeb0402a9c2c872bafa0b2b8a82",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 2231
+            }
+          ]
+        },
+        "package_digest": "2a5ea1551bb2506236816334110ac5094ca5a2ea2c39e9f1630b48c45b5ab76e",
+        "package_root": "packages/simulate_exact_token_bucket",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Replay ordered timestamped token requests against one bounded bucket using exact fractional refill arithmetic.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Simulate an exact token bucket\n\nReplay ordered timestamped token requests against one bounded bucket using exact fractional refill arithmetic.\n",
+        "title": "Simulate an exact token bucket"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.audit_boolean_rule_coverage",
+      "record_version": "48ca20ab90f98b0e66ba60cbfd7249c0c0d5721008870674ac05e5eeeeadeea9",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "3e18c16674e6fca7791364d54fbd13c8d465c001c442604373020f5c71b77ac5",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "audit boolean rule coverage",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Audit Boolean rule coverage and conflicts"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/audit_boolean_rule_coverage.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "77069a87601de7b31d9f979b14c9ceeb2dbd6f0253748ce6561be8165cce14ad",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2356
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "d7a6eb4ee3145fcd504b6b90aa319925ace77e187978e952146532c8c1debd0e",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 1276
+            },
+            {
+              "digest": "e996bbf35183cfa6073e4537f4d5920464f1c3e75b725cbab21b2bc5df35fcf8",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 1278
+            },
+            {
+              "digest": "65c16f84a7535e7177549ea9b3bd351ed1b7125264a8dfd9be0fde43e189f040",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 246
+            },
+            {
+              "digest": "88070c0ff667c26309a667deeb82c839a150f37eb3bee5f6e9a8615dd7672b97",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 67
+            },
+            {
+              "digest": "b0e17802ec7da2b902b8f380489a7eeca4fdca51adc031a3456f2a86fa783568",
+              "media_type": "text/x-python",
+              "path": "tools/audit_boolean_rule_coverage.py",
+              "role": "executable_tool",
+              "size_bytes": 2994
+            },
+            {
+              "digest": "c4868c16ed08a199467f30ae54e504886e711f827c4850943b80b745462e1563",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1688
+            }
+          ]
+        },
+        "package_digest": "e15774569b995286404c81f2e55c2ecb839fd5ebc8a9525f6b7049a3e04162b9",
+        "package_root": "packages/audit_boolean_rule_coverage",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Enumerate every assignment of up to six Boolean variables and report missing or conflicting routing decisions.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Audit Boolean rule coverage and conflicts\n\nEnumerate every assignment of up to six Boolean variables and report missing or conflicting routing decisions.\n",
+        "title": "Audit Boolean rule coverage and conflicts"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.decode_u16_length_prefixed_frames",
+      "record_version": "64678ef4ce2eb01e6fe50a475b0cd422da49353a69b021dd0ebad4a6632711ee",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "89fe34dd4961a3007c188af5d956a4963874b3876e2dcecac659e45e8648c9cc",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "decode u16 length prefixed frames",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Decode two-byte length-prefixed records"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/decode_u16_length_prefixed_frames.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "3295b14318d51ae038007afab14426d255ace10db1b616dec4e30f72815eeb2d",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2380
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "802ce5f4e57bb97c2536cdf1949969e991be41da7d879b6b3e858742eb4f54ab",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 292
+            },
+            {
+              "digest": "b75927f4fd2cc521c34d46083666ed3390c7210ecd9407815e2feaa04d204492",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 508
+            },
+            {
+              "digest": "2e52f2829baad4df0d8eae7eea51692af9d7244349411a0a14d25c43a73598e6",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 30
+            },
+            {
+              "digest": "ce341dae536c4e1591337e1c9802803d9c424911c8cddcf83e5dabe058285ac9",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 61
+            },
+            {
+              "digest": "339672c2df402a197ced971111f9998fdb8367fd02f76bfe136fd3377e88d6a7",
+              "media_type": "text/x-python",
+              "path": "tools/decode_u16_length_prefixed_frames.py",
+              "role": "executable_tool",
+              "size_bytes": 2366
+            },
+            {
+              "digest": "4c922bb9c606ac1dc3aafde07fcfd7d1a2200669866035072d2aefaffca3c9e0",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 517
+            }
+          ]
+        },
+        "package_digest": "4dda3bfacd5440295ac5cb56ffb537cffdbd826ef877ce7ee2b1b2597222bbc6",
+        "package_root": "packages/decode_u16_length_prefixed_frames",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Split a bounded hexadecimal byte stream into complete records prefixed by unsigned two-byte big-endian lengths.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Decode two-byte length-prefixed records\n\nSplit a bounded hexadecimal byte stream into complete records prefixed by unsigned two-byte big-endian lengths.\n",
+        "title": "Decode two-byte length-prefixed records"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.evaluate_bounded_rational_expression",
+      "record_version": "2f0ae3765e85b6e3ce8740401ec8d24cd5729aac263a882c026000b8b49e888f",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "ecbc1182cd734dd500624a3b01e19650a5ac53b58794d2606c745810c182748b",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "evaluate bounded rational expression",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Evaluate a bounded rational expression"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/evaluate_bounded_rational_expression.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "d9c1243b1d8e3e6b48ac0de7467b95ce2c9d2f6df2778a66b558c8497d26e2bf",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2424
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "b8fc031c28140e887e315daa969943007504970cc3663384696a55b4c70de121",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 273
+            },
+            {
+              "digest": "733d496c8b13ef658316cbf85d83a1647728f72dee5a5a28eff2967393f6c8e4",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 317
+            },
+            {
+              "digest": "71331b2c01181302e6e208747ffdd1c77725b1e51876069ec1fefe34d6c7a5a3",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 32
+            },
+            {
+              "digest": "f1a6af4533db6127d7531442e677c2ae14b03b87ed0bd419e8180c12baa315e3",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 41
+            },
+            {
+              "digest": "8f080aa48538dcb346b2743983855f440947874d1951bfe8373e807dc3b06d47",
+              "media_type": "text/x-python",
+              "path": "tools/evaluate_bounded_rational_expression.py",
+              "role": "executable_tool",
+              "size_bytes": 3179
+            },
+            {
+              "digest": "b7b8385d1bacb4fcc28a3cb1e304f5d43afc28bedc920d668dbe1dd9f79e5bd4",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 645
+            }
+          ]
+        },
+        "package_digest": "d8793e1f11a24a99807e636e4d909984573201adda323182d1c7bbe4dc36b5c0",
+        "package_root": "packages/evaluate_bounded_rational_expression",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Evaluate integer arithmetic with parentheses, unary signs, addition, subtraction, multiplication and true division as an exact fraction.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Evaluate a bounded rational expression\n\nEvaluate integer arithmetic with parentheses, unary signs, addition, subtraction, multiplication and true division as an exact fraction.\n",
+        "title": "Evaluate a bounded rational expression"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.resolve_literal_named_template",
+      "record_version": "3fbf2f7472a63de722193cd6252a23dd08e3009f31e546e301a0b7a11f82b52a",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "33ac34f8c7b2efff8c70f341abd4cb5713df7d68d163404ff475357b83053d09",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "resolve literal named template",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Resolve a literal named template"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/resolve_literal_named_template.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "03c110d57194c682941c1975ea434bdac0bea477dcd82c0e197856c8b2e998bd",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2362
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "337dbb1f8a7a32a65db56493c5faec561e6519e5cd2a3094de5a6f1b2543bf57",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 525
+            },
+            {
+              "digest": "13579735830f419db13f43c9757c1a7265c0a5ba7635de37979e284905cf4e13",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 241
+            },
+            {
+              "digest": "1ae0f855ef227c0adf3bb4ac563c9412fbdaa7fac8e07a17d2fc7a4a929af1e0",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 77
+            },
+            {
+              "digest": "106c2d3063d9accfb09eeaaa8480af60d8ac64210b871a4084f74cbd8d333f3f",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 31
+            },
+            {
+              "digest": "26091b7b72f150f098dfdce2a421b272271927bd2d93ca8c360440ae5586ca49",
+              "media_type": "text/x-python",
+              "path": "tools/resolve_literal_named_template.py",
+              "role": "executable_tool",
+              "size_bytes": 2381
+            },
+            {
+              "digest": "8092d86e50260f5a8f83d1fd696453e6ec0ce3fc2790b992edbc845e4e38e6ab",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 792
+            }
+          ]
+        },
+        "package_digest": "31c2d135a962bb0acd7ee8b0b164ec3fc465d9b8aace8745ef47ba66699cf2b7",
+        "package_root": "packages/resolve_literal_named_template",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Replace declared ${name} placeholders exactly once with supplied literal strings and refuse missing or unused variables.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Resolve a literal named template\n\nReplace declared ${name} placeholders exactly once with supplied literal strings and refuse missing or unused variables.\n",
+        "title": "Resolve a literal named template"
+      }
+    },
+    {
+      "record_id": "original.mixed_native.project_json_pointer_values",
+      "record_version": "8a2c40091dcfa47b1775628f8b3249c7bff3042fa2e5870374f629eeed659165",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "original.mixed_native",
+      "attributes": {
+        "content_sha256": "1fe7ee0b458cb6b0bb5ba6439ba857ced2d08542f4c3b573ffcd16763339bc20",
+        "family": "deterministic_native_method",
+        "license_state": "pending_review",
+        "tags": [
+          "project json pointer values",
+          "standard library",
+          "json input",
+          "deterministic tool"
+        ],
+        "title": "Project values using JSON Pointer"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/project_json_pointer_values.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Python>=3.10 standard library; no third-party packages"
+        ],
+        "execution_available": false,
+        "family": "deterministic_native_method",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "1cd98aeda346ff98374841a339055c6293385fc589425c24af0a4025325d7db2",
+              "media_type": "text/markdown",
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "size_bytes": 2390
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "e6ead281ce74aae61f3cc62f6e632df9425e6206167139a220ae800f6b0e950f",
+              "media_type": "application/schema+json",
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "size_bytes": 378
+            },
+            {
+              "digest": "91580ac280c14a73838768985e29cadca910a1896cf1e6f2f89f7d816d323f24",
+              "media_type": "application/schema+json",
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "size_bytes": 280
+            },
+            {
+              "digest": "2de0dfdc01c07d71fb1b3882addef66195f4ab54e642f1c6ee4db00b3bd06729",
+              "media_type": "application/json",
+              "path": "examples/input.json",
+              "role": "other",
+              "size_bytes": 154
+            },
+            {
+              "digest": "0ee12b297fc46f34ccfbcb64dc4a3e1ff9e542df674b079666df70a6b46cf1d9",
+              "media_type": "application/json",
+              "path": "examples/output.json",
+              "role": "other",
+              "size_bytes": 55
+            },
+            {
+              "digest": "01ec4acb9514b2c485aa4eac884cae4e281bff2fa5757e661f182872aa21040d",
+              "media_type": "text/x-python",
+              "path": "tools/project_json_pointer_values.py",
+              "role": "executable_tool",
+              "size_bytes": 2767
+            },
+            {
+              "digest": "c9005c9ed1a2f21e929a4cc4ccedd259a562e6ce461d0af2594cd282a3b894fc",
+              "media_type": "application/json",
+              "path": "verification/cases.json",
+              "role": "other",
+              "size_bytes": 1038
+            }
+          ]
+        },
+        "package_digest": "939b4b57e86d635f32042270485863245231213d0cfc05a3a28b93e5a74802ef",
+        "package_root": "packages/project_json_pointer_values",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_original_mixed_native_authoring/v1",
+          "producer_identity": "Codex original mixed native authoring session"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Select values from a supplied JSON document using JSON Pointer string-form paths, with strict escape and array-index checks.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "symbols": [
+          "solve"
+        ],
+        "text": "# Project values using JSON Pointer\n\nSelect values from a supplied JSON document using JSON Pointer string-form paths, with strict escape and array-index checks.\n",
+        "title": "Project values using JSON Pointer"
+      }
+    }
+  ],
+  "count": 12
+}

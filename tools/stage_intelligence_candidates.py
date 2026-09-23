@@ -4,13 +4,16 @@ This development tool creates a new isolated database, not a hosted catalogue.
 It exports acknowledged candidate records and tests normal versus review search.
 It grants no execution, disclosure, qualification or promotion authority.
 
-Two specification versions are read. Version one cites files inside this
+Three specification versions are read. Version one cites files inside this
 repository. Version two carries material from outside it: each row names its
 outside provenance (outside_source_provenance/v1, read by the library
 ingestion component, which refuses a row without it), how its text was
 authored, the licence of that text, its declared effects and the files of its
 package, and a row whose authoring or licence disagrees with its licence
-evidence is refused. Both versions stage only candidates.
+evidence is refused. Version three carries original native packages with exact
+file roles, bytes, producer method, dependencies and source provenance. It needs
+an explicit package root and verifies the complete tree before staging. All
+versions stage only candidates.
 """
 from __future__ import annotations
 
@@ -23,6 +26,12 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import time
+import sys
+
+if __name__ == "__main__":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from tools.stage_intelligence_candidates import main as canonical_main
+    raise SystemExit(canonical_main())
 
 from loop_engine.catalog.protocol import CatalogRecordPrecondition, CatalogWriteBatch, require_atomic_batch
 from loop_engine.catalog.query import IntelligenceQuery
@@ -32,6 +41,7 @@ from loop_engine.core.intelligence_layers import IntelligenceSearchRequest, quer
 from loop_engine.core.library_ingestion.provenance import read_outside_provenance
 from loop_engine.core.library_ingestion.record_rules import LibraryRecordError
 from loop_engine.core.store_serve import StoreRecord
+from loop_engine.core.service_runtime.catalogue_bundle import strict_json
 
 # These are existing catalogue identifiers and their public retrieval projection.
 CATALOG_LAYERS = dict(zip(("context", "code", "runtime_history_solution", "user_feedback"), LAYERS))
@@ -56,6 +66,7 @@ class CandidateStageRequest:
     repository: Path
     namespace: str
     writes_authorized: bool = False
+    package_root: Path | None = None
 
 
 def _package_file(value) -> dict:
@@ -139,13 +150,16 @@ def _compile_outside(rows, request: CandidateStageRequest) -> list[dict]:
 
 
 def compile_candidates(specifications: dict, request: CandidateStageRequest) -> list[dict]:
-    if specifications.get("record_type") not in (LOCAL_SPECIFICATIONS, OUTSIDE_SPECIFICATIONS):
+    from tools.native_harness_candidates import NATIVE_SPECIFICATIONS, compile_native_candidates
+    if specifications.get("record_type") not in (LOCAL_SPECIFICATIONS, OUTSIDE_SPECIFICATIONS, NATIVE_SPECIFICATIONS):
         raise ValueError("Unsupported candidate specification contract")
     if not re.fullmatch(r"[a-z][a-z0-9_.-]{1,80}", request.namespace):
         raise ValueError("An explicit bounded namespace is required")
     rows = specifications.get("specifications")
     if not isinstance(rows, list) or not 1 <= len(rows) <= 50:
         raise ValueError("One bounded population of specifications is required")
+    if specifications["record_type"] == NATIVE_SPECIFICATIONS:
+        return compile_native_candidates(rows, request)
     if specifications["record_type"] == OUTSIDE_SPECIFICATIONS:
         return _compile_outside(rows, request)
     root, records, identities = request.repository.resolve(), [], set()
@@ -233,6 +247,8 @@ def main():
     parser.add_argument("--specifications", type=Path, required=True)
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--namespace", required=True)
+    parser.add_argument("--package-root", type=Path,
+                        help="Explicit prepared native package folder for version-three specifications")
     parser.add_argument("--authorize-isolated-staging", action="store_true")
     parser.add_argument("--export", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
@@ -241,8 +257,8 @@ def main():
             or len({path.resolve() for path in (args.database, args.export, args.report)}) != 3):
         parser.error("Explicit staging authority and three distinct new output paths are required")
     root = Path(__file__).resolve().parents[1]
-    request = CandidateStageRequest(root, args.namespace, True)
-    records = compile_candidates(json.loads(args.specifications.read_text()), request)
+    request = CandidateStageRequest(root, args.namespace, True, args.package_root)
+    records = compile_candidates(strict_json(args.specifications.read_bytes(), "specifications_unreadable"), request)
     with closing(SQLiteRecordStore(str(args.database.resolve()))) as store:
         acknowledgment = stage_candidates(store, records, request)
         selected = store.query(IntelligenceQuery(namespaces=(args.namespace,), lifecycle=("candidate",)))
@@ -258,7 +274,3 @@ def main():
             json.dump(value, stream, indent=2); stream.write("\n")
     print(json.dumps({key: report[key] for key in ("records", "families", "layers", "committed", "hosted_publication")}))
     return 0 if review["normal_search_hits"] == 0 and all(row["found_in_first_three"] for row in review["probes"]) else 1
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

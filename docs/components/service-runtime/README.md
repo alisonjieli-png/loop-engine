@@ -94,7 +94,7 @@ effect, so an older release cannot silently reinterpret a newer request.
 | Session | `service_session/v1` | `service_session/v1` |
 | Provisioning | `service_provisioning_request/v1` | `provisioning_discover/v2`, `provisioning_list/v2`, `provisioning_manifest/v2` or `provisioning_body/v2` |
 | Download | `service_provisioning_request/v1` with operation `read` | `provisioning_body/v2` |
-| Metadata search | `service_retrieval_request/v1`, with optional `filters` | `service_retrieval_result/v1`, each hit with `attributes` and `package` |
+| Metadata search | `service_retrieval_request/v2`, with optional `filters` and `authority_effects` | `service_retrieval_result/v1`, each hit with `attributes` and `package` |
 | Usage | none | `durable_tenant_usage/v1` |
 | Client access | `service_client_access_options/v1` | `service_client_access_result/v1` |
 | Administrator access | `service_client_access_options/v1` | `service_client_access_result/v1` |

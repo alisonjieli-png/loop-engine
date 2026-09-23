@@ -1,0 +1,28 @@
+{
+  "record_type": "generator_boundary_repair/v1",
+  "run_record_type": "original_native_generation_run/v4",
+  "prior_prompt_bytes": 1076,
+  "rendered_bytes": 1076,
+  "identical_prompt_bytes": true,
+  "prompt_sha256": "02436f583453916c23f9ab7c19bd1cd5a27afeb0ec475116920b27e2ceb2fe87",
+  "resource_binding": {
+    "record_type": "original_native_generation_prompt/v1",
+    "path": "tools/resources/original-native-generation-prompt-v1.json",
+    "sha256": "9fa5aef441dc91dc1acf094dd3bd3196b3545a9a5b8efb7f1ca12f6e61e8c777",
+    "render": {
+      "record_type": "prompt_resource_render/v1",
+      "bundle_ref": "original_native_generation@1.0.0",
+      "bundle_digest": "d9c505905a2ada0858572651233357172141f39eb8ba6b7d1a2038172b7de886",
+      "slot_schema_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "render_digest": "02436f583453916c23f9ab7c19bd1cd5a27afeb0ec475116920b27e2ceb2fe87",
+      "slot_value_digests": [],
+      "slot_provenance": [],
+      "trust_classes": []
+    }
+  },
+  "generator_tests_passed": 33,
+  "model_calls": 0,
+  "provider_calls": 0,
+  "production_scope": "ollama_cloud only",
+  "hardcoding_allowlist_changed": false
+}

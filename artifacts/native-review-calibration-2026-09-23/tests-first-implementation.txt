@@ -1,0 +1,13 @@
+test_all_controls_reach_semantic_review_instead_of_static_refusal (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_all_controls_reach_semantic_review_instead_of_static_refusal) ... ok
+test_approving_any_known_wrong_control_excludes_the_reviewer (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_approving_any_known_wrong_control_excludes_the_reviewer) ... ok
+test_control_digest_mutation_is_refused (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_control_digest_mutation_is_refused) ... ok
+test_controls_are_complete_bound_packages_and_labels_never_enter_prompts (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_controls_are_complete_bound_packages_and_labels_never_enter_prompts) ... ok
+test_correct_decisions_qualify_only_this_small_control_set (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_correct_decisions_qualify_only_this_small_control_set) ... ok
+test_false_refusal_invalid_answers_and_unknown_usage_stay_distinct (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_false_refusal_invalid_answers_and_unknown_usage_stay_distinct) ... ok
+test_starter_calibration_record_is_not_reinterpreted_as_native (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_starter_calibration_record_is_not_reinterpreted_as_native) ... ok
+test_unknown_versions_and_unknown_label_fields_are_refused (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_unknown_versions_and_unknown_label_fields_are_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.617s
+
+OK

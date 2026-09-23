@@ -1,0 +1,71 @@
+{
+  "copied_baseline": {
+    "files": [
+      {
+        "path": "tools/generate_original_native_candidates.py",
+        "sha256": "abf33ffc1c29f01480ea7adf491550eded5651f64fb4c88e7688e79f02175657"
+      },
+      {
+        "path": "tools/test_generate_original_native_candidates.py",
+        "sha256": "098c576da99f413cea6a92251070de1a76a97852b90b7aebc5a9c71526634c49"
+      },
+      {
+        "path": "tools/GENERATE-ORIGINAL-NATIVE-CANDIDATES.md",
+        "sha256": "a4644db2283f4bdc09941df35bc3f4913424bd627ca9ed64c194fb097df12bc7"
+      },
+      {
+        "path": "tools/native_harness_candidates.py",
+        "sha256": "d348b1e40cf6b43f9a345a5e4ad0c9f010e3edc873e321bb7447a6de64624f27"
+      },
+      {
+        "path": "tools/prepare_harness_candidates.py",
+        "sha256": "627cfea5286abe84600a4a5391b1e9d69fc6e94ec6ee7d2fe9ec10b57511cc9b"
+      },
+      {
+        "path": "src/loop_engine/core/model_gateway.py",
+        "sha256": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b"
+      },
+      {
+        "path": "src/loop_engine/core/ollama_client.py",
+        "sha256": "a81402bbfd7fbeb8c8d5c21c95bf4ef76901f07c76309b270f1eb64bff703f3c"
+      },
+      {
+        "path": "src/loop_engine/core/custom_endpoint.py",
+        "sha256": "b4e920ec8ce3b235fdaa409366a51ee01612c64c3e36596e3b6add9cabea41c4"
+      }
+    ],
+    "original_system_sha256": "02436f583453916c23f9ab7c19bd1cd5a27afeb0ec475116920b27e2ceb2fe87"
+  },
+  "delta": [
+    {
+      "path": "tools/generate_original_native_candidates.py",
+      "before_sha256": "abf33ffc1c29f01480ea7adf491550eded5651f64fb4c88e7688e79f02175657",
+      "after_sha256": "c55d2b950fb9ae822fad1b3b79a7df5d7d5d7249dc2d25ae0b6f4c0cf8ff005c"
+    },
+    {
+      "path": "tools/test_generate_original_native_candidates.py",
+      "before_sha256": "098c576da99f413cea6a92251070de1a76a97852b90b7aebc5a9c71526634c49",
+      "after_sha256": "4571248d5d32e440dc0436f8f074b3b5a2bf4e6c1e7f46e2dd38aef6bcaef0b4"
+    },
+    {
+      "path": "tools/GENERATE-ORIGINAL-NATIVE-CANDIDATES.md",
+      "before_sha256": "a4644db2283f4bdc09941df35bc3f4913424bd627ca9ed64c194fb097df12bc7",
+      "after_sha256": "a4d9dab959f069a76fa63dd739a0c75ad56b6d4829dd2b697117bb28b2e6a9c4"
+    },
+    {
+      "path": "tools/resources/original-native-generation-prompt-v1.json",
+      "before_sha256": null,
+      "after_sha256": "9fa5aef441dc91dc1acf094dd3bd3196b3545a9a5b8efb7f1ca12f6e61e8c777"
+    },
+    {
+      "path": "tools/resources/README.md",
+      "before_sha256": null,
+      "after_sha256": "f7fed291249d4b3de0e99525acae73fd4fc98579debd8441371b4570fb4c6cae"
+    },
+    {
+      "path": "docs/verification/NATIVE-GENERATOR-PROMPT-AND-PROVIDER-BOUNDARIES-2026-09-23.md",
+      "before_sha256": null,
+      "after_sha256": "48df1c0395ad7b9380720b4417b30920e5fbe58a852affef78887dd9df672f32"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "capacity": 3,
+  "initial_tokens": 1,
+  "refill_per_second": 1,
+  "requests": [
+    {
+      "id": "a",
+      "at_ms": 0,
+      "tokens": 2
+    },
+    {
+      "id": "b",
+      "at_ms": 1000,
+      "tokens": 2
+    },
+    {
+      "id": "c",
+      "at_ms": 1500,
+      "tokens": 1
+    },
+    {
+      "id": "d",
+      "at_ms": 2000,
+      "tokens": 1
+    }
+  ]
+}

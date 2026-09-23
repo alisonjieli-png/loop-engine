@@ -1,0 +1,72 @@
+[
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 2,
+      "row": 35
+    },
+    "filename": "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from candidate_review import (\n    calibration,\n    native_calibration,\n    native_profile,\n    panel,\n    prechecks,\n    review_record,\n)\nfrom candidate_review.ledger import ReviewLedger\nfrom candidate_review.prompt import build_prompt\nfrom candidate_review.records import VERDICT_RECORD, CandidateReviewError\nfrom candidate_review.reviewers.fixture import FixtureReviewer\nfrom test_candidate_review_panel import (\n    BASE,\n    _bound_fixture_script,\n    _configuration,\n    _installation,\n    answer,\n    attempt,\n)\n\n",
+          "end_location": {
+            "column": 1,
+            "row": 37
+          },
+          "location": {
+            "column": 1,
+            "row": 15
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 15
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 15,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 60,
+      "row": 174
+    },
+    "filename": "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from types import SimpleNamespace\n\n        from candidate_review.reviewers import Availability\n",
+          "end_location": {
+            "column": 1,
+            "row": 175
+          },
+          "location": {
+            "column": 1,
+            "row": 173
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 173
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 173,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  }
+]

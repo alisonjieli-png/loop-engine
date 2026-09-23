@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adjustment": {
+      "type": "integer"
+    },
+    "held": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "opening": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "period": {
+      "type": "string"
+    },
+    "receipts": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "reported_available": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "shipments": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "unit": {
+      "const": "units"
+    }
+  },
+  "required": [
+    "sku",
+    "period",
+    "unit",
+    "opening",
+    "receipts",
+    "shipments",
+    "held",
+    "reported_available",
+    "adjustment"
+  ],
+  "type": "object"
+}

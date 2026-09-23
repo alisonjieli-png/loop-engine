@@ -1,0 +1,128 @@
+{
+  "record_type": "signup_candidate_source_set/v1",
+  "base": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "files": [
+    {
+      "path": "docs/guides/account-email-operations.md",
+      "sha256": "9a1a55a6a0033fc4571786d10ccd7c4b243d3dc34fb3e444255144bac9925873",
+      "observed_sha256": "9a1a55a6a0033fc4571786d10ccd7c4b243d3dc34fb3e444255144bac9925873",
+      "matches_frozen": true
+    },
+    {
+      "path": "docs/guides/public-website-content-and-domain.md",
+      "sha256": "178000673322c5399ee27987e8905d5108b57f117be7d8f89b8347004a4212b9",
+      "observed_sha256": "178000673322c5399ee27987e8905d5108b57f117be7d8f89b8347004a4212b9",
+      "matches_frozen": true
+    },
+    {
+      "path": "docs/verification/HANDOFF-signup-2026-09-23.md",
+      "sha256": "b24c2f387d3df7795886b21172f164b8420fb8d0010e809d7c53ec30eb63dbdd",
+      "observed_sha256": "b24c2f387d3df7795886b21172f164b8420fb8d0010e809d7c53ec30eb63dbdd",
+      "matches_frozen": true
+    },
+    {
+      "path": "docs/verification/SIGNUP-FLOW-RESTORED-2026-09-23.md",
+      "sha256": "2a46ff9116cac3ed4fc161a67b14cbeb7b7751096f7e2973ba325edbdf5752c9",
+      "observed_sha256": "2a46ff9116cac3ed4fc161a67b14cbeb7b7751096f7e2973ba325edbdf5752c9",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/README.md",
+      "sha256": "34c7f18b8a51a7d55136e4c98ee3d1696de658ad9507b159bd3f53c06a351f68",
+      "observed_sha256": "34c7f18b8a51a7d55136e4c98ee3d1696de658ad9507b159bd3f53c06a351f68",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/access.py",
+      "sha256": "81d3e6ed63aabcdd8bee0d5f0079ae8f8196224a57df12be446282a977f845e1",
+      "observed_sha256": "81d3e6ed63aabcdd8bee0d5f0079ae8f8196224a57df12be446282a977f845e1",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/account_email.py",
+      "sha256": "e69470446ee5e518c7cb8beb419e75fe3de5914bd1feada3974fc6f52a105b36",
+      "observed_sha256": "e69470446ee5e518c7cb8beb419e75fe3de5914bd1feada3974fc6f52a105b36",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/account_email_checks.py",
+      "sha256": "8b05fa2803196385c265f46ee312787edc6e9060f0246d7bab7b645abefb1bfb",
+      "observed_sha256": "8b05fa2803196385c265f46ee312787edc6e9060f0246d7bab7b645abefb1bfb",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/http.py",
+      "sha256": "6375dd8ec580fb4a9ce605156a26e30e48f172fa4ce525ef1a81d1ce5354c754",
+      "observed_sha256": "6375dd8ec580fb4a9ce605156a26e30e48f172fa4ce525ef1a81d1ce5354c754",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/observability_checks.py",
+      "sha256": "424f24299a93c1f3155d2a0af5ae233f4d10548125cc61fc7236945a47df2508",
+      "observed_sha256": "424f24299a93c1f3155d2a0af5ae233f4d10548125cc61fc7236945a47df2508",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/README.md",
+      "sha256": "b197ae821a49e6c69dd3c076cc71136509e7cb2c15872623560d23e6b8108c67",
+      "observed_sha256": "b197ae821a49e6c69dd3c076cc71136509e7cb2c15872623560d23e6b8108c67",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/index.html",
+      "sha256": "f0be12e470d7114191e2ad1e85aba49ec311f72402f9d608b8193cb307ef54ea",
+      "observed_sha256": "f0be12e470d7114191e2ad1e85aba49ec311f72402f9d608b8193cb307ef54ea",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.css",
+      "sha256": "d67c3c90a2b54408186e5ac539720722ba43aa82e3a1e85dcc73528b68d4030c",
+      "observed_sha256": "d67c3c90a2b54408186e5ac539720722ba43aa82e3a1e85dcc73528b68d4030c",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.js",
+      "sha256": "32542531c4535ff84ad0afd51b3b9302b536dc14c4bdd7da276bc470359a8f01",
+      "observed_sha256": "32542531c4535ff84ad0afd51b3b9302b536dc14c4bdd7da276bc470359a8f01",
+      "matches_frozen": true
+    },
+    {
+      "path": "src/loop_engine/data/component_interactions.yaml",
+      "sha256": "d3675692ecb279c0e6186b91cdc2dc996bbbeb3a1b5f13c31423d96d99607a4b",
+      "observed_sha256": "d3675692ecb279c0e6186b91cdc2dc996bbbeb3a1b5f13c31423d96d99607a4b",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/check_hosted_website.mjs",
+      "sha256": "620ffd3da8a7de049641b9be475b6f42e924e646364d67e27dc057d573ea6198",
+      "observed_sha256": "620ffd3da8a7de049641b9be475b6f42e924e646364d67e27dc057d573ea6198",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/check_service_workspace.mjs",
+      "sha256": "d9d238d675942099714d24008948d0aafcff7954f73be298a93bebec14c5c88d",
+      "observed_sha256": "d9d238d675942099714d24008948d0aafcff7954f73be298a93bebec14c5c88d",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/check_signup_session_boundaries.mjs",
+      "sha256": "97d4b495e3e2df49531b7e87b53dbffe7cd78673cc64c88f2daeade7dbae208d",
+      "observed_sha256": "97d4b495e3e2df49531b7e87b53dbffe7cd78673cc64c88f2daeade7dbae208d",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/signup_session_boundary_checks.mjs",
+      "sha256": "2ba22b45350a2f3c9566db4a57fae74904a2e5c68ea2ffb49d027e21e00e2bdb",
+      "observed_sha256": "2ba22b45350a2f3c9566db4a57fae74904a2e5c68ea2ffb49d027e21e00e2bdb",
+      "matches_frozen": true
+    },
+    {
+      "path": "tools/test_email_signup_password_policy.py",
+      "sha256": "8642f584d85f72e2ac78758e3a257ff3142b6ca9afc36eb7b0b6e1fdbec7423d",
+      "observed_sha256": "8642f584d85f72e2ac78758e3a257ff3142b6ca9afc36eb7b0b6e1fdbec7423d",
+      "matches_frozen": true
+    }
+  ],
+  "independently_checked_at": "2026-09-23T17:44:30.445130+00:00",
+  "all_match": true
+}

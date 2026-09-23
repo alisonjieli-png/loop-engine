@@ -1,0 +1,81 @@
+{
+  "record_type": "native_schema_inspection/v1",
+  "client": "codex-cli 0.155.1",
+  "command": "codex app-server generate-json-schema --out <temporary directory>",
+  "exit_code": 0,
+  "schemas": [
+    {
+      "name": "HooksListParams.json",
+      "schema_sha256": "07638c3a8a3690cf368fa92c7ff697fdd0132865e8c59d53f6e5789e5a260053",
+      "properties": [
+        "cwds"
+      ],
+      "required": [],
+      "input_definition": {}
+    },
+    {
+      "name": "SkillsListParams.json",
+      "schema_sha256": "1d245374e64c5acc9739dfc68a4fe5114c6c9147af04c480886f1846d2ca6239",
+      "properties": [
+        "cwds",
+        "forceReload"
+      ],
+      "required": [],
+      "input_definition": {}
+    },
+    {
+      "name": "ThreadStartParams.json",
+      "schema_sha256": "792e2f32e37cece971bd616664ea2053741acbed4e9c92e9d1766427718f2ecd",
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "baseInstructions",
+        "config",
+        "cwd",
+        "developerInstructions",
+        "ephemeral",
+        "model",
+        "modelProvider",
+        "personality",
+        "sandbox",
+        "serviceName",
+        "serviceTier",
+        "sessionStartSource",
+        "threadSource"
+      ],
+      "required": [],
+      "input_definition": {}
+    },
+    {
+      "name": "TurnStartParams.json",
+      "schema_sha256": "a3835e8c1e942e4b358e1a670939b89918b16c4d13105a579899892b7ade6dea",
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "clientUserMessageId",
+        "cwd",
+        "effort",
+        "input",
+        "model",
+        "outputSchema",
+        "personality",
+        "sandboxPolicy",
+        "serviceTier",
+        "serviceTierForTurn",
+        "summary",
+        "threadId",
+        "toolOutput",
+        "turnTrigger"
+      ],
+      "required": [
+        "input",
+        "threadId"
+      ],
+      "input_definition": {}
+    }
+  ],
+  "model_calls": 0,
+  "limits": [
+    "Schema generation only; methods were not invoked and no task was run."
+  ]
+}

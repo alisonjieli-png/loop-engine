@@ -1,0 +1,78 @@
+{
+  "baseline": "index frozen after integrity successor",
+  "files": [
+    {
+      "path": "tools/candidate_review/configuration.py",
+      "before": 7,
+      "after": 7,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/engines.py",
+      "before": 0,
+      "after": 0,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/ledger.py",
+      "before": 3,
+      "after": 3,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/panel.py",
+      "before": 1,
+      "after": 1,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/prechecks/__init__.py",
+      "before": 1,
+      "after": 1,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/prompt.py",
+      "before": 1,
+      "after": 1,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/records.py",
+      "before": 1,
+      "after": 1,
+      "new": []
+    },
+    {
+      "path": "tools/candidate_review/review_record.py",
+      "before": 4,
+      "after": 4,
+      "new": []
+    },
+    {
+      "path": "tools/review_catalogue_candidates.py",
+      "before": 10,
+      "after": 10,
+      "new": []
+    },
+    {
+      "path": "tools/test_candidate_review_integrity.py",
+      "before": 0,
+      "after": 0,
+      "new": []
+    },
+    {
+      "path": "tools/test_candidate_review_panel.py",
+      "before": 22,
+      "after": 22,
+      "new": []
+    },
+    {
+      "path": "tools/test_candidate_review_record.py",
+      "before": 10,
+      "after": 10,
+      "new": []
+    }
+  ],
+  "new_findings": 0
+}

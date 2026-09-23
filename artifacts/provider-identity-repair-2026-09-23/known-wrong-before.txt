@@ -1,0 +1,61 @@
+FFF.FFFF
+======================================================================
+FAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 76, in test_gateway_never_fills_missing_null_or_empty_identity
+    self.assertEqual(result.ok, model == MODEL)
+AssertionError: True != False
+
+======================================================================
+FAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 76, in test_gateway_never_fills_missing_null_or_empty_identity
+    self.assertEqual(result.ok, model == MODEL)
+AssertionError: True != False
+
+======================================================================
+FAIL: test_gateway_never_fills_missing_null_or_empty_identity (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_gateway_never_fills_missing_null_or_empty_identity) (model='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 76, in test_gateway_never_fills_missing_null_or_empty_identity
+    self.assertEqual(result.ok, model == MODEL)
+AssertionError: True != False
+
+======================================================================
+FAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='missing')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 64, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage
+    self.assertFalse(result.ok)
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 64, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage
+    self.assertFalse(result.ok)
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 64, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage
+    self.assertFalse(result.ok)
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage (tools.test_provider_model_identity_reporting.ProviderIdentityTest.test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage) (model='another-model')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_provider_model_identity_reporting.py", line 64, in test_ollama_missing_null_empty_and_wrong_model_refuse_with_usage
+    self.assertFalse(result.ok)
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.096s
+
+FAILED (failures=7)

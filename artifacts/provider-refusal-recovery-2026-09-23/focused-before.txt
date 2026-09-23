@@ -1,0 +1,18 @@
+E..
+======================================================================
+ERROR: test_failed_unknown_model_keeps_observation_separate_from_requested_authority (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py", line 26, in test_failed_unknown_model_keeps_observation_separate_from_requested_authority
+    call = refusal_call()
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py", line 10, in refusal_call
+    return HarnessModelCall('fixture-provider', '', False, error_code='invalid_response_body',
+  File "<string>", line 13, in __init__
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/external_harness.py", line 216, in __post_init__
+    raise HarnessError("model-call records need provider and model")
+loop_engine.core.harness_model_authority.HarnessError: model-call records need provider and model
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (errors=1)

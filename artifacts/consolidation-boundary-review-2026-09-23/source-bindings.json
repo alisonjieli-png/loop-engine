@@ -1,0 +1,13 @@
+{
+  "files": {
+    "src/loop_engine/core/external_harness.py": "759ff89a6c9084cb3826fe1a51c0e5f1515ab20a8ff2fc21dcd3fb8a6bc613a7",
+    "src/loop_engine/core/external_harness_accounting.py": "5226890f0589529159fd19aec6869d449c41e095c35d5584d0a7e48e34ed82a3",
+    "src/loop_engine/core/harness_semantic.py": "41a6b9a6f4c8c5c3027c8940ec34d67885a212ab1817872040c7ed1da96f3ebc",
+    "src/loop_engine/core/model_gateway.py": "769965d1f809a3b25e4801e939155bed4ba5323f8b6cb48306a431fe91c7614f",
+    "src/loop_engine/loop/encapsulate.py": "ea89b57e8ef73402b55e73320fccbd86713c385a6d0cdc233a81be09c2844e35",
+    "tools/candidate_review/native_prechecks.py": "23590dca2410b44764a6fe402583c3cf6de339cb815aab0645b4d111615804da",
+    "artifacts/harness-working-directory-compiler-prototype-2026-09-23/preview.py": "8d603b3179f69d710fa1a1695cbf7c460cc8c756b46af1f0d0ddcabdaa385b33"
+  },
+  "model_calls": 0,
+  "native_compiler_qualification": false
+}

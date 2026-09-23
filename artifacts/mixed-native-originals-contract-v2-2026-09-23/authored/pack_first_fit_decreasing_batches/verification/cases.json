@@ -1,0 +1,102 @@
+[
+  {
+    "input": {
+      "capacity": 8,
+      "items": [
+        {
+          "id": "a",
+          "size": 6
+        },
+        {
+          "id": "b",
+          "size": 4
+        },
+        {
+          "id": "c",
+          "size": 4
+        },
+        {
+          "id": "d",
+          "size": 2
+        }
+      ]
+    },
+    "expected": {
+      "bins": [
+        {
+          "item_ids": [
+            "a",
+            "d"
+          ],
+          "used": 8
+        },
+        {
+          "item_ids": [
+            "b",
+            "c"
+          ],
+          "used": 8
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "capacity": 1,
+      "items": []
+    },
+    "expected": {
+      "bins": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "capacity": 3,
+      "items": [
+        {
+          "id": "a",
+          "size": 4
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "capacity": 0,
+      "items": []
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "capacity": 8.0,
+      "items": [
+        {
+          "id": "a",
+          "size": 6.0
+        },
+        {
+          "id": "b",
+          "size": 2.0
+        }
+      ]
+    },
+    "expected": {
+      "bins": [
+        {
+          "item_ids": [
+            "a",
+            "b"
+          ],
+          "used": 8
+        }
+      ]
+    },
+    "expected_exit": 0
+  }
+]

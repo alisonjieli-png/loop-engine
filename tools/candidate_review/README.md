@@ -5,11 +5,15 @@ The first real pilot is recorded in
 [`reviews-panel-2026-09-22.json`](../../examples/29_intelligence_service/starter-catalogue/reviews-panel-2026-09-22.json),
 and both of its attempts, their ledgers and their comparison are kept in
 [`artifacts/candidate-review-pilot-2026-09-22`](../../artifacts/candidate-review-pilot-2026-09-22/README.md).
+That version-one worker evidence remains historical. Current worker records
+use version two and refuse version-one resume or admission input. The live
+service's separate historical approval-source format is unchanged.
 
 ## What the panel does
 
 The panel decides whether independent reviewers approve the exact bytes of one
-candidate item for the harness intelligence library. It runs six deterministic
+candidate item for the harness intelligence library. It first compares the
+body with its selected reference's exact digest and byte size, then runs six deterministic
 pre-checks first, then asks reviewers from different model families, and
 writes a dated review record beside the catalogue's `reviews.json`. It never
 edits `reviews.json`, the item file, a body or a host manifest, and it serves
@@ -104,7 +108,51 @@ Every kind of pre-check must be decided for every item. A kind whose engines
 are all unavailable, or an engine that fails, refuses the item. Every available
 engine of a kind runs, so the record shows each result.
 
+The fixed request edge checks the body's declared digest and exact integer
+byte size before any replaceable pre-check engine or reviewer runs. A mismatch
+is a `format` refusal by `candidate_request_integrity`, with no reviewer call
+or budget reservation. Calibration deliberately changes its fixture metadata
+to identify the planted body; normal requests never silently replace a bad
+declaration with their measured digest.
+
 ## Pre-checks
+
+### Original native packages
+
+`--content-profile native-original` reads the preparation tool's exact
+version-three item/specification files. The adapter checks the complete
+`CataloguePackage`, every declared file, its bytes, source provenance and
+producer. It selects [native package criteria](resources/NATIVE-PACKAGE-REVIEW.md)
+and [native reviewer instructions](resources/NATIVE-REVIEWER-INSTRUCTIONS.md).
+The existing panel, model engines, family rule and budgets remain in force.
+
+The first native profile covers text instruction files, skills, declared
+Python tools, text references, JSON Schema contracts and supporting JSON data.
+Scripts are parsed and inspected, never executed by review prechecks. Missing
+helpers, role/effect disagreements, unsupported required components and binary
+assets without separate verification withhold review. Native loading and task
+acceptance still require their own evidence. Packages are not flattened into
+synthetic skills. Every exact text file reaches the reviewer in its own block.
+The format engine's version two confines passive resources to `examples/`,
+`verification/`, `references/`, `assets/` and `contracts/`, with a licence-notice
+exception. Reserved native configuration paths cannot become passive by being
+labelled as a reference, schema or data file.
+
+The canonical package digest is the review subject's `body_sha256`; individual
+file digests remain in its typed manifest. Version-two records explicitly name
+the native subject type and persist its complete manifest, original item,
+specification, producer method and request binding. A reader recomputes the
+request hash from this material and binds it to each decision's call.
+
+The native reader currently bounds each payload file at 256 KiB and each
+package at 2 MiB, with the existing 64-file package ceiling. Oversized input
+is refused, never truncated. Populations above the declared exact-comparison
+ceiling select the existing MinHash engine; its missing optional dependency
+refuses the duplicate check. `--calibrate` selects the
+[frozen native control set](resources/native-calibration/README.md) for this
+profile. It never reinterprets the starter-body calibration set.
+
+### Starter catalogue bodies
 
 | Kind | Engine | What it refuses |
 |---|---|---|
@@ -134,7 +182,7 @@ installation of the item's producer family.
 |---|---|---|---|
 | `ollama.deepseek-v4-pro` | deepseek | model_gateway | Model `deepseek-v4-pro:0813`. |
 | `ollama.qwen3.5-397b` | alibaba | model_gateway | Model `qwen3.5:397b`. |
-| `codex.gpt-6-sol` | openai | command_line | `codex exec`, read-only sandbox, its tools switched off, an empty working folder. |
+| `codex.gpt-6-sol` | openai | command_line | Currently unavailable for review: the qualified `codex exec` JSONL protocol does not report the answering model. Its requested model is not evidence of the model that answered. |
 | `ollama.minimax-m3` | minimax | model_gateway | |
 | `ollama.kimi-k2.6` | moonshot | model_gateway | The admissible model of the Kimi family. |
 | `ollama.glm-5.3` | zhipu | model_gateway | Writes its reasoning into the answer text, so it declares the answer format `json_after_reasoning` and a 32,768 token allocation. |
@@ -171,14 +219,37 @@ exact prompt. A changed prompt is a new review, and the ledger keeps both.
 ## Calibration
 
 With `--calibrate`, every eligible reviewer is first asked about every item of
+the content profile's calibration set. Starter bodies use
 `resources/calibration-set.json`: real bodies with one planted defect that a
 written criterion names, and one body an earlier independent review approved,
 unchanged. A reviewer that approves a known-wrong item, or gives no valid
-verdict on one, or that the calibration never reached, is not asked about real
-candidates in the same command, and the record says why. A rejection of the
-known-good item is recorded as a false refusal. The calibration measures known
+verdict on any control, or that the calibration never reached, is not asked about real
+candidates in the same command, and the record says why. This includes reviewers
+skipped for the control producer's family, disabled reviewers and unavailable
+engines. A rejection of the expected-approve item is recorded as a label refusal;
+it is not an empirical false-refusal measurement without full control eligibility
+evidence. The calibration measures known
 defect classes on a small fixed set; it does not estimate a reviewer's error
 rate on real candidates.
+
+Native packages use `candidate_native_review_calibration_set/v1` and typed
+native control items that bind the entire package digest. Their expected
+decisions and defect explanations stay outside reviewer prompts. The native
+set includes a benign package and separate correctness, output-contract,
+declared-effect and source-claim controls. Calls, invalid answers and unknown
+usage use the existing ledger. An excluded calibration reviewer cannot supply
+a candidate decision accepted by the export reader. The reader reconstructs
+eligibility from trusted control requests, exact calls and complete typed
+verdicts, including the applicable criteria. Removing or changing the status
+or exclusion lists does not change that reconstruction. Custom control sets
+need separately supplied host-selected `CalibrationInputs`; the default reader
+trusts only the shipped set digests, never labels supplied by a reviewer/export.
+
+The current native benign control has algorithm and contract checks but lacks
+the applicable native-loading evidence needed for universal admission. Its
+expected-approve label is provisional. The real native calibration pilot stays
+on hold until that evidence or a separately approved control scope exists;
+the admission criterion is unchanged.
 
 ## Budget, pauses and the cursor
 
@@ -216,9 +287,20 @@ completed.
 | `candidate_review_criteria/v2` | `resources/criteria.json` | The kinds of body and the written criteria, each a quote of the catalogue's `REVIEW.md` matched with whitespace collapsed, and the kinds each criterion applies to. Version one had no kinds and sent every criterion for every body; the current reader refuses version one. |
 | `candidate_producer_declaration/v1` | `resources/producer-starter-catalogue.json` | Who produced the items, with a quote of the evidence. |
 | `candidate_review_calibration_set/v1` | `resources/calibration-set.json` | Known-wrong and known-good items. |
-| `candidate_review_request/v1`, `candidate_precheck_result/v1`, `candidate_review_verdict/v1` | edges | What one reviewer is shown, what each pre-check found, what one reviewer decided. |
-| `candidate_review_run/v1`, `candidate_review_run_end/v1`, `candidate_review_dispatch/v1`, `candidate_review_call/v1` | the ledger | Every run, every dispatch and every call with its model, version, route or command, usage, charge, pause and outcome. |
-| `starter_catalogue_panel_review/v1` | beside `reviews.json` | The dated review record, read back by a strict reader before it is written. Each row names its kind of body and the criteria applied; each reviewer is named with the installation digest, engine kind, family and model its calls were made under and the model and engine version its calls answered with, and the reader refuses a reviewer whose calls name anything else, so the families counted for the quorum are the families of the calls; a row put to reviewers passed every pre-check kind, a row refused before review names its refusing pre-check, and an approved row declares a licence the policy accepts; every path is relative to the repository root; the record lists every call and every interrupted dispatch. |
+| `candidate_review_request/v1`, `candidate_native_package_review_request/v1`, `candidate_precheck_result/v1`, `candidate_review_verdict/v2` | edges | The explicitly typed body or native-package subject, each pre-check result, and the exact model verdict. |
+| `candidate_review_run/v2`, `candidate_review_run_end/v2`, `candidate_review_dispatch/v2`, `candidate_review_call/v2` | the ledger | Every run, dispatch and call, including requested and reported model identity, subject type, usage, charge, pause and outcome. |
+| `starter_catalogue_panel_review/v3` | dated review artifact | The complete typed panel configuration and exact subjects bind both content profiles. Calibration eligibility is reconstructed from trusted requests and typed verdict/call evidence; version two exports are historical and refused. |
+| `candidate_review_calibration_result/v2` | calibration section of the dated artifact | Complete verdict records, calls, all installation outcomes, and recomputable exclusions. Missing any control verdict makes an installation incomplete. |
+
+In active version-two records, `model` is the requested installation model
+and `reported_model` is the observed answering identity. The fixed panel,
+ledger and export reader require a matching identity before a verdict counts.
+Command-line availability reports the CLI version and leaves model version
+unknown. Claude's reported model set must contain only the requested model.
+A no-model result does not imply zero tokens: absent usage remains unknown,
+partial counts are preserved and only explicitly reported zero is zero.
+Historical version-one worker records keep their bytes and cannot be resumed
+or admitted through the current reader. They are not retroactively qualified.
 
 Every reader refuses another version, an unknown field and a missing field.
 Every text written passes through the secret patterns first. The dated record

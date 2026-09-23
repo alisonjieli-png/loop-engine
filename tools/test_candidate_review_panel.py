@@ -47,6 +47,7 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -102,7 +103,11 @@ def _configuration(installations: list, **policy) -> config.PanelConfiguration:
 
 def _request(identity: str = FIRST, body: "bytes | None" = None):
     request = DATA.request(identity, PRODUCERS.producer_for(identity), CRITERIA, INSTRUCTIONS.sha256)
-    return request if body is None else request.replaced(body=body)
+    if body is None:
+        return request
+    item = request.item
+    item["reference"].update(digest=hashlib.sha256(body).hexdigest(), size_bytes=len(body))
+    return request.replaced(body=body, item=item)
 
 
 def answer(prompt, decision=verdicts.APPROVE, *, digest=None, findings=None, reasons="", extra=None) -> str:
@@ -135,6 +140,14 @@ def rejecting(prompt, number):
     return attempt(answer(prompt, verdicts.REJECT))
 
 
+def _bound_fixture_script(script, model):
+    """Bind generic test responses to their fixture identity; explicit wrong identities remain wrong."""
+    def bound(prompt, number):
+        result = script(prompt, number)
+        return dataclasses.replace(result, reported_model=model) if result.reported_model == "fixture" else result
+    return bound
+
+
 class Harness:
     """A panel over fixture reviewers, a temporary ledger and a recorded clock."""
 
@@ -144,7 +157,8 @@ class Harness:
         installations = [_installation(name, family, quota_groups.get(name, ""))
                          for name, family in zip(names, families)]
         self.configuration = _configuration(installations, **policy)
-        self.reviewers = {item.installation_id: FixtureReviewer(item, scripts[item.installation_id])
+        self.reviewers = {item.installation_id: FixtureReviewer(item, _bound_fixture_script(
+            scripts[item.installation_id], item.model))
                           for item in self.configuration.installations}
         self.ledger_path = Path(directory) / "ledger.jsonl"
         self.sleeps = []
@@ -538,7 +552,7 @@ class CursorTest(unittest.TestCase):
             ReviewLedger(harness.ledger_path).dispatch({
                 "record_type": panel_module.DISPATCH_RECORD, "run_id": "run-0", "sequence": 1, "review_key": key,
                 "installation_id": "a", "identity": request.identity, "body_sha256": request.body_sha256,
-                "request_sha256": request.request_sha256, "dispatched_at": "2026-09-22T00:00:00Z"})
+                "request_sha256": request.request_sha256, "request_record_type": request.to_record()["record_type"], "dispatched_at": "2026-09-22T00:00:00Z"})
             result = harness.run([request])
             self.assertEqual(harness.calls("a"), [])
             self.assertEqual(len(harness.calls("d")), 1)
@@ -597,7 +611,7 @@ class CursorTest(unittest.TestCase):
         ledger.dispatch({
             "record_type": panel_module.DISPATCH_RECORD, "run_id": "resume", "sequence": 1, "review_key": key,
             "installation_id": "a", "identity": request.identity, "body_sha256": request.body_sha256,
-            "request_sha256": request.request_sha256, "dispatched_at": "2026-09-22T00:00:01Z"})
+            "request_sha256": request.request_sha256, "request_record_type": request.to_record()["record_type"], "dispatched_at": "2026-09-22T00:00:01Z"})
         return harness, request, key
 
     def test_a_reused_run_identity_never_turns_an_interrupted_dispatch_into_a_completed_call(self):

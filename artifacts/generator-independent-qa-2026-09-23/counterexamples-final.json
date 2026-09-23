@@ -1,0 +1,41 @@
+{
+  "record_type": "original_generation_independent_qa/v1",
+  "checks": [
+    {
+      "case": "resume_changed_producer_and_effect_metadata",
+      "expected": "refusal before any call",
+      "refusal": "saved_prepared_tree_changed",
+      "candidate_count": null,
+      "model_fixture_calls": 1,
+      "defect_reproduced": false
+    },
+    {
+      "case": "resume_changed_proposal_positive_guard",
+      "refusal": "saved_proposal_changed",
+      "model_fixture_calls": 1,
+      "passed": true
+    },
+    {
+      "case": "provider_error_body_keeps_reported_usage",
+      "expected_input_tokens": 11,
+      "expected_output_tokens": 7,
+      "actual_input_tokens": 11,
+      "actual_output_tokens": 7,
+      "ok": false,
+      "defect_reproduced": false
+    },
+    {
+      "case": "provider_error_body_without_identity_stays_unknown",
+      "model": "",
+      "ok": false,
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "tools/generate_original_native_candidates.py": "6293bcbdbb6c0109e5d93e738d001d2431c881ba4cf0c3a4a5c3d4cc0bde2db1",
+    "src/loop_engine/core/ollama_client.py": "a81402bbfd7fbeb8c8d5c21c95bf4ef76901f07c76309b270f1eb64bff703f3c",
+    "src/loop_engine/core/model_gateway.py": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b"
+  },
+  "provider_calls": 0,
+  "approvals": 0
+}

@@ -77,7 +77,7 @@ def main():
         check("new_token_authenticates_with_exact_scope", code == 200 and child["result"]["principal"]["scopes"] == ["provisioning:metadata"])
         code, _, _ = call("/api/v1/admin/access", generated)
         check("new_token_cannot_manage_administration", code == 403)
-        code, _, search = call("/api/v1/retrieval", generated, {"record_type":"service_retrieval_request/v1","query":"review","mode":"lexical","top_n":10})
+        code, _, search = call("/api/v1/retrieval", generated, {"record_type":"service_retrieval_request/v2","query":"review","mode":"lexical","top_n":10})
         check("new_token_can_search_authorized_references", code == 200 and len(search["result"]["hits"]) > 0)
         code, _, listing = call("/api/v1/admin/access", administrator)
         check("listing_never_returns_raw_token", code == 200 and generated not in json.dumps(listing) and "key_digest" not in json.dumps(listing))

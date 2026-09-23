@@ -1,0 +1,54 @@
+{
+  "record_type": "openmuse_component_source_probe/v1",
+  "commit": "bb7ce4e1c6e523bf282a655c63621e3ed9e75150",
+  "sources": [
+    {
+      "path": "apps/server/src/config.ts",
+      "sha256": "cd47ea600cf048f2735cd4875c49460bde1d74685a0d7f02cfb46bcb196e891b"
+    },
+    {
+      "path": "packages/backends/src/openbot.ts",
+      "sha256": "aafeefb054e0f48a57f1fb810837782348f0d0399c0d3e4b4f3df17774aa72ca"
+    }
+  ],
+  "results": [
+    {
+      "id": "sample_requires_intelligence_key",
+      "passed": true,
+      "scope": "readConfig and createApp precondition helper; no app started"
+    },
+    {
+      "id": "synthetic_key_allows_sample_config_construction",
+      "passed": true,
+      "scope": "No key validation or service connection"
+    },
+    {
+      "id": "disabled_openbot_no_transport_call",
+      "passed": true
+    },
+    {
+      "id": "mutation_500_is_uncertain_and_not_retried",
+      "passed": true,
+      "physical_injected_calls": 1
+    },
+    {
+      "id": "snapshot_500_is_not_mutation_uncertainty",
+      "passed": true,
+      "physical_injected_calls": 1
+    },
+    {
+      "id": "invalid_mutation_response_is_uncertain",
+      "passed": true
+    },
+    {
+      "id": "openbot_runtime_identifies_intelligence_transport",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Synthetic in-process transport; no HTTP, model, database, SDK runtime, browser or Docker started",
+    "Does not qualify live OpenBot integration or durable task race behavior",
+    "No upstream tests rerun"
+  ],
+  "model_calls": 0
+}

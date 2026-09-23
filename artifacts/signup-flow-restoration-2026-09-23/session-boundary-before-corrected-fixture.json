@@ -1,0 +1,29 @@
+{
+  "record_type": "signup_session_boundary_checks/v1",
+  "scope": "real browser; loopback identity and email stand-in only",
+  "checks": [
+    {
+      "name": "a_verified_pending_confirmation_can_be_held_without_activating",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "a_stale_confirmation_never_changes_the_new_sessions_password",
+      "passed": false,
+      "detail": {
+        "password_writes_before": 1,
+        "password_writes_after": 2,
+        "original_password_status": 400,
+        "replacement_password_status": 200
+      }
+    },
+    {
+      "name": "no_external_requests",
+      "passed": true,
+      "detail": {
+        "blocked": []
+      }
+    }
+  ],
+  "passed": false
+}

@@ -1,0 +1,45 @@
+{
+  "address_space_ceiling_mib": 768,
+  "audit_seconds": 19.898,
+  "generation_seconds": 6.974,
+  "limits": "No body blobs, rights, approval, active release, native loading or task benefit.",
+  "observed": {
+    "active_release_credit": 0,
+    "distinct_file_sha256": 1,
+    "logical_records": 1000000,
+    "physical_file_paths": 1000000
+  },
+  "peak_child_rss_kib": 43532,
+  "record_type": "harness_supply_scale_probe/v1",
+  "report_sha256": "a90b8be1a384c27daf74df0e72b94249c95dea598289c5080edfdf7305727f34",
+  "repository_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "source_rows": [
+    {
+      "items": 200000,
+      "items_bytes": 53000000,
+      "items_sha256": "b113d2ff47eceecad8148616ae526045edc9c6f17b4dc4870da06c5abc0b2875"
+    },
+    {
+      "items": 200000,
+      "items_bytes": 53000000,
+      "items_sha256": "4822776fb6bf03318feb40045909496cae03051e1a6fd28665a45f19975a6040"
+    },
+    {
+      "items": 200000,
+      "items_bytes": 53000000,
+      "items_sha256": "e93ccc829291b406817e544686d964a472e5eff4ef276bfedce9c5c449c71ad8"
+    },
+    {
+      "items": 200000,
+      "items_bytes": 53000000,
+      "items_sha256": "4c03a2900fd2061a432209d58709b0b36ef05c26fa1f979fd380f35f195a58af"
+    },
+    {
+      "items": 200000,
+      "items_bytes": 53000000,
+      "items_sha256": "7ab9ffa136af075671853696d708baf0383fc265482ff9422bd6c03b47c76a16"
+    }
+  ],
+  "synthetic_metadata_only": true,
+  "tool_sha256": "1720d54a1b3fe556a44bb430344a17124e3b4383980557067891019dd8e519b4"
+}

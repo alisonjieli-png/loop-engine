@@ -1,0 +1,320 @@
+{
+  "schema": "baltor.research-render-observations/v1",
+  "created_at": "2026-09-23T17:05:41.594Z",
+  "revision": "2ecf44f97ab6ffd76f5c1a58ac57b930e2ccfa17",
+  "node": "v22.22.1",
+  "model_calls": 0,
+  "source_files": [
+    {
+      "path": "packages/toolkit/src/utils.ts",
+      "sha256": "880be200265c9e90f72a7258f108004c4c2272df63be827d0d3cccbb07b25935"
+    },
+    {
+      "path": "packages/toolkit/src/hooks.ts",
+      "sha256": "ed9c7c69ccfd642a27c91ed61a00f9ca10b01a75ddb4922cdd7642152ffac8ed"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/claude.ts",
+      "sha256": "a54d7c96ea55cad60f4410fee963d1b581b1d04602385a4c941a88fd362d21e3"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/codex.ts",
+      "sha256": "2df34afb615e1208f767632094879c2fa096da688371c5dc4fb70fe4ae7fe9d9"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/constants.ts",
+      "sha256": "918a56d2f1706c439fcaa4c7fa072e9fc234bca08b9a983778c74869eb030203"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/copilot.ts",
+      "sha256": "502012e268574b5cb553bd35cf285c8d2cca72ab36c478e7b93f65cdc6e03499"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/create-adapter.ts",
+      "sha256": "e52b0766bbab519c21acaa3820aee5b8a7bc25329eb944dac8993f7a7d2f006b"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/cursor.ts",
+      "sha256": "c12474629dd5bd06b525eee09f66b652fe3e654408fbfcc80106a54222463041"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/hook-capabilities.ts",
+      "sha256": "5da680f4e90ba66cb600dea44ab21972d2e33819175250b373cd31c5e1e64a74"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/hooks.ts",
+      "sha256": "49a163f1477782c9cdefbb2dc4547d5f6b9321a3051d6d4594662d7e7abd3d71"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/mcp.ts",
+      "sha256": "2d4471259b9f9299842ba92787bde4c67853f77175505adadf35e1032656be90"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/paths.ts",
+      "sha256": "9783c2cd09adc1d287c2ffe449f12e1c85c56beb836caa0d7bde043dac948b50"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/registry.ts",
+      "sha256": "2f5241617977c6ce572a6e6c5230b37701923941d202b6cb53c1e4523d1a92c8"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/renderers.ts",
+      "sha256": "b87c05ebafc27bc17a17b0a05744808bfb2e45627d0556be5035466dc18da7c1"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/subagents.ts",
+      "sha256": "ceccb3b5362a26fbd4c2687cdefe06778c73ff5e8a1a8a516b197df1b57cd359"
+    },
+    {
+      "path": "packages/toolkit/src/provider-adapters/types.ts",
+      "sha256": "552dc0f87db7c90c40b8d1a512d1e57f2894d3c27f71bbff5eb809c730f4fd7a"
+    }
+  ],
+  "providers": [
+    {
+      "provider": "codex",
+      "prompt": [
+        {
+          "path": "AGENTS.md",
+          "content": "FIRST_REQUIREMENT\n\nSECOND_REQUIREMENT\n",
+          "ownerEntityId": "a-second,z-first",
+          "provider": "codex",
+          "format": "markdown"
+        },
+        {
+          "path": "packages/api/AGENTS.md",
+          "content": "PACKAGE_REQUIREMENT\n",
+          "ownerEntityId": "pkg",
+          "provider": "codex",
+          "format": "markdown"
+        }
+      ],
+      "skill": [
+        {
+          "path": ".codex/skills/sample/SKILL.md",
+          "content": "---\nname: sample\ndescription: SAMPLE_SKILL_DESCRIPTION\n---\nSAMPLE_SKILL_BODY\n",
+          "ownerEntityId": "sample",
+          "provider": "codex",
+          "format": "markdown"
+        },
+        {
+          "path": ".codex/skills/sample/scripts/sample.py",
+          "content": "print(\"sample\")\n",
+          "ownerEntityId": "sample",
+          "provider": "codex",
+          "format": "markdown"
+        }
+      ],
+      "mcp": [
+        {
+          "path": ".codex/config.toml",
+          "content": "[mcp_servers.sample]\ntype = \"stdio\"\ncommand = \"/usr/bin/false\"\n\n  [mcp_servers.sample.env]\n  ONLY_SYNTHETIC = \"yes\"\n",
+          "ownerEntityId": "connection",
+          "provider": "codex",
+          "format": "toml"
+        }
+      ],
+      "subagent": [
+        {
+          "path": ".codex/config.toml",
+          "content": "[agents.reviewer]\ndescription = \"Synthetic reviewer\"\ndeveloper_instructions = \"REVIEWER_BODY\"\n",
+          "ownerEntityId": "reviewer",
+          "provider": "codex",
+          "format": "toml"
+        }
+      ]
+    },
+    {
+      "provider": "claude",
+      "prompt": [
+        {
+          "path": "CLAUDE.md",
+          "content": "FIRST_REQUIREMENT\n\nSECOND_REQUIREMENT\n",
+          "ownerEntityId": "a-second,z-first",
+          "provider": "claude",
+          "format": "markdown"
+        },
+        {
+          "path": "packages/api/CLAUDE.md",
+          "content": "PACKAGE_REQUIREMENT\n",
+          "ownerEntityId": "pkg",
+          "provider": "claude",
+          "format": "markdown"
+        }
+      ],
+      "skill": [
+        {
+          "path": "packages/api/.claude/skills/sample/SKILL.md",
+          "content": "---\nname: sample\ndescription: SAMPLE_SKILL_DESCRIPTION\n---\nSAMPLE_SKILL_BODY\n",
+          "ownerEntityId": "sample",
+          "provider": "claude",
+          "format": "markdown"
+        },
+        {
+          "path": "packages/api/.claude/skills/sample/scripts/sample.py",
+          "content": "print(\"sample\")\n",
+          "ownerEntityId": "sample",
+          "provider": "claude",
+          "format": "markdown"
+        }
+      ],
+      "mcp": [
+        {
+          "path": ".mcp.json",
+          "content": "{\n  \"mcpServers\": {\n    \"sample\": {\n      \"command\": \"/usr/bin/false\",\n      \"env\": {\n        \"ONLY_SYNTHETIC\": \"yes\"\n      },\n      \"type\": \"stdio\"\n    }\n  }\n}\n",
+          "ownerEntityId": "connection",
+          "provider": "claude",
+          "format": "json"
+        }
+      ],
+      "subagent": [
+        {
+          "path": ".claude/agents/reviewer.md",
+          "content": "---\nname: \"reviewer\"\ndescription: \"Synthetic reviewer\"\n---\n\nREVIEWER_BODY\n",
+          "ownerEntityId": "reviewer",
+          "provider": "claude",
+          "format": "markdown"
+        }
+      ]
+    },
+    {
+      "provider": "copilot",
+      "prompt": [
+        {
+          "path": ".github/copilot-instructions.md",
+          "content": "FIRST_REQUIREMENT\n\nSECOND_REQUIREMENT\n\nPACKAGE_REQUIREMENT\n",
+          "ownerEntityId": "a-second,pkg,z-first",
+          "provider": "copilot",
+          "format": "markdown"
+        }
+      ],
+      "skill": [
+        {
+          "path": ".github/skills/sample/SKILL.md",
+          "content": "---\nname: sample\ndescription: SAMPLE_SKILL_DESCRIPTION\n---\nSAMPLE_SKILL_BODY\n",
+          "ownerEntityId": "sample",
+          "provider": "copilot",
+          "format": "markdown"
+        },
+        {
+          "path": ".github/skills/sample/scripts/sample.py",
+          "content": "print(\"sample\")\n",
+          "ownerEntityId": "sample",
+          "provider": "copilot",
+          "format": "markdown"
+        }
+      ],
+      "mcp": [
+        {
+          "path": ".vscode/mcp.json",
+          "content": "{\n  \"servers\": {\n    \"sample\": {\n      \"command\": \"/usr/bin/false\",\n      \"env\": {\n        \"ONLY_SYNTHETIC\": \"yes\"\n      },\n      \"type\": \"stdio\"\n    }\n  }\n}\n",
+          "ownerEntityId": "connection",
+          "provider": "copilot",
+          "format": "json"
+        }
+      ],
+      "subagent": [
+        {
+          "path": ".github/agents/reviewer.agent.md",
+          "content": "---\nname: \"reviewer\"\ndescription: \"Synthetic reviewer\"\n---\n\nREVIEWER_BODY\n",
+          "ownerEntityId": "reviewer",
+          "provider": "copilot",
+          "format": "markdown"
+        }
+      ]
+    },
+    {
+      "provider": "cursor",
+      "prompt": null,
+      "skill": [
+        {
+          "path": ".cursor/skills/sample/SKILL.md",
+          "content": "---\nname: sample\ndescription: SAMPLE_SKILL_DESCRIPTION\n---\nSAMPLE_SKILL_BODY\n",
+          "ownerEntityId": "sample",
+          "provider": "cursor",
+          "format": "markdown"
+        },
+        {
+          "path": ".cursor/skills/sample/scripts/sample.py",
+          "content": "print(\"sample\")\n",
+          "ownerEntityId": "sample",
+          "provider": "cursor",
+          "format": "markdown"
+        }
+      ],
+      "mcp": [
+        {
+          "path": ".cursor/mcp.json",
+          "content": "{\n  \"mcpServers\": {\n    \"sample\": {\n      \"command\": \"/usr/bin/false\",\n      \"env\": {\n        \"ONLY_SYNTHETIC\": \"yes\"\n      },\n      \"type\": \"stdio\"\n    }\n  }\n}\n",
+          "ownerEntityId": "connection",
+          "provider": "cursor",
+          "format": "json"
+        }
+      ],
+      "subagent": [
+        {
+          "path": ".cursor/agents/reviewer.md",
+          "content": "---\nname: \"reviewer\"\ndescription: \"Synthetic reviewer\"\n---\n\nREVIEWER_BODY\n",
+          "ownerEntityId": "reviewer",
+          "provider": "cursor",
+          "format": "markdown"
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "name": "duplicate_mcp_conflict",
+      "result": null,
+      "error": "MCP server 'sample' has conflicting definitions across configs"
+    },
+    {
+      "name": "copilot_strict_matcher",
+      "result": null,
+      "error": "HOOK_EVENT_UNSUPPORTED: provider 'copilot' does not support matcher used by hook 'gate'"
+    },
+    {
+      "name": "copilot_best_effort_matcher",
+      "result": [
+        {
+          "path": ".github/hooks/harness.generated.json",
+          "content": "{\n  \"hooks\": {},\n  \"version\": 1\n}\n",
+          "ownerEntityId": "gate",
+          "provider": "copilot",
+          "format": "json"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "codex_settings_override",
+      "result": [
+        {
+          "path": ".codex/config.toml",
+          "content": "[mcp_servers.sample]\ncommand = \"/usr/bin/true\"\ntype = \"stdio\"\n\n  [mcp_servers.sample.env]\n  ONLY_SYNTHETIC = \"yes\"\n",
+          "ownerEntityId": "codex,connection",
+          "provider": "codex",
+          "format": "toml"
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "claude_root_prompt",
+      "result": [
+        {
+          "path": "CLAUDE.md",
+          "content": "ONE\n",
+          "ownerEntityId": "sample",
+          "provider": "claude",
+          "format": "markdown"
+        }
+      ],
+      "error": null
+    }
+  ],
+  "limits": [
+    "Pure upstream renderer functions, with synthetic in-memory canonical inputs.",
+    "No end-to-end importer, planner, native hook or subagent execution qualification."
+  ]
+}

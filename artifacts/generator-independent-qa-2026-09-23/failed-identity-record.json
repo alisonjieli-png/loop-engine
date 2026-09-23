@@ -1,0 +1,14 @@
+{
+  "record_type": "generator_failed_identity_qa/v1",
+  "candidate_count": 0,
+  "actual_attempt_model": "reported-other-model",
+  "logical_result_model": "",
+  "journal_gateway_model": "",
+  "error_code": "model_identity_mismatch",
+  "input_tokens": 11,
+  "output_tokens": 7,
+  "provider_calls": 0,
+  "fixture_adapter_calls": 1,
+  "defect_reproduced": true,
+  "scope": "Actual ModelGateway with an injected no-network adapter; generator drops the reported model from a rejected physical attempt."
+}

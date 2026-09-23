@@ -1,0 +1,12 @@
+test_alias_objects_are_typed_refusals (tools.test_documentation_index.IndexContract.test_alias_objects_are_typed_refusals) ... ok
+test_current_index_is_valid (tools.test_documentation_index.IndexContract.test_current_index_is_valid) ... ok
+test_duplicate_json_members_are_refused (tools.test_documentation_index.IndexContract.test_duplicate_json_members_are_refused) ... ok
+test_foreign_body_and_duplicate_page_are_refused (tools.test_documentation_index.IndexContract.test_foreign_body_and_duplicate_page_are_refused) ... ok
+test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) ... ok
+test_trailing_newline_identity_and_invalid_date_are_refused (tools.test_documentation_index.IndexContract.test_trailing_newline_identity_and_invalid_date_are_refused) ... ok
+test_unknown_version_and_fields_are_refused (tools.test_documentation_index.IndexContract.test_unknown_version_and_fields_are_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.006s
+
+OK

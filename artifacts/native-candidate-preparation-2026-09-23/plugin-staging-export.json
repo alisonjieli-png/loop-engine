@@ -1,0 +1,180 @@
+{
+  "record_type": "catalog_export/v1",
+  "records": [
+    {
+      "record_id": "native.fixture.focused_brief_plugin",
+      "record_version": "baf6a915339c55ccebcccc75eb9b6a7caf7be4fac6e19542bcaf140ff90a29b0",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "native.fixture",
+      "attributes": {
+        "content_sha256": "a3eb2c2d52ad99a5e82a346c60958cc9ccf12a07e630b8fdc6e3c1d5817e0f6e",
+        "family": "harness_plugin",
+        "license_state": "pending_review",
+        "tags": [
+          "focused assignment",
+          "task context",
+          "first steps",
+          "brief checker"
+        ],
+        "title": "Check a focused harness assignment"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "body_path": "bodies/focused_brief_plugin.package.json",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "dependencies": [
+          "Linux",
+          "/usr/bin/python3 >=3.10, trusted immutable host interpreter"
+        ],
+        "execution_available": false,
+        "family": "harness_plugin",
+        "kind": "tool",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "digest": "761c680c56909384b0a1e9cee7a072a134f8ac77b7c200229f102a72cf175c42",
+              "media_type": "application/json",
+              "path": ".claude-plugin/plugin.json",
+              "role": "plugin_manifest",
+              "size_bytes": 233
+            },
+            {
+              "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+              "media_type": "text/plain",
+              "path": "LICENSE",
+              "role": "other",
+              "size_bytes": 1068
+            },
+            {
+              "digest": "8afc506f010c6b942f7ccff96eee1c42910ef885ac35f00b22b28080a9a6bbb4",
+              "media_type": "text/markdown",
+              "path": "agents/brief-reviewer.md",
+              "role": "subagent_definition",
+              "size_bytes": 1204
+            },
+            {
+              "digest": "445c661f7d05b1c26a02b1d17971bf4f65b4f1785386323fed9974b5285a4587",
+              "media_type": "text/markdown",
+              "path": "commands/check-brief.md",
+              "role": "command",
+              "size_bytes": 1862
+            },
+            {
+              "digest": "a21ab5811b6715ccaf0f55d0c485a64c49f85b84aced3302d147b2ce34094a26",
+              "media_type": "application/json",
+              "path": "contracts/brief-input.schema.json",
+              "role": "configuration",
+              "size_bytes": 4448
+            },
+            {
+              "digest": "9737600b93ba2c85ad073dff90fe89ef46b29e1562a45e4f14980e8d69dd92a5",
+              "media_type": "application/json",
+              "path": "contracts/brief-output.schema.json",
+              "role": "configuration",
+              "size_bytes": 1487
+            },
+            {
+              "digest": "6a3cad77c976b97e969fecf65da4c18d801563daee2f31958b725f6795ec326c",
+              "media_type": "application/json",
+              "path": "contracts/example-brief.json",
+              "role": "other",
+              "size_bytes": 756
+            },
+            {
+              "digest": "53790328f5c43cb79d04bafcd964abba70aaf82bfc186b42f5d9f48600c712ee",
+              "media_type": "application/json",
+              "path": "contracts/hook-input.schema.json",
+              "role": "configuration",
+              "size_bytes": 518
+            },
+            {
+              "digest": "ff76b58c9f467505da9f8a4c14c46147dc8b9f4b68d7939c27d14d19d62002de",
+              "media_type": "application/json",
+              "path": "contracts/hook-output.schema.json",
+              "role": "configuration",
+              "size_bytes": 834
+            },
+            {
+              "digest": "4ba8a9023c7b204918cfe4d95b01269d94a4e525a40e706077bd0bd6b180b9b3",
+              "media_type": "application/json",
+              "path": "hooks/hooks.json",
+              "role": "configuration",
+              "size_bytes": 325
+            },
+            {
+              "digest": "6af5545af3760ba25b0478ce03d51b76af36fc064229d2bb24c45ad039373887",
+              "media_type": "text/x-python",
+              "path": "scripts/check_brief.py",
+              "role": "executable_tool",
+              "size_bytes": 4960
+            },
+            {
+              "digest": "9d289b0f4e732bc3014c17eb2ea4c6e66f2c4cd0ca4a7bbd072a310ad8340e09",
+              "media_type": "text/x-python",
+              "path": "scripts/protocol.py",
+              "role": "executable_tool",
+              "size_bytes": 1981
+            },
+            {
+              "digest": "e6772480609063d05b7e3e1953a52f1214bfcfa47407e9e3dcfc8e87b3642413",
+              "media_type": "text/x-python",
+              "path": "scripts/session_start.py",
+              "role": "hook",
+              "size_bytes": 1925
+            }
+          ]
+        },
+        "package_digest": "1193c550be6f4252fb1846e8b9bb246f9f51e9b6c4bae578740a9d8f2fc4a3d4",
+        "package_root": "packages/focused_brief_plugin",
+        "producer": {
+          "family": "openai",
+          "method_identity": "codex_native_plugin_context_candidate/v1",
+          "producer_identity": "Codex live_baltor_review task"
+        },
+        "provenance": {
+          "authoring": "original_assistant_authored",
+          "license": {
+            "expression": "MIT",
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          },
+          "source_digests": {
+            "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+        },
+        "purpose": "Validate the required structure of a focused assignment, provide startup guidance, and request advisory review of missing context.",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v3",
+        "sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "styles": [
+          "claude"
+        ],
+        "symbols": [
+          "check_brief"
+        ],
+        "text": "# Check a focused harness assignment\n\nValidate the required structure of a focused assignment, provide startup guidance, and request advisory review of missing context.\n",
+        "title": "Check a focused harness assignment"
+      }
+    }
+  ],
+  "count": 1
+}

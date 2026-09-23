@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_script_refusal_is_typed_json_without_traceback (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_script_refusal_is_typed_json_without_traceback) (invocation=['-m', 'tools.prepare_harness_candidates'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_prepare_native_harness_candidates.py", line 255, in test_script_refusal_is_typed_json_without_traceback
+    self.assertEqual(result.stderr, "")
+AssertionError: 'Traceback (most recent call last):\n  Fil[1718 chars]ch\n' != ''
+Diff is 1786 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.304s
+
+FAILED (failures=1)

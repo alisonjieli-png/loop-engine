@@ -1,0 +1,17 @@
+{
+  "model_calls": 0,
+  "fixture_only": true,
+  "calibration_openai_calls": 0,
+  "calibration_ineligible": {
+    "a-openai": "producer_family"
+  },
+  "evaluated_excluded": {},
+  "calibration_status_for_openai": null,
+  "candidate_openai_calls": 1,
+  "candidate_outcome": "approved",
+  "candidate_reviewers": [
+    "a-openai",
+    "b-zhipu",
+    "c-alibaba"
+  ]
+}

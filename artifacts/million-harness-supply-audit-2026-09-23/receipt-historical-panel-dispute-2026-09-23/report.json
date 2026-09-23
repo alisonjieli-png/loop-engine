@@ -1,0 +1,255 @@
+{
+  "inputs": [
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json",
+      "sha256": "97ee4e157af9cd7d10d951df547961d9f3aac919f37054a49218b7a59f6abf6a"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json",
+      "sha256": "b06f1a5a15127dbed6c3e3f0d6580e1dcad31953bc430a9d9bb6db7656cc3c7f"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json",
+      "sha256": "f5790bedba8efded222d87a5d819a44d4def6dadb8982bd529e23a4c0437791a"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/first-party-harness-candidates-2026-09-22/manifest.json",
+      "sha256": "85eb74823631bb520690e9c486e535c6f1564549761ed4723e759f93fed20bde"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/candidate-items.json",
+      "sha256": "7aa8cabb7a0e4c0454ea7ac538ee1eb94d4125b84e85252af44f29b3560626c2"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/manifest.json",
+      "sha256": "2440dd2123cea394b38609696a9fc7fc82590f698a6f39124eac357c03fdf9bf"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json",
+      "sha256": "d7229b3edc03f0e1e44a43f17081bd5ae02855467cda3ded4ba41c6db48e604e"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/artifacts/harness-intelligence-format-pilot-2026-09-22/manifest.json",
+      "sha256": "12f41d188e0022a0ff16132f3ffce14f0378639d50e00cc53467291aef50f000"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json",
+      "sha256": "336921b7b481b355849592e30cbbe069215f932c91b3360ab703a03fdf83386f"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/examples/29_intelligence_service/starter-catalogue/items.json",
+      "sha256": "c9782c6929778c4133ce00d3cc9267fc27b3ed9e73702a79ffe5b2f4c267cccf"
+    },
+    {
+      "path": "/home/username/.le-codex-review-20260923/examples/29_intelligence_service/starter-catalogue/reviews.json",
+      "sha256": "2f19b79a6a5647f83b7bb84f810854b47fe786419acc9ec32cb8d7728611aa63"
+    },
+    {
+      "path": "/home/username/.le-library/ls1/artifacts/library-ingestion-2026-09-23/run-report-2.json",
+      "sha256": "881fc9f2154b329c566d02ff0e36dedb42f3bd896f3dabffacbffeff35f32332"
+    },
+    {
+      "path": "/home/username/.le-library/ls2/examples/29_intelligence_service/starter-catalogue/reviews-panel-2026-09-22.json",
+      "sha256": "22f3fb23c41d93cca99ec76c648e9e6d3cb24cf2d201c71aa56670d45f2dab31"
+    },
+    {
+      "path": "/home/username/loop-engine/.claude/worktrees/wf_2c5a17d0-bee-4/examples/29_intelligence_service/starter-catalogue/reviews.json",
+      "sha256": "043f92e36a4bde89b5d816c9dbcc31435a1a626c28f91f96c2c60c341497b9ef"
+    }
+  ],
+  "limitations": [
+    "Local review records and package digests are inventoried, not independently re-adjudicated.",
+    "A packaged host manifest is not proof that a live account can fetch or use an item.",
+    "Exact byte deduplication does not establish semantic distinctness or rights.",
+    "A prospective bundle line is not a published active release, and its blobs are not checked here.",
+    "An unmerged panel verdict cannot increase approved supply; conflicting verdicts require adjudication."
+  ],
+  "live_active_count": null,
+  "local": {
+    "client_specific_variants": 23,
+    "distinct_payload_body_sha256": 225,
+    "exact_duplicate_body_groups_first_25": [
+      {
+        "logical_packages": 6,
+        "physical_paths": 6,
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      },
+      {
+        "logical_packages": 1,
+        "physical_paths": 4,
+        "sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
+      },
+      {
+        "logical_packages": 1,
+        "physical_paths": 4,
+        "sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
+      },
+      {
+        "logical_packages": 1,
+        "physical_paths": 3,
+        "sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
+      },
+      {
+        "logical_packages": 1,
+        "physical_paths": 3,
+        "sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca"
+      }
+    ],
+    "file_roles": {
+      "implementation_script": 3,
+      "local_protocol_server_connection": 9,
+      "native_step_instructions": 10,
+      "reused_confinement_helper": 3,
+      "single_markdown_body": 123,
+      "skill_definition": 80,
+      "skill_entry": 3,
+      "skill_with_python_tool": 9
+    },
+    "logical_package_records": 212,
+    "not_approved_review_queue": 169,
+    "packaged_host_items": 43,
+    "physical_payload_paths": 240,
+    "recorded_approved": 43,
+    "review_states": {
+      "approved": 43,
+      "candidate_only": 89,
+      "not_reviewed": 74,
+      "rejected": 6
+    },
+    "sources": [
+      {
+        "logical_packages": 24,
+        "payload_paths": 24,
+        "source": "first-party-harness-candidates-2026-09-22"
+      },
+      {
+        "logical_packages": 24,
+        "payload_paths": 24,
+        "source": "first-party-harness-candidates-2026-09-22-wave-2"
+      },
+      {
+        "logical_packages": 20,
+        "payload_paths": 20,
+        "source": "first-party-harness-candidates-2026-09-22-wave-3"
+      },
+      {
+        "logical_packages": 12,
+        "payload_paths": 12,
+        "source": "first-party-harness-candidates-2026-09-22-wave-4-ops"
+      },
+      {
+        "logical_packages": 6,
+        "payload_paths": 28,
+        "source": "harness-intelligence-format-pilot-2026-09-22"
+      },
+      {
+        "logical_packages": 3,
+        "payload_paths": 9,
+        "source": "harness-intelligence-format-pilot-2026-09-22-wave-2"
+      },
+      {
+        "logical_packages": 123,
+        "payload_paths": 123,
+        "source": "starter"
+      }
+    ],
+    "starter_distinct_source_references": 73,
+    "variant_file_bindings": 55
+  },
+  "outside_ingestion_reports": [
+    {
+      "approved_package_credit": 0,
+      "candidate_refs": 4049,
+      "discovered": 4790,
+      "distinct_native_file_count": null,
+      "integration_state": "external_run_evidence_only",
+      "sha256": "881fc9f2154b329c566d02ff0e36dedb42f3bd896f3dabffacbffeff35f32332",
+      "source_rows": 21,
+      "staged_by_kind": {
+        "instruction_file": 445,
+        "skill": 596,
+        "tool": 2210
+      },
+      "staged_rows": 3251
+    }
+  ],
+  "panels": {
+    "approval_credit_from_panels": 0,
+    "conflicting_identities_first_25": [
+      "assemble_the_context_for_one_step",
+      "backfill_a_large_table_in_bounded_batches",
+      "build_an_incident_timeline_from_evidence",
+      "classify_a_failure_before_deciding_to_retry",
+      "compare_a_smaller_model_against_the_larger_one",
+      "design_a_request_and_response_contract",
+      "keep_instructions_and_supplied_text_apart",
+      "keep_secrets_out_of_source_and_settings",
+      "make_a_write_safe_to_repeat_with_an_idempotency_key",
+      "measure_before_optimising",
+      "pin_dependency_versions_and_verify_them",
+      "plan_a_schema_change_in_compatible_steps",
+      "prove_a_check_can_fail_when_the_behaviour_is_removed",
+      "read_a_failure_report_and_name_the_first_wrong_value",
+      "record_the_licence_of_every_bundled_component",
+      "reduce_a_failure_to_a_minimal_reproduction",
+      "remove_personal_data_before_it_reaches_a_log",
+      "reproduce_the_evidence_a_report_claims",
+      "respond_to_a_vulnerable_dependency_report",
+      "retry_with_backoff_inside_a_declared_budget",
+      "review_a_change_for_what_is_missing",
+      "review_a_new_dependency_before_adding_it",
+      "review_generated_output_before_it_is_executed",
+      "review_shared_state_for_ordering_defects",
+      "separate_required_from_optional_in_a_request"
+    ],
+    "conflicting_identity_count": 29,
+    "host_packaged_identity_conflicts": 0,
+    "same_body_after_closing_anchor_conflict_count": 29,
+    "unmerged_evidence": [
+      {
+        "bodies_changed_or_missing": 49,
+        "exact_bodies_still_present": 74,
+        "promotion_authority": false,
+        "record_type": "starter_catalogue_independent_review/v1",
+        "recorded_outcomes": {
+          "approved": 114,
+          "rejected": 9
+        },
+        "sha256": "043f92e36a4bde89b5d816c9dbcc31435a1a626c28f91f96c2c60c341497b9ef",
+        "within_panel_disagreements": null
+      },
+      {
+        "bodies_changed_or_missing": 0,
+        "exact_bodies_still_present": 30,
+        "promotion_authority": false,
+        "record_type": "starter_catalogue_panel_review/v1",
+        "recorded_outcomes": {
+          "rejected": 30
+        },
+        "sha256": "22f3fb23c41d93cca99ec76c648e9e6d3cb24cf2d201c71aa56670d45f2dab31",
+        "within_panel_disagreements": 14
+      }
+    ]
+  },
+  "prospective_bundles": {
+    "active_release_credit": 0,
+    "distinct_file_sha256": 0,
+    "inputs": [],
+    "logical_records": 0,
+    "physical_file_paths": 0
+  },
+  "record_type": "harness_supply_offline_audit/v1",
+  "repository_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "review_queue": {
+    "next_gates": {
+      "adjudicate_conflicting_review_records": 29,
+      "historical_or_unmerged_approval_requires_authoritative_admission": 42,
+      "repair_then_independent_rereview": 9,
+      "rights_distinctness_and_independent_review": 82,
+      "rights_effects_sandbox_and_independent_tree_review": 7
+    },
+    "path": "review-queue.jsonl",
+    "rows": 169,
+    "sha256": "a1a63e065b27b9fd499e05c3870f3f9b35427f8faf2d6e9d2a309f8b21005f7b"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "record_type": "documentation_search_effect_gap/v1",
+  "scope": "local fixture only",
+  "scenario": "search_can_select_an_authorized_effectful_item",
+  "owner": "core service retrieval/provisioning boundary; root records S-6.40/44",
+  "plain_search": {
+    "status": 200,
+    "body": {
+      "record_type": "service_http_result/v1",
+      "operation": "retrieval",
+      "result": {
+        "record_type": "service_retrieval_result/v1",
+        "hits": [],
+        "mode": "lexical",
+        "bodies_loaded": false,
+        "backend": {
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false,
+          "scope": "authorized_catalogue_metadata",
+          "returns_bodies": false,
+          "index": "one_reusable_index_for_each_catalogue_view",
+          "filters": "declared_filterable_public_attributes"
+        },
+        "catalogue_release": null,
+        "limitations": [
+          "Hash vectors measure character similarity, not learned semantic understanding.",
+          "Distribution references do not grant local code execution or independent Code admission."
+        ]
+      },
+      "execution": {
+        "runtime_type": "Loop",
+        "loop_id": "loop1",
+        "profile": "intelligence.search@1.0.0",
+        "mode": "deterministic",
+        "model_calls": 0,
+        "definition_digest": "74156e87dfc1676e5b6b97871711734c9ca1a7e6177c6ff1451bd07055c87bbf"
+      }
+    }
+  },
+  "search_with_authority": {
+    "status": 400,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "unknown_request_field",
+        "message": "The request carried a field this service does not know.",
+        "next_action": "Remove the field the refusal names and send only the documented fields."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_h3k2wg3a2fc6v6kt3jvp6wnsna"
+    }
+  },
+  "authorized_list": {
+    "status": 400,
+    "body": {
+      "record_type": "service_http_error/v1",
+      "error": {
+        "code": "invalid_request",
+        "message": "One field in this request did not match the documented shape.",
+        "next_action": "Compare the request with the schema in the setup guide, correct it, then send it again."
+      },
+      "effect_commitment": "not_asserted",
+      "automatic_retry": false,
+      "request_reference": "ref_lj5ynj2eajax2wjqyazppl4vuy"
+    }
+  }
+}

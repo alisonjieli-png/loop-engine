@@ -1,0 +1,14 @@
+[
+  {
+    "path": "src/loop_engine/core/custom_endpoint.py",
+    "before": 9,
+    "after": 9,
+    "introduced": []
+  },
+  {
+    "path": "src/loop_engine/core/custom_endpoint_checks.py",
+    "before": 3,
+    "after": 3,
+    "introduced": []
+  }
+]

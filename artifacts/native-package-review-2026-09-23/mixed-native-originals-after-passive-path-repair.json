@@ -1,0 +1,702 @@
+{
+  "provider_calls": 0,
+  "approvals": 0,
+  "rows": [
+    {
+      "identity": "schedule_dag_earliest_times",
+      "package_digest": "03ea8b8016d6352eb36453c6e53455c0d691988bb559c006a5f7c10246d8484c",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "package_digest": "29dd6f93a9cf962b36aca0f171e474e7e8860b676f2ec7bbff2412577ce91abc",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "package_digest": "7181cdf967db138e7f50f20cb2590bb34a8c90c5aef5362fe73f55874f147380",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "package_digest": "fdb931f908c53467f270d024699d04992b941cd35cb89441d6c4bfff1e10797f",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "package_digest": "0120acc6744d56b69447e2dc40f740e8b248ee5c2a631f46b654eab9f254063f",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "package_digest": "94ba49ea3fd8d276bd5610003fd3a2c170714826c2ecef63118aa470f97fdb99",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "package_digest": "2a5ea1551bb2506236816334110ac5094ca5a2ea2c39e9f1630b48c45b5ab76e",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "package_digest": "e15774569b995286404c81f2e55c2ecb839fd5ebc8a9525f6b7049a3e04162b9",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "package_digest": "4dda3bfacd5440295ac5cb56ffb537cffdbd826ef877ce7ee2b1b2597222bbc6",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "package_digest": "d8793e1f11a24a99807e636e4d909984573201adda323182d1c7bbe4dc36b5c0",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "package_digest": "31c2d135a962bb0acd7ee8b0b164ec3fc465d9b8aace8745ef47ba66699cf2b7",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "package_digest": "939b4b57e86d635f32042270485863245231213d0cfc05a3a28b93e5a74802ef",
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+test_a_client_command_no_recipe_publishes_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_client_command_no_recipe_publishes_is_refused) ... ok
+test_a_command_the_interface_does_not_have_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_command_the_interface_does_not_have_is_refused) ... ok
+test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused)
+The pages restored from the documentation branch are held like the first four. ... FAIL
+test_a_field_name_the_source_does_not_use_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_field_name_the_source_does_not_use_is_refused) ... ok
+test_a_missing_page_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_missing_page_is_refused) ... ok
+test_a_page_address_the_page_table_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_address_the_page_table_stops_serving_is_refused)
+The website addresses live in the page table, not in the transport. ... FAIL
+test_a_page_promises_a_status_for_a_refusal_with_no_raise_site (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_for_a_refusal_with_no_raise_site)
+Known-wrong: a promise this check cannot hold to the source at all. ... ok
+test_a_page_promises_a_status_the_service_does_not_answer (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_the_service_does_not_answer)
+Known-wrong: the refusal is real and the status beside it is not. ... FAIL
+test_a_record_version_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_record_version_the_source_does_not_declare_is_refused) ... ok
+test_a_refusal_code_no_source_raises_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_no_source_raises_is_refused) ... ok
+test_a_refusal_code_the_source_stops_raising_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_the_source_stops_raising_is_refused)
+The real drift case: the page is untouched and the source renames a code. ... FAIL
+test_a_scope_outside_the_vocabulary_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_scope_outside_the_vocabulary_is_refused) ... FAIL
+test_a_served_recipe_that_no_page_documents_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_served_recipe_that_no_page_documents_is_refused) ... ok
+test_a_status_is_read_from_the_position_or_the_keyword (tools.test_service_documentation.ServiceDocumentationCheck.test_a_status_is_read_from_the_position_or_the_keyword)
+A `status=` keyword must not silently fall back to the class default. ... ok
+test_an_address_the_service_does_not_serve_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_does_not_serve_is_refused) ... ok
+test_an_address_the_service_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_an_address_the_service_stops_serving_is_refused) ... ok
+test_every_customer_page_the_guides_index_lists_is_held_to_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_every_customer_page_the_guides_index_lists_is_held_to_the_source)
+A customer page the index lists and this check skips could say anything. ... ok
+test_every_documented_page_exists (tools.test_service_documentation.ServiceDocumentationCheck.test_every_documented_page_exists) ... ok
+test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not) ... ok
+test_the_committed_pages_match_the_committed_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_committed_pages_match_the_committed_source) ... FAIL
+test_the_default_status_of_a_transport_refusal_is_read_from_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_default_status_of_a_transport_refusal_is_read_from_the_source)
+Known-wrong: the transport refusal's default status moves, and every ... FAIL
+test_the_page_reader_separates_tables_blocks_and_spans (tools.test_service_documentation.ServiceDocumentationCheck.test_the_page_reader_separates_tables_blocks_and_spans) ... ok
+test_the_privacy_notice_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_privacy_notice_address_is_held_to_the_page_table)
+The setup guide names the privacy notice address, so the page table must keep serving it. ... FAIL
+test_the_service_changes_the_status_a_refusal_answers_with (tools.test_service_documentation.ServiceDocumentationCheck.test_the_service_changes_the_status_a_refusal_answers_with)
+Known-wrong: the source moves and the untouched pages become false. ... FAIL
+test_the_source_reader_finds_a_real_service_surface (tools.test_service_documentation.ServiceDocumentationCheck.test_the_source_reader_finds_a_real_service_surface) ... ok
+test_the_status_guard_holds_a_real_number_of_rows (tools.test_service_documentation.ServiceDocumentationCheck.test_the_status_guard_holds_a_real_number_of_rows)
+A guard that read no row would let every status case above pass. ... ok
+test_the_terms_of_service_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_terms_of_service_address_is_held_to_the_page_table)
+The setup guide names the terms of service address, so the page table must keep serving it. ... FAIL
+
+======================================================================
+FAIL: test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused)
+The pages restored from the documentation branch are held like the first four.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 118, in test_a_fact_on_the_usage_page_the_source_does_not_declare_is_refused
+    edit(root, "docs/guides/service-what-baltor-is.md",
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 65, in edit
+    raise AssertionError("the fixture text was not found in " + relative)
+AssertionError: the fixture text was not found in docs/guides/service-what-baltor-is.md
+
+======================================================================
+FAIL: test_a_page_address_the_page_table_stops_serving_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_address_the_page_table_stops_serving_is_refused)
+The website addresses live in the page table, not in the transport.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 172, in test_a_page_address_the_page_table_stops_serving_is_refused
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_a_page_promises_a_status_the_service_does_not_answer (tools.test_service_documentation.ServiceDocumentationCheck.test_a_page_promises_a_status_the_service_does_not_answer)
+Known-wrong: the refusal is real and the status beside it is not.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 276, in test_a_page_promises_a_status_the_service_does_not_answer
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_a_refusal_code_the_source_stops_raising_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_refusal_code_the_source_stops_raising_is_refused)
+The real drift case: the page is untouched and the source renames a code.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 138, in test_a_refusal_code_the_source_stops_raising_is_refused
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_a_scope_outside_the_vocabulary_is_refused (tools.test_service_documentation.ServiceDocumentationCheck.test_a_scope_outside_the_vocabulary_is_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 222, in test_a_scope_outside_the_vocabulary_is_refused
+    edit(root, "docs/guides/service-troubleshooting.md",
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 65, in edit
+    raise AssertionError("the fixture text was not found in " + relative)
+AssertionError: the fixture text was not found in docs/guides/service-troubleshooting.md
+
+======================================================================
+FAIL: test_the_committed_pages_match_the_committed_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_committed_pages_match_the_committed_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 93, in test_the_committed_pages_match_the_committed_source
+    self.assertEqual(report["findings"], [], msg=(
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it. : the service pages name facts the service source does not have; run tools/check_service_documentation.py for the list
+
+======================================================================
+FAIL: test_the_default_status_of_a_transport_refusal_is_read_from_the_source (tools.test_service_documentation.ServiceDocumentationCheck.test_the_default_status_of_a_transport_refusal_is_read_from_the_source)
+Known-wrong: the transport refusal's default status moves, and every
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 303, in test_the_default_status_of_a_transport_refusal_is_read_from_the_source
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_the_privacy_notice_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_privacy_notice_address_is_held_to_the_page_table)
+The setup guide names the privacy notice address, so the page table must keep serving it.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 183, in test_the_privacy_notice_address_is_held_to_the_page_table
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_the_service_changes_the_status_a_refusal_answers_with (tools.test_service_documentation.ServiceDocumentationCheck.test_the_service_changes_the_status_a_refusal_answers_with)
+Known-wrong: the source moves and the untouched pages become false.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 292, in test_the_service_changes_the_status_a_refusal_answers_with
+    self.assertEqual(check(root)["findings"], [])
+AssertionError: Lists differ: [{'page': 'docs/guides/service-serving-and[1577 chars]ce'}] != []
+
+First list contains 8 additional elements.
+First extra element 0:
+{'page': 'docs/guides/service-serving-and-connections.md', 'kind': 'refusal_code', 'value': 'key_expired', 'note': 'no service refusal raises this code'}
+
+Diff is 1809 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_the_terms_of_service_address_is_held_to_the_page_table (tools.test_service_documentation.ServiceDocumentationCheck.test_the_terms_of_service_address_is_held_to_the_page_table)
+The setup guide names the terms of service address, so the page table must keep serving it.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_service_documentation.py", line 198, in test_the_terms_of_service_address_is_held_to_the_page_table
+    self.assertIn("address", self.kinds(report))
+AssertionError: 'address' not found in []
+
+----------------------------------------------------------------------
+Ran 27 tests in 21.642s
+
+FAILED (failures=10)

@@ -1,0 +1,19 @@
+test_candidate_review_native_calibration (unittest.loader._FailedTest.test_candidate_review_native_calibration) ... ERROR
+
+======================================================================
+ERROR: test_candidate_review_native_calibration (unittest.loader._FailedTest.test_candidate_review_native_calibration)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_candidate_review_native_calibration
+Traceback (most recent call last):
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native_calibration.py", line 14, in <module>
+    from candidate_review import calibration, native_calibration, native_profile, panel, prechecks
+ImportError: cannot import name 'native_calibration' from 'candidate_review' (/home/username/.le-codex-build/review-integrity/tools/candidate_review/__init__.py)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

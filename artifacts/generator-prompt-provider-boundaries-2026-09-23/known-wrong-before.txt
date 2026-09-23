@@ -1,0 +1,89 @@
+======================================================================
+ERROR: test_changed_prompt_resource_refuses_resume_before_call (tools.test_generate_original_native_candidates.GenerationTest.test_changed_prompt_resource_refuses_resume_before_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 119, in test_changed_prompt_resource_refuses_resume_before_call
+    self.run_generation(gateway)
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 97, in run_generation
+    return generation.generate(self.request(**changes), gateway=gateway or FakeGateway(), provider_spec=self.spec, fixture_run=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/generate_original_native_candidates.py", line 430, in generate
+    plan = load_plan(repository, request.plan, request.plan_sha256)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/generate_original_native_candidates.py", line 159, in load_plan
+    raw = read_file(path, MAX_PLAN_BYTES)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1204, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 116, in changed
+    return raw + b"\n" if Path(path) == generation.PROMPT_RESOURCE_PATH else raw
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'tools.generate_original_native_candidates' has no attribute 'PROMPT_RESOURCE_PATH'
+
+======================================================================
+ERROR: test_credential_presence_delegates_to_selected_adapter (tools.test_generate_original_native_candidates.GenerationTest.test_credential_presence_delegates_to_selected_adapter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 143, in test_credential_presence_delegates_to_selected_adapter
+    generation.require_provider_credential(spec)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'tools.generate_original_native_candidates' has no attribute 'require_provider_credential'
+
+======================================================================
+ERROR: test_missing_credential_refuses_without_provider_verification (tools.test_generate_original_native_candidates.GenerationTest.test_missing_credential_refuses_without_provider_verification)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 150, in test_missing_credential_refuses_without_provider_verification
+    generation.require_provider_credential(replace(self.spec, adapter=MissingProvider()))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'tools.generate_original_native_candidates' has no attribute 'require_provider_credential'
+
+======================================================================
+ERROR: test_unsupported_prompt_resource_refuses_before_output_or_call (tools.test_generate_original_native_candidates.GenerationTest.test_unsupported_prompt_resource_refuses_before_output_or_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 133, in test_unsupported_prompt_resource_refuses_before_output_or_call
+    self.run_generation(gateway)
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 97, in run_generation
+    return generation.generate(self.request(**changes), gateway=gateway or FakeGateway(), provider_spec=self.spec, fixture_run=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/generate_original_native_candidates.py", line 430, in generate
+    plan = load_plan(repository, request.plan, request.plan_sha256)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/generate_original_native_candidates.py", line 159, in load_plan
+    raw = read_file(path, MAX_PLAN_BYTES)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/mock.py", line 1204, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 126, in changed
+    if Path(path) == generation.PROMPT_RESOURCE_PATH:
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'tools.generate_original_native_candidates' has no attribute 'PROMPT_RESOURCE_PATH'
+
+======================================================================
+ERROR: test_versioned_resource_preserves_exact_prior_prompt_bytes (tools.test_generate_original_native_candidates.GenerationTest.test_versioned_resource_preserves_exact_prior_prompt_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/generation-resources/tools/test_generate_original_native_candidates.py", line 105, in test_versioned_resource_preserves_exact_prior_prompt_bytes
+    self.assertEqual(record["prompt_resource"]["record_type"], generation.PROMPT_RESOURCE_TYPE)
+                     ~~~~~~^^^^^^^^^^^^^^^^^^^
+KeyError: 'prompt_resource'
+
+----------------------------------------------------------------------
+Ran 33 tests in 1.923s
+
+FAILED (errors=5)

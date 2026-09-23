@@ -1,0 +1,115 @@
+{
+  "observed_at": "2026-09-23T15:56:47.861268+00:00",
+  "url": "https://baltor.ai/api/v1/capabilities",
+  "status": 200,
+  "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "capabilities",
+    "result": {
+      "record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "website": {
+        "display_name": "Baltor",
+        "registration_available": false,
+        "browser_identity_available": true,
+        "access_profile": "operator_provisioned",
+        "access_administration_available": true,
+        "client_access_available": true,
+        "promotion_redemption_available": false,
+        "promotion_redemption_endpoint": "/api/v1/account/promotion",
+        "waitlist_available": true
+      },
+      "protocol": {
+        "transport": "streamable_http",
+        "versions": [
+          "2025-11-25",
+          "2026-07-28"
+        ],
+        "handshake_versions": [
+          "2025-11-25"
+        ],
+        "per_request_versions": [
+          "2026-07-28"
+        ],
+        "sdk_version": "2.2.0",
+        "session_state": "stateless",
+        "oauth_resource_metadata": false,
+        "oauth_authorization_server_installed": false,
+        "external_authorization_flow_qualified": false
+      },
+      "authentication": {
+        "record_type": "service_http_authentication/v1",
+        "modes": [
+          "host_key"
+        ],
+        "issuer": null,
+        "audience": null,
+        "algorithms": [],
+        "required_scopes": [],
+        "key_cache_seconds": 60,
+        "maximum_key_set_bytes": 262144,
+        "issues_tokens": false,
+        "external_provider_qualified": false
+      },
+      "operation_scopes": {
+        "metadata_and_search": "provisioning:metadata",
+        "body_and_download": "provisioning:read",
+        "usage": "usage:read",
+        "billing_sessions": "billing:manage"
+      },
+      "retrieval": {
+        "modes": [
+          "lexical",
+          "hybrid"
+        ],
+        "lexical_backend": "sqlite_fts5",
+        "vector_backend": "deterministic_character_hash",
+        "semantic_embedding_model_installed": false,
+        "scope": "authorized_catalogue_metadata",
+        "returns_bodies": false,
+        "index": "one_reusable_index_for_each_catalogue_view",
+        "filters": "declared_filterable_public_attributes"
+      },
+      "delivery": {
+        "inline_body_bytes": 16384,
+        "download_bytes": 1048576,
+        "download_endpoint": "/api/v1/download",
+        "requires_reauthorization": true,
+        "body_format": "utf8_text",
+        "package_files": "download_by_path"
+      },
+      "limits": {
+        "request_bytes": 65536,
+        "response_bytes": 262144,
+        "search_results": 50,
+        "concurrent_operations": 8,
+        "concurrent_operations_for_each_account": 4,
+        "concurrent_operations_waiting_on_another_service": 4,
+        "request_nesting_depth": 64,
+        "failed_attempts_per_address": {
+          "record_type": "service_failed_attempt_limit/v1",
+          "active": true,
+          "counted": [
+            "refused_authentication",
+            "refused_account_activation",
+            "refused_promotion_redemption"
+          ],
+          "failures_allowed": 30,
+          "window_seconds": 60,
+          "client_address_source": "header",
+          "ipv6_prefix_bits": 64,
+          "refusal_code": "failed_attempt_limit_reached",
+          "state": "memory_of_one_service_process"
+        }
+      },
+      "billing": {
+        "webhook": true,
+        "checkout": true,
+        "portal": true,
+        "discount_code": false,
+        "plans_endpoint": "/api/v1/billing/plans"
+      },
+      "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"
+    }
+  }
+}

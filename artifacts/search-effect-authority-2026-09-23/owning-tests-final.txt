@@ -1,0 +1,15 @@
+test_disabled_tenant_is_refused (tools.test_search_effect_authority.SearchEffectAuthority.test_disabled_tenant_is_refused) ... ok
+test_effect_selection_does_not_broaden_grants_or_scopes (tools.test_search_effect_authority.SearchEffectAuthority.test_effect_selection_does_not_broaden_grants_or_scopes) ... ok
+test_inflight_grant_change_still_refuses_selected_metadata (tools.test_search_effect_authority.SearchEffectAuthority.test_inflight_grant_change_still_refuses_selected_metadata) ... ok
+test_omitted_empty_or_insufficient_effects_remain_withheld (tools.test_search_effect_authority.SearchEffectAuthority.test_omitted_empty_or_insufficient_effects_remain_withheld) ... ok
+test_protocol_schema_and_calls_share_the_same_selection (tools.test_search_effect_authority.SearchEffectAuthority.test_protocol_schema_and_calls_share_the_same_selection) ... ok
+test_request_version_is_advertised_and_old_or_future_requests_refuse (tools.test_search_effect_authority.SearchEffectAuthority.test_request_version_is_advertised_and_old_or_future_requests_refuse) ... ok
+test_search_can_select_an_authorized_effectful_item (tools.test_search_effect_authority.SearchEffectAuthority.test_search_can_select_an_authorized_effectful_item) ... ok
+test_unknown_and_malformed_effects_refuse_before_indexing (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_and_malformed_effects_refuse_before_indexing) ... ok
+test_unknown_authority_and_tenant_fields_are_not_selectors (tools.test_search_effect_authority.SearchEffectAuthority.test_unknown_authority_and_tenant_fields_are_not_selectors) ... ok
+test_unrelated_query_and_unchanged_ranking (tools.test_search_effect_authority.SearchEffectAuthority.test_unrelated_query_and_unchanged_ranking) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.702s
+
+OK

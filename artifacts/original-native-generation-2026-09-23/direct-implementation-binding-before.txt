@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_direct_gateway_and_adapter_implementations_are_bound_on_resume (tools.test_generate_original_native_candidates.GenerationTest.test_direct_gateway_and_adapter_implementations_are_bound_on_resume)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 327, in test_direct_gateway_and_adapter_implementations_are_bound_on_resume
+    self.assertIn('model_gateway.py',meta['implementations'])
+AssertionError: 'model_gateway.py' not found in {'generate_original_native_candidates.py': 'cdd679dd38de5562362502dcc5eb1bbe01012232e4d170feb98b304ab8e4404b', 'native_harness_candidates.py': 'd348b1e40cf6b43f9a345a5e4ad0c9f010e3edc873e321bb7447a6de64624f27', 'prepare_harness_candidates.py': 'ded71c80bce93f6bfed6ac0cf42d6100a7b6b0d7868672cc48f04c20aa4923e5'}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.057s
+
+FAILED (failures=1)

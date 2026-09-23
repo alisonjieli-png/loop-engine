@@ -1,0 +1,38 @@
+[
+  {
+    "path": "tools/candidate_review/calibration.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/candidate_review/panel.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/candidate_review/records.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/candidate_review/review_record.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/review_catalogue_candidates.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/test_candidate_review_native.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/test_candidate_review_native_calibration.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/test_candidate_review_record.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/candidate_review/calibration_record.py",
+    "introduced": []
+  }
+]

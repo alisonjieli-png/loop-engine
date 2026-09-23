@@ -1,0 +1,21 @@
+{
+  "violations": [
+    {
+      "determinant": [
+        1
+      ],
+      "dependent_variants": [
+        [
+          "x"
+        ],
+        [
+          "y"
+        ]
+      ],
+      "row_indices": [
+        0,
+        1
+      ]
+    }
+  ]
+}

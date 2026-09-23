@@ -1,0 +1,37 @@
+{
+  "record_type": "signup_readonly_host_readiness/v1",
+  "observed_at": "2026-09-23T18:00:13.181032+00:00",
+  "exit_code": 0,
+  "helper": "tools/fly_operator.py --account baltor",
+  "selected_host_fields": {
+    "account_email": {
+      "present": false
+    },
+    "browser_identity": {
+      "present": true,
+      "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+      "registration_enabled": false,
+      "email_signup_enabled": false,
+      "allow_network": true
+    },
+    "http": {
+      "present": true,
+      "record_type": "service_http_configuration/v2",
+      "public_base_url": "https://baltor-pilot.fly.dev",
+      "display_name": "Baltor"
+    },
+    "request_limit_address_binding": {
+      "client_address_source": "header",
+      "client_address_header": "Fly-Client-IP"
+    },
+    "expected_environment_names_present": {
+      "SUPABASE_PUBLISHABLE_KEY": true,
+      "BALTOR_IDENTITY_SERVICE_KEY": false,
+      "BALTOR_MAIL_API_KEY": false
+    }
+  },
+  "error": null,
+  "raw_output_recorded": false,
+  "secret_values_recorded": false,
+  "host_writes": 0
+}

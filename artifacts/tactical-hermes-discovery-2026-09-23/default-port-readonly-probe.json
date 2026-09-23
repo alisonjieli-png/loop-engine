@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-09-23T16:52:47.975654+00:00",
+  "credentials_sent": false,
+  "model_calls": 0,
+  "rows": [
+    {
+      "url": "https://ai.tacticalengineering.net/",
+      "error_type": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>"
+    },
+    {
+      "url": "https://ai.tacticalengineering.net/v1/models",
+      "error_type": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>"
+    },
+    {
+      "url": "https://ai.tacticalengineering.net/hermes/v1/models",
+      "error_type": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>"
+    },
+    {
+      "url": "https://ai.tacticalengineering.net/hermes/models",
+      "error_type": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1081)>"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "src/loop_engine/core/external_harness.py",
+    "introduced": []
+  },
+  {
+    "path": "src/loop_engine/core/external_harness_accounting.py",
+    "introduced": []
+  },
+  {
+    "path": "src/loop_engine/core/harness_semantic.py",
+    "introduced": []
+  },
+  {
+    "path": "src/loop_engine/core/model_gateway.py",
+    "introduced": []
+  },
+  {
+    "path": "src/loop_engine/loop/encapsulate.py",
+    "introduced": []
+  },
+  {
+    "path": "tools/test_provider_refusal_recovery.py",
+    "introduced": []
+  }
+]

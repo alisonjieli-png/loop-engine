@@ -1,0 +1,16 @@
+{
+  "committed_idempotency": {},
+  "context_version": 2,
+  "execution_authorized": false,
+  "record_type": "focused_step_state_snapshot_candidate/v1",
+  "run_id": "inventory-demo",
+  "state_digest": "a54e25171c4e1802115bccb010c31d635b4c76faf36046a3d39236f86de766dd",
+  "state_id": "inventory-demo.reconcile-stock",
+  "step_id": "reconcile-stock",
+  "values": {
+    "pending_question": "Does the reported availability agree with the movements?",
+    "previous_step": "Synthetic movement inputs collected; no correction has been committed.",
+    "status": "ready_for_reconciliation"
+  },
+  "version": 3
+}

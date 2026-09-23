@@ -399,7 +399,7 @@ class HarnessSemanticBinding:
         response = ModelGatewayResult(
             ok=result.completed and bool(output), text=output,
             provider=latest.provider or primary.provider,
-            model=latest.model or primary.model, route=latest.route or primary.name,
+            model=(physical[-1].model if physical else ''), route=latest.route or primary.name,
             thinking_power=latest.thinking_power,
             input_tokens=complete_attempt_sum(physical, 'input_tokens') if physical else None,
             output_tokens=complete_attempt_sum(physical, 'output_tokens') if physical else None,

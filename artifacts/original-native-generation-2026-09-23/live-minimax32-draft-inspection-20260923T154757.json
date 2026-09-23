@@ -1,0 +1,96 @@
+{
+  "record_type": "native_generation_safe_draft_inspection/v1",
+  "generated_code_executed": false,
+  "models_called": 0,
+  "results": [
+    {
+      "method_id": "minimum_cost_unique_assignment",
+      "original_and_saved_text_identical": true,
+      "saved_text_bytes": 31319,
+      "status": "failed",
+      "pure_draft_validation": "refused",
+      "safe_error_type": "GenerationError",
+      "safe_error_code": "duplicate_json_key"
+    },
+    {
+      "method_id": "apportion_integer_quotas",
+      "original_and_saved_text_identical": true,
+      "saved_text_bytes": 33182,
+      "status": "candidate_prepared",
+      "json_shape": {
+        "top_keys": [
+          "files",
+          "method_id",
+          "record_type"
+        ],
+        "method_id": "apportion_integer_quotas",
+        "file_rows": 7
+      },
+      "pure_draft_validation": "passed",
+      "packages": [
+        {
+          "identity": "apportion_integer_quotas",
+          "package_digest": "f058254050adf7f03f2f96577cae7c65930abe9e35b330c280e6f824834d3589",
+          "producer": {
+            "family": "minimax",
+            "method_identity": "original_native_generation/v1",
+            "producer_identity": "ollama_cloud:minimax-m3"
+          },
+          "file_count": 7,
+          "payload_bytes": 31190,
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "role": "instruction_file",
+              "media_type": "text/markdown",
+              "bytes": 5434,
+              "sha256": "b42070e15eb0970374e172bfd898eebfcae7d9589989075f4c65fbac6a7b8338"
+            },
+            {
+              "path": "CLAUDE.md",
+              "role": "instruction_file",
+              "media_type": "text/markdown",
+              "bytes": 11,
+              "sha256": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "role": "configuration",
+              "media_type": "application/json",
+              "bytes": 961,
+              "sha256": "c0e0aaa8a7183270b9cb413328ad8e4e616236cd97f882b42c0034d82c966bba"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "role": "configuration",
+              "media_type": "application/json",
+              "bytes": 1505,
+              "sha256": "d98a123d5d35d3b8125617499d5e5cfe6692ee54689dd42aa0b5f24f5def4a3e"
+            },
+            {
+              "path": "references/acceptance.md",
+              "role": "skill_reference",
+              "media_type": "text/markdown",
+              "bytes": 4157,
+              "sha256": "55a3c20f88e6e5716feeb96de4ae9a5e82ecd764084d2ced443fa49adefbbdc3"
+            },
+            {
+              "path": "tests/test_apportion_integer_quotas.py",
+              "role": "executable_tool",
+              "media_type": "text/x-python",
+              "bytes": 9324,
+              "sha256": "583b89da4166822f50e6a507d028e60471e700600d2215850aa14740ebaf7b77"
+            },
+            {
+              "path": "tools/apportion_integer_quotas.py",
+              "role": "executable_tool",
+              "media_type": "text/x-python",
+              "bytes": 9798,
+              "sha256": "3bfe1c314c8fbdcdbc8eec9121be12ee84967cf61eeecee7b5ab7bce3f6ade3c"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

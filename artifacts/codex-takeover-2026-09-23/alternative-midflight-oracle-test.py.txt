@@ -1,0 +1,47 @@
+"""An eager catalogue refresh must not invalidate the in-flight request oracle."""
+from __future__ import annotations
+
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import httpx
+
+from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
+from loop_engine.core.service_runtime.catalogue_serving_checks import _Served, _mid_flight_checks
+from loop_engine.core.service_runtime.http_test_fixtures import running_http
+
+
+class CatalogueMidflightOracleTest(unittest.TestCase):
+    def test_eager_publication_keeps_a_distinct_old_view_and_detects_the_mutant(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            case = Fixture(Path(temporary))
+            case.publish([case.line("clean_supplier_names", "# Clean supplier names\nalpha one\n",
+                                    attributes={"domain": ["data"]})])
+            served = _Served(case)
+            publish = case.publish
+
+            def eager_refresh(lines):
+                result = publish(lines)
+                # Force the schedule that previously happened intermittently:
+                # the background refresher sees the publish immediately.
+                served.provisioning.install_view(case.view())
+                return result
+
+            observed = {}
+
+            def check(name, passed, *_detail):
+                observed[name] = bool(passed)
+
+            with running_http(served) as (base, _service):
+                with httpx.Client(base_url=base, trust_env=False, timeout=5,
+                                  headers={"Authorization": "Bearer " + case.key.key}) as client:
+                    with patch.object(case, "publish", eager_refresh):
+                        _mid_flight_checks(check, case, served, client)
+            self.assertTrue(observed["a_request_in_flight_finishes_on_the_view_it_started_with"])
+            self.assertTrue(observed["removed_one_view_for_each_request_rule_is_detected"])
+
+
+if __name__ == "__main__":
+    unittest.main()

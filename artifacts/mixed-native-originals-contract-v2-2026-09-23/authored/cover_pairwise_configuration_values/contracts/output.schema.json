@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "minProperties": 2,
+        "maxProperties": 6,
+        "propertyNames": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "minItems": 1,
+      "maxItems": 135
+    },
+    "total_pairs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "covered_pairs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000000
+    }
+  },
+  "required": [
+    "cases",
+    "total_pairs",
+    "covered_pairs"
+  ],
+  "additionalProperties": false
+}

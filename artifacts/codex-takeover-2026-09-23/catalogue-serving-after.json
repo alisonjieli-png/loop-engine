@@ -1,0 +1,92 @@
+{
+  "checks": [
+    {
+      "name": "a_published_item_is_searched_and_downloaded_over_http_without_a_redeploy",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "search_filters_only_on_public_filterable_attributes_and_shows_only_public_shown_ones",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "a_package_file_of_any_type_is_downloaded_by_path_with_its_own_digest_and_one_charge",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "a_request_in_flight_finishes_on_the_view_it_started_with",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "removed_one_view_for_each_request_rule_is_detected",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "the_catalogue_commands_answer_through_the_service_entry_point",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "withdraw_and_follow_answer_through_the_service_entry_point",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "apply_grants_keeps_a_following_account_on_its_engine",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "removed_following_account_rule_is_detected",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "a_rollback_needs_the_release_it_expects",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "a_catalogue_command_is_refused_without_the_catalogue_section",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "the_documented_first_release_procedure_leaves_ungranted_accounts_with_nothing",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "the_first_release_step_as_written_for_release_17_now_leaves_ungranted_accounts_with_nothing",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "the_release_17_procedure_under_release_17_rules_is_detected",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "the_live_repair_empties_the_denied_accounts_and_keeps_the_owner_following",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "removed_stop_following_snapshot_is_detected",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "stop_following_names_one_following_account_and_nothing_else",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "passed": 17,
+  "total": 17,
+  "provider_calls": 0
+}

@@ -1,0 +1,608 @@
+[
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 38,
+      "row": 19
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/access.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from __future__ import annotations\n\nimport hashlib\nimport math\nimport secrets\nimport uuid\nfrom dataclasses import dataclass\n\nfrom .records import (\n    ACCESS_MANAGE_SCOPE,\n    CLIENT_ACCESS_PROFILE,\n    DEFAULT_SCOPES,\n    ServiceRuntimeError,\n    digest,\n    identifier,\n    scopes,\n    text,\n)\nfrom .runtime import (\n    BILLING_POLICY,\n    BODIES,\n    CODE_GRANT_SOURCE,\n    ENTITLEMENT,\n    HOST_GRANT_SOURCE,\n    KEY,\n    OWNER_BOUND_KEY_SCHEMA,\n    SCHEMAS,\n    SESSION_REVOCATION,\n    STRIPE_SNAPSHOT_SOURCE,\n    SUBJECT,\n    TENANT,\n    ServiceRuntime,\n)\n\n",
+          "end_location": {
+            "column": 1,
+            "row": 21
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 8
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 8,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 115,
+      "row": 18
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/access.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from .runtime import (BILLING_POLICY, BODIES, CODE_GRANT_SOURCE, ENTITLEMENT, HOST_GRANT_SOURCE, KEY,\n                      OWNER_BOUND_KEY_SCHEMA, SCHEMAS, SESSION_REVOCATION, STRIPE_SNAPSHOT_SOURCE, SUBJECT, ServiceRuntime)",
+          "end_location": {
+            "column": 38,
+            "row": 19
+          },
+          "location": {
+            "column": 1,
+            "row": 17
+          }
+        }
+      ],
+      "message": "Remove unused import: `.runtime.TENANT`"
+    },
+    "location": {
+      "column": 109,
+      "row": 18
+    },
+    "message": "`.runtime.TENANT` imported but unused",
+    "name": "unused-import",
+    "noqa_row": 18,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 2,
+      "row": 57
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from __future__ import annotations\n\nimport hashlib\nimport json\nimport math\nimport re\nimport secrets\nimport string\nimport time\nfrom dataclasses import dataclass, field\nfrom dataclasses import fields as dataclass_fields\nfrom urllib.parse import quote, urlsplit\n\nfrom .http import ServiceHttpError\nfrom .http_auth import validate_public_url\nfrom .records import ServiceRuntimeError, text\nfrom .request_limits import (\n    LIMIT_REACHED_CODE,\n    REFUSAL_RECORD_TYPE,\n    SOCKET_PEER_SOURCE,\n    FailedAttemptLimiter,\n    ServiceRequestLimits,\n)\n\n",
+          "end_location": {
+            "column": 1,
+            "row": 59
+          },
+          "location": {
+            "column": 1,
+            "row": 40
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 40
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 40,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 88,
+      "row": 441
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email.py",
+    "fix": null,
+    "location": {
+      "column": 9,
+      "row": 440
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 440,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 21,
+      "row": 447
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email.py",
+    "fix": null,
+    "location": {
+      "column": 12,
+      "row": 447
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 447,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 25,
+      "row": 668
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email.py",
+    "fix": null,
+    "location": {
+      "column": 16,
+      "row": 668
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 668,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 25,
+      "row": 731
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email.py",
+    "fix": null,
+    "location": {
+      "column": 16,
+      "row": 731
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 731,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 2,
+      "row": 52
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from __future__ import annotations\n\nimport base64\nimport io\nimport json\nimport logging\nimport os\nimport re\nimport secrets\nimport threading\nimport time\nimport uuid\nfrom contextlib import contextmanager, redirect_stderr, redirect_stdout\nfrom datetime import datetime, timedelta, timezone\nfrom http.server import BaseHTTPRequestHandler, ThreadingHTTPServer\nfrom unittest.mock import patch\nfrom urllib.parse import parse_qs, urlsplit\n\nfrom . import account_email as module\nfrom .account_email import (\n    CONFIGURATION_RECORD_TYPE,\n    CONFIRM_PAGE,\n    CONFIRMATION_SENT,\n    GENERATE_LINK_PATH,\n    GENERATED_PASSWORD_GROUPS,\n    IDENTITY_SECRET_PREFIX,\n    MAIL_SECRET_PREFIX,\n    MAIL_SEND_PATH,\n    MAXIMUM_PASSWORD_BYTES,\n    PROVIDER_PROFILE,\n    RECOVERY_ACTION,\n    RECOVERY_RESULT_VERSION,\n    RECOVERY_SENT,\n    SERVICE_REFUSAL_STATUSES,\n    SIGNUP_ACTION,\n    SIGNUP_RESULT_VERSION,\n    AccountEmailAdapter,\n    AccountEmailConfiguration,\n    AccountEmailError,\n    AccountMailRequest,\n    IdentityLinkRequest,\n    PreparedAccountRequest,\n    ProviderAnswer,\n    counted_email_key,\n    email_address,\n    generate_identity_link,\n    generated_signup_password,\n    send_account_mail,\n)\nfrom .http import ServiceHttpApplication\nfrom .http_auth import HttpAuthenticationError\nfrom .http_test_fixtures import HttpDomainFixture, running_http\nfrom .records import ServiceRuntimeError\nfrom .request_limits import (\n    HEADER_SOURCE,\n    LIMIT_REACHED_CODE,\n    SOCKET_PEER_SOURCE,\n    FailedAttemptLimiter,\n    ServiceRequestLimits,\n)\n\n",
+          "end_location": {
+            "column": 1,
+            "row": 54
+          },
+          "location": {
+            "column": 1,
+            "row": 19
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 19
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 19,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 14,
+      "row": 21
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 22
+          },
+          "location": {
+            "column": 1,
+            "row": 21
+          }
+        }
+      ],
+      "message": "Remove unused import: `base64`"
+    },
+    "location": {
+      "column": 8,
+      "row": 21
+    },
+    "message": "`base64` imported but unused",
+    "name": "unused-import",
+    "noqa_row": 21,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "B023",
+    "end_location": {
+      "column": 60,
+      "row": 382
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 53,
+      "row": 382
+    },
+    "message": "Function definition does not bind loop variable `adapter`",
+    "name": "function-uses-loop-variable",
+    "noqa_row": 382,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/function-uses-loop-variable"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 61,
+      "row": 465
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 44,
+      "row": 465
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 465,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 41,
+      "row": 474
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 26,
+      "row": 474
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 474,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 80,
+      "row": 561
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 559
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 559,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 80,
+      "row": 608
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 606
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 606,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 56,
+      "row": 612
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 39,
+      "row": 612
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 612,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 80,
+      "row": 623
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 622
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 622,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 80,
+      "row": 627
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 626
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 626,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 44,
+      "row": 730
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 23,
+      "row": 730
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 730,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 101,
+      "row": 852
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "    from .http_entrypoint import (\n        HOST_CONFIGURATION_VERSION,\n        MANIFEST_VERSION,\n        load_host_application,\n    )\n",
+          "end_location": {
+            "column": 1,
+            "row": 853
+          },
+          "location": {
+            "column": 1,
+            "row": 852
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 5,
+      "row": 852
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 852,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 40,
+      "row": 968
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 19,
+      "row": 968
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 968,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 102,
+      "row": 980
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 87,
+      "row": 980
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 980,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 63,
+      "row": 1087
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 16,
+      "row": 1087
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 1087,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "UP031",
+    "end_location": {
+      "column": 35,
+      "row": 1304
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 14,
+      "row": 1304
+    },
+    "message": "Use format specifiers instead of percent format",
+    "name": "printf-string-formatting",
+    "noqa_row": 1304,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/printf-string-formatting"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 58,
+      "row": 1436
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "    import httpx\n\n    from .observability import ServiceObservabilityPolicy\n",
+          "end_location": {
+            "column": 1,
+            "row": 1437
+          },
+          "location": {
+            "column": 1,
+            "row": 1435
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 5,
+      "row": 1435
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 1435,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 25,
+      "row": 1444
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 16,
+      "row": 1444
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 1444,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "SIM117",
+    "end_location": {
+      "column": 105,
+      "row": 1458
+    },
+    "filename": "/home/username/.le-codex-build/signup-flow/src/loop_engine/core/service_runtime/account_email_checks.py",
+    "fix": null,
+    "location": {
+      "column": 5,
+      "row": 1456
+    },
+    "message": "Use a single `with` statement with multiple contexts instead of nested `with` statements",
+    "name": "multiple-with-statements",
+    "noqa_row": 1457,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/multiple-with-statements"
+  }
+]

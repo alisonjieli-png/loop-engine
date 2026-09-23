@@ -1,0 +1,29 @@
+{
+  "record_type": "working_directory_compiler_experiment_sources/v1",
+  "base_revision": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "code": [
+    {
+      "path": "tools/install_selected_material.py",
+      "sha256": "ebbaed67ff2c2332560e1b779cc199b150795ede555ce87e3b606836a1994267"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+    },
+    {
+      "path": "src/loop_engine/core/facets.py",
+      "sha256": "7c9d043ed04eda8e81d13a315905c996499adfb6fb0808f9c4e3ba86323b07d9"
+    },
+    {
+      "path": "src/loop_engine/core/boundary_registry.py",
+      "sha256": "6bed170a62f50cbd5a0a94d8edf037096d0e48c5e7264d660ef36f2c1d04271a"
+    },
+    {
+      "path": "src/loop_engine/data/engine_slots.yaml",
+      "sha256": "f1cda4b6ed4326dae0dc2beb46eeecad2fc4d4383dd67cb16d2c3400bd07ea82"
+    }
+  ],
+  "design_input_sha256": "d7f6f399247a5680e03ac3b354eeea32f6d6f0d24e6044d92c4994b0351b05d4",
+  "draft_fixture_index_sha256": "27bdfbcad0c08e7b9710c300fbf64cbf6639fbc46958297b075bec9a84e5e785",
+  "scope": "Artifact-only original prototype; no active registry/source edits; snapshots preserve root-approved design and prior12 synthetic schema fixtures"
+}

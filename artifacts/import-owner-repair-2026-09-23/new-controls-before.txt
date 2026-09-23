@@ -1,0 +1,56 @@
+EEFF
+======================================================================
+ERROR: test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py", line 343, in test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume
+    bindings = generation.implementation_digests(self.spec)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/import-owner-repair/tools/generate_original_native_candidates.py", line 395, in implementation_digests
+    Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)))
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/inspect.py", line 924, in getfile
+    raise TypeError('{!r} is a built-in class'.format(object))
+TypeError: <class 'type'> is a built-in class
+
+======================================================================
+ERROR: test_adapter_without_source_file_is_explicitly_unqualified (tools.test_generate_original_native_candidates.GenerationTest.test_adapter_without_source_file_is_explicitly_unqualified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py", line 366, in test_adapter_without_source_file_is_explicitly_unqualified
+    generation.implementation_digests(replace(self.spec, adapter=str))
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/dataclasses.py", line 1588, in replace
+    return obj.__class__(**changes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 14, in __init__
+  File "/home/username/.le-codex-build/import-owner-repair/src/loop_engine/core/model_gateway.py", line 87, in __post_init__
+    raise ValueError(
+ValueError: provider 'ollama_cloud' misses adapter fields ['chat_maxout', 'verify', 'live_models', 'output_capability_for', 'DEFAULT_MODEL']
+
+======================================================================
+FAIL: test_review_and_generator_share_canonical_preparation_exception_in_either_import_order (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_review_and_generator_share_canonical_preparation_exception_in_either_import_order) (first='tools.generate_original_native_candidates')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_prepare_native_harness_candidates.py", line 224, in test_review_and_generator_share_canonical_preparation_exception_in_either_import_order
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+AssertionError
+
+
+======================================================================
+FAIL: test_review_and_generator_share_canonical_preparation_exception_in_either_import_order (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_review_and_generator_share_canonical_preparation_exception_in_either_import_order) (first='candidate_review.native')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_prepare_native_harness_candidates.py", line 224, in test_review_and_generator_share_canonical_preparation_exception_in_either_import_order
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 8, in <module>
+AssertionError
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.512s
+
+FAILED (failures=2, errors=2)

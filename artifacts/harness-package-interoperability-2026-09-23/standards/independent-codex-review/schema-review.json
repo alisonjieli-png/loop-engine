@@ -1,0 +1,89 @@
+{
+  "record_type": "independent_schema_observation/v1",
+  "exit_code": 0,
+  "observations": [
+    {
+      "name": "HooksListParams.json",
+      "sha256": "07638c3a8a3690cf368fa92c7ff697fdd0132865e8c59d53f6e5789e5a260053",
+      "matches_prior_sha256": true,
+      "properties": [
+        "cwds"
+      ],
+      "required": [],
+      "input_schema": null
+    },
+    {
+      "name": "SkillsListParams.json",
+      "sha256": "1d245374e64c5acc9739dfc68a4fe5114c6c9147af04c480886f1846d2ca6239",
+      "matches_prior_sha256": true,
+      "properties": [
+        "cwds",
+        "forceReload"
+      ],
+      "required": [],
+      "input_schema": null
+    },
+    {
+      "name": "ThreadStartParams.json",
+      "sha256": "792e2f32e37cece971bd616664ea2053741acbed4e9c92e9d1766427718f2ecd",
+      "matches_prior_sha256": true,
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "baseInstructions",
+        "config",
+        "cwd",
+        "developerInstructions",
+        "ephemeral",
+        "model",
+        "modelProvider",
+        "personality",
+        "sandbox",
+        "serviceName",
+        "serviceTier",
+        "sessionStartSource",
+        "threadSource"
+      ],
+      "required": [],
+      "input_schema": null
+    },
+    {
+      "name": "TurnStartParams.json",
+      "sha256": "a3835e8c1e942e4b358e1a670939b89918b16c4d13105a579899892b7ade6dea",
+      "matches_prior_sha256": true,
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "clientUserMessageId",
+        "cwd",
+        "effort",
+        "input",
+        "model",
+        "outputSchema",
+        "personality",
+        "sandboxPolicy",
+        "serviceTier",
+        "serviceTierForTurn",
+        "summary",
+        "threadId",
+        "toolOutput",
+        "turnTrigger"
+      ],
+      "required": [
+        "input",
+        "threadId"
+      ],
+      "input_schema": {
+        "items": {
+          "$ref": "#/definitions/UserInput"
+        },
+        "type": "array"
+      }
+    }
+  ],
+  "model_execution_requested": false,
+  "limits": [
+    "Schema generation does not invoke the represented methods.",
+    "No operating-system network isolation was applied."
+  ]
+}

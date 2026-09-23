@@ -1,0 +1,62 @@
+[
+  {
+    "path": "tools/candidate_review/native.py",
+    "before": 0,
+    "after": 1,
+    "introduced": [
+      [
+        "I001",
+        "Import block is un-sorted or un-formatted",
+        1
+      ]
+    ]
+  },
+  {
+    "path": "tools/generate_original_native_candidates.py",
+    "before": 0,
+    "after": 0,
+    "introduced": []
+  },
+  {
+    "path": "tools/ingest_outside_material.py",
+    "before": 19,
+    "after": 19,
+    "introduced": []
+  },
+  {
+    "path": "tools/prepare_harness_candidates.py",
+    "before": 2,
+    "after": 2,
+    "introduced": []
+  },
+  {
+    "path": "tools/review_catalogue_candidates.py",
+    "before": 11,
+    "after": 11,
+    "introduced": []
+  },
+  {
+    "path": "tools/stage_intelligence_candidates.py",
+    "before": 4,
+    "after": 4,
+    "introduced": []
+  },
+  {
+    "path": "tools/test_generate_original_native_candidates.py",
+    "before": 0,
+    "after": 1,
+    "introduced": [
+      [
+        "I001",
+        "Import block is un-sorted or un-formatted",
+        1
+      ]
+    ]
+  },
+  {
+    "path": "tools/test_prepare_native_harness_candidates.py",
+    "before": 0,
+    "after": 0,
+    "introduced": []
+  }
+]

@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_recomputed_review_key_cannot_hide_a_changed_calibration_prompt (tools.test_candidate_review_native_calibration.NativeCalibrationTest.test_recomputed_review_key_cannot_hide_a_changed_calibration_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_candidate_review_native_calibration.py", line 129, in test_recomputed_review_key_cannot_hide_a_changed_calibration_prompt
+    with self.assertRaises(CandidateReviewError) as caught:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.262s
+
+FAILED (failures=1)

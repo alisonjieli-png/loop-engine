@@ -1,0 +1,561 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "control_71af",
+        "kind": "tool",
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "digest": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/control_71af.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0",
+            "size_bytes": 2788,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+            "size_bytes": 1027,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+            "size_bytes": 870,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+            "size_bytes": 274,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+            "size_bytes": 238,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/schedule_dag_earliest_times.py",
+            "digest": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809",
+            "size_bytes": 3424,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563",
+            "size_bytes": 2016,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/control_71af",
+      "producer": {
+        "producer_identity": "OpenAI native review fixture author",
+        "family": "openai",
+        "method_identity": "native_review_control_authoring/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "control_c902",
+        "kind": "tool",
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "digest": "c7772995594907ff3953c2385bf789cd99cad46e7eef389fc11a8e4acb67da5e",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/control_c902.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0",
+            "size_bytes": 2788,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+            "size_bytes": 1027,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+            "size_bytes": 870,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+            "size_bytes": 274,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+            "size_bytes": 238,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/schedule_dag_earliest_times.py",
+            "digest": "df95ad69360121551c0848d53398e80e96b51505a16e8d87a6432fce7a12eb7e",
+            "size_bytes": 3424,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563",
+            "size_bytes": 2016,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/control_c902",
+      "producer": {
+        "producer_identity": "OpenAI native review fixture author",
+        "family": "openai",
+        "method_identity": "native_review_control_authoring/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "control_38d4",
+        "kind": "tool",
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "digest": "79704b428bc5be99c11572d5180cd3a69273015f7dcb63e9cddc117d39727a5e",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/control_38d4.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0",
+            "size_bytes": 2788,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+            "size_bytes": 1027,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "035ee384de3884aa41d433cdaa8893ada5810162ac38aaa1f30c467b14a5346a",
+            "size_bytes": 892,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+            "size_bytes": 274,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+            "size_bytes": 238,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/schedule_dag_earliest_times.py",
+            "digest": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809",
+            "size_bytes": 3424,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563",
+            "size_bytes": 2016,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/control_38d4",
+      "producer": {
+        "producer_identity": "OpenAI native review fixture author",
+        "family": "openai",
+        "method_identity": "native_review_control_authoring/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "control_9bb0",
+        "kind": "tool",
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "digest": "5ac3d88bc615b81e05dce0f657672e7f4c2f976af6167a4cce5415ff079e90aa",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/control_9bb0.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0",
+            "size_bytes": 2788,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+            "size_bytes": 1027,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+            "size_bytes": 870,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+            "size_bytes": 274,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+            "size_bytes": 238,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/schedule_dag_earliest_times.py",
+            "digest": "dfa1c731c33c6f462ce29b37a91130ffaccc95fd69d320078372524598e789f1",
+            "size_bytes": 3565,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563",
+            "size_bytes": 2016,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/control_9bb0",
+      "producer": {
+        "producer_identity": "OpenAI native review fixture author",
+        "family": "openai",
+        "method_identity": "native_review_control_authoring/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "control_e137",
+        "kind": "tool",
+        "purpose": "Compute earliest starts and finishes for a bounded acyclic task graph with nonnegative integer durations.",
+        "digest": "7eaaa30f042a58d85a5e2bf83f1e004ca23e6c1e444c6ffe04bdd57cd0c4946e",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@9c57c9a4c813578bffa504108ef9d785b308bb86",
+        "family": "harness",
+        "size_bytes": 1477,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "language": [
+            "en"
+          ],
+          "domain": [
+            "software",
+            "data"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/control_e137.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "066ecd7057706c21cd7aa73bd063eee31b79caa3750c3f45bac3a26c3ed901e6",
+            "size_bytes": 2883,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "LICENSE",
+            "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+            "size_bytes": 1068,
+            "media_type": "text/plain",
+            "role": "other"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+            "size_bytes": 1027,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+            "size_bytes": 870,
+            "media_type": "application/schema+json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+            "size_bytes": 274,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+            "size_bytes": 238,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "tools/schedule_dag_earliest_times.py",
+            "digest": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809",
+            "size_bytes": 3424,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/cases.json",
+            "digest": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563",
+            "size_bytes": 2016,
+            "media_type": "application/json",
+            "role": "other"
+          }
+        ]
+      },
+      "package_root": "packages/control_e137",
+      "producer": {
+        "producer_identity": "OpenAI native review fixture author",
+        "family": "openai",
+        "method_identity": "native_review_control_authoring/v1"
+      },
+      "dependencies": [
+        "Python>=3.10 standard library; no third-party packages"
+      ]
+    }
+  ]
+}

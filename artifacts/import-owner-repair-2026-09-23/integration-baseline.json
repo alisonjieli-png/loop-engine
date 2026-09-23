@@ -1,0 +1,266 @@
+{
+  "head": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "tracked_patch_sha256": "34a9cd39687959219cba58e322f1c76e0f3de98aec0f10a25b93653016242b64",
+  "untracked_tools": [
+    {
+      "path": "tools/GENERATE-ORIGINAL-NATIVE-CANDIDATES.md",
+      "sha256": "b9b75ac7740aef0ac00b3adcf82f1c561040d302082cf23750e24a1bf54d19a6"
+    },
+    {
+      "path": "tools/candidate_review/native.py",
+      "sha256": "ae2992eff395113a09e44a186cbf98b72ba7864e5a2411cf576e8d0f9f59afa5"
+    },
+    {
+      "path": "tools/candidate_review/native_calibration.py",
+      "sha256": "92491e62cfa4496b6221337a6e22da25cda03cc9bd8bec160aeb7cdf8b1387fb"
+    },
+    {
+      "path": "tools/candidate_review/native_prechecks.py",
+      "sha256": "304a7e1d92d85290ac46aba86b9e3c809491d6280382aa2a8f263a818a356107"
+    },
+    {
+      "path": "tools/candidate_review/native_profile.py",
+      "sha256": "d74d97cad0c1d19b1f11808550a01631b91a564aa08fa3b4a427bed106db939a"
+    },
+    {
+      "path": "tools/candidate_review/resources/NATIVE-PACKAGE-REVIEW.md",
+      "sha256": "09b6d6574bbfd64cd6481612c88fab4d7fc5af891f4c274e6507d26434de9487"
+    },
+    {
+      "path": "tools/candidate_review/resources/NATIVE-REVIEWER-INSTRUCTIONS.md",
+      "sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/README.md",
+      "sha256": "9f08c3bed84a083707ff60152ad82ca9f2f16193cfe540f77f7b839ddbc9e7c4"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/calibration-set.json",
+      "sha256": "86c43397d504f0c1a8d03c30609a166b60c626dfb9f11e43080c8bc78e834299"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_38d4.package.json",
+      "sha256": "79704b428bc5be99c11572d5180cd3a69273015f7dcb63e9cddc117d39727a5e"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_71af.package.json",
+      "sha256": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_9bb0.package.json",
+      "sha256": "5ac3d88bc615b81e05dce0f657672e7f4c2f976af6167a4cce5415ff079e90aa"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_c902.package.json",
+      "sha256": "c7772995594907ff3953c2385bf789cd99cad46e7eef389fc11a8e4acb67da5e"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/bodies/control_e137.package.json",
+      "sha256": "7eaaa30f042a58d85a5e2bf83f1e004ca23e6c1e444c6ffe04bdd57cd0c4946e"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/items.json",
+      "sha256": "cfca4c76761dbcf831e300972baee5faf3ee2ffda2b7e0479f7266dfb39cef4c"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/AGENTS.md",
+      "sha256": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/LICENSE",
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/contracts/input.schema.json",
+      "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/contracts/output.schema.json",
+      "sha256": "035ee384de3884aa41d433cdaa8893ada5810162ac38aaa1f30c467b14a5346a"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/examples/input.json",
+      "sha256": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/examples/output.json",
+      "sha256": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/tools/schedule_dag_earliest_times.py",
+      "sha256": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/verification/cases.json",
+      "sha256": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/AGENTS.md",
+      "sha256": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/LICENSE",
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/contracts/input.schema.json",
+      "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/contracts/output.schema.json",
+      "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/examples/input.json",
+      "sha256": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/examples/output.json",
+      "sha256": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/tools/schedule_dag_earliest_times.py",
+      "sha256": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/verification/cases.json",
+      "sha256": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/AGENTS.md",
+      "sha256": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/LICENSE",
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/contracts/input.schema.json",
+      "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/contracts/output.schema.json",
+      "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/examples/input.json",
+      "sha256": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/examples/output.json",
+      "sha256": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/tools/schedule_dag_earliest_times.py",
+      "sha256": "dfa1c731c33c6f462ce29b37a91130ffaccc95fd69d320078372524598e789f1"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/verification/cases.json",
+      "sha256": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/AGENTS.md",
+      "sha256": "d23f7e6372ff6c7042a89c35e403bfc2dd354070f93ab2512b252bc1c05a7ad0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/LICENSE",
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/contracts/input.schema.json",
+      "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/contracts/output.schema.json",
+      "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/examples/input.json",
+      "sha256": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/examples/output.json",
+      "sha256": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/tools/schedule_dag_earliest_times.py",
+      "sha256": "df95ad69360121551c0848d53398e80e96b51505a16e8d87a6432fce7a12eb7e"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/verification/cases.json",
+      "sha256": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/AGENTS.md",
+      "sha256": "066ecd7057706c21cd7aa73bd063eee31b79caa3750c3f45bac3a26c3ed901e6"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/LICENSE",
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/contracts/input.schema.json",
+      "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/contracts/output.schema.json",
+      "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/examples/input.json",
+      "sha256": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/examples/output.json",
+      "sha256": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/tools/schedule_dag_earliest_times.py",
+      "sha256": "89d22390d9867bef2026395c1037651ca21dcddce8351d991058f06393cd4809"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/verification/cases.json",
+      "sha256": "6fbbe304101d9dc27302b6c57a0dca66a45ca95e638b497a71bfc8364e6c6563"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/specifications-001.json",
+      "sha256": "e31c7dd9dae174766fb45edcfba43f2c0c01763264d70fee69d3c96dfd8a6979"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-criteria.json",
+      "sha256": "1f0e09d044221c7bfe4f77dac0882d631a9349ac493feffa861735aba4bfc5b7"
+    },
+    {
+      "path": "tools/generate_original_native_candidates.py",
+      "sha256": "6293bcbdbb6c0109e5d93e738d001d2431c881ba4cf0c3a4a5c3d4cc0bde2db1"
+    },
+    {
+      "path": "tools/native_harness_candidates.py",
+      "sha256": "d348b1e40cf6b43f9a345a5e4ad0c9f010e3edc873e321bb7447a6de64624f27"
+    },
+    {
+      "path": "tools/test_candidate_review_integrity.py",
+      "sha256": "58a28416c1e01d9c0b38ec4d1d4cfaae0ee99d6744c6f3bbeac9ded35884579b"
+    },
+    {
+      "path": "tools/test_candidate_review_native.py",
+      "sha256": "33bbc0a34651451da385069c0e5d4592b8a895c12e5693e83fee36c32ba42eba"
+    },
+    {
+      "path": "tools/test_candidate_review_native_calibration.py",
+      "sha256": "813ff32f938915cccf9fb7e76e686d7f0d62e513d5f405e7a925167f7d7af0b9"
+    },
+    {
+      "path": "tools/test_generate_original_native_candidates.py",
+      "sha256": "133086f0b273e0996542af3d426a9a27e3f6e0ac6f9a6f0f4aba3d0541a491c7"
+    },
+    {
+      "path": "tools/test_prepare_native_harness_candidates.py",
+      "sha256": "f1de6219fefe2e87d123a39a1e358bafae4f5525d235b1e14ba14b58aefb296e"
+    },
+    {
+      "path": "tools/test_provider_model_identity_reporting.py",
+      "sha256": "7874cc3302b0e8089eea5ed32be24826f573721729b545447bc31bc33720d8ab"
+    }
+  ]
+}

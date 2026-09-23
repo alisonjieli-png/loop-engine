@@ -175,45 +175,37 @@ disagreement a named failure instead of a silent one.
 
 ### Get started
 
-Get started is the first item in the navigation and in the footer, ahead of
-How it works. Connect is no longer a destination in the navigation, because a
-reader meets the word before they know what it means. It is step two of Get
-started and is always written as "Connect your tools".
+Get started is the single public access action in the header. It opens the
+served `/get-started` funnel. Get set up is the separate connection guide at
+`/setup`; `/connect` remains an alias for that guide.
 
-The Get started page names three steps in order: download, connect your tools,
-sign up. It keeps the copyable connection settings, the environment variable
-guidance and the connection check that the Connect page already held. Step one
-says plainly that the packaged download and its email link are being built and
-sends the reader to the installation guide. Step three says plainly that the
-waiting list form is being built.
+The funnel shows five steps: create an account or use an invitation, confirm
+the email, choose a password, subscribe when needed, and get set up. While
+registration is open, the form asks only for an email address and carries the
+approved terms and privacy consent sentence. The service sends its own link.
+The person chooses a password on `/auth/confirm`, and the page verifies the
+link and sets that password before activating the service account.
 
-The page answers at `/connect`, which the serving route table lists. The
-address `/get-started` opens the same page through the navigation, and a
-direct visit to it is not served yet. It needs one entry in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/web_pages.py`, next to the entry that
-`/pricing` received on September 21, 2026. Until it has one, every link on
-the website points at `/connect`, so no customer reaches a refused address.
+While registration is closed, the funnel offers the waiting list only when
+`website.waitlist_available` says the service keeps one. Otherwise it offers
+sign-in for an existing account. An unanswered or unsupported capabilities
+record never opens account creation. Signed-in accounts read the recorded
+`access_source`; an operator invitation or promotion is shown as covering the
+plan rather than being sent to checkout.
 
-The account action has two states and the page never chooses between them by
-itself. It reads `website.registration_available` from `/api/v1/capabilities`.
-When the service reports that account creation is open, the action reads
-"Create your account" and leads to `/signup`. Otherwise it reads "Join the
-waiting list" and leads to `/signup#waiting-list`, where the page explains
-that accounts open in small groups. Before the service answers, and if it
-never answers, the page keeps the careful state. The same rule drives the
-personal-key wording on the homepage and the pricing view, which reads
-`website.client_access_available`. While that field is false, both places say
-that creating and revoking a key for each device is being prepared and that
-the person who runs the service issues the key. The deployed release reports
-it as false, so the page may not state the control as working today.
+The service reports registration open only when both browser identity and its
+own account-email adapter allow signup. Deployment must also verify that the
+identity provider's public signup is closed, as the
+[account-email operations guide](account-email-operations.md) requires. This
+candidate changes no provider setting and does not itself open registration.
 
 The payment state on the pricing view reads two fields, so the account action
 and the payment wording come from one state. While
 `website.registration_available` is false the pricing view says "Invitation
 only", whatever `billing.checkout` reports: accounts open by invitation,
 invited accounts stay free, and a signed-in account can subscribe from its
-account page when checkout is available. A visitor therefore never reads "Join
-the waiting list" beside "Payment open". The view says "Payment open" only
+account page when checkout is available. A visitor therefore never reads an invitation-only access path beside
+"Payment open". The view says "Payment open" only
 when account creation and checkout are both open, and "Payment not open" when
 account creation is open and checkout is not. The account page keeps its own
 checkout and portal buttons, which follow the session options of the signed-in
@@ -376,9 +368,8 @@ the source serves the address. Four named checks hold it:
 four. The deployed service serves the address only from the release that
 carries this source.
 
-The address `/get-started` is still not in the serving route table, so it
-works through the navigation only and every link on the website points at
-`/connect` instead.
+The address `/get-started` is served directly and through navigation. It opens
+the access funnel; `/setup` and `/connect` open the connection guide.
 
 One thing is still missing on September 21, 2026. The account page holds the
 subscription controls, and those remain behind the payment state.

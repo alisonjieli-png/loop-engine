@@ -1,0 +1,69 @@
+{
+  "record_type": "native_calibration_independent_source_qa/v1",
+  "at": "2026-09-23T16:53:09.516811+00:00",
+  "files": [
+    {
+      "path": "tools/candidate_review/native_calibration.py",
+      "sha256": "92491e62cfa4496b6221337a6e22da25cda03cc9bd8bec160aeb7cdf8b1387fb"
+    },
+    {
+      "path": "tools/candidate_review/calibration.py",
+      "sha256": "f23bc9247081c07c9ab4149d8dfbb61fcbc8a8274e700d8fba19f1387ab96a68"
+    },
+    {
+      "path": "tools/candidate_review/native.py",
+      "sha256": "00bf72f69b72bc374464182236decfc3808f1e3730850a6d8a6801647280db48"
+    },
+    {
+      "path": "tools/candidate_review/prompt.py",
+      "sha256": "def6c9098a32f5980ea581ea84ecbd1e09d0135e72359c9668f2124eec27fff3"
+    },
+    {
+      "path": "tools/candidate_review/review_record.py",
+      "sha256": "0b3107ae8a0f83c102c425c1ecb84fcbf505e88c5ed50ce0bfc3048a48a3ff55"
+    },
+    {
+      "path": "tools/candidate_review/panel.py",
+      "sha256": "8cfe1ef1acaa58c1d1ee77d575b1a133a5b9d4a3f81953b3764a114d24a4e3ac"
+    },
+    {
+      "path": "tools/review_catalogue_candidates.py",
+      "sha256": "64e53d102e319d0a391b96e69cf404495bf76b9c41199af7106a1f8896726956"
+    },
+    {
+      "path": "tools/test_candidate_review_native_calibration.py",
+      "sha256": "813ff32f938915cccf9fb7e76e686d7f0d62e513d5f405e7a925167f7d7af0b9"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/calibration-set.json",
+      "sha256": "86c43397d504f0c1a8d03c30609a166b60c626dfb9f11e43080c8bc78e834299"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/items.json",
+      "sha256": "cfca4c76761dbcf831e300972baee5faf3ee2ffda2b7e0479f7266dfb39cef4c"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-calibration/catalogue/specifications-001.json",
+      "sha256": "e31c7dd9dae174766fb45edcfba43f2c0c01763264d70fee69d3c96dfd8a6979"
+    },
+    {
+      "path": "tools/candidate_review/resources/native-criteria.json",
+      "sha256": "1f0e09d044221c7bfe4f77dac0882d631a9349ac493feffa861735aba4bfc5b7"
+    }
+  ],
+  "model_calls": 0,
+  "formal_admissions": 0,
+  "focused_tests": {
+    "passed": 12,
+    "native_suite_only": true
+  },
+  "external_sandbox_helper": {
+    "path": "/home/username/.le-codex-build/native-factory/artifacts/mixed-native-originals-2026-09-23/verify_packages.py",
+    "sha256": "6c5b74af36516f49600ddaf6b765b68efdcd9bb69d72445d687f1bcfbdc58d3e"
+  },
+  "observed_findings": [
+    "persisted exclusions can be omitted despite retained failed decisions",
+    "reviewer excluded for calibration control producer family can later review unmeasured",
+    "benign algorithm control does not establish full native-loading qualification"
+  ]
+}

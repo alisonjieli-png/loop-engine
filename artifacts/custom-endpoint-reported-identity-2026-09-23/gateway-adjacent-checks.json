@@ -1,0 +1,265 @@
+{
+  "components": [
+    {
+      "record_type": "model_gateway_contract_test/v2",
+      "scope": "offline_contract_only",
+      "provider_integration_proven": false,
+      "tests": [
+        {
+          "test": "route_separation_excludes_named_routes_and_never_reuses_an_excluded_one",
+          "passed": true,
+          "detail": "error='no model route is permitted after route separation excluded contract.unknown'"
+        },
+        {
+          "test": "a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation",
+          "passed": true,
+          "detail": "the execution phase is timed; a refused invocation is a failed record with unknown tokens"
+        },
+        {
+          "test": "unknown_output_capability_refuses_before_provider_use",
+          "passed": true,
+          "detail": "this is a contract refusal, not a provider integration test"
+        },
+        {
+          "test": "context_window_preflight_refuses_before_provider_use",
+          "passed": true,
+          "detail": "an explicit caller ceiling that cannot fit is refused rather than quietly shrunk; max_context=100"
+        },
+        {
+          "test": "default_output_maximum_is_never_reduced_to_context_room",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "missing_credential_is_not_an_authentication_failure",
+          "passed": true,
+          "detail": "a keyless provider is skipped by failover, not fatal to it"
+        },
+        {
+          "test": "invalid_explicit_output_values_are_refused",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "provider_descriptions_carry_references_not_secret_values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "operating_profile_controls_gateway_route_locality",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "an_unspecified_output_limit_remains_unspecified_until_capability_resolution",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "authentication_failure_does_not_silently_fail_over",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "default_gateway_does_not_enable_cross_provider_failover",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "default_route_discovery_selects_only_one_provider",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "payment_failure_can_fail_over_to_another_authorized_provider",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "failover_attempts_share_one_logical_semantic_call_in_run_history",
+          "passed": true,
+          "detail": "logical identity is shared; physical attempt Loop IDs remain exact"
+        },
+        {
+          "test": "separate_gateway_invocations_receive_distinct_semantic_call_ids",
+          "passed": true,
+          "detail": "one gateway invocation is one logical semantic call"
+        },
+        {
+          "test": "output_limit_is_typed_and_can_fail_over",
+          "passed": true,
+          "detail": "a partial HTTP 200 is evidence, not a successful model answer"
+        },
+        {
+          "test": "network_transport_failures_have_specific_codes",
+          "passed": true,
+          "detail": "routing and DNS failures remain distinct from model rejection"
+        },
+        {
+          "test": "spawned_gateway_inherits_spawning_depth_without_reparenting",
+          "passed": true,
+          "detail": "practitioner -> spawned stage -> candidate -> route -> attempt"
+        },
+        {
+          "test": "starting_gateway_has_no_implicit_depth_ceiling",
+          "passed": true,
+          "detail": "starting gateway uses no product-imposed recursion ceiling"
+        },
+        {
+          "test": "a_response_without_usage_reports_unknown_not_zero",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "test": "a_response_without_usage_carries_a_typed_diagnostic",
+          "passed": true,
+          "detail": ""
+        }
+      ],
+      "passed": 22,
+      "total": 22,
+      "all_passed": true
+    },
+    {
+      "record_type": "model_gateway_accounting_test/v1",
+      "tests": [
+        {
+          "test": "gateway_aggregates_failed_and_winning_physical_usage",
+          "passed": true
+        },
+        {
+          "test": "partial_usage_preserves_unknown_instead_of_zero",
+          "passed": true
+        },
+        {
+          "test": "exact_token_budget_refuses_incomplete_usage",
+          "passed": true
+        },
+        {
+          "test": "transport_failure_survives_missing_usage_accounting_block",
+          "passed": true
+        },
+        {
+          "test": "successful_response_missing_usage_has_no_transport_failure",
+          "passed": true
+        },
+        {
+          "test": "known_usage_preserves_public_transport_failure",
+          "passed": true
+        },
+        {
+          "test": "prior_transport_diagnostic_stays_on_attempt_after_recovery",
+          "passed": true
+        },
+        {
+          "test": "saved_transport_diagnostic_does_not_persist_provider_secret",
+          "passed": true
+        },
+        {
+          "test": "session_call_ceiling_caps_physical_failover_attempts",
+          "passed": true
+        },
+        {
+          "test": "session_token_ceiling_is_cumulative_across_semantic_calls",
+          "passed": true
+        },
+        {
+          "test": "effect_free_preflight_is_not_a_physical_model_call",
+          "passed": true
+        },
+        {
+          "test": "saved_30130_remaining_65536_output_counterexample_has_zero_dispatch",
+          "passed": true
+        },
+        {
+          "test": "strict_token_budget_without_host_bound_refuses_before_dispatch",
+          "passed": true
+        },
+        {
+          "test": "stale_physical_request_bound_refuses_before_dispatch",
+          "passed": true
+        },
+        {
+          "test": "strict_budget_refuses_unknown_supported_output_even_with_explicit_ceiling",
+          "passed": true
+        },
+        {
+          "test": "failover_rechecks_remaining_budget_after_failed_physical_usage",
+          "passed": true
+        },
+        {
+          "test": "context_shortfall_never_silently_reduces_the_provider_maximum",
+          "passed": true
+        },
+        {
+          "test": "exact_bound_fit_dispatches_once_and_preserves_reported_usage",
+          "passed": true
+        },
+        {
+          "test": "qualified_input_bound_checks_context_even_when_text_estimate_fits",
+          "passed": true
+        },
+        {
+          "test": "raising_callback_remains_a_physical_call_and_cannot_refund_authority",
+          "passed": true
+        },
+        {
+          "test": "outer_gateway_exception_poisons_session_instead_of_refunding",
+          "passed": true
+        },
+        {
+          "test": "mutable_results_cannot_refund_private_call_or_token_counters",
+          "passed": true
+        },
+        {
+          "test": "replacing_session_authority_cannot_replenish_spent_budget",
+          "passed": true
+        },
+        {
+          "test": "invocation_model_override_cannot_broaden_session_authority",
+          "passed": true
+        },
+        {
+          "test": "gateway_model_authority_does_not_match_family_aliases",
+          "passed": true
+        },
+        {
+          "test": "two_thread_single_flight_prevents_double_spend_of_calls_and_tokens",
+          "passed": true
+        },
+        {
+          "test": "bound_violation_halts_and_preserves_actual_usage_without_clamping",
+          "passed": true
+        },
+        {
+          "test": "output_component_bound_violation_preserves_provider_reported_count",
+          "passed": true
+        },
+        {
+          "test": "unfinished_response_cannot_override_gateway_refusal_with_ok_true",
+          "passed": true
+        },
+        {
+          "test": "output_limit_signal_cannot_override_gateway_refusal_with_ok_true",
+          "passed": true
+        },
+        {
+          "test": "explicit_error_cannot_override_gateway_refusal_with_ok_true",
+          "passed": true
+        },
+        {
+          "test": "post_dispatch_keyboard_interrupt_poisons_accounting_before_unlock",
+          "passed": true
+        },
+        {
+          "test": "adapter_multi_attempt_claim_halts_failover_and_session_retry",
+          "passed": true
+        }
+      ],
+      "passed": 33,
+      "total": 33,
+      "all_passed": true,
+      "provider_calls": 0
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "old": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "maxProperties": 40,
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}$"
+          },
+          "additionalProperties": {
+            "enum": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}$"
+          },
+          "minItems": 0,
+          "maxItems": 60,
+          "uniqueItems": true
+        },
+        "allow_extra": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "fields",
+        "required",
+        "allow_extra"
+      ],
+      "additionalProperties": false
+    },
+    "new": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "object",
+          "maxProperties": 40,
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}$"
+          },
+          "additionalProperties": {
+            "enum": [
+              "string",
+              "integer",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}$"
+          },
+          "minItems": 0,
+          "maxItems": 60,
+          "uniqueItems": true
+        },
+        "allow_extra": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "fields",
+        "required",
+        "allow_extra"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "old",
+    "new"
+  ],
+  "additionalProperties": false
+}

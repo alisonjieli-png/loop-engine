@@ -1,0 +1,79 @@
+[
+  {
+    "input": {
+      "document": {
+        "a/b": [
+          10,
+          20
+        ],
+        "~1": "literal",
+        "": false
+      },
+      "pointers": [
+        "/a~1b/1",
+        "/~01",
+        "/"
+      ]
+    },
+    "expected": {
+      "values": [
+        20,
+        "literal",
+        false
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "document": [
+        1,
+        "x"
+      ],
+      "pointers": [
+        ""
+      ]
+    },
+    "expected": {
+      "values": [
+        [
+          1,
+          "x"
+        ]
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "document": [
+        1
+      ],
+      "pointers": [
+        "/01"
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "document": {},
+      "pointers": [
+        "/absent"
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "document": {},
+      "pointers": [
+        "#/"
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

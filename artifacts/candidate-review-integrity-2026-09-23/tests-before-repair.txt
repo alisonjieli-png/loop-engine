@@ -1,0 +1,163 @@
+test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) ... 
+  test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2424) ... FAIL
+  test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=None) ... FAIL
+  test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=True) ... FAIL
+  test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2423.0) ... FAIL
+  test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size='100') ... FAIL
+test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) ... 
+  test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest=None) ... FAIL
+  test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest='') ... FAIL
+  test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest='0000000000000000000000000000000000000000000000000000000000000000') ... FAIL
+  test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest=True) ... FAIL
+  test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest={'digest': 'bcc7350104ec47c4a79c17032bf267dbb18e4cba94e0664846b8f6abc2529481'}) ... FAIL
+test_same_length_changed_bytes_are_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_same_length_changed_bytes_are_refused) ... FAIL
+test_valid_binding_still_reaches_the_independent_reviewers (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_valid_binding_still_reaches_the_independent_reviewers) ... ok
+test_wrong_binding_reaches_no_reviewer_and_reserves_no_calls (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_wrong_binding_reaches_no_reviewer_and_reserves_no_calls) ... FAIL
+test_claude_explicit_zero_usage_remains_reported_zero (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_explicit_zero_usage_remains_reported_zero) ... ok
+test_claude_genuine_reported_identity_is_preserved (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_genuine_reported_identity_is_preserved) ... ok
+test_claude_missing_and_mismatched_reported_identity_do_not_count (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) ... 
+  test_claude_missing_and_mismatched_reported_identity_do_not_count (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) (models={'claude-opus-5-5': {}, 'another-model': {}}) ... FAIL
+test_claude_missing_usage_stays_unknown_even_when_no_model_used (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_usage_stays_unknown_even_when_no_model_used) ... FAIL
+test_claude_partial_usage_is_not_replaced_with_zeros (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_partial_usage_is_not_replaced_with_zeros) ... FAIL
+test_codex_does_not_promote_requested_model_to_reported_identity (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_codex_does_not_promote_requested_model_to_reported_identity) ... FAIL
+
+======================================================================
+FAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2424)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 36, in test_declared_byte_size_must_be_an_exact_nonnegative_integer
+    self.assertIn("body_size_mismatch", _codes(result))
+AssertionError: 'body_size_mismatch' not found in set()
+
+======================================================================
+FAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 36, in test_declared_byte_size_must_be_an_exact_nonnegative_integer
+    self.assertIn("body_size_mismatch", _codes(result))
+AssertionError: 'body_size_mismatch' not found in set()
+
+======================================================================
+FAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 36, in test_declared_byte_size_must_be_an_exact_nonnegative_integer
+    self.assertIn("body_size_mismatch", _codes(result))
+AssertionError: 'body_size_mismatch' not found in set()
+
+======================================================================
+FAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size=2423.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 36, in test_declared_byte_size_must_be_an_exact_nonnegative_integer
+    self.assertIn("body_size_mismatch", _codes(result))
+AssertionError: 'body_size_mismatch' not found in set()
+
+======================================================================
+FAIL: test_declared_byte_size_must_be_an_exact_nonnegative_integer (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_declared_byte_size_must_be_an_exact_nonnegative_integer) (size='100')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 36, in test_declared_byte_size_must_be_an_exact_nonnegative_integer
+    self.assertIn("body_size_mismatch", _codes(result))
+AssertionError: 'body_size_mismatch' not found in set()
+
+======================================================================
+FAIL: test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 45, in test_missing_malformed_or_changed_digest_is_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 45, in test_missing_malformed_or_changed_digest_is_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest='0000000000000000000000000000000000000000000000000000000000000000')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 45, in test_missing_malformed_or_changed_digest_is_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 45, in test_missing_malformed_or_changed_digest_is_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_missing_malformed_or_changed_digest_is_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_missing_malformed_or_changed_digest_is_refused) (digest={'digest': 'bcc7350104ec47c4a79c17032bf267dbb18e4cba94e0664846b8f6abc2529481'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 45, in test_missing_malformed_or_changed_digest_is_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_same_length_changed_bytes_are_refused (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_same_length_changed_bytes_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 27, in test_same_length_changed_bytes_are_refused
+    self.assertIn("body_digest_mismatch", _codes(result))
+AssertionError: 'body_digest_mismatch' not found in set()
+
+======================================================================
+FAIL: test_wrong_binding_reaches_no_reviewer_and_reserves_no_calls (tools.test_candidate_review_integrity.CandidateBodyBindingTest.test_wrong_binding_reaches_no_reviewer_and_reserves_no_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 55, in test_wrong_binding_reaches_no_reviewer_and_reserves_no_calls
+    self.assertEqual(_only(result).outcome, "refused_before_review")
+AssertionError: 'approved' != 'refused_before_review'
+- approved
++ refused_before_review
+
+
+======================================================================
+FAIL: test_claude_missing_and_mismatched_reported_identity_do_not_count (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_and_mismatched_reported_identity_do_not_count) (models={'claude-opus-5-5': {}, 'another-model': {}})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 112, in test_claude_missing_and_mismatched_reported_identity_do_not_count
+    self.assertEqual(attempt.outcome, reviewers.MODEL_IDENTITY_MISMATCH)
+AssertionError: 'answered' != 'model_identity_mismatch'
+- answered
++ model_identity_mismatch
+
+
+======================================================================
+FAIL: test_claude_missing_usage_stays_unknown_even_when_no_model_used (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_missing_usage_stays_unknown_even_when_no_model_used)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 87, in test_claude_missing_usage_stays_unknown_even_when_no_model_used
+    self.assertEqual(attempt.usage, reviewers.UNKNOWN_USAGE)
+AssertionError: Usage(input_tokens=0, output_tokens=0, reasoning_output_toke[61 chars]ted') != Usage(input_tokens=None, output_tokens=None, reasoning_outpu[53 chars]own')
+
+======================================================================
+FAIL: test_claude_partial_usage_is_not_replaced_with_zeros (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_claude_partial_usage_is_not_replaced_with_zeros)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 103, in test_claude_partial_usage_is_not_replaced_with_zeros
+    self.assertIsNone(attempt.usage.input_tokens)
+AssertionError: 0 is not None
+
+======================================================================
+FAIL: test_codex_does_not_promote_requested_model_to_reported_identity (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_codex_does_not_promote_requested_model_to_reported_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 77, in test_codex_does_not_promote_requested_model_to_reported_identity
+    self.assertEqual(attempt.reported_model, "")
+AssertionError: 'gpt-6-sol' != ''
+- gpt-6-sol
+
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.517s
+
+FAILED (failures=16)

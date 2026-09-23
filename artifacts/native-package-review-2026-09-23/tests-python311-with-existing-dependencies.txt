@@ -1,0 +1,35 @@
+test_candidate_review_native (unittest.loader._FailedTest.test_candidate_review_native) ... ERROR
+
+======================================================================
+ERROR: test_candidate_review_native (unittest.loader._FailedTest.test_candidate_review_native)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_candidate_review_native
+Traceback (most recent call last):
+  File "/home/username/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/unittest/loader.py", line 162, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 17, in <module>
+    from candidate_review import native, native_profile, panel, prechecks, review_record
+  File "/home/username/.le-codex-build/review-integrity/tools/candidate_review/native.py", line 13, in <module>
+    from loop_engine.core.record_operations_records import parse_json
+  File "/home/username/.le-codex-build/review-integrity/src/loop_engine/core/record_operations_records.py", line 14, in <module>
+    from jsonschema import Draft202012Validator
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/jsonschema/__init__.py", line 13, in <module>
+    from jsonschema._format import FormatChecker
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/jsonschema/_format.py", line 11, in <module>
+    from jsonschema.exceptions import FormatError
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/jsonschema/exceptions.py", line 15, in <module>
+    from referencing.exceptions import Unresolvable as _Unresolvable
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/referencing/__init__.py", line 5, in <module>
+    from referencing._core import Anchor, Registry, Resource, Specification
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/referencing/_core.py", line 9, in <module>
+    from rpds import HashTrieMap, HashTrieSet, List
+  File "/home/username/.le-codex-review-20260923/.venv/lib/python3.12/site-packages/rpds/__init__.py", line 1, in <module>
+    from .rpds import *
+ModuleNotFoundError: No module named 'rpds.rpds'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

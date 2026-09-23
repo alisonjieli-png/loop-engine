@@ -135,7 +135,7 @@ def main() -> int:
                                           {"record_type": "service_provisioning_request/v1", "operation": "list"}))
         for mode in ("lexical", "hybrid"):
             profiles.append(MeasurementProfile(mode + "_retrieval", "/api/v1/retrieval", True,
-                            {"record_type": "service_retrieval_request/v1", "query": args.query, "mode": mode, "top_n": 10}))
+                            {"record_type": "service_retrieval_request/v2", "query": args.query, "mode": mode, "top_n": 10}))
     report = {"record_type": "service_latency_report/v1", "observed_at": datetime.now(timezone.utc).isoformat(),
               "origin": args.origin, "vantage_point": "development_workstation", "authenticated": token is not None,
               "samples_per_profile": args.samples, "serial_concurrency": 1, "interval_seconds": args.interval,

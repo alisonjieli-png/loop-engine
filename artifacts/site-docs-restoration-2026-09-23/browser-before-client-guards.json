@@ -1,0 +1,683 @@
+{
+  "record_type": "documentation_browser_check/v1",
+  "scope": "loopback-fixture",
+  "checks": [
+    {
+      "name": "index_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 1481,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 0,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "index_1440_order",
+      "passed": false,
+      "detail": {
+        "cards": [],
+        "height": 1481
+      }
+    },
+    {
+      "name": "what-baltor-is_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "what-baltor-is_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "your-account_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "your-account_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "searching-and-retrieving_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "searching-and-retrieving_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "troubleshooting_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "troubleshooting_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "serving-and-connections_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 960,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 168.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "serving-and-connections_1440_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 960,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "index_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 2385,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 0,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "index_390_order",
+      "passed": false,
+      "detail": {
+        "cards": [],
+        "height": 2385
+      }
+    },
+    {
+      "name": "what-baltor-is_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "what-baltor-is_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "your-account_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "your-account_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "searching-and-retrieving_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "searching-and-retrieving_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "troubleshooting_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "troubleshooting_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "serving-and-connections_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 1291,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 137.140625,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "serving-and-connections_390_content",
+      "passed": false,
+      "detail": {
+        "title": "",
+        "summaryLines": 0,
+        "height": 1291,
+        "tocTop": 0
+      }
+    },
+    {
+      "name": "what-baltor-is_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "what-baltor-is_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "setup_alias_opens_guide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unknown_doc_route_is_not_served",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "what-baltor-is_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_unknown_version",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_foreign_address",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_foreign_body",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_duplicate_identity",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_unknown_field",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_invalid_review_date",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_untyped_alias",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_forbidden_element",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_head_script",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_event_attribute",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_foreign_link_missing_rel",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "removed_version_guard_exposes_wrong_index",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_unexpected_script_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "no_external_requests",
+      "passed": true,
+      "detail": {
+        "blocked": []
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "page": "/docs",
+      "width": 1440,
+      "height": 1481,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-index-1440.png"
+    },
+    {
+      "page": "/docs/what-baltor-is",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-what-baltor-is-1440.png"
+    },
+    {
+      "page": "/docs/your-account",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-your-account-1440.png"
+    },
+    {
+      "page": "/docs/searching-and-retrieving",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-searching-and-retrieving-1440.png"
+    },
+    {
+      "page": "/docs/usage-and-what-you-pay-for",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-usage-and-what-you-pay-for-1440.png"
+    },
+    {
+      "page": "/docs/troubleshooting",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-troubleshooting-1440.png"
+    },
+    {
+      "page": "/docs/serving-and-connections",
+      "width": 1440,
+      "height": 960,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-serving-and-connections-1440.png"
+    },
+    {
+      "page": "/docs",
+      "width": 390,
+      "height": 2385,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-index-390.png"
+    },
+    {
+      "page": "/docs/what-baltor-is",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-what-baltor-is-390.png"
+    },
+    {
+      "page": "/docs/your-account",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-your-account-390.png"
+    },
+    {
+      "page": "/docs/searching-and-retrieving",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-searching-and-retrieving-390.png"
+    },
+    {
+      "page": "/docs/usage-and-what-you-pay-for",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-usage-and-what-you-pay-for-390.png"
+    },
+    {
+      "page": "/docs/troubleshooting",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-troubleshooting-390.png"
+    },
+    {
+      "page": "/docs/serving-and-connections",
+      "width": 390,
+      "height": 1291,
+      "path": "/home/username/.le-codex-build/site-docs/artifacts/site-docs-restoration-2026-09-23/browser-before-client-guards-serving-and-connections-390.png"
+    }
+  ],
+  "passed": false
+}

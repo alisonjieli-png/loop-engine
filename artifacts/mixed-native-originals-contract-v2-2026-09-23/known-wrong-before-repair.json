@@ -1,0 +1,222 @@
+{
+  "record_type": "native_contract_successor_checks/v1",
+  "checks": [
+    {
+      "identity": "schedule_dag_earliest_times",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 1.0,
+            "depends_on": []
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "result": {
+        "expected_exit": 0,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": false,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": false
+      },
+      "passed": false
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "input": {
+        "tasks": [
+          {
+            "id": "a",
+            "duration": 1.5,
+            "depends_on": []
+          }
+        ]
+      },
+      "input_schema_valid": false,
+      "result": {
+        "expected_exit": 2,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "input": {
+        "determinants": [
+          "a"
+        ],
+        "dependents": [
+          "b"
+        ],
+        "rows": [
+          {
+            "a": "x",
+            "b": 1,
+            "unused": {
+              "nested": true
+            }
+          }
+        ]
+      },
+      "input_schema_valid": false,
+      "result": {
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "output": {
+          "violations": []
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      },
+      "passed": false
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "input": {
+        "determinants": [
+          "a"
+        ],
+        "dependents": [
+          "b"
+        ],
+        "rows": [
+          {
+            "a": "x",
+            "b": {
+              "nested": true
+            }
+          }
+        ]
+      },
+      "input_schema_valid": false,
+      "result": {
+        "expected_exit": 2,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": true,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "input": {
+        "determinants": [
+          "a"
+        ],
+        "dependents": [
+          "b"
+        ],
+        "rows": [
+          {
+            "a": 1.0,
+            "b": "x"
+          },
+          {
+            "a": 1,
+            "b": "y"
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "result": {
+        "expected_exit": 0,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": false,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": false
+      },
+      "passed": false
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "input": {
+        "capacity": 8.0,
+        "items": [
+          {
+            "id": "a",
+            "size": 6.0
+          },
+          {
+            "id": "b",
+            "size": 2.0
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "result": {
+        "expected_exit": 0,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": false,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": false
+      },
+      "passed": false
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "input": {
+        "capacity": 2.0,
+        "initial_tokens": 1.0,
+        "refill_per_second": 1.0,
+        "requests": [
+          {
+            "id": "a",
+            "at_ms": 1000.0,
+            "tokens": 2.0
+          }
+        ]
+      },
+      "input_schema_valid": true,
+      "result": {
+        "expected_exit": 0,
+        "actual_exit": 2,
+        "output": {
+          "error": "invalid_input"
+        },
+        "schema_valid": false,
+        "timed_out": false,
+        "truncated": false,
+        "stderr": "",
+        "passed": false
+      },
+      "passed": false
+    }
+  ],
+  "passed": false,
+  "provider_calls": 0,
+  "approval": false,
+  "execution": "existing minimal Bubblewrap verifier"
+}

@@ -1,0 +1,137 @@
+{
+  "record_type": "native_plugin_candidate_inventory/v1",
+  "package_id": "baltor-focused-brief-candidate",
+  "version": "0.1.0",
+  "status": "candidate_only",
+  "independently_approved": false,
+  "hosted": false,
+  "producer": "Codex live_baltor_review task",
+  "producer_model_family": "OpenAI",
+  "original_work": true,
+  "client": {
+    "name": "Claude Code",
+    "observed_version": "2.1.280"
+  },
+  "logical_packages": 1,
+  "physical_package_files": 13,
+  "approved_package_count_contribution": 0,
+  "runtime_dependencies": [
+    "Linux",
+    "/usr/bin/python3 >=3.10, trusted immutable host interpreter"
+  ],
+  "declared_effects": [
+    "start_authorized_local_process",
+    "read_package_source",
+    "read_standard_input",
+    "write_standard_output_and_error"
+  ],
+  "optional_agent_effects": [
+    "authorized_model_call"
+  ],
+  "files": [
+    {
+      "path": ".claude-plugin/plugin.json",
+      "role": "plugin_manifest",
+      "pickup": "native_discovery",
+      "bytes": 233,
+      "sha256": "761c680c56909384b0a1e9cee7a072a134f8ac77b7c200229f102a72cf175c42",
+      "license": "MIT"
+    },
+    {
+      "path": "LICENSE",
+      "role": "license_notice",
+      "pickup": "package_resource",
+      "bytes": 1068,
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+      "license": "MIT"
+    },
+    {
+      "path": "agents/brief-reviewer.md",
+      "role": "agent_definition",
+      "pickup": "native_discovery_then_authorized_model_invocation",
+      "bytes": 1204,
+      "sha256": "8afc506f010c6b942f7ccff96eee1c42910ef885ac35f00b22b28080a9a6bbb4",
+      "license": "MIT"
+    },
+    {
+      "path": "commands/check-brief.md",
+      "role": "command_definition",
+      "pickup": "native_discovery_then_explicit_invocation",
+      "bytes": 1862,
+      "sha256": "445c661f7d05b1c26a02b1d17971bf4f65b4f1785386323fed9974b5285a4587",
+      "license": "MIT"
+    },
+    {
+      "path": "contracts/brief-input.schema.json",
+      "role": "input_contract",
+      "pickup": "referenced_resource",
+      "bytes": 4448,
+      "sha256": "a21ab5811b6715ccaf0f55d0c485a64c49f85b84aced3302d147b2ce34094a26",
+      "license": "MIT"
+    },
+    {
+      "path": "contracts/brief-output.schema.json",
+      "role": "output_contract",
+      "pickup": "referenced_resource",
+      "bytes": 1487,
+      "sha256": "9737600b93ba2c85ad073dff90fe89ef46b29e1562a45e4f14980e8d69dd92a5",
+      "license": "MIT"
+    },
+    {
+      "path": "contracts/example-brief.json",
+      "role": "example_input",
+      "pickup": "explicit_test_input",
+      "bytes": 756,
+      "sha256": "6a3cad77c976b97e969fecf65da4c18d801563daee2f31958b725f6795ec326c",
+      "license": "MIT"
+    },
+    {
+      "path": "contracts/hook-input.schema.json",
+      "role": "hook_input_contract_subset",
+      "pickup": "review_resource",
+      "bytes": 518,
+      "sha256": "53790328f5c43cb79d04bafcd964abba70aaf82bfc186b42f5d9f48600c712ee",
+      "license": "MIT"
+    },
+    {
+      "path": "contracts/hook-output.schema.json",
+      "role": "hook_output_contract_subset",
+      "pickup": "review_resource",
+      "bytes": 834,
+      "sha256": "ff76b58c9f467505da9f8a4c14c46147dc8b9f4b68d7939c27d14d19d62002de",
+      "license": "MIT"
+    },
+    {
+      "path": "hooks/hooks.json",
+      "role": "hook_configuration",
+      "pickup": "native_registration",
+      "bytes": 325,
+      "sha256": "4ba8a9023c7b204918cfe4d95b01269d94a4e525a40e706077bd0bd6b180b9b3",
+      "license": "MIT"
+    },
+    {
+      "path": "scripts/check_brief.py",
+      "role": "deterministic_tool",
+      "pickup": "explicit_process_invocation",
+      "bytes": 4960,
+      "sha256": "6af5545af3760ba25b0478ce03d51b76af36fc064229d2bb24c45ad039373887",
+      "license": "MIT"
+    },
+    {
+      "path": "scripts/protocol.py",
+      "role": "tool_dependency",
+      "pickup": "entrypoint_import",
+      "bytes": 1981,
+      "sha256": "9d289b0f4e732bc3014c17eb2ea4c6e66f2c4cd0ca4a7bbd072a310ad8340e09",
+      "license": "MIT"
+    },
+    {
+      "path": "scripts/session_start.py",
+      "role": "hook_entrypoint",
+      "pickup": "event_invocation",
+      "bytes": 1925,
+      "sha256": "e6772480609063d05b7e3e1953a52f1214bfcfa47407e9e3dcfc8e87b3642413",
+      "license": "MIT"
+    }
+  ]
+}

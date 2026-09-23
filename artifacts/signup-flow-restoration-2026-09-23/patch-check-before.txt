@@ -1,0 +1,8 @@
+error: patch failed: src/loop_engine/core/service_runtime/web_assets/index.html:158
+error: src/loop_engine/core/service_runtime/web_assets/index.html: patch does not apply
+error: patch failed: src/loop_engine/core/service_runtime/web_assets/service.js:23
+error: src/loop_engine/core/service_runtime/web_assets/service.js: patch does not apply
+error: patch failed: src/loop_engine/core/service_runtime/web_pages.py:35
+error: src/loop_engine/core/service_runtime/web_pages.py: patch does not apply
+error: patch failed: tools/check_service_workspace.mjs:9
+error: tools/check_service_workspace.mjs: patch does not apply

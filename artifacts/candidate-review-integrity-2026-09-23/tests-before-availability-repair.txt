@@ -1,0 +1,14 @@
+test_codex_without_identity_reporting_is_unavailable_before_a_review_call (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_codex_without_identity_reporting_is_unavailable_before_a_review_call) ... FAIL
+
+======================================================================
+FAIL: test_codex_without_identity_reporting_is_unavailable_before_a_review_call (tools.test_candidate_review_integrity.CommandReportedFactsTest.test_codex_without_identity_reporting_is_unavailable_before_a_review_call)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_integrity.py", line 73, in test_codex_without_identity_reporting_is_unavailable_before_a_review_call
+    self.assertFalse(available.available)
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.027s
+
+FAILED (failures=1)

@@ -294,7 +294,7 @@ def release_search(query, top_n=10):
             key = application.runtime.issue_key(TenantKeyIssue(tenants[0], "homepage demonstration check")).key
             reply = httpx.post(base + "/api/v1/retrieval", trust_env=False, timeout=10,
                                headers={"Authorization": "Bearer " + key},
-                               json={"record_type": "service_retrieval_request/v1", "query": query,
+                               json={"record_type": "service_retrieval_request/v2", "query": query,
                                      "mode": "lexical", "top_n": top_n})
             reply.raise_for_status()
     return [{"identity": hit["reference"]["identity"], "kind": hit["kind"], "license": hit["license"],

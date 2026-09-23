@@ -52,9 +52,10 @@ def _usage_agrees(event, call) -> bool:
     return recorded == reported or (recorded == (0, 0) and reported == (None, None))
 
 
-def _validate_gateway_references(calls, events, owner_ids) -> None:
+def _validate_gateway_references(calls, events, owner_ids) -> dict:
     """Only fresh, matching canonical attempts may suppress imported events."""
     referenced = [call for call in calls if call.gateway_loop_id]
+    requested = {}
     if len({call.gateway_loop_id for call in referenced}) != len(referenced):
         raise HarnessError("a gateway attempt cannot represent several physical calls")
     for call in referenced:
@@ -75,3 +76,14 @@ def _validate_gateway_references(calls, events, owner_ids) -> None:
                 or (event.get("event") == "model_led") != call.ok
                 or not _usage_agrees(event, call)):
             raise HarnessError("gateway reference identity, status or usage mismatch")
+        if not call.model:
+            binding = boundary.get("request_model_binding")
+            fields = {"record_type", "provider", "model", "route"}
+            if (type(binding) is not dict or set(binding) != fields
+                    or binding["record_type"] != "model_request_binding/v1"
+                    or any(type(binding[name]) is not str or not binding[name].strip()
+                           for name in ("provider", "model", "route"))
+                    or binding["provider"] != call.provider or binding["route"] != call.route_id):
+                raise HarnessError("unknown reported model requires its exact canonical requested identity")
+            requested[call.gateway_loop_id] = (binding["provider"], binding["model"], binding["route"])
+    return requested

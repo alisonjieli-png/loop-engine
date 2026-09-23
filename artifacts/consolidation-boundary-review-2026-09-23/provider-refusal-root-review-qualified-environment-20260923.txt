@@ -1,0 +1,18 @@
+.{"diagnostic_code":null,"elapsed_seconds":0.01,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.072,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.104,"event_type":"model.step.output_invalid","failure_code":"invalid_json","model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.125,"event_type":"model.step.started","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.139,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.15,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.153,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":1,"step":null,"task":"T-OFFLINE"}
+.{"diagnostic_code":null,"elapsed_seconds":0.001,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.023,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.047,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.066,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":2,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":"stage_evidence_degraded","elapsed_seconds":0.069,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.071,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+.
+----------------------------------------------------------------------
+Ran 3 tests in 0.857s
+
+OK

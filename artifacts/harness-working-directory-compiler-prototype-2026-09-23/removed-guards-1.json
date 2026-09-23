@@ -1,0 +1,93 @@
+{
+  "record_type": "working_directory_compiler_experiment_checks/v1",
+  "mutants": [
+    {
+      "mutant": "mandatory_role",
+      "guard": "_roles_supported",
+      "check": "test_unsupported_mandatory_role_refuses",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "same_target",
+      "guard": "_paths_disjoint",
+      "check": "test_two_packages_claim_same_target_refuses",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "parent_file",
+      "guard": "_paths_disjoint",
+      "check": "test_parent_file_collision_refuses",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "payload_bytes",
+      "guard": "_payloads_bound",
+      "check": "test_same_size_payload_change_refuses",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "current_state",
+      "guard": "_snapshots_match",
+      "check": "test_stale_expected_current_refuses",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "worker_authority",
+      "guard": "_effects_within",
+      "check": "test_worker_effects_cannot_expand",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    },
+    {
+      "mutant": "post_preview_state",
+      "guard": "_snapshots_match",
+      "check": "test_revalidation_refuses_changes_after_preview",
+      "detected": true,
+      "failures": 1,
+      "errors": 0
+    }
+  ],
+  "all_detected": true,
+  "example": {
+    "status": "compiled",
+    "digest": "1e618341370f800b0bda38aea92c1153e98b060e981807fc17b76373417b0b2d",
+    "files": [
+      {
+        "package_identity": "sample",
+        "package_digest": "aff8a08f69dc5376c5c14b8744b61b53e14bb0e12cb169dfe7e5edbcdefbc82a",
+        "source_path": "SKILL.md",
+        "target_path": ".opencode/skills/sample/SKILL.md",
+        "role": "skill_definition",
+        "media_type": "text/markdown",
+        "digest": "ff13c79e27641d97b1d8d3a036a635ab8b28d330dd2d655e25fdef743137dec4",
+        "size_bytes": 42
+      },
+      {
+        "package_identity": "sample",
+        "package_digest": "aff8a08f69dc5376c5c14b8744b61b53e14bb0e12cb169dfe7e5edbcdefbc82a",
+        "source_path": "assets/data.bin",
+        "target_path": ".opencode/skills/sample/assets/data.bin",
+        "role": "skill_asset",
+        "media_type": "application/octet-stream",
+        "digest": "6171db06a1c89b1ff8ab77e479d5df976ccd88a7b63567b4b18f413649e12ff3",
+        "size_bytes": 5
+      }
+    ],
+    "native_qualified": false,
+    "writes_performed": false
+  },
+  "model_calls": 0,
+  "workspace_writes": 0,
+  "admitted_profiles": 0
+}

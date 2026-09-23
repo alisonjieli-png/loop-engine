@@ -1,0 +1,19 @@
+{
+  "checks": [
+    {
+      "case": "non_json",
+      "reported_model": "glm-5.3",
+      "ok": false,
+      "expected_reported_model": "",
+      "defect_reproduced": true
+    },
+    {
+      "case": "non_object_json",
+      "reported_model": "glm-5.3",
+      "ok": false,
+      "expected_reported_model": "",
+      "defect_reproduced": true
+    }
+  ],
+  "provider_calls": 0
+}

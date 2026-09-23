@@ -511,7 +511,7 @@ def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     del backoff, floor_frac
     if max_attempts != 1:
         return ChatResult(
-            "", model, ok=False,
+            "", "", ok=False, physical_requests=0,
             error="physical model retries require an explicit outer call budget")
     return chat(
         prompt, model=model, system=system,
@@ -532,12 +532,12 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
         capability = output_capability or output_capability_for(model)
         maximum = require_declared_maximum(num_predict, capability)
     except (UnknownModelOutputLimit, ModelOutputLimitMismatch) as exc:
-        return ChatResult("", model, ok=False, error=str(exc))
+        return ChatResult("", "", ok=False, error=str(exc), physical_requests=0)
     # An explicit api_key="" means "no key" (used to test fallback); only None
     # falls back to the environment / .env.
     key = load_api_key() if api_key is None else api_key
     if not key:
-        return ChatResult("", model, ok=False,
+        return ChatResult("", "", ok=False,
                           error="OLLAMA_API_KEY not found",
                           physical_requests=0)
     messages = []
@@ -576,38 +576,42 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
         retry_after = _retry_after_seconds(getattr(exc, "headers", None))
         stated = (f" (retry after {retry_after:g}s)"
                   if retry_after is not None else "")
-        return ChatResult("", model, ok=False,
+        return ChatResult("", "", ok=False,
                           error=f"HTTP {exc.code}{stated}: {detail}",
                           retry_after_seconds=retry_after)
     except Exception as exc:
-        return ChatResult("", model, ok=False, error=repr(exc))
+        return ChatResult("", "", ok=False, error=repr(exc))
     try:
         data = json.loads(raw.decode("utf-8", "replace"))
     except ValueError:
-        return ChatResult("", model, ok=False, response_received=True,
+        return ChatResult("", "", ok=False, response_received=True,
                           error="invalid_response_body: Ollama answered with "
                                 "a body that is not JSON")
     if not isinstance(data, dict):
-        return ChatResult("", model, ok=False, response_received=True,
+        return ChatResult("", "", ok=False, response_received=True,
                           error="invalid_response_body: Ollama answered with "
                                 "JSON that is not an object")
+    reported_model = data.get("model") if type(data.get("model")) is str else ""
+    prompt_tokens = optional_token(data.get("prompt_eval_count"))
+    eval_tokens = optional_token(data.get("eval_count"))
     if data.get("error") and not (data.get("message") or {}).get("content"):
         # A refusal inside a 200 body is classified by its words, never
         # read as an empty answer.
-        return ChatResult("", str(data.get("model", model)), ok=False,
+        return ChatResult("", reported_model, prompt_tokens=prompt_tokens, eval_tokens=eval_tokens, ok=False,
                           response_received=True,
+                          usage_reported=prompt_tokens is not None and eval_tokens is not None,
                           error=f"provider_error_body: {str(data['error'])[:300]}")
     message = data.get("message", {}) or {}
     text = message.get("content", "")
     reasoning_present = bool(str(message.get("thinking", "") or "").strip())
     done = data.get("done") if isinstance(data.get("done"), bool) else None
     done_reason = str(data.get("done_reason", "") or "")
-    prompt_tokens = optional_token(data.get("prompt_eval_count"))
-    eval_tokens = optional_token(data.get("eval_count"))
     output_limit_reached = response_reached_output_limit(
         done_reason, eval_tokens, maximum)
     error = ""
-    if output_limit_reached:
+    if reported_model != model:
+        error = "model_identity_mismatch: the provider did not report the exact requested model"
+    elif output_limit_reached:
         error = (
             "output_limit_reached: Ollama response reached the exact "
             f"{maximum}-token output ceiling; done_reason={done_reason!r}")
@@ -620,9 +624,9 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     elif not text:
         error = "empty_response: Ollama returned no final response content"
     return ChatResult(
-        text=text, model=data.get("model", model),
+        text=text, model=reported_model,
         prompt_tokens=prompt_tokens, eval_tokens=eval_tokens,
-        ok=bool(text) and not output_limit_reached and done is not False,
+        ok=bool(text) and not error,
         error=error, num_predict_used=maximum, response_received=True,
         done=done, done_reason=done_reason,
         reasoning_present=reasoning_present,

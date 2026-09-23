@@ -1,0 +1,18 @@
+E
+======================================================================
+ERROR: test_adapter_without_source_file_is_explicitly_unqualified (tools.test_generate_original_native_candidates.GenerationTest.test_adapter_without_source_file_is_explicitly_unqualified)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py", line 367, in test_adapter_without_source_file_is_explicitly_unqualified
+    generation.implementation_digests(replace(self.spec, adapter=unavailable))
+  File "/home/username/.le-codex-build/import-owner-repair/tools/generate_original_native_candidates.py", line 395, in implementation_digests
+    Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)))
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/inspect.py", line 924, in getfile
+    raise TypeError('{!r} is a built-in class'.format(object))
+TypeError: <class 'type'> is a built-in class
+
+----------------------------------------------------------------------
+Ran 1 test in 0.013s
+
+FAILED (errors=1)

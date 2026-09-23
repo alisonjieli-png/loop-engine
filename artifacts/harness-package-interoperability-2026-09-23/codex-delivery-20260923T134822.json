@@ -1,0 +1,219 @@
+{
+  "record_type": "harness_delivery_research_probe/v1",
+  "created_at": "2026-09-23T13:48:22.760146+00:00",
+  "client": "codex-cli 0.155.1",
+  "probe_source_sha256": "94a915f758acde88f84c87b207b52c83f34a4c7e06b4cb8cc7ab4d682f71c8a2",
+  "packet_manifest_sha256": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+  "model_calls": 0,
+  "command": "codex debug prompt-input",
+  "observations": [
+    {
+      "case": "clean_native_entrypoint",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": true,
+        "first_action": true,
+        "state_identity": true,
+        "output_contract": true
+      },
+      "other_markers_visible": {},
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "6e96d69f383f5824eb2796c8b5a6332ead6f42b94b62928a6060b0a7da4d8e5c",
+      "input_files": {
+        "work/AGENTS.md": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5",
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "override_shadows_entrypoint",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": false,
+        "first_action": false,
+        "state_identity": false,
+        "output_contract": false
+      },
+      "other_markers_visible": {
+        "override": true
+      },
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "0757d07514e3119c864a32c9183bab3d604c5f7dbb362771adcf0a07fc276d91",
+      "input_files": {
+        "work/AGENTS.md": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5",
+        "work/AGENTS.override.md": "22a119aca024e9829febca1930496d155004061f495c52657df9db04c26f6359",
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "pointer_only_does_not_import_context",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": false,
+        "first_action": false,
+        "state_identity": false,
+        "output_contract": false
+      },
+      "other_markers_visible": {},
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "d79402c01ab8f2220e64f278021d21170797e13b9cc765e2c7b3d7629980e1fe",
+      "input_files": {
+        "work/AGENTS.md": "942b873ea82928179229924825bc33920ecac41729f16d4fb3ad7a8af5d34062",
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "ancestor_consumes_combined_budget",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": false,
+        "first_action": false,
+        "state_identity": false,
+        "output_contract": false
+      },
+      "other_markers_visible": {
+        "ancestor": true
+      },
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "33b83212668197688043e661f75e23c47ea917e3b5278aefb6ddb8aed8ea98d2",
+      "input_files": {
+        "AGENTS.md": "170313bf08a7de3642c90844099282f8f1a083241a3fd314232baed9e7f9fcb5",
+        "step/AGENTS.md": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5",
+        "step/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "step/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "step/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "step/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "step/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "step/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "step/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "step/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "explicit_launch_without_entrypoint",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": true,
+        "first_action": true,
+        "state_identity": true,
+        "output_contract": true
+      },
+      "other_markers_visible": {},
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "31f5e019f1ac8e3b0ac747140b3c9f3f5ad14d3841ef7f39a8ba2b56ff346bdd",
+      "input_files": {
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "reduced_budget_truncates_obligations",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": true,
+        "first_action": false,
+        "state_identity": false,
+        "output_contract": false
+      },
+      "other_markers_visible": {},
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "508998223e6b885099bc8398f1baba73d306098eeca74e9002e6c0e0c465439e",
+      "input_files": {
+        "work/AGENTS.md": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5",
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+      },
+      "stderr_present": true
+    },
+    {
+      "case": "skill_metadata_is_not_skill_body",
+      "exit_code": 0,
+      "parse_error": false,
+      "assignment_markers_visible": {
+        "objective": true,
+        "first_action": true,
+        "state_identity": true,
+        "output_contract": true
+      },
+      "other_markers_visible": {
+        "skill_description": true,
+        "skill_body": false,
+        "unregistered_tool_body": false
+      },
+      "workspace_unchanged": true,
+      "control_observed": true,
+      "prompt_output_sha256": "821e64afe89b052b6e322eaa0da91541a666ca3216d6357e74c557e685ac3057",
+      "input_files": {
+        "work/.agents/skills/task-delivery-probe/SKILL.md": "3ca4bde268c2918bf17640faabbd5fe6303e2aaf3b8720bb41b48f0cd55139a4",
+        "work/AGENTS.md": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5",
+        "work/checklist.md": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca",
+        "work/input.json": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b",
+        "work/input.schema.json": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd",
+        "work/node_context.md": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b",
+        "work/output.schema.json": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e",
+        "work/packet-manifest.json": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2",
+        "work/run-state.json": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13",
+        "work/task.json": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54",
+        "work/unregistered_tool.py": "668e9280fa50b70fb24fb88621a5956ae7009fe476213bf3034fdaf9617de548"
+      },
+      "stderr_present": true
+    }
+  ],
+  "all_controls_observed": true,
+  "limits": [
+    "Prompt construction only, no model use or accepted task.",
+    "Closed proxy settings are not an operating-system network sandbox.",
+    "Explicit assignment visibility does not authorize conflicting inherited instructions.",
+    "Repeated process starts test fresh sessions, not hot reload or resume.",
+    "Fixture files, not private customer inputs, were placed on the debug command line."
+  ]
+}

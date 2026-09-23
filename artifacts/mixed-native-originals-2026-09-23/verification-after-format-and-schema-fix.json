@@ -1,0 +1,2084 @@
+{
+  "record_type": "original_native_method_verification/v1",
+  "passed": true,
+  "sandbox": {
+    "engine": "bubblewrap",
+    "network": "unshare-all",
+    "home_mounted": false,
+    "mounted_inputs": [
+      "read-only /usr",
+      "one candidate script",
+      "synthetic input",
+      "trusted resource-limit runner"
+    ],
+    "cpu_seconds": 2,
+    "address_space_bytes": 268435456,
+    "wall_timeout_seconds": 4,
+    "environment": "clearenv, HOME=/tmp, PATH=/usr/bin:/bin",
+    "execution": "python3 -I -S -B"
+  },
+  "packages": [
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "script_sha256": "b0e17802ec7da2b902b8f380489a7eeca4fdca51adc031a3456f2a86fa783568",
+      "package_digest": "e15774569b995286404c81f2e55c2ecb839fd5ebc8a9525f6b7049a3e04162b9",
+      "payload_digests": {
+        "AGENTS.md": "77069a87601de7b31d9f979b14c9ceeb2dbd6f0253748ce6561be8165cce14ad",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "d7a6eb4ee3145fcd504b6b90aa319925ace77e187978e952146532c8c1debd0e",
+        "contracts/output.schema.json": "e996bbf35183cfa6073e4537f4d5920464f1c3e75b725cbab21b2bc5df35fcf8",
+        "examples/input.json": "65c16f84a7535e7177549ea9b3bd351ed1b7125264a8dfd9be0fde43e189f040",
+        "examples/output.json": "88070c0ff667c26309a667deeb82c839a150f37eb3bee5f6e9a8615dd7672b97",
+        "tools/audit_boolean_rule_coverage.py": "b0e17802ec7da2b902b8f380489a7eeca4fdca51adc031a3456f2a86fa783568",
+        "verification/cases.json": "c4868c16ed08a199467f30ae54e504886e711f827c4850943b80b745462e1563"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "itertools"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 2,
+            "uncovered": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [
+              {
+                "assignment": {
+                  "x": true
+                },
+                "rule_ids": [
+                  "a",
+                  "b"
+                ]
+              }
+            ],
+            "unambiguous_count": 0,
+            "uncovered": [
+              {
+                "x": false
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "script_sha256": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403",
+      "package_digest": "0120acc6744d56b69447e2dc40f740e8b248ee5c2a631f46b654eab9f254063f",
+      "payload_digests": {
+        "AGENTS.md": "4cba61ecdcf24fe4e7fa85825bd18eb7a67793f63feceead84ccf337fa70b614",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "7a6510c175984134b1dfc3301d54e64711b56b7488fabcf721e1cc7be6833a43",
+        "contracts/output.schema.json": "c9b38b3b5be9ecca52fd66bb9af89e0b2856d91e2c4ba526e897a57b63c3c404",
+        "examples/input.json": "3373c627b6b641a893f663203c347a9ce18db3af44891b32de6dc664833a9279",
+        "examples/output.json": "b8e44054fb1d639adcf355dde5b15020e24de0c5f720c79d8c2db38fc70a751d",
+        "tools/audit_functional_dependency_rows.py": "6eb37445435cb34f175971421087eb91c8dd93c622efe78fed230f11ce2ca403",
+        "verification/cases.json": "5f466dda3d2f22c68a24df3e95da922d702a8d936646c02944ee9f8149797ad0"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": [
+              {
+                "dependent_variants": [
+                  [
+                    "x"
+                  ],
+                  [
+                    "y"
+                  ]
+                ],
+                "determinant": [
+                  1
+                ],
+                "row_indices": [
+                  0,
+                  1
+                ]
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "script_sha256": "e971347d2b0c59fd43b9368995b7836416cad32c80d57378f75cb89f1f234b06",
+      "package_digest": "7181cdf967db138e7f50f20cb2590bb34a8c90c5aef5362fe73f55874f147380",
+      "payload_digests": {
+        "AGENTS.md": "2c0a1b307d8428561757c9ad547d58801ca70cb303d52b36049bab734c1145cf",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "782de48439be2f1b0e8d500599cecadf066548ace83cfdbd45fcb17d9fb0ba9a",
+        "contracts/output.schema.json": "eae89d0bc6ce007d543fc366baab4cf47c158f0017d1e4dbaa739f1afc7506ab",
+        "examples/input.json": "a4a6cc149fefe7c054671580e3e5f59c40e4a2f02c05daf1af6b0bd17b4dc834",
+        "examples/output.json": "4755dd338cf0284d8b40ce2857839e118c9faf5059c955345d9590196c82a6d5",
+        "tools/compare_primitive_object_contracts.py": "e971347d2b0c59fd43b9368995b7836416cad32c80d57378f75cb89f1f234b06",
+        "verification/cases.json": "793be146d18d6c9d6950305d9b28df6390f2614fe26c293012fe948fd339acce"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [],
+            "compatible": true
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "changed_type",
+                "field": "age"
+              },
+              {
+                "code": "new_required_field",
+                "field": "name"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "extra_field_constrained",
+                "field": "x"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "script_sha256": "9f84e058c0f65b37d7275c197e0e80a0670160cadcaef80d2db2f549dbd72cca",
+      "package_digest": "29dd6f93a9cf962b36aca0f171e474e7e8860b676f2ec7bbff2412577ce91abc",
+      "payload_digests": {
+        "AGENTS.md": "545b4f87957c6b6a0e5e9ebefa1b26cd1d1d3dff9ba71120582b98b0d79b5d88",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "4e2b69af12234d15966e3bfae43675f99ed5a23b5067507ef90c06a74713e919",
+        "contracts/output.schema.json": "b7345153e76ccbb6a1d431f1c6cfeb981c0a42858a0f2e5c3a60206500e51bcb",
+        "examples/input.json": "5c75983ace5afa7dd0b7ffe0d46526ba6e66e6e294aab442ce4177064c168345",
+        "examples/output.json": "ba3ca3f7a86967e77892716bab040bb15fb1f076e43aa5602c68b263d8db0b35",
+        "tools/cover_pairwise_configuration_values.py": "9f84e058c0f65b37d7275c197e0e80a0670160cadcaef80d2db2f549dbd72cca",
+        "verification/cases.json": "76408bd9ae42322985a9c800c3444785d808e9f4654b00bb97a6ea5647dc0b1e"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "itertools"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "0",
+                "b": "0",
+                "c": "0"
+              },
+              {
+                "a": "0",
+                "b": "1",
+                "c": "1"
+              },
+              {
+                "a": "1",
+                "b": "0",
+                "c": "1"
+              },
+              {
+                "a": "1",
+                "b": "1",
+                "c": "0"
+              }
+            ],
+            "covered_pairs": 12,
+            "total_pairs": 12
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "x",
+                "b": "z"
+              },
+              {
+                "a": "y",
+                "b": "z"
+              }
+            ],
+            "covered_pairs": 2,
+            "total_pairs": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "script_sha256": "339672c2df402a197ced971111f9998fdb8367fd02f76bfe136fd3377e88d6a7",
+      "package_digest": "4dda3bfacd5440295ac5cb56ffb537cffdbd826ef877ce7ee2b1b2597222bbc6",
+      "payload_digests": {
+        "AGENTS.md": "3295b14318d51ae038007afab14426d255ace10db1b616dec4e30f72815eeb2d",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "802ce5f4e57bb97c2536cdf1949969e991be41da7d879b6b3e858742eb4f54ab",
+        "contracts/output.schema.json": "b75927f4fd2cc521c34d46083666ed3390c7210ecd9407815e2feaa04d204492",
+        "examples/input.json": "2e52f2829baad4df0d8eae7eea51692af9d7244349411a0a14d25c43a73598e6",
+        "examples/output.json": "ce341dae536c4e1591337e1c9802803d9c424911c8cddcf83e5dabe058285ac9",
+        "tools/decode_u16_length_prefixed_frames.py": "339672c2df402a197ced971111f9998fdb8367fd02f76bfe136fd3377e88d6a7",
+        "verification/cases.json": "4c922bb9c606ac1dc3aafde07fcfd7d1a2200669866035072d2aefaffca3c9e0"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 2,
+            "frames_hex": [
+              "616263",
+              ""
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 0,
+            "frames_hex": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "script_sha256": "8f080aa48538dcb346b2743983855f440947874d1951bfe8373e807dc3b06d47",
+      "package_digest": "d8793e1f11a24a99807e636e4d909984573201adda323182d1c7bbe4dc36b5c0",
+      "payload_digests": {
+        "AGENTS.md": "d9c1243b1d8e3e6b48ac0de7467b95ce2c9d2f6df2778a66b558c8497d26e2bf",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "b8fc031c28140e887e315daa969943007504970cc3663384696a55b4c70de121",
+        "contracts/output.schema.json": "733d496c8b13ef658316cbf85d83a1647728f72dee5a5a28eff2967393f6c8e4",
+        "examples/input.json": "71331b2c01181302e6e208747ffdd1c77725b1e51876069ec1fefe34d6c7a5a3",
+        "examples/output.json": "f1a6af4533db6127d7531442e677c2ae14b03b87ed0bd419e8180c12baa315e3",
+        "tools/evaluate_bounded_rational_expression.py": "8f080aa48538dcb346b2743983855f440947874d1951bfe8373e807dc3b06d47",
+        "verification/cases.json": "b7b8385d1bacb4fcc28a3cb1e304f5d43afc28bedc920d668dbe1dd9f79e5bd4"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "ast",
+        "fractions"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 2,
+            "numerator": 1
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 1,
+            "numerator": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "script_sha256": "bb10dce38ac6e06b0c595cb12dce777f18248e0921bca5d64f5215884a2b2d20",
+      "package_digest": "94ba49ea3fd8d276bd5610003fd3a2c170714826c2ecef63118aa470f97fdb99",
+      "payload_digests": {
+        "AGENTS.md": "4edac81bba49a9eec7737d3d3dd4a1b61909f5ab697b836bb107593b4c69c822",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "c8aff0f097a2fe94732bb7d6ab2866f4d41b129f0d05c2f3fe45687a0b6ae32a",
+        "contracts/output.schema.json": "c3a9832cbf0081e6d43cd1e3cf28f2ced5be628ebc084974917f28bed5306f57",
+        "examples/input.json": "f12740e4a0b6513c1ab5308b2056b160eed768b37d72fcfe757b855792e3e4b2",
+        "examples/output.json": "8edffba35f638d49e3609d266c07deb2b28fb340d3816f48d8fe061d9794276d",
+        "tools/find_strongly_connected_components.py": "bb10dce38ac6e06b0c595cb12dce777f18248e0921bca5d64f5215884a2b2d20",
+        "verification/cases.json": "b7efff902cdb3ebd0bca58d82aa50358c86ee47909f467afba0c45589df2da91"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "a",
+                "b"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "x"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "script_sha256": "308c686ca8e9e9bf105d137bb001aff149d0cc402e7913688583add91450745e",
+      "package_digest": "fdb931f908c53467f270d024699d04992b941cd35cb89441d6c4bfff1e10797f",
+      "payload_digests": {
+        "AGENTS.md": "254106a57efb564b89c9910923f9291adb0f3735fb3dfe3b85d73345d603590c",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "4f813398c2dd954cd9c14fa9b7c820454761c0b0f2821926da774828c60c07ce",
+        "contracts/output.schema.json": "ec9e1830bb383a0a2e795790348f9469ccc6c4ac62f5b508ff9a34611b7974b7",
+        "examples/input.json": "c8dc906670ecdfd9b4a5f8aa4285836073ef3deca9536be02f699fd15bece426",
+        "examples/output.json": "6a902051293c396710bc11d75f93930f79afac5e537e54f45589057d4177182f",
+        "tools/pack_first_fit_decreasing_batches.py": "308c686ca8e9e9bf105d137bb001aff149d0cc402e7913688583add91450745e",
+        "verification/cases.json": "9e95d4e1e3d9b22f6bc5e3265b0fd0e9e48be7008df0c93ac0f9130c175e7628"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": [
+              {
+                "item_ids": [
+                  "a",
+                  "d"
+                ],
+                "used": 8
+              },
+              {
+                "item_ids": [
+                  "b",
+                  "c"
+                ],
+                "used": 8
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "script_sha256": "01ec4acb9514b2c485aa4eac884cae4e281bff2fa5757e661f182872aa21040d",
+      "package_digest": "939b4b57e86d635f32042270485863245231213d0cfc05a3a28b93e5a74802ef",
+      "payload_digests": {
+        "AGENTS.md": "1cd98aeda346ff98374841a339055c6293385fc589425c24af0a4025325d7db2",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "e6ead281ce74aae61f3cc62f6e632df9425e6206167139a220ae800f6b0e950f",
+        "contracts/output.schema.json": "91580ac280c14a73838768985e29cadca910a1896cf1e6f2f89f7d816d323f24",
+        "examples/input.json": "2de0dfdc01c07d71fb1b3882addef66195f4ab54e642f1c6ee4db00b3bd06729",
+        "examples/output.json": "0ee12b297fc46f34ccfbcb64dc4a3e1ff9e542df674b079666df70a6b46cf1d9",
+        "tools/project_json_pointer_values.py": "01ec4acb9514b2c485aa4eac884cae4e281bff2fa5757e661f182872aa21040d",
+        "verification/cases.json": "c9005c9ed1a2f21e929a4cc4ccedd259a562e6ce461d0af2594cd282a3b894fc"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              20,
+              "literal",
+              false
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              [
+                1,
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "script_sha256": "26091b7b72f150f098dfdce2a421b272271927bd2d93ca8c360440ae5586ca49",
+      "package_digest": "31c2d135a962bb0acd7ee8b0b164ec3fc465d9b8aace8745ef47ba66699cf2b7",
+      "payload_digests": {
+        "AGENTS.md": "03c110d57194c682941c1975ea434bdac0bea477dcd82c0e197856c8b2e998bd",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "337dbb1f8a7a32a65db56493c5faec561e6519e5cd2a3094de5a6f1b2543bf57",
+        "contracts/output.schema.json": "13579735830f419db13f43c9757c1a7265c0a5ba7635de37979e284905cf4e13",
+        "examples/input.json": "1ae0f855ef227c0adf3bb4ac563c9412fbdaa7fac8e07a17d2fc7a4a929af1e0",
+        "examples/output.json": "106c2d3063d9accfb09eeaaa8480af60d8ac64210b871a4084f74cbd8d333f3f",
+        "tools/resolve_literal_named_template.py": "26091b7b72f150f098dfdce2a421b272271927bd2d93ca8c360440ae5586ca49",
+        "verification/cases.json": "8092d86e50260f5a8f83d1fd696453e6ec0ce3fc2790b992edbc845e4e38e6ab"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello ${later}"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "a/a"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "script_sha256": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393",
+      "package_digest": "03ea8b8016d6352eb36453c6e53455c0d691988bb559c006a5f7c10246d8484c",
+      "payload_digests": {
+        "AGENTS.md": "ed050bedfee782064c5bc3e596f40bbaa13c341f33a79a0eeba67b17cdb6a786",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86",
+        "contracts/output.schema.json": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825",
+        "examples/input.json": "c5c73b12d87bdd32127f7a22675c652f132dab7abe6eca4fdf8acfebd8278663",
+        "examples/output.json": "484a12da0ca63cbfc07a85ce0d7f2c4e6c88c4f14e62edf01b78aeee162114c0",
+        "tools/schedule_dag_earliest_times.py": "b7679de480cc0fdbbcc710a6cdb6ca5079ff7fdf39873192b7eb2bcaeb3f2393",
+        "verification/cases.json": "b4980ff0916179f69bbfc9716ce3d06a773293ff354b7705dcd7b9679b5ceeff"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "graphlib"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 7,
+            "schedule": [
+              {
+                "finish": 3,
+                "id": "a",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "b",
+                "start": 0
+              },
+              {
+                "finish": 7,
+                "id": "c",
+                "start": 5
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 0,
+            "schedule": [
+              {
+                "finish": 0,
+                "id": "z",
+                "start": 0
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "script_sha256": "108436f5b87b7b931caf4947cca9ce7e8afdb61d006b4b9ed25de4c402d42a43",
+      "package_digest": "2a5ea1551bb2506236816334110ac5094ca5a2ea2c39e9f1630b48c45b5ab76e",
+      "payload_digests": {
+        "AGENTS.md": "e44f521dbe10b452ffd88490db3a49da9dc4c064de5206effcc8f35412ad7845",
+        "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "contracts/input.schema.json": "bb10ddb8e813018e9143bd722dfff87768660c1e8df9400553588e4d16c1a407",
+        "contracts/output.schema.json": "e3a3e646aaca967509ddc7ba720e7ef3252d6260138388cfe18fed47be988cb3",
+        "examples/input.json": "3aef16af4e7dd97414e68e4ed17387e2a8e8b2c751080f62fdace25de511892a",
+        "examples/output.json": "06d58ce37b03bbceb6c14862e718af53966db52b70234d641113aac1792a0f1f",
+        "tools/simulate_exact_token_bucket.py": "108436f5b87b7b931caf4947cca9ce7e8afdb61d006b4b9ed25de4c402d42a43",
+        "verification/cases.json": "de0d4a9484031210445be39dbdd1dae144219eeb0402a9c2c872bafa0b2b8a82"
+      },
+      "imports": [
+        "json",
+        "math",
+        "re",
+        "sys",
+        "fractions"
+      ],
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": false,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "b",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              },
+              {
+                "allowed": false,
+                "id": "c",
+                "tokens_after": {
+                  "denominator": 2,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "d",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": true,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true,
+          "input_schema_valid": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "mutants": [
+    {
+      "identity": "audit_boolean_rule_coverage",
+      "mutation": {
+        "before": "elif len(decisions) > 1:",
+        "after": "elif False:"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 2,
+            "uncovered": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "conflicts": [],
+            "unambiguous_count": 1,
+            "uncovered": [
+              {
+                "x": false
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "audit_functional_dependency_rows",
+      "mutation": {
+        "before": "if len(group[\"dependent_variants\"]) > 1]",
+        "after": "if False]"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "violations": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "compare_primitive_object_contracts",
+      "mutation": {
+        "before": "add(\"changed_type\", field)",
+        "after": "pass"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [],
+            "compatible": true
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "new_required_field",
+                "field": "name"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "breaking_changes": [
+              {
+                "code": "extra_field_constrained",
+                "field": "x"
+              }
+            ],
+            "compatible": false
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "cover_pairwise_configuration_values",
+      "mutation": {
+        "before": "uncovered -= coverage[best]",
+        "after": "uncovered.clear()"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "0",
+                "b": "0",
+                "c": "0"
+              }
+            ],
+            "covered_pairs": 12,
+            "total_pairs": 12
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "cases": [
+              {
+                "a": "x",
+                "b": "z"
+              }
+            ],
+            "covered_pairs": 2,
+            "total_pairs": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "decode_u16_length_prefixed_frames",
+      "mutation": {
+        "before": "need(size <= 1024 and offset + size <= len(data))",
+        "after": "need(size <= 1024)"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 2,
+            "frames_hex": [
+              "616263",
+              ""
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "count": 0,
+            "frames_hex": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 0,
+          "output": {
+            "count": 1,
+            "frames_hex": [
+              "61"
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "identity": "evaluate_bounded_rational_expression",
+      "mutation": {
+        "before": "result = left + right",
+        "after": "result = left - right"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 6,
+            "numerator": 1
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "denominator": 1,
+            "numerator": 2
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "find_strongly_connected_components",
+      "mutation": {
+        "before": "len(group) > 1 or (group[0], group[0]) in edge_set",
+        "after": "len(group) > 1"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c"
+              ]
+            ],
+            "cyclic_components": [
+              [
+                "a",
+                "b"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "components": [
+              [
+                "x"
+              ]
+            ],
+            "cyclic_components": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "pack_first_fit_decreasing_batches",
+      "mutation": {
+        "before": "target = next((bucket for bucket in bins if bucket[\"used\"] + item[\"size\"] <= value[\"capacity\"]), None)",
+        "after": "target = None"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": [
+              {
+                "item_ids": [
+                  "a"
+                ],
+                "used": 6
+              },
+              {
+                "item_ids": [
+                  "b"
+                ],
+                "used": 4
+              },
+              {
+                "item_ids": [
+                  "c"
+                ],
+                "used": 4
+              },
+              {
+                "item_ids": [
+                  "d"
+                ],
+                "used": 2
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "bins": []
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "project_json_pointer_values",
+      "mutation": {
+        "before": "encoded.replace(\"~1\", \"/\").replace(\"~0\", \"~\")",
+        "after": "encoded.replace(\"~0\", \"~\").replace(\"~1\", \"/\")"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": false,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "values": [
+              [
+                1,
+                "x"
+              ]
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "resolve_literal_named_template",
+      "mutation": {
+        "before": "need(names_used == set(value[\"variables\"]))",
+        "after": "need(names_used <= set(value[\"variables\"]))"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello ${later}"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "text": "a/a"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 0,
+          "output": {
+            "text": "Hello"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "schedule_dag_earliest_times",
+      "mutation": {
+        "before": "start = max((finishes[parent]",
+        "after": "start = min((finishes[parent]"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 5,
+            "schedule": [
+              {
+                "finish": 3,
+                "id": "a",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "b",
+                "start": 0
+              },
+              {
+                "finish": 5,
+                "id": "c",
+                "start": 3
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "duration": 0,
+            "schedule": [
+              {
+                "finish": 0,
+                "id": "z",
+                "start": 0
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "identity": "simulate_exact_token_bucket",
+      "mutation": {
+        "before": "previous) * value[\"refill_per_second\"], 1000)",
+        "after": "previous) * value[\"refill_per_second\"], 1)"
+      },
+      "detected": true,
+      "checks": [
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": false,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "b",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 1
+                }
+              },
+              {
+                "allowed": true,
+                "id": "c",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 2
+                }
+              },
+              {
+                "allowed": true,
+                "id": "d",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 2
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": false
+        },
+        {
+          "expected_exit": 0,
+          "actual_exit": 0,
+          "output": {
+            "decisions": [
+              {
+                "allowed": true,
+                "id": "a",
+                "tokens_after": {
+                  "denominator": 1,
+                  "numerator": 0
+                }
+              }
+            ]
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        },
+        {
+          "expected_exit": 2,
+          "actual_exit": 2,
+          "output": {
+            "error": "invalid_input"
+          },
+          "schema_valid": true,
+          "timed_out": false,
+          "truncated": false,
+          "stderr": "",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "model_calls": 0,
+  "independent_approval": false,
+  "native_harness_loading_proven": false
+}

@@ -1,0 +1,16 @@
+......F.........
+======================================================================
+FAIL: test_preview_can_be_inspected_without_installation_write_authority (__main__.PreviewTests.test_preview_can_be_inspected_without_installation_write_authority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/compiler-preview/artifacts/harness-working-directory-compiler-prototype-2026-09-23/test_preview.py", line 103, in test_preview_can_be_inspected_without_installation_write_authority
+    self.assertEqual(result.status,"compiled")
+AssertionError: 'refused' != 'compiled'
+- refused
++ compiled
+
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.005s
+
+FAILED (failures=1)

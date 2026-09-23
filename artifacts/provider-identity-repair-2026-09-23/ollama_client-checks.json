@@ -1,0 +1,70 @@
+{
+  "record_type": "ollama_client_contract_test/v2",
+  "scope": "offline_contract_only",
+  "provider_integration_proven": false,
+  "tests": [
+    {
+      "test": "a_missing_key_returns_ok_false_not_a_crash",
+      "passed": true,
+      "detail": "with no api key the client returns ok=False with an error, never raising into the loop"
+    },
+    {
+      "test": "the_live_wording_with_a_reference_id_and_digits_in_the_model_name_yields_the_maximum",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_refusal_that_names_the_maximum_yields_a_source_backed_capability",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_vague_refusal_an_allowance_refusal_and_an_acceptance_yield_no_number",
+      "passed": true,
+      "detail": "HTTP 400 did not name exactly one maximum: invalid request / HTTP 429: {\"error\":\"you have reached your weekly usage limit / the service accepted the request instead of naming a ceiling"
+    },
+    {
+      "test": "a_batch_stops_at_the_first_allowance_refusal_and_counts_its_requests",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_missing_key_learns_nothing_and_sends_nothing",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "an_unknown_model_maximum_refuses_before_network_use",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_caller_cannot_replace_the_declared_maximum_with_a_small_cap",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "the_exact_live_observation_overrides_the_stale_family_value",
+      "passed": true,
+      "detail": "exact deepseek-v4-flash:0731 maximum is 65536"
+    },
+    {
+      "test": "alternate_cloud_models_have_exact_observed_output_contracts",
+      "passed": true,
+      "detail": "alternate routes remain unavailable until Ollama declares maxima"
+    },
+    {
+      "test": "chat_result_reports_total_tokens",
+      "passed": true,
+      "detail": "the result exposes provider-reported prompt + eval token totals"
+    },
+    {
+      "test": "provider_completion_metadata_distinguishes_truncation",
+      "passed": true,
+      "detail": "an explicit stop is complete; length is a typed output limit"
+    }
+  ],
+  "passed": 12,
+  "total": 12,
+  "all_passed": true
+}

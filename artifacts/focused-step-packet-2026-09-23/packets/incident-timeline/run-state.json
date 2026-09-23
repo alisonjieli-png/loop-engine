@@ -1,0 +1,16 @@
+{
+  "committed_idempotency": {},
+  "context_version": 1,
+  "execution_authorized": false,
+  "record_type": "focused_step_state_snapshot_candidate/v1",
+  "run_id": "incident-demo",
+  "state_digest": "7b0df621c5e0ba9a669be7f7f3e944006b01e38c60fdebbeefcfb1f72c15c876",
+  "state_id": "incident-demo.order-events",
+  "step_id": "order-events",
+  "values": {
+    "effects_committed": "none",
+    "root_cause": "unknown",
+    "status": "observations_collected"
+  },
+  "version": 1
+}

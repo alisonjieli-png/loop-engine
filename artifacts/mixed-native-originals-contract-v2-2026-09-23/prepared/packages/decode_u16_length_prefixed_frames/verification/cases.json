@@ -1,0 +1,39 @@
+[
+  {
+    "input": {
+      "hex": "00036162630000"
+    },
+    "expected": {
+      "frames_hex": [
+        "616263",
+        ""
+      ],
+      "count": 2
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "hex": ""
+    },
+    "expected": {
+      "frames_hex": [],
+      "count": 0
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "hex": "00"
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "hex": "000261"
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

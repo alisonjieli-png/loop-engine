@@ -393,7 +393,7 @@ offered = sorted(row["identity"] for row in listing["result"]["items"])
 withheld = sorted(row["identity"] for row in listing["result"]["withheld"])
 registered = sorted(offered + withheld)
 status, found = call("/api/v1/retrieval",
-    {{"record_type": "service_retrieval_request/v1", "query": {query!r}, "mode": "lexical", "top_n": 50}})
+    {{"record_type": "service_retrieval_request/v2", "query": {query!r}, "mode": "lexical", "top_n": 50}})
 assert status == 200, found
 hits = sorted(hit["reference"]["identity"] for hit in found["result"]["hits"])
 unreachable = []

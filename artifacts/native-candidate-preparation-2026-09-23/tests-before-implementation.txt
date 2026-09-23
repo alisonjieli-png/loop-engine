@@ -1,0 +1,212 @@
+test_no_write_authority_and_symlinked_output_parent_refuse (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_no_write_authority_and_symlinked_output_parent_refuse) ... ok
+test_one_item_matches_existing_refresh_and_staging_shapes (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_one_item_matches_existing_refresh_and_staging_shapes) ... ok
+test_one_thousand_synthetic_candidates_are_bounded_to_twenty_population_files (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_one_thousand_synthetic_candidates_are_bounded_to_twenty_population_files) ... ok
+test_stale_source_and_declared_digest_mismatch_refuse_before_output (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_stale_source_and_declared_digest_mismatch_refuse_before_output) ... ok
+test_symlink_and_path_escape_refuse (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_symlink_and_path_escape_refuse) ... ok
+test_unknown_or_false_license_refuses (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_unknown_or_false_license_refuses) ... ok
+test_unsafe_duplicate_or_unapproved_lifecycle_refuses (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_unsafe_duplicate_or_unapproved_lifecycle_refuses) ... ok
+test_wrong_revision_and_existing_output_refuse (tools.test_prepare_harness_candidates.CandidatePreparerChecks.test_wrong_revision_and_existing_output_refuse) ... ok
+test_case_collision_and_file_parent_collision_refuse (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_case_collision_and_file_parent_collision_refuse) ... ok
+test_complete_tree_uses_canonical_package_and_preserves_binary_bytes (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_complete_tree_uses_canonical_package_and_preserves_binary_bytes) ... ERROR
+test_corrupt_payload_digest_refuses_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_corrupt_payload_digest_refuses_before_output) ... FAIL
+test_duplicate_package_under_new_identity_refuses_inflated_count (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_package_under_new_identity_refuses_inflated_count) ... FAIL
+test_executable_effect_cannot_be_omitted (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_executable_effect_cannot_be_omitted) ... FAIL
+test_native_population_stages_atomically_as_candidates_only (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_native_population_stages_atomically_as_candidates_only) ... ERROR
+test_old_stage_reader_refuses_native_population_version (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_old_stage_reader_refuses_native_population_version) ... ERROR
+test_staging_rechecks_changed_missing_and_extra_files (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rechecks_changed_missing_and_extra_files) ... ERROR
+test_staging_rejects_forged_manifest_body_and_producer (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_forged_manifest_body_and_producer) ... ERROR
+test_staging_rejects_symlinks_and_fifos_before_read (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_symlinks_and_fifos_before_read) ... ERROR
+test_staging_requires_explicit_package_root (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_requires_explicit_package_root) ... ERROR
+test_unknown_producer_dependency_or_approval_field_refuses (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_unknown_producer_dependency_or_approval_field_refuses) ... ok
+
+======================================================================
+ERROR: test_complete_tree_uses_canonical_package_and_preserves_binary_bytes (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_complete_tree_uses_canonical_package_and_preserves_binary_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 62, in test_complete_tree_uses_canonical_package_and_preserves_binary_bytes
+    report = self.prepare()
+             ^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_native_population_stages_atomically_as_candidates_only (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_native_population_stages_atomically_as_candidates_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 77, in test_native_population_stages_atomically_as_candidates_only
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_old_stage_reader_refuses_native_population_version (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_old_stage_reader_refuses_native_population_version)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 170, in test_old_stage_reader_refuses_native_population_version
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_staging_rechecks_changed_missing_and_extra_files (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rechecks_changed_missing_and_extra_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 133, in test_staging_rechecks_changed_missing_and_extra_files
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_staging_rejects_forged_manifest_body_and_producer (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_forged_manifest_body_and_producer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 162, in test_staging_rejects_forged_manifest_body_and_producer
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_staging_rejects_symlinks_and_fifos_before_read (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_symlinks_and_fifos_before_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 149, in test_staging_rejects_symlinks_and_fifos_before_read
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+ERROR: test_staging_requires_explicit_package_root (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_requires_explicit_package_root)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 128, in test_staging_requires_explicit_package_root
+    self.prepare()
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 53, in prepare
+    return self.fixture._prepare(self.proposals if record is None else record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_harness_candidates.py", line 74, in _prepare
+    return prepare(PreparationRequest(self.repository, self.input, output or self.output, True))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 283, in prepare
+    record, raw = _input_record(request)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 171, in _input_record
+    _refuse("unsupported_proposal_contract")
+  File "/home/username/.le-codex-build/native-factory/tools/prepare_harness_candidates.py", line 62, in _refuse
+    raise PreparationError(f"{code}: {detail}" if detail else code)
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+======================================================================
+FAIL: test_corrupt_payload_digest_refuses_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_corrupt_payload_digest_refuses_before_output)
+----------------------------------------------------------------------
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 90, in test_corrupt_payload_digest_refuses_before_output
+    with self.assertRaisesRegex(PreparationError, "native_file_bytes_mismatch"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "native_file_bytes_mismatch" does not match "unsupported_proposal_contract"
+
+======================================================================
+FAIL: test_duplicate_package_under_new_identity_refuses_inflated_count (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_package_under_new_identity_refuses_inflated_count)
+----------------------------------------------------------------------
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 113, in test_duplicate_package_under_new_identity_refuses_inflated_count
+    with self.assertRaisesRegex(PreparationError, "duplicate_native_package"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "duplicate_native_package" does not match "unsupported_proposal_contract"
+
+======================================================================
+FAIL: test_executable_effect_cannot_be_omitted (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_executable_effect_cannot_be_omitted)
+----------------------------------------------------------------------
+tools.prepare_harness_candidates.PreparationError: unsupported_proposal_contract
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py", line 96, in test_executable_effect_cannot_be_omitted
+    with self.assertRaisesRegex(PreparationError, "package_executable_effect_undeclared"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "package_executable_effect_undeclared" does not match "unsupported_proposal_contract"
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.622s
+
+FAILED (failures=3, errors=7)

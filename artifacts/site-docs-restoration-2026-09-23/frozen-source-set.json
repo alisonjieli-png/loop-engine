@@ -1,0 +1,146 @@
+{
+  "record_type": "documentation_candidate_source_set/v1",
+  "base": "9d255944705505d2118efda21327a42f33cb5d72",
+  "files": [
+    {
+      "path": "docs/README.md",
+      "sha256": "c89ea9579fe87dee9c8f849733b9fdc587d1d064d1b73090ea64a294f5137a51"
+    },
+    {
+      "path": "docs/guides/README.md",
+      "sha256": "50ebff42d4e8e71d3ab2f9a3de459cc0dd842a4fad321768441622e33350aa6e"
+    },
+    {
+      "path": "docs/guides/service-getting-set-up.md",
+      "sha256": "da11c01b1f2b33642f7ffe5fa1386a39ea410994be129aa9155992269155c41b"
+    },
+    {
+      "path": "docs/guides/service-searching-and-retrieving.md",
+      "sha256": "c46171c433f0df29b6da8de6086d07ef52a88a80b9fddebe9ee07f43af5f3533"
+    },
+    {
+      "path": "docs/guides/service-serving-and-connections.md",
+      "sha256": "06ede1c1f54e0bba36f5b9d1aa2fac692fb3d4914ccb152c6de434e9539928a9"
+    },
+    {
+      "path": "docs/guides/service-troubleshooting.md",
+      "sha256": "72d87db2b88502bcfa46332395a0e5e33ee0fcb40a61ef5641f7c51c0e54cce1"
+    },
+    {
+      "path": "docs/guides/service-usage-and-what-you-pay-for.md",
+      "sha256": "18dc7fc3ea511f42f4b49a0f5eeab5418cfca983523af27db5061fd3290787b1"
+    },
+    {
+      "path": "docs/guides/service-what-baltor-is.md",
+      "sha256": "2b6665c0aa23bb26070719c8a7e69a183efe55b632a42a31d626aba80fb44f15"
+    },
+    {
+      "path": "docs/guides/service-your-account.md",
+      "sha256": "b9fa3e47f527d9a66dfbd8d968f0f9d71630d58f20bd402db9c42c20f4d380e2"
+    },
+    {
+      "path": "docs/guides/website-documentation-view.md",
+      "sha256": "b69f3245681c99955fbb12962cfae171a04d97795e49682674a9adb7b5c69301"
+    },
+    {
+      "path": "docs/standards/LANGUAGES-AND-COMPONENTS.md",
+      "sha256": "d7ad3a797c2a0b52d4483416ca48d1079854c87632ff0e698b22f4ad217a9738"
+    },
+    {
+      "path": "docs/verification/HANDOFF-SITE-DOCS-2026-09-23.md",
+      "sha256": "00e87db5737650644b4ab5151ebf656a620e4960f1ed57bb29da2d723a81759a"
+    },
+    {
+      "path": "docs/verification/SITE-DOCUMENTATION-RESTORED-2026-09-23.md",
+      "sha256": "7b2323c026244f5519feddef7e94423a03a0666bb1f0a1d8496a10509e3f94a0"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/documentation_pages.json",
+      "sha256": "aac0ed280a6632575a8d10dfaf9b07e4dff1bf7612ee0081c36d120e94d01bdb"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/README.md",
+      "sha256": "fa0f5553825e4b487742abcda4731e427354de3ac45e253daeeafc3ba04f4020"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/searching-and-retrieving.html",
+      "sha256": "eaef40883a95743b0639f1d706d4acdcc12d7c2eaaa797d52d0b39329f3096d1"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/serving-and-connections.html",
+      "sha256": "aaf654fc1a525d2226993480030fada2e56f3b9a9b996950e8b09e5f9fde7334"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/troubleshooting.html",
+      "sha256": "713c94ea6920aaeccc40396779300462f1bf4e7ac3ce3dab176c34ae7c0f3d26"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/usage-and-what-you-pay-for.html",
+      "sha256": "91d87cb7d51ee4e7498f391346035cac9011803c04634c4c0ba19522868d7ca6"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/what-baltor-is.html",
+      "sha256": "aa0d31453e9114c430d9ef1e101f64a2e1d1794c7ba1c65b1a7fa110d6e341d1"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/docs/your-account.html",
+      "sha256": "e27f87b80e56005d30ba33dc5301f03c23f5f6d65e8f13cea623473feace82fa"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/documentation-index.json",
+      "sha256": "c904bfe3b31ce470baa44425facc0f1fbb77388692b6e9bc31368dfcd1b20eae"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/documentation.css",
+      "sha256": "cafb83b98c9258e2c17fb172a3b64b40cacee714e53c96ace59eb167347397fc"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/documentation.js",
+      "sha256": "67915d36667bf1b0ea6765dc95d75b3c530de86e1f2892d4a116fe87640e0a37"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/index.html",
+      "sha256": "70a7d7079a4f688aee822dc7251945d9de88bbc3b415f008ac4f71afd5ecf358"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_assets/service.js",
+      "sha256": "bc4dd80130fa2d82bb1c066b0a4d3f4b36aa06d045a14bcfc5be0d46559399d3"
+    },
+    {
+      "path": "src/loop_engine/core/service_runtime/web_pages.py",
+      "sha256": "e7b488f42418374d1e45fbffe6ac36be7fc33988a3a5e8445491227b20a0a05a"
+    },
+    {
+      "path": "tools/build_documentation_index.py",
+      "sha256": "2be985bb3b8b7844d67b0dac50378c67171d396ba478913f2569b154da643520"
+    },
+    {
+      "path": "tools/check_documentation_browser.mjs",
+      "sha256": "7e979ffe9447ceece59d36a06e5f67cca61893f6e852fe0ab771e6c00bb64bfa"
+    },
+    {
+      "path": "tools/check_documentation_index.py",
+      "sha256": "9ee171903821e6d4086e07f5323abf6e8243e893033eaece99877c5ed2ecb4d8"
+    },
+    {
+      "path": "tools/check_hosted_website.mjs",
+      "sha256": "f873d543889f8834aa8799d2e3b04f89357a0ef14e57bfe11d554931ecbfc0b8"
+    },
+    {
+      "path": "tools/check_service_documentation.py",
+      "sha256": "af5f5f5fb045138cd446c26b5e8e5e8091cad8714487e0d161463bf83f9eb69a"
+    },
+    {
+      "path": "tools/check_service_workspace.mjs",
+      "sha256": "74611013fc2443c64410723991e1a76acce3246d71c841f6a572dda40ada3b92"
+    },
+    {
+      "path": "tools/test_documentation_index.py",
+      "sha256": "ea9c4259904019ea7485a1cdce246f01e601a0b1a8029ea08834d934e4669fb5"
+    },
+    {
+      "path": "tools/test_service_documentation.py",
+      "sha256": "62315e8cbae88564415192fd532ab9895340ed09109ff386b42c8ba1a1db89f1"
+    }
+  ]
+}

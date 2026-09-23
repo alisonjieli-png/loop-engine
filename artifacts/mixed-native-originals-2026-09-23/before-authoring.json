@@ -1,0 +1,20 @@
+{
+  "candidate_methods": 12,
+  "acceptance_cases": 51,
+  "missing_implementations": [
+    "schedule_dag_earliest_times",
+    "cover_pairwise_configuration_values",
+    "compare_primitive_object_contracts",
+    "pack_first_fit_decreasing_batches",
+    "audit_functional_dependency_rows",
+    "find_strongly_connected_components",
+    "simulate_exact_token_bucket",
+    "audit_boolean_rule_coverage",
+    "decode_u16_length_prefixed_frames",
+    "evaluate_bounded_rational_expression",
+    "resolve_literal_named_template",
+    "project_json_pointer_values"
+  ],
+  "passed": false,
+  "stage": "Acceptance cases written before candidate implementations"
+}

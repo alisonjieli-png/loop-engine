@@ -1,0 +1,147 @@
+test_bad_manifest_keeps_history_diagnostic_and_exact_response (test_artifact_task_trial.ArtifactTrialChecks) ... {"elapsed_seconds":0.0,"known_model_calls":0,"status":"validating_composition_eligibility","task_id":"fixture"}
+{"elapsed_seconds":0.408,"known_model_calls":0,"status":"composing_real_task_deliverables","task_id":"fixture"}
+{"elapsed_seconds":0.434,"known_model_calls":1,"status":"failed","task_id":"fixture"}
+ok
+test_dataset_cannot_be_silently_omitted_by_attachment_only_composition (test_artifact_task_trial.ArtifactTrialChecks) ... {"elapsed_seconds":0.0,"known_model_calls":0,"status":"validating_composition_eligibility","task_id":"fixture"}
+{"elapsed_seconds":0.007,"known_model_calls":0,"status":"ineligible_configuration","task_id":"fixture"}
+ok
+test_executed_candidate_is_not_independently_accepted (test_artifact_task_trial.ArtifactTrialChecks) ... {"elapsed_seconds":0.0,"known_model_calls":0,"status":"validating_composition_eligibility","task_id":"fixture"}
+{"elapsed_seconds":0.009,"known_model_calls":0,"status":"composing_real_task_deliverables","task_id":"fixture"}
+{"elapsed_seconds":0.03,"known_model_calls":1,"status":"candidate_composed","task_id":"fixture"}
+{"elapsed_seconds":0.034,"known_model_calls":1,"status":"executing_in_declared_sandbox","task_id":"fixture"}
+{"elapsed_seconds":0.04,"known_model_calls":1,"status":"candidate_execution_recorded","task_id":"fixture"}
+{"elapsed_seconds":0.044,"known_model_calls":1,"status":"finished_candidate_not_independently_accepted","task_id":"fixture"}
+ok
+test_feedback_requires_exact_unchanged_evidence (test_artifact_task_trial.ArtifactTrialChecks) ... ok
+test_outer_project_contract_does_not_replace_original_deliverable_contract (test_artifact_task_trial.ArtifactTrialChecks) ... ok
+test_unimplemented_configuration_is_recorded_without_a_model_call (test_artifact_task_trial.ArtifactTrialChecks) ... {"elapsed_seconds":0.0,"known_model_calls":0,"status":"validating_composition_eligibility","task_id":"fixture"}
+{"elapsed_seconds":0.004,"known_model_calls":0,"status":"ineligible_configuration","task_id":"fixture"}
+ok
+test_access_probe_uses_the_gateway_and_keeps_its_own_history (test_campaign_activation.CampaignActivationChecks) ... ok
+test_grid_binds_a_typed_route_without_a_provider_specific_branch (test_campaign_activation.CampaignActivationChecks) ... ok
+test_probe_policy_is_explicit_and_does_not_probe_every_cell_by_default (test_campaign_activation.CampaignActivationChecks) ... ok
+test_time_gate_is_explicit_and_never_uses_a_naive_clock (test_campaign_activation.CampaignActivationChecks) ... ok
+test_crash_marker_stays_pending_without_dispatch (test_campaign_safety.CampaignSafetyChecks) ... {"configuration_index":0,"effects_reconciled":false,"observed_at":"2026-09-23T17:36:42.946445+00:00","occurrence":"0-attempt-0","replay_authorized":false,"status":"interrupted_requires_reconciliation","task_id":"T-1"}
+ok
+test_future_activation_cannot_probe_or_dispatch (test_campaign_safety.CampaignSafetyChecks) ... ok
+test_quota_wait_does_not_fail_the_task_or_drain_the_queue (test_campaign_safety.CampaignSafetyChecks) ... ok
+test_real_trial_boundary_keeps_authentication_cause (test_campaign_safety.CampaignSafetyChecks) ... {"diagnostic_code":null,"elapsed_seconds":0.004,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-1"}
+{"diagnostic_code":null,"elapsed_seconds":0.079,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-1"}
+{"diagnostic_code":null,"elapsed_seconds":0.113,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-1"}
+{"diagnostic_code":null,"elapsed_seconds":0.138,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":2,"step":"orient","task":"T-1"}
+{"diagnostic_code":"stage_evidence_degraded","elapsed_seconds":0.142,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-1"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.146,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-1"}
+ok
+test_verified_access_is_reused_across_successive_trials_only_in_this_activation (test_campaign_safety.CampaignSafetyChecks) ... ok
+test_all_declared_bytes_and_hidden_directory_members_are_bound (test_campaign_sources.CampaignSourceChecks) ... ok
+test_cache_is_scoped_and_changes_are_not_reused (test_campaign_sources.CampaignSourceChecks) ... ok
+test_declared_root_can_resolve_only_within_database (test_campaign_sources.CampaignSourceChecks) ... ok
+test_foreign_version_and_unknown_fields_refuse (test_campaign_sources.CampaignSourceChecks) ... ok
+test_membership_changes_and_empty_directories_invalidate_freeze (test_campaign_sources.CampaignSourceChecks) ... ok
+test_missing_declared_source_is_frozen_as_a_gap_not_an_empty_task (test_campaign_sources.CampaignSourceChecks) ... ok
+test_mutating_dataset_attachment_or_brief_invalidates_freeze (test_campaign_sources.CampaignSourceChecks) ... ok
+test_nested_symbolic_links_and_special_files_refuse (test_campaign_sources.CampaignSourceChecks) ... ok
+test_task_metadata_does_not_hide_changed_inputs (test_campaign_sources.CampaignSourceChecks) ... ok
+test_unrelated_source_is_not_implicitly_loaded (test_campaign_sources.CampaignSourceChecks) ... ok
+test_installed_and_qualification_levels_name_existing_code (test_catalog_implementations.CatalogImplementationChecks) ... ok
+test_layering_level_maturity_agrees_with_the_availability_projection (test_catalog_implementations.CatalogImplementationChecks)
+A layering level is installed only if the address it implies ... ok
+test_planned_levels_that_lack_code_stay_visible_as_planned (test_catalog_implementations.CatalogImplementationChecks) ... ok
+test_the_layering_dimensions_resolve_to_their_records (test_catalog_implementations.CatalogImplementationChecks) ... ok
+test_agent_entry_points_link_the_same_dimension_requirement (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_complete_behavioral_explanation_is_preserved_verbatim (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_design_is_explicitly_not_runtime_permission_or_qualification (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_discovery_addendum_is_linked_without_replacing_the_frozen_review (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_every_dimension_requires_initial_choice_and_ordered_fallback (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_inventory_requires_ongoing_discovery_without_runtime_permission (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_packaged_architecture_matches_authoritative_inventory (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_packaged_contract_files_preserve_exact_authoritative_bytes (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_proposals_remain_distinct_and_inherit_all_choice_requirements (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_required_baseline_is_preserved_without_an_exact_count_ceiling (test_configuration_dimensions.ConfigurationDimensionDocumentationChecks) ... ok
+test_changed_input_changes_the_correct_repair_without_changing_the_menu (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_duplicate_case_selection_is_refused_before_tool_execution (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_matrix_is_explicit_and_contains_every_named_harness_per_variant (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_real_tool_execution_improves_all_four_failed_requests (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_reference_scope_and_content_identity_survive_serialized_handoff (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_separate_consumer_process_loads_exact_content_without_provider_credentials (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_valid_but_wrong_values_do_not_pass_independent_evaluation (test_configuration_resources.ConfigurationResourceChecks) ... ok
+test_configuration_refuses_unregistered_axes (test_configuration_study.ConfigurationStudyChecks) ... ok
+test_explicit_normalization_preserves_value_and_single_physical_call (test_configuration_study.ConfigurationStudyChecks) ... ok
+test_normalization_does_not_invent_missing_fields (test_configuration_study.ConfigurationStudyChecks) ... ok
+test_strict_refuses_fence_without_fabricating_an_answer (test_configuration_study.ConfigurationStudyChecks) ... ok
+test_an_intact_earlier_checkpoint_cannot_claim_a_later_call (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_checkpoint_verification_reads_a_store_once_and_never_uses_latest (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_full_outcome_or_exact_public_projection_only (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_report_explains_completion_and_missing_accounting (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_trillion_level_range_is_projected_without_enumeration (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_uninstalled_or_unsupported_harness_is_not_a_malformed_configuration (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_usage_missing_partial_invalid_and_zero_remain_distinct (test_evidence_integrity.EvidenceIntegrityChecks) ... ok
+test_all_implementations_produce_verified_outputs_and_history (test_lab.LabTests) ... ok
+test_cancellation_closes_a_real_worker (test_lab.LabTests) ... ok
+test_catalog_folders_and_planned_refusals (test_lab.LabTests) ... ok
+test_contracts_refuse_unknown_boolean_and_oversized_values (test_lab.LabTests) ... ok
+test_durable_activation_and_history_survive_database_reopen (test_lab.LabTests) ... ok
+test_failed_attempts_remain_in_the_denominator (test_lab.LabTests) ... ok
+test_independent_oracle_rejects_wrong_value_and_wrong_request (test_lab.LabTests) ... ok
+test_invalid_candidate_never_replaces_verified_portfolio (test_lab.LabTests) ... ok
+test_no_product_imports_of_experiments_or_cross_variant_imports (test_lab.LabTests) ... ok
+test_packet_digest_and_exact_schema_are_enforced (test_lab.LabTests) ... ok
+test_real_process_payload_delivery_and_session_state_separation (test_lab.LabTests) ... ok
+test_serving_best_random_and_as_of_never_reexecutes_a_producer (test_lab.LabTests) ... ok
+test_study_controls_and_resource_drift (test_lab.LabTests) ... ok
+test_symlink_and_traversal_refused (test_lab.LabTests) ... ok
+test_governed_adapter_does_not_hide_a_second_request_behind_auto_streaming (test_provider_accounting_integrity.AccountingIntegrityChecks) ... ok
+test_hidden_request_multiplicity_is_charged_and_refused (test_provider_accounting_integrity.AccountingIntegrityChecks) ... ok
+test_provider_zero_partial_missing_and_invalid_usage_are_distinct (test_provider_accounting_integrity.AccountingIntegrityChecks) ... ok
+test_archive_or_member_drift_refused (test_references.ReferenceTests) ... ok
+test_committed_source_is_mirrored_without_dirty_or_runtime_data (test_references.ReferenceTests) ... ok
+test_foreign_source_cannot_be_prepared_inside_product_tree (test_references.ReferenceTests) ... ok
+test_symlink_member_refused_before_extraction (test_references.ReferenceTests) ... ok
+test_traversal_refused_before_output_directory_exists (test_references.ReferenceTests) ... ok
+test_coverage_distinguishes_proposals_controls_and_full_trials (test_run_path_coverage.RunPathCoverageChecks) ... ok
+test_every_authoritative_baseline_has_one_coverage_row (test_run_path_coverage.RunPathCoverageChecks) ... ok
+test_every_configured_harness_is_visible_without_claiming_qualification (test_run_path_coverage.RunPathCoverageChecks) ... ok
+test_malformed_test_result_is_not_counted_as_a_boolean_pass (test_systematic_runtime.SystematicRuntimeChecks) ... ok
+test_multiple_brokered_calls_are_not_reported_as_one_outer_physical_call (test_systematic_runtime.SystematicRuntimeChecks) ... ok
+test_an_interrupted_trial_cannot_authorize_its_own_replay (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_checkpoints_do_not_delete_referenced_run_history (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_declared_work_limits_are_independent_grid_axes (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_diagonal_schedule_is_exhaustive_per_task (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_engine_identity_is_frozen_and_checked (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_family_order_preserves_every_task_without_a_sample_cap (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_grid_values_are_applied_fields_not_prose_claims (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_hosted_and_loopback_urls_use_the_same_endpoint_contract (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_identifiers_cannot_escape_trial_directories (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_incomplete_task_sources_enter_best_available_resolution_intake (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_invalid_work_limit_levels_refuse (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_only_terminal_provider_results_determine_the_failure (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_outage_decisions_are_bounded_and_never_wait_on_configuration_faults (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_readiness_probe_defaults_the_port_by_scheme_and_classifies_refusals (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_run_trial_reports_an_existing_cell_instead_of_crashing (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_setting_refusal_cannot_invoke_provider (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_setting_wrapper_retains_gateway_authority_and_history (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_supplied_attachment_files_reach_the_run_beside_inline_text (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_the_public_population_index_reproduces_its_digest_without_host_paths (test_task_database_campaign.TaskDatabaseCampaignChecks) ... ok
+test_visited_cells_are_placed_in_the_declared_space_and_counted_by_level (test_task_database_trial_offline.CampaignGridChecks)
+A cell is placed at its index in the declared space with a ... ok
+test_one_trial_runs_end_to_end_through_a_fixture_gateway (test_task_database_trial_offline.OfflineTrialChecks) ... {"diagnostic_code":null,"elapsed_seconds":0.001,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.027,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.056,"event_type":"model.step.output_invalid","failure_code":"invalid_json","model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.08,"event_type":"model.step.started","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.096,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":null,"elapsed_seconds":0.111,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-OFFLINE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.115,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":1,"step":null,"task":"T-OFFLINE"}
+ok
+test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count (test_task_database_trial_offline.RefusalPageTrialChecks)
+A login page or proxy notice answering a trial's model call is a ... {"diagnostic_code":null,"elapsed_seconds":0.001,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.028,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.055,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.079,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":2,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":"stage_evidence_degraded","elapsed_seconds":0.082,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.086,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+ok
+
+----------------------------------------------------------------------
+Ran 106 tests in 11.975s
+
+OK

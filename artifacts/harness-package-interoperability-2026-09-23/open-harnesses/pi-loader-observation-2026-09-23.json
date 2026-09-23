@@ -1,0 +1,112 @@
+{
+  "kind": "native_resource_loader_observation",
+  "at": "2026-09-23T13:48:48.444Z",
+  "package": "@mariozechner/pi-coding-agent",
+  "version": "0.73.1",
+  "moduleSha256": "9a64314925734e69716e1da9d69dea48bec178778708cf4cfa6d7e0c4f3daf65",
+  "scope": "Direct installed module invocation; not a full CLI session or a model call.",
+  "modelCalls": 0,
+  "nativeConfigurationChanges": 0,
+  "cases": [
+    {
+      "name": "arbitrary_context_and_state_not_auto_loaded",
+      "passed": true,
+      "sources": []
+    },
+    {
+      "name": "agents_wins_over_claude_same_directory",
+      "passed": true,
+      "sources": [
+        {
+          "path": "<temporary>/parent/work/AGENTS.md",
+          "content": "TASK_MARKER first action: inspect input.json"
+        }
+      ]
+    },
+    {
+      "name": "installed_0731_does_not_load_override_name",
+      "passed": true,
+      "sources": [
+        {
+          "path": "<temporary>/parent/work/AGENTS.md",
+          "content": "TASK_MARKER first action: inspect input.json"
+        }
+      ]
+    },
+    {
+      "name": "git_root_does_not_block_parent_context",
+      "passed": true,
+      "sources": [
+        {
+          "path": "<temporary>/parent/AGENTS.md",
+          "content": "ANCESTOR_MARKER"
+        },
+        {
+          "path": "<temporary>/parent/work/AGENTS.md",
+          "content": "TASK_MARKER first action: inspect input.json"
+        }
+      ]
+    },
+    {
+      "name": "global_then_parent_then_work_order",
+      "passed": true,
+      "sources": [
+        {
+          "path": "<temporary>/agent/AGENTS.md",
+          "content": "GLOBAL_MARKER"
+        },
+        {
+          "path": "<temporary>/parent/AGENTS.md",
+          "content": "ANCESTOR_MARKER"
+        },
+        {
+          "path": "<temporary>/parent/work/AGENTS.md",
+          "content": "TASK_MARKER first action: inspect input.json"
+        }
+      ]
+    },
+    {
+      "name": "missing_agents_activates_claude_fallback",
+      "passed": true,
+      "sources": [
+        {
+          "path": "<temporary>/agent/AGENTS.md",
+          "content": "GLOBAL_MARKER"
+        },
+        {
+          "path": "<temporary>/parent/AGENTS.md",
+          "content": "ANCESTOR_MARKER"
+        },
+        {
+          "path": "<temporary>/parent/work/CLAUDE.md",
+          "content": "CLAUDE_MARKER"
+        }
+      ]
+    },
+    {
+      "name": "same_name_first_explicit_skill_wins_with_diagnostic",
+      "passed": true,
+      "skills": [
+        {
+          "name": "reconcile",
+          "description": "FIRST_SKILL_MARKER",
+          "filePath": "<temporary>/skills-a/reconcile/SKILL.md"
+        }
+      ],
+      "diagnostics": [
+        {
+          "type": "collision",
+          "message": "name \"reconcile\" collision",
+          "path": "<temporary>/skills-b/reconcile/SKILL.md",
+          "collision": {
+            "resourceType": "skill",
+            "name": "reconcile",
+            "winnerPath": "<temporary>/skills-a/reconcile/SKILL.md",
+            "loserPath": "<temporary>/skills-b/reconcile/SKILL.md"
+          }
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

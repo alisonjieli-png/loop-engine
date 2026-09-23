@@ -1,0 +1,19 @@
+{
+  "model_calls": 0,
+  "fixture_only": true,
+  "known_wrong_false_approvals_retained": [
+    "control_38d4",
+    "control_9bb0",
+    "control_c902",
+    "control_e137"
+  ],
+  "persisted_installation_status": "failed_calibration",
+  "candidate_decisions_from_a": 1,
+  "original_consistent_exclusion": {
+    "accepted": false,
+    "code": "excluded_calibration_reviewer_decided"
+  },
+  "exclusion_lists_removed_only": {
+    "accepted": true
+  }
+}

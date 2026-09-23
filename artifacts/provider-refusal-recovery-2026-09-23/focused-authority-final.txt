@@ -1,0 +1,16 @@
+F...
+======================================================================
+FAIL: test_failed_unknown_call_is_still_checked_against_requested_model_authority (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py", line 71, in test_failed_unknown_call_is_still_checked_against_requested_model_authority
+    self.assertEqual(accepted.error_code, 'invalid_response_body')
+AssertionError: 'adapter_reported_failure' != 'invalid_response_body'
+- adapter_reported_failure
++ invalid_response_body
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.017s
+
+FAILED (failures=1)

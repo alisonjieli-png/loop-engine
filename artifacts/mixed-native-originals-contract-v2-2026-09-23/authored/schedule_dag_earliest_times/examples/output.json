@@ -1,0 +1,20 @@
+{
+  "duration": 7,
+  "schedule": [
+    {
+      "id": "a",
+      "start": 0,
+      "finish": 3
+    },
+    {
+      "id": "b",
+      "start": 0,
+      "finish": 5
+    },
+    {
+      "id": "c",
+      "start": 5,
+      "finish": 7
+    }
+  ]
+}

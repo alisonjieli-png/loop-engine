@@ -1,0 +1,19 @@
+{
+  "record_type": "native_supply_sandbox_control/v1",
+  "exit_code": 0,
+  "observed": {
+    "home_visible": false,
+    "root_home_visible": false,
+    "environment_names": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PWD"
+    ],
+    "network_refused": true,
+    "package_write_refused": true
+  },
+  "passed": true,
+  "secrets_read": false,
+  "limits": "This confirms these tested paths and namespace properties, not a general sandbox escape audit."
+}

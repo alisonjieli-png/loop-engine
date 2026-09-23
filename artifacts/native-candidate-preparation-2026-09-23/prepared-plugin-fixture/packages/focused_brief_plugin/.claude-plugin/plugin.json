@@ -1,0 +1,7 @@
+{
+  "name": "baltor-focused-brief-candidate",
+  "version": "0.1.0",
+  "description": "Candidate-only focused-step briefing hook, contract checker, command and reviewer agent.",
+  "author": {"name": "Baltor.AI"},
+  "license": "MIT"
+}

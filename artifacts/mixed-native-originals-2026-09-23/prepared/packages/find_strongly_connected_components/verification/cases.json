@@ -1,0 +1,95 @@
+[
+  {
+    "input": {
+      "vertices": [
+        "a",
+        "b",
+        "c"
+      ],
+      "edges": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "b",
+          "a"
+        ],
+        [
+          "b",
+          "c"
+        ]
+      ]
+    },
+    "expected": {
+      "components": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "c"
+        ]
+      ],
+      "cyclic_components": [
+        [
+          "a",
+          "b"
+        ]
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "vertices": [
+        "x"
+      ],
+      "edges": [
+        [
+          "x",
+          "x"
+        ]
+      ]
+    },
+    "expected": {
+      "components": [
+        [
+          "x"
+        ]
+      ],
+      "cyclic_components": [
+        [
+          "x"
+        ]
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "vertices": [
+        "a"
+      ],
+      "edges": [
+        [
+          "a",
+          "b"
+        ]
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "vertices": [
+        "a",
+        "a"
+      ],
+      "edges": []
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

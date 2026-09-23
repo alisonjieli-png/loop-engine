@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "template": {
+      "type": "string",
+      "maxLength": 8192
+    },
+    "variables": {
+      "type": "object",
+      "maxProperties": 30,
+      "propertyNames": {
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 2048
+      }
+    }
+  },
+  "required": [
+    "template",
+    "variables"
+  ],
+  "additionalProperties": false
+}

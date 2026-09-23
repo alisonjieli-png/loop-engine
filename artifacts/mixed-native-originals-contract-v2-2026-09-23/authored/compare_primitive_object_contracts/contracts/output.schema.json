@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "compatible": {
+      "type": "boolean"
+    },
+    "breaking_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "removed_field",
+              "changed_type",
+              "new_required_field",
+              "extra_fields_rejected",
+              "extra_field_constrained"
+            ]
+          },
+          "field": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "field"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 200
+    }
+  },
+  "required": [
+    "compatible",
+    "breaking_changes"
+  ],
+  "additionalProperties": false
+}

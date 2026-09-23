@@ -1,0 +1,93 @@
+{
+  "source_sha256": "a7ddd95479920d368e3093f8648bb2f92d9a44698265beb5fd5d8eb3b680e39d",
+  "mutations": [
+    {
+      "mutation": "requested_model_fills_missing_buffered_identity",
+      "detected": true,
+      "failed_checks": [
+        "openai_buffer_missing_reported_identity_is_not_the_request",
+        "ollama_buffer_missing_reported_identity_is_not_the_request"
+      ]
+    },
+    {
+      "mutation": "request_model_fills_missing_openai_stream_identity",
+      "detected": true,
+      "failed_checks": [
+        "openai_stream_missing_reported_identity_is_not_the_request",
+        "openai_stream_wrong_reported_identity_is_preserved_and_refused"
+      ]
+    },
+    {
+      "mutation": "later_stream_identity_erases_conflict",
+      "detected": true,
+      "failed_checks": [
+        "openai_stream_changed_identity_cannot_be_overwritten",
+        "ollama_stream_changed_identity_cannot_be_overwritten"
+      ]
+    },
+    {
+      "mutation": "nonstring_provider_identity_is_coerced",
+      "detected": true,
+      "failed_checks": [
+        "openai_buffer_integer_reported_identity_is_not_the_request",
+        "openai_buffer_object_reported_identity_is_not_the_request",
+        "openai_stream_integer_reported_identity_is_not_the_request",
+        "openai_stream_object_reported_identity_is_not_the_request",
+        "ollama_buffer_integer_reported_identity_is_not_the_request",
+        "ollama_buffer_object_reported_identity_is_not_the_request",
+        "ollama_stream_integer_reported_identity_is_not_the_request",
+        "ollama_stream_object_reported_identity_is_not_the_request"
+      ]
+    },
+    {
+      "mutation": "identity_refusal_does_not_refuse_adapter_answer",
+      "detected": true,
+      "failed_checks": [
+        "openai_buffer_missing_reported_identity_is_not_the_request",
+        "openai_buffer_null_reported_identity_is_not_the_request",
+        "openai_buffer_empty_reported_identity_is_not_the_request",
+        "openai_buffer_integer_reported_identity_is_not_the_request",
+        "openai_buffer_object_reported_identity_is_not_the_request",
+        "openai_buffer_wrong_reported_identity_is_preserved_and_refused",
+        "openai_stream_missing_reported_identity_is_not_the_request",
+        "openai_stream_null_reported_identity_is_not_the_request",
+        "openai_stream_empty_reported_identity_is_not_the_request",
+        "openai_stream_integer_reported_identity_is_not_the_request",
+        "openai_stream_object_reported_identity_is_not_the_request",
+        "openai_stream_wrong_reported_identity_is_preserved_and_refused",
+        "openai_stream_changed_identity_cannot_be_overwritten",
+        "openai_stream_malformed_identity_cannot_be_overwritten",
+        "ollama_buffer_missing_reported_identity_is_not_the_request",
+        "ollama_buffer_null_reported_identity_is_not_the_request",
+        "ollama_buffer_empty_reported_identity_is_not_the_request",
+        "ollama_buffer_integer_reported_identity_is_not_the_request",
+        "ollama_buffer_object_reported_identity_is_not_the_request",
+        "ollama_buffer_wrong_reported_identity_is_preserved_and_refused",
+        "ollama_stream_missing_reported_identity_is_not_the_request",
+        "ollama_stream_null_reported_identity_is_not_the_request",
+        "ollama_stream_empty_reported_identity_is_not_the_request",
+        "ollama_stream_integer_reported_identity_is_not_the_request",
+        "ollama_stream_object_reported_identity_is_not_the_request",
+        "ollama_stream_wrong_reported_identity_is_preserved_and_refused",
+        "ollama_stream_changed_identity_cannot_be_overwritten",
+        "ollama_stream_malformed_identity_cannot_be_overwritten"
+      ]
+    },
+    {
+      "mutation": "missing_stream_usage_fabricates_zero",
+      "detected": true,
+      "failed_checks": [
+        "ollama_stream_absent_usage_stays_unknown"
+      ]
+    },
+    {
+      "mutation": "preflight_refusal_invents_physical_request",
+      "detected": true,
+      "failed_checks": [
+        "custom_endpoint_capacity_and_retry_refusals_have_no_answering_model_or_request"
+      ]
+    }
+  ],
+  "all_detected": true,
+  "provider_calls": 0
+}

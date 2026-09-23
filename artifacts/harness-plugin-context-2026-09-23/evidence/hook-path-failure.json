@@ -1,0 +1,11 @@
+{
+  "record_type": "independent_counterexample_replay/v1",
+  "at": "2026-09-23T13:24:43.884263+00:00",
+  "finding_by": "multifile_wave2_independent_qa",
+  "source_manifest_sha256": "7b9d52d01e0da5ac219d528850d86ca4024a6c35058e16790c0c49a789471321",
+  "wrong_case": "Host PATH starts with a fake python3 executable",
+  "observed_exit_code": 0,
+  "stdout": "path-hijacked\n",
+  "stderr": "",
+  "defect_reproduced": true
+}

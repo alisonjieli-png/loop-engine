@@ -1,0 +1,27 @@
+<p>Baltor gives your coding tools and agents material for the step they are working on: instructions, skills, tools and reusable code. Your client searches the hosted library, chooses an item and downloads its exact bytes. You keep your own harness and model access.</p>
+<h2 id="the-goal-and-the-current-service">The goal and the current service</h2>
+<p>The goal is to make harnesses and multi-agent systems more efficient at solving unfamiliar tasks within the user's budget and permissions. That includes giving each step suitable context, reusing working code and choosing appropriate models and methods. A reusable solution is one possible result of that work.</p>
+<p>The local engine's default design gives each focused step a fresh harness with the material that step needs. The hosted library is usable through your existing client today. Connecting to the library does not by itself install the engine, start separate harness processes or finish a task for you.</p>
+<h2 id="where-the-work-happens">Where the work happens</h2>
+<pre><code class="language-text">Your task
+├── Hosted Baltor library
+│   ├── Searches the material your account may see
+│   ├── Returns small references before bodies
+│   └── Delivers selected bytes and records applicable download usage
+└── Your environment
+    ├── Runs your harness and any local engine
+    ├── Holds your provider settings and model credentials
+    └── Loads material, performs work and checks the result</code></pre>
+<p>The library receives what your client sends in a request, including search text, selected item identities and the service credential. A search can contain project information if you put it there. The library connection does not upload your repository or forward your model credentials automatically.</p>
+<h2 id="files-and-packages">Files and packages</h2>
+<p>An item can be a text file or a package of files. The <code>catalogue_package/v1</code> format supports native instructions such as <code>AGENTS.md</code> and <code>CLAUDE.md</code>, skills with supporting scripts and references, tools, contracts, plugin declarations and configuration. Check the catalogue to see which items are currently available to your account. Format support does not mean every possible package is already published.</p>
+<p>A harness must load material through its own supported mechanism. A plugin can need explicit activation; a tool can need dependencies and execution permission. Downloading a file establishes neither of those facts.</p>
+<h2 id="give-the-harness-its-current-assignment">Give the harness its current assignment</h2>
+<p>A reusable package does not automatically carry the current task, inputs, acceptance conditions or first action. Supply those when you start the focused step. A file named <code>node_context.md</code> or <code>agents.state</code> is not a universal startup standard. Use the client's supported instruction file, task input or explicit file-loading mechanism, and verify that the step received it. Keep temporary task state separate from reusable library material.</p>
+<h2 id="read-the-reference-before-downloading">Read the reference before downloading</h2>
+<table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody><tr><td><code>family</code></td><td>The material's family. Hosted harness material uses <code>harness</code>.</td></tr><tr><td><code>source_layer</code></td><td>The source holding its body. Harness material uses <code>harness_local</code>.</td></tr><tr><td><code>kind</code></td><td>The declared item kind, such as <code>skill</code>, <code>tool</code> or <code>instruction_file</code>.</td></tr><tr><td><code>license</code></td><td>The declared licence.</td></tr><tr><td><code>declared_effects</code></td><td>Operations the material says it needs. These are not execution permissions.</td></tr><tr><td><code>qualification_basis</code></td><td>The basis reported by the service. <code>host_attested</code> is the host's attestation, not a new review performed by the download.</td></tr></tbody></table>
+<p>The manifest includes a digest and says <code>verify_before_use</code>. Compare downloaded bytes with that digest, and check the result against your task. Retrieval, loading, use and acceptance are separate events.</p>
+<h2 id="models-and-payment">Models and payment</h2>
+<p>The hosted library does not supply a model subscription or run your task's model calls. Configure models in your harness or local engine. Those calls can go to a local endpoint, a server you operate or a hosted provider, within the permissions you set. Provider charges are separate from Baltor Pro.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul><li><a href="/get-started">Get started</a> for account access.</li><li><a href="/setup">Get set up</a> to connect your client.</li><li><a href="/docs/searching-and-retrieving">Searching and retrieving</a> for references and package downloads.</li><li><a href="/docs/usage-and-what-you-pay-for">Usage and what you pay for</a> for metering and retries.</li></ul>

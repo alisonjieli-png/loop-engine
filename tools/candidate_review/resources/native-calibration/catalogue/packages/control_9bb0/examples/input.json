@@ -1,0 +1,22 @@
+{
+  "tasks": [
+    {
+      "id": "a",
+      "duration": 3,
+      "depends_on": []
+    },
+    {
+      "id": "b",
+      "duration": 5,
+      "depends_on": []
+    },
+    {
+      "id": "c",
+      "duration": 2,
+      "depends_on": [
+        "a",
+        "b"
+      ]
+    }
+  ]
+}

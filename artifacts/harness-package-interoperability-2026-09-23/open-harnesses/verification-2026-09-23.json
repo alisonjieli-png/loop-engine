@@ -1,0 +1,44 @@
+{
+  "at": "2026-09-23T13:57:48.009233+00:00",
+  "source_files": 54,
+  "source_bytes": 988370,
+  "source_failures": [],
+  "local_links": [
+    {
+      "source": "docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "target": "NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "exists": true
+    },
+    {
+      "source": "docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "target": "HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md",
+      "exists": true
+    },
+    {
+      "source": "docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "target": "../../artifacts/focused-step-packet-2026-09-23/README.md",
+      "exists": true
+    },
+    {
+      "source": "docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "target": "../../artifacts/harness-package-interoperability-2026-09-23/open-harnesses/source-manifest.json",
+      "exists": true
+    },
+    {
+      "source": "docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "target": "../../artifacts/harness-package-interoperability-2026-09-23/open-harnesses/pi-loader-observation-2026-09-23.json",
+      "exists": true
+    },
+    {
+      "source": "artifacts/harness-package-interoperability-2026-09-23/open-harnesses/README.md",
+      "target": "../../../docs/research/HARNESS-PACKAGES-OPEN-HARNESSES-2026-09-23.md",
+      "exists": true
+    }
+  ],
+  "public_language_issues": [],
+  "pi_probe_passed": true,
+  "pi_probe_cases": 7,
+  "markdownlint_version": "0.23.2",
+  "markdownlint_result": "2 owned Markdown files; zero issues",
+  "limitations": "No full repository CI, installations, provider calls, native task completion or live changes."
+}

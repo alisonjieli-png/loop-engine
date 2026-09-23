@@ -1,0 +1,6 @@
+{
+  "base_revision": "9f7cd80495e454ea6dac0a7ffafcf74a49113bd6",
+  "worktree": "/home/username/.le-codex-build/ci-midflight-20260923T140815",
+  "candidate_tree": "a29db940815ef8d3c919aad70d503e7660b62419",
+  "note": "Exact uncommitted export; source/test and bounded before/after reports only."
+}

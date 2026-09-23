@@ -604,10 +604,10 @@
      "S-6.43"
     ],
     "id": "S-6.44",
-    "next_local_work": "Keep Baltor's own layout profiles as the default placement engine and add an optional Agent Harness engine behind the same edge, never running U-Haul and refusing a key through a placeholder; publish a Baltor preset registry for Agent Harness users with the connection written per tool (Claude Code ${NAME}, Cursor and VS Code ${env:NAME}, Codex bearer_token_env_var). Known-wrong checks: a connection file that contains a key value, a Codex connection that names the key by value, and an install that deletes an existing instruction file must each fail by name.",
+    "next_local_work": "Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep compilation separate from authorized placement; preserve opaque bytes and modes, validate final merged effects, refuse required semantic losses and stale existing-file state. Distinguish near-daily candidate profile checks from per-launch runtime binding and protocol negotiation. Qualify the connection preset per CLI/editor surface before publishing it. An affected known-bad profile must stop new starts; active attempts retain their frozen binding and supervisor policy.",
     "phase": 6,
     "status": "proposed",
-    "title": "Serve the open formats in each harness's own layout",
+    "title": "Harness Working Directory Compiler and native package compatibility",
     "waiting_on": []
    },
    {
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3f283dfa3bea16e2891c8b2ba4e327cbebbcbeba0c14ce737bc3618200c9406a"
+ "source_fingerprint": "sha256:35bbce8c0c18cc400cbe0f3e2391670978db04172041311428006ec603544eca"
 }

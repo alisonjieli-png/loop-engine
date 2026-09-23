@@ -1,0 +1,119 @@
+{
+  "name": "05-old-profile-version-invalid",
+  "schema": "profile",
+  "record": {
+    "record_type": "native_client_layout_profile/v1",
+    "component": "Harness Working Directory Compiler",
+    "draft_status": "research_only_not_runtime_admitted",
+    "profile_id": "fixture_layout",
+    "profile_revision": "fixture-1",
+    "client_binding": {
+      "client_kind": "synthetic_cli",
+      "interface": "cli",
+      "exact_version": "fixture-1.0.0",
+      "operating_system": "linux",
+      "architecture": "x86_64",
+      "executable_digest": "84f0830dd690c0bd024941bb7f77cd4efb2d2ffb727ba026270f5d7d13db5585",
+      "effective_configuration_digest": "4cb278ea5c1e32735981b16dd8f67ec68c521d4d8d37d38f0dd18bad5adbcaee"
+    },
+    "compiler_contract_versions": [
+      "native_material_install_preview/v2"
+    ],
+    "locations": [
+      {
+        "served_kind": "skill",
+        "file_role": "skill_definition",
+        "directory_segments": [
+          ".fixture",
+          "skills"
+        ],
+        "append_native_name": true,
+        "file_path_policy": "preserve_package_relative_path",
+        "file_name": null,
+        "rendering_operation": "copy_exact_bytes",
+        "scope": "attempt_project",
+        "activation": "on_demand",
+        "precedence_rule": {
+          "ref": "fixture:fixture precedence",
+          "digest": "48322da3f88cc61bad0c0c7c079e1d9febc8ad184cdf246107ca9f33bd02c43e"
+        },
+        "trust_requirement": "isolated_untrusted",
+        "native_probe_recipe": null
+      }
+    ],
+    "unplaced_roles": [
+      {
+        "role": "instruction_file",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "skill_script",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "skill_reference",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "skill_asset",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "subagent_definition",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "command",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "hook",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "protocol_server_configuration",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "plugin_manifest",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "executable_tool",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "configuration",
+        "reason": "fixture does not support this role"
+      },
+      {
+        "role": "other",
+        "reason": "fixture does not support this role"
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "path_construction",
+        "kind": "path_constructor",
+        "artifact": {
+          "ref": "fixture:fixture path construction",
+          "digest": "e72ec18447be1f5367e62d70021729c2dbb8f8b2eac0c4c095678618ffe96692"
+        },
+        "observed_client_binding": null,
+        "observed_at": "2026-09-23T18:00:00Z"
+      }
+    ],
+    "evidence_claim": {
+      "stage": "paths_constructed",
+      "evidence_ids": [
+        "path_construction"
+      ]
+    },
+    "independent_qualification": null,
+    "unsupported_role_policy": "refuse"
+  },
+  "context": {},
+  "expected_schema_valid": false,
+  "expected_semantic_errors": [],
+  "note": "Do not reinterpret v1 as v2."
+}

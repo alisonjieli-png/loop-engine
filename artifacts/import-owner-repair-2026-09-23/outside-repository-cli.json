@@ -1,0 +1,39 @@
+[
+  {
+    "command": "prepare_harness_candidates",
+    "exit_code": 0,
+    "usage_present": true,
+    "stderr": ""
+  },
+  {
+    "command": "stage_intelligence_candidates",
+    "exit_code": 0,
+    "usage_present": true,
+    "stderr": ""
+  },
+  {
+    "command": "generate_original_native_candidates",
+    "exit_code": 0,
+    "usage_present": true,
+    "stderr": ""
+  },
+  {
+    "command": "review_catalogue_candidates",
+    "exit_code": 0,
+    "usage_present": true,
+    "stderr": ""
+  },
+  {
+    "command": "ingest_outside_material",
+    "exit_code": 0,
+    "usage_present": true,
+    "stderr": ""
+  },
+  {
+    "command": "native review unavailable catalogue, no call authorization",
+    "exit_code": 2,
+    "stdout": "{\"record_type\": \"candidate_review_command_summary/v1\", \"refused\": true, \"code\": \"native_root_invalid\", \"message\": \"native_root_invalid: a native review root must be a plain existing directory\"}\n",
+    "stderr": "",
+    "ledger_created": false
+  }
+]

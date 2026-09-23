@@ -492,7 +492,7 @@ interactions:
     producer_kind: runtime_definition
     consumer_kind: policy
     operation: rank_catalogue_references
-    request_contract: service_retrieval_request/v1
+    request_contract: service_retrieval_request/v2
     result_contract: harness_intelligence_search_result/v1
     relationship: queried_by
     delivery: synchronous_exactly_once_per_query
@@ -513,7 +513,7 @@ interactions:
     producer_kind: runtime_definition
     consumer_kind: policy
     operation: search_hosted_catalogue_metadata
-    request_contract: service_retrieval_request/v1
+    request_contract: service_retrieval_request/v2
     result_contract: service_retrieval_result/v1
     relationship: starting
     delivery: synchronous_exactly_once_per_request
@@ -849,7 +849,7 @@ interactions:
     producer_kind: runtime_definition
     consumer_kind: provider
     operation: send_signup_email
-    request_contract: service_account_signup_request/v1
+    request_contract: service_account_signup_request/v2
     result_contract: service_account_signup_result/v1
     relationship: starting
     delivery: at_most_once_per_request_identity

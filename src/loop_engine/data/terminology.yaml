@@ -1,5 +1,56 @@
 schema_version: 1
 terms:
+  Harness Working Directory Package:
+    kind: technical_word
+    definition: >-
+      A versioned bundle selected for a task and rendered for a declared
+      harness interface. It contains exact files, dependency and effect
+      declarations, provenance and admission evidence. The existing
+      CataloguePackage represents its file tree; the owning catalogue record
+      carries the wider metadata. A package is passive material, not a runtime.
+    pattern: '\bHarness Working Directory Package(?:s)?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: engineering_terminology_from_owner_direction_2026_09_23
+  Harness Working Directory File:
+    kind: technical_word
+    definition: >-
+      One exact file within a Harness Working Directory Package.
+      CataloguePackageFile records its path, digest, size, media type and role.
+      Compatibility profiles separately describe placement and activation.
+      File presence never proves discovery, use, authority or task acceptance.
+    pattern: '\bHarness Working Directory Files?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: engineering_terminology_from_owner_direction_2026_09_23
+  Harness Working Directory Compiler:
+    kind: technical_word
+    definition: >-
+      The owner-named functional component that compiles selected intelligence,
+      an assignment and a qualified harness profile into an exact proposed
+      working-directory file set. Its selectable compiler engines consume
+      profile data; the component is not a Loop runtime or intelligence layer.
+      Compilation, authorized placement, native discovery and task acceptance
+      remain separate. The complete cross-harness component is a design target.
+    pattern: '\bHarness Working Directory Compiler\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner_2026_09_23
   Loop:
     kind: canonical
     definition: The sole concrete public operational runtime and executable graph vertex.

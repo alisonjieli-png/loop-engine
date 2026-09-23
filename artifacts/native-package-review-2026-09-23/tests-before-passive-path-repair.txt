@@ -1,0 +1,88 @@
+test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) ... 
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='opencode.json', role='other') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.pi/settings.json', role='other') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='references/opencode.json', role='skill_reference') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.claude/settings.json', role='configuration') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.opencode/plugins/helper.ts', role='skill_reference') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.pi/extensions/helper.ts', role='instruction_file') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='plugin.json', role='skill_reference') ... FAIL
+  test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='hooks/hooks.json', role='configuration') ... FAIL
+test_passive_json_is_limited_to_the_declared_resource_locations (tools.test_candidate_review_native.NativePrecheckTest.test_passive_json_is_limited_to_the_declared_resource_locations) ... 
+  test_passive_json_is_limited_to_the_declared_resource_locations (tools.test_candidate_review_native.NativePrecheckTest.test_passive_json_is_limited_to_the_declared_resource_locations) (path='arbitrary.json') ... FAIL
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='opencode.json', role='other')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.pi/settings.json', role='other')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='references/opencode.json', role='skill_reference')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.claude/settings.json', role='configuration')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.opencode/plugins/helper.ts', role='skill_reference')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='.pi/extensions/helper.ts', role='instruction_file')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in {'native_instruction_invalid'}
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='plugin.json', role='skill_reference')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_native_activation_paths_cannot_be_disguised_as_passive_resources (tools.test_candidate_review_native.NativePrecheckTest.test_native_activation_paths_cannot_be_disguised_as_passive_resources) (path='hooks/hooks.json', role='configuration')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 193, in test_native_activation_paths_cannot_be_disguised_as_passive_resources
+    self.assertIn("native_activation_path_unqualified", codes(self.evaluate(files=files)))
+AssertionError: 'native_activation_path_unqualified' not found in set()
+
+======================================================================
+FAIL: test_passive_json_is_limited_to_the_declared_resource_locations (tools.test_candidate_review_native.NativePrecheckTest.test_passive_json_is_limited_to_the_declared_resource_locations) (path='arbitrary.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 203, in test_passive_json_is_limited_to_the_declared_resource_locations
+    self.assertEqual(not outcome.refused, accepted)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.184s
+
+FAILED (failures=9)

@@ -1,0 +1,120 @@
+{
+  "record_type": "original_native_generation_removed_guards/v1",
+  "provider_calls": 0,
+  "source_sha256": "43daeb12de3416ef3d0b08932eaf86f45fa50937920b7725c0f42d5443e1653d",
+  "all_detected": true,
+  "results": [
+    {
+      "guard": "plan_binding",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.038s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 2,
+        "errors": 0,
+        "output": "FF\n======================================================================\nFAIL: test_authority_source_plan_and_budget_binding_refuse_before_call (tools.test_generate_original_native_candidates.GenerationTest.test_authority_source_plan_and_budget_binding_refuse_before_call) (change={'plan_sha256': '0000000000000000000000000000000000000000000000000000000000000000'})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 126, in test_authority_source_plan_and_budget_binding_refuse_before_call\n    with self.subTest(change=change), self.assertRaises(ValueError):\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n======================================================================\nFAIL: test_authority_source_plan_and_budget_binding_refuse_before_call (tools.test_generate_original_native_candidates.GenerationTest.test_authority_source_plan_and_budget_binding_refuse_before_call)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 128, in test_authority_source_plan_and_budget_binding_refuse_before_call\n    self.assertFalse(gateway.calls)\nAssertionError: [ModelGatewayRequest(prompt='{\"draft_record_type\":\"original_native_file_draft/v1\",\"method\":{\"acceptance\":[\"Report unknown when the required value is absent.\"],\"brief\":\"Inspect the supplied value without mutation.\",\"declared_effects\":[],\"dependencies\":[],\"family\":\"native_instruction\",\"files\":[{\"media_type\":\"text/markdown\",\"path\":\"AGENTS.md\",\"purpose\":\"Native briefing\",\"role\":\"instruction_file\"},{\"media_type\":\"text/markdown\",\"path\":\"reference.md\",\"purpose\":\"Supporting checks\",\"role\":\"skill_reference\"}],\"id\":\"inspect_fixture\",\"kind\":\"instruction_file\",\"layer\":\"context\",\"opportunity\":\"Original fixture method for contract testing, not customer intelligence.\",\"purpose\":\"Inspect one bounded input.\",\"search_tags\":[\"inspect fixture\"],\"sources\":[\"source.py\"],\"styles\":[\"codex\"],\"symbols\":[],\"tags\":{\"domain\":[\"software\"],\"language\":[\"en\"]},\"title\":\"Inspect fixture\"},\"source_revision\":\"43f0e0e94d6e36da60faa0a1e669ec65490ccc9d\"}', config=ModelGatewayConfig(purpose='generation', route_names=('original_native_generation',), route_plan=(), thinking_power='medium', allowed_models=('fixture-model',), allowed_localities=('cloud', 'organization', 'local'), allow_failover=False, max_route_attempts=1, timeout_seconds=180.0, max_output_tokens=None, max_total_tokens=None, allow_power_escalation=False, max_power_escalations=0, escalate_on=('output_validation_failed',), output_allocation=ModelOutputAllocation(capability=ModelOutputCapability(maximum_output_tokens=8192, source='offline fixture capacity', endpoint='', observed_at=''), provider_id='ollama_cloud', model_id='fixture-model', route_name='original_native_generation', requested_tokens=4096, decision_ref='original_native_generation_plan/v1#run', reason='The operator explicitly allocated this output allowance for complete candidate files.'), allow_evaluator_route_failover=False, excluded_routes=()), system='Write one original, complete, candidate-only harness package for the supplied focused task method.\\nThe host owns identity, effect permissions, file paths, dependencies and acceptance criteria.\\nReturn exactly one JSON object with record_type original_native_file_draft/v1,\\nmethod_id equal to the supplied identity, and files containing objects with exactly path and content.\\nSupply every planned file once, no additional paths. Contents are UTF-8 text, never base64.\\nDo not return digests, approval claims, credentials, executable downloads or Markdown wrappers.\\nWrite complete useful implementations and native entrypoint instructions, not placeholders.\\nLink supplied helpers and contracts from the entrypoint. Preserve bounded work and explicit refusals.\\nThe supplied source references are provenance for task discovery, not claims that those sources implement your new method.\\nDo not copy opportunity-source wording into generated files; write original method instructions.\\nDo not execute anything. All generated material still requires independent review and qualification.', temperature=0.0, output_contract='original_native_file_draft/v1', trace_id='', semantic_call_id='')] is not false\n\n----------------------------------------------------------------------\nRan 1 test in 0.065s\n\nFAILED (failures=2)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "call_ceiling",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.069s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 1,
+        "errors": 0,
+        "output": "F\n======================================================================\nFAIL: test_call_ceiling_stops_without_generating_another_method (tools.test_generate_original_native_candidates.GenerationTest.test_call_ceiling_stops_without_generating_another_method)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 140, in test_call_ceiling_stops_without_generating_another_method\n    self.assertEqual(result[\"stop_reason\"], \"call_ceiling_reached\")\nAssertionError: 'completed' != 'call_ceiling_reached'\n- completed\n+ call_ceiling_reached\n\n\n----------------------------------------------------------------------\nRan 1 test in 0.077s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "model_identity",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.043s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 1,
+        "errors": 0,
+        "output": "F\n======================================================================\nFAIL: test_nonmatching_model_never_generates_package (tools.test_generate_original_native_candidates.GenerationTest.test_nonmatching_model_never_generates_package)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 158, in test_nonmatching_model_never_generates_package\n    self.assertEqual(result[\"candidate_count\"],0)\nAssertionError: 1 != 0\n\n----------------------------------------------------------------------\nRan 1 test in 0.057s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "strict_bound_source",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.025s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 1,
+        "errors": 0,
+        "output": "F\n======================================================================\nFAIL: test_strict_total_requires_resolver_before_dispatch (tools.test_generate_original_native_candidates.GenerationTest.test_strict_total_requires_resolver_before_dispatch)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 172, in test_strict_total_requires_resolver_before_dispatch\n    with self.assertRaisesRegex(ValueError,\"token_bound_resolver_required\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.067s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "resume_binding",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.096s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 2,
+        "errors": 0,
+        "output": "FF\n======================================================================\nFAIL: test_changed_resume_budget_and_timeout_refuse (tools.test_generate_original_native_candidates.GenerationTest.test_changed_resume_budget_and_timeout_refuse) (change={'call_ceiling': 4})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 197, in test_changed_resume_budget_and_timeout_refuse\n    with self.subTest(change=change), self.assertRaisesRegex(ValueError,\"resume_binding_changed\"):\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n======================================================================\nFAIL: test_changed_resume_budget_and_timeout_refuse (tools.test_generate_original_native_candidates.GenerationTest.test_changed_resume_budget_and_timeout_refuse) (change={'timeout_seconds': 10})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 197, in test_changed_resume_budget_and_timeout_refuse\n    with self.subTest(change=change), self.assertRaisesRegex(ValueError,\"resume_binding_changed\"):\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.091s\n\nFAILED (failures=2)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "complete_file_tree",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.081s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 1,
+        "errors": 0,
+        "output": "F\n======================================================================\nFAIL: test_missing_or_extra_path_and_wrapper_are_preserved_failures (tools.test_generate_original_native_candidates.GenerationTest.test_missing_or_extra_path_and_wrapper_are_preserved_failures)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 148, in test_missing_or_extra_path_and_wrapper_are_preserved_failures\n    self.assertEqual(result[\"candidate_count\"], 0)\nAssertionError: 1 != 0\n\n----------------------------------------------------------------------\nRan 1 test in 0.062s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    },
+    {
+      "guard": "duplicate_package",
+      "baseline": {
+        "passed": true,
+        "failures": 0,
+        "errors": 0,
+        "output": ".\n----------------------------------------------------------------------\nRan 1 test in 0.080s\n\nOK\n"
+      },
+      "removed": {
+        "passed": false,
+        "failures": 1,
+        "errors": 0,
+        "output": "F\n======================================================================\nFAIL: test_identical_payloads_under_new_method_name_do_not_inflate_count (tools.test_generate_original_native_candidates.GenerationTest.test_identical_payloads_under_new_method_name_do_not_inflate_count)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py\", line 205, in test_identical_payloads_under_new_method_name_do_not_inflate_count\n    self.assertEqual(result[\"candidate_count\"],1)\nAssertionError: 2 != 1\n\n----------------------------------------------------------------------\nRan 1 test in 0.109s\n\nFAILED (failures=1)\n"
+      },
+      "detected": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "values": {
+      "type": "array",
+      "items": {},
+      "minItems": 1,
+      "maxItems": 16
+    }
+  },
+  "required": [
+    "values"
+  ],
+  "additionalProperties": false
+}

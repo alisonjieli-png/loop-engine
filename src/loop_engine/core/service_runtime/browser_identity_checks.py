@@ -112,7 +112,7 @@ def run_checks(check, root: Path):
                       session["authentication_mode"] == "browser_identity" and session["principal"]["tenant_id"] == tenant
                       and session["principal"]["entitlement"] == "metadata" and "access:manage" not in session["principal"]["scopes"])
                 search = client.post("/api/v1/retrieval", headers=headers, json={
-                    "record_type": "service_retrieval_request/v1", "query": "alpha", "mode": "lexical"}).json()["result"]
+                    "record_type": "service_retrieval_request/v2", "query": "alpha", "mode": "lexical"}).json()["result"]
                 check("new_account_sees_only_host_selected_starter_metadata_without_free_body_access",
                       len(search["hits"]) == 1 and not search["hits"][0]["body_allowed"]
                       and search["hits"][0]["reference"]["identity"] == "skill.alpha")

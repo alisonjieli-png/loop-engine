@@ -1,0 +1,9 @@
+{
+  "record_type": "candidate_contract_refinement/v1",
+  "at": "2026-09-23T13:19:35.802068+00:00",
+  "known_wrong": "Identifier with a trailing newline: label\\n",
+  "finding": "The initial JSON Schema end anchor accepts a final newline under the Python jsonschema engine; the tool strict end anchor rejects it.",
+  "repair": "Added an identifier character exclusion in the input schema; the agreement test now includes the trailing newline.",
+  "previous_schema_sha256": "2aab9c6e53195a26159528c23c52be3f234dd68e6f635f0871bd97be708878d2",
+  "new_schema_sha256": "a21ab5811b6715ccaf0f55d0c485a64c49f85b84aced3302d147b2ce34094a26"
+}

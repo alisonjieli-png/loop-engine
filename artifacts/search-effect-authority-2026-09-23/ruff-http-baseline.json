@@ -1,0 +1,431 @@
+[
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 91,
+      "row": 37
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from __future__ import annotations\n\nimport asyncio\nimport json\nimport math\nimport re\nimport threading\nfrom concurrent.futures import ThreadPoolExecutor\nfrom contextlib import asynccontextmanager\nfrom dataclasses import dataclass, field\nfrom urllib.parse import urlsplit\n\nfrom ...loop.encapsulate import as_loop\nfrom ...loop.loop_role import LoopRole, LoopRoleIdentity\nfrom ..provisioning_mcp import TOOL_OPERATIONS, _schema\nfrom ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding\nfrom .http_auth import (\n    EXTERNAL_JWT_AUTHENTICATION,\n    HttpAuthenticationError,\n    ServiceHttpAuthentication,\n    ServiceHttpAuthenticator,\n    validate_public_url,\n)\nfrom .observability import (\n    CAPTURED_BODY_KEY,\n    SCOPE_REFERENCE_KEY,\n    ServiceFailureJournal,\n    ServiceObservabilityPolicy,\n    new_request_reference,\n    readiness_deadline_report,\n    readiness_report,\n)\nfrom .records import (\n    ACCESS_MANAGE_SCOPE,\n    BILLING_MANAGE_SCOPE,\n    ServiceCommitUnknown,\n    ServiceRuntimeError,\n)\nfrom .refusals import guidance as _refusal_guidance\nfrom .request_limits import (\n    LIMIT_REACHED_CODE,\n    FailedAttemptLimiter,\n    ServiceRequestLimits,\n)\nfrom .retention import RetentionSchedule, ServiceRetentionPolicy\nfrom .waitlist import ServiceWaitlist, administer_waitlist, join_request\nfrom .web_pages import (\n    CACHEABLE_WEB_ASSETS,\n    HTML_MEDIA_TYPE,\n    PUBLIC_ASSET_CACHE_CONTROL,\n    WEB_ASSETS,\n    asset_etag,\n    missing_address_page,\n    served_asset,\n    validator_matches,\n)\n\n",
+          "end_location": {
+            "column": 1,
+            "row": 39
+          },
+          "location": {
+            "column": 1,
+            "row": 7
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 1,
+      "row": 7
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 7,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "RUF009",
+    "end_location": {
+      "column": 66,
+      "row": 172
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 44,
+      "row": 172
+    },
+    "message": "Do not perform function call `ServiceRequestLimits` in dataclass defaults",
+    "name": "function-call-in-dataclass-default-argument",
+    "noqa_row": 172,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/function-call-in-dataclass-default-argument"
+  },
+  {
+    "cell": null,
+    "code": "RUF009",
+    "end_location": {
+      "column": 77,
+      "row": 546
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 49,
+      "row": 546
+    },
+    "message": "Do not perform function call `ServiceObservabilityPolicy` in dataclass defaults",
+    "name": "function-call-in-dataclass-default-argument",
+    "noqa_row": 546,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/function-call-in-dataclass-default-argument"
+  },
+  {
+    "cell": null,
+    "code": "RUF009",
+    "end_location": {
+      "column": 65,
+      "row": 547
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 41,
+      "row": 547
+    },
+    "message": "Do not perform function call `ServiceRetentionPolicy` in dataclass defaults",
+    "name": "function-call-in-dataclass-default-argument",
+    "noqa_row": 547,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/function-call-in-dataclass-default-argument"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 61,
+      "row": 554
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from .provisioning import DurableProvisioningBinding\n        from .runtime import ServiceRuntime\n",
+          "end_location": {
+            "column": 1,
+            "row": 555
+          },
+          "location": {
+            "column": 1,
+            "row": 553
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 553
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 553,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 25,
+      "row": 802
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 16,
+      "row": 802
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 802,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 54,
+      "row": 858
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from dataclasses import asdict\n\n        from ..harness_intelligence import HarnessIntelligenceItem\n        from ..intelligence_tagging import TagSet\n        from .catalogue_search import authorized_hits\n",
+          "end_location": {
+            "column": 1,
+            "row": 859
+          },
+          "location": {
+            "column": 1,
+            "row": 855
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 855
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 855,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 86,
+      "row": 936
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from .stripe_sessions import SESSION_UNCERTAINTY_VERSION, BillingSessionError\n",
+          "end_location": {
+            "column": 1,
+            "row": 937
+          },
+          "location": {
+            "column": 1,
+            "row": 936
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 936
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 936,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 57,
+      "row": 999
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from jsonschema import ValidationError, validate\n",
+          "end_location": {
+            "column": 1,
+            "row": 1000
+          },
+          "location": {
+            "column": 1,
+            "row": 999
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 999
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 999,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 57,
+      "row": 1021
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        import mcp.types as types\n        from jsonschema import ValidationError, validate\n        from mcp.server.caching import CacheHint\n        from mcp.server.lowlevel import Server\n        from mcp.types.version import HANDSHAKE_PROTOCOL_VERSIONS as LIBRARY_HANDSHAKE\n        from mcp.types.version import MODERN_PROTOCOL_VERSIONS as LIBRARY_PER_REQUEST\n",
+          "end_location": {
+            "column": 1,
+            "row": 1022
+          },
+          "location": {
+            "column": 1,
+            "row": 1016
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 1016
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 1016,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "PLR0402",
+    "end_location": {
+      "column": 34,
+      "row": 1016
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from mcp import types",
+          "end_location": {
+            "column": 34,
+            "row": 1016
+          },
+          "location": {
+            "column": 9,
+            "row": 1016
+          }
+        }
+      ],
+      "message": "Replace with `from mcp import types`"
+    },
+    "location": {
+      "column": 16,
+      "row": 1016
+    },
+    "message": "Use `from mcp import types` in lieu of alias",
+    "name": "manual-from-import",
+    "noqa_row": 1016,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/manual-from-import"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 29,
+      "row": 1068
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 20,
+      "row": 1068
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 1068,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 76,
+      "row": 1104
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "        from mcp.server.streamable_http_manager import StreamableHTTPSessionManager\n        from mcp.server.transport_security import TransportSecuritySettings\n        from starlette.applications import Starlette\n        from starlette.requests import Request\n        from starlette.responses import JSONResponse, Response\n        from starlette.routing import Mount\n",
+          "end_location": {
+            "column": 1,
+            "row": 1105
+          },
+          "location": {
+            "column": 1,
+            "row": 1099
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 9,
+      "row": 1099
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 1099,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  },
+  {
+    "cell": null,
+    "code": "BLE001",
+    "end_location": {
+      "column": 29,
+      "row": 1188
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": null,
+    "location": {
+      "column": 20,
+      "row": 1188
+    },
+    "message": "Do not catch blind exception: `Exception`",
+    "name": "blind-except",
+    "noqa_row": 1188,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/blind-except"
+  },
+  {
+    "cell": null,
+    "code": "I001",
+    "end_location": {
+      "column": 105,
+      "row": 1416
+    },
+    "filename": "/home/username/.le-codex-build/search-effects/src/loop_engine/core/service_runtime/http.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "                from .stripe_sessions import (\n                    CHECKOUT_OPERATION,\n                    PORTAL_OPERATION,\n                    BillingSessionRequest,\n                )\n",
+          "end_location": {
+            "column": 1,
+            "row": 1417
+          },
+          "location": {
+            "column": 1,
+            "row": 1416
+          }
+        }
+      ],
+      "message": "Organize imports"
+    },
+    "location": {
+      "column": 17,
+      "row": 1416
+    },
+    "message": "Import block is un-sorted or un-formatted",
+    "name": "unsorted-imports",
+    "noqa_row": 1416,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+  }
+]

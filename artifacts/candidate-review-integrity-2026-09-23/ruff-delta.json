@@ -1,0 +1,37 @@
+{
+  "base_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+  "files": [
+    {
+      "path": "tools/candidate_review/prechecks/__init__.py",
+      "before_count": 1,
+      "after_count": 1,
+      "new_findings": []
+    },
+    {
+      "path": "tools/candidate_review/reviewers/command_line.py",
+      "before_count": 3,
+      "after_count": 3,
+      "new_findings": []
+    },
+    {
+      "path": "tools/test_candidate_review_engines.py",
+      "before_count": 9,
+      "after_count": 9,
+      "new_findings": []
+    },
+    {
+      "path": "tools/test_candidate_review_panel.py",
+      "before_count": 22,
+      "after_count": 22,
+      "new_findings": []
+    },
+    {
+      "path": "tools/test_candidate_review_prechecks.py",
+      "before_count": 11,
+      "after_count": 11,
+      "new_findings": []
+    }
+  ],
+  "new_findings": 0,
+  "comparison": "multiset of rule code and diagnostic text per file; existing style was not reformatted"
+}

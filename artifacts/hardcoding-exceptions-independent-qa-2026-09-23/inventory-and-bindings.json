@@ -1,0 +1,42 @@
+{
+  "new_entries": 36,
+  "new_exact_exclusions": 2,
+  "old_entries_unchanged": true,
+  "old_exclusions_unchanged": true,
+  "duplicate_new_ids": false,
+  "initial_triage_findings": 139,
+  "triage_decisions": {
+    "exclude_file": 101,
+    "allowlist": 35,
+    "abstract": 3
+  },
+  "triage_unique_ids": 139,
+  "initial_allowance_match": true,
+  "new_entry_classes": {
+    "RESOURCE_OR_TEMPLATE": 1,
+    "STRATEGY_OR_PROVIDER_BINDING": 23,
+    "CLOSED_CONTROLLED_VOCABULARY": 12
+  },
+  "baseline_bytes_unchanged": true,
+  "baseline_sha256": "09f46c9ae19407c648d145977ee9b87291e23dac93663aca5a9ea35dee87f255",
+  "evidence_exclusions": [
+    {
+      "path": "docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json",
+      "digest_matches": true,
+      "size": 118515,
+      "credential_shaped_value_paths": []
+    },
+    {
+      "path": "docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json",
+      "digest_matches": true,
+      "size": 26398,
+      "credential_shaped_value_paths": []
+    }
+  ],
+  "abstracted_ids": [
+    "hardcoding.ed651ac4e0948b6d1b245719",
+    "hardcoding.2bd5c002b59846fd53ada250",
+    "hardcoding.f77a9cfcbbc0afbab9444d70"
+  ],
+  "allowlist_sha256": "b8fd3f7aa5cfd6095e9fd2d7cb85eaee13698477a50d2b52f0b4187246c78f5f"
+}

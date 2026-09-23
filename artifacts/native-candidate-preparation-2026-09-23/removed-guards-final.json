@@ -1,0 +1,59 @@
+{
+  "checks": [
+    {
+      "guard": "payload_digest",
+      "check": "test_corrupt_payload_digest_refuses_before_output",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_corrupt_payload_digest_refuses_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_corrupt_payload_digest_refuses_before_output) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.020s\n\nOK\n",
+      "mutant_output": "test_corrupt_payload_digest_refuses_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_corrupt_payload_digest_refuses_before_output) ... FAIL\n\n======================================================================\nFAIL: test_corrupt_payload_digest_refuses_before_output (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_corrupt_payload_digest_refuses_before_output)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 98, in test_corrupt_payload_digest_refuses_before_output\n    with self.assertRaisesRegex(PreparationError, \"native_file_bytes_mismatch\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PreparationError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.027s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "guard": "executable_effect",
+      "check": "test_executable_effect_cannot_be_omitted",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_executable_effect_cannot_be_omitted (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_executable_effect_cannot_be_omitted) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.024s\n\nOK\n",
+      "mutant_output": "test_executable_effect_cannot_be_omitted (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_executable_effect_cannot_be_omitted) ... FAIL\n\n======================================================================\nFAIL: test_executable_effect_cannot_be_omitted (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_executable_effect_cannot_be_omitted)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 104, in test_executable_effect_cannot_be_omitted\n    with self.assertRaisesRegex(PreparationError, \"package_executable_effect_undeclared\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PreparationError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.030s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "guard": "duplicate_package",
+      "check": "test_duplicate_package_under_new_identity_refuses_inflated_count",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_duplicate_package_under_new_identity_refuses_inflated_count (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_package_under_new_identity_refuses_inflated_count) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.023s\n\nOK\n",
+      "mutant_output": "test_duplicate_package_under_new_identity_refuses_inflated_count (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_package_under_new_identity_refuses_inflated_count) ... FAIL\n\n======================================================================\nFAIL: test_duplicate_package_under_new_identity_refuses_inflated_count (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_duplicate_package_under_new_identity_refuses_inflated_count)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 121, in test_duplicate_package_under_new_identity_refuses_inflated_count\n    with self.assertRaisesRegex(PreparationError, \"duplicate_native_package\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PreparationError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.027s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "guard": "full_inventory",
+      "check": "test_staging_rechecks_changed_missing_and_extra_files",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_staging_rechecks_changed_missing_and_extra_files (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rechecks_changed_missing_and_extra_files) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.042s\n\nOK\n",
+      "mutant_output": "test_staging_rechecks_changed_missing_and_extra_files (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rechecks_changed_missing_and_extra_files) ... FAIL\n\n======================================================================\nFAIL: test_staging_rechecks_changed_missing_and_extra_files (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rechecks_changed_missing_and_extra_files)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 153, in test_staging_rechecks_changed_missing_and_extra_files\n    with self.assertRaisesRegex(ValueError, \"native_package_inventory_mismatch\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.048s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "guard": "canonical_document",
+      "check": "test_staging_rejects_forged_manifest_body_and_producer",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_staging_rejects_forged_manifest_body_and_producer (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_forged_manifest_body_and_producer) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.030s\n\nOK\n",
+      "mutant_output": "test_staging_rejects_forged_manifest_body_and_producer (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_forged_manifest_body_and_producer) ... FAIL\n\n======================================================================\nFAIL: test_staging_rejects_forged_manifest_body_and_producer (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_staging_rejects_forged_manifest_body_and_producer)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 174, in test_staging_rejects_forged_manifest_body_and_producer\n    with self.assertRaisesRegex(ValueError, \"native_package_document_mismatch\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.029s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "guard": "closed_effects",
+      "check": "test_producer_method_is_required_and_staging_refuses_unknown_effect",
+      "baseline_exit": 0,
+      "mutant_exit": 1,
+      "detected": true,
+      "baseline_output": "test_producer_method_is_required_and_staging_refuses_unknown_effect (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_producer_method_is_required_and_staging_refuses_unknown_effect) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.029s\n\nOK\n",
+      "mutant_output": "test_producer_method_is_required_and_staging_refuses_unknown_effect (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_producer_method_is_required_and_staging_refuses_unknown_effect) ... FAIL\n\n======================================================================\nFAIL: test_producer_method_is_required_and_staging_refuses_unknown_effect (tools.test_prepare_native_harness_candidates.NativeCandidatePreparerChecks.test_producer_method_is_required_and_staging_refuses_unknown_effect)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/native-factory/tools/test_prepare_native_harness_candidates.py\", line 193, in test_producer_method_is_required_and_staging_refuses_unknown_effect\n    with self.assertRaisesRegex(ValueError, \"native_effects_invalid\"):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.037s\n\nFAILED (failures=1)\n"
+    }
+  ],
+  "passed": true
+}

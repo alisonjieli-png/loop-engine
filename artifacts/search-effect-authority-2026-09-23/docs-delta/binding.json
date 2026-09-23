@@ -1,0 +1,15 @@
+{
+  "record_type": "search_effect_docs_delta/v1",
+  "files": [
+    {
+      "path": "docs/guides/service-searching-and-retrieving.md",
+      "before_sha256": "c46171c433f0df29b6da8de6086d07ef52a88a80b9fddebe9ee07f43af5f3533",
+      "after_sha256": "eb547489f54dcc873a37b073bcfd55e715d2bda1ca89e32363c88dd53f6e1eac"
+    },
+    {
+      "path": "docs/guides/service-troubleshooting.md",
+      "before_sha256": "72d87db2b88502bcfa46332395a0e5e33ee0fcb40a61ef5641f7c51c0e54cce1",
+      "after_sha256": "1bf56ad52c22e6b147558908b349732f5877860c3db351091fde43eae2e3c836"
+    }
+  ]
+}

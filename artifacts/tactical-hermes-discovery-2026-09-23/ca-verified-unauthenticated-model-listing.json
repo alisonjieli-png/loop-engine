@@ -1,0 +1,13 @@
+{
+  "record_type": "endpoint_model_listing/v1",
+  "provider": "tactical",
+  "listing_url": "https://ai.tacticalengineering.net:6969/v1/models",
+  "model": "/hermes",
+  "ok": false,
+  "models": [],
+  "model_listed": false,
+  "http_status": null,
+  "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'ai.tacticalengineering.net'. (_ssl.c:1010)>",
+  "error_type": "URLError",
+  "retry_after_seconds": null
+}

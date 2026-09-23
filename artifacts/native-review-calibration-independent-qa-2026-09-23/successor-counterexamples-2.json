@@ -1,0 +1,28 @@
+{
+  "model_calls": 0,
+  "fixture_only": true,
+  "source_root": "/home/username/.le-codex-build/import-owner-repair",
+  "consistent_failed_reviewer": {
+    "accepted": false,
+    "code": "excluded_calibration_reviewer_decided"
+  },
+  "remove_both_exclusion_lists": {
+    "accepted": false,
+    "code": "calibration_inconsistent"
+  },
+  "retained_false_approvals": [
+    "control_38d4",
+    "control_9bb0",
+    "control_c902",
+    "control_e137"
+  ],
+  "valid_record": {
+    "accepted": true
+  },
+  "unmeasured_author_status": "calibration_incomplete",
+  "unmeasured_author_candidate_calls": 0,
+  "rebound_fake_prompt_digest": {
+    "accepted": false,
+    "code": "calibration_prompt_mismatch"
+  }
+}

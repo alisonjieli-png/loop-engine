@@ -1,0 +1,22 @@
+{
+  "record_type": "original_native_supply_count/v1",
+  "source_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86",
+  "selected_catalogue": "prepared-final/items.json",
+  "logical_candidates": 12,
+  "payload_paths": 96,
+  "distinct_payload_digests": 85,
+  "package_documents": 12,
+  "skill_entrypoints": 0,
+  "prior_candidates_inventoried": 89,
+  "identity_collisions": [],
+  "accepted_fixture_cases": 51,
+  "wrong_algorithm_mutants_detected": 12,
+  "normal_search_hits": 0,
+  "review_search_found_in_first_three": 12,
+  "approved": 0,
+  "hosted": 0,
+  "model_calls": 0,
+  "native_harness_loading_proven": false,
+  "tested_interpreter": "Python 3.14.4 /usr/bin/python3",
+  "copy_count_rule": "Authored, prepared and predecessor trees are representations or versions of the same 12 logical candidates, not additional intelligence."
+}

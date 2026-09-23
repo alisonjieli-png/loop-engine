@@ -1,0 +1,23 @@
+{
+  "record_type": "signup_primary_source_review/v1",
+  "reviewed_on": "2026-09-23",
+  "sources": [
+    {
+      "url": "https://supabase.com/docs/reference/javascript/auth-admin-generatelink",
+      "finding": "Administration generateLink supports custom email delivery; signup needs an email and password."
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/password-security",
+      "finding": "Provider minimum and character policy remain authoritative. Password-change reauthentication/current-password settings require live journey qualification."
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/sessions",
+      "finding": "Provider session lifetime and JWT lifetime are distinct; local fixture behavior is not proof that all existing provider access JWTs are immediately invalidated."
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/signout",
+      "finding": "Signout scope controls affected refresh sessions; access-token expiry must be considered separately."
+    }
+  ],
+  "decision": "Reuse existing AccountEmailAdapter, browser identity and provider SDK; do not add another identity store or authentication system. Keep registration/provider configuration unchanged in this lane."
+}

@@ -1,5 +1,311 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.b8c2de715f0926b6fb499569
+    owner: tools.check_service_workspace.mjs:url
+    rationale: Exact hosted-checkout URL prefix in the loopback browser acceptance scenario. It verifies
+      the fixture returned the Stripe checkout surface rather than accepting an arbitrary destination. This
+      is a provider-specific test assertion, not a runtime route or credential; it does not create a real
+      checkout or charge.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.6f5b08707df506d0111f2aef
+    owner: tools.resources.original-native-generation-prompt-v1.json:system
+    rationale: Versioned generation instruction resource owned by original_native_generation_prompt/v1 and
+      rendered through the existing PromptResourceBundle. Run v4 binds both resource bytes and rendered
+      text digests plus implementation source; a resource-only change refuses resume before a model call.
+      These are the deliberately governed instructions, not an inline hidden prompt or a task-specific control-flow
+      shortcut.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.e9ddeba11651edd644bf09d1
+    owner: docs.verification.assets.live-baltor-morning-2026-09-23.inspect.mjs:url
+    rationale: Fixed public URLs in the saved September23 read-only website observation program reproduce
+      that particular recorded observation. This historical inspector is not imported by the service or
+      used for customer routing; the exact endpoint literals remain visible for reproducibility.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.7c2fb79a7124d6710e62cd0b
+    owner: docs.verification.assets.live-baltor-morning-2026-09-23.inspect.mjs:url
+    rationale: Fixed public URLs in the saved September23 read-only website observation program reproduce
+      that particular recorded observation. This historical inspector is not imported by the service or
+      used for customer routing; the exact endpoint literals remain visible for reproducibility.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.ad8be6a3d2782f641e616ea9
+    owner: docs.verification.assets.live-baltor-morning-2026-09-23.inspect.mjs:url
+    rationale: Fixed public URLs in the saved September23 read-only website observation program reproduce
+      that particular recorded observation. This historical inspector is not imported by the service or
+      used for customer routing; the exact endpoint literals remain visible for reproducibility.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.dd158a3c674dffe88144f51f
+    owner: docs.verification.assets.live-baltor-morning-2026-09-23.inspect.mjs:url
+    rationale: Fixed public URLs in the saved September23 read-only website observation program reproduce
+      that particular recorded observation. This historical inspector is not imported by the service or
+      used for customer routing; the exact endpoint literals remain visible for reproducibility.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.7cab50bbc563d86d7bd19b2c
+    owner: tools.build_documentation_index
+    rationale: Canonical first-party documentation-link origin, used only to rewrite exact origin-plus-slash
+      links into same-site paths. It selects no runtime provider or credential and makes no network call.
+      Foreign hosts are not accepted by this prefix rule; link and body guards are tested.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.73f41a7a93bc6cff7f50424a
+    owner: tools.build_documentation_index
+    rationale: Literal HTTP/HTTPS scheme prefixes classify documentation links; these strings are URI syntax,
+      not a configurable deployment endpoint. No request or model call occurs in this renderer.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.d0c58fb466ed023c23264ce2
+    owner: tools.build_documentation_index
+    rationale: Literal HTTP/HTTPS scheme prefixes classify documentation links; these strings are URI syntax,
+      not a configurable deployment endpoint. No request or model call occurs in this renderer.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.b1a795e94f8b2fa0afc249e7
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.01529ca1e6545bb4a911e15e
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.34dcf23e5196c5e53faf2d75
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.4f8b7396c1dabff19ed164ae
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.d79a62d5214996bf3430b6f5
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.f722ca57c8b0570b96d61c07
+    owner: tools.candidate_review.native_prechecks:qualified_placement
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.c687a8212d64c73e3e2759c9
+    owner: tools.candidate_review.native_prechecks:_local_resources
+    rationale: HTTP/HTTPS prefixes distinguish an external documentary citation from a package-local resource
+      reference. This check never fetches a URL; local references still require confined in-package targets.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.cb5775a65626254b235e2877
+    owner: tools.candidate_review.native_prechecks:_local_resources
+    rationale: HTTP/HTTPS prefixes distinguish an external documentary citation from a package-local resource
+      reference. This check never fetches a URL; local references still require confined in-package targets.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.a3efd35224da72c20f40fa78
+    owner: tools.candidate_review.native_prechecks:_schema
+    rationale: The native profile explicitly supports the JSON Schema2020-12 dialect and validates it locally.
+      Other dialects and non-local ordinary/dynamic references are refused. This literal names a standard,
+      not a deployment endpoint.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.e3d867623ec71d276f2f4a0e
+    owner: tools.candidate_review.native_prechecks:NativeFormatRules.findings
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.d5c128e99d474eecc7106527
+    owner: tools.candidate_review.native_prechecks:NativeFormatRules.findings
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.7e3c806b1e306398aa50cc57
+    owner: tools.candidate_review.native_prechecks:NativeFormatRules.findings
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.c087b01e2c7da9a054ad586d
+    owner: tools.candidate_review.native_prechecks:NativeFormatRules.findings
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.28b20de210a100635f762232
+    owner: tools.candidate_review.native_prechecks:NativeFormatRules.findings
+    rationale: Closed file-role discriminant from CataloguePackage FILE_ROLES, interpreted by the versioned
+      native review profile. Branches enforce role/path/content checks and refuse unqualified activation
+      paths; making these values caller-configurable would weaken the admission contract. Existing unknown-role
+      and reserved-path controls remain required.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.e317fb74a8bbb570c88fa0ed
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_38d4.contracts.input.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.17852cccd247bffc91c2ffa4
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_38d4.contracts.output.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.58f112e79ccb8bce2f0c8d40
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_71af.contracts.input.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.93dcace264997a8d48c234e1
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_71af.contracts.output.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.5701279589688ade2d4aea43
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_9bb0.contracts.input.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.a60513b39bf2c1d86ed1aacd
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_9bb0.contracts.output.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.ded96b94ac7c70a8d721a2d6
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_c902.contracts.input.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.6b44c383aab1268021596a8f
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_c902.contracts.output.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.dae5f67f6778530bc47a7090
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_e137.contracts.input.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.8ff2de7a3df9ff72885eab23
+    owner: tools.candidate_review.resources.native-calibration.catalogue.packages.control_e137.contracts.output.schema.json:$schema
+    rationale: Published JSON Schema2020-12 dialect identifier in an exact frozen calibration contract.
+      The native validator uses its local Draft202012Validator implementation and refuses external references;
+      this identifier is not a network service or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.a71288d58830ee27eac9ae7d
+    owner: tools.check_documentation_browser.mjs:url
+    rationale: Reserved .invalid origin is an intentional known-wrong browser fixture. The page must refuse
+      it before fetching or rendering external content, and the browser blocks all non-fixture origins.
+      Removing the runtime guard is detected by the named malformed-index/body controls.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.319e4daaea38a7c76945e58f
+    owner: tools.check_documentation_browser.mjs:url
+    rationale: Reserved .invalid origin is an intentional known-wrong browser fixture. The page must refuse
+      it before fetching or rendering external content, and the browser blocks all non-fixture origins.
+      Removing the runtime guard is detected by the named malformed-index/body controls.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.3ad3c4d91516afa77f27155a
+    owner: tools.check_documentation_browser.mjs:url
+    rationale: Reserved .invalid origin is an intentional known-wrong browser fixture. The page must refuse
+      it before fetching or rendering external content, and the browser blocks all non-fixture origins.
+      Removing the runtime guard is detected by the named malformed-index/body controls.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+  - finding_id: hardcoding.004e06876f648bdd1766ad39
+    owner: tools.generate_original_native_candidates:generate
+    rationale: Exact controller-generated journal status distinguishes a prepared and digest-verified candidate
+      tree from a failed attempt. It does not approve or execute the candidate. Resume rechecks the complete
+      prepared tree and refuses changed identity or bytes.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
   - finding_id: hardcoding.35aaadb14d0d3746064e2d9c
     owner: tools.check_hosted_website.mjs:url
     rationale: >-
@@ -6299,6 +6605,24 @@ entries:
     created_on: 2026-09-23
     expires_on: 2027-09-23
 excluded_paths:
+  - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
+    owner: docs.verification.live-baltor-morning-2026-09-23
+    rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
+      page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
+      keeps this narrow; changed bytes are scanned again.
+    classification: GENERATED_EVIDENCE_RECORD
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+    sha256: e3742d45a8ff78664c9d394eab3bca47e9812167d524c94bdb5c893af2531435
+  - path: docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json
+    owner: docs.verification.live-baltor-morning-2026-09-23
+    rationale: Frozen machine-produced public website observation. Literal addresses, response headers and
+      page text are recorded facts, never imported as runtime policy or model instructions. The exact digest
+      keeps this narrow; changed bytes are scanned again.
+    classification: GENERATED_EVIDENCE_RECORD
+    created_on: '2026-09-23'
+    expires_on: '2027-09-23'
+    sha256: ef182319e87a521a91b79336e9f97f7e80b36ec36bdb233d6c6c48e8266aa62e
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
     rationale: >-

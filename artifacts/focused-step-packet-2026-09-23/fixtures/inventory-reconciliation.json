@@ -1,0 +1,142 @@
+{
+  "acceptance": [
+    "The output SKU equals the supplied SKU; every arithmetic term comes from this input.",
+    "The discrepancy is computed available units minus reported available units; zero means matches, otherwise needs_review.",
+    "Do not mutate any stock balance. A host verifier checks arithmetic and scope before accepting a result."
+  ],
+  "assignment": {
+    "dependency_ids": [],
+    "effects": [],
+    "harness_style": "codex",
+    "kind": "reason",
+    "mode": "deterministic",
+    "model_calls_authorized": false,
+    "node_id": "reconcile-stock",
+    "objective": "Reconcile the reported available units against the supplied stock movements and holds. Return the discrepancy for review.",
+    "output_contract_refs": [
+      "inventory_reconciliation/v1"
+    ],
+    "record_type": "node_assignment/v3",
+    "required_capabilities": []
+  },
+  "context": [
+    "All quantities belong to the supplied closed period and one SKU. Positive adjustment adds stock; a negative adjustment removes stock.",
+    "Held stock remains in closing inventory but is unavailable. Do not subtract it twice.",
+    "This is a static proposal from synthetic inputs. No warehouse, database, model or external service is authorized."
+  ],
+  "context_version": 2,
+  "first_actions": [
+    "Check that every movement uses the same unit and period and that each required quantity is present.",
+    "Compute closing units as opening plus receipts minus shipments plus adjustment; compute available units as closing minus held.",
+    "Compare computed available units with reported available units; return a discrepancy without changing inventory."
+  ],
+  "input": {
+    "adjustment": -1,
+    "held": 3,
+    "opening": 12,
+    "period": "2026-09-22",
+    "receipts": 5,
+    "reported_available": 8,
+    "shipments": 4,
+    "sku": "demo-blue",
+    "unit": "units"
+  },
+  "input_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "adjustment": {
+        "type": "integer"
+      },
+      "held": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "opening": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "period": {
+        "type": "string"
+      },
+      "receipts": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "reported_available": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "shipments": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "sku": {
+        "type": "string"
+      },
+      "unit": {
+        "const": "units"
+      }
+    },
+    "required": [
+      "sku",
+      "period",
+      "unit",
+      "opening",
+      "receipts",
+      "shipments",
+      "held",
+      "reported_available",
+      "adjustment"
+    ],
+    "type": "object"
+  },
+  "output_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "available_units": {
+        "type": "integer"
+      },
+      "closing_units": {
+        "type": "integer"
+      },
+      "discrepancy_units": {
+        "type": "integer"
+      },
+      "reason": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "sku": {
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "matches",
+          "needs_review"
+        ]
+      }
+    },
+    "required": [
+      "sku",
+      "closing_units",
+      "available_units",
+      "discrepancy_units",
+      "status",
+      "reason"
+    ],
+    "type": "object"
+  },
+  "record_type": "focused_step_brief_candidate/v1",
+  "run_id": "inventory-demo",
+  "state": {
+    "state_id": "inventory-demo.reconcile-stock",
+    "values": {
+      "pending_question": "Does the reported availability agree with the movements?",
+      "previous_step": "Synthetic movement inputs collected; no correction has been committed.",
+      "status": "ready_for_reconciliation"
+    },
+    "version": 3
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "executions": 302,
+  "distinct_script_input_pairs": 301,
+  "packages": 12,
+  "passes": 302,
+  "timeouts": 0,
+  "truncations": 0,
+  "elapsed_ms_max": 48.84897801093757,
+  "elapsed_ms_median": 34.16670102160424,
+  "elapsed_ms_sum": 10436.19192240294,
+  "expected_refusals": 105,
+  "expected_successes": 197,
+  "all_sources_unchanged": true,
+  "approval": false
+}

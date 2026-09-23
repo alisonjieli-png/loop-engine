@@ -1,0 +1,838 @@
+{
+  "record_type": "documentation_browser_check/v1",
+  "scope": "loopback-fixture",
+  "checks": [
+    {
+      "name": "index_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 1760,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [
+          "get-set-up",
+          "what-baltor-is",
+          "your-account",
+          "searching-and-retrieving",
+          "usage-and-what-you-pay-for",
+          "troubleshooting",
+          "serving-and-connections"
+        ],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 0,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "index_1440_order",
+      "passed": true,
+      "detail": {
+        "cards": [
+          "get-set-up",
+          "what-baltor-is",
+          "your-account",
+          "searching-and-retrieving",
+          "usage-and-what-you-pay-for",
+          "troubleshooting",
+          "serving-and-connections"
+        ],
+        "height": 1760
+      }
+    },
+    {
+      "name": "what-baltor-is_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 3321,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "What Baltor is",
+        "summary": "The library, the local engine and your models.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Baltor gives your coding tools and agents material for the step they are working on: instructions, skills, tools and reusable code. Your client searches the hosted library, chooses an item and downloads its exact bytes. You keep your own harness and model access.\nThe goal and the current service\nThe goal is to make harnesses and multi-agent systems more efficient at solving unfamiliar tasks within the user's budget and permissions. That includes giving each step suitable context, reusing working code and choosing appropriate models and methods. A reusable solution is one possible result of that work.\nThe local engine's default design gives each focused step a fresh harness with the material that step needs. The hosted library is usable through your existing client today. Connecting to the library does not by itself install the engine, start separate harness processes or finish a task for you.\nWhere the work happens\nYour task\n├── Hosted Baltor library\n│   ├── Searches the material your account may see\n│   ├── Returns small references before bodies\n│   └── Delivers selected bytes and records applicable download usage\n└── Your environment\n    ├── Runs your harness and any local engine\n    ├── Holds your provider settings and model credentials\n    └── Loads material, performs work and checks the result\nThe library receives what your client sends in a request, including search text, selected item identities and the service credential. A search can contain project information if you put it there. The library connection does not upload your repository or forward your model credentials automatically.\nFiles and packages\nAn item can be a text file or a package of files. The catalogue_package/v1 format supports native instructions such as AGENTS.md and CLAUDE.md, skills with supporting scripts and references, tools, contracts, plugin declarations and configuration. Check the catalogue to see which items are currently available to your account. Format support does not mean every possible package is already published.\nA harness must load material through its own supported mechanism. A plugin can need explicit activation; a tool can need dependencies and execution permission. Downloading a file establishes neither of those facts.\nGive the harness its current assignment\nA reusable package does not automatically carry the current task, inputs, acceptance conditions or first action. Supply those when you start the focused step. A file named node_context.md or agents.state is not a universal startup standard. Use the client's supported instruction file, task input or explicit file-loading mechanism, and verify that the step received it. Keep temporary task state separate from reusable library material.\nRead the reference before downloading\nFieldMeaningfamilyThe material's family. Hosted harness material uses harness.source_layerThe source holding its body. Harness material uses harness_local.kindThe declared item kind, such as skill, tool or instruction_file.licenseThe declared licence.declared_effectsOperations the material says it needs. These are not execution permissions.qualification_basisThe basis reported by the service. host_attested is the host's attestation, not a new review performed by the download.\nThe manifest includes a digest and says verify_before_use. Compare downloaded bytes with that digest, and check the result against your task. Retrieval, loading, use and acceptance are separate events.\nModels and payment\nThe hosted library does not supply a model subscription or run your task's model calls. Configure models in your harness or local engine. Those calls can go to a local endpoint, a server you operate or a hosted provider, within the permissions you set. Provider charges are separate from Baltor Pro.\nNext steps\nGet started for account access.Get set up to connect your client.Searching and retrieving for references and package downloads.Usage and what you pay for for metering and retries.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "what-baltor-is_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "What Baltor is",
+        "summaryLines": 0.9997676888357891,
+        "height": 3321,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "your-account_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 3629,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Your account",
+        "summary": "Accounts, personal tokens and access.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Open Get started for the current access path. When signup is open, enter your email, open the link and choose a password on the confirmation page. Otherwise follow the configured invitation path or sign in to an existing account. Manage your account at /account.\nYour browser sign-in and your coding tool's client token are different credentials. The browser manages your account. The client token authorizes the specific service operations its scopes allow.\nCreate a client token\nOn /account, open Your client tokens and create one for each client or machine. Give it a label you will recognize. Copy the secret when it is shown; later listings contain its identity and state, not the secret.\nThe service stores a digest of the token. An exact replay of its creation request returns token as null, so repeating the request is not a way to recover the original secret. Keep the token through your client's supported secret mechanism, as Get set up explains.\nWhat controls a download\nCheckWhat must holdAccountThe account is enabled and the credential is current.ScopeThe credential includes provisioning:read.GrantThe account holds access to the selected item and its body.EntitlementThe account has bodies access rather than metadata only.SelectionThe item still matches the requested digest and permitted filters.\nThe service rechecks authorization when it releases the result. An unknown or inaccessible identity returns item_unavailable; it is not listed as material belonging to another account.\nEntitlements\nValueAccessmetadataSearch, discovery, listing and manifests.bodiesMetadata and permitted body downloads.\nA subscription or operator grant supplies the account entitlement. Creating a token does not upgrade it. Invited access can be free through an operator grant.\nScopes\nScopeService operationprovisioning:metadataSearch, discover, list and manifest.provisioning:readBody reads and downloads.usage:readYour account's usage.billing:manageAuthorized checkout and customer portal operations.access:manageOperator access administration.\nA personal client token is limited by the account, browser session and host policy. It cannot create more client tokens through the customer management endpoint; that operation requires a browser session.\nToken limits and state\nThe account page reads service_client_access_options/v1 from /api/v1/account/access. It shows the available scopes and token policy.\nPolicy fieldMeaningmaximum_active_tokensMaximum active tokens.maximum_lifetime_secondsLongest allowed lifetime.default_lifetime_secondsDefault requested lifetime.maximum_token_recordsLimit on retained token records.\nEach token has an expiry and an active, expired or revoked state. The account page provides a Revoke action. A revoked or expired token is refused on its next request; material already downloaded is not recalled.\nConfirm which account a client uses\nWith the environment variable from the setup guide available to your terminal:\ncurl -sS -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" https://app.baltor.ai/api/v1/session\nThe service_session/v1 result contains principal, authentication_mode, token_expires_at and access_source. The source explains whether a subscription, operator invitation or promotion currently covers the account. Check the principal's tenant_id, entitlement and scopes before using a client on a shared machine. Keep credentials out of logs and support messages.\nSubscription and help\nBaltor Pro is $29 a month. Invited accounts are free through their grant. When available, the account page opens checkout or the customer portal. Account creation and checkout are separate capabilities; available checkout does not mean public registration is open.\nModel access and provider charges remain yours. See Usage and what you pay for for download records, or Troubleshooting for a refusal.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "your-account_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "Your account",
+        "summaryLines": 0.9997676888357891,
+        "height": 3629,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "searching-and-retrieving_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 4407,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Searching and retrieving",
+        "summary": "Find, inspect and download selected material.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Search returns small references so a step can choose useful material before loading its body. Download only the items the task needs, then verify their bytes and how the harness uses them.\nSearch the authorized catalogue\ncurl -sS -X POST https://app.baltor.ai/api/v1/retrieval -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" -H \"Content-Type: application/json\" -d '{\"record_type\":\"service_retrieval_request/v2\",\"query\":\"split address lines\",\"mode\":\"lexical\",\"top_n\":3}'\nThe result is service_retrieval_result/v1. It holds hits and states bodies_loaded as false. The items and scores depend on your account, the current catalogue and the query; this example does not assume a particular hit.\nRequest fieldMeaningrecord_typeExactly service_retrieval_request/v2.queryNonempty search text, at most 4096 UTF-8 bytes.authority_effectsOptional unique array of declared effect names already permitted for your step. Omitted or empty means no declared effects. This selects metadata, not execution permission.modelexical or hybrid; default lexical.top_nPositive whole number within the advertised search_results limit; default 10.filtersUp to eight declared, public, filterable catalogue attributes. Conditions include equals, any_of, at_least and at_most.\nUnknown fields and unsupported filter shapes are refused. lexical uses the full-text index. The current hybrid mode adds character-hash similarity; semantic_embedding_model_installed is false. A score orders hits within that answer. It is not a correctness score or a cross-query quality measurement.\nMaterial that declares effects\nA search can name authority_effects to include material whose declared effects fit the step's existing permissions. Omit it or send an empty array to consider only material with no declared effects. For example, a step already authorized to read files and run a local process can search with:\n{\"record_type\":\"service_retrieval_request/v2\",\"query\":\"validate a local data file\",\"mode\":\"lexical\",\"authority_effects\":[\"reads_fs\",\"spawns_process\"]}\nRead the current request version from /api/v1/capabilities. Version 1 requests are refused; update the client rather than removing its selection fields. The protocol tool publishes its current shape through the tool list.\nThis selects material; it does not grant execution permission. A manifest or read must carry the appropriate selection fields too. A metadata filters condition does not replace this selection or your harness's own permissions.\nRead the reference\nKeep the complete reference returned for the item.\nFieldMeaningidentityThe selected item identity.source_layerWhere its source belongs. Harness material uses harness_local; this is not one of the four persistent engine layers.source_refThe source reference and its version.body_digestSHA-256 of the body to be downloaded.descriptor_digestIdentity of the accompanying descriptor.size_bytesBody size.licenseDeclared licence.declared_effectsOperations the material declares.qualification_basisThe service's reported qualification basis, such as host_attested.body_allowedWhether this credential may read the body.packageFile inventory when the item belongs to a catalogue package.\nA catalogue release is named in catalogue_release. Retain it when reporting an unexpected result. A new search can return a different release or digest.\nInspect the manifest\nSend a manifest operation to /api/v1/provisioning with the selected identity. Add expected_digest using the reference's body_digest, so a changed body is refused rather than substituted. The following is a request shape: replace the two example strings with values from your search.\n{\"record_type\":\"service_provisioning_request/v1\",\"operation\":\"manifest\",\"identity\":\"item-identity\",\"expected_digest\":\"selected-digest\"}\nThe manifest reports the digest, licence, size, body_allowed, metering_policy and verify_before_use. A manifest is not a body download and is not metered. Permission is checked again when the body is requested.\nDownload exact bytes\nFor bytes, send the read operation to /api/v1/download. Supply the identity, expected digest and a new request_id for this logical read. Keep the request identity if you retry an uncertain outcome.\nThe response carries X-Content-SHA256 and X-Loop-Engine-Record-Type headers. Compute SHA-256 over the downloaded bytes and compare it with the selected manifest. The download endpoint returns bytes, not a JSON usage acknowledgment.\nOne file of a package\nA package body is a catalogue_package/v1 document listing its files. A file entry names path, digest, size_bytes, media_type and role. Retrieve one file through /api/v1/download by adding that exact path to the read request.\n{\"record_type\":\"service_provisioning_request/v1\",\"operation\":\"read\",\"identity\":\"item-identity\",\"expected_digest\":\"selected-digest\",\"request_id\":\"one-package-read\",\"path\":\"scripts/tool.py\"}\nThese are example identity and path values, not a promise that such an item is in your account. Use values from the actual package. The response digest must match the file entry, while expected_digest, when supplied, binds the selected item body. Reuse the same request_id across that package's files to share its item-level metering unit. A missing path returns package_file_not_found.\nInline reads\nAn inline read through /api/v1/provisioning returns the body inside provisioning_body/v2, with metering fields. Bodies above inline_body_bytes require the download endpoint. Package file paths also require that endpoint; they are not accepted as inline reads.\nFinish the step\nA body may need a native directory, explicit plugin activation or declared dependencies before a harness can use it. Preserve the package's relative paths. A download does not grant local process, network or model authority. Verify loading and check the resulting work against your task.\nSee Usage and what you pay for for retries and Serving and connections for the wire protocol, limits and refusal codes.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "searching-and-retrieving_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "Searching and retrieving",
+        "summaryLines": 0.9997676888357891,
+        "height": 4407,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 3319,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Usage and what you pay for",
+        "summary": "The plan, downloads and usage records.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Baltor Pro is $29 a month. Search is free, and there is no overage billing at launch. Invited accounts are free through an operator grant. Model access and provider charges are separate from this subscription.\nThe measured unit\nOne accepted, metered item read records one provisioned_item. This is the download unit shown by the service; it does not prove that your client saved, loaded or used the bytes successfully.\nSearch, discovery, listing, manifests and reading your usage are not metered. The discovery answer states metered_unit and never_metered. A request refused before metering records no unit. A timeout or uncertain commit can happen after metering, so it needs the retry procedure below.\nInspect the manifest first\nThe free manifest tells you the item's size, whether your credential may read its body, and its metering policy.\nFieldMeaningbody_allowedWhether this credential and account may read the body.metering_policyrequired records the applicable unit; unmetered does not.size_bytesBody size before downloading.verify_before_useThe client must verify and assess the downloaded material.\nSearching and retrieving describes the manifest and download requests.\nRead your usage\nThe account page displays usage. A client with usage:read can also ask for it:\ncurl -sS -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" https://app.baltor.ai/api/v1/usage\nThe result is durable_tenant_usage/v1.\nFieldMeaningtenant_idThe account these records belong to.recordsNumber of recorded measured reads.totalsQuantities grouped by unit.durabilitydurable for this stored usage record.itemsEach item's item_identity, read count in records, and latest last_used_at time.\nUsage is a record of service reads. It is not a measure of model tokens, successful tasks or how often a downloaded file was used afterward.\nRetry the same read with the same identity\nChoose one request_id for one selected item read. If the result is uncertain, keep the item, its expected digest and that request identity when retrying. An exact retry reuses the recorded unit. A new request identity represents a new logical read.\nFor a package, fetching its files with the same request_id shares the same item-level unit. A request identity must not be reused for another item or version. On the current service that conflict reaches the client as meter_commit_unknown, so repeated conflicting requests will not repair it.\nCodeStatusNext stepmeter_commit_unknown503Keep the original item and request identity. Inspect usage, then retry the same read. Check that the identity was not reused for another item.deadline_exceeded504The server callback may still finish. Inspect usage or retry the same read identity.commit_unknown503Inspect current state before repeating the operation.meter_unavailable400Report the service configuration problem to the operator.\nBytes and inline responses differ\n/api/v1/download returns bytes, with X-Content-SHA256 and X-Loop-Engine-Record-Type headers. It does not return a JSON metering acknowledgment. Compare the bytes with the manifest's digest.\nAn inline read through /api/v1/provisioning returns provisioning_body/v2. Its metered flag says whether a meter was used. metered_unit is provisioned_item when metered and null otherwise; metering_acknowledgment is also null for an unmetered read. An accepted metered response requires a confirmed commitment. unknown is not a successful commitment state.\nSee Your account for access and Troubleshooting for other refusals.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "Usage and what you pay for",
+        "summaryLines": 0.9997676888357891,
+        "height": 3319,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "troubleshooting_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 4734,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Troubleshooting",
+        "summary": "Understand a refusal and choose the next step.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Start with the response code and message. The direct interface returns service_http_error/v1 with error.code, error.message and error.next_action. It can include request_reference for support. Protocol transport errors use the protocol's own error shape instead.\nCheck the connection first\nOpen /api/v1/capabilities to see whether the service answers and which protocol versions and limits it reports.Confirm that the client process received BALTOR_SERVICE_TOKEN and uses the endpoint shown by Get set up.Check /api/v1/session with that credential to identify the account, scopes and expiry. A browser sign-in and a client token are different credentials.Confirm the native client lists the server's tools. A configuration listing alone does not prove a successful handshake.\nCredential and account refusals\nCodeStatusNext stepunauthorized401Check the credential and the process environment that supplies it.tenant_disabled401Ask the operator about the account state.insufficient_scope403The credential lacks the scope required by this operation.scope_required403The account lacks a required scope. Ask the operator.body_forbidden403Metadata access does not currently permit this body download.browser_session_required403Use browser sign-in for customer token management.account_registration_unavailable503Follow the current access path at Get started.\nExpired, revoked or disabled credentials can answer unauthorized; the service does not disclose a more specific authentication reason. An account entitlement, a token scope and an item grant are separate checks. Your account explains each one.\nEmpty search or unavailable material\nAn empty result is not a connection failure. It can mean the query has no match, the account lacks grants, the item is withdrawn, or the current selection excludes it. Search with authority_effects only for effects already permitted for your step. Omitted or empty effect selection withholds material that declares effects. This choice does not authorize executing the material. Read the current request version from /api/v1/capabilities and update an older client when it is refused.\nCodeStatusNext stepitem_unavailable404Refresh your authorized list and selected digest. The response does not distinguish an unknown identity from an inaccessible one.item_withheld400Check the requested style, kind and effect selection.item_withdrawn404Search again; the selected published version is no longer available.package_file_not_found404Use a path from the selected package document.package_files_unavailable404This item has no separately downloadable package files.search_filter_not_allowed400Use only declared public filterable attributes.search_filter_invalid400Check the filter condition and value types.\nVersion and request problems\nFor the handshake-based protocol, use the version returned by initialize if your client supports it. A different returned version is a negotiation result; a client that cannot support it must stop. Other requests with unsupported, missing or malformed version information are refused.\nCodeStatusNext stepunsupported_protocol_version400Select a supported protocol version from the response or capabilities.protocol_version_header_missing400Supply the negotiated version header.protocol_version_header_repeated400Send the version header once.protocol_version_header_malformed400Send a supported version string.protocol_method_not_allowed405The protocol endpoint accepts POST messages.unsupported_version400Use the exact request record version this interface supports.unknown_request_field400Remove fields outside the declared request schema.nesting_limit_exceeded400Reduce the nested request structure.\nThe protocol transport requires an Accept header supporting both application/json and text/event-stream; an incompatible header can receive\nSee Serving and connections for the\nheaders and the two supported protocol flows.\nCapacity, size and time\nRead current limits from /api/v1/capabilities. A larger local allowance does not change a server limit.\nCodeStatusNext stepfailed_attempt_limit_reached429Wait for Retry-After, then correct the rejected request or credential.tenant_concurrency_limit_reached429Reduce concurrent work from this account.service_busy503Retry after a pause with lower concurrency.external_provider_capacity_reached503Work waiting on another service has reached its capacity.download_required413Use the download endpoint instead of an inline body.download_limit_exceeded413The selected body exceeds the service's download limit.response_limit_exceeded413Ask for fewer results or a smaller response.deadline_exceeded504A server callback may still finish. Keep the original request identity for a read retry.\nUncertain metering and mismatched bytes\nmeter_commit_unknown means the usage outcome is uncertain. Inspect usage and retry the same item with the same request_id. If that identity was used for a different item, repeating the conflicting request will not repair it. See Usage and what you pay for.\nIf downloaded bytes do not match the selected digest, do not treat that file as the selected item. Keep the item identity, expected digest and request reference for the operator. body_integrity_failed identifies a service-side integrity problem; the client should also check its received bytes.\nSend a useful report\nInclude the endpoint, time, error code and request_reference when present. State whether the failure was a client listing, handshake, search, manifest or download. Do not include credentials or private task content. The service's readiness endpoint is /api/v1/health; its result does not prove that your specific account or native client can complete the task.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "troubleshooting_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "Troubleshooting",
+        "summaryLines": 0.9997676888357891,
+        "height": 4734,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "serving-and-connections_1440_layout",
+      "passed": true,
+      "detail": {
+        "height": 7116,
+        "width": 1440,
+        "viewport": 1440,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Serving and connections",
+        "summary": "Protocol versions and API request shapes.",
+        "summaryLines": 0.9997676888357891,
+        "titleTop": 168.140625,
+        "tocTop": 386.78125,
+        "tocVisible": true,
+        "article": "Read /api/v1/capabilities for the deployment you connect to. A public check on September 23, 2026 reported both protocol versions below, library version 2.2.0, package downloads by path and an active failed-attempt limit. Values and enabled features remain deployment settings; the capabilities response is the current source for them.\nProtocol versions\nFlowVersionClient behaviorHandshake2025-11-25Start with initialize, then use the returned compatible version.Per request2026-07-28Supply version and capabilities with each self-contained request.\nBoth use the Model Context Protocol at /mcp over streamable_http. The service reports session_state as stateless. Your service credential goes in the Authorization header on each request, independently of protocol negotiation. The published client recipes use a supplied token; an external authorization flow is not qualified by the current capabilities.\nThe 2025-11-25 lifecycle allows a server to return a supported version when it cannot use the requested one. The client continues only if it supports that result. The 2026-07-28 specification uses self-contained requests and per-request capability negotiation.\nHandshake\nAn initialization request contains the protocol version, client capabilities and client identity:\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"clientInfo\":{\"name\":\"my-client\",\"version\":\"1.0.0\"}}}\nThis service's handshake profile returns 2025-11-25. If initialization requests an unsupported older version, it can still return that supported version. After the initialization result, complete the client's initialized notification and send the negotiated MCP-Protocol-Version on subsequent requests.\nA normal request with an unsupported version receives status 400 and protocol error -32022, including supported versions. Missing, repeated or malformed version headers receive protocol error -32020. These are not instructions to silently downgrade a request that needs unsupported semantics.\nPer-request flow\nAt 2026-07-28, requests carry the version in MCP-Protocol-Version and in params._meta. They also carry Mcp-Method; a tool call carries Mcp-Name. A client can request server/discover with these metadata keys:\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"server/discover\",\"params\":{\"_meta\":{\"io.modelcontextprotocol/protocolVersion\":\"2026-07-28\",\"io.modelcontextprotocol/clientCapabilities\":{},\"io.modelcontextprotocol/clientInfo\":{\"name\":\"my-client\",\"version\":\"1.0.0\"}}}}\nDiscovery and tool-list results can carry cacheScope and ttlMs. Respect private cache scope and the returned lifetime. They do not waive authorization checks on a later item read.\nHeaders and tools\nHeaderPurposeAuthorizationOne Bearer service credential.Content-Typeapplication/json for request bodies.AcceptAccept both application/json and text/event-stream for the protocol transport.MCP-Protocol-VersionNegotiated or per-request protocol version.Mcp-MethodMethod routing for the per-request protocol flow.Mcp-NameTool name for a per-request tools/call.X-Content-SHA256Digest of a downloaded body or selected package file.X-Loop-Engine-Record-Typeservice_download/v1 on a byte download.Retry-AfterWait interval supplied with a rate refusal.WWW-AuthenticateAuthentication challenge information.\nThe service lists provisioning_discover, provisioning_list, provisioning_manifest, provisioning_read and intelligence_search. Use each tool's returned input schema. Search has no read-only annotation in the current implementation; it is still not metered. A body read can record usage. Do not infer permissions or price from a tool annotation.\nDirect interface addresses\nThe direct interface uses versioned JSON records rather than protocol messages. A success wrapper is service_http_result/v1. A refusal is service_http_error/v1, with error.code, error.message and error.next_action; it can include request_reference. A protocol transport refusal instead uses the protocol's own error object.\nAddressMethodPurpose/api/v1/capabilitiesGETPublic protocol, limits and feature settings./api/v1/healthGETPublic health and readiness checks./api/v1/sessionGETAccount, authentication mode and credential expiry./api/v1/retrievalPOSTSearch authorized metadata./api/v1/provisioningPOSTDiscover, list, manifest or inline read./api/v1/downloadPOSTDownload bytes, including a declared package path./api/v1/usageGETRead this account's recorded usage./api/v1/account/identityGETBrowser identity configuration./api/v1/account/activatePOSTBind an authenticated browser identity to its allowed account./api/v1/account/logoutPOSTEnd the browser account authorization./api/v1/account/accessGET, POSTCustomer token options, listing and management./api/v1/account/signupPOSTAccount creation when enabled./api/v1/account/recoveryPOSTAccount recovery when available./api/v1/account/promotionPOSTRedeem an enabled promotion./api/v1/waitlistPOSTRequest an invitation./api/v1/admin/accessGET, POSTAuthorized operator token administration./api/v1/admin/waitlistGET, POSTAuthorized invitation administration./api/v1/billing/plansGETPlans offered to the authenticated account./api/v1/billing/checkoutPOSTCreate an authorized checkout session./api/v1/billing/portalPOSTOpen an authorized customer portal session./api/v1/billing/webhookPOSTReceive provider events with signature verification.\nAn address can exist while its feature is unavailable. Check capabilities and the returned refusal. Authorization requirements differ: a public invitation request is not an operator decision, and a billing webhook uses its provider signature. A client token is not a browser-management session.\nThe external authorization metadata addresses /.well-known/oauth-protected-resource and /.well-known/oauth-protected-resource/mcp are conditional on that host configuration. Their existence in the route table does not qualify an external login flow.\nLimits, deadlines and retries\nThe capabilities record names request_bytes, response_bytes, search_results, concurrent_operations, concurrent_operations_for_each_account, concurrent_operations_waiting_on_another_service and request_nesting_depth. Delivery separately names inline_body_bytes and download_bytes.\nThe failed-attempt policy reports whether it is active, the counted refusal categories, failures_allowed and window_seconds. Follow the returned wait interval and correct the failed request before repeating it.\nA deadline bounds how long the response waits. A running callback can still finish after that deadline. The service does not automatically replay it. Retain the original request_id and selection when retrying a body read after an uncertain outcome; do not treat a timeout as proof that metering did not occur.\nRefusal reference\nThese are the codes most relevant to a client. The response also supplies a plain message and next action. Troubleshooting explains how to diagnose them.\nCodeStatusMeaningunauthorized401Credential refused.tenant_disabled401Account disabled.insufficient_scope403Credential lacks the operation scope.scope_required403Account lacks the operation scope.body_forbidden403Body disclosure is not permitted.browser_session_required403Customer token management needs browser sign-in.item_unavailable404Identity or expected digest is unavailable to this account.item_withheld400Requested selection excludes this material.item_withdrawn404Selected item version withdrawn.package_file_not_found404Path absent from the package.package_files_unavailable404Separate file download unavailable for this item.package_file_requires_download400Use the byte-download endpoint for a package path.search_filter_not_allowed400Attribute is not public and filterable.search_filter_invalid400Filter condition is invalid.unknown_request_field400Request includes an unsupported field.unsupported_version400Request record version is unsupported.invalid_request400Request schema is invalid.nesting_limit_exceeded400Request is nested too deeply.unsupported_protocol_version400Protocol version is unsupported for this request.protocol_version_header_missing400Version header missing.protocol_version_header_repeated400Version header repeated.protocol_version_header_malformed400Version header malformed.protocol_method_not_allowed405Protocol endpoint method unsupported.download_required413Body exceeds the inline limit.download_limit_exceeded413Body exceeds the download limit.response_limit_exceeded413Response exceeds the configured limit.body_integrity_failed400Stored bytes fail their identity check.failed_attempt_limit_reached429Failed-attempt allowance exhausted.tenant_concurrency_limit_reached429Account operation capacity exhausted.service_busy503Service operation capacity exhausted.external_provider_capacity_reached503Capacity waiting on another service exhausted.deadline_exceeded504Response deadline exceeded.meter_unavailable400Required metering unavailable.meter_commit_unknown503Meter outcome uncertain or read identity conflicts.commit_unknown503Durable write outcome uncertain.scope_escalation_refused403Requested token scopes exceed authority.access_lifetime_exceeded400Requested token lifetime exceeds policy.access_token_limit_reached409Active token limit reached.access_token_history_limit_reached409Token record limit reached.access_request_identity_conflict409Token-operation identity reused with different contents.managed_access_token_not_found404Managed token unavailable to this account.concurrent_update409A competing write changed the expected state.account_registration_unavailable503Account creation is unavailable.\nRelated guides\nGet set upSearching and retrievingYour accountUsage and what you pay for\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "serving-and-connections_1440_content",
+      "passed": true,
+      "detail": {
+        "title": "Serving and connections",
+        "summaryLines": 0.9997676888357891,
+        "height": 7116,
+        "tocTop": 386.78125
+      }
+    },
+    {
+      "name": "index_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 3252,
+        "width": 390,
+        "viewport": 390,
+        "cards": [
+          "get-set-up",
+          "what-baltor-is",
+          "your-account",
+          "searching-and-retrieving",
+          "usage-and-what-you-pay-for",
+          "troubleshooting",
+          "serving-and-connections"
+        ],
+        "header": 1,
+        "footer": 1,
+        "title": "",
+        "summary": "",
+        "summaryLines": 0,
+        "titleTop": 0,
+        "tocTop": 0,
+        "tocVisible": false,
+        "article": "",
+        "retired": false
+      }
+    },
+    {
+      "name": "index_390_order",
+      "passed": true,
+      "detail": {
+        "cards": [
+          "get-set-up",
+          "what-baltor-is",
+          "your-account",
+          "searching-and-retrieving",
+          "usage-and-what-you-pay-for",
+          "troubleshooting",
+          "serving-and-connections"
+        ],
+        "height": 3252
+      }
+    },
+    {
+      "name": "what-baltor-is_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 4864,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "What Baltor is",
+        "summary": "The library, the local engine and your models.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 137.140625,
+        "tocTop": 287.328125,
+        "tocVisible": true,
+        "article": "Baltor gives your coding tools and agents material for the step they are working on: instructions, skills, tools and reusable code. Your client searches the hosted library, chooses an item and downloads its exact bytes. You keep your own harness and model access.\nThe goal and the current service\nThe goal is to make harnesses and multi-agent systems more efficient at solving unfamiliar tasks within the user's budget and permissions. That includes giving each step suitable context, reusing working code and choosing appropriate models and methods. A reusable solution is one possible result of that work.\nThe local engine's default design gives each focused step a fresh harness with the material that step needs. The hosted library is usable through your existing client today. Connecting to the library does not by itself install the engine, start separate harness processes or finish a task for you.\nWhere the work happens\nYour task\n├── Hosted Baltor library\n│   ├── Searches the material your account may see\n│   ├── Returns small references before bodies\n│   └── Delivers selected bytes and records applicable download usage\n└── Your environment\n    ├── Runs your harness and any local engine\n    ├── Holds your provider settings and model credentials\n    └── Loads material, performs work and checks the result\nThe library receives what your client sends in a request, including search text, selected item identities and the service credential. A search can contain project information if you put it there. The library connection does not upload your repository or forward your model credentials automatically.\nFiles and packages\nAn item can be a text file or a package of files. The catalogue_package/v1 format supports native instructions such as AGENTS.md and CLAUDE.md, skills with supporting scripts and references, tools, contracts, plugin declarations and configuration. Check the catalogue to see which items are currently available to your account. Format support does not mean every possible package is already published.\nA harness must load material through its own supported mechanism. A plugin can need explicit activation; a tool can need dependencies and execution permission. Downloading a file establishes neither of those facts.\nGive the harness its current assignment\nA reusable package does not automatically carry the current task, inputs, acceptance conditions or first action. Supply those when you start the focused step. A file named node_context.md or agents.state is not a universal startup standard. Use the client's supported instruction file, task input or explicit file-loading mechanism, and verify that the step received it. Keep temporary task state separate from reusable library material.\nRead the reference before downloading\nFieldMeaningfamilyThe material's family. Hosted harness material uses harness.source_layerThe source holding its body. Harness material uses harness_local.kindThe declared item kind, such as skill, tool or instruction_file.licenseThe declared licence.declared_effectsOperations the material says it needs. These are not execution permissions.qualification_basisThe basis reported by the service. host_attested is the host's attestation, not a new review performed by the download.\nThe manifest includes a digest and says verify_before_use. Compare downloaded bytes with that digest, and check the result against your task. Retrieval, loading, use and acceptance are separate events.\nModels and payment\nThe hosted library does not supply a model subscription or run your task's model calls. Configure models in your harness or local engine. Those calls can go to a local endpoint, a server you operate or a hosted provider, within the permissions you set. Provider charges are separate from Baltor Pro.\nNext steps\nGet started for account access.Get set up to connect your client.Searching and retrieving for references and package downloads.Usage and what you pay for for metering and retries.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "what-baltor-is_390_content",
+      "passed": true,
+      "detail": {
+        "title": "What Baltor is",
+        "summaryLines": 0.9998739919354839,
+        "height": 4864,
+        "tocTop": 287.328125
+      }
+    },
+    {
+      "name": "your-account_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 5125,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Your account",
+        "summary": "Accounts, personal tokens and access.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 137.140625,
+        "tocTop": 287.328125,
+        "tocVisible": true,
+        "article": "Open Get started for the current access path. When signup is open, enter your email, open the link and choose a password on the confirmation page. Otherwise follow the configured invitation path or sign in to an existing account. Manage your account at /account.\nYour browser sign-in and your coding tool's client token are different credentials. The browser manages your account. The client token authorizes the specific service operations its scopes allow.\nCreate a client token\nOn /account, open Your client tokens and create one for each client or machine. Give it a label you will recognize. Copy the secret when it is shown; later listings contain its identity and state, not the secret.\nThe service stores a digest of the token. An exact replay of its creation request returns token as null, so repeating the request is not a way to recover the original secret. Keep the token through your client's supported secret mechanism, as Get set up explains.\nWhat controls a download\nCheckWhat must holdAccountThe account is enabled and the credential is current.ScopeThe credential includes provisioning:read.GrantThe account holds access to the selected item and its body.EntitlementThe account has bodies access rather than metadata only.SelectionThe item still matches the requested digest and permitted filters.\nThe service rechecks authorization when it releases the result. An unknown or inaccessible identity returns item_unavailable; it is not listed as material belonging to another account.\nEntitlements\nValueAccessmetadataSearch, discovery, listing and manifests.bodiesMetadata and permitted body downloads.\nA subscription or operator grant supplies the account entitlement. Creating a token does not upgrade it. Invited access can be free through an operator grant.\nScopes\nScopeService operationprovisioning:metadataSearch, discover, list and manifest.provisioning:readBody reads and downloads.usage:readYour account's usage.billing:manageAuthorized checkout and customer portal operations.access:manageOperator access administration.\nA personal client token is limited by the account, browser session and host policy. It cannot create more client tokens through the customer management endpoint; that operation requires a browser session.\nToken limits and state\nThe account page reads service_client_access_options/v1 from /api/v1/account/access. It shows the available scopes and token policy.\nPolicy fieldMeaningmaximum_active_tokensMaximum active tokens.maximum_lifetime_secondsLongest allowed lifetime.default_lifetime_secondsDefault requested lifetime.maximum_token_recordsLimit on retained token records.\nEach token has an expiry and an active, expired or revoked state. The account page provides a Revoke action. A revoked or expired token is refused on its next request; material already downloaded is not recalled.\nConfirm which account a client uses\nWith the environment variable from the setup guide available to your terminal:\ncurl -sS -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" https://app.baltor.ai/api/v1/session\nThe service_session/v1 result contains principal, authentication_mode, token_expires_at and access_source. The source explains whether a subscription, operator invitation or promotion currently covers the account. Check the principal's tenant_id, entitlement and scopes before using a client on a shared machine. Keep credentials out of logs and support messages.\nSubscription and help\nBaltor Pro is $29 a month. Invited accounts are free through their grant. When available, the account page opens checkout or the customer portal. Account creation and checkout are separate capabilities; available checkout does not mean public registration is open.\nModel access and provider charges remain yours. See Usage and what you pay for for download records, or Troubleshooting for a refusal.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "your-account_390_content",
+      "passed": true,
+      "detail": {
+        "title": "Your account",
+        "summaryLines": 0.9998739919354839,
+        "height": 5125,
+        "tocTop": 287.328125
+      }
+    },
+    {
+      "name": "searching-and-retrieving_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 6390,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Searching and retrieving",
+        "summary": "Find, inspect and download selected material.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 137.140625,
+        "tocTop": 287.328125,
+        "tocVisible": true,
+        "article": "Search returns small references so a step can choose useful material before loading its body. Download only the items the task needs, then verify their bytes and how the harness uses them.\nSearch the authorized catalogue\ncurl -sS -X POST https://app.baltor.ai/api/v1/retrieval -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" -H \"Content-Type: application/json\" -d '{\"record_type\":\"service_retrieval_request/v2\",\"query\":\"split address lines\",\"mode\":\"lexical\",\"top_n\":3}'\nThe result is service_retrieval_result/v1. It holds hits and states bodies_loaded as false. The items and scores depend on your account, the current catalogue and the query; this example does not assume a particular hit.\nRequest fieldMeaningrecord_typeExactly service_retrieval_request/v2.queryNonempty search text, at most 4096 UTF-8 bytes.authority_effectsOptional unique array of declared effect names already permitted for your step. Omitted or empty means no declared effects. This selects metadata, not execution permission.modelexical or hybrid; default lexical.top_nPositive whole number within the advertised search_results limit; default 10.filtersUp to eight declared, public, filterable catalogue attributes. Conditions include equals, any_of, at_least and at_most.\nUnknown fields and unsupported filter shapes are refused. lexical uses the full-text index. The current hybrid mode adds character-hash similarity; semantic_embedding_model_installed is false. A score orders hits within that answer. It is not a correctness score or a cross-query quality measurement.\nMaterial that declares effects\nA search can name authority_effects to include material whose declared effects fit the step's existing permissions. Omit it or send an empty array to consider only material with no declared effects. For example, a step already authorized to read files and run a local process can search with:\n{\"record_type\":\"service_retrieval_request/v2\",\"query\":\"validate a local data file\",\"mode\":\"lexical\",\"authority_effects\":[\"reads_fs\",\"spawns_process\"]}\nRead the current request version from /api/v1/capabilities. Version 1 requests are refused; update the client rather than removing its selection fields. The protocol tool publishes its current shape through the tool list.\nThis selects material; it does not grant execution permission. A manifest or read must carry the appropriate selection fields too. A metadata filters condition does not replace this selection or your harness's own permissions.\nRead the reference\nKeep the complete reference returned for the item.\nFieldMeaningidentityThe selected item identity.source_layerWhere its source belongs. Harness material uses harness_local; this is not one of the four persistent engine layers.source_refThe source reference and its version.body_digestSHA-256 of the body to be downloaded.descriptor_digestIdentity of the accompanying descriptor.size_bytesBody size.licenseDeclared licence.declared_effectsOperations the material declares.qualification_basisThe service's reported qualification basis, such as host_attested.body_allowedWhether this credential may read the body.packageFile inventory when the item belongs to a catalogue package.\nA catalogue release is named in catalogue_release. Retain it when reporting an unexpected result. A new search can return a different release or digest.\nInspect the manifest\nSend a manifest operation to /api/v1/provisioning with the selected identity. Add expected_digest using the reference's body_digest, so a changed body is refused rather than substituted. The following is a request shape: replace the two example strings with values from your search.\n{\"record_type\":\"service_provisioning_request/v1\",\"operation\":\"manifest\",\"identity\":\"item-identity\",\"expected_digest\":\"selected-digest\"}\nThe manifest reports the digest, licence, size, body_allowed, metering_policy and verify_before_use. A manifest is not a body download and is not metered. Permission is checked again when the body is requested.\nDownload exact bytes\nFor bytes, send the read operation to /api/v1/download. Supply the identity, expected digest and a new request_id for this logical read. Keep the request identity if you retry an uncertain outcome.\nThe response carries X-Content-SHA256 and X-Loop-Engine-Record-Type headers. Compute SHA-256 over the downloaded bytes and compare it with the selected manifest. The download endpoint returns bytes, not a JSON usage acknowledgment.\nOne file of a package\nA package body is a catalogue_package/v1 document listing its files. A file entry names path, digest, size_bytes, media_type and role. Retrieve one file through /api/v1/download by adding that exact path to the read request.\n{\"record_type\":\"service_provisioning_request/v1\",\"operation\":\"read\",\"identity\":\"item-identity\",\"expected_digest\":\"selected-digest\",\"request_id\":\"one-package-read\",\"path\":\"scripts/tool.py\"}\nThese are example identity and path values, not a promise that such an item is in your account. Use values from the actual package. The response digest must match the file entry, while expected_digest, when supplied, binds the selected item body. Reuse the same request_id across that package's files to share its item-level metering unit. A missing path returns package_file_not_found.\nInline reads\nAn inline read through /api/v1/provisioning returns the body inside provisioning_body/v2, with metering fields. Bodies above inline_body_bytes require the download endpoint. Package file paths also require that endpoint; they are not accepted as inline reads.\nFinish the step\nA body may need a native directory, explicit plugin activation or declared dependencies before a harness can use it. Preserve the package's relative paths. A download does not grant local process, network or model authority. Verify loading and check the resulting work against your task.\nSee Usage and what you pay for for retries and Serving and connections for the wire protocol, limits and refusal codes.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "searching-and-retrieving_390_content",
+      "passed": true,
+      "detail": {
+        "title": "Searching and retrieving",
+        "summaryLines": 0.9998739919354839,
+        "height": 6390,
+        "tocTop": 287.328125
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 4852,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Usage and what you pay for",
+        "summary": "The plan, downloads and usage records.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 137.140625,
+        "tocTop": 319.71875,
+        "tocVisible": true,
+        "article": "Baltor Pro is $29 a month. Search is free, and there is no overage billing at launch. Invited accounts are free through an operator grant. Model access and provider charges are separate from this subscription.\nThe measured unit\nOne accepted, metered item read records one provisioned_item. This is the download unit shown by the service; it does not prove that your client saved, loaded or used the bytes successfully.\nSearch, discovery, listing, manifests and reading your usage are not metered. The discovery answer states metered_unit and never_metered. A request refused before metering records no unit. A timeout or uncertain commit can happen after metering, so it needs the retry procedure below.\nInspect the manifest first\nThe free manifest tells you the item's size, whether your credential may read its body, and its metering policy.\nFieldMeaningbody_allowedWhether this credential and account may read the body.metering_policyrequired records the applicable unit; unmetered does not.size_bytesBody size before downloading.verify_before_useThe client must verify and assess the downloaded material.\nSearching and retrieving describes the manifest and download requests.\nRead your usage\nThe account page displays usage. A client with usage:read can also ask for it:\ncurl -sS -H \"Authorization: Bearer $BALTOR_SERVICE_TOKEN\" https://app.baltor.ai/api/v1/usage\nThe result is durable_tenant_usage/v1.\nFieldMeaningtenant_idThe account these records belong to.recordsNumber of recorded measured reads.totalsQuantities grouped by unit.durabilitydurable for this stored usage record.itemsEach item's item_identity, read count in records, and latest last_used_at time.\nUsage is a record of service reads. It is not a measure of model tokens, successful tasks or how often a downloaded file was used afterward.\nRetry the same read with the same identity\nChoose one request_id for one selected item read. If the result is uncertain, keep the item, its expected digest and that request identity when retrying. An exact retry reuses the recorded unit. A new request identity represents a new logical read.\nFor a package, fetching its files with the same request_id shares the same item-level unit. A request identity must not be reused for another item or version. On the current service that conflict reaches the client as meter_commit_unknown, so repeated conflicting requests will not repair it.\nCodeStatusNext stepmeter_commit_unknown503Keep the original item and request identity. Inspect usage, then retry the same read. Check that the identity was not reused for another item.deadline_exceeded504The server callback may still finish. Inspect usage or retry the same read identity.commit_unknown503Inspect current state before repeating the operation.meter_unavailable400Report the service configuration problem to the operator.\nBytes and inline responses differ\n/api/v1/download returns bytes, with X-Content-SHA256 and X-Loop-Engine-Record-Type headers. It does not return a JSON metering acknowledgment. Compare the bytes with the manifest's digest.\nAn inline read through /api/v1/provisioning returns provisioning_body/v2. Its metered flag says whether a meter was used. metered_unit is provisioned_item when metered and null otherwise; metering_acknowledgment is also null for an unmetered read. An accepted metered response requires a confirmed commitment. unknown is not a successful commitment state.\nSee Your account for access and Troubleshooting for other refusals.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_390_content",
+      "passed": true,
+      "detail": {
+        "title": "Usage and what you pay for",
+        "summaryLines": 0.9998739919354839,
+        "height": 4852,
+        "tocTop": 319.71875
+      }
+    },
+    {
+      "name": "troubleshooting_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 7281,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Troubleshooting",
+        "summary": "Understand a refusal and choose the next step.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 162.875,
+        "tocTop": 313.0625,
+        "tocVisible": true,
+        "article": "Start with the response code and message. The direct interface returns service_http_error/v1 with error.code, error.message and error.next_action. It can include request_reference for support. Protocol transport errors use the protocol's own error shape instead.\nCheck the connection first\nOpen /api/v1/capabilities to see whether the service answers and which protocol versions and limits it reports.Confirm that the client process received BALTOR_SERVICE_TOKEN and uses the endpoint shown by Get set up.Check /api/v1/session with that credential to identify the account, scopes and expiry. A browser sign-in and a client token are different credentials.Confirm the native client lists the server's tools. A configuration listing alone does not prove a successful handshake.\nCredential and account refusals\nCodeStatusNext stepunauthorized401Check the credential and the process environment that supplies it.tenant_disabled401Ask the operator about the account state.insufficient_scope403The credential lacks the scope required by this operation.scope_required403The account lacks a required scope. Ask the operator.body_forbidden403Metadata access does not currently permit this body download.browser_session_required403Use browser sign-in for customer token management.account_registration_unavailable503Follow the current access path at Get started.\nExpired, revoked or disabled credentials can answer unauthorized; the service does not disclose a more specific authentication reason. An account entitlement, a token scope and an item grant are separate checks. Your account explains each one.\nEmpty search or unavailable material\nAn empty result is not a connection failure. It can mean the query has no match, the account lacks grants, the item is withdrawn, or the current selection excludes it. Search with authority_effects only for effects already permitted for your step. Omitted or empty effect selection withholds material that declares effects. This choice does not authorize executing the material. Read the current request version from /api/v1/capabilities and update an older client when it is refused.\nCodeStatusNext stepitem_unavailable404Refresh your authorized list and selected digest. The response does not distinguish an unknown identity from an inaccessible one.item_withheld400Check the requested style, kind and effect selection.item_withdrawn404Search again; the selected published version is no longer available.package_file_not_found404Use a path from the selected package document.package_files_unavailable404This item has no separately downloadable package files.search_filter_not_allowed400Use only declared public filterable attributes.search_filter_invalid400Check the filter condition and value types.\nVersion and request problems\nFor the handshake-based protocol, use the version returned by initialize if your client supports it. A different returned version is a negotiation result; a client that cannot support it must stop. Other requests with unsupported, missing or malformed version information are refused.\nCodeStatusNext stepunsupported_protocol_version400Select a supported protocol version from the response or capabilities.protocol_version_header_missing400Supply the negotiated version header.protocol_version_header_repeated400Send the version header once.protocol_version_header_malformed400Send a supported version string.protocol_method_not_allowed405The protocol endpoint accepts POST messages.unsupported_version400Use the exact request record version this interface supports.unknown_request_field400Remove fields outside the declared request schema.nesting_limit_exceeded400Reduce the nested request structure.\nThe protocol transport requires an Accept header supporting both application/json and text/event-stream; an incompatible header can receive\nSee Serving and connections for the\nheaders and the two supported protocol flows.\nCapacity, size and time\nRead current limits from /api/v1/capabilities. A larger local allowance does not change a server limit.\nCodeStatusNext stepfailed_attempt_limit_reached429Wait for Retry-After, then correct the rejected request or credential.tenant_concurrency_limit_reached429Reduce concurrent work from this account.service_busy503Retry after a pause with lower concurrency.external_provider_capacity_reached503Work waiting on another service has reached its capacity.download_required413Use the download endpoint instead of an inline body.download_limit_exceeded413The selected body exceeds the service's download limit.response_limit_exceeded413Ask for fewer results or a smaller response.deadline_exceeded504A server callback may still finish. Keep the original request identity for a read retry.\nUncertain metering and mismatched bytes\nmeter_commit_unknown means the usage outcome is uncertain. Inspect usage and retry the same item with the same request_id. If that identity was used for a different item, repeating the conflicting request will not repair it. See Usage and what you pay for.\nIf downloaded bytes do not match the selected digest, do not treat that file as the selected item. Keep the item identity, expected digest and request reference for the operator. body_integrity_failed identifies a service-side integrity problem; the client should also check its received bytes.\nSend a useful report\nInclude the endpoint, time, error code and request_reference when present. State whether the failure was a client listing, handshake, search, manifest or download. Do not include credentials or private task content. The service's readiness endpoint is /api/v1/health; its result does not prove that your specific account or native client can complete the task.\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "troubleshooting_390_content",
+      "passed": true,
+      "detail": {
+        "title": "Troubleshooting",
+        "summaryLines": 0.9998739919354839,
+        "height": 7281,
+        "tocTop": 313.0625
+      }
+    },
+    {
+      "name": "serving-and-connections_390_layout",
+      "passed": true,
+      "detail": {
+        "height": 10716,
+        "width": 390,
+        "viewport": 390,
+        "cards": [],
+        "header": 1,
+        "footer": 1,
+        "title": "Serving and connections",
+        "summary": "Protocol versions and API request shapes.",
+        "summaryLines": 0.9998739919354839,
+        "titleTop": 137.140625,
+        "tocTop": 287.328125,
+        "tocVisible": true,
+        "article": "Read /api/v1/capabilities for the deployment you connect to. A public check on September 23, 2026 reported both protocol versions below, library version 2.2.0, package downloads by path and an active failed-attempt limit. Values and enabled features remain deployment settings; the capabilities response is the current source for them.\nProtocol versions\nFlowVersionClient behaviorHandshake2025-11-25Start with initialize, then use the returned compatible version.Per request2026-07-28Supply version and capabilities with each self-contained request.\nBoth use the Model Context Protocol at /mcp over streamable_http. The service reports session_state as stateless. Your service credential goes in the Authorization header on each request, independently of protocol negotiation. The published client recipes use a supplied token; an external authorization flow is not qualified by the current capabilities.\nThe 2025-11-25 lifecycle allows a server to return a supported version when it cannot use the requested one. The client continues only if it supports that result. The 2026-07-28 specification uses self-contained requests and per-request capability negotiation.\nHandshake\nAn initialization request contains the protocol version, client capabilities and client identity:\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{},\"clientInfo\":{\"name\":\"my-client\",\"version\":\"1.0.0\"}}}\nThis service's handshake profile returns 2025-11-25. If initialization requests an unsupported older version, it can still return that supported version. After the initialization result, complete the client's initialized notification and send the negotiated MCP-Protocol-Version on subsequent requests.\nA normal request with an unsupported version receives status 400 and protocol error -32022, including supported versions. Missing, repeated or malformed version headers receive protocol error -32020. These are not instructions to silently downgrade a request that needs unsupported semantics.\nPer-request flow\nAt 2026-07-28, requests carry the version in MCP-Protocol-Version and in params._meta. They also carry Mcp-Method; a tool call carries Mcp-Name. A client can request server/discover with these metadata keys:\n{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"server/discover\",\"params\":{\"_meta\":{\"io.modelcontextprotocol/protocolVersion\":\"2026-07-28\",\"io.modelcontextprotocol/clientCapabilities\":{},\"io.modelcontextprotocol/clientInfo\":{\"name\":\"my-client\",\"version\":\"1.0.0\"}}}}\nDiscovery and tool-list results can carry cacheScope and ttlMs. Respect private cache scope and the returned lifetime. They do not waive authorization checks on a later item read.\nHeaders and tools\nHeaderPurposeAuthorizationOne Bearer service credential.Content-Typeapplication/json for request bodies.AcceptAccept both application/json and text/event-stream for the protocol transport.MCP-Protocol-VersionNegotiated or per-request protocol version.Mcp-MethodMethod routing for the per-request protocol flow.Mcp-NameTool name for a per-request tools/call.X-Content-SHA256Digest of a downloaded body or selected package file.X-Loop-Engine-Record-Typeservice_download/v1 on a byte download.Retry-AfterWait interval supplied with a rate refusal.WWW-AuthenticateAuthentication challenge information.\nThe service lists provisioning_discover, provisioning_list, provisioning_manifest, provisioning_read and intelligence_search. Use each tool's returned input schema. Search has no read-only annotation in the current implementation; it is still not metered. A body read can record usage. Do not infer permissions or price from a tool annotation.\nDirect interface addresses\nThe direct interface uses versioned JSON records rather than protocol messages. A success wrapper is service_http_result/v1. A refusal is service_http_error/v1, with error.code, error.message and error.next_action; it can include request_reference. A protocol transport refusal instead uses the protocol's own error object.\nAddressMethodPurpose/api/v1/capabilitiesGETPublic protocol, limits and feature settings./api/v1/healthGETPublic health and readiness checks./api/v1/sessionGETAccount, authentication mode and credential expiry./api/v1/retrievalPOSTSearch authorized metadata./api/v1/provisioningPOSTDiscover, list, manifest or inline read./api/v1/downloadPOSTDownload bytes, including a declared package path./api/v1/usageGETRead this account's recorded usage./api/v1/account/identityGETBrowser identity configuration./api/v1/account/activatePOSTBind an authenticated browser identity to its allowed account./api/v1/account/logoutPOSTEnd the browser account authorization./api/v1/account/accessGET, POSTCustomer token options, listing and management./api/v1/account/signupPOSTAccount creation when enabled./api/v1/account/recoveryPOSTAccount recovery when available./api/v1/account/promotionPOSTRedeem an enabled promotion./api/v1/waitlistPOSTRequest an invitation./api/v1/admin/accessGET, POSTAuthorized operator token administration./api/v1/admin/waitlistGET, POSTAuthorized invitation administration./api/v1/billing/plansGETPlans offered to the authenticated account./api/v1/billing/checkoutPOSTCreate an authorized checkout session./api/v1/billing/portalPOSTOpen an authorized customer portal session./api/v1/billing/webhookPOSTReceive provider events with signature verification.\nAn address can exist while its feature is unavailable. Check capabilities and the returned refusal. Authorization requirements differ: a public invitation request is not an operator decision, and a billing webhook uses its provider signature. A client token is not a browser-management session.\nThe external authorization metadata addresses /.well-known/oauth-protected-resource and /.well-known/oauth-protected-resource/mcp are conditional on that host configuration. Their existence in the route table does not qualify an external login flow.\nLimits, deadlines and retries\nThe capabilities record names request_bytes, response_bytes, search_results, concurrent_operations, concurrent_operations_for_each_account, concurrent_operations_waiting_on_another_service and request_nesting_depth. Delivery separately names inline_body_bytes and download_bytes.\nThe failed-attempt policy reports whether it is active, the counted refusal categories, failures_allowed and window_seconds. Follow the returned wait interval and correct the failed request before repeating it.\nA deadline bounds how long the response waits. A running callback can still finish after that deadline. The service does not automatically replay it. Retain the original request_id and selection when retrying a body read after an uncertain outcome; do not treat a timeout as proof that metering did not occur.\nRefusal reference\nThese are the codes most relevant to a client. The response also supplies a plain message and next action. Troubleshooting explains how to diagnose them.\nCodeStatusMeaningunauthorized401Credential refused.tenant_disabled401Account disabled.insufficient_scope403Credential lacks the operation scope.scope_required403Account lacks the operation scope.body_forbidden403Body disclosure is not permitted.browser_session_required403Customer token management needs browser sign-in.item_unavailable404Identity or expected digest is unavailable to this account.item_withheld400Requested selection excludes this material.item_withdrawn404Selected item version withdrawn.package_file_not_found404Path absent from the package.package_files_unavailable404Separate file download unavailable for this item.package_file_requires_download400Use the byte-download endpoint for a package path.search_filter_not_allowed400Attribute is not public and filterable.search_filter_invalid400Filter condition is invalid.unknown_request_field400Request includes an unsupported field.unsupported_version400Request record version is unsupported.invalid_request400Request schema is invalid.nesting_limit_exceeded400Request is nested too deeply.unsupported_protocol_version400Protocol version is unsupported for this request.protocol_version_header_missing400Version header missing.protocol_version_header_repeated400Version header repeated.protocol_version_header_malformed400Version header malformed.protocol_method_not_allowed405Protocol endpoint method unsupported.download_required413Body exceeds the inline limit.download_limit_exceeded413Body exceeds the download limit.response_limit_exceeded413Response exceeds the configured limit.body_integrity_failed400Stored bytes fail their identity check.failed_attempt_limit_reached429Failed-attempt allowance exhausted.tenant_concurrency_limit_reached429Account operation capacity exhausted.service_busy503Service operation capacity exhausted.external_provider_capacity_reached503Capacity waiting on another service exhausted.deadline_exceeded504Response deadline exceeded.meter_unavailable400Required metering unavailable.meter_commit_unknown503Meter outcome uncertain or read identity conflicts.commit_unknown503Durable write outcome uncertain.scope_escalation_refused403Requested token scopes exceed authority.access_lifetime_exceeded400Requested token lifetime exceeds policy.access_token_limit_reached409Active token limit reached.access_token_history_limit_reached409Token record limit reached.access_request_identity_conflict409Token-operation identity reused with different contents.managed_access_token_not_found404Managed token unavailable to this account.concurrent_update409A competing write changed the expected state.account_registration_unavailable503Account creation is unavailable.\nRelated guides\nGet set upSearching and retrievingYour accountUsage and what you pay for\n",
+        "retired": false
+      }
+    },
+    {
+      "name": "serving-and-connections_390_content",
+      "passed": true,
+      "detail": {
+        "title": "Serving and connections",
+        "summaryLines": 0.9998739919354839,
+        "height": 10716,
+        "tocTop": 287.328125
+      }
+    },
+    {
+      "name": "what-baltor-is_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "what-baltor-is_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_card_opens_same_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_back_preserves_document",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "setup_alias_opens_guide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "served_index_matches_versioned_source",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unknown_doc_route_is_not_served",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "what-baltor-is_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "your-account_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "searching-and-retrieving_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage-and-what-you-pay-for_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "troubleshooting_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "serving-and-connections_served_exact_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_unknown_version",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_foreign_address",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_foreign_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_duplicate_identity",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_unknown_field",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_invalid_review_date",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_untyped_alias",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_index_null_alias",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_forbidden_element",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_head_script",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_event_attribute",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "refuses_body_foreign_link_missing_rel",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "removed_head_guard_exposes_wrong_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "removed_element_guard_exposes_wrong_body",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "removed_version_guard_exposes_wrong_index",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "index_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "what-baltor-is_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "your-account_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "searching-and-retrieving_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "troubleshooting_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "serving-and-connections_light_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "index_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "what-baltor-is_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "your-account_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "searching-and-retrieving_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "usage-and-what-you-pay-for_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "troubleshooting_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "serving-and-connections_dark_text_contrast",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "contrast_guard_detects_low_contrast",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_unexpected_script_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "no_external_requests",
+      "passed": true,
+      "detail": {
+        "blocked": []
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "page": "/docs",
+      "width": 1440,
+      "height": 1760,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-index-1440.png"
+    },
+    {
+      "page": "/docs/what-baltor-is",
+      "width": 1440,
+      "height": 3321,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-what-baltor-is-1440.png"
+    },
+    {
+      "page": "/docs/your-account",
+      "width": 1440,
+      "height": 3629,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-your-account-1440.png"
+    },
+    {
+      "page": "/docs/searching-and-retrieving",
+      "width": 1440,
+      "height": 4407,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-searching-and-retrieving-1440.png"
+    },
+    {
+      "page": "/docs/usage-and-what-you-pay-for",
+      "width": 1440,
+      "height": 3319,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-usage-and-what-you-pay-for-1440.png"
+    },
+    {
+      "page": "/docs/troubleshooting",
+      "width": 1440,
+      "height": 4734,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-troubleshooting-1440.png"
+    },
+    {
+      "page": "/docs/serving-and-connections",
+      "width": 1440,
+      "height": 7116,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-serving-and-connections-1440.png"
+    },
+    {
+      "page": "/docs",
+      "width": 390,
+      "height": 3252,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-index-390.png"
+    },
+    {
+      "page": "/docs/what-baltor-is",
+      "width": 390,
+      "height": 4864,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-what-baltor-is-390.png"
+    },
+    {
+      "page": "/docs/your-account",
+      "width": 390,
+      "height": 5125,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-your-account-390.png"
+    },
+    {
+      "page": "/docs/searching-and-retrieving",
+      "width": 390,
+      "height": 6390,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-searching-and-retrieving-390.png"
+    },
+    {
+      "page": "/docs/usage-and-what-you-pay-for",
+      "width": 390,
+      "height": 4852,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-usage-and-what-you-pay-for-390.png"
+    },
+    {
+      "page": "/docs/troubleshooting",
+      "width": 390,
+      "height": 7281,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-troubleshooting-390.png"
+    },
+    {
+      "page": "/docs/serving-and-connections",
+      "width": 390,
+      "height": 10716,
+      "path": "/home/username/.le-codex-build/signup-integrated/artifacts/signup-integration-2026-09-23/docs-browser-combined-serving-and-connections-390.png"
+    }
+  ],
+  "passed": true
+}

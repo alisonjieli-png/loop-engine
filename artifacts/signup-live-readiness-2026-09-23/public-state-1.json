@@ -1,0 +1,79 @@
+{
+  "record_type": "signup_readonly_public_readiness/v1",
+  "observed_at": "2026-09-23T17:58:47.864134+00:00",
+  "requests": [
+    {
+      "url": "https://baltor.ai/api/v1/capabilities",
+      "http_status": 200,
+      "selected_fields": {
+        "record_type": "service_capabilities/v1",
+        "api_version": "v1",
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "browser_identity_available": true,
+          "access_profile": "operator_provisioned",
+          "access_administration_available": true,
+          "client_access_available": true,
+          "promotion_redemption_available": false,
+          "promotion_redemption_endpoint": "/api/v1/account/promotion",
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless",
+          "oauth_resource_metadata": false,
+          "oauth_authorization_server_installed": false,
+          "external_authorization_flow_qualified": false
+        }
+      }
+    },
+    {
+      "url": "https://baltor.ai/api/v1/account/identity",
+      "http_status": 200,
+      "selected_fields": {
+        "record_type": "browser_identity_public_configuration/v1",
+        "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+        "registration_enabled": false,
+        "email_signup_enabled": false,
+        "signup_available": false,
+        "recovery_available": false,
+        "minimum_password_length": null,
+        "redirect_url": "https://baltor-pilot.fly.dev/auth/callback",
+        "publishable_key_present": true
+      }
+    },
+    {
+      "url": "https://qfzxmjznlwiopgvfgtsw.supabase.co/auth/v1/settings",
+      "http_status": 200,
+      "selected_fields": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false,
+        "phone_autoconfirm": false,
+        "email_provider_enabled": true
+      },
+      "unavailable_requested_fields": [
+        "password_min_length",
+        "password_required_characters",
+        "security_update_password_require_reauthentication"
+      ],
+      "credential_reference": "supabase-publishable",
+      "secret_values_recorded": false
+    }
+  ],
+  "mutations": 0,
+  "emails_sent": 0,
+  "logins": 0,
+  "secret_values_recorded": false
+}

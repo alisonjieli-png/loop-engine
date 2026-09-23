@@ -1,0 +1,49 @@
+{
+  "fixtures": [
+    {
+      "expected_binding": {
+        "brief_sha256": "60ad912497a45eac53bba1c813199f6e5302bfcfab233ad859a77569b3d2666e",
+        "context_version": 2,
+        "harness_style": "codex",
+        "packet_content_sha256": "992b89deb7cf4cd51f6bee98ae245498e53d2fd7ca954a806421e6630b305f9c",
+        "run_id": "inventory-demo",
+        "state_version": 3,
+        "step_id": "reconcile-stock"
+      },
+      "fixture": "fixtures/inventory-reconciliation.json",
+      "fixture_sha256": "327d757ba051c5aebb719c7dd5a5b48fdbdc6ec22aa568ce375d141e9dc553e1",
+      "verification": {
+        "native_loading_verified": false,
+        "passed": true,
+        "payload_bytes": 10193,
+        "payload_files": 8,
+        "persistent_library_items_added": 0,
+        "task_accepted": false
+      }
+    },
+    {
+      "expected_binding": {
+        "brief_sha256": "e9b0acc74ade8359aabc8b4e90c896b07a171711fc2a85977a38120e2f53d44f",
+        "context_version": 1,
+        "harness_style": "claude_code",
+        "packet_content_sha256": "aaa1db8577c40cece273e6ecc3068a8475825e2456cb4fd9a5a8095059799cee",
+        "run_id": "incident-demo",
+        "state_version": 1,
+        "step_id": "order-events"
+      },
+      "fixture": "fixtures/incident-timeline.json",
+      "fixture_sha256": "f9688d40d4f0b193a34a6606d0e2d0f9a9f633d377b9ea950ae3a7c7d973d5ce",
+      "verification": {
+        "native_loading_verified": false,
+        "passed": true,
+        "payload_bytes": 10334,
+        "payload_files": 9,
+        "persistent_library_items_added": 0,
+        "task_accepted": false
+      }
+    }
+  ],
+  "persistent_library_items_added": 0,
+  "record_type": "focused_step_fixture_bindings/v1",
+  "state": "candidate"
+}

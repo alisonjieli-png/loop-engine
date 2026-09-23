@@ -98,6 +98,81 @@ def _listing(endpoint, opener):
         ce._endpoint_opener = saved
 
 
+def _reported_identity_checks(check):
+    """The request model is not evidence about the answering model."""
+    missing = object()
+    model = "gpt-oss:20b"
+    for wire in ("openai", "ollama"):
+        for stream in ("buffer", "stream"):
+            def response(identity, *, first_identity=missing, usage=True,
+                         wire=wire, stream=stream):
+                if wire == "openai":
+                    body = {"choices": [{"message": {"content": "answer"},
+                                         "finish_reason": "stop"}]}
+                    if usage:
+                        body["usage"] = {"prompt_tokens": 0, "completion_tokens": 0}
+                else:
+                    body = {"message": {"content": "answer"}, "done": True,
+                            "done_reason": "stop"}
+                    if usage:
+                        body.update(prompt_eval_count=0, eval_count=0)
+                if identity is not missing:
+                    body["model"] = identity
+                if stream == "buffer":
+                    return _Response(body=json.dumps(body).encode())
+                chunks = []
+                if first_identity is not missing:
+                    chunks.append({"model": first_identity})
+                chunks.append(body)
+                if wire == "openai":
+                    return _Response(lines=[b"data: " + line for line in _ndjson(*chunks)]
+                                     + [b"data: [DONE]\n"])
+                return _Response(lines=_ndjson(*chunks))
+
+            endpoint = _endpoint(wire=wire, stream=stream)
+            for label, identity in (("missing", missing), ("null", None),
+                                    ("empty", ""), ("integer", 7),
+                                    ("object", {"id": model})):
+                result = _chat(endpoint, _Opener([response(identity)]))
+                check(f"{wire}_{stream}_{label}_reported_identity_is_not_the_request",
+                      not result.ok and result.model == ""
+                      and result.error.startswith("model_identity_mismatch"),
+                      f"model={result.model!r}, error={result.error}")
+            result = _chat(endpoint, _Opener([response("different-model")]))
+            check(f"{wire}_{stream}_wrong_reported_identity_is_preserved_and_refused",
+                  not result.ok and result.model == "different-model"
+                  and result.error.startswith("model_identity_mismatch"), result.error)
+            result = _chat(endpoint, _Opener([response(model)]))
+            check(f"{wire}_{stream}_genuine_identity_and_explicit_zero_usage_survive",
+                  result.ok and result.model == model and result.prompt_tokens == 0
+                  and result.eval_tokens == 0 and result.usage_reported, result.error)
+            result = _chat(endpoint, _Opener([response(model, usage=False)]))
+            check(f"{wire}_{stream}_absent_usage_stays_unknown",
+                  result.ok and result.model == model and result.prompt_tokens is None
+                  and result.eval_tokens is None and not result.usage_reported, result.error)
+            if stream == "stream":
+                for label, first in (("changed", "different-model"), ("malformed", 7)):
+                    result = _chat(endpoint, _Opener([response(model, first_identity=first)]))
+                    check(f"{wire}_stream_{label}_identity_cannot_be_overwritten",
+                          not result.ok and result.error.startswith("model_identity_mismatch"),
+                          result.error)
+                result = _chat(endpoint, _Opener([response(missing, first_identity=model)]))
+                check(f"{wire}_stream_one_genuine_identity_may_precede_usage_chunk",
+                      result.ok and result.model == model, result.error)
+
+    endpoint = _endpoint(credential_env="ENDPOINT_CHECKS_ABSENT", auth_scheme="bearer")
+    opener = _Opener([])
+    result = _chat(endpoint, opener)
+    check("custom_endpoint_preflight_refusal_has_no_answering_model",
+          not result.ok and result.model == "" and result.physical_requests == 0
+          and not opener.requests)
+    unavailable = make_adapter(_endpoint(output_capability=None)).chat("unused")
+    retries = make_adapter(_endpoint()).chat_maxout("unused", max_attempts=2)
+    check("custom_endpoint_capacity_and_retry_refusals_have_no_answering_model_or_request",
+          all(not row.ok and row.model == "" and row.physical_requests == 0
+              for row in (unavailable, retries)))
+
+
 def run_checks():
     tests = []
 
@@ -125,7 +200,7 @@ def run_checks():
           not result.ok and result.done is False and result.text == "online"
           and result.error.startswith("incomplete_response"), result.error)
     result = _chat(_endpoint(), _Opener([_Response(lines=[
-        b'data: {"message": {"content": "framed"}, "done": false}\n',
+        b'data: {"model": "gpt-oss:20b", "message": {"content": "framed"}, "done": false}\n',
         b': keep-alive\n',
         b'data: {"message": {"content": ""}, "done": true, "done_reason": "stop", '
         b'"prompt_eval_count": 3, "eval_count": 1}\n'])]))
@@ -269,7 +344,7 @@ def run_checks():
           not _endpoint(auth_scheme="bearer", api_key="k", credential_env="CHECKS_BOX_KEY").credential_missing
           and not _endpoint(auth_scheme="none", credential_env="CHECKS_BOX_KEY").credential_missing)
 
-    sse = [b'data: {"choices": [{"delta": {"content": "hello, the ans"}}]}\n']
+    sse = [b'data: {"model": "gpt-oss:20b", "choices": [{"delta": {"content": "hello, the ans"}}]}\n']
     result = _chat(_endpoint(wire="openai", stream="stream"), _Opener([_Response(lines=sse)]))
     complete = _chat(_endpoint(wire="openai", stream="stream"), _Opener([_Response(lines=sse + [
         b'data: {"choices": [{"delta": {}, "finish_reason": "stop"}], '
@@ -345,6 +420,7 @@ def run_checks():
         check("key_and_key_env_together_are_refused", False, "accepted")
     except EndpointError:
         check("key_and_key_env_together_are_refused", True)
+    _reported_identity_checks(check)
     return tests
 
 

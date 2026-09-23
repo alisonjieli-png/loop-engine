@@ -1,0 +1,6 @@
+test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not (tools.test_service_documentation.ServiceDocumentationCheck.test_local_refusal_helper_is_followed_but_a_nonraising_helper_is_not) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.841s
+
+OK

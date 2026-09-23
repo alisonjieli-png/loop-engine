@@ -1,0 +1,26 @@
+diff --git a/src/loop_engine/core/service_runtime/catalogue_serving_checks.py b/src/loop_engine/core/service_runtime/catalogue_serving_checks.py
+index 411c0708..75d2cad6 100644
+--- a/src/loop_engine/core/service_runtime/catalogue_serving_checks.py
++++ b/src/loop_engine/core/service_runtime/catalogue_serving_checks.py
+@@ -128,14 +128,20 @@ def _serving_checks(check, root):
+                   and inline.status_code == 400
+                   and inline.json()["error"]["code"] == "package_file_requires_download"
+                   and usage["records"] == 2)
++    # The checks above own periodic refresh. Stop that service before testing
++    # the exact request boundary, so only the controlled manifest callback
++    # can swap this request's view. Otherwise the timer may swap before the
++    # request starts and the oracle incorrectly expects an earlier body.
++    with running_http(served) as (base, _service):
++        with httpx.Client(base_url=base, headers=headers, trust_env=False, timeout=5) as client:
+             _mid_flight_checks(check, case, served, client)
+ 
+ 
+ def _mid_flight_checks(check, case, served, client):
+     """A request that started before a swap is answered wholly from the view it started with."""
++    old_view = served.provisioning.current_view()
+     third = case.publish([case.line("clean_supplier_names", "# Clean supplier names\nalpha three\n",
+                                     attributes={"domain": ["data"]})])
+-    old_view = served.provisioning.current_view()
+     new_view = case.view()
+     original = DurableProvisioningBinding.invoke_for_principal
+ 

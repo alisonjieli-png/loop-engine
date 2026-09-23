@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:3f283dfa3bea16e2891c8b2ba4e327cbebbcbeba0c14ce737bc3618200c9406a`.
+Source fingerprint: `sha256:35bbce8c0c18cc400cbe0f3e2391670978db04172041311428006ec603544eca`.
 
 ## Where things stand
 
@@ -60,7 +60,7 @@ Source fingerprint: `sha256:3f283dfa3bea16e2891c8b2ba4e327cbebbcbeba0c14ce737bc3
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
-| S-6.44 | Serve the open formats in each harness's own layout | proposed | Keep Baltor's own layout profiles as the default placement engine and add an optional Agent Harness engine behind the same edge, never running U-Haul and refusing a key through a placeholder; publish a Baltor preset regi |
+| S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep co |
 | S-2.10 | Intelligence access contract and no-direct-edit conformance rule | proposed |  |
 | S-2.18 | Relayer each declared boundary package from core one boundary at a time | proposed |  |
 | S-2.19 | Move the specifications at the docs root into their kind folders with redirect stubs | proposed |  |

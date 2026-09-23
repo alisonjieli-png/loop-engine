@@ -1,0 +1,3018 @@
+{
+  "record_type": "read_only_browser_review/v1",
+  "source_revision": "abcad4f8",
+  "at": "2026-09-23T12:44:57.639Z",
+  "browser": "148.0.7778.178",
+  "pages": [
+    {
+      "path": "/",
+      "width": 1440,
+      "height": 7025,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:45.824Z",
+      "title": "Baltor | Material your coding tools can search",
+      "overflow": false,
+      "h1": [
+        "Supercharge your developers and AI agents."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      },
+      "hero": {
+        "x": 64,
+        "y": 159.828125,
+        "width": 725.359375,
+        "height": 538.984375
+      },
+      "aside": {
+        "x": 875.75,
+        "y": 443.1875,
+        "width": 500.25,
+        "height": 255.625
+      },
+      "demo": {
+        "x": 64,
+        "y": 762.8125,
+        "width": 1312,
+        "height": 461.921875
+      },
+      "action": {
+        "x": 64,
+        "y": 565.84375,
+        "width": 251.234375,
+        "height": 52
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nHow it works\nLibrary\nPricing\nDocs\nSign in\nRequest an invitation\n\nHarness and agent optimized operation\n\nSupercharge your developers and AI agents.\n\nBig tasks go better in small steps. Give each step a fresh harness that holds only what that step needs: nothing drifts, and smaller models can do more of the work.\n\nRequest an invitation\nSee one step work\nSearch is free\nWorks with Claude Code, Codex and OpenCode\nInvitation only while we open in small groups\n\nHarness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode. Today your agent can search Baltor's reviewed library at each step and download only what that step needs, with its source, licence and exact version. The fresh harness for each step is being built.\n\nFree to install. Paid access to the library, one plan at 29 United States dollars each month. Your model keys stay with you, and Baltor never asks you for a provider key.\n\nWHAT YOUR CODING AGENT SEES AT ONE STEP\n\nSplit the address lines in a customer file\n\nRecorded from this release's library\n\n1\n\nsearch:\nsplit address lines in a customer file\n\nsplit_address_lines_into_components\nskill · MIT · 3.0 KB · sha256 27cc9e73…\nChosen\nfind_duplicate_records_with_blocking_keys\nskill · MIT · 2.7 KB · sha256 175d693f…\nnormalize_whitespace_and_unicode_text\nskill · MIT · 2.7 KB · sha256 e8192ce1…\n2\n\ndownload split_address_lines_into_components\nBytes match the digest · 1 download recorded\n\n3\n\nA fresh harness, holding only this step's files\n\nBeing built\n\nstep-folder/\n├── AGENTS.md\n├── CLAUDE.md                  imports @AGENTS.md\n├── .agents/skills/split-address-lines-into-components/\n│   ├── SKILL.md\n│   └── scripts/split_address_lines.py\n├── .mcp.json                  this step's tools only\n└── .baltor/step.lock.json     item, version, digest\nWorks with the harness you already run\nClaude Code\nConnect today\nCodex\nConnect today\nOpenCode\nConnect today\nPi\nPlanned\n\nOther clients can connect when they speak the protocol version this service accepts.\n\nWHY TEAMS USE BALTOR\n\nRight-sized help for every step of the work.\n\nLong sessions drift and large models are costly. Baltor gives each step the material it asks for, so the work stays focused and smaller models can do more of it.\n\nOnly the context a step needs\n\nSearch returns short references. Your agent downloads only the item it chose, so a small step never carries the whole history.\n\nAvailable now\n\nSmaller models for smaller decisions\n\nWith the right material in front of it, a smaller or local model can take on work that would otherwise need a large one.\n\nBeing built\n\nExpertise your agent does not have\n\nA reviewed library of skills. Every item is approved by reviewers who did not write it.\n\nAvailable now\n\nReuse code instead of rewriting it\n\nEvery item carries its source, licence and exact version, so proven work can be reused rather than generated again.\n\nCode packages coming\n\nFewer repeated mistakes\n\nWhat went wrong in earlier work is kept, so the next step can start from it instead of repeating it.\n\nPlanned\n\nLong jobs that finish overnight\n\nWork is split into small steps, each in its own fresh harness, so a small model can carry a long task to the end while you are away.\n\nBeing built\n\nHOW IT WORKS\n\nOne fresh harness for each step.\n\nFrom one task to a checked result, in five steps. Search and download work today; the rest is being built.\n\n01\nSplit\n\nThe task becomes small, focused steps with clear inputs and outputs.\n\nBeing built\n\n02\nSearch\n\nThe step asks the library for what it needs. Searching is free.\n\nLive\n\n03\nDownload\n\nOne exact version, checked against its digest and recorded in your usage.\n\nLive\n\n04\nRun\n\nA freshly started harness holds only that step's files, and nothing from your global settings.\n\nBeing built\n\n05\nCheck\n\nAn independent check accepts the result, not the agent that produced it.\n\nBeing built\n\nConnect in one entry\n\nYour harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.\n\nClaude Code, in .mcp.json\n\nExplore an example task\n{\n  \"mcpServers\": {\n    \"baltor\": {\n      \"type\": \"http\",\n      \"url\": \"https://baltor.ai/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${BALTOR_SERVICE_TOKEN}\"\n      }\n    }\n  }\n}\n\nTHE LIBRARY\n\nAnything a harness can pick up.\n\nNot only Markdown: instruction files, skills with their scripts, tools, subagents, hooks and protocol server settings. The library is built to hold every kind, and the tags say which you can download today.\n\nSkills\n\nSKILL.md today · scripts/ and assets/ coming\n\nAvailable now\n\nInstruction files\n\nAGENTS.md · CLAUDE.md\n\nPlanned\n\nTools and code\n\ntested scripts and packages\n\nBeing built\n\nSubagents and commands\n\nagent and command definitions\n\nPlanned\n\nHooks\n\nsteps your harness runs itself\n\nPlanned\n\nProtocol servers\n\none step's tool settings\n\nPlanned\n\n43\nreviewed items in the library today, and growing\n\nApproved by reviewers who did not write the item, bound to its exact bytes\nItems that need file, network or process access are offered only to a step that declares it\n\nToday every item is a single file. Packages with scripts and assets are coming.\n\nBuilt for teams that check the details.\nYour keys stay yours\n\nBaltor never asks for a model key. Your harness calls your models through the connection you control.\n\nExact versions, verified\n\nEvery download names its version and digest, and your access is checked again before the bytes are read.\n\nNothing runs on your computer\n\nConnecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.\n\nPRICING\n\nOne plan. Search is free.\n\nOne monthly plan. Searching never counts: the measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups. Model costs stay with your own provider, and there is no overage billing.\n\nBaltor Pro\n\nInvitation only\n\n$29\nper month\n\nFree search of the library\nOne downloaded item is the measured unit, with no overage billing\nA personal key for each device, from your account page\nUsage you can see, item by item\nRequest an invitation\n\nAccounts open by invitation, and invited accounts stay free.\n\nSee what is included\nQuestions, answered.\n\nAnything else, write to the operator at the contact address in the privacy notice.\n\nWhich tools work with it?\n\nClaude Code, Codex and OpenCode have reviewed connection settings on the Get started page. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.\n\nWhat counts as a download?\nWhat does Baltor keep about my work?\nWhen can I sign up?\nBring your next task to Baltor.\n\nRequest an invitation today. Invited accounts are free while we open in small groups.\n\nRequest an invitation\n\nToken savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "Docs",
+          "href": "/docs"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See one step work",
+          "href": "#step-demo"
+        },
+        {
+          "text": "Explore an example task",
+          "href": "/how-it-works#task-breakdown"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See what is included",
+          "href": "/pricing"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 178.546875,
+            "y": 5741.34375,
+            "width": 108.03125,
+            "height": 22
+          }
+        },
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 979.03125,
+            "y": 6009.0625,
+            "width": 101.671875,
+            "height": 21
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 580.796875,
+            "y": 6700.109375,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 6735.359375,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 6770.609375,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 6805.859375,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 6841.109375,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 6700.109375,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 6735.359375,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 6770.609375,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 1137.59375,
+            "y": 6700.109375,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 64,
+          "y": 19.5,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 230.5,
+          "dom_content_loaded": 441.89999997615814,
+          "load": 501
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "height": 11830,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:47.135Z",
+      "title": "Baltor | Material your coding tools can search",
+      "overflow": false,
+      "h1": [
+        "Supercharge your developers and AI agents."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 65
+      },
+      "hero": {
+        "x": 17.34375,
+        "y": 105,
+        "width": 355.3125,
+        "height": 574.40625
+      },
+      "aside": {
+        "x": 17.34375,
+        "y": 719.40625,
+        "width": 355.3125,
+        "height": 306.8125
+      },
+      "demo": {
+        "x": 17.34375,
+        "y": 1082.21875,
+        "width": 355.3125,
+        "height": 983.21875
+      },
+      "action": {
+        "x": 17.34375,
+        "y": 451.15625,
+        "width": 251.234375,
+        "height": 52
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nRequest an invitation\n\nHarness and agent optimized operation\n\nSupercharge your developers and AI agents.\n\nBig tasks go better in small steps. Give each step a fresh harness that holds only what that step needs: nothing drifts, and smaller models can do more of the work.\n\nRequest an invitation\nSee one step work\nSearch is free\nWorks with Claude Code, Codex and OpenCode\nInvitation only while we open in small groups\n\nHarness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode. Today your agent can search Baltor's reviewed library at each step and download only what that step needs, with its source, licence and exact version. The fresh harness for each step is being built.\n\nFree to install. Paid access to the library, one plan at 29 United States dollars each month. Your model keys stay with you, and Baltor never asks you for a provider key.\n\nWHAT YOUR CODING AGENT SEES AT ONE STEP\n\nSplit the address lines in a customer file\n\nRecorded from this release's library\n\nsearch:\nsplit address lines in a customer file\n\nsplit_address_lines_into_components\nskill · MIT · 3.0 KB · sha256 27cc9e73…\nChosen\nfind_duplicate_records_with_blocking_keys\nskill · MIT · 2.7 KB · sha256 175d693f…\nnormalize_whitespace_and_unicode_text\nskill · MIT · 2.7 KB · sha256 e8192ce1…\n\ndownload split_address_lines_into_components\nBytes match the digest · 1 download recorded\n\nA fresh harness, holding only this step's files\n\nBeing built\n\nstep-folder/\n├── AGENTS.md\n├── CLAUDE.md\n├── .agents/skills/split-address-lines-into-components/\n│   ├── SKILL.md\n│   └── scripts/split_address_lines.py\n├── .mcp.json\n└── .baltor/step.lock.json\nWorks with the harness you already run\nClaude Code\nConnect today\nCodex\nConnect today\nOpenCode\nConnect today\nPi\nPlanned\n\nOther clients can connect when they speak the protocol version this service accepts.\n\nWHY TEAMS USE BALTOR\n\nRight-sized help for every step of the work.\n\nLong sessions drift and large models are costly. Baltor gives each step the material it asks for, so the work stays focused and smaller models can do more of it.\n\nOnly the context a step needs\n\nSearch returns short references. Your agent downloads only the item it chose, so a small step never carries the whole history.\n\nAvailable now\n\nSmaller models for smaller decisions\n\nWith the right material in front of it, a smaller or local model can take on work that would otherwise need a large one.\n\nBeing built\n\nExpertise your agent does not have\n\nA reviewed library of skills. Every item is approved by reviewers who did not write it.\n\nAvailable now\n\nReuse code instead of rewriting it\n\nEvery item carries its source, licence and exact version, so proven work can be reused rather than generated again.\n\nCode packages coming\n\nFewer repeated mistakes\n\nWhat went wrong in earlier work is kept, so the next step can start from it instead of repeating it.\n\nPlanned\n\nLong jobs that finish overnight\n\nWork is split into small steps, each in its own fresh harness, so a small model can carry a long task to the end while you are away.\n\nBeing built\n\nHOW IT WORKS\n\nOne fresh harness for each step.\n\nFrom one task to a checked result, in five steps. Search and download work today; the rest is being built.\n\n01\nSplit\n\nThe task becomes small, focused steps with clear inputs and outputs.\n\nBeing built\n\n02\nSearch\n\nThe step asks the library for what it needs. Searching is free.\n\nLive\n\n03\nDownload\n\nOne exact version, checked against its digest and recorded in your usage.\n\nLive\n\n04\nRun\n\nA freshly started harness holds only that step's files, and nothing from your global settings.\n\nBeing built\n\n05\nCheck\n\nAn independent check accepts the result, not the agent that produced it.\n\nBeing built\n\nConnect in one entry\n\nYour harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.\n\nClaude Code, in .mcp.json\n\nExplore an example task\n{\n  \"mcpServers\": {\n    \"baltor\": {\n      \"type\": \"http\",\n      \"url\": \"https://baltor.ai/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${BALTOR_SERVICE_TOKEN}\"\n      }\n    }\n  }\n}\n\nTHE LIBRARY\n\nAnything a harness can pick up.\n\nNot only Markdown: instruction files, skills with their scripts, tools, subagents, hooks and protocol server settings. The library is built to hold every kind, and the tags say which you can download today.\n\nSkills\n\nSKILL.md today · scripts/ and assets/ coming\n\nAvailable now\n\nInstruction files\n\nAGENTS.md · CLAUDE.md\n\nPlanned\n\nTools and code\n\ntested scripts and packages\n\nBeing built\n\nSubagents and commands\n\nagent and command definitions\n\nPlanned\n\nHooks\n\nsteps your harness runs itself\n\nPlanned\n\nProtocol servers\n\none step's tool settings\n\nPlanned\n\n43\nreviewed items in the library today, and growing\n\nApproved by reviewers who did not write the item, bound to its exact bytes\nItems that need file, network or process access are offered only to a step that declares it\n\nToday every item is a single file. Packages with scripts and assets are coming.\n\nBuilt for teams that check the details.\nYour keys stay yours\n\nBaltor never asks for a model key. Your harness calls your models through the connection you control.\n\nExact versions, verified\n\nEvery download names its version and digest, and your access is checked again before the bytes are read.\n\nNothing runs on your computer\n\nConnecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.\n\nPRICING\n\nOne plan. Search is free.\n\nOne monthly plan. Searching never counts: the measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups. Model costs stay with your own provider, and there is no overage billing.\n\nBaltor Pro\n\nInvitation only\n\n$29\nper month\n\nFree search of the library\nOne downloaded item is the measured unit, with no overage billing\nA personal key for each device, from your account page\nUsage you can see, item by item\nRequest an invitation\n\nAccounts open by invitation, and invited accounts stay free.\n\nSee what is included\nQuestions, answered.\n\nAnything else, write to the operator at the contact address in the privacy notice.\n\nWhich tools work with it?\n\nClaude Code, Codex and OpenCode have reviewed connection settings on the Get started page. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.\n\nWhat counts as a download?\nWhat does Baltor keep about my work?\nWhen can I sign up?\nBring your next task to Baltor.\n\nRequest an invitation today. Invited accounts are free while we open in small groups.\n\nRequest an invitation\n\nToken savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See one step work",
+          "href": "#step-demo"
+        },
+        {
+          "text": "Explore an example task",
+          "href": "/how-it-works#task-breakdown"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See what is included",
+          "href": "/pricing"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 17.34375,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 195.21875,
+            "y": 9934.5,
+            "width": 108.03125,
+            "height": 22
+          }
+        },
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 153.34375,
+            "y": 10522.375,
+            "width": 101.671875,
+            "height": 21
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 11249.28125,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 11284.53125,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 11319.78125,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 11355.03125,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 11390.28125,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 11249.28125,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 11284.53125,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 11319.78125,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 11477.671875,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 17.34375,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 50.800000071525574,
+          "dom_content_loaded": 150.20000004768372,
+          "load": 210.20000004768372
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "width": 320,
+      "height": 13018,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:48.268Z",
+      "title": "Baltor | Material your coding tools can search",
+      "overflow": false,
+      "h1": [
+        "Supercharge your developers and AI agents."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 320,
+        "height": 65
+      },
+      "hero": {
+        "x": 16,
+        "y": 105,
+        "width": 288,
+        "height": 685.71875
+      },
+      "aside": {
+        "x": 16,
+        "y": 830.71875,
+        "width": 288,
+        "height": 379.6875
+      },
+      "demo": {
+        "x": 16,
+        "y": 1266.40625,
+        "width": 288,
+        "height": 1048.296875
+      },
+      "action": {
+        "x": 16,
+        "y": 519.09375,
+        "width": 251.234375,
+        "height": 52
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nRequest an invitation\n\nHarness and agent optimized operation\n\nSupercharge your developers and AI agents.\n\nBig tasks go better in small steps. Give each step a fresh harness that holds only what that step needs: nothing drifts, and smaller models can do more of the work.\n\nRequest an invitation\nSee one step work\nSearch is free\nWorks with Claude Code, Codex and OpenCode\nInvitation only while we open in small groups\n\nHarness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode. Today your agent can search Baltor's reviewed library at each step and download only what that step needs, with its source, licence and exact version. The fresh harness for each step is being built.\n\nFree to install. Paid access to the library, one plan at 29 United States dollars each month. Your model keys stay with you, and Baltor never asks you for a provider key.\n\nWHAT YOUR CODING AGENT SEES AT ONE STEP\n\nSplit the address lines in a customer file\n\nRecorded from this release's library\n\nsearch:\nsplit address lines in a customer file\n\nsplit_address_lines_into_components\nskill · MIT · 3.0 KB · sha256 27cc9e73…\nChosen\nfind_duplicate_records_with_blocking_keys\nskill · MIT · 2.7 KB · sha256 175d693f…\nnormalize_whitespace_and_unicode_text\nskill · MIT · 2.7 KB · sha256 e8192ce1…\n\ndownload split_address_lines_into_components\nBytes match the digest · 1 download recorded\n\nA fresh harness, holding only this step's files\n\nBeing built\n\nstep-folder/\n├── AGENTS.md\n├── CLAUDE.md\n├── .agents/skills/split-address-lines-into-components/\n│   ├── SKILL.md\n│   └── scripts/split_address_lines.py\n├── .mcp.json\n└── .baltor/step.lock.json\nWorks with the harness you already run\nClaude Code\nConnect today\nCodex\nConnect today\nOpenCode\nConnect today\nPi\nPlanned\n\nOther clients can connect when they speak the protocol version this service accepts.\n\nWHY TEAMS USE BALTOR\n\nRight-sized help for every step of the work.\n\nLong sessions drift and large models are costly. Baltor gives each step the material it asks for, so the work stays focused and smaller models can do more of it.\n\nOnly the context a step needs\n\nSearch returns short references. Your agent downloads only the item it chose, so a small step never carries the whole history.\n\nAvailable now\n\nSmaller models for smaller decisions\n\nWith the right material in front of it, a smaller or local model can take on work that would otherwise need a large one.\n\nBeing built\n\nExpertise your agent does not have\n\nA reviewed library of skills. Every item is approved by reviewers who did not write it.\n\nAvailable now\n\nReuse code instead of rewriting it\n\nEvery item carries its source, licence and exact version, so proven work can be reused rather than generated again.\n\nCode packages coming\n\nFewer repeated mistakes\n\nWhat went wrong in earlier work is kept, so the next step can start from it instead of repeating it.\n\nPlanned\n\nLong jobs that finish overnight\n\nWork is split into small steps, each in its own fresh harness, so a small model can carry a long task to the end while you are away.\n\nBeing built\n\nHOW IT WORKS\n\nOne fresh harness for each step.\n\nFrom one task to a checked result, in five steps. Search and download work today; the rest is being built.\n\n01\nSplit\n\nThe task becomes small, focused steps with clear inputs and outputs.\n\nBeing built\n\n02\nSearch\n\nThe step asks the library for what it needs. Searching is free.\n\nLive\n\n03\nDownload\n\nOne exact version, checked against its digest and recorded in your usage.\n\nLive\n\n04\nRun\n\nA freshly started harness holds only that step's files, and nothing from your global settings.\n\nBeing built\n\n05\nCheck\n\nAn independent check accepts the result, not the agent that produced it.\n\nBeing built\n\nConnect in one entry\n\nYour harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.\n\nClaude Code, in .mcp.json\n\nExplore an example task\n{\n  \"mcpServers\": {\n    \"baltor\": {\n      \"type\": \"http\",\n      \"url\": \"https://baltor.ai/mcp\",\n      \"headers\": {\n        \"Authorization\": \"Bearer ${BALTOR_SERVICE_TOKEN}\"\n      }\n    }\n  }\n}\n\nTHE LIBRARY\n\nAnything a harness can pick up.\n\nNot only Markdown: instruction files, skills with their scripts, tools, subagents, hooks and protocol server settings. The library is built to hold every kind, and the tags say which you can download today.\n\nSkills\n\nSKILL.md today · scripts/ and assets/ coming\n\nAvailable now\n\nInstruction files\n\nAGENTS.md · CLAUDE.md\n\nPlanned\n\nTools and code\n\ntested scripts and packages\n\nBeing built\n\nSubagents and commands\n\nagent and command definitions\n\nPlanned\n\nHooks\n\nsteps your harness runs itself\n\nPlanned\n\nProtocol servers\n\none step's tool settings\n\nPlanned\n\n43\nreviewed items in the library today, and growing\n\nApproved by reviewers who did not write the item, bound to its exact bytes\nItems that need file, network or process access are offered only to a step that declares it\n\nToday every item is a single file. Packages with scripts and assets are coming.\n\nBuilt for teams that check the details.\nYour keys stay yours\n\nBaltor never asks for a model key. Your harness calls your models through the connection you control.\n\nExact versions, verified\n\nEvery download names its version and digest, and your access is checked again before the bytes are read.\n\nNothing runs on your computer\n\nConnecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.\n\nPRICING\n\nOne plan. Search is free.\n\nOne monthly plan. Searching never counts: the measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups. Model costs stay with your own provider, and there is no overage billing.\n\nBaltor Pro\n\nInvitation only\n\n$29\nper month\n\nFree search of the library\nOne downloaded item is the measured unit, with no overage billing\nA personal key for each device, from your account page\nUsage you can see, item by item\nRequest an invitation\n\nAccounts open by invitation, and invited accounts stay free.\n\nSee what is included\nQuestions, answered.\n\nAnything else, write to the operator at the contact address in the privacy notice.\n\nWhich tools work with it?\n\nClaude Code, Codex and OpenCode have reviewed connection settings on the Get started page. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.\n\nWhat counts as a download?\nWhat does Baltor keep about my work?\nWhen can I sign up?\nBring your next task to Baltor.\n\nRequest an invitation today. Invited accounts are free while we open in small groups.\n\nRequest an invitation\n\nToken savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See one step work",
+          "href": "#step-demo"
+        },
+        {
+          "text": "Explore an example task",
+          "href": "/how-it-works#task-breakdown"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See what is included",
+          "href": "/pricing"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 16,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 12303.890625,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12339.140625,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12374.390625,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12409.640625,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12444.890625,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12532.28125,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12567.53125,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12602.78125,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 12690.171875,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 16,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 44,
+          "dom_content_loaded": 131.10000002384186,
+          "load": 198.80000007152557
+        }
+      ]
+    },
+    {
+      "path": "/waitlist",
+      "width": 390,
+      "height": 5373,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:49.344Z",
+      "title": "Baltor | Get started",
+      "overflow": false,
+      "h1": [
+        "Three steps to your first download."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 65
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 38.34375,
+        "y": 467.203125,
+        "width": 313.3125,
+        "height": 48
+      },
+      "visible_text": "Skip to content\nBaltor\nRequest an invitation\n\nGET STARTED\n\nThree steps to your first download.\n\nAsk for an account, connect the harness you already use, and let your agent ask for what each step needs.\n\n1\nGet access\nAn invitation takes a minute\n2\nConnect your harness\nOne entry, no key in files\n3\nSearch and download\nSearch is free\n1. Get access\nRequest an invitation\nOpen for requests\nWork email\nWhat will your agents work on? Optional\n\nThe note helps the person reading your request. Do not include credentials, customer data or anything private.\n\nRequest an invitation\n\nA person reads every request and decides. We keep your address and note only to send your invitation, as the privacy notice says, and an operator can erase both from the list on request. We do not publish a date, and we will not add you to a mailing list.\n\nAlready invited? Sign in\n\nWhat an invited account gets\nFree access while we open in small groups\nThe reviewed library, searchable from your harness\nA usage record for every download\n2. Connect your harness\n\nYour harness connects to this service with the Model Context Protocol. Pick it below and copy one reviewed entry. It holds this service's address and the name of the environment variable with your key, never the key.\n\nCodex\nOpenCode 1.x\nClaude Code\n\nYour existing Codex config.toml Merge this table into your existing config.toml. Do not replace your other settings.\n\n[mcp_servers.baltor]\nurl = \"https://baltor.ai/mcp\"\nbearer_token_env_var = \"BALTOR_SERVICE_TOKEN\"\nstartup_timeout_sec = 20\ntool_timeout_sec = 45\nCopy configuration without secrets\n\nSource: https://learn.chatgpt.com/docs/extend/mcp?surface=cli\n\nDocumented configuration; native end-to-end qualification is pending. Check your installed version with codex --version.\n\nSet BALTOR_SERVICE_TOKEN in your environment. The file holds the variable's name, never the key, so it is safe to keep in version control. Then check the entry with codex mcp list\n\nThis command shows configuration, not a completed handshake. In a Codex session, inspect /mcp and confirm that Baltor's tools are available before asking it to search.\n\nTemporary setup in Bash\nCheck the service connection\nEndpoint\nhttps://baltor.ai/mcp\nTransport\nStreamable HTTP\nProtocol\n2025-11-25, 2026-07-28\nAuthentication\nService token, sent in the Authorization header\n\nThis browser check initializes the protocol and lists the available operations with your current connection. It does not run any work, fetch file bodies or spend model credits.\n\nTest service connection\nSign in to check access\n\nSign in with your service token to run the connection check.\n\nNot tested. No model calls are made by this check.\n\nConfiguration, connection, retrieval, native loading and useful task completion are separate checks. A green connection does not qualify all five. This service does not offer a browser-based authorization flow for native clients yet. Read the access and data boundaries.\n\nWhen you no longer need it\n\nIf you created this token on your Account page, open Account, find it under Your client tokens and select Revoke. If your operator gave you the token, ask your operator to revoke it. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.\n\nAfter the token is revoked, delete the mcp_servers.baltor table from config.toml and clear BALTOR_SERVICE_TOKEN from your environment.\n\nOpen your account\n3. Search and download\n\nAsk your agent to search Baltor for what the current step needs. It gets short references with source, licence and digest, downloads only the one it chooses, and every download appears in your usage.\n\nOpen the first example\nSearch in the browser\n\nConnecting needs nothing installed beside your harness. The engine that runs on your machine is free and open source under the MIT licence; the documentation has its installation steps.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "1 Get access An invitation takes a minute",
+          "href": "#start-access"
+        },
+        {
+          "text": "2 Connect your harness One entry, no key in files",
+          "href": "#start-connect"
+        },
+        {
+          "text": "3 Search and download Search is free",
+          "href": "#start-search"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli",
+          "href": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli"
+        },
+        {
+          "text": "Sign in to check access",
+          "href": "/login"
+        },
+        {
+          "text": "Read the access and data boundaries",
+          "href": "/security"
+        },
+        {
+          "text": "Open your account",
+          "href": "/account"
+        },
+        {
+          "text": "Open the first example",
+          "href": "/examples"
+        },
+        {
+          "text": "Search in the browser",
+          "href": "/app"
+        },
+        {
+          "text": "documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 17.34375,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 145.953125,
+            "y": 847.890625,
+            "width": 88.96875,
+            "height": 18
+          }
+        },
+        {
+          "text": "Sign in",
+          "id": "start-sign-in",
+          "box": {
+            "x": 163,
+            "y": 950.640625,
+            "width": 51.28125,
+            "height": 21
+          }
+        },
+        {
+          "text": "documentation",
+          "id": "",
+          "box": {
+            "x": 38.34375,
+            "y": 4208.34375,
+            "width": 95.953125,
+            "height": 18
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 4792.359375,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4827.609375,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4862.859375,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4898.109375,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4933.359375,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4792.359375,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4827.609375,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4862.859375,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 5020.75,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 17.34375,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 39.299999952316284,
+          "dom_content_loaded": 128.29999995231628,
+          "load": 177.89999997615814
+        }
+      ]
+    },
+    {
+      "path": "/pricing",
+      "width": 1440,
+      "height": 2066,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:50.350Z",
+      "title": "Baltor | Pricing",
+      "overflow": false,
+      "h1": [
+        "One plan. Search is free."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nHow it works\nLibrary\nPricing\nDocs\nSign in\nRequest an invitation\n\nPRICING\n\nOne plan.\nSearch is free.\n\nBaltor Pro is for one person and the devices that person connects. You bring your own tools and your own model keys.\n\nONE PLAN\n\nBaltor Pro\nInvitation only\n\n29 United States dollars\neach month\n\nSearch is free.\nSearching permitted material and reading a reference costs nothing, with an account or with a key from your operator.\nThe measured unit is one downloaded item.\nOne item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.\nInvited accounts are free.\nWhile invitations go out in small groups, an invited account pays nothing and keeps the same limits as a paid account. An invitation may also carry a discount code.\nPersonal keys for each device.\nCreate and revoke a key for every client you connect, from your account page.\nConnection settings for OpenCode, Codex and Claude Code.\nCopy one reviewed entry. It never holds your key.\nRequest an invitation\n↗\nSee how it works\n\nAccounts open by invitation. Invited accounts stay free. A signed-in account can subscribe from its account page when checkout is available.\n\nWhat the price does not cover\n\nYour model provider bills you directly for the calls your own tools make. Baltor does not resell model access and never asks for a model key.\n\nHow usage is counted\n\nYour account page shows the usage the service recorded for your connections. That record is the same one the price is based on, so you can check it yourself.\n\nHow to stop paying\n\nWhen payment is open you can cancel from your account page. Cancelling stops the next payment. Files you already downloaded stay on your computer.\n\nWhat is still in progress\n\nPublic account creation and complete native client onboarding are not finished. No percentage saving, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.\n\nCommon questions\nDo I need a model key to use Baltor?\nWhat happens to material I already downloaded?\nIs there a free plan?\nCan a team share one account?\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "Docs",
+          "href": "/docs"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation ↗",
+          "href": "/waitlist"
+        },
+        {
+          "text": "See how it works",
+          "href": "/how-it-works#task-breakdown"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 580.796875,
+            "y": 1740.71875,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1775.96875,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1811.21875,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1846.46875,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1881.71875,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1740.71875,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1775.96875,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1811.21875,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 1137.59375,
+            "y": 1740.71875,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 64,
+          "y": 19.5,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 42.39999997615814,
+          "dom_content_loaded": 147,
+          "load": 207.5
+        }
+      ]
+    },
+    {
+      "path": "/connect",
+      "width": 390,
+      "height": 5373,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:51.200Z",
+      "title": "Baltor | Get started",
+      "overflow": false,
+      "h1": [
+        "Three steps to your first download."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 65
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 38.34375,
+        "y": 467.203125,
+        "width": 313.3125,
+        "height": 48
+      },
+      "visible_text": "Skip to content\nBaltor\nRequest an invitation\n\nGET STARTED\n\nThree steps to your first download.\n\nAsk for an account, connect the harness you already use, and let your agent ask for what each step needs.\n\n1\nGet access\nAn invitation takes a minute\n2\nConnect your harness\nOne entry, no key in files\n3\nSearch and download\nSearch is free\n1. Get access\nRequest an invitation\nOpen for requests\nWork email\nWhat will your agents work on? Optional\n\nThe note helps the person reading your request. Do not include credentials, customer data or anything private.\n\nRequest an invitation\n\nA person reads every request and decides. We keep your address and note only to send your invitation, as the privacy notice says, and an operator can erase both from the list on request. We do not publish a date, and we will not add you to a mailing list.\n\nAlready invited? Sign in\n\nWhat an invited account gets\nFree access while we open in small groups\nThe reviewed library, searchable from your harness\nA usage record for every download\n2. Connect your harness\n\nYour harness connects to this service with the Model Context Protocol. Pick it below and copy one reviewed entry. It holds this service's address and the name of the environment variable with your key, never the key.\n\nCodex\nOpenCode 1.x\nClaude Code\n\nYour existing Codex config.toml Merge this table into your existing config.toml. Do not replace your other settings.\n\n[mcp_servers.baltor]\nurl = \"https://baltor.ai/mcp\"\nbearer_token_env_var = \"BALTOR_SERVICE_TOKEN\"\nstartup_timeout_sec = 20\ntool_timeout_sec = 45\nCopy configuration without secrets\n\nSource: https://learn.chatgpt.com/docs/extend/mcp?surface=cli\n\nDocumented configuration; native end-to-end qualification is pending. Check your installed version with codex --version.\n\nSet BALTOR_SERVICE_TOKEN in your environment. The file holds the variable's name, never the key, so it is safe to keep in version control. Then check the entry with codex mcp list\n\nThis command shows configuration, not a completed handshake. In a Codex session, inspect /mcp and confirm that Baltor's tools are available before asking it to search.\n\nTemporary setup in Bash\nCheck the service connection\nEndpoint\nhttps://baltor.ai/mcp\nTransport\nStreamable HTTP\nProtocol\n2025-11-25, 2026-07-28\nAuthentication\nService token, sent in the Authorization header\n\nThis browser check initializes the protocol and lists the available operations with your current connection. It does not run any work, fetch file bodies or spend model credits.\n\nTest service connection\nSign in to check access\n\nSign in with your service token to run the connection check.\n\nNot tested. No model calls are made by this check.\n\nConfiguration, connection, retrieval, native loading and useful task completion are separate checks. A green connection does not qualify all five. This service does not offer a browser-based authorization flow for native clients yet. Read the access and data boundaries.\n\nWhen you no longer need it\n\nIf you created this token on your Account page, open Account, find it under Your client tokens and select Revoke. If your operator gave you the token, ask your operator to revoke it. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.\n\nAfter the token is revoked, delete the mcp_servers.baltor table from config.toml and clear BALTOR_SERVICE_TOKEN from your environment.\n\nOpen your account\n3. Search and download\n\nAsk your agent to search Baltor for what the current step needs. It gets short references with source, licence and digest, downloads only the one it chooses, and every download appears in your usage.\n\nOpen the first example\nSearch in the browser\n\nConnecting needs nothing installed beside your harness. The engine that runs on your machine is free and open source under the MIT licence; the documentation has its installation steps.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "1 Get access An invitation takes a minute",
+          "href": "#start-access"
+        },
+        {
+          "text": "2 Connect your harness One entry, no key in files",
+          "href": "#start-connect"
+        },
+        {
+          "text": "3 Search and download Search is free",
+          "href": "#start-search"
+        },
+        {
+          "text": "privacy notice",
+          "href": "/privacy"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli",
+          "href": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli"
+        },
+        {
+          "text": "Sign in to check access",
+          "href": "/login"
+        },
+        {
+          "text": "Read the access and data boundaries",
+          "href": "/security"
+        },
+        {
+          "text": "Open your account",
+          "href": "/account"
+        },
+        {
+          "text": "Open the first example",
+          "href": "/examples"
+        },
+        {
+          "text": "Search in the browser",
+          "href": "/app"
+        },
+        {
+          "text": "documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 17.34375,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "privacy notice",
+          "id": "",
+          "box": {
+            "x": 145.953125,
+            "y": 847.890625,
+            "width": 88.96875,
+            "height": 18
+          }
+        },
+        {
+          "text": "Sign in",
+          "id": "start-sign-in",
+          "box": {
+            "x": 163,
+            "y": 950.640625,
+            "width": 51.28125,
+            "height": 21
+          }
+        },
+        {
+          "text": "documentation",
+          "id": "",
+          "box": {
+            "x": 38.34375,
+            "y": 4208.34375,
+            "width": 95.953125,
+            "height": 18
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 4792.359375,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4827.609375,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4862.859375,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4898.109375,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 4933.359375,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4792.359375,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4827.609375,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 4862.859375,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 5020.75,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 17.34375,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 43.89999997615814,
+          "dom_content_loaded": 136.80000007152557,
+          "load": 202.70000004768372
+        }
+      ]
+    },
+    {
+      "path": "/signup",
+      "width": 390,
+      "height": 1966,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:52.163Z",
+      "title": "Baltor | Account status",
+      "overflow": false,
+      "h1": [
+        "Account creation is not open to everyone yet."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 65
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nRequest an invitation\n\nACCOUNTS\n\nAccount creation is not open to everyone yet.\n\nAccounts open in small groups. If you already have a service access token, you can sign in and use the workspace now.\n\nAsk for an invitation\n\nAn invitation may carry a discount code for the first months. Paid access is one plan, Baltor Pro, 29 United States dollars each month, and you can cancel it yourself from your account page once payment is open to you.\n\nWhat remains before account creation opens\n\nVerified email delivery, customer account provisioning and the complete sign-up journey must pass their integration checks. While the library holds only its first items, we would rather have you on the waiting list than take a subscription you cannot use yet.\n\nRequest an invitation\nGo to sign-in\nRead the setup guide\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Go to sign-in",
+          "href": "/login"
+        },
+        {
+          "text": "Read the setup guide",
+          "href": "/docs"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 17.34375,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 1385.453125,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 1420.703125,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 1455.953125,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 1491.203125,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 1526.453125,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 1385.453125,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 1420.703125,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 1455.953125,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 1613.84375,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 17.34375,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 40.300000071525574,
+          "dom_content_loaded": 122.40000009536743,
+          "load": 179.10000002384186
+        }
+      ]
+    },
+    {
+      "path": "/account",
+      "width": 1440,
+      "height": 1361,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:52.958Z",
+      "title": "Baltor | Your account",
+      "overflow": false,
+      "h1": [
+        "Access and usage."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nHow it works\nLibrary\nPricing\nDocs\nSign in\nRequest an invitation\nOverview\nConnect\nKeys\nLibrary\nUsage\nBilling\n\nYOUR ACCOUNT\n\nAccess and usage.\nManage this connection\nCurrent service identity\nNot connected\n\nSign in to see your service identity, usage and available subscription settings.\n\nSign in\nConnect your development tools\nLoad client tokens\n\nSign in with your verified account to manage client tokens. A service token cannot create more credentials.\n\nRecorded usage\nRefresh\n\nService usage is separate from the model calls your own tools make.\n\nSign in to see the downloads recorded for your account.\n\nSubscription access\nCheck availability\n\nOnly configured plans are shown. A completed checkout does not itself confirm that access is active.\n\nConnect to check this service's billing configuration.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "Docs",
+          "href": "/docs"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Overview",
+          "href": "/account"
+        },
+        {
+          "text": "Connect",
+          "href": "/connect#start-connect"
+        },
+        {
+          "text": "Keys",
+          "href": "/account#account-keys"
+        },
+        {
+          "text": "Library",
+          "href": "/app"
+        },
+        {
+          "text": "Usage",
+          "href": "/account#account-usage"
+        },
+        {
+          "text": "Billing",
+          "href": "/account#account-billing"
+        },
+        {
+          "text": "Manage this connection",
+          "href": "/login"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "Sign in",
+          "id": "account-access-link",
+          "box": {
+            "x": 342.59375,
+            "y": 386.3125,
+            "width": 50.28125,
+            "height": 21
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 580.796875,
+            "y": 1035.328125,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1070.578125,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1105.828125,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1141.078125,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1176.328125,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1035.328125,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1070.578125,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1105.828125,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 1137.59375,
+            "y": 1035.328125,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 64,
+          "y": 19.5,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 41.299999952316284,
+          "dom_content_loaded": 129.19999992847443,
+          "load": 194.5
+        }
+      ]
+    },
+    {
+      "path": "/app",
+      "width": 1440,
+      "height": 1901,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:53.760Z",
+      "title": "Baltor | Intelligence workspace",
+      "overflow": false,
+      "h1": [
+        "Find material for your next task."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nHow it works\nLibrary\nPricing\nDocs\nSign in\nRequest an invitation\nOverview\nConnect\nKeys\nLibrary\nUsage\nBilling\n\nINTELLIGENCE WORKSPACE\n\nFind material for your next task.\n\nInspect an exact reference before fetching its body. Your own tools run in your environment.\n\nSERVICE ACCESS\n\nSign in to search\n\nSearch and downloads are scoped to your service account.\n\nSign in to this service\nClient connection\nModel Context Protocol endpoint\nCopy endpoint\n\nSupported protocol: 2025-11-25, 2026-07-28. External identity flow qualified: no.\n\nSELECTED MATERIAL\n\nSearch intelligence\nConnect to search\nWhat does your task need?\nSearch\nRetrieval method\nLexical search\nHybrid search with character similarity\n\nInstalled vector method: deterministic_character_hash. Semantic embedding model installed: no. Bodies load only after selection.\n\n↗\nStart with an assignment\n\nConnect, describe the material you need, then inspect the returned source and permissions before downloading.\n\nBROWSE WHAT YOU HAVE\n\nEverything published for your account\nSign in to browse\n\nSearch answers a question. Browsing shows what is there, grouped by where the material comes from. Open an item to read its details before you fetch the file.\n\nKind of material\nEvery kind\nDevelopment tool\nEvery tool\nLoad the catalogue\n\nMaterial that names no development tool suits every tool, so a tool filter keeps it. Material that declares an effect, such as running a command, is not offered here, because this page holds no permission to run anything.\n\nSign in to browse the material published for your account.\n\nOpen an item to read its details.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "Docs",
+          "href": "/docs"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Overview",
+          "href": "/account"
+        },
+        {
+          "text": "Connect",
+          "href": "/connect#start-connect"
+        },
+        {
+          "text": "Keys",
+          "href": "/account#account-keys"
+        },
+        {
+          "text": "Library",
+          "href": "/app"
+        },
+        {
+          "text": "Usage",
+          "href": "/account#account-usage"
+        },
+        {
+          "text": "Billing",
+          "href": "/account#account-billing"
+        },
+        {
+          "text": "Sign in to this service",
+          "href": "/login"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "Sign in to this service",
+          "id": "workspace-access-link",
+          "box": {
+            "x": 342.59375,
+            "y": 418.125,
+            "width": 157.09375,
+            "height": 21
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 580.796875,
+            "y": 1575.875,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1611.125,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1646.375,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1681.625,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 1716.875,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1575.875,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1611.125,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 1646.375,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 1137.59375,
+            "y": 1575.875,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 64,
+          "y": 19.5,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 43.10000002384186,
+          "dom_content_loaded": 132.5,
+          "load": 188.10000002384186
+        }
+      ]
+    },
+    {
+      "path": "/docs",
+      "width": 1440,
+      "height": 2649,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:54.562Z",
+      "title": "Baltor | Setup guide",
+      "overflow": false,
+      "h1": [
+        "Connect a client. Keep your keys private."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 72
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nHow it works\nLibrary\nPricing\nDocs\nSign in\nRequest an invitation\n\nSETUP GUIDE\n\nConnect a client.\nKeep your keys private.\n\nThere are two different connections: access to an intelligence service, and permission for your harness to call a model provider.\n\nRequest an invitation\nFirst retrieval example\nAccess and data boundaries\nTechnical runtime reference\n\nThe public website calls a unit of work a step. The implementation uses the canonical Loop runtime described here and in the repository.\n\nRuntime classification and role profiles\nComplete behavior of a discrete cognitive or act step Loop node\n\nHarness Intelligence is a provisioning view over the four persistent layers. It is not a fifth persistent layer.\n\nRuntime Memory is the temporary note board for one run. Saving a note does not promote it into reusable intelligence.\n\n1. Install the local runtime\n\nUse the release and installation instructions supplied by your service operator. When installing this repository from an approved checkout, the serving dependencies are optional:\n\npython -m pip install '.[serving]'\nloop-engine service --help\n\nThe intelligence service can run locally or remotely. A remote model call still sends the selected context to that provider.\n\n2. Obtain service access\n\nYour operator creates a tenant and binds its access before issuing a scoped key, or binds your identity-provider subject. There is no automatic account creation from an unverified email address or a token's tenant claim.\n\nFor Model Context Protocol clients, configure the endpoint shown in the workspace and supply its service token through your client's supported secret mechanism. Use the exact protocol version returned by the service. Do not put tokens in a URL, a shared Markdown file, or a checked-in client configuration.\n\n3. Bring your own model keys\n\nKeep model credentials on the machine or broker that performs the model call. Store only a secret reference in shared configuration. The browser workspace never asks for a model provider key.\n\ncredential_ref: env:YOUR_PROVIDER_KEY\nallow_network: false\n\nThis is a configuration pattern, not an executable universal provider file. Use the selected adapter's documented schema. Enable network calls only after choosing the exact provider, model, task allowance, and disclosure scope.\n\nA native harness may use its own supported sign-in. A brokered tool can instead use a host-held credential on behalf of a scoped assignment. Neither arrangement removes the provider's terms, account limits, or required permissions.\n\n4. Verify the connection\n\nConnect to the workspace and confirm the tenant, namespace and scopes. Search for a permitted item. Inspect its identity, qualification basis and digest. Fetching a file does not prove that your harness loaded it or used it correctly.\n\nIf access expires, reconnect with a valid token. If a download or checkout has an uncertain outcome, inspect its recorded state before repeating the operation. Do not assume a timed-out action was cancelled.\n\nPrivacy and telemetry\n\nDo not include keys in prompts, intelligence bodies, screenshots, logs, or feedback. Embeddings and raw context are confidential data, not anonymous telemetry. Choose retention and improvement consent separately from execution access.\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "Docs",
+          "href": "/docs"
+        },
+        {
+          "text": "Sign in",
+          "href": "/login"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "First retrieval example",
+          "href": "/examples"
+        },
+        {
+          "text": "Access and data boundaries",
+          "href": "/security"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 580.796875,
+            "y": 2323.515625,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 2358.765625,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 2394.015625,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 2429.265625,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 580.796875,
+            "y": 2464.515625,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 2323.515625,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 2358.765625,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 859.1875,
+            "y": 2394.015625,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 1137.59375,
+            "y": 2323.515625,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 64,
+          "y": 19.5,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 45.60000002384186,
+          "dom_content_loaded": 126.60000002384186,
+          "load": 179.29999995231628
+        }
+      ]
+    },
+    {
+      "path": "/how-it-works",
+      "width": 390,
+      "height": 10764,
+      "status": 200,
+      "observed_at": "2026-09-23T12:44:55.374Z",
+      "title": "Baltor | How it works",
+      "overflow": false,
+      "h1": [
+        "Big problems. Clear steps."
+      ],
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 65
+      },
+      "hero": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "aside": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "demo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "action": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "email": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "visible_text": "Skip to content\nBaltor\nRequest an invitation\n\nHOW IT WORKS\n\nBig problems.\nClear steps.\n\nStart with what you want to achieve. Break the work into steps, give each step relevant expertise and tools, then check the result before moving on.\n\nThe plan can change as you learn more. A step can ask for missing information, try another approach or send unfinished work back for improvement, within the limits you set.\n\nSEE WHAT EACH STEP NEEDS\n\nPrepare a customer import without changing the original.\nExample only · no work runs here\n\nChoose a step to see its information, tools and expected result. The person inspecting the data needs different material from the person checking the finished import.\n\n01\nUnderstand the input\n02\nChoose an approach\n03\nBuild or reuse\n04\nCheck the result\n\nUNDERSTAND\n\nUnderstand the inputs before changing anything.\n\nRead a sample, identify the columns and flag missing or unclear values. Keep the original file unchanged.\n\nHow this step could run\nA research session\n\nA short brief, the selected sample and read-only tools.\n\nInformation for this step\nSelected files\nStep instructions\ntask.json\n\nWhat to inspect, what to report and what must stay unchanged.\n\nExpert guidance\nfield-definitions.md\n\nDefinitions for the columns in this file.\n\nTask files\ncustomer-sample.csv\n\nOnly the sample you have allowed this step to read.\n\nPrevious findings\nprevious-import-findings.json\n\nRelevant past mistakes, such as losing leading zeroes in customer numbers.\n\nWhat it can do\n\nRead the selected files and check their contents. This step cannot change the input or browse unrelated files.\n\nWhat it cannot access\nThe rest of the customer archive\nPermission to change the original file\nBilling and model-provider keys\nWhat you get\n\nA report of the columns, unclear values and questions that affect the import.\n\nWhen this step is finished\n\nThis is an illustration, not a recorded customer result. Selecting a step does not access your files or call a model.\n\nUSEFUL INFORMATION, WHEN IT IS NEEDED\n\nGive each step a useful starting point.\nFind\nLook for relevant guidance and reusable code\nChoose\nCheck that it fits the task and your permissions\nPrepare\nGive the step its selected files and instructions\nWork\nUse an appropriate model, tool or existing code\nCheck\nTest the result against your requirements\n\nA useful briefing is not always the shortest one. Start with relevant information and add more when the work reveals a gap.\n\nWhat if a step needs more information?\n\nUSE WHAT SUITS THE WORK\n\nNot every step needs a large model.\n\nThe goal and quality checks stay the same. The way a step does the work can vary.\n\nBuild something new\nA focused AI workspace\n\nGive your chosen development tool a clear brief, selected files and the permissions needed to build or repair the missing pieces.\n\nMake a choice\nA smaller, focused request\n\nA decision may need one model request rather than a complete development session. Use a compatible model service you have already configured.\n\nReuse existing work\nRun code that already fits\n\nUse reviewed code when it meets the requirements. That step may need no model call and no newly generated code.\n\nModels may run on your machine or through a provider you choose. You supply access; Baltor does not need to install or host the models for you.\n\nMAKE THE EFFORT COUNT\n\nIs your AI spending effort in the wrong places?\n\nThese are the questions Baltor is designed to address at each step of the work.\n\nINFORMATION\nToo much context for a small task?\n\nMatch information to the task. Bring in more when it helps, without making every step carry the whole history.\n\nRelevant information, less repetition\nMODEL SELECTION\nAn expensive model for every decision?\n\nCompare suitable models and reusable code for each step, against your quality and spending requirements.\n\nAn approach that fits the work\nDOMAIN KNOWLEDGE\nMissing the right domain expertise?\n\nBring relevant methods, examples and checks into the work, with sources and applicability kept visible.\n\nSpecific guidance, not generic guesses\nCODE REUSE\nPaying to rewrite code that already exists?\n\nFind an eligible implementation first. Generate new code for the gaps instead of reproducing a known solution as more output tokens.\n\nReuse what is already qualified\nIMPROVEMENT\nAre the same mistakes showing up again?\n\nKeep useful results and corrections. Compare proposed improvements on real tasks before making them the default.\n\nMeasured improvement, not blind repetition\n\nBUILDING BLOCKS FOR BETTER SOLUTIONS\n\nPut knowledge, code and experience to work.\n\nUseful intelligence includes how to approach the work, code that can do it, what happened before, and what you want done differently.\n\n01 / Approach\nContext Intelligence\n\nMethods, questions, constraints, examples and output contracts that guide the work.\n\nFor the import task\n\nA field-definition guide and a checklist for missing values.\n\n02 / Reuse\nCode Intelligence\n\nReusable functions, tools, packages and workflows with declared inputs, outputs and effects.\n\nFor the import task\n\nA qualified normalizer with its dependency and verification records.\n\n03 / Experience\nRuntime History and Solution Intelligence\n\nSaved outcomes, failures, repairs, measurements and solution information that can inform a new task.\n\nFor the import task\n\nA previous import's failed assumptions and the checks that detected them.\n\n04 / Guidance\nUser Feedback Intelligence\n\nScoped corrections, priorities and instructions supplied by a person.\n\nFor the import task\n\n“Keep uncertain matches for review. Never overwrite the original file.”\n\nThe four layers describe the broader product. The hosted service currently provides a small Context Intelligence example; it does not yet offer a populated catalogue across every layer.\n\nYOUR TOOLS, WITH HELP FROM BALTOR\n\nGet useful material. Keep control of your work.\nBALTOR\nA library of useful material\nCheck your access\nFind material your account is allowed to use\nFind relevant help\nSearch guidance, reusable code and previous findings\nDeliver selected files\nCheck that each download matches the version you chose\n\nAccess to the library does not give Baltor control of your computer.\n\n←\nYou request\nRelevant help or a selected file\n→\nYou receive\nMatching results or the permitted download\n\nThrough your signed-in connection\n\nYOUR ENVIRONMENT\nYour task and tools\nSet the goal and limits\nDecide what success means and what the work may access\nCarry out each step\nUse your chosen models, development tools or existing code\nKeep the results\nInspect files, checks and the record of what happened\n\nYour tools work within the permissions you set.\n\nMODEL ACCESS IS SEPARATE\nYour tools connect to your chosen model\n\nModel keys stay in your environment or its approved credential manager. A remote model may receive the information you allow your tools to send.\n\nThe website does not automatically upload your complete task files or conversations. The full workflow shown here is a product design; the service currently supports search and selected-file delivery.\nAvailable today\n\nA person with an account can sign in with a service token, search the small example library, download permitted files and view usage. Administrators can create and revoke test tokens.\n\nThe complete example above is still being tested from start to finish. Public account creation, paid subscriptions and automatic setup of every step are not open yet. We have not established token savings or overnight task completion for this release.\n\nRequest an invitation\n\nTechnical setup and architecture\n\nBaltor\n\nHarness and agent optimized operation.\n\nService available\n\nPRODUCT\n\nRequest an invitation\nHow it works\nLibrary\nPricing\nFirst example\n\nDEVELOPERS\n\nDocumentation\nAccess and data\nOpen-source notices\n\nCOMPANY\n\nPrivacy notice\nTerms of service: not yet published\nContact: by post, at the address below\n\n© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678\n\nYour model keys stay with you.\n\nAppearance: light",
+      "links": [
+        {
+          "text": "Skip to content",
+          "href": "#main"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "Technical setup and architecture",
+          "href": "/docs"
+        },
+        {
+          "text": "Baltor",
+          "href": "/"
+        },
+        {
+          "text": "Request an invitation",
+          "href": "/waitlist"
+        },
+        {
+          "text": "How it works",
+          "href": "/how-it-works"
+        },
+        {
+          "text": "Library",
+          "href": "/#library"
+        },
+        {
+          "text": "Pricing",
+          "href": "/pricing"
+        },
+        {
+          "text": "First example",
+          "href": "/examples"
+        },
+        {
+          "text": "Documentation",
+          "href": "/docs"
+        },
+        {
+          "text": "Access and data",
+          "href": "/security"
+        },
+        {
+          "text": "Open-source notices",
+          "href": "/assets/third-party-notices.txt"
+        },
+        {
+          "text": "Privacy notice",
+          "href": "/privacy"
+        }
+      ],
+      "unlabeled_controls": [],
+      "tiny_controls": [
+        {
+          "text": "",
+          "id": "menu-toggle",
+          "box": {
+            "x": 17.34375,
+            "y": 31.5,
+            "width": 1,
+            "height": 1
+          }
+        },
+        {
+          "text": "Technical setup and architecture",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 9904.75,
+            "width": 237.609375,
+            "height": 21
+          }
+        },
+        {
+          "text": "Request an invitation",
+          "id": "footer-access",
+          "box": {
+            "x": 16,
+            "y": 10183.421875,
+            "width": 143.953125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "How it works",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 10218.671875,
+            "width": 88.96875,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Library",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 10253.921875,
+            "width": 46.75,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Pricing",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 10289.171875,
+            "width": 47.59375,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "First example",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 10324.421875,
+            "width": 92.390625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Documentation",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 10183.421875,
+            "width": 104.65625,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Access and data",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 10218.671875,
+            "width": 113,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Open-source notices",
+          "id": "",
+          "box": {
+            "x": 207,
+            "y": 10253.921875,
+            "width": 143.078125,
+            "height": 23.25
+          }
+        },
+        {
+          "text": "Privacy notice",
+          "id": "",
+          "box": {
+            "x": 16,
+            "y": 10411.8125,
+            "width": 96.140625,
+            "height": 23.25
+          }
+        }
+      ],
+      "logo": {
+        "src": "/assets/baltor-mark.svg",
+        "box": {
+          "x": 17.34375,
+          "y": 16,
+          "width": 32,
+          "height": 32
+        }
+      },
+      "meta_description": "Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.",
+      "canonical": null,
+      "navigation_timing": [
+        {
+          "response_start": 41.299999952316284,
+          "dom_content_loaded": 124.29999995231628,
+          "load": 175.20000004768372
+        }
+      ]
+    }
+  ],
+  "keyboard": [
+    {
+      "tag": "A",
+      "id": "",
+      "text": "Skip to content",
+      "aria": null
+    },
+    {
+      "tag": "A",
+      "id": "",
+      "text": "Baltor",
+      "aria": "Baltor home"
+    },
+    {
+      "tag": "INPUT",
+      "id": "menu-toggle",
+      "text": "",
+      "aria": "Show the menu"
+    },
+    {
+      "tag": "A",
+      "id": "header-primary",
+      "text": "Request an invitation",
+      "aria": null
+    },
+    {
+      "tag": "A",
+      "id": "hero-primary",
+      "text": "Request an invitation",
+      "aria": null
+    }
+  ],
+  "menu": {
+    "checked": true,
+    "expanded": null,
+    "visible": true,
+    "height": 65
+  },
+  "invitation": {
+    "path": "/waitlist",
+    "visible": true,
+    "top": 467.203125,
+    "bottom": 515.203125,
+    "viewport": 844,
+    "active": "main"
+  },
+  "assetHashes": {
+    "baltor-mark.svg": {
+      "status": 200,
+      "sha256": "c0db56476c6df357a92c1cf1509c4f9e2c86864f4fe86e14586cfe355422caa1",
+      "bytes": 1805
+    },
+    "favicon-32.png": {
+      "status": 200,
+      "sha256": "f96f178626a7dfe0bf601562ac2e3bb950ee136cbf803ece7af2e32c096e2149",
+      "bytes": 1025
+    },
+    "architecture.css": {
+      "status": 200,
+      "sha256": "8f8c961517ed9ee5b6613d0eb51b7144cde1a8e30662308b690b8fd11be21391",
+      "bytes": 48055
+    },
+    "service.js": {
+      "status": 200,
+      "sha256": "7f8eb3b7edc8d42bca626c8d0f18fa5db62ee8009f3a3a42d0ddcb669e6b717c",
+      "bytes": 62905
+    }
+  },
+  "errors": [],
+  "rejected": [],
+  "limits": [
+    "No forms submitted, no accounts used, no protected material fetched",
+    "One isolated Chromium session, no screen-reader or conversion measurement"
+  ]
+}

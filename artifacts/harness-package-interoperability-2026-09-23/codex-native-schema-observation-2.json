@@ -1,0 +1,270 @@
+{
+  "record_type": "native_schema_inspection/v2",
+  "client": "codex-cli 0.155.1",
+  "command": "codex app-server generate-json-schema --out <temporary directory>",
+  "exit_code": 0,
+  "schemas": [
+    {
+      "name": "HooksListParams.json",
+      "schema_sha256": "07638c3a8a3690cf368fa92c7ff697fdd0132865e8c59d53f6e5789e5a260053",
+      "properties": [
+        "cwds"
+      ],
+      "required": [],
+      "input_property": null
+    },
+    {
+      "name": "SkillsListParams.json",
+      "schema_sha256": "1d245374e64c5acc9739dfc68a4fe5114c6c9147af04c480886f1846d2ca6239",
+      "properties": [
+        "cwds",
+        "forceReload"
+      ],
+      "required": [],
+      "input_property": null
+    },
+    {
+      "name": "ThreadStartParams.json",
+      "schema_sha256": "792e2f32e37cece971bd616664ea2053741acbed4e9c92e9d1766427718f2ecd",
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "baseInstructions",
+        "config",
+        "cwd",
+        "developerInstructions",
+        "ephemeral",
+        "model",
+        "modelProvider",
+        "personality",
+        "sandbox",
+        "serviceName",
+        "serviceTier",
+        "sessionStartSource",
+        "threadSource"
+      ],
+      "required": [],
+      "input_property": null
+    },
+    {
+      "name": "TurnStartParams.json",
+      "schema_sha256": "a3835e8c1e942e4b358e1a670939b89918b16c4d13105a579899892b7ade6dea",
+      "properties": [
+        "approvalPolicy",
+        "approvalsReviewer",
+        "clientUserMessageId",
+        "cwd",
+        "effort",
+        "input",
+        "model",
+        "outputSchema",
+        "personality",
+        "sandboxPolicy",
+        "serviceTier",
+        "serviceTierForTurn",
+        "summary",
+        "threadId",
+        "toolOutput",
+        "turnTrigger"
+      ],
+      "required": [
+        "input",
+        "threadId"
+      ],
+      "input_property": {
+        "items": {
+          "$ref": "#/definitions/UserInput"
+        },
+        "type": "array"
+      },
+      "input_definition": {
+        "oneOf": [
+          {
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "text_elements": {
+                "default": [],
+                "description": "UI-defined spans within `text` used to render or persist special elements.",
+                "items": {
+                  "$ref": "#/definitions/TextElement"
+                },
+                "type": "array"
+              },
+              "type": {
+                "enum": [
+                  "text"
+                ],
+                "title": "TextUserInputType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "type"
+            ],
+            "title": "TextUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "detail": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/ImageDetail"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "type": {
+                "enum": [
+                  "image"
+                ],
+                "title": "ImageUserInputType",
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "url"
+            ],
+            "title": "ImageUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "detail": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/ImageDetail"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
+              "path": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "localImage"
+                ],
+                "title": "LocalImageUserInputType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "type"
+            ],
+            "title": "LocalImageUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "audio"
+                ],
+                "title": "AudioUserInputType",
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "url"
+            ],
+            "title": "AudioUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "localAudio"
+                ],
+                "title": "LocalAudioUserInputType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "type"
+            ],
+            "title": "LocalAudioUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "skill"
+                ],
+                "title": "SkillUserInputType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "path",
+              "type"
+            ],
+            "title": "SkillUserInput",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "mention"
+                ],
+                "title": "MentionUserInputType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "path",
+              "type"
+            ],
+            "title": "MentionUserInput",
+            "type": "object"
+          }
+        ]
+      }
+    }
+  ],
+  "model_calls": 0,
+  "limits": [
+    "Schema generation only; methods were not invoked and no task was run."
+  ],
+  "predecessor": "codex-native-schema-observation.json",
+  "correction": "Resolve UserInput from definitions, not $defs; absent input fields are null rather than an empty schema."
+}

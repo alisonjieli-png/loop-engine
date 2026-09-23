@@ -1,0 +1,33 @@
+{
+  "record_type": "signup_readonly_source_bindings/v1",
+  "observed_at": "2026-09-23T18:03:42.579343+00:00",
+  "sources": [
+    {
+      "path": "/home/username/.le-codex-build/integration/AGENTS.md",
+      "sha256": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9"
+    },
+    {
+      "path": "/home/username/loop-engine/AGENTS.md",
+      "sha256": "783077616c50ffa848e57932ccbb5e0dd6baaf0620c20c6db2710176e949b42b"
+    },
+    {
+      "path": "/home/username/.le-codex-build/integration/tools/operator_credentials.py",
+      "sha256": "8626502c5922052f6404b37321a76dfc87f6ebf51a2f5446bc117dabeaa9aa4f"
+    },
+    {
+      "path": "/home/username/.le-codex-build/integration/tools/operator_credentials.json",
+      "sha256": "39ba56538e34d122760e40de401b718be92ffccab87858941fd9d2180c0a2e43"
+    },
+    {
+      "path": "/home/username/.le-codex-build/integration/tools/fly_operator.py",
+      "sha256": "b011fcae2fb65314ac41675f0ee5ea6b5464501f0d00eba72ddbfe9fd6fbc7f5"
+    },
+    {
+      "path": "/home/username/.le-codex-build/integration/docs/guides/account-email-operations.md",
+      "sha256": "9a1a55a6a0033fc4571786d10ccd7c4b243d3dc34fb3e444255144bac9925873"
+    }
+  ],
+  "authority_observation": "Integration AGENTS.md records conditional September23 signup approval; shared main checkout retains earlier wording. This task explicitly narrows to read-only inspection; no activation authority inferred.",
+  "secret_values_recorded": false,
+  "external_mutations": 0
+}

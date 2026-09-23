@@ -131,9 +131,15 @@ class ReaderTest(unittest.TestCase):
         record = copy.deepcopy(APPROVED_RECORD)
         producer_family = record["producers"]["default_producer"]["family"]
         record["reviewers"][0]["family"] = producer_family
+        identity = record["reviewers"][0]["reviewer_id"]
+        declared = next(row for row in record["configuration"]["installations"] if row["installation_id"] == identity)
+        declared["family"] = producer_family
+        updated = review_record.PanelConfiguration.from_dict(record["configuration"]).installation(identity)
+        record["reviewers"][0]["installation_sha256"] = updated.sha256
         for call in record["calls"]:
             if call["installation_id"] == record["reviewers"][0]["reviewer_id"]:
                 call["family"] = producer_family
+                call["installation_sha256"] = updated.sha256
         _refused(self, record, "producer_family_approved")
 
     def test_an_approval_beside_a_rejection_is_refused(self):
@@ -197,7 +203,7 @@ class ReaderTest(unittest.TestCase):
 
     def test_another_version_or_an_unknown_or_missing_field_is_refused(self):
         record = copy.deepcopy(APPROVED_RECORD)
-        record["record_type"] = "starter_catalogue_panel_review/v2"
+        record["record_type"] = "starter_catalogue_panel_review/v999"
         _refused(self, record, "unsupported_record_version")
         record = copy.deepcopy(APPROVED_RECORD)
         record["served"] = True
@@ -230,7 +236,7 @@ def _record_with_an_interrupted_dispatch():
             "record_type": panel_module.DISPATCH_RECORD, "run_id": "run-0", "sequence": 1,
             "review_key": panel_module.review_key(installation, request, prompt), "installation_id": "a",
             "identity": request.identity, "body_sha256": request.body_sha256,
-            "request_sha256": request.request_sha256, "dispatched_at": "2026-09-22T00:00:00Z"})
+            "request_sha256": request.request_sha256, "request_record_type": request.to_record()["record_type"], "dispatched_at": "2026-09-22T00:00:00Z"})
         result = harness.run([request])
         ledger = panel_check.ReviewLedger(harness.ledger_path)
         return review_record.build_panel_review_record(
@@ -329,7 +335,8 @@ class ReviewerIdentityTest(unittest.TestCase):
                 for call in record["calls"]:
                     if call["installation_id"] == reviewer:
                         call[field] = value
-                _refused(self, record, "reviewer_identity_disagrees_with_calls")
+                _refused(self, record, "reviewer_identity_unverified" if field == "model" else
+                         "reviewer_identity_disagrees_with_calls")
 
     def test_a_call_by_an_installation_the_record_does_not_name_is_refused(self):
         record = copy.deepcopy(APPROVED_RECORD)
@@ -341,6 +348,7 @@ class ReviewerIdentityTest(unittest.TestCase):
         of them listed twice would read as four approvals."""
         record = copy.deepcopy(APPROVED_RECORD)
         record["policy"].update(minimum_approvals=4, reviewers_per_item=4)
+        record["configuration"]["policy"].update(minimum_approvals=4, reviewers_per_item=4)
         _row(record)["decisions"].append(copy.deepcopy(_row(record)["decisions"][0]))
         _refused(self, record, "reviewer_decided_twice")
 
@@ -494,7 +502,8 @@ class InterruptedDispatchTest(unittest.TestCase):
             "record_type": panel_module.DISPATCH_RECORD, "run_id": call["run_id"], "sequence": call["sequence"],
             "review_key": call["review_key"], "installation_id": call["installation_id"],
             "identity": call["identity"], "body_sha256": call["body_sha256"],
-            "request_sha256": call["request_sha256"], "dispatched_at": call["started_at"]})
+            "request_sha256": call["request_sha256"], "request_record_type": call["request_record_type"],
+            "dispatched_at": call["started_at"]})
         record["totals"]["interrupted_dispatches"] = 2
         _refused(self, record, "dispatch_not_interrupted")
 
@@ -537,11 +546,15 @@ class SerializationTest(unittest.TestCase):
 
 
 class CommittedPilotRecordTest(unittest.TestCase):
-    """The committed pilot record reads with the strict reader and matches the bodies committed with it."""
+    """Historical pilot bytes remain inspectable evidence, never active version-two admission input."""
 
     @classmethod
     def setUpClass(cls):
-        cls.record = review_record.read_panel_review_record(json.loads(PILOT_RECORD.read_text(encoding="utf-8")))
+        cls.record = json.loads(PILOT_RECORD.read_text(encoding="utf-8"))
+
+    def test_historical_record_is_refused_by_current_admission_reader(self):
+        with self.assertRaises(CandidateReviewError):
+            review_record.read_panel_review_record(self.record)
 
     def test_the_committed_bytes_are_the_serialized_record(self):
         """The file is ASCII, holds no retired term, and is exactly what the serializer writes."""

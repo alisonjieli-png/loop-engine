@@ -1,0 +1,49 @@
+test_boolean_version_cannot_impersonate_version_one (test_render_packet.PacketTests) ... ok
+test_caller_mutation_cannot_change_loaded_brief (test_render_packet.PacketTests) ... ok
+test_candidate_cannot_claim_execution_authority (test_render_packet.PacketTests) ... ok
+test_claude_native_alias_and_exact_manifest (test_render_packet.PacketTests) ... ok
+test_destination_traversal_and_existing_folder_refused (test_render_packet.PacketTests) ... ok
+test_edited_context_manifest_metadata_and_extra_file_refused (test_render_packet.PacketTests) ... ok
+test_empty_first_actions_are_refused (test_render_packet.PacketTests) ... ok
+test_essential_assignment_is_inline_and_state_is_passive (test_render_packet.PacketTests) ... ok
+test_invalid_json_schema_returns_typed_refusal (test_render_packet.PacketTests) ... ERROR
+test_missing_objective_is_refused (test_render_packet.PacketTests) ... ok
+test_output_contract_is_required (test_render_packet.PacketTests) ... ok
+test_rehashed_tampered_packet_refused_against_external_binding (test_render_packet.PacketTests) ... ok
+test_run_bound_state_and_unknown_native_client_are_refused (test_render_packet.PacketTests) ... ok
+test_schema_mismatch_and_remote_reference_are_refused (test_render_packet.PacketTests) ... ok
+test_secret_and_oversized_context_are_refused (test_render_packet.PacketTests) ... ok
+test_stale_context_state_run_and_digest_refused_before_write (test_render_packet.PacketTests) ... ok
+test_symlink_parent_and_payload_refused (test_render_packet.PacketTests) ... ok
+test_unknown_record_version_and_fields_are_refused (test_render_packet.PacketTests) ... ok
+
+======================================================================
+ERROR: test_invalid_json_schema_returns_typed_refusal (test_render_packet.PacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 221, in test_invalid_json_schema_returns_typed_refusal
+    self.brief(value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/test_render_packet.py", line 39, in brief
+    return packet.load_brief(sample() if value is None else value)
+  File "/home/username/.le-codex-review-20260923/artifacts/focused-step-packet-2026-09-23/render_packet.py", line 157, in load_brief
+    resolved_schema_json(canonical(schema))
+  File "/home/username/.le-codex-review-20260923/src/loop_engine/core/observation_expectations.py", line 50, in resolved_schema_json
+    Draft202012Validator.check_schema(schema)
+  File "/home/username/loop-engine/.venv/lib/python3.10/site-packages/jsonschema/validators.py", line 316, in check_schema
+    raise exceptions.SchemaError.create_from(error)
+jsonschema.exceptions.SchemaError: 'not-a-json-schema-type' is not valid under any of the given schemas
+
+Failed validating 'anyOf' in metaschema['allOf'][1]['properties']['properties']['additionalProperties']['$dynamicRef']['allOf'][3]['properties']['type']:
+    {'anyOf': [{'$ref': '#/$defs/simpleTypes'},
+               {'type': 'array',
+                'items': {'$ref': '#/$defs/simpleTypes'},
+                'minItems': 1,
+                'uniqueItems': True}]}
+
+On schema['properties']['above']['type']:
+    'not-a-json-schema-type'
+
+----------------------------------------------------------------------
+Ran 18 tests in 2.404s
+
+FAILED (errors=1)

@@ -1,0 +1,14 @@
+test_schema_json_media_and_regular_expression_data_do_not_imply_binary_or_network_execution (tools.test_candidate_review_native.NativePrecheckTest.test_schema_json_media_and_regular_expression_data_do_not_imply_binary_or_network_execution) ... FAIL
+
+======================================================================
+FAIL: test_schema_json_media_and_regular_expression_data_do_not_imply_binary_or_network_execution (tools.test_candidate_review_native.NativePrecheckTest.test_schema_json_media_and_regular_expression_data_do_not_imply_binary_or_network_execution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/review-integrity/tools/test_candidate_review_native.py", line 161, in test_schema_json_media_and_regular_expression_data_do_not_imply_binary_or_network_execution
+    self.assertFalse(self.evaluate(files=files).refused)
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)

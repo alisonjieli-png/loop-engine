@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_persistent_model_identity_failure_stops_remaining_methods (tools.test_generate_original_native_candidates.GenerationTest.test_persistent_model_identity_failure_stops_remaining_methods)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/native-generation/tools/test_generate_original_native_candidates.py", line 320, in test_persistent_model_identity_failure_stops_remaining_methods
+    self.assertEqual(result['stop_reason'],'model_identity_mismatch')
+AssertionError: 'completed' != 'model_identity_mismatch'
+- completed
++ model_identity_mismatch
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.041s
+
+FAILED (failures=1)

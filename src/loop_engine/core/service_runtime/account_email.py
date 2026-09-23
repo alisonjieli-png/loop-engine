@@ -9,20 +9,33 @@ service's own message through the configured mail provider. The message
 carries a link to a page of this service, never the link that the identity
 provider generated for itself.
 
+Sign-up is email first. A sign-up request carries the address and nothing
+else; a request that carries a password is refused. The provider's interface
+needs a password to create a user, so this adapter generates a new random one
+for every request, sends it in that one request and keeps it nowhere. Nobody
+learns it. The person chooses their own password on the page the link opens,
+before that page opens the account. On September 23, 2026 a probe of the
+identity project showed that a second sign-up link for an address that has
+not been confirmed keeps the first password, so a caller who could choose the
+password could register an address first and keep a password its owner would
+later confirm. The record is
+`artifacts/architecture-audit-2026-09-19/identity-unconfirmed-signup-probe-1.json`.
+
 Surface: `AccountEmailConfiguration` (the typed host block), `AccountEmailAdapter`
 with `prepare`, `deliver` and `availability`, the two wire records
 `IdentityLinkRequest` and `AccountMailRequest`, their default transports
-`generate_identity_link` and `send_account_mail`, and `ProviderAnswer`, which
-is what a transport returns. Both operations stay closed until the host sets
-their Boolean and grants network authority.
+`generate_identity_link` and `send_account_mail`, `generated_signup_password`,
+and `ProviderAnswer`, which is what a transport returns. Both operations stay
+closed until the host sets their Boolean and grants network authority.
 
 The answer to a caller never says whether an address already has an account.
 That holds for every definite answer the identity provider can give, not only
 for the two this release expects, because a refusal that could be about the
 address takes the same path as the expected one. The link, the token hash, the
-password and every provider key stay out of records, messages, reports and
-exception text. An open operation also needs a stated client address source,
-so that one caller cannot send messages to addresses it chooses without limit.
+generated password and every provider key stay out of records, messages,
+reports and exception text. An open operation also needs a stated client
+address source, so that one caller cannot send messages to addresses it
+chooses without limit.
 """
 from __future__ import annotations
 
@@ -31,6 +44,7 @@ import hashlib
 import json
 import math
 import re
+import secrets
 import string
 import time
 from urllib.parse import quote, urlsplit
@@ -43,7 +57,10 @@ from .request_limits import (
 )
 
 CONFIGURATION_RECORD_TYPE = "service_account_email_configuration/v1"
-SIGNUP_REQUEST_VERSION = "service_account_signup_request/v1"
+#: Version 2 carries the address alone. Version 1 carried a password chosen by
+#: the caller and is refused: the website is the only caller, and before launch
+#: no other caller has to be kept working.
+SIGNUP_REQUEST_VERSION = "service_account_signup_request/v2"
 SIGNUP_RESULT_VERSION = "service_account_signup_result/v1"
 RECOVERY_REQUEST_VERSION = "service_account_recovery_request/v1"
 RECOVERY_RESULT_VERSION = "service_account_recovery_result/v1"
@@ -87,10 +104,25 @@ TOKEN_HASH = re.compile(r"[A-Za-z0-9_-]{1,256}")
 LONGEST_EMAIL_ADDRESS, LONGEST_LOCAL_PART, LONGEST_DOMAIN = 254, 64, 253
 DOMAIN_CHARACTERS = frozenset(string.ascii_letters + string.digits + "-")
 LOCAL_CHARACTERS = frozenset(string.ascii_letters + string.digits + "!#$%&'*+/=?^_`{|}~.-")
-#: This service refuses a password longer than this, so that a password cannot
-#: be silently shortened later by a hash function with a block limit.
+#: The fields of a request each operation reads, and no others. Sign-up takes
+#: no password: a caller who could choose one could register an address before
+#: its owner does and keep a password the owner would later confirm.
+REQUEST_FIELDS = {SIGNUP_ACTION: frozenset({"record_type", "email"}),
+                  RECOVERY_ACTION: frozenset({"record_type", "email"})}
+#: No password is longer than this, so that a password cannot be silently
+#: shortened later by a hash function with a block limit. The identity
+#: provider's own ceiling is the same number.
 MAXIMUM_PASSWORD_BYTES = 72
 SHORTEST_ALLOWED_MINIMUM_PASSWORD = 8
+#: 51 random bytes encode to 68 ASCII characters, then four required character
+#: groups bring the temporary secret to 72 bytes. This covers every host minimum
+#: the configuration accepts without exceeding its maximum password byte count.
+GENERATED_PASSWORD_BYTES = 51
+#: One character from each group is added to the random part, so that the
+#: password meets any character rule the identity project may set. A password
+#: its policy refused would be answered like an ineligible address, and the
+#: person would receive the notice message instead of a link.
+GENERATED_PASSWORD_GROUPS = (string.ascii_lowercase, string.ascii_uppercase, string.digits, "-_")
 SENDER_NAME_CHARACTERS = frozenset(string.ascii_letters + string.digits + " .-")
 
 
@@ -146,15 +178,19 @@ def email_address(value):
     return address.lower()
 
 
-def password_for_signup(value, address, minimum_length):
-    """Return the password this service will send, or refuse the value."""
-    if not isinstance(value, str) or any(ord(character) < 32 or ord(character) == 127 for character in value):
-        raise AccountEmailError("invalid_password", 400)
-    if len(value) < minimum_length or len(value.encode("utf-8")) > MAXIMUM_PASSWORD_BYTES:
-        raise AccountEmailError("invalid_password", 400)
-    if value.strip().lower() == address:
-        raise AccountEmailError("password_matches_the_email_address", 400)
-    return value
+def generated_signup_password():
+    """Return a new password that nobody chose and nobody will learn.
+
+    The identity provider's interface needs a password to create a user. This
+    one is made for one request and kept nowhere: not in a record, a message,
+    an answer or a log. The person who owns the address chooses their own
+    password on the page the link opens, before that page opens the account.
+    Its 51 random bytes are written in the address-safe alphabet; one
+    character from each group follows them. The resulting 72 ASCII bytes
+    cover every minimum admitted by this configuration and its byte ceiling.
+    """
+    return (secrets.token_urlsafe(GENERATED_PASSWORD_BYTES)
+            + "".join(secrets.choice(group) for group in GENERATED_PASSWORD_GROUPS))
 
 
 def counted_email_key(address):
@@ -288,8 +324,10 @@ class ProviderAnswer:
 class IdentityLinkRequest:
     """One bounded request to the identity provider's administration interface.
 
-    The address and the password are kept out of the printed form, so that a
-    log line, a traceback or a report of this record shows neither.
+    A sign-up request carries the password from `generated_signup_password`;
+    a recovery request carries none. The address and the password are kept
+    out of the printed form, so that a log line, a traceback or a report of
+    this record shows neither.
     """
 
     url: str
@@ -437,11 +475,14 @@ def send_account_mail(request: AccountMailRequest, secret: str):
 
 @dataclass(frozen=True)
 class PreparedAccountRequest:
-    """One validated and counted request, ready for the two provider requests."""
+    """One validated and counted request, ready for the two provider requests.
+
+    It holds no password. The one a sign-up needs is generated when the
+    identity request is built, so that it exists for that request alone.
+    """
 
     action: str
     email: str = field(repr=False)
-    password: str = field(repr=False)
 
     @property
     def operation(self):
@@ -457,9 +498,10 @@ def confirmation_message(name, link):
     """The message for an address that can have a new account."""
     return ("Confirm your " + name + " account",
             "Someone asked to create a " + name + " account for this address.\n\n"
-            "Open this link to confirm the address and finish creating the account:\n" + link + "\n\n"
+            "Open this link to confirm the address, choose your password and finish creating the account:\n"
+            + link + "\n\n"
             "If you did not ask for an account, you can ignore this message. The account cannot be used "
-            "until the address is confirmed.\n")
+            "until the address is confirmed and a password is chosen on that page.\n")
 
 
 def already_registered_message(name, origin):
@@ -543,8 +585,14 @@ class AccountEmailAdapter:
         return self.configuration.recovery_enabled and self.configuration.allow_network
 
     def availability(self):
-        """The two Booleans that the account identity route publishes."""
-        return {"signup_available": self.signup_available, "recovery_available": self.recovery_available}
+        """What the account identity route publishes about the two operations.
+
+        Two Booleans say which operation is open. The minimum length is the
+        shortest password the website's choose-a-password page accepts, read
+        from the host file so that the page and the host agree.
+        """
+        return {"signup_available": self.signup_available, "recovery_available": self.recovery_available,
+                "minimum_password_length": self.configuration.minimum_password_length}
 
     def _available(self, action):
         return self.signup_available if action == SIGNUP_ACTION else self.recovery_available
@@ -556,19 +604,20 @@ class AccountEmailAdapter:
             raise AccountEmailError("account_" + action + "_unavailable", 503)
 
     def prepare(self, action, request_fields, address_key):
-        """Read one request and count the attempt, before any provider request."""
+        """Read one request and count the attempt, before any provider request.
+
+        A request with any field the operation does not read is refused, a
+        sign-up that carries a password among them, and so is the retired
+        sign-up version 1, which carried one.
+        """
         self._require_available(action)
-        signup = action == SIGNUP_ACTION
-        expected = SIGNUP_REQUEST_VERSION if signup else RECOVERY_REQUEST_VERSION
-        allowed = {"record_type", "email", "password"} if signup else {"record_type", "email"}
-        if (not isinstance(request_fields, dict) or set(request_fields) != allowed
+        expected = SIGNUP_REQUEST_VERSION if action == SIGNUP_ACTION else RECOVERY_REQUEST_VERSION
+        if (not isinstance(request_fields, dict) or set(request_fields) != REQUEST_FIELDS[action]
                 or request_fields.get("record_type") != expected):
             raise AccountEmailError("invalid_account_" + action, 400)
         address = email_address(request_fields["email"])
-        password = (password_for_signup(request_fields["password"], address,
-                                        self.configuration.minimum_password_length) if signup else "")
         self._count(address_key, address)
-        return PreparedAccountRequest(action, address, password)
+        return PreparedAccountRequest(action, address)
 
     def _count(self, address_key, address):
         """Refuse an address or an email address over its allowance, then count this attempt.
@@ -632,10 +681,16 @@ class AccountEmailAdapter:
         turned into a refusal the caller can see.
         """
         configuration = self.configuration
+        # The key is resolved first, so that a missing or wrong key stops the
+        # request before a password is generated for it.
+        secret = self._secret(configuration.identity_service_key_ref, IDENTITY_SECRET_PREFIX)
+        # A sign-up password exists only inside the one request built here. It
+        # is not kept on this adapter, returned, put in a message or logged.
         answer = self._ask(self._identity_transport,
             IdentityLinkRequest(configuration.identity_origin + GENERATE_LINK_PATH, prepared.action, prepared.email,
-                                prepared.password, configuration.timeout_seconds, configuration.maximum_response_bytes),
-            self._secret(configuration.identity_service_key_ref, IDENTITY_SECRET_PREFIX), "identity_link_unavailable")
+                                generated_signup_password() if prepared.action == SIGNUP_ACTION else "",
+                                configuration.timeout_seconds, configuration.maximum_response_bytes),
+            secret, "identity_link_unavailable")
         if 400 <= answer.status_code < 500:
             if answer.status_code in SERVICE_REFUSAL_STATUSES:
                 raise AccountEmailError("identity_link_refused", 503)

@@ -5,6 +5,9 @@
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
   let clientAccess = null, catalogueBrowser = null;
+  // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
+  // from, and whether this page has asked for a sign-up link.
+  let registrationOpen = false, accessSource = "", funnelSent = false;
   const pending = new Set(), downloads = new Map(), billingRequests = new Map();
   const message = (id, text, error = false) => { $(id).textContent = text; $(id).classList.toggle("error", error); };
   const element = (tag, text, className = "") => { const item = document.createElement(tag); item.textContent = text; if (className) item.className = className; return item; };
@@ -15,17 +18,32 @@
     document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name && !(item.getAttribute("href") || "").includes("#")) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
   // "/setup" opens the guide, Get set up, and "/connect" stays an alias for it, so older links and emails still work.
-  // "/get-started" is the sign-up, registration and payment funnel. Until that page is merged, it opens the waiting list page.
+  // "/get-started" is the sign-up, registration and payment funnel.
   // "/waitlist" opens the waiting list page, which holds the invitation form; the guide links to it.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"waitlist", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"waitlist", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/docs/getting-set-up":"setup", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"waitlist", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"waitlist", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
+  // Three addresses open views of their own: the Get started funnel, the page a message link opens, and the setup guide's
+  // address. They are added here rather than in the table above, so that a change to either place merges on its own.
+  routeNames["/get-started"] = "start"; routeNames["/auth/confirm"] = "confirm"; routeNames["/setup"] = "setup";
+  /* A link from this service's own message opens /auth/confirm?token_hash=...&type=signup or recovery. The token is read once
+     into page memory and removed from the address bar and the history at once, before anything else runs, as /auth/callback
+     does. It is never stored or logged, and it leaves the page only for the identity provider, when the person submits the
+     password they chose. A token or a type this page cannot read is dropped, and the page says the link cannot be used. */
+  const confirmTypes = ["signup", "recovery"];
+  let confirmation = null;
+  if (location.pathname === "/auth/confirm") {
+    const query = new URLSearchParams(location.search), tokenHash = query.get("token_hash") || "", type = query.get("type") || "";
+    history.replaceState({}, "", "/auth/confirm");
+    const readable = /^[A-Za-z0-9_-]{1,256}$/.test(tokenHash) && confirmTypes.includes(type);
+    confirmation = {tokenHash:readable ? tokenHash : "", type:readable ? type : "signup", session:null, email:""};
+  }
   const serviceName = document.title.split(" | ")[0];
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get set up", waitlist:"Request an invitation", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Request an invitation", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -104,6 +122,9 @@
     $("usage-raw").hidden = true; $("usage-raw").open = false; $("usage").textContent = "";
   };
   function disconnect() {
+    // A pending confirmation belongs to the identity session that verified its link.
+    // Connecting another account or signing out invalidates it before any retry.
+    confirmation = null; $("confirm-password").value = ""; $("confirm-password-again").value = ""; showConfirmation();
     generation++; token = ""; principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
     $("access-token").value = ""; $("identity").hidden = true; $("connect-form").hidden = false; $("connection-state").textContent = "Not connected";
     ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = true; });
@@ -121,6 +142,7 @@
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset(); catalogueBrowser?.reset();
+    accessSource = ""; renderFunnel();
   }
   /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
      session. The sign-in page's Disconnect button and the header's Sign out do the same; Sign out also opens the sign-in page,
@@ -211,6 +233,7 @@
       if (activate) await request("/api/v1/account/activate", {record_type:"service_account_activation_request/v1"});
       const value = await request("/api/v1/session");
       authenticationMode = value.authentication_mode;
+      accessSource = typeof value.access_source === "string" ? value.access_source : "";
       const entries = [["Tenant", value.principal.tenant_id], ["Namespace", value.principal.namespace], ["Scopes", value.principal.scopes.join(", ")], ["Access", value.principal.entitlement]];
       facts($("identity-facts"), entries); facts($("account-facts"), entries);
       $("account-state").textContent = "Connected"; $("account-note").textContent = "This connection is scoped to the identity below. Access and subscriptions are checked by the service.";
@@ -225,6 +248,7 @@
       $("test-protocol").disabled = authenticationMode === "browser_identity" || !value.principal.scopes.includes("provisioning:metadata") || !capabilities;
       $("setup-identity").textContent = "Connected as " + value.principal.tenant_id + ". Client setup uses a separate local copy of your service token.";
       $("admin-nav").hidden = !administrator; $("refresh-access").disabled = !administrator;
+      renderFunnel();
       const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app"));
       if (administrator) await loadAccess();
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
@@ -291,18 +315,151 @@
     } catch (error) { message("waitlist-message", error.message, true); }
     finally { busy = false; $("waitlist-button").disabled = false; }
   });
-  $("email-signup-form").addEventListener("submit", async event => {
-    event.preventDefault(); if (busy || !identityClient || !identityConfiguration.email_signup_enabled) return;
-    busy = true; $("email-signup-button").disabled = true;
-    const email = $("signup-email").value.trim(), password = $("signup-password").value; $("signup-password").value = "";
-    message("signup-message", "Requesting account confirmation…");
+  /* Sign-up and recovery ask this service to send a link. The page sends the address alone: no password, and no request to the
+     identity provider, which hears from this page only when the person opens the link and chooses a password. The service
+     answers the same way whether or not the address has an account, so the page says what either message holds. */
+  const accountRequests = {signup:{record_type:"service_account_signup_request/v2", result:"service_account_signup_result/v1", status:"confirmation_sent"},
+    recovery:{record_type:"service_account_recovery_request/v1", result:"service_account_recovery_result/v1", status:"recovery_sent"}};
+  const accountAnswers = {invalid_email_address:"That does not look like an email address we can write to. Check it and try again.",
+    failed_attempt_limit_reached:"Too many requests for this address or from this connection. Please try again later.",
+    account_signup_unavailable:"Account creation is not open right now. Nothing was sent.",
+    account_recovery_unavailable:"A new password cannot be sent right now. Nothing was sent.",
+    deadline_exceeded:"The service ran out of time. A message may still arrive, so wait before asking again."};
+  async function requestAccountLink(action, email) {
+    const expected = accountRequests[action], controller = new AbortController(), timer = setTimeout(() => controller.abort(), 35000);
     try {
-      const result = await identityClient.auth.signUp({email,password,options:{emailRedirectTo:identityConfiguration.redirect_url}});
-      if (result.error) throw new Error("Account confirmation could not be requested. Check the address and password requirements, or try again later.");
-      message("signup-message", "Check your email for the confirmation link, then return here to sign in. If this address already has an account, use sign-in. This page has not granted access or started a subscription.");
-    } catch (error) { message("signup-message", error.message, true); }
-    finally { busy = false; $("email-signup-button").disabled = false; }
+      const response = await fetch("/api/v1/account/" + action, {method:"POST",credentials:"omit",redirect:"error",cache:"no-store",signal:controller.signal,
+        headers:{"Content-Type":"application/json"},body:JSON.stringify({record_type:expected.record_type,email})});
+      let value = null; try { value = await response.json(); } catch (_) {}
+      if (response.status !== 202 || value?.result?.record_type !== expected.result || value.result.status !== expected.status)
+        throw new Error(accountAnswers[value?.error?.code] || "The request was not sent. Please try again later.");
+    } catch (error) {
+      throw error.name === "AbortError" ? new Error("The service did not answer in time. A message may still arrive, so wait before asking again.") : error;
+    } finally { clearTimeout(timer); }
+  }
+  const signupSent = "Check your email. The message holds a link to choose your password, or says how to sign in if this address already has an account. Nothing here starts a subscription.";
+  const listenForSignUp = (form, field, button, status, sent) => $(form).addEventListener("submit", async event => {
+    event.preventDefault(); if (busy || !registrationOpen) return;
+    busy = true; $(button).disabled = true; message(status, "Sending your link…");
+    try { await requestAccountLink("signup", $(field).value.trim()); message(status, signupSent); sent(); }
+    catch (error) { message(status, error.message, true); }
+    finally { busy = false; $(button).disabled = false; }
   });
+  listenForSignUp("email-signup-form", "signup-email", "email-signup-button", "signup-message", () => {});
+  listenForSignUp("funnel-signup-form", "funnel-email", "funnel-signup-button", "funnel-signup-message", () => { funnelSent = true; renderFunnel(); });
+  $("recovery-form").addEventListener("submit", async event => {
+    event.preventDefault(); if (busy || identityConfiguration?.recovery_available !== true) return;
+    busy = true; $("recovery-button").disabled = true; message("recovery-message", "Sending your link…");
+    try { await requestAccountLink("recovery", $("recovery-email").value.trim()); message("recovery-message", "Check your email. The message holds a link to choose a new password, or says that this address has no account."); }
+    catch (error) { message("recovery-message", error.message, true); }
+    finally { busy = false; $("recovery-button").disabled = false; }
+  });
+  /* The page a message link opens. The person chooses a password first. On submit the page exchanges the link for a sign-in at
+     the identity provider and sets that password at once, and only then opens the account. The link is used only when the
+     person submits, so a mail scanner that opens it does not use it up. The service never lets a caller choose the password
+     of an account it creates, and this step replaces whatever password the account held before anything else opens it. */
+  const minimumPassword = () => { const value = identityConfiguration?.minimum_password_length; return Number.isInteger(value) && value >= 8 && value <= 72 ? value : 12; };
+  const passwordProblem = (password, again, email) => {
+    const shortest = minimumPassword();
+    if ([...password].length < shortest) return "Use at least " + shortest + " characters.";
+    if (new TextEncoder().encode(password).length > 72) return "Use at most 72 bytes. A shorter password is enough.";
+    if (/[\u0000-\u001f\u007f]/.test(password)) return "Use letters, digits, spaces and symbols only.";
+    if (email && password.trim().toLowerCase() === email.trim().toLowerCase()) return "Choose a password that is not your email address.";
+    if (password !== again) return "The two passwords are not the same. Type them again.";
+    return "";
+  };
+  function showConfirmation() {
+    if (!confirmation) { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = false; return; }
+    const recovery = confirmation.type === "recovery", usable = Boolean(confirmation.tokenHash || confirmation.session);
+    $("confirm-heading").textContent = recovery ? "Choose a new password." : "Choose your password.";
+    $("confirm-lede").textContent = recovery ? "Your old password stops working when you set this one." : "Your email address is confirmed when you set it. Then you are signed in.";
+    $("confirm-step").hidden = recovery;
+    $("confirm-rule").textContent = "Use at least " + minimumPassword() + " characters and a password you use nowhere else.";
+    for (const id of ["confirm-password", "confirm-password-again"]) $(id).minLength = minimumPassword();
+    $("confirm-new-link").setAttribute("href", recovery ? "/login" : "/signup"); $("confirm-new-link").dataset.page = recovery ? "login" : "signup";
+    $("confirm-password-step").hidden = !usable; $("confirm-unusable").hidden = usable;
+  }
+  $("confirm-form").addEventListener("submit", async event => {
+    event.preventDefault(); if (busy || !confirmation) return;
+    const password = $("confirm-password").value, again = $("confirm-password-again").value, problem = passwordProblem(password, again, confirmation.email);
+    if (problem) { message("confirm-message", problem, true); return; }
+    if (!identityClient) { message("confirm-message", "This page is still loading its sign-in settings. Wait a moment, then try again. Your link was not used.", true); return; }
+    const flow = confirmation, client = identityClient, epoch = generation;
+    const current = () => confirmation === flow && identityClient === client && generation === epoch;
+    busy = true; $("confirm-button").disabled = true; message("confirm-message", "Setting your password…");
+    try {
+      if (!flow.session) {
+        const tokenHash = flow.tokenHash; flow.tokenHash = "";
+        const verified = await client.auth.verifyOtp({token_hash:tokenHash, type:flow.type});
+        if (!current()) return;
+        if (verified.error || !verified.data?.session) { showConfirmation(); message("confirm-message", ""); return; }
+        flow.session = verified.data.session; flow.email = verified.data.user?.email || "";
+        const late = passwordProblem(password, again, flow.email);
+        if (late) { message("confirm-message", late, true); return; }
+      }
+      if (!current()) return;
+      const updated = await client.auth.updateUser({password});
+      if (!current()) return;
+      if (updated.error) throw new Error("The password was not accepted. Choose a longer one that you use nowhere else, then try again.");
+      $("confirm-password").value = ""; $("confirm-password-again").value = "";
+      const accessToken = flow.session.access_token, recovery = flow.type === "recovery"; confirmation = null;
+      afterLogin = recovery ? "/account" : "/get-started";
+      await connectService(accessToken, identityConfiguration.registration_enabled);
+      if (!token) message("confirm-message", "Your password is set, but the service did not open your account. Sign in from the sign-in page.", true);
+    } catch (error) { if (current()) message("confirm-message", error.message, true); }
+    finally { busy = false; $("confirm-button").disabled = false; }
+  });
+  showConfirmation();
+  /* The Get started funnel. One card shows the step a visitor is on, beside the five steps, with one primary action in every
+     state: account creation while the service reports it open, the invitation request while it does not, and for a
+     signed-in account the subscription, or the setup guide once an invitation, a code or a subscription covers Baltor Pro.
+     Where paid access comes from is read from the session record. The page never guesses it, and it offers no payment
+     control unless the service reports checkout open. */
+  const funnelPlans = {
+    operator_grant:{title:"Your invitation covers Baltor Pro", text:"There is nothing to pay while your invitation lasts. Search and downloads are open to this account.", covered:true},
+    promotion_code:{title:"A promotion code covers Baltor Pro", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
+    subscription:{title:"You subscribe to Baltor Pro", text:"Manage or cancel the subscription from your account page.", covered:true},
+    checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Search stays free, and you can cancel from your account page.", covered:false, subscribe:true},
+    unpaid:{title:"Payment is not open yet", text:"Search is free. Subscribing opens here when payment does.", covered:false}};
+  const funnelOrder = ["account", "confirm", "password", "plan", "setup"];
+  function renderFunnel() {
+    const signedIn = Boolean(token), checkout = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.billing?.checkout === true;
+    const waitingList = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;
+    const plan = signedIn ? funnelPlans[accessSource] || (checkout ? funnelPlans.checkout : funnelPlans.unpaid) : null;
+    const state = signedIn ? "plan" : registrationOpen ? "register" : "invite", creating = signedIn || registrationOpen;
+    $("funnel").dataset.funnelState = state;
+    for (const panel of document.querySelectorAll("[data-funnel-panel]")) panel.hidden = panel.dataset.funnelPanel !== state;
+    $("funnel-signin").hidden = signedIn || (!registrationOpen && !waitingList);
+    $("funnel-account-title").textContent = creating ? "Create your account" : waitingList ? "Get an invitation" : "Sign in";
+    $("funnel-account-note").textContent = creating ? "Your email address, nothing else" : waitingList ? "Accounts open in small groups" : "Use an existing account";
+    $("funnel-invite-title").textContent = waitingList ? "Request an invitation" : "Sign in to your account";
+    $("funnel-invite-note").textContent = waitingList ? "Accounts open in small groups. Leave your email address, and a person reads every request." : "Account creation is closed. Sign in if you already have an account.";
+    $("funnel-invite").href = waitingList ? "/waitlist" : "/login";
+    $("funnel-invite").dataset.page = waitingList ? "waitlist" : "login";
+    $("funnel-invite").textContent = waitingList ? "Request an invitation" : "Sign in";
+    if (plan) {
+      $("funnel-plan-title").textContent = plan.title; $("funnel-plan-text").textContent = plan.text;
+      $("funnel-plan-step").textContent = plan.covered ? "Step 5 of 5" : "Step 4 of 5";
+      $("funnel-subscribe").hidden = !plan.subscribe; $("funnel-setup-action").className = plan.subscribe ? "button quiet" : "button primary";
+    }
+    const here = funnelOrder.indexOf(signedIn ? (plan.covered ? "setup" : "plan") : funnelSent ? "confirm" : "account");
+    for (const item of document.querySelectorAll("[data-funnel-step]")) {
+      const place = funnelOrder.indexOf(item.dataset.funnelStep);
+      item.classList.toggle("is-done", place < here); item.classList.toggle("is-current", place === here);
+      if (place === here) item.setAttribute("aria-current", "step"); else item.removeAttribute("aria-current");
+    }
+  }
+  // Subscribing uses the checkout the account page uses, for the first plan the service offers; the host offers one plan.
+  $("funnel-subscribe").addEventListener("click", async () => {
+    if (!token) return;
+    const button = $("funnel-subscribe"); message("funnel-plan-message", "Checking the plan…");
+    try {
+      const options = await request("/api/v1/billing/plans");
+      if (!options.checkout_available || !Array.isArray(options.plans) || !options.plans.length) throw new Error("Checkout is not available for this account right now. Nothing was charged.");
+      await createSession("checkout", options, options.plans[0].plan_ref, button, "funnel-plan-message");
+    } catch (error) { message("funnel-plan-message", error.name === "AbortError" ? "The check timed out. Nothing was charged." : error.message, true); }
+  });
+  renderFunnel();
   async function download(hit, button, status) {
     const identity = JSON.stringify(hit.reference), epoch = generation;
     if (!downloads.has(identity)) downloads.set(identity, crypto.randomUUID());
@@ -333,7 +490,7 @@
   }
   $("search-form").addEventListener("submit", async event => {
     event.preventDefault(); $("search-button").disabled = true; message("search-message", "Searching authorized references…");
-    try { const value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v1", query:$("query").value, mode:$("search-mode").value, top_n:10}); renderResults(value.hits); message("search-message", "References only. No bodies loaded."); }
+    try { const value = await request("/api/v1/retrieval", {record_type:"service_retrieval_request/v2", query:$("query").value, mode:$("search-mode").value, top_n:10}); renderResults(value.hits); message("search-message", "References only. No bodies loaded."); }
     catch (error) { message("search-message", error.name === "AbortError" ? "Search timed out. You can retry." : error.message, true); }
     finally { $("search-button").disabled = !token; }
   });
@@ -373,16 +530,16 @@
     try { renderUsage(await request("/api/v1/usage")); }
     catch (error) { if (epoch === generation) showUsageNote(error.name === "AbortError" ? "The usage request timed out. You can refresh again." : error.message, true); }
   });
-  async function createSession(operation, options, plan, button) {
+  async function createSession(operation, options, plan, button, target = "billing-message") {
     const key = JSON.stringify([operation, options.policy_digest, plan]), epoch = generation;
     if (!billingRequests.has(key)) billingRequests.set(key, crypto.randomUUID());
-    button.disabled = true; message("billing-message", "Requesting a hosted session…");
+    button.disabled = true; message(target, "Requesting a hosted session…");
     try {
       const result = await request("/api/v1/billing/" + operation, {record_type:"billing_session_request/v1", request_id:billingRequests.get(key), policy_digest:options.policy_digest, ...(plan ? {plan_ref:plan} : {})});
       if (epoch !== generation) return;
       const url = new URL(result.redirect_url); if (url.protocol !== "https:" || !["checkout.stripe.com", "billing.stripe.com"].includes(url.hostname) || url.username || url.password) throw new Error("The service returned an unsupported payment destination.");
-      const link = element("a", "Open secure " + operation); link.href = url.href; link.rel = "noopener noreferrer"; link.target = "_blank"; $("billing-message").replaceChildren(link);
-    } catch (error) { message("billing-message", error.name === "AbortError" ? "The outcome is uncertain. Check the provider before trying again. This page retains the same request identity." : error.message, true); }
+      const link = element("a", "Open secure " + operation); link.href = url.href; link.rel = "noopener noreferrer"; link.target = "_blank"; $(target).replaceChildren(link);
+    } catch (error) { message(target, error.name === "AbortError" ? "The outcome is uncertain. Check the provider before trying again. This page retains the same request identity." : error.message, true); }
     finally { button.disabled = !token; }
   }
   $("refresh-billing").addEventListener("click", async () => {
@@ -613,23 +770,31 @@
     $("test-protocol").disabled = !token || authenticationMode === "browser_identity" || !principalScopes.includes("provisioning:metadata") || connectionBusy;
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
+      registrationOpen = value.website.registration_available === true;
       applyAccessState(value.website.registration_available === true);
       applyStartState(startState(value.website));
       applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));
       applyClientAccessState(value.website.client_access_available === true);
       if (value.website.browser_identity_available) openBrowserIdentity();
     }
+    renderFunnel();
     function openBrowserIdentity() {
       request("/api/v1/account/identity", null, false).then(settings => {
         if (settings.record_type !== "browser_identity_public_configuration/v1" || settings.provider_profile !== "supabase_user/v1" || !settings.publishable_key.startsWith("sb_publishable_") || !window.BaltorIdentitySdk) throw new Error("Identity configuration unavailable");
         identityConfiguration = settings;
         identityClient = createIdentityClient(settings);
-        $("email-login").hidden = false; $("email-signup").hidden = !settings.email_signup_enabled;
-        $("signup-closed").hidden = settings.email_signup_enabled;
+        // The sign-up form is offered only where this service sends the link itself. The provider's own sign-up is never used.
+        const signupOpen = settings.email_signup_enabled === true && settings.signup_available === true;
+        $("email-login").hidden = false; $("email-signup").hidden = !signupOpen; $("signup-closed").hidden = signupOpen;
+        $("email-recovery").hidden = settings.recovery_available !== true;
         $("login-access-description").textContent = "Sign in with your verified email account, or use a service token issued by your operator.";
         $("email-access-note").textContent = "Email credentials are checked by the configured identity provider. Model keys are separate.";
-        $("email-signin-limit").textContent = settings.email_signup_enabled ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";
-      }).catch(() => message("identity-message", "Email sign-in configuration is unavailable. Operator service tokens remain separate.", true));
+        $("email-signin-limit").textContent = signupOpen ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";
+        showConfirmation();
+      }).catch(() => {
+        message("identity-message", "Email sign-in configuration is unavailable. Operator service tokens remain separate.", true);
+        if (confirmation) message("confirm-message", "Sign-in settings are unavailable, so this link cannot be finished now. Your link was not used; open it again later.", true);
+      });
     }
   }).catch(() => { waitlistOffer(null); $("service-status").textContent = "Service unavailable. Check the host configuration."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
 })();

@@ -213,7 +213,17 @@ class RefusalPageTrialChecks(unittest.TestCase):
             manifest = {'harnesses': ['native_gateway'], 'repository': str(REPOSITORY),
                         'harness_file_digests': {}, 'provider_file': ''}
             transport = PageTransport()
-            with patch('loop_engine.core.custom_endpoint._endpoint_opener', return_value=transport):
+            from loop_engine.core.harness_semantic import HarnessSemanticBinding
+            semantic_results = []
+            invoke_one = HarnessSemanticBinding._invoke_one
+
+            def capture_failed_response(binding, *args, **kwargs):
+                observed = invoke_one(binding, *args, **kwargs)
+                semantic_results.append(observed.response)
+                return observed
+
+            with patch('loop_engine.core.custom_endpoint._endpoint_opener', return_value=transport), \
+                    patch.object(HarnessSemanticBinding, '_invoke_one', capture_failed_response):
                 state = run_trial(root / 'campaign', row, configuration, manifest, '0-attempt-0',
                                   services=CampaignTrialServices(gateway=gateway))
             self.assertEqual(state['status'], 'finished')
@@ -221,6 +231,13 @@ class RefusalPageTrialChecks(unittest.TestCase):
             self.assertEqual(state['provider_failure_codes'], ['invalid_response_body'])
             self.assertEqual(state['model_calls'], transport.calls)
             self.assertTrue(state['model_call_accounting_complete'])
+            self.assertTrue(semantic_results)
+            self.assertTrue(all(result.model == '' and result.input_tokens is None and result.output_tokens is None
+                                for result in semantic_results))
+            physical = [attempt for result in semantic_results for attempt in result.physical_provider_attempts]
+            self.assertEqual(len(physical), transport.calls)
+            self.assertTrue(all(attempt.model == '' and attempt.expected_model == 'fixture-model'
+                                and attempt.error_code == 'invalid_response_body' for attempt in physical))
             from embodiment_lab.task_database_campaign import outage_decision
             from loop_engine.core.provider_failure_classes import WAIT_FOR_RECOVERY
             self.assertEqual(outage_decision(state, 0, 3)['decision'], WAIT_FOR_RECOVERY)

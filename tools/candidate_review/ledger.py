@@ -38,14 +38,15 @@ from .records import (
 RUN_FIELDS = ("run_id", "started_at", "policy_sha256", "call_ceiling", "token_ceiling", "fixture_run", "requests")
 RUN_END_FIELDS = ("run_id", "finished_at", "stop_reason", "elapsed_seconds", "calls", "items", "pause_seconds")
 DISPATCH_FIELDS = ("run_id", "sequence", "review_key", "installation_id", "identity", "body_sha256",
-                   "request_sha256", "dispatched_at")
+                   "request_sha256", "request_record_type", "dispatched_at")
 CALL_FIELDS = ("run_id", "sequence", "review_key", "installation_id", "installation_sha256", "engine_kind", "family",
                "model", "model_version", "engine_version", "route_or_command", "identity", "body_sha256",
                "request_sha256", "prompt_sha256", "started_at", "elapsed_seconds", "outcome", "error_code",
                "decision", "invalid_answer_excerpt", "physical_model_calls", "physical_calls_basis", "usage",
-               "reserved_tokens", "charged_tokens", "charge_basis", "retry_after_seconds", "pause_seconds_after")
+               "reserved_tokens", "charged_tokens", "charge_basis", "retry_after_seconds", "pause_seconds_after",
+               "reported_model", "request_record_type")
 VERDICT_FIELDS = ("run_id", "sequence", "review_key", "installation_id", "family", "identity", "body_sha256",
-                  "request_sha256", "decision", "findings", "reasons")
+                  "request_sha256", "decision", "findings", "reasons", "reported_model", "request_record_type")
 ROW_FIELDS = {RUN_RECORD: RUN_FIELDS, RUN_END_RECORD: RUN_END_FIELDS, DISPATCH_RECORD: DISPATCH_FIELDS,
               CALL_RECORD: CALL_FIELDS, VERDICT_RECORD: VERDICT_FIELDS}
 
@@ -53,7 +54,15 @@ ROW_FIELDS = {RUN_RECORD: RUN_FIELDS, RUN_END_RECORD: RUN_END_FIELDS, DISPATCH_R
 def read_row(value) -> dict:
     if type(value) is not dict or value.get("record_type") not in ROW_FIELDS:
         refuse("ledger_row_unknown", "a ledger row names no known record type")
-    return read_record(value, value["record_type"], ROW_FIELDS[value["record_type"]])
+    row = read_record(value, value["record_type"], ROW_FIELDS[value["record_type"]])
+    if row["record_type"] in (DISPATCH_RECORD, CALL_RECORD, VERDICT_RECORD) and row["request_record_type"] not in (
+            "candidate_review_request/v1", "candidate_native_package_review_request/v1"):
+        refuse("review_subject_unsupported", "the ledger row names an unsupported review subject version")
+    if row["record_type"] in (CALL_RECORD, VERDICT_RECORD) and type(row["reported_model"]) is not str:
+        refuse("reported_model_invalid", "reported model is text; empty text means unknown")
+    if row["record_type"] == CALL_RECORD and row["outcome"] == "verdict" and row["reported_model"] != row["model"]:
+        refuse("reviewer_identity_unverified", "a verdict requires the exact reported reviewer model")
+    return row
 
 
 class ReviewLedger:
@@ -64,6 +73,7 @@ class ReviewLedger:
         self._lock = threading.Lock()
         self._rows, self._verdicts, self._dispatched, self._completed = [], {}, {}, set()
         self._run_ids = set()
+        self._call_rows = {}
         if self.path.is_symlink():
             refuse("ledger_unsafe", "the ledger path is a link")
         if self.path.exists():
@@ -93,7 +103,13 @@ class ReviewLedger:
             self._dispatched.setdefault(row["review_key"], []).append(row)
         elif kind == CALL_RECORD:
             self._completed.add((row["run_id"], row["sequence"]))
+            self._call_rows[(row["run_id"], row["sequence"])] = row
         elif kind == VERDICT_RECORD:
+            call = self._call_rows.get((row["run_id"], row["sequence"]))
+            if (call is None or call["outcome"] != "verdict" or not row["reported_model"]
+                    or any(row[field] != call[field] for field in ("review_key", "installation_id", "family", "identity",
+                           "body_sha256", "request_sha256", "request_record_type", "reported_model", "decision"))):
+                refuse("verdict_without_verified_call", "a reusable verdict needs its exact verified model call")
             self._verdicts.setdefault(row["review_key"], row)
 
     def _append(self, rows) -> None:

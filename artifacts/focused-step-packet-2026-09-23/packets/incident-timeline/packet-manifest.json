@@ -1,0 +1,50 @@
+{
+  "brief_sha256": "e9b0acc74ade8359aabc8b4e90c896b07a171711fc2a85977a38120e2f53d44f",
+  "context_version": 1,
+  "files": {
+    "AGENTS.md": {
+      "sha256": "c9963ce6eb38ca3f0b717c98dde7f822528d08b45667dfef7f92dbccbc356436",
+      "size_bytes": 4167
+    },
+    "CLAUDE.md": {
+      "sha256": "0ae19b8594ac0f5d4530f51e15da3433187e1b4e7b8f9e4d8dab192e2b6a1f45",
+      "size_bytes": 146
+    },
+    "checklist.md": {
+      "sha256": "f8cedda49384464ef4f5b2fb8b49e6af1d16e12e4fee72769d30cb8e62375b1c",
+      "size_bytes": 1054
+    },
+    "input.json": {
+      "sha256": "3be7aa1133fb15b11bd75281cdc6b5b6c7d4d157617b73d2836df26bc318ae29",
+      "size_bytes": 414
+    },
+    "input.schema.json": {
+      "sha256": "117ae6a1278e82ed48c55da09c16f812aacd8bc3033402a2bebcd27c9962ae8f",
+      "size_bytes": 797
+    },
+    "node_context.md": {
+      "sha256": "7a4b42ff1ec2fe9c923c09f1521ed1b0fa472519e4024e1b5a97dc0faeb47e56",
+      "size_bytes": 2170
+    },
+    "output.schema.json": {
+      "sha256": "b25f3319448c46f24b3a98dad38ae438661e59413d7d94b0be06520343cb2aa9",
+      "size_bytes": 674
+    },
+    "run-state.json": {
+      "sha256": "0deb6c1d48400cf3ed8a40b9910ca624b5ff8bd82864f23f8c113cdc4d337ac1",
+      "size_bytes": 476
+    },
+    "task.json": {
+      "sha256": "20a4a5e9f7ed33026a8641637af65d34519c6d4929451029aa04494ac96d21e6",
+      "size_bytes": 450
+    }
+  },
+  "harness_style": "claude_code",
+  "packet_content_sha256": "9e1a3d15417081143c2e2fbc6d225478f28a2735a11ed6c89bea70fa1094bb36",
+  "persistent_library_items_added": 0,
+  "record_type": "focused_step_packet_candidate/v1",
+  "run_id": "incident-demo",
+  "state": "candidate",
+  "state_version": 1,
+  "step_id": "order-events"
+}

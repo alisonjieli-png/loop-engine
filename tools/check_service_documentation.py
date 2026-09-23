@@ -1,11 +1,16 @@
 """Hold the customer service pages to the exact service source.
 
-Kind: development check. It reads the four customer-facing service pages, takes
+Kind: development check. It reads the customer-facing service pages, takes
 every checkable fact out of their code spans, fenced blocks and refusal tables,
 and refuses any fact that the service source does not contain. A command, an
 address, a record type, a scope, a field name or a refusal code that is renamed
 or removed in the source makes this check fail, so the pages cannot drift
 silently away from the service a paying customer actually meets.
+
+A refusal table also states the status a client will see. That status is not
+restated here. The transport decides it in one function, and this check
+compiles that function out of the source under test and asks it, so changing
+the status a refusal answers with changes what every page must say.
 
 It reads files. It starts no server, opens no connection and needs no
 credential. It is not a runtime boundary and grants no authority.
@@ -21,9 +26,9 @@ from __future__ import annotations
 import argparse
 import ast
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 REPORT_VERSION = "service_documentation_check/v1"
 
@@ -33,6 +38,9 @@ DOCUMENTED_PAGES = (
     "docs/guides/service-searching-and-retrieving.md",
     "docs/guides/service-serving-and-connections.md",
     "docs/guides/service-troubleshooting.md",
+    "docs/guides/service-what-baltor-is.md",
+    "docs/guides/service-your-account.md",
+    "docs/guides/service-usage-and-what-you-pay-for.md",
 )
 
 #: The service surface a customer meets. A documented name must exist in one of
@@ -61,6 +69,12 @@ REFUSAL_CLASSES = {"ServiceHttpError": 0, "ServiceRuntimeError": 0, "ServiceErro
 #: The code each class uses when the call names none.
 REFUSAL_DEFAULTS = {"HttpAuthenticationError": "unauthorized", "ProvisioningError": "invalid_request",
                     "ServiceError": "invalid_request"}
+#: The transport function that decides one status for one refusal code. It is
+#: compiled from the source under test and asked, never restated here.
+STATUS_FUNCTION = "_status"
+#: The one refusal class that carries its own status. Every other class leaves
+#: the status to the transport function above.
+TRANSPORT_REFUSAL = "ServiceHttpError"
 
 RECORD_TYPE = re.compile(r"^[a-z][a-z0-9_]*/v[0-9]+$")
 SCOPE = re.compile(r"^(?:provisioning|usage|billing|access):[a-z_]+$")
@@ -89,6 +103,100 @@ def _python_files(root: Path):
             yield path
 
 
+def _raised_status(node):
+    """The status a transport refusal names, positionally or as a keyword.
+
+    None means the call named none, so the class default applies. Reading both
+    forms keeps a later `status=` keyword from silently resolving to that
+    default and making every page that states the real status fail.
+    """
+    if len(node.args) > 1 and isinstance(node.args[1], ast.Constant):
+        return node.args[1].value
+    for keyword in node.keywords:
+        if keyword.arg == "status" and isinstance(keyword.value, ast.Constant):
+            return keyword.value.value
+    return None
+
+
+def _status_resolver(http_tree):
+    """Compile the transport's own status function, with stand-in refusal classes.
+
+    The function reads only the class of a refusal and its code, and for a
+    transport refusal the status it was raised with. Each stand-in carries
+    exactly that much, and the default status is read from the class in the
+    source rather than written here, so a change to either is a change to what
+    the pages must say.
+    """
+    default_status = None
+    for node in ast.walk(http_tree):
+        if isinstance(node, ast.ClassDef) and node.name == TRANSPORT_REFUSAL:
+            for item in node.body:
+                if not isinstance(item, ast.FunctionDef) or item.name != "__init__":
+                    continue
+                named = [argument.arg for argument in item.args.args]
+                for argument, value in zip(named[len(named) - len(item.args.defaults):],
+                                           item.args.defaults):
+                    if argument == "status" and isinstance(value, ast.Constant):
+                        default_status = value.value
+    if not isinstance(default_status, int):
+        raise DocumentationDrift("the transport refusal declares no default status")
+
+    class ServiceError(ValueError):
+        pass
+
+    class ServiceHttpError(ValueError):
+        def __init__(self, code, status=default_status, **_unused):
+            self.code, self.status = code, status
+
+    class HttpAuthenticationError(ValueError):
+        def __init__(self, code="unauthorized"):
+            self.code = code
+
+    class ServiceRuntimeError(ValueError):
+        def __init__(self, code, message=""):
+            self.code = code
+
+    class BillingSessionError(ServiceRuntimeError):
+        pass
+
+    class ProvisioningError(ServiceError):
+        def __init__(self, message, code="invalid_request"):
+            self.code = code
+
+    namespace = {"ServiceError": ServiceError, "ServiceHttpError": ServiceHttpError,
+                 "HttpAuthenticationError": HttpAuthenticationError,
+                 "ServiceRuntimeError": ServiceRuntimeError,
+                 "BillingSessionError": BillingSessionError,
+                 "ProvisioningError": ProvisioningError}
+    for node in http_tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name == STATUS_FUNCTION:
+            # Only this one function is compiled, out of the repository's own
+            # transport module, and it is given nothing but the stand-in
+            # classes above. Restating its rules here instead would create a
+            # second copy of the status table, which is the drift this check
+            # exists to catch.
+            module = ast.Module(body=[node], type_ignores=[])
+            exec(compile(module, "<transport status>", "exec"), namespace)  # noqa: S102
+            return namespace
+    raise DocumentationDrift(f"the transport module defines no {STATUS_FUNCTION} function")
+
+
+def _refusal_statuses(http_tree, raise_sites) -> dict:
+    """Ask the transport what each refusal code answers with, by raise site."""
+    namespace = _status_resolver(http_tree)
+    decide, statuses = namespace[STATUS_FUNCTION], {}
+    for code, target, raised_status in raise_sites:
+        build = namespace[target]
+        if target == TRANSPORT_REFUSAL:
+            error = build(code) if raised_status is None else build(code, raised_status)
+        elif target == "ProvisioningError":
+            error = build("", code)
+        else:
+            error = build(code)
+        statuses.setdefault(code, set()).add(decide(error)[0])
+    return statuses
+
+
 def source_facts(root: Path) -> dict:
     """Collect, from the service source alone, every fact the pages may state."""
     files = list(_python_files(root))
@@ -111,8 +219,30 @@ def source_facts(root: Path) -> dict:
             return constants[node.id]
         return None
 
-    strings, names, refusals = set(), set(), set()
+    strings, names, refusals, raise_sites = set(), set(), set(), []
     for tree in trees.values():
+        # A module-local helper may forward its code argument to a known
+        # refusal class. Follow only that explicit raising implementation;
+        # a function with the same name that merely returns is not evidence.
+        helpers = {}
+        for function in tree.body:
+            if not isinstance(function, ast.FunctionDef):
+                continue
+            arguments = [argument.arg for argument in function.args.args]
+            bindings = set()
+            for raised in ast.walk(function):
+                call = raised.exc if isinstance(raised, ast.Raise) else None
+                if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Name):
+                    continue
+                target = call.func.id
+                if target not in REFUSAL_CLASSES or target == TRANSPORT_REFUSAL:
+                    continue
+                index = REFUSAL_CLASSES[target]
+                if (len(call.args) > index and isinstance(call.args[index], ast.Name)
+                        and call.args[index].id in arguments):
+                    bindings.add((target, arguments.index(call.args[index].id)))
+            if len(bindings) == 1:
+                helpers[function.name] = next(iter(bindings))
         for node in ast.walk(tree):
             if isinstance(node, ast.Constant) and isinstance(node.value, str):
                 strings.add(node.value)
@@ -120,9 +250,7 @@ def source_facts(root: Path) -> dict:
                 names.add(node.id)
             elif isinstance(node, ast.Attribute):
                 names.add(node.attr)
-            elif isinstance(node, ast.arg):
-                names.add(node.arg)
-            elif isinstance(node, ast.keyword) and node.arg:
+            elif isinstance(node, ast.arg) or isinstance(node, ast.keyword) and node.arg:
                 names.add(node.arg)
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 names.add(node.name)
@@ -130,6 +258,8 @@ def source_facts(root: Path) -> dict:
                 target, index = None, 0
                 if isinstance(node.func, ast.Name) and node.func.id in REFUSAL_CLASSES:
                     target, index = node.func.id, REFUSAL_CLASSES[node.func.id]
+                elif isinstance(node.func, ast.Name) and node.func.id in helpers:
+                    target, index = helpers[node.func.id]
                 elif (isinstance(node.func, ast.Attribute) and node.func.attr == "__init__"
                       and isinstance(node.func.value, ast.Call)
                       and isinstance(node.func.value.func, ast.Name)
@@ -140,6 +270,10 @@ def source_facts(root: Path) -> dict:
                     value = literal(node.args[index]) if len(node.args) > index else REFUSAL_DEFAULTS.get(target)
                     if value and CODE_TOKEN.match(value):
                         refusals.add(value)
+                        # A transport refusal carries its own status; every
+                        # other class leaves the status to the transport.
+                        raise_sites.append((value, target, _raised_status(node)
+                                            if target == TRANSPORT_REFUSAL else None))
     refusals.update(value for name, value in constants.items()
                     if name.endswith("_CODE") and NAME_TOKEN.match(value))
     # A refusal code may reach the caller through a named constant that a
@@ -211,7 +345,9 @@ def source_facts(root: Path) -> dict:
     collect(recipes)
     record_types = {value for value in strings if RECORD_TYPE.match(value)}
     record_types.add(recipes["record_type"])
+    http_tree = trees[root / HTTP_MODULE]
     return {"refusal_codes": refusals, "addresses": addresses, "scopes": scopes,
+            "refusal_statuses": _refusal_statuses(http_tree, raise_sites),
             "record_types": record_types, "strings": strings, "names": names,
             "service_commands": service_commands, "root_commands": root_commands,
             "recipe_commands": {row["verification_command"]: row["id"] for row in recipes["recipes"]},
@@ -221,7 +357,7 @@ def source_facts(root: Path) -> dict:
 
 def page_facts(text: str) -> dict:
     """Take every checkable fact out of one page's code spans, blocks and tables."""
-    spans, commands, refusal_rows = [], [], []
+    spans, commands, refusal_rows, status_rows = [], [], [], []
     inside, language, header = False, "", None
     for line in text.splitlines():
         fence = FENCE.match(line)
@@ -237,6 +373,8 @@ def page_facts(text: str) -> dict:
                     commands.append(stripped)
             continue
         spans.extend(INLINE_CODE.findall(line))
+        # Public same-origin page links are service facts too, not just code spans.
+        spans.extend(re.findall(r"\]\(https://(?:app\.)?baltor\.ai(/[^)#?\s]*)(?:[?#][^)]*)?\)", line))
         row = TABLE_ROW.match(line.strip())
         if row:
             cells = [cell.strip() for cell in row.group(1).split("|")]
@@ -246,10 +384,14 @@ def page_facts(text: str) -> dict:
                 continue
             elif header and header[0].strip("` ").lower() == "code" and cells:
                 refusal_rows.append(cells[0].strip("` "))
+                # A second cell holding only digits is the status the page
+                # promises a client will see for that refusal.
+                if len(cells) > 1 and cells[1].strip("` ").isdigit():
+                    status_rows.append((cells[0].strip("` "), int(cells[1].strip("` "))))
         else:
             header = None
     return {"tokens": [value.strip("`.,").rstrip(":;") for value in spans], "commands": commands,
-            "refusal_codes": refusal_rows}
+            "refusal_codes": refusal_rows, "refusal_statuses": status_rows}
 
 
 def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
@@ -271,6 +413,16 @@ def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
             checked += 1
             if value not in facts["refusal_codes"]:
                 refuse(page, "refusal_code", value, "no service refusal raises this code")
+        for value, status in found["refusal_statuses"]:
+            checked += 1
+            answered = facts["refusal_statuses"].get(value)
+            if not answered:
+                refuse(page, "refusal_status_unknown", f"{value} {status}",
+                       "the page promises a status for a refusal whose raise site this check "
+                       "cannot find, so the promise cannot be held to the source")
+            elif status not in answered:
+                refuse(page, "refusal_status", f"{value} {status}",
+                       "the service answers this refusal with {}".format(" or ".join(str(number) for number in sorted(answered))))
         for token in found["tokens"]:
             if RECORD_TYPE.match(token):
                 checked += 1
@@ -323,7 +475,7 @@ def main(argv=None) -> int:
         print("checked {facts_checked} documented facts; {result}".format(
             facts_checked=report["facts_checked"],
             result="all exist in the service source" if report["passed"]
-            else "%d absent from the service source" % len(report["findings"])))
+            else f"{len(report['findings'])} absent from the service source"))
     return 0 if report["passed"] else 1
 
 

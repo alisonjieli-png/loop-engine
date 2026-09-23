@@ -1,0 +1,17 @@
+F
+======================================================================
+FAIL: test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count (test_task_database_trial_offline.RefusalPageTrialChecks)
+A login page or proxy notice answering a trial's model call is a
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/import-owner-repair/devtools/embodiment_lab/tests/test_task_database_trial_offline.py", line 220, in test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count
+    self.assertEqual(state['engine_terminal'], 'PROVIDER_UNAVAILABLE')
+AssertionError: 'NO_PROGRESS' != 'PROVIDER_UNAVAILABLE'
+- NO_PROGRESS
++ PROVIDER_UNAVAILABLE
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.855s
+
+FAILED (failures=1)

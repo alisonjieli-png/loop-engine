@@ -57,7 +57,7 @@ COMMAND_RESULT_RECORD_TYPE = "client_journey_command_result/v1"
 HOST_CONFIGURATION_RECORD_TYPE = "service_http_host_configuration/v1"
 MANIFEST_RECORD_TYPE = "host_attested_intelligence_manifest/v1"
 PROVISIONING_REQUEST_RECORD_TYPE = "service_provisioning_request/v1"
-RETRIEVAL_REQUEST_RECORD_TYPE = "service_retrieval_request/v1"
+RETRIEVAL_REQUEST_RECORD_TYPE = "service_retrieval_request/v2"
 INSTALL_REPORT_RECORD_TYPE = "native_material_install_report/v1"
 ISSUED_KEY_RECORD_TYPE = "issued_service_key/v1"
 #: The record versions this drill accepts from the service. A served document

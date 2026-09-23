@@ -1,0 +1,481 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Harness Working Directory Compiler \u2014 ClientLayoutProfile v2 draft",
+  "$comment": "Research candidate only. JSON Schema validates shape, not native support, provenance, review or authority.",
+  "type": "object",
+  "properties": {
+    "record_type": {
+      "const": "native_client_layout_profile/v2"
+    },
+    "component": {
+      "const": "Harness Working Directory Compiler"
+    },
+    "draft_status": {
+      "const": "research_only_not_runtime_admitted"
+    },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+    },
+    "profile_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "client_binding": {
+      "type": "object",
+      "properties": {
+        "client_kind": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "interface": {
+          "enum": [
+            "cli",
+            "editor",
+            "api"
+          ]
+        },
+        "exact_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operating_system": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "architecture": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "executable_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effective_configuration_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "client_kind",
+        "interface",
+        "exact_version",
+        "operating_system",
+        "architecture",
+        "executable_digest",
+        "effective_configuration_digest"
+      ],
+      "additionalProperties": false
+    },
+    "compiler_contract_versions": {
+      "type": "array",
+      "items": {
+        "const": "native_material_install_preview/v2"
+      },
+      "minItems": 1,
+      "maxItems": 1,
+      "uniqueItems": true
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "served_kind": {
+            "enum": [
+              "instruction_file",
+              "skill",
+              "tool",
+              "reusable_code"
+            ]
+          },
+          "file_role": {
+            "enum": [
+              "instruction_file",
+              "skill_definition",
+              "skill_script",
+              "skill_reference",
+              "skill_asset",
+              "subagent_definition",
+              "command",
+              "hook",
+              "protocol_server_configuration",
+              "plugin_manifest",
+              "executable_tool",
+              "configuration",
+              "other"
+            ]
+          },
+          "directory_segments": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^(?!\\.{1,2}$)(?!\\.git$)[A-Za-z0-9._@+-]+$"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "append_native_name": {
+            "type": "boolean"
+          },
+          "file_path_policy": {
+            "enum": [
+              "preserve_package_relative_path",
+              "fixed_file_name"
+            ]
+          },
+          "file_name": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "pattern": "^(?!\\.{1,2}$)(?!\\.git$)[A-Za-z0-9._@+-]+$"
+              }
+            ]
+          },
+          "rendering_operation": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+          },
+          "scope": {
+            "enum": [
+              "attempt_project",
+              "isolated_user_configuration"
+            ]
+          },
+          "activation": {
+            "enum": [
+              "initial_discovery",
+              "on_demand",
+              "explicit_activation",
+              "explicit_read"
+            ]
+          },
+          "precedence_rule": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "additionalProperties": false
+          },
+          "trust_requirement": {
+            "enum": [
+              "isolated_untrusted",
+              "explicit_project_trust",
+              "host_managed_approval"
+            ]
+          },
+          "native_probe_recipe": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "ref",
+                  "digest"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "served_kind",
+          "file_role",
+          "directory_segments",
+          "append_native_name",
+          "file_path_policy",
+          "file_name",
+          "rendering_operation",
+          "scope",
+          "activation",
+          "precedence_rule",
+          "trust_requirement",
+          "native_probe_recipe"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "file_path_policy": {
+                  "const": "fixed_file_name"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "file_name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^(?!\\.{1,2}$)(?!\\.git$)[A-Za-z0-9._@+-]+$"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "file_name": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 64
+    },
+    "unplaced_roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "enum": [
+              "instruction_file",
+              "skill_definition",
+              "skill_script",
+              "skill_reference",
+              "skill_asset",
+              "subagent_definition",
+              "command",
+              "hook",
+              "protocol_server_configuration",
+              "plugin_manifest",
+              "executable_tool",
+              "configuration",
+              "other"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "role",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+          },
+          "kind": {
+            "enum": [
+              "documentation",
+              "path_constructor",
+              "native_discovery",
+              "native_activation",
+              "accepted_task"
+            ]
+          },
+          "artifact": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "additionalProperties": false
+          },
+          "observed_client_binding": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "client_kind": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+                  },
+                  "interface": {
+                    "enum": [
+                      "cli",
+                      "editor",
+                      "api"
+                    ]
+                  },
+                  "exact_version": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "operating_system": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+                  },
+                  "architecture": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+                  },
+                  "executable_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "effective_configuration_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                },
+                "required": [
+                  "client_kind",
+                  "interface",
+                  "exact_version",
+                  "operating_system",
+                  "architecture",
+                  "executable_digest",
+                  "effective_configuration_digest"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "evidence_id",
+          "kind",
+          "artifact",
+          "observed_client_binding",
+          "observed_at"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "evidence_claim": {
+      "type": "object",
+      "properties": {
+        "stage": {
+          "enum": [
+            "paths_constructed",
+            "material_listed",
+            "material_activated",
+            "accepted_task"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "stage",
+        "evidence_ids"
+      ],
+      "additionalProperties": false
+    },
+    "independent_qualification": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "ref",
+            "digest"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "unsupported_role_policy": {
+      "const": "refuse"
+    }
+  },
+  "required": [
+    "record_type",
+    "component",
+    "draft_status",
+    "profile_id",
+    "profile_revision",
+    "client_binding",
+    "compiler_contract_versions",
+    "locations",
+    "unplaced_roles",
+    "evidence",
+    "evidence_claim",
+    "independent_qualification",
+    "unsupported_role_policy"
+  ],
+  "additionalProperties": false
+}

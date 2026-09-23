@@ -1,0 +1,22 @@
+E
+======================================================================
+ERROR: test_task_database_trial_offline (unittest.loader._FailedTest.test_task_database_trial_offline)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_task_database_trial_offline
+Traceback (most recent call last):
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/loader.py", line 396, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/unittest/loader.py", line 339, in _get_module_from_name
+    __import__(name)
+  File "/home/username/.le-codex-build/integration/devtools/embodiment_lab/tests/test_task_database_trial_offline.py", line 17, in <module>
+    from embodiment_lab.systematic_records import CampaignProjection
+  File "/home/username/.le-codex-build/integration/devtools/embodiment_lab/systematic_records.py", line 16, in <module>
+    import duckdb
+ModuleNotFoundError: No module named 'duckdb'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

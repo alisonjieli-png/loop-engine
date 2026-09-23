@@ -1,0 +1,36 @@
+{
+  "decisions": [
+    {
+      "id": "a",
+      "allowed": false,
+      "tokens_after": {
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "id": "b",
+      "allowed": true,
+      "tokens_after": {
+        "numerator": 0,
+        "denominator": 1
+      }
+    },
+    {
+      "id": "c",
+      "allowed": false,
+      "tokens_after": {
+        "numerator": 1,
+        "denominator": 2
+      }
+    },
+    {
+      "id": "d",
+      "allowed": true,
+      "tokens_after": {
+        "numerator": 0,
+        "denominator": 1
+      }
+    }
+  ]
+}

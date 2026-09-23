@@ -1,0 +1,16 @@
+{
+  "record_type": "working_directory_compiler_experiment_handoff/v1",
+  "base_revision": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "source_sha256": "8d603b3179f69d710fa1a1695cbf7c460cc8c756b46af1f0d0ddcabdaa385b33",
+  "test_sha256": "70c2af5052867637258300b85d66611b8dbbc77d4df8468c08d8470aeed97d86",
+  "tests_passed": 16,
+  "removed_guards_detected": 7,
+  "active_source_changes": 0,
+  "runtime_registrations": 0,
+  "profile_promotions": 0,
+  "model_calls": 0,
+  "native_client_calls": 0,
+  "package_installs": 0,
+  "independent_source_review": "not yet performed; peer assigned an integration CI blocker",
+  "documentation_missing_links": []
+}

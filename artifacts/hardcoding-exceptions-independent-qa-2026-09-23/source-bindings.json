@@ -1,0 +1,110 @@
+[
+  {
+    "path": ".github/workflows/ci.yml",
+    "sha256": "a52bb76804feac24d0f766e41363a0a09070780f700b4f1feb1ab288ff234eed"
+  },
+  {
+    "path": "devtools/hardcoding-allowlist.yaml",
+    "sha256": "0936c44b187ec467d9a67da3c1168ada7e0e31b6b75c093027545f335c8f941e"
+  },
+  {
+    "path": "devtools/hardcoding-ci-baseline.json",
+    "sha256": "09f46c9ae19407c648d145977ee9b87291e23dac93663aca5a9ea35dee87f255"
+  },
+  {
+    "path": "devtools/src/loop_engine_devtools/assurance/hardcoding.py",
+    "sha256": "978ce26b30fa41f2f153c4a4326493cc1269d84f22981207c351a8913e56a725"
+  },
+  {
+    "path": "docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json",
+    "sha256": "e3742d45a8ff78664c9d394eab3bca47e9812167d524c94bdb5c893af2531435"
+  },
+  {
+    "path": "docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json",
+    "sha256": "ef182319e87a521a91b79336e9f97f7e80b36ec36bdb233d6c6c48e8266aa62e"
+  },
+  {
+    "path": "docs/verification/assets/live-baltor-morning-2026-09-23/inspect.mjs",
+    "sha256": "f550d7a091cd86742de650b895f750ffbb52680f0658e16f79fdf2bcd3ed2250"
+  },
+  {
+    "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+    "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  {
+    "path": "src/loop_engine/core/service_runtime/stripe_session_checks.py",
+    "sha256": "19e340145f5100d7d985ce2ad15da1c8b23d8db7131a4a775b124dca3ee4daac"
+  },
+  {
+    "path": "src/loop_engine/strings/prompt_fragments.py",
+    "sha256": "25af2abb99979e5a5146859f061f734619d21dccd7c5c1ec396615228dcb5c18"
+  },
+  {
+    "path": "tools/build_documentation_index.py",
+    "sha256": "2be985bb3b8b7844d67b0dac50378c67171d396ba478913f2569b154da643520"
+  },
+  {
+    "path": "tools/candidate_review/native_prechecks.py",
+    "sha256": "23590dca2410b44764a6fe402583c3cf6de339cb815aab0645b4d111615804da"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/contracts/input.schema.json",
+    "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_38d4/contracts/output.schema.json",
+    "sha256": "035ee384de3884aa41d433cdaa8893ada5810162ac38aaa1f30c467b14a5346a"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/contracts/input.schema.json",
+    "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_71af/contracts/output.schema.json",
+    "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/contracts/input.schema.json",
+    "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_9bb0/contracts/output.schema.json",
+    "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/contracts/input.schema.json",
+    "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_c902/contracts/output.schema.json",
+    "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/contracts/input.schema.json",
+    "sha256": "9491e1ed316c769d2af5f81f963e0bf68266fe6265ffe9ff4a3ddc445a9d8a86"
+  },
+  {
+    "path": "tools/candidate_review/resources/native-calibration/catalogue/packages/control_e137/contracts/output.schema.json",
+    "sha256": "1895dfcba1f21b52a66b2651288715b693e7ad8402fd24a1a9d8815e96012825"
+  },
+  {
+    "path": "tools/check_documentation_browser.mjs",
+    "sha256": "7e979ffe9447ceece59d36a06e5f67cca61893f6e852fe0ab771e6c00bb64bfa"
+  },
+  {
+    "path": "tools/check_service_workspace.mjs",
+    "sha256": "e48fb4c84596bd1e53b6584c974d5f3c354eb87549eeacb7295757d603bf8914"
+  },
+  {
+    "path": "tools/generate_original_native_candidates.py",
+    "sha256": "c55d2b950fb9ae822fad1b3b79a7df5d7d5d7249dc2d25ae0b6f4c0cf8ff005c"
+  },
+  {
+    "path": "tools/resources/original-native-generation-prompt-v1.json",
+    "sha256": "9fa5aef441dc91dc1acf094dd3bd3196b3545a9a5b8efb7f1ca12f6e61e8c777"
+  },
+  {
+    "path": "tools/test_generate_original_native_candidates.py",
+    "sha256": "4571248d5d32e440dc0436f8f074b3b5a2bf4e6c1e7f46e2dd38aef6bcaef0b4"
+  }
+]

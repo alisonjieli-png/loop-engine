@@ -14,13 +14,40 @@ import secrets
 import uuid
 
 from .records import ACCESS_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, DEFAULT_SCOPES, ServiceRuntimeError, digest, identifier, scopes, text
-from .runtime import KEY, OWNER_BOUND_KEY_SCHEMA, SCHEMAS, SESSION_REVOCATION, SUBJECT, TENANT, ServiceRuntime
+from .runtime import (BILLING_POLICY, BODIES, CODE_GRANT_SOURCE, ENTITLEMENT, HOST_GRANT_SOURCE, KEY,
+                      OWNER_BOUND_KEY_SCHEMA, SCHEMAS, SESSION_REVOCATION, STRIPE_SNAPSHOT_SOURCE, SUBJECT, ServiceRuntime)
 
 POLICY_VERSION = "service_access_administration/v1"
 REQUEST_VERSION = "service_access_request/v1"
 RESULT_VERSION = "service_access_result/v1"
 OPERATION_KIND = "service_access_operation"
 CLIENT_REQUEST_VERSION = "service_client_access_request/v1"
+#: The name an account holder reads for each recorded source of paid access.
+ACCESS_SOURCE_NAMES = {STRIPE_SNAPSHOT_SOURCE: "subscription", HOST_GRANT_SOURCE: "operator_grant",
+                       CODE_GRANT_SOURCE: "promotion_code"}
+
+
+def paid_access_source(runtime, tenant_id):
+    """Where one account's paid access comes from now, read from its recorded source.
+
+    `subscription` for a provider subscription snapshot, `operator_grant` for
+    an explicit host grant, such as an invitation, `promotion_code` for a
+    redeemed code, and `none` while the account holds no paid access. The
+    account holder reads it on the session record, so the website can say that
+    an invitation covers the plan instead of offering a payment. It applies
+    the entitlement rule the runtime's access source report applies, and reads
+    the recorded `source` field; it never guesses from an expiry, a grant or a
+    name.
+    """
+    catalog = runtime._catalog
+    with catalog.store() as store:
+        _row, tenant = runtime._tenant(store, tenant_id)
+        row = catalog.read(store, ENTITLEMENT, tenant_id)
+        policy = catalog.read(store, BILLING_POLICY, "stripe")
+        if (row is None or tenant.get("enabled") is not True or tenant.get("body_access_revoked") is not False
+                or runtime._entitlement(row, policy) != BODIES):
+            return "none"
+        return ACCESS_SOURCE_NAMES.get(runtime._payload(row, ENTITLEMENT).get("source"), "none")
 
 
 def _validate_limits(policy):

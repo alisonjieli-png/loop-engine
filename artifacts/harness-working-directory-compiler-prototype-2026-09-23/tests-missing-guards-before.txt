@@ -1,0 +1,31 @@
+.F.....E........
+======================================================================
+ERROR: test_projected_path_over_package_bound_is_typed_refusal (__main__.PreviewTests.test_projected_path_over_package_bound_is_typed_refusal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/compiler-preview/artifacts/harness-working-directory-compiler-prototype-2026-09-23/test_preview.py", line 120, in test_projected_path_over_package_bound_is_typed_refusal
+    self.check_refusal(selected,"projected_path_invalid")
+  File "/home/username/.le-codex-build/compiler-preview/artifacts/harness-working-directory-compiler-prototype-2026-09-23/test_preview.py", line 46, in check_refusal
+    result = BaltorPreviewEngine().compile(selected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/compiler-preview/artifacts/harness-working-directory-compiler-prototype-2026-09-23/preview.py", line 251, in compile
+    placement_path(target)
+  File "/home/username/.le-codex-build/compiler-preview/src/loop_engine/core/service_runtime/catalogue_packages.py", line 108, in placement_path
+    _refuse("package_path_invalid", "a placement path uses safe segments and never names .., . or .git")
+  File "/home/username/.le-codex-build/compiler-preview/src/loop_engine/core/service_runtime/catalogue_packages.py", line 79, in _refuse
+    raise ServiceRuntimeError(code, message)
+loop_engine.core.service_runtime.records.ServiceRuntimeError: a placement path uses safe segments and never names .., . or .git
+
+======================================================================
+FAIL: test_executable_package_cannot_omit_process_declaration (__main__.PreviewTests.test_executable_package_cannot_omit_process_declaration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/compiler-preview/artifacts/harness-working-directory-compiler-prototype-2026-09-23/test_preview.py", line 110, in test_executable_package_cannot_omit_process_declaration
+    with self.assertRaises(PreviewRefusal) as caught:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: PreviewRefusal not raised
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.005s
+
+FAILED (failures=1, errors=1)

@@ -1,0 +1,28 @@
+{
+  "record_type": "baltor_step_brief/v1",
+  "objective": "Describe missing customer identifiers in the supplied sample.",
+  "inputs": [
+    "customer_sample"
+  ],
+  "outputs": [
+    "missing_identifier_report"
+  ],
+  "constraints": [
+    "Read only the supplied sample. Preserve every original value."
+  ],
+  "out_of_scope": [
+    "Do not repair data or access the customer archive."
+  ],
+  "acceptance_checks": [
+    {
+      "id": "row_accounting",
+      "output": "missing_identifier_report",
+      "assertion": "Every sample row is counted once; missing identifiers are reported with row labels."
+    }
+  ],
+  "unresolved_questions": [],
+  "requested_effects": [
+    "read_selected_inputs"
+  ],
+  "authority_reference": "caller:declared-sample-read"
+}

@@ -1,0 +1,4 @@
+error: patch failed: src/loop_engine/core/service_runtime/web_assets/service.js:15
+error: src/loop_engine/core/service_runtime/web_assets/service.js: patch does not apply
+error: patch failed: tools/check_hosted_website.mjs:156
+error: tools/check_hosted_website.mjs: patch does not apply

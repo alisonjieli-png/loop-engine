@@ -1,0 +1,86 @@
+test_alias_objects_are_typed_refusals (tools.test_documentation_index.IndexContract.test_alias_objects_are_typed_refusals) ... ERROR
+test_current_index_is_valid (tools.test_documentation_index.IndexContract.test_current_index_is_valid) ... ok
+test_duplicate_json_members_are_refused (tools.test_documentation_index.IndexContract.test_duplicate_json_members_are_refused) ... FAIL
+test_foreign_body_and_duplicate_page_are_refused (tools.test_documentation_index.IndexContract.test_foreign_body_and_duplicate_page_are_refused) ... ok
+test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) ... 
+  test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='/tmp/private.md') ... FAIL
+  test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='../../../private.md') ... FAIL
+  test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='docs/guides/../private.md') ... FAIL
+  test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='secrets/private.md') ... FAIL
+test_trailing_newline_identity_and_invalid_date_are_refused (tools.test_documentation_index.IndexContract.test_trailing_newline_identity_and_invalid_date_are_refused) ... FAIL
+test_unknown_version_and_fields_are_refused (tools.test_documentation_index.IndexContract.test_unknown_version_and_fields_are_refused) ... ok
+
+======================================================================
+ERROR: test_alias_objects_are_typed_refusals (tools.test_documentation_index.IndexContract.test_alias_objects_are_typed_refusals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 63, in test_alias_objects_are_typed_refusals
+    self.read(changed)
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 25, in read
+    return load_index(root)
+           ^^^^^^^^^^^^^^^^
+  File "/home/username/.le-codex-build/site-docs/tools/build_documentation_index.py", line 214, in load_index
+    _page(entry, identity, seen_pages)
+  File "/home/username/.le-codex-build/site-docs/tools/build_documentation_index.py", line 169, in _page
+    if (not isinstance(aliases, list) or len(set(aliases)) != len(aliases)
+                                             ^^^^^^^^^^^^
+TypeError: unhashable type: 'dict'
+
+======================================================================
+FAIL: test_duplicate_json_members_are_refused (tools.test_documentation_index.IndexContract.test_duplicate_json_members_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 48, in test_duplicate_json_members_are_refused
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+======================================================================
+FAIL: test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='/tmp/private.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 56, in test_repository_paths_cannot_escape_or_name_another_tree
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+======================================================================
+FAIL: test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='../../../private.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 56, in test_repository_paths_cannot_escape_or_name_another_tree
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+======================================================================
+FAIL: test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='docs/guides/../private.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 56, in test_repository_paths_cannot_escape_or_name_another_tree
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+======================================================================
+FAIL: test_repository_paths_cannot_escape_or_name_another_tree (tools.test_documentation_index.IndexContract.test_repository_paths_cannot_escape_or_name_another_tree) (path='secrets/private.md')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 56, in test_repository_paths_cannot_escape_or_name_another_tree
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+======================================================================
+FAIL: test_trailing_newline_identity_and_invalid_date_are_refused (tools.test_documentation_index.IndexContract.test_trailing_newline_identity_and_invalid_date_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/site-docs/tools/test_documentation_index.py", line 43, in test_trailing_newline_identity_and_invalid_date_are_refused
+    with self.assertRaises(DocumentationBuildError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DocumentationBuildError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.008s
+
+FAILED (failures=6, errors=1)

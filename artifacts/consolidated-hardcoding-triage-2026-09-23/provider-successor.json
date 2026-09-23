@@ -1,0 +1,53 @@
+{
+  "summary": {
+    "record_type": "hardcoding_audit_summary/v1",
+    "schema_version": "hardcoding_audit/v1",
+    "repository_root_ref": "/home/username/.le-codex-build/integration",
+    "files_scanned": 8,
+    "files_by_type": {
+      ".json": 1,
+      ".md": 1,
+      ".py": 6
+    },
+    "literal_candidates_scanned": 3548,
+    "findings": 727,
+    "unsuppressed_findings": 724,
+    "suppressed_findings": 3,
+    "by_classification": {
+      "CLOSED_CONTROLLED_VOCABULARY": 149,
+      "DEPLOYMENT_CONFIGURATION": 5,
+      "LOOP_PROFILE_SETTING": 338,
+      "OPEN_TAXONOMY_OR_REGISTRY_VALUE": 2,
+      "OPTIONAL_PARAMETER_WITH_DEFAULT": 104,
+      "STRATEGY_OR_PROVIDER_BINDING": 126
+    },
+    "by_severity": {
+      "high": 7,
+      "medium": 717
+    },
+    "by_owner": {
+      "src/loop_engine/core": 561,
+      "src/loop_engine/loop": 60,
+      "tools/generate_original_native_candidates.py": 103
+    },
+    "by_subsystem": {
+      "src/loop_engine/core": 561,
+      "src/loop_engine/loop": 60,
+      "tools/generate_original_native_candidates.py": 103
+    },
+    "by_proposed_abstraction": {
+      "admitted_strategy_or_provider_binding": 126,
+      "enum_literal_or_terminology_authority": 149,
+      "existing_registry_catalog_or_ontology": 2,
+      "typed_optional_parameter_and_default": 104,
+      "typed_runtime_settings": 5,
+      "versioned_loop_profile_setting": 338
+    },
+    "prompt_resource_findings": 1,
+    "string_state_findings": 5,
+    "configuration_findings": 343,
+    "skipped_files": [],
+    "allowlist_problems": []
+  },
+  "blocking": []
+}

@@ -1,0 +1,151 @@
+{
+  "record_type": "candidate_intelligence_staging_report/v1",
+  "records": 12,
+  "families": {
+    "deterministic_native_method": 12
+  },
+  "layers": {
+    "code": 12
+  },
+  "batch_digest": "954948b0898ca9c77215f36a36a60e0987c82c1c565d3cbe9ce83f276fbb1ba4",
+  "committed": true,
+  "hosted_publication": false,
+  "independent_qualification": false,
+  "review_search": {
+    "normal_search_hits": 0,
+    "normal_search_excluded": 12,
+    "probes": [
+      {
+        "expected_identity": "original.mixed_native.schedule_dag_earliest_times",
+        "returned": [
+          "original.mixed_native.schedule_dag_earliest_times",
+          "original.mixed_native.audit_functional_dependency_rows",
+          "original.mixed_native.find_strongly_connected_components"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 18.887,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.cover_pairwise_configuration_values",
+        "returned": [
+          "original.mixed_native.cover_pairwise_configuration_values",
+          "original.mixed_native.project_json_pointer_values",
+          "original.mixed_native.audit_boolean_rule_coverage"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.426,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.compare_primitive_object_contracts",
+        "returned": [
+          "original.mixed_native.compare_primitive_object_contracts",
+          "original.mixed_native.simulate_exact_token_bucket",
+          "original.mixed_native.audit_functional_dependency_rows"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.427,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.pack_first_fit_decreasing_batches",
+        "returned": [
+          "original.mixed_native.pack_first_fit_decreasing_batches",
+          "original.mixed_native.resolve_literal_named_template",
+          "original.mixed_native.evaluate_bounded_rational_expression"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.55,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.audit_functional_dependency_rows",
+        "returned": [
+          "original.mixed_native.audit_functional_dependency_rows",
+          "original.mixed_native.audit_boolean_rule_coverage",
+          "original.mixed_native.schedule_dag_earliest_times"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 8.419,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.find_strongly_connected_components",
+        "returned": [
+          "original.mixed_native.find_strongly_connected_components",
+          "original.mixed_native.schedule_dag_earliest_times",
+          "original.mixed_native.compare_primitive_object_contracts"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.773,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.simulate_exact_token_bucket",
+        "returned": [
+          "original.mixed_native.simulate_exact_token_bucket",
+          "original.mixed_native.evaluate_bounded_rational_expression"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.834,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.audit_boolean_rule_coverage",
+        "returned": [
+          "original.mixed_native.audit_boolean_rule_coverage",
+          "original.mixed_native.audit_functional_dependency_rows",
+          "original.mixed_native.find_strongly_connected_components"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.506,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.decode_u16_length_prefixed_frames",
+        "returned": [
+          "original.mixed_native.decode_u16_length_prefixed_frames",
+          "original.mixed_native.cover_pairwise_configuration_values"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 6.494,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.evaluate_bounded_rational_expression",
+        "returned": [
+          "original.mixed_native.evaluate_bounded_rational_expression",
+          "original.mixed_native.schedule_dag_earliest_times",
+          "original.mixed_native.find_strongly_connected_components"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.456,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.resolve_literal_named_template",
+        "returned": [
+          "original.mixed_native.resolve_literal_named_template",
+          "original.mixed_native.schedule_dag_earliest_times",
+          "original.mixed_native.audit_functional_dependency_rows"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 8.239,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "original.mixed_native.project_json_pointer_values",
+        "returned": [
+          "original.mixed_native.project_json_pointer_values",
+          "original.mixed_native.cover_pairwise_configuration_values",
+          "original.mixed_native.simulate_exact_token_bucket"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 7.348,
+        "physical_model_calls": 0
+      }
+    ],
+    "limits": "Title-derived lexical smoke probes on authored candidates, not a held-out relevance or task-success benchmark"
+  }
+}

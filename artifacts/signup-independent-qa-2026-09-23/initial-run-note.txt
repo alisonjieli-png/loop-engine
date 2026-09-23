@@ -1,0 +1,1 @@
+The first account-email rerun looked for a nonexistent account_email.self_test entrypoint and failed before executing any check. The corrected rerun calls account_email_checks.run_checks under temporary fixtures; account-email-replay-2.json is the independent product observation.

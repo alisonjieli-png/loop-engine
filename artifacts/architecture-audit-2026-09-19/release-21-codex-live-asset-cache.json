@@ -1,0 +1,67 @@
+{
+  "observed_at": "2026-09-23T16:38:18.954914+00:00",
+  "revision": "1920296c00ced18e47992ae05237f4a2923666f0",
+  "badge_absent": true,
+  "home_cache": "no-store",
+  "assets": [
+    {
+      "path": "/assets/baltor-mark.svg?v=06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1",
+      "get": 200,
+      "cache": "public, max-age=300",
+      "etag_matches_body": true,
+      "conditional_get": 304,
+      "head": 200,
+      "head_empty": true,
+      "head_length_matches": true
+    },
+    {
+      "path": "/assets/favicon-32.png?v=6376bde759781891bd193c02c3563d1ff3d954a76a5ca05b982ebf5ef2add536",
+      "get": 200,
+      "cache": "public, max-age=300",
+      "etag_matches_body": true,
+      "conditional_get": 304,
+      "head": 200,
+      "head_empty": true,
+      "head_length_matches": true
+    },
+    {
+      "path": "/assets/favicon-192.png?v=e7a90ee8d8e07403272693e705a32761bb9379841d1a51c1c854db4069b642f9",
+      "get": 200,
+      "cache": "public, max-age=300",
+      "etag_matches_body": true,
+      "conditional_get": 304,
+      "head": 200,
+      "head_empty": true,
+      "head_length_matches": true
+    },
+    {
+      "path": "/assets/apple-touch-icon.png?v=7c3bb10fafb183530aceb07a6dabb67bdf0f1ec19fce63329111979c09584c46",
+      "get": 200,
+      "cache": "public, max-age=300",
+      "etag_matches_body": true,
+      "conditional_get": 304,
+      "head": 200,
+      "head_empty": true,
+      "head_length_matches": true
+    }
+  ],
+  "four_worker_sixteen_request_burst_statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "limits": "One bounded read-only observation; not a load-capacity or uptime claim."
+}

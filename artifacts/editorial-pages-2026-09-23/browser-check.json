@@ -1,0 +1,297 @@
+{
+  "record_type": "editorial_preview_browser_check/v1",
+  "base": "http://127.0.0.1:41487/",
+  "checks": [
+    {
+      "route": "index.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "Blog | Baltor editorial preview",
+      "heading": "Notes from building Baltor.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "what-your-harness-actually-reads.html",
+        "what-your-harness-actually-reads.html",
+        "growing-a-harness-library.html",
+        "growing-a-harness-library.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "team.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "Team | Baltor editorial preview",
+      "heading": "The people building Baltor.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "brand.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "Logo study | Baltor editorial preview",
+      "heading": "Judge the mark where it will live.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 7,
+      "loaded": 7,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "when-a-reviewed-skill-made-a-model-worse.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "When a reviewed skill made a model worse | Baltor editorial preview",
+      "heading": "When a reviewed skill made a model worse",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "what-your-harness-actually-reads.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "What your harness actually reads | Baltor editorial preview",
+      "heading": "What your harness actually reads",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "growing-a-harness-library.html",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "status": 200,
+      "title": "How we plan a larger harness library | Baltor editorial preview",
+      "heading": "How we plan a larger harness library",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "index.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Blog | Baltor editorial preview",
+      "heading": "Notes from building Baltor.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "what-your-harness-actually-reads.html",
+        "what-your-harness-actually-reads.html",
+        "growing-a-harness-library.html",
+        "growing-a-harness-library.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "team.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Team | Baltor editorial preview",
+      "heading": "The people building Baltor.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "when-a-reviewed-skill-made-a-model-worse.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "brand.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "Logo study | Baltor editorial preview",
+      "heading": "Judge the mark where it will live.",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 7,
+      "loaded": 7,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "when-a-reviewed-skill-made-a-model-worse.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "When a reviewed skill made a model worse | Baltor editorial preview",
+      "heading": "When a reviewed skill made a model worse",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "what-your-harness-actually-reads.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "What your harness actually reads | Baltor editorial preview",
+      "heading": "What your harness actually reads",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    },
+    {
+      "route": "growing-a-harness-library.html",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": 200,
+      "title": "How we plan a larger harness library | Baltor editorial preview",
+      "heading": "How we plan a larger harness library",
+      "noindex": "noindex,nofollow",
+      "overflow": false,
+      "images": 1,
+      "loaded": 1,
+      "localLinks": [
+        "index.html",
+        "index.html",
+        "team.html",
+        "brand.html",
+        "index.html",
+        "index.html",
+        "index.html"
+      ],
+      "page_errors": []
+    }
+  ],
+  "limitations": "Read-only local draft preview. No live routes, form submissions, authentication, analytics or publication tested."
+}

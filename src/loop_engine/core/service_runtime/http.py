@@ -18,6 +18,7 @@ from urllib.parse import urlsplit
 
 from ...loop.encapsulate import as_loop
 from ...loop.loop_role import LoopRole, LoopRoleIdentity
+from ..facets import EFFECTS
 from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding
 from .http_auth import (
@@ -39,7 +40,9 @@ from .web_pages import (CACHEABLE_WEB_ASSETS, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACH
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
 PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v1"
-RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v1"
+# Version 2 adds explicit metadata effect selection. Old readers must refuse
+# this request rather than silently omit its required selection.
+RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v2"
 #: Version 2 replaced the one pinned protocol version of version 1 with the
 #: set of versions the host serves. A release that reads version 1 refuses
 #: version 2, and this release refuses version 1, so neither can widen or
@@ -130,11 +133,13 @@ PROTOCOL_PATH = "/mcp"
 #: record keeps the path only when it is one of these; anything else is
 #: recorded as the unmatched name, because a stranger chooses that text.
 DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
-#: The addresses whose request body is itself a credential: sign-up carries the
-#: password of a new account, and promotion redemption carries a code that
-#: grants paid access to whoever holds it. Their bodies never reach a failure
-#: record, whatever the host chose to capture, because no recording choice may
-#: record a credential. The refusal itself is still recorded.
+#: The addresses whose request body may itself be a credential. Sign-up takes an
+#: address alone since September 23, 2026, and refuses a request that carries a
+#: password, but a caller can still send one, and the refused body would hold
+#: it. Promotion redemption carries a code that grants paid access to whoever
+#: holds it. Their bodies never reach a failure record, whatever the host chose
+#: to capture, because no recording choice may record a credential. The refusal
+#: itself is still recorded.
 CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH)
 
 
@@ -476,6 +481,21 @@ def http_provisioning_schema(operation):
     return schema
 
 
+def http_retrieval_schema():
+    """The protocol tool's closed input schema, sharing the list effect shape.
+
+    This selector declares what material the caller wants considered. Tenant
+    grants, qualification and scopes still come from the provisioning boundary;
+    the selector never grants execution or body access.
+    """
+    effects = http_provisioning_schema(LIST_OPERATION)["properties"]["authority_effects"]
+    effects["items"] = {"type": "string", "enum": list(EFFECTS)}
+    return {"type": "object", "required": ["query"], "additionalProperties": False,
+            "properties": {"query": {"type": "string"}, "mode": {"enum": ["lexical", "hybrid"]},
+                           "top_n": {"type": "integer", "minimum": 1},
+                           "filters": {"type": "object"}, "authority_effects": effects}}
+
+
 def _status(error):
     code = getattr(error, "code", "operation_failed")
     if isinstance(error, ServiceHttpError):
@@ -594,12 +614,25 @@ class ServiceHttpApplication:
         self.failure_journal = ServiceFailureJournal(self.runtime.config, DECLARED_ROUTES,
                                                      policy=self.observability)
 
+    def registration_available(self):
+        """True when a visitor can create an account on this service today.
+
+        The website creates an account in one way only: it asks this service
+        to send the sign-up link, and the person chooses a password on the page
+        that link opens. Email sign-up in the browser identity is therefore not
+        enough; the account email adapter must have sign-up open as well, or
+        the public pages would say account creation is open beside a sign-up
+        page that cannot send a link.
+        """
+        return (self.browser_identity is not None and self.browser_identity.configuration.email_signup_enabled
+                and self.account_email is not None and self.account_email.availability()["signup_available"] is True)
+
     def capabilities(self):
         from importlib.metadata import version
         session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}
         return {"record_type": "service_capabilities/v1", "api_version": "v1",
                 "website": {"display_name": self.configuration.display_name,
-                            "registration_available": self.browser_identity is not None and self.browser_identity.configuration.email_signup_enabled,
+                            "registration_available": self.registration_available(),
                             "browser_identity_available": self.browser_identity is not None,
                             "access_profile": "operator_provisioned",
                             "access_administration_available": self.access_administration is not None,
@@ -619,7 +652,9 @@ class ServiceHttpApplication:
                 "operation_scopes": {"metadata_and_search": "provisioning:metadata",
                                      "body_and_download": "provisioning:read", "usage": "usage:read",
                                      "billing_sessions": BILLING_MANAGE_SCOPE},
-                "retrieval": {"modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",
+                "retrieval": {"request_record_type": RETRIEVAL_REQUEST_VERSION,
+                              "authority_effects": "metadata_eligibility_only",
+                              "modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",
                               "vector_backend": "deterministic_character_hash",
                               "semantic_embedding_model_installed": False,
                               "scope": "authorized_catalogue_metadata", "returns_bodies": False,
@@ -866,7 +901,8 @@ class ServiceHttpApplication:
 
         def authorize(candidates):
             listing = self.provisioning.invoke_for_principal(current.principal, LIST_OPERATION, view=view,
-                                                             candidates=candidates)
+                                                             candidates=candidates,
+                                                             authority_effects=fields.get("authority_effects", ()))
             return {row["identity"]: row for row in listing["items"]}
         ranked, rows = authorized_hits(view, fields, authorize)
         hits = []
@@ -972,8 +1008,8 @@ class ServiceHttpApplication:
     def _validate_search(self, payload, *, versioned=True):
         if not isinstance(payload, dict):
             raise ServiceHttpError("object_required")
-        if set(payload) - ({"record_type", "query", "mode", "top_n", "filters"} if versioned
-                           else {"query", "mode", "top_n", "filters"}):
+        if set(payload) - ({"record_type", "query", "mode", "top_n", "filters", "authority_effects"} if versioned
+                           else {"query", "mode", "top_n", "filters", "authority_effects"}):
             raise ServiceHttpError("unknown_request_field")
         if versioned and payload.get("record_type") != RETRIEVAL_REQUEST_VERSION:
             raise ServiceHttpError("unsupported_version")
@@ -987,6 +1023,12 @@ class ServiceHttpApplication:
             raise ServiceHttpError("invalid_search_limit")
         if "filters" in payload and not isinstance(payload["filters"], dict):
             raise ServiceHttpError("search_filter_invalid")
+        if "authority_effects" in payload:
+            from jsonschema import ValidationError, validate
+            try:
+                validate(payload["authority_effects"], http_retrieval_schema()["properties"]["authority_effects"])
+            except ValidationError:
+                raise ServiceHttpError("invalid_request") from None
         return {key: value for key, value in payload.items() if key != "record_type"}
 
     def _validate_provisioning(self, payload):
@@ -1033,10 +1075,7 @@ class ServiceHttpApplication:
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
                 for name, operation in TOOL_OPERATIONS.items()]
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
-                inputSchema={"type": "object", "required": ["query"], "additionalProperties": False,
-                    "properties": {"query": {"type": "string"}, "mode": {"enum": ["lexical", "hybrid"]},
-                                   "top_n": {"type": "integer", "minimum": 1},
-                                   "filters": {"type": "object"}}}))
+                inputSchema=http_retrieval_schema()))
             return types.ListToolsResult(tools=tools)
 
         async def call_tool(ctx, params):
@@ -1360,8 +1399,15 @@ class ServiceHttpApplication:
         else:
             context = await self._authenticated(request)
             if path == "/api/v1/session" and method == "GET":
+                # The access source lets the Get started page tell an invited
+                # account that its invitation covers the plan, instead of
+                # offering it a payment.
+                from .access import paid_access_source
+                source = await self._tenant_work(context, lambda: paid_access_source(self.runtime,
+                                                                                     context.principal.tenant_id))
                 output = {"record_type": "service_session/v1", "principal": context.principal.to_dict(),
-                          "authentication_mode": context.mode, "token_expires_at": context.expires_at}
+                          "authentication_mode": context.mode, "token_expires_at": context.expires_at,
+                          "access_source": source}
                 output["principal"]["scopes"] = list(context.effective_scopes)
             elif path == "/api/v1/account/logout" and method == "POST":
                 from .http_auth import BROWSER_IDENTITY_AUTHENTICATION

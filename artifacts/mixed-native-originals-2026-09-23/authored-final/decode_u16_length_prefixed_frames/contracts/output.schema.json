@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "frames_hex": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(?:[0-9a-f]{2})*(?![\\s\\S])",
+        "maxLength": 2048
+      },
+      "minItems": 0,
+      "maxItems": 256
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000
+    }
+  },
+  "required": [
+    "frames_hex",
+    "count"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,353 @@
+{
+  "module": "core.custom_endpoint_checks",
+  "tests": [
+    {
+      "test": "the_ollama_wire_streams_as_newline_delimited_json_and_joins_the_deltas",
+      "passed": true,
+      "detail": "online"
+    },
+    {
+      "test": "a_stream_that_ends_without_a_done_line_is_incomplete_not_an_answer",
+      "passed": true,
+      "detail": "incomplete_response: endpoint response did not finish"
+    },
+    {
+      "test": "a_proxy_that_reframes_the_stream_as_sse_still_parses",
+      "passed": false,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "auto_mode_learns_that_this_endpoint_needs_streaming_and_streams_first_next_time",
+      "passed": true,
+      "detail": " / requests 2 then 1"
+    },
+    {
+      "test": "learned_modes_can_be_forgotten",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_refusal_inside_a_200_body_is_classified_by_its_words_not_as_an_empty_answer",
+      "passed": true,
+      "detail": "provider_error_body: model 'gpt-oss:20b' not found, try pulling it first"
+    },
+    {
+      "test": "a_200_body_that_names_a_status_is_classified_by_that_status",
+      "passed": true,
+      "detail": "HTTP 429: Rate limit reached"
+    },
+    {
+      "test": "a_page_that_is_not_json_is_an_invalid_body_the_provider_did_not_send",
+      "passed": true,
+      "detail": "invalid_response_body: endpoint answered with a body that is not JSON"
+    },
+    {
+      "test": "json_that_is_not_an_object_is_an_invalid_body_too",
+      "passed": true,
+      "detail": "invalid_response_body: endpoint answered with JSON that is not an object"
+    },
+    {
+      "test": "a_refusal_that_states_a_wait_carries_it_in_seconds_and_in_the_error_text",
+      "passed": true,
+      "detail": "HTTP 429 (retry after 120s): {\"error\":\"rate limit exceeded\"}"
+    },
+    {
+      "test": "a_spent_weekly_allowance_states_no_wait_and_is_not_a_throttle",
+      "passed": true,
+      "detail": "HTTP 429: {\"error\":\"you have reached your weekly usage limit, add usage credits (ref: 4013)\"}"
+    },
+    {
+      "test": "an_http_date_retry_after_reads_as_a_non_negative_wait",
+      "passed": true,
+      "detail": "HTTP 503 (retry after 0s): "
+    },
+    {
+      "test": "an_unreadable_retry_after_is_unstated_not_guessed",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "the_ollama_wire_sends_think_false_by_default_true_on_request_and_nothing_for_the_model_default",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "an_unrecognized_think_spelling_is_refused",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_refused_listing_says_how_it_was_refused_and_the_compatible_call_lists_nothing",
+      "passed": true,
+      "detail": "HTTP 401: {\"error\":\"unauthorized\"}"
+    },
+    {
+      "test": "a_listing_that_names_other_models_is_obtained_and_says_the_model_is_absent",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "an_openai_wire_listing_reads_its_data_rows",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_listing_that_is_not_json_is_an_invalid_body",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_listing_that_carries_an_error_is_refused_by_its_words",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "listing_records_are_json_plain",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_declared_but_unset_credential_refuses_before_any_request_as_the_built_ins_do",
+      "passed": true,
+      "detail": "missing_credential: CHECKS_BOX_KEY is not set; no request was sent"
+    },
+    {
+      "test": "a_declared_variable_that_holds_a_key_or_a_keyless_scheme_is_not_missing",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "an_openai_stream_cut_before_its_stop_reason_or_done_sentinel_is_incomplete",
+      "passed": false,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "a_connection_that_ends_inside_the_body_is_an_incomplete_response_never_a_raise",
+      "passed": true,
+      "detail": "incomplete_response: IncompleteRead: IncompleteRead(7 bytes read)"
+    },
+    {
+      "test": "the_result_counts_the_http_requests_one_attempt_opened",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "a_server_that_echoes_the_key_cannot_put_it_in_a_record",
+      "passed": true,
+      "detail": "HTTP 401: {\"error\":\"invalid key <redacted> sent as Bearer <redacted>\"}"
+    },
+    {
+      "test": "a_base_that_names_the_chat_path_the_api_prefix_or_the_root_composes_the_same_urls",
+      "passed": true,
+      "detail": "{}"
+    },
+    {
+      "test": "the_environment_declaration_accepts_think_and_a_key_variable_name",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "key_and_key_env_together_are_refused",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "openai_buffer_missing_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_null_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_empty_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_integer_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_object_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_wrong_reported_identity_is_preserved_and_refused",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_buffer_genuine_identity_and_explicit_zero_usage_survive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "openai_buffer_absent_usage_stays_unknown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "openai_stream_missing_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_null_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_empty_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_integer_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_object_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_wrong_reported_identity_is_preserved_and_refused",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_genuine_identity_and_explicit_zero_usage_survive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "openai_stream_absent_usage_stays_unknown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "openai_stream_changed_identity_cannot_be_overwritten",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_malformed_identity_cannot_be_overwritten",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "openai_stream_one_genuine_identity_may_precede_usage_chunk",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ollama_buffer_missing_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_null_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_empty_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_integer_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_object_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_wrong_reported_identity_is_preserved_and_refused",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_buffer_genuine_identity_and_explicit_zero_usage_survive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ollama_buffer_absent_usage_stays_unknown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ollama_stream_missing_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_null_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_empty_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_integer_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_object_reported_identity_is_not_the_request",
+      "passed": true,
+      "detail": "model='', error=model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_wrong_reported_identity_is_preserved_and_refused",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_genuine_identity_and_explicit_zero_usage_survive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ollama_stream_absent_usage_stays_unknown",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "ollama_stream_changed_identity_cannot_be_overwritten",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_malformed_identity_cannot_be_overwritten",
+      "passed": true,
+      "detail": "model_identity_mismatch: missing, malformed, conflicting or unexpected response model"
+    },
+    {
+      "test": "ollama_stream_one_genuine_identity_may_precede_usage_chunk",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "test": "custom_endpoint_preflight_refusal_has_no_answering_model",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "passed": 67,
+  "total": 69,
+  "all_passed": false
+}

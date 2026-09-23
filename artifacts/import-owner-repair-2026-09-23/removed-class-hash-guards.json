@@ -1,0 +1,32 @@
+{
+  "source_function_sha256": "36ce9f81f2581bf14e6846e33dfdba524303a34a53647a41d714aedadc534fb0",
+  "all_detected": true,
+  "controls": [
+    {
+      "mutation": "class_adapter_is_misread_as_its_metaclass",
+      "detected": true,
+      "failed": [
+        "tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume"
+      ],
+      "output": "E.\n======================================================================\nERROR: test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"<fixed-adapter-source-mutant>\", line 5, in implementation_digests\n  File \"/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/inspect.py\", line 924, in getfile\n    raise TypeError('{!r} is a built-in class'.format(object))\nTypeError: <class 'type'> is a built-in class\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py\", line 343, in test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume\n    bindings = generation.implementation_digests(self.spec)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<fixed-adapter-source-mutant>\", line 7, in implementation_digests\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/generate_original_native_candidates.py\", line 73, in refuse\n    raise GenerationError(code)\ntools.generate_original_native_candidates.GenerationError: implementation_source_unavailable\n\n----------------------------------------------------------------------\nRan 2 tests in 0.027s\n\nFAILED (errors=1)\n"
+    },
+    {
+      "mutation": "adapter_digest_is_not_bound_to_source_bytes",
+      "detected": true,
+      "failed": [
+        "tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume"
+      ],
+      "output": "F.\n======================================================================\nFAIL: test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py\", line 344, in test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume\n    self.assertEqual(bindings[source.name], generation.digest(source.read_bytes()))\nAssertionError: '0000000000000000000000000000000000000000000000000000000000000000' != 'b4e920ec8ce3b235fdaa409366a51ee01612c64c3e36596e3b6add9cabea41c4'\n- 0000000000000000000000000000000000000000000000000000000000000000\n+ b4e920ec8ce3b235fdaa409366a51ee01612c64c3e36596e3b6add9cabea41c4\n\n\n----------------------------------------------------------------------\nRan 2 tests in 0.021s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "missing_source_escapes_as_unclassified_type_error",
+      "detected": true,
+      "failed": [
+        "tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume",
+        "tools.test_generate_original_native_candidates.GenerationTest.test_adapter_without_source_file_is_explicitly_unqualified"
+      ],
+      "output": "FE\n======================================================================\nERROR: test_adapter_without_source_file_is_explicitly_unqualified (tools.test_generate_original_native_candidates.GenerationTest.test_adapter_without_source_file_is_explicitly_unqualified)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py\", line 367, in test_adapter_without_source_file_is_explicitly_unqualified\n    generation.implementation_digests(replace(self.spec, adapter=unavailable))\n  File \"<fixed-adapter-source-mutant>\", line 5, in implementation_digests\n  File \"/home/username/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/inspect.py\", line 924, in getfile\n    raise TypeError('{!r} is a built-in class'.format(object))\nTypeError: <class 'SourceUnavailableAdapter'> is a built-in class\n\n======================================================================\nFAIL: test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume (tools.test_generate_original_native_candidates.GenerationTest.test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_generate_original_native_candidates.py\", line 360, in test_class_adapter_hashes_owning_source_and_changed_source_refuses_resume\n    self.assertRaisesRegex(ValueError, \"resume_binding_changed\"):\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 2 tests in 0.082s\n\nFAILED (failures=1, errors=1)\n"
+    }
+  ],
+  "provider_calls": 0
+}

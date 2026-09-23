@@ -1,0 +1,15 @@
+{
+  "dependency_ids": [],
+  "effects": [],
+  "harness_style": "codex",
+  "kind": "reason",
+  "mode": "deterministic",
+  "model_calls_authorized": false,
+  "node_id": "reconcile-stock",
+  "objective": "Reconcile the reported available units against the supplied stock movements and holds. Return the discrepancy for review.",
+  "output_contract_refs": [
+    "inventory_reconciliation/v1"
+  ],
+  "record_type": "node_assignment/v3",
+  "required_capabilities": []
+}

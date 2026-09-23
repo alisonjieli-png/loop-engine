@@ -1,0 +1,126 @@
+[
+  {
+    "input": {
+      "capacity": 3,
+      "initial_tokens": 1,
+      "refill_per_second": 1,
+      "requests": [
+        {
+          "id": "a",
+          "at_ms": 0,
+          "tokens": 2
+        },
+        {
+          "id": "b",
+          "at_ms": 1000,
+          "tokens": 2
+        },
+        {
+          "id": "c",
+          "at_ms": 1500,
+          "tokens": 1
+        },
+        {
+          "id": "d",
+          "at_ms": 2000,
+          "tokens": 1
+        }
+      ]
+    },
+    "expected": {
+      "decisions": [
+        {
+          "id": "a",
+          "allowed": false,
+          "tokens_after": {
+            "numerator": 1,
+            "denominator": 1
+          }
+        },
+        {
+          "id": "b",
+          "allowed": true,
+          "tokens_after": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        },
+        {
+          "id": "c",
+          "allowed": false,
+          "tokens_after": {
+            "numerator": 1,
+            "denominator": 2
+          }
+        },
+        {
+          "id": "d",
+          "allowed": true,
+          "tokens_after": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "capacity": 2,
+      "initial_tokens": 0,
+      "refill_per_second": 100,
+      "requests": [
+        {
+          "id": "a",
+          "at_ms": 1000,
+          "tokens": 2
+        }
+      ]
+    },
+    "expected": {
+      "decisions": [
+        {
+          "id": "a",
+          "allowed": true,
+          "tokens_after": {
+            "numerator": 0,
+            "denominator": 1
+          }
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "capacity": 2,
+      "initial_tokens": 3,
+      "refill_per_second": 1,
+      "requests": []
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "capacity": 2,
+      "initial_tokens": 2,
+      "refill_per_second": 1,
+      "requests": [
+        {
+          "id": "a",
+          "at_ms": 2,
+          "tokens": 1
+        },
+        {
+          "id": "b",
+          "at_ms": 1,
+          "tokens": 1
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

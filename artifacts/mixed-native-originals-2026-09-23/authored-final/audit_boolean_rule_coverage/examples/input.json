@@ -1,0 +1,21 @@
+{
+  "variables": [
+    "x"
+  ],
+  "rules": [
+    {
+      "id": "a",
+      "when": {
+        "x": false
+      },
+      "decision": "blue"
+    },
+    {
+      "id": "b",
+      "when": {
+        "x": true
+      },
+      "decision": "red"
+    }
+  ]
+}

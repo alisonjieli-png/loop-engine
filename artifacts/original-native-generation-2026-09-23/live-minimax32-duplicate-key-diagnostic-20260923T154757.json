@@ -1,0 +1,35 @@
+{
+  "record_type": "duplicate_json_key_diagnostic/v1",
+  "source_sha256": "cd8b578fe33b9a75d93ebe52e1ec7edc701a0a888706ebb4e30f221915579b5c",
+  "findings": [
+    {
+      "object_path": "$.files[2]",
+      "key": "path",
+      "occurrences": 5,
+      "values_identical": false,
+      "value_digests": [
+        "0f9517a2d9605cefbf2c3ff4e33eef54e028a218f65e804a779d61267e087d59",
+        "26b477eec3c99a250d33c16a80a930b86660291880d0361710b6174f10d587f5",
+        "5f320da1462728df6e78c21d975c02a31eecc88b1dabeb853b3780251d9ed5ed",
+        "5cf364b643256d3791e27fe39a728d9250c4b94f83f251eb5bcd0d24909c7d2f",
+        "213ec1f9d5906331e25c386a052072414331c0d0b17ce33fc23b4e3c6c9bd3bd"
+      ]
+    },
+    {
+      "object_path": "$.files[2]",
+      "key": "content",
+      "occurrences": 5,
+      "values_identical": false,
+      "value_digests": [
+        "898bc7c5418ae6871824274ae844d071831a144b57fb291c23164c9f4864692e",
+        "9030c85bbf1aac5e1cd8f20415092c611bd8a33acd0196ae5b2aa0d1b758b61f",
+        "cba78f42e6b29a1988930d387771947af29bd6655180e441d2d86ae60580dc3b",
+        "537f37a91df84a5d12823c766602cd3c82da7f57488f0e8d1a6d1a54c8d24abc",
+        "24844d16a1c07dae25d8274bd125bbf9d35ecb46532f2f41ae01332c96290592"
+      ]
+    }
+  ],
+  "rewritten": false,
+  "files_materialized": 0,
+  "code_executed": false
+}

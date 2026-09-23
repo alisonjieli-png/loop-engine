@@ -1,0 +1,88 @@
+{
+  "record_type": "original_native_allocation_comparison_report/v1",
+  "started_at": "2026-09-23T15:47:57Z",
+  "predecessor": "live-minimax-20260923T153828",
+  "run_path": "live-minimax32-20260923T154757",
+  "plan_sha256": "23646f43d9f836ff4cf16f43af44791b9f7ed6ed2bc2d16f8760f60f966f497c",
+  "source_revision": "9f7cd80495e454ea6dac0a7ffafcf74a49113bd6",
+  "source_implementations": {
+    "generate_original_native_candidates.py": "6293bcbdbb6c0109e5d93e738d001d2431c881ba4cf0c3a4a5c3d4cc0bde2db1",
+    "model_gateway.py": "eaca708ce5d5bce2a1483798260f71698aacde86eae7a6ef946d88d5f536fe2b",
+    "native_harness_candidates.py": "d348b1e40cf6b43f9a345a5e4ad0c9f010e3edc873e321bb7447a6de64624f27",
+    "ollama_client.py": "a81402bbfd7fbeb8c8d5c21c95bf4ef76901f07c76309b270f1eb64bff703f3c",
+    "prepare_harness_candidates.py": "ded71c80bce93f6bfed6ac0cf42d6100a7b6b0d7868672cc48f04c20aa4923e5"
+  },
+  "model_requested": "minimax-m3",
+  "model_reported": [
+    "minimax-m3"
+  ],
+  "provider_request_attempts": 2,
+  "output_allocation_tokens": 32768,
+  "timeout_seconds": 600,
+  "strict_total_token_ceiling": null,
+  "input_tokens_reported": 2753,
+  "output_tokens_reported": 17575,
+  "total_tokens_reported": 20328,
+  "cost_state": "unknown",
+  "candidate_packages_prepared": 1,
+  "harness_payload_files_prepared": 7,
+  "packages": [
+    {
+      "identity": "apportion_integer_quotas",
+      "directory": "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates",
+      "package_digest": "f058254050adf7f03f2f96577cae7c65930abe9e35b330c280e6f824834d3589",
+      "files": 7,
+      "payload_bytes": 31190,
+      "producer": {
+        "family": "minimax",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "ollama_cloud:minimax-m3"
+      },
+      "prepared_tree_sha256": "2af81d483d6b41efe41c986182793d260ac2a12b814f6297d8de3b19c523665a"
+    }
+  ],
+  "failures": [
+    {
+      "method_id": "minimum_cost_unique_assignment",
+      "recorded_error": "candidate_draft_or_factory_refused",
+      "diagnosed_stage": "strict_json",
+      "diagnosed_error": "duplicate_json_key",
+      "duplicate_object_path": "$.files[2]",
+      "duplicate_keys": {
+        "path": 5,
+        "content": 5
+      },
+      "repeated_values_identical": false,
+      "format_repaired": false
+    }
+  ],
+  "generated_code_executed": false,
+  "approvals_granted": 0,
+  "catalogue_staging": false,
+  "published": false,
+  "stop_reason": "call_ceiling_reached",
+  "evidence_sha256": {
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/bodies/apportion_integer_quotas.package.json": "f058254050adf7f03f2f96577cae7c65930abe9e35b330c280e6f824834d3589",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/items.json": "672839cda5a4e874bda9a9ee27de530cdd7bf116a341ac632af527272dd570e3",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/AGENTS.md": "b42070e15eb0970374e172bfd898eebfcae7d9589989075f4c65fbac6a7b8338",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/contracts/input.schema.json": "c0e0aaa8a7183270b9cb413328ad8e4e616236cd97f882b42c0034d82c966bba",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/contracts/output.schema.json": "d98a123d5d35d3b8125617499d5e5cfe6692ee54689dd42aa0b5f24f5def4a3e",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/references/acceptance.md": "55a3c20f88e6e5716feeb96de4ae9a5e82ecd764084d2ced443fa49adefbbdc3",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/tests/test_apportion_integer_quotas.py": "583b89da4166822f50e6a507d028e60471e700600d2215850aa14740ebaf7b77",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/packages/apportion_integer_quotas/tools/apportion_integer_quotas.py": "3bfe1c314c8fbdcdbc8eec9121be12ee84967cf61eeecee7b5ab7bce3f6ade3c",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/preparation-report.json": "6a781e0d6658de86a808d1d4283c4f9111ddfefd97267d7ef7ae54fb534ff59a",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/specifications-001.json": "3faf3194ea22924af68b41b8c2f1fbc61fbda43416394216e981427e6625a56d",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/proposals.json": "a767b319e7db2418da9e3d4baded969f4e8a95bcc93c370fcd8021080cdca066",
+    "live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/response.txt": "5a9f1daab17e48a90078dbd5133874b354fcea58e21a8a90139966b16d3b49af",
+    "live-minimax32-20260923T154757/cursor.json": "0e7a9670d57f53da2a327ae88b33c933ab74d12c4c3050c2735b8dd5b540fc17",
+    "live-minimax32-20260923T154757/journal.jsonl": "730908a864fac67b64b8069160d5699dc1091366b221ca7041eaa62c6c9795e7",
+    "live-minimax32-20260923T154757/minimum_cost_unique_assignment.attempt-1/response.txt": "cd8b578fe33b9a75d93ebe52e1ec7edc701a0a888706ebb4e30f221915579b5c",
+    "live-minimax32-20260923T154757/run.json": "cd03fe689f40b79a73875a631586eede136b63c2f34904ce6e4c95031770a7ba"
+  },
+  "limits": [
+    "Preparation verifies native packaging and bindings, not code correctness or native harness use.",
+    "No benchmark or throughput extrapolation from this two-task campaign.",
+    "Unknown GLM usage remains unknown and is not replaced by this campaign usage."
+  ]
+}

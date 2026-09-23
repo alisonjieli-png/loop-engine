@@ -1,0 +1,8 @@
+/home/username/.le-codex-build/signup-flow/tools/check_service_workspace.mjs:2060
+  const consentWords="By creating an account you agree to the terms of service and the privacy notice.";
+        ^
+
+SyntaxError: Identifier 'consentWords' has already been declared
+    at checkSyntax (node:internal/main/check_syntax:74:5)
+
+Node.js v22.22.1

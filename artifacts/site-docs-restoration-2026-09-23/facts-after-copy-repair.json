@@ -1,0 +1,65 @@
+{
+ "facts_checked": 420,
+ "findings": [
+  {
+   "kind": "refusal_code",
+   "note": "no service refusal raises this code",
+   "page": "docs/guides/service-serving-and-connections.md",
+   "value": "key_expired"
+  },
+  {
+   "kind": "refusal_code",
+   "note": "no service refusal raises this code",
+   "page": "docs/guides/service-serving-and-connections.md",
+   "value": "key_revoked"
+  },
+  {
+   "kind": "refusal_status_unknown",
+   "note": "the page promises a status for a refusal whose raise site this check cannot find, so the promise cannot be held to the source",
+   "page": "docs/guides/service-serving-and-connections.md",
+   "value": "key_expired 401"
+  },
+  {
+   "kind": "refusal_status_unknown",
+   "note": "the page promises a status for a refusal whose raise site this check cannot find, so the promise cannot be held to the source",
+   "page": "docs/guides/service-serving-and-connections.md",
+   "value": "key_revoked 401"
+  },
+  {
+   "kind": "refusal_code",
+   "note": "no service refusal raises this code",
+   "page": "docs/guides/service-troubleshooting.md",
+   "value": "key_expired"
+  },
+  {
+   "kind": "refusal_code",
+   "note": "no service refusal raises this code",
+   "page": "docs/guides/service-troubleshooting.md",
+   "value": "key_revoked"
+  },
+  {
+   "kind": "refusal_status_unknown",
+   "note": "the page promises a status for a refusal whose raise site this check cannot find, so the promise cannot be held to the source",
+   "page": "docs/guides/service-troubleshooting.md",
+   "value": "key_expired 401"
+  },
+  {
+   "kind": "refusal_status_unknown",
+   "note": "the page promises a status for a refusal whose raise site this check cannot find, so the promise cannot be held to the source",
+   "page": "docs/guides/service-troubleshooting.md",
+   "value": "key_revoked 401"
+  }
+ ],
+ "pages": [
+  "docs/guides/service-getting-set-up.md",
+  "docs/guides/service-searching-and-retrieving.md",
+  "docs/guides/service-serving-and-connections.md",
+  "docs/guides/service-troubleshooting.md",
+  "docs/guides/service-what-baltor-is.md",
+  "docs/guides/service-your-account.md",
+  "docs/guides/service-usage-and-what-you-pay-for.md"
+ ],
+ "passed": false,
+ "record_type": "service_documentation_check/v1",
+ "repository": "/home/username/.le-codex-build/site-docs"
+}

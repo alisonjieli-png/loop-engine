@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,31}(?![\\s\\S])"
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "tokens_after": {
+            "type": "object",
+            "properties": {
+              "numerator": {
+                "type": "integer"
+              },
+              "denominator": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "numerator",
+              "denominator"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "allowed",
+          "tokens_after"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "decisions"
+  ],
+  "additionalProperties": false
+}

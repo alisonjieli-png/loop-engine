@@ -1,0 +1,40 @@
+{"diagnostic_code":null,"elapsed_seconds":0.004,"event_type":"practitioner.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.076,"event_type":"model.step.started","failure_code":null,"model_calls_completed":0,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.111,"event_type":"model.step.transport_failed","failure_code":null,"model_calls_completed":1,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":null,"elapsed_seconds":0.137,"event_type":"model.step.recovery_decided","failure_code":null,"model_calls_completed":2,"step":"orient","task":"T-PAGE"}
+{"diagnostic_code":"stage_evidence_degraded","elapsed_seconds":0.14,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+{"diagnostic_code":"orientation_provider_unavailable","elapsed_seconds":0.143,"event_type":"practitioner.diagnostic","failure_code":null,"model_calls_completed":2,"step":null,"task":"T-PAGE"}
+{
+  "all_detected": true,
+  "controls": [
+    {
+      "mutation": "unknown_model_cannot_claim_success",
+      "detected": true,
+      "named_check": "test_unknown_model_requires_failed_typed_canonical_observation",
+      "source_function_sha256": "ea10538dff25f04eca5f774a261cd9393e8336bd96691a2a902ba39463f73c91",
+      "output": "\n======================================================================\nFAIL: test_unknown_model_requires_failed_typed_canonical_observation (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks) (fields={'ok': True})\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py\", line 105, in test_unknown_model_requires_failed_typed_canonical_observation\n    with self.subTest(fields=fields), self.assertRaises(HarnessError):\nAssertionError: HarnessError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "requested_binding_version_is_required",
+      "detected": true,
+      "named_check": "test_unknown_observation_cannot_guess_or_forge_requested_binding",
+      "source_function_sha256": "9beb61fa7a01c3c101314cd1bbcc059bc878d8414de99292dc065791876784e9",
+      "output": "\n======================================================================\nFAIL: test_unknown_observation_cannot_guess_or_forge_requested_binding (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks) (kind='version')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py\", line 119, in test_unknown_observation_cannot_guess_or_forge_requested_binding\n    with self.subTest(kind=kind), self.assertRaises(HarnessError):\nAssertionError: HarnessError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "requested_authority_cannot_be_invented",
+      "detected": true,
+      "named_check": "test_failed_unknown_call_is_still_checked_against_requested_model_authority",
+      "source_function_sha256": "46a9e9dca2252724965cefadd257d7685bd64160d4290342959683445ee5d731",
+      "output": "F\n======================================================================\nFAIL: test_failed_unknown_call_is_still_checked_against_requested_model_authority (tools.test_provider_refusal_recovery.ProviderRefusalRecoveryChecks)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/tools/test_provider_refusal_recovery.py\", line 90, in test_failed_unknown_call_is_still_checked_against_requested_model_authority\n    with self.assertRaises(HarnessError):\nAssertionError: HarnessError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 0.007s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "semantic_failure_cannot_invent_reported_model",
+      "detected": true,
+      "named_check": "test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count",
+      "source_function_sha256": "7b07bef309614f0441c12a7657e0a8025f65531281f97116a86e313bb445088b",
+      "output": "F\n======================================================================\nFAIL: test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count (devtools.embodiment_lab.tests.test_task_database_trial_offline.RefusalPageTrialChecks)\nA login page or proxy notice answering a trial's model call is a\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/username/.le-codex-build/import-owner-repair/devtools/embodiment_lab/tests/test_task_database_trial_offline.py\", line 235, in test_a_page_in_the_providers_place_keeps_its_typed_code_and_its_call_count\n    self.assertTrue(all(result.model == '' and result.input_tokens is None and result.output_tokens is None\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.634s\n\nFAILED (failures=1)\n"
+    }
+  ],
+  "provider_calls": 0
+}

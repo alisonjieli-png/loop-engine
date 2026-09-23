@@ -1,0 +1,1 @@
+/bin/bash: line 1: /home/username/.le-codex-build/integration/.venv/bin/ruff: No such file or directory

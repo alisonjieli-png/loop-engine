@@ -25,16 +25,22 @@ the check that enforces them. The single structured source it points at is
 
 ## For a paying customer of the hosted service
 
-These four pages take a customer from no account to a working connection and a
-useful answer. Every command, address, record type and refusal code in them is
-held to the service source by `tools/check_service_documentation.py`, and every
-request and answer shown in them was run and marked deployed or local.
+These seven pages explain account access, client setup, selection and downloads.
+They separate a configured connection from a harness loading and using material. Every command, address, record type,
+refusal code and refusal status in them is held to the service source by
+`tools/check_service_documentation.py`. Examples are request shapes for the reader to fill with actual selected values;
+they are not transcripts or proof of a completed native-client task. A refusal status is not restated in that check: it compiles
+the transport's own status function out of the source and asks it, so a
+refusal whose status moves makes every page that states the old status fail.
 
 | Page | Scope |
 |---|---|
+| [What Baltor is](service-what-baltor-is.md) | What the hosted service holds, what stays on your machine, and the families and layers that sort the material. |
+| [Your account](service-your-account.md) | Browser sessions, personal client tokens, scopes, grants and entitlements. |
 | [Getting set up](service-getting-set-up.md) | Account, client token, where the token is kept, the settings entry for each supported client, and how to tell the connection succeeded. |
 | [Searching and retrieving](service-searching-and-retrieving.md) | What a search returns, how to read and select a reference, how to download a body, and what one measured unit is. |
-| [Serving and connections](service-serving-and-connections.md) | Protocol, transport, handshake, version mismatch, session behaviour and the complete refusal table. |
+| [Usage and what you pay for](service-usage-and-what-you-pay-for.md) | One measured unit is one downloaded item, what is free, where your usage is, and how a retry avoids a second measured unit. |
+| [Serving and connections](service-serving-and-connections.md) | Protocol versions, transport, addresses and common refusal codes. |
 | [Troubleshooting](service-troubleshooting.md) | The failures a customer meets first, with what they see, what it means and what to do. |
 
 The saved requests and answers are in
@@ -86,3 +92,8 @@ token-efficiency and expert-context drafts with their required evidence. The
 exploration, not approved copy or a capability claim. It does not rename the
 repository. The owner's selection of Baltor as the public brand is recorded in
 the table Names and where they may appear.
+
+## Maintain the public documentation
+
+See [the website documentation guide](website-documentation-view.md) for the
+versioned index, body build, explicit routes and browser checks.

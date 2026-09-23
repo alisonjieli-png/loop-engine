@@ -1,0 +1,96 @@
+{
+  "record_type": "focused_step_removed_guard_checks/v1",
+  "renderer_sha256": "6f9e28c6a30c3f409182805fd5c6c65b00d7104398bdca38025f43aa6fda7762",
+  "tests_sha256": "ada56887743feb966c47267bb7e83853d74b6ca09688c406a0d5057e2abdfa39",
+  "cases": [
+    {
+      "case": "unmodified",
+      "exit_code": 0,
+      "result_tail": [
+        "..................",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 1.921s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "case": "stale_binding_before_write",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 2.001s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "externally_bound_payload_digest",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 0.983s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "first_actions_nonempty",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 2.069s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "native_style_allowlist",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 4.868s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "ancestor_symlink_refusal",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 2.557s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "strict_integer_version",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 2.948s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "case": "brief_secret_scan",
+      "exit_code": 1,
+      "result_tail": [
+        "",
+        "----------------------------------------------------------------------",
+        "Ran 18 tests in 0.461s",
+        "",
+        "FAILED (failures=1)"
+      ]
+    }
+  ],
+  "all_seven_mutants_detected": true
+}

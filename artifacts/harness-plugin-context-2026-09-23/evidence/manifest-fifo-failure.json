@@ -1,0 +1,12 @@
+{
+  "record_type": "independent_counterexample_replay/v1",
+  "at": "2026-09-23T13:22:39.569892+00:00",
+  "finding_by": "multifile_wave2_independent_qa",
+  "source_manifest_sha256": "7b9d52d01e0da5ac219d528850d86ca4024a6c35058e16790c0c49a789471321",
+  "wrong_case": "Unexpected FIFO plugin/extra.pipe outside the 13-file manifest",
+  "expected_exit_code": "nonzero",
+  "observed_exit_code": 0,
+  "stdout": "{\"logical_packages\": 1, \"physical_package_files\": 13, \"status\": \"candidate_only\", \"manifest_sha256\": \"7b9d52d01e0da5ac219d528850d86ca4024a6c35058e16790c0c49a789471321\"}\n",
+  "stderr": "",
+  "defect_reproduced": true
+}

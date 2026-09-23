@@ -1,0 +1,4 @@
+markdownlint-cli2 v0.23.2 (markdownlint v0.41.1)
+Finding: docs/components/service-runtime/README.md docs/standards/SERVICE-INTERFACE-CONVENTIONS.md docs/architecture/ENGINES-BEHIND-FIXED-EDGES.md src/loop_engine/core/service_runtime/README.md artifacts/search-effect-authority-2026-09-23/docs-delta/service-searching-and-retrieving.md artifacts/search-effect-authority-2026-09-23/docs-delta/service-troubleshooting.md
+Linting: 6 files
+Summary: 0 issues in 0 files

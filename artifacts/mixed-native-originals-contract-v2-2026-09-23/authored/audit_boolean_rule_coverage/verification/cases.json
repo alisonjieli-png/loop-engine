@@ -1,0 +1,110 @@
+[
+  {
+    "input": {
+      "variables": [
+        "x"
+      ],
+      "rules": [
+        {
+          "id": "a",
+          "when": {
+            "x": false
+          },
+          "decision": "blue"
+        },
+        {
+          "id": "b",
+          "when": {
+            "x": true
+          },
+          "decision": "red"
+        }
+      ]
+    },
+    "expected": {
+      "unambiguous_count": 2,
+      "uncovered": [],
+      "conflicts": []
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "variables": [
+        "x"
+      ],
+      "rules": [
+        {
+          "id": "a",
+          "when": {
+            "x": true
+          },
+          "decision": "blue"
+        },
+        {
+          "id": "b",
+          "when": {
+            "x": true
+          },
+          "decision": "red"
+        }
+      ]
+    },
+    "expected": {
+      "unambiguous_count": 0,
+      "uncovered": [
+        {
+          "x": false
+        }
+      ],
+      "conflicts": [
+        {
+          "assignment": {
+            "x": true
+          },
+          "rule_ids": [
+            "a",
+            "b"
+          ]
+        }
+      ]
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "variables": [
+        "x"
+      ],
+      "rules": [
+        {
+          "id": "a",
+          "when": {
+            "unknown": true
+          },
+          "decision": "red"
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "variables": [
+        "x"
+      ],
+      "rules": [
+        {
+          "id": "a",
+          "when": {
+            "x": 1
+          },
+          "decision": "red"
+        }
+      ]
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

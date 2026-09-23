@@ -93,6 +93,8 @@ def _request(identity: str, *, body: "bytes | None" = None, item_change=None, as
     item = json.loads(json.dumps(request.item))
     if item_change is not None:
         item_change(item)
+    if body is not None:
+        item["reference"].update(digest=hashlib.sha256(body).hexdigest(), size_bytes=len(body))
     return request.replaced(body=body if body is not None else request.body, item=item,
                             identity=as_identity or request.identity)
 

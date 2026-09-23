@@ -1,6 +1,6 @@
 """The dated panel review record, written beside ``reviews.json``, and its strict reader.
 
-Record ``starter_catalogue_panel_review/v1`` holds one row for every item the
+Record ``starter_catalogue_panel_review/v3`` holds one row for every item the
 panel was asked to review, in the row shape of the catalogue's review record
 (identity, body path and digest, declared licence, source layer, decisions,
 outcome, approval state, rule and approval reference), plus what this panel
@@ -9,6 +9,9 @@ from, every reviewer with its engine, family, model, route or command and
 version, every installation that was not asked and why, every call with its
 usage and outcome, every call that was dispatched and never completed (its
 outcome and usage unknown), the runs, the population rule and the totals.
+Every subject distinguishes a single body from a complete native package,
+and calls preserve requested and reported model identity separately. Old
+worker records remain historical bytes, not active resume or admission input.
 
 The record approves nothing on its own and edits no other record. The lead
 engineer merges its verdicts into the served catalogue through the carry and
@@ -26,7 +29,7 @@ import re
 import loop_engine
 
 from .catalogue import select_population
-from .configuration import FIXTURE_ENGINE_KIND, PRECHECK_KINDS, PanelPolicy
+from .configuration import FIXTURE_ENGINE_KIND, PRECHECK_KINDS, PanelConfiguration, PanelPolicy
 from .ledger import read_row
 from .prechecks import PASSED, REFUSED, UNAVAILABLE
 from .panel import (
@@ -35,7 +38,7 @@ from .panel import (
 )
 from .records import (
     CALL_RECORD, DISPATCH_RECORD, PANEL_REVIEW_RECORD, PRECHECK_RECORD, RUN_END_RECORD, RUN_RECORD, SHA256, read_part,
-    read_record, refuse,
+    read_record, refuse, digest,
 )
 from .verdicts import APPROVE, DECISIONS, REJECT
 
@@ -47,14 +50,12 @@ SECONDS_PER_HOUR = 3600.0
 TOP_FIELDS = ("recorded_at", "record_path", "fixture_run", "catalogue_folder", "catalogue_items_record_type",
               "catalogue_source_revision", "complements_review_record", "approval_ref_prefix", "decision_rule",
               "what_an_approval_permits", "what_a_rejection_records", "what_a_row_without_a_verdict_records",
-              "population", "producers", "policy", "criteria", "instructions", "reviewers", "ineligible_reviewers",
+              "population", "producers", "policy", "configuration", "criteria", "instructions", "reviewers", "ineligible_reviewers",
               "calibration", "rows", "calls", "interrupted_dispatches", "runs", "totals")
-CALIBRATION_FIELDS = ("set_sha256", "purpose", "items", "run_id", "installations", "excluded", "limits", "calls",
-                      "interrupted_dispatches")
 CALIBRATION_STATUSES = ("qualified", "failed_calibration", "calibration_incomplete")
 ROW_FIELDS = ("identity", "body_path", "body_sha256", "body_size_bytes", "declared_license", "source_layer",
               "grounding", "criteria_applied", "prechecks", "decisions", "outcome", "approval_state",
-              "rule_applied", "approval_ref", "reasons")
+              "rule_applied", "approval_ref", "reasons", "subject")
 DECISION_FIELDS = ("reviewer_id", "decision", "reason", "findings", "body_sha256", "call_ref")
 REVIEWER_FIELDS = ("reviewer_id", "label", "engine_kind", "family", "model", "model_version", "route_or_command",
                    "engine_version", "installation_sha256", "lens", "produced_any_item_under_review")
@@ -171,7 +172,20 @@ def _relative(path, repository) -> str:
 def _row(item, catalogue, prefix) -> dict:
     reference = catalogue.item(item.identity)["reference"]
     approved = item.outcome == APPROVED
-    return {"identity": item.identity, "body_path": catalogue.item(item.identity)["body_path"],
+    from .native import NativePackageReviewRequest
+    native = isinstance(item.request, NativePackageReviewRequest)
+    subject = {"record_type": item.request.to_record()["record_type"],
+               "review_profile": item.request.review_profile if native else "starter_catalogue/v1",
+               "request_sha256": item.request.request_sha256,
+               "package": item.request.package.to_dict() if native else None,
+               "producer_method": item.request.item["producer"]["method_identity"] if native else "",
+               "specification_sha256": digest(json.loads(item.request.specification_json)) if native else "",
+               "specification": json.loads(item.request.specification_json) if native else None,
+               "item": item.request.item, "producer": item.request.producer.to_dict(),
+               "cited_sources": [source.to_dict() for source in item.request.cited_sources],
+               "criteria_sha256": item.request.criteria.sha256,
+               "instructions_sha256": item.request.instructions_sha256}
+    return {"identity": item.identity, "body_path": catalogue.item(item.identity)["body_path"], "subject": subject,
             "body_sha256": item.request.body_sha256, "body_size_bytes": item.request.body_size_bytes,
             "declared_license": reference.get("license"), "source_layer": reference.get("source_layer"),
             "grounding": item.request.grounding, "criteria_applied": sorted(item.request.applicable_criteria_ids),
@@ -245,19 +259,22 @@ def build_panel_review_record(result, ledger, *, catalogue, configuration, crite
         calibration = {**calibration_report, "calls": sorted(
             (call for call in ledger.calls() if call["request_sha256"] in wanted),
             key=lambda call: (call["started_at"], call["run_id"], call["sequence"])),
-            "interrupted_dispatches": _interrupted(ledger, wanted)}
+            "interrupted_dispatches": _interrupted(ledger, wanted),
+            "verdicts": [row for row in ledger.verdicts() if row["request_sha256"] in wanted]}
     return {"record_type": PANEL_REVIEW_RECORD, "recorded_at": recorded_at, "record_path": record_path,
             "fixture_run": fixture_run, "catalogue_folder": producers.catalogue_folder,
-            "catalogue_items_record_type": "starter_catalogue_candidate_items/v2",
+            "catalogue_items_record_type": getattr(catalogue, "items_record_type", "starter_catalogue_candidate_items/v2"),
             "catalogue_source_revision": catalogue.source_revision,
-            "complements_review_record": {"path": "reviews.json", "record_type": "starter_catalogue_independent_review/v2",
-                                          "sha256": catalogue.review_record_sha256},
+            "complements_review_record": ({"path": "reviews.json", "record_type": "starter_catalogue_independent_review/v2",
+                                           "sha256": catalogue.review_record_sha256}
+                                          if catalogue.review_record_sha256 else None),
             "approval_ref_prefix": prefix, "decision_rule": DECISION_RULE,
             "what_an_approval_permits": WHAT_AN_APPROVAL_PERMITS,
             "what_a_rejection_records": WHAT_A_REJECTION_RECORDS,
             "what_a_row_without_a_verdict_records": WHAT_A_ROW_WITHOUT_A_VERDICT_RECORDS,
             "population": population.to_dict(), "producers": producers.to_dict(),
-            "policy": configuration.policy.to_dict(), "criteria": {**criteria.to_dict(),
+            "policy": configuration.policy.to_dict(), "configuration": configuration.to_dict(),
+            "criteria": {**criteria.to_dict(),
                                                                     "source_sha256": criteria.source_sha256,
                                                                     "criteria_sha256": criteria.sha256},
             "instructions": {"path": _relative(instructions.path, catalogue.repository),
@@ -282,12 +299,15 @@ def _producer_family(record, identity) -> str:
     return record["producers"]["default_producer"]["family"]
 
 
-def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
+def read_panel_review_record(value, *, allow_fixture: bool = False, calibration_inputs=None) -> dict:
     """Return the record only when every row, decision, call and total agrees with the panel rule."""
     record = read_record(value, PANEL_REVIEW_RECORD, TOP_FIELDS)
     if record["fixture_run"] is not False and not allow_fixture:
         refuse("fixture_reviewer_in_record", "this record comes from a fixture run")
     policy = PanelPolicy.from_dict(record["policy"])
+    configuration = PanelConfiguration.from_dict(record["configuration"])
+    if configuration.policy.to_dict() != record["policy"]:
+        refuse("record_configuration_mismatch", "the policy differs from the declared panel configuration")
     reviewers = {}
     for raw in record["reviewers"]:
         reviewer = read_part(raw, "reviewer", REVIEWER_FIELDS)
@@ -295,6 +315,14 @@ def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
             refuse("reviewer_repeated", f"{reviewer['reviewer_id']} is named twice")
         if reviewer["engine_kind"] == FIXTURE_ENGINE_KIND and not allow_fixture:
             refuse("fixture_reviewer_in_record", f"{reviewer['reviewer_id']} is a fixture reviewer")
+        try:
+            installation = configuration.installation(reviewer["reviewer_id"])
+        except KeyError:
+            refuse("unknown_reviewer", "a reviewer is absent from the declared panel configuration")
+        configured = {"installation_sha256": installation.sha256, "engine_kind": installation.engine_kind,
+                      "family": installation.family, "model": installation.model}
+        if _identity(reviewer) != _identity(configured):
+            refuse("record_configuration_mismatch", "a reviewer differs from the declared panel installation")
         reviewers[reviewer["reviewer_id"]] = reviewer
     family_of = {identity: reviewer["family"] for identity, reviewer in reviewers.items()}
     calls, ordered = {}, []
@@ -320,7 +348,9 @@ def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
         if read_row(raw)["record_type"] not in (RUN_RECORD, RUN_END_RECORD):
             refuse("record_run_unsupported", "the runs list holds only run records")
     if record["calibration"] is not None:
-        _read_calibration(record["calibration"], record["ineligible_reviewers"])
+        _read_calibration(record["calibration"], record["ineligible_reviewers"],
+            configuration=configuration, reviewers=reviewers, allow_fixture=allow_fixture,
+            calibration_inputs=calibration_inputs, criteria=record["criteria"], instructions=record["instructions"])
     population = read_part(record["population"], "population", POPULATION_FIELDS)
     if population["rule"] not in POPULATION_RULES:
         refuse("population_rule_unknown", f"population rules are {list(POPULATION_RULES)}")
@@ -337,6 +367,17 @@ def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
             refuse("approval_licence_not_accepted",
                    f"approved {row['identity']} declares a licence the panel policy does not accept")
         _read_row(row, reviewers, family_of, calls, policy, prefix, _producer_family(record, raw["identity"]))
+        if (row["subject"]["criteria_sha256"] != record["criteria"]["criteria_sha256"]
+                or row["subject"]["instructions_sha256"] != record["instructions"]["sha256"]):
+            refuse("review_subject_invalid", "the subject names different criteria or reviewer instructions")
+        declared_producer = next(({key: producer[key] for key in ("producer_identity", "family")}
+                                  for producer in record["producers"]["item_producers"]
+                                  if producer["identity"] == row["identity"]), record["producers"]["default_producer"])
+        if row["subject"]["producer"] != declared_producer:
+            refuse("review_subject_invalid", "the reviewed producer differs from the declared producer")
+        if record["calibration"] is not None and any(decision["reviewer_id"] in record["calibration"]["excluded"]
+                                                     for decision in row["decisions"]):
+            refuse("excluded_calibration_reviewer_decided", "a calibration-excluded reviewer cannot decide a candidate")
     runs = [read_row(raw) for raw in record["runs"]]
     if record["totals"] != _totals(record["rows"], ordered, runs, interrupted):
         refuse("totals_inconsistent", "the totals disagree with the rows and the calls")
@@ -398,22 +439,9 @@ def _read_interrupted(values, calls) -> list:
     return rows
 
 
-def _read_calibration(value, ineligible) -> None:
-    calibration = read_part(value, "calibration", CALIBRATION_FIELDS)
-    calls = {}
-    for raw in calibration["calls"]:
-        call = read_row(raw)
-        if call["record_type"] != CALL_RECORD:
-            refuse("record_call_unsupported", "the calibration calls list holds only call records")
-        calls[f"{call['run_id']}#{call['sequence']}"] = call
-    _read_interrupted(calibration["interrupted_dispatches"], calls)
-    for installation_id, status in calibration["excluded"].items():
-        if status not in CALIBRATION_STATUSES[1:]:
-            refuse("calibration_inconsistent", f"{installation_id} is excluded for an unknown reason")
-    excluded_for_calibration = {row["installation_id"]: row["reason"] for row in ineligible
-                                if row["reason"] in CALIBRATION_STATUSES[1:]}
-    if excluded_for_calibration != dict(calibration["excluded"]):
-        refuse("calibration_inconsistent", "the reviewers excluded by calibration differ from the calibration result")
+def _read_calibration(value, ineligible, **context):
+    from .calibration_record import read_calibration
+    return read_calibration(value, ineligible, **context)
 
 
 def _read_row(row, reviewers, family_of, calls, policy, prefix, producer_family) -> None:
@@ -425,6 +453,7 @@ def _read_row(row, reviewers, family_of, calls, policy, prefix, producer_family)
     if row["body_sha256"] is not None and (type(row["body_sha256"]) is not str
                                            or not SHA256.fullmatch(row["body_sha256"])):
         refuse("row_digest_invalid", f"{identity} names no valid digest")
+    _read_subject(row)
     applied = row["criteria_applied"]
     if type(applied) is not list or any(type(item) is not str for item in applied):
         refuse("row_inconsistent", f"{identity} names the criteria it was judged by as a list")
@@ -456,6 +485,10 @@ def _read_row(row, reviewers, family_of, calls, policy, prefix, producer_family)
         if (call is None or call["outcome"] != VERDICT_OUTCOME or call["installation_id"] != decision["reviewer_id"]
                 or call["body_sha256"] != decision["body_sha256"] or call["decision"] != decision["decision"]):
             refuse("decision_without_call", f"a decision on {identity} names no matching call")
+        if (call["reported_model"] != reviewers[decision["reviewer_id"]]["model"]
+                or call["request_record_type"] != row["subject"]["record_type"]
+                or call["request_sha256"] != row["subject"]["request_sha256"]):
+            refuse("decision_identity_or_subject_mismatch", "a decision lacks its exact model and review subject binding")
     rejections = [decision for decision in row["decisions"] if decision["decision"] == REJECT]
     approvers = [decision["reviewer_id"] for decision in row["decisions"] if decision["decision"] == APPROVE]
     if outcome == APPROVED:
@@ -478,6 +511,49 @@ def _read_row(row, reviewers, family_of, calls, policy, prefix, producer_family)
         refuse("rejection_inconsistent", f"{identity} records a rejection and the outcome {outcome}")
     if outcome in (REFUSED_BEFORE_REVIEW, NOT_STARTED) and row["decisions"]:
         refuse("row_inconsistent", f"{identity} records decisions without a review")
+
+
+def _read_subject(row):
+    from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+    from loop_engine.core.service_runtime.records import ServiceRuntimeError
+
+    from .native import NATIVE_GROUNDING, NATIVE_PROFILE, NATIVE_REQUEST
+    from .records import REQUEST_RECORD
+    subject = read_part(row["subject"], "review subject", ("record_type", "review_profile", "request_sha256",
+        "package", "producer_method", "specification_sha256", "specification", "item", "producer",
+        "cited_sources", "criteria_sha256", "instructions_sha256"))
+    if type(subject["request_sha256"]) is not str or not SHA256.fullmatch(subject["request_sha256"]):
+        refuse("review_subject_invalid", "the review subject needs its exact request identity")
+    if subject["record_type"] == REQUEST_RECORD:
+        if (subject["review_profile"] != "starter_catalogue/v1" or subject["package"] is not None
+                or subject["producer_method"] or subject["specification_sha256"] or subject["specification"] is not None):
+            refuse("review_subject_invalid", "a single-body review cannot carry a native package subject")
+    elif subject["record_type"] == NATIVE_REQUEST:
+        try:
+            package = CataloguePackage.from_dict(subject["package"])
+        except (ServiceRuntimeError, ValueError, TypeError):
+            refuse("review_subject_invalid", "a native review needs the exact typed package inventory")
+        if (subject["review_profile"] != NATIVE_PROFILE or package.body_form != "package"
+                or package.package_digest != row["body_sha256"] or package.served_size != row["body_size_bytes"]
+                or row["grounding"] != NATIVE_GROUNDING or not subject["producer_method"]
+                or type(subject["specification_sha256"]) is not str or not SHA256.fullmatch(subject["specification_sha256"])):
+            refuse("review_subject_invalid", "the native review subject differs from the exact package or profile")
+        spec = subject["specification"]
+        if (type(spec) is not dict or digest(spec) != subject["specification_sha256"]
+                or spec.get("package") != subject["package"]
+                or type(spec.get("producer")) is not dict
+                or spec["producer"].get("method_identity") != subject["producer_method"]):
+            refuse("review_subject_invalid", "the native specification differs from its exact request binding")
+    else:
+        refuse("review_subject_unsupported", "the review subject uses an unsupported record version")
+    base = digest({"identity": row["identity"], "body_sha256": row["body_sha256"], "item": subject["item"],
+                   "cited_sources": subject["cited_sources"], "producer": subject["producer"],
+                   "criteria_sha256": subject["criteria_sha256"], "instructions_sha256": subject["instructions_sha256"]})
+    expected = (digest({"record_type": NATIVE_REQUEST, "base": base, "package": subject["package"],
+                        "profile": subject["review_profile"], "specification": subject["specification"]})
+                if subject["record_type"] == NATIVE_REQUEST else base)
+    if expected != subject["request_sha256"]:
+        refuse("review_subject_invalid", "the serialized material does not reproduce the reviewed request identity")
 
 
 __all__ = ["PopulationSelection", "build_panel_review_record", "read_panel_review_record", "select_population",

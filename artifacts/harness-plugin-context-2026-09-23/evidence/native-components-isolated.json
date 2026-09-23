@@ -1,0 +1,34 @@
+{
+  "record_type": "native_plugin_discovery_probe/v1",
+  "observed_at": "2026-09-23T13:15:31.862749+00:00",
+  "client_version": "2.1.280",
+  "isolated_home": true,
+  "credentials_supplied": false,
+  "model_prompt_supplied": false,
+  "observations": [
+    {
+      "target": "isolated_copy/",
+      "exit_code": 0,
+      "stdout": "{\n  \"success\": true,\n  \"strict\": true,\n  \"target\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/.claude-plugin/plugin.json\",\n  \"manifest\": {\n    \"file\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/.claude-plugin/plugin.json\",\n    \"type\": \"plugin\",\n    \"errors\": [],\n    \"warnings\": [],\n    \"notes\": []\n  },\n  \"contents\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "target": "isolated_copy/agents/brief-reviewer.md",
+      "exit_code": 1,
+      "stdout": "{\n  \"success\": false,\n  \"strict\": true,\n  \"target\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/agents/brief-reviewer.md\",\n  \"manifest\": {\n    \"file\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/agents/brief-reviewer.md\",\n    \"type\": \"plugin\",\n    \"errors\": [\n      {\n        \"path\": \"json\",\n        \"message\": \"Invalid JSON syntax: JSON Parse error: Invalid number\",\n        \"code\": null\n      }\n    ],\n    \"warnings\": [],\n    \"notes\": []\n  },\n  \"contents\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "target": "isolated_copy/commands/check-brief.md",
+      "exit_code": 1,
+      "stdout": "{\n  \"success\": false,\n  \"strict\": true,\n  \"target\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/commands/check-brief.md\",\n  \"manifest\": {\n    \"file\": \"/tmp/baltor-plugin-outside-repo-40i6xu7x/candidate/commands/check-brief.md\",\n    \"type\": \"plugin\",\n    \"errors\": [\n      {\n        \"path\": \"json\",\n        \"message\": \"Invalid JSON syntax: JSON Parse error: Invalid number\",\n        \"code\": null\n      }\n    ],\n    \"warnings\": [],\n    \"notes\": []\n  },\n  \"contents\": []\n}\n",
+      "stderr": ""
+    },
+    {
+      "target": "plugin_details_isolated_copy",
+      "exit_code": 0,
+      "stdout": "baltor-focused-brief-candidate 0.1.0\n  Description: Candidate-only focused-step briefing hook, contract checker, command and reviewer agent.\n  Source: baltor-focused-brief-candidate@inline\n\nComponent inventory\n  Skills (1)  check-brief\n  Agents (1)  brief-reviewer\n  Hooks (1)  SessionStart  (harness-only \u2014 no model context cost)\n  MCP servers (0)\n  LSP servers (0)\n\nProjected token cost\n  Always-on:   ~78 tok   added to every session\n\nPer-component (rounded)\n  component       always-on  on-invoke\n  brief-reviewer        ~50       ~230\n  check-brief           ~30       ~390\n\n  On-invoke cost is paid each time a skill or agent fires.\n  Token counts are estimates and may differ from actual usage.\n",
+      "stderr": ""
+    }
+  ]
+}

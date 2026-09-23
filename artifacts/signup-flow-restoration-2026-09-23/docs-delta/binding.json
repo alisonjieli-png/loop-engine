@@ -1,0 +1,15 @@
+{
+  "record_type": "signup_guide_delta/v1",
+  "files": [
+    {
+      "path": "docs/guides/service-getting-set-up.md",
+      "before_sha256": "da11c01b1f2b33642f7ffe5fa1386a39ea410994be129aa9155992269155c41b",
+      "after_sha256": "a3a38ae2403254adba54827918b1b55132d1a64a0135174f1e473ca0a4ef5816"
+    },
+    {
+      "path": "docs/guides/service-your-account.md",
+      "before_sha256": "b9fa3e47f527d9a66dfbd8d968f0f9d71630d58f20bd402db9c42c20f4d380e2",
+      "after_sha256": "90e68f2f8704ddb0a8382f364a3db7edf6a45152303335a33f03f2cabbb7a0f5"
+    }
+  ]
+}

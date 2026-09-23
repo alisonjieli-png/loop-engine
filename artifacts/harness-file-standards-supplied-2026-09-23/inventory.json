@@ -1,0 +1,17 @@
+{
+  "record_type": "supplied_research_inventory/v1",
+  "files": [
+    {
+      "path": "docs/architecture/HARNESS-WORKING-DIRECTORY-COMPILER-2026-09-23.md",
+      "sha256": "46b8a36489dd7a519e1bc96cccd0e2e0077c332675f458988097d0c68c658c1c",
+      "size_bytes": 9772,
+      "status": "supplied_uncommitted_research_snapshot"
+    },
+    {
+      "path": "docs/research/HARNESS-FILE-STANDARDS-FLEXIBILITY-2026-09-23.md",
+      "sha256": "39757454b202f815728ac5f7c7d8fc63cc990c72826071e8d677dcde84b726b9",
+      "size_bytes": 9290,
+      "status": "supplied_uncommitted_research_snapshot"
+    }
+  ]
+}

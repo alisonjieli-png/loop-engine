@@ -98,10 +98,10 @@ There is no framework, no bundler and no build step for the pages themselves.
   data file. The adapter never serves the repository, the source inventory,
   configuration or an internal report
   ([web assets README](../../src/loop_engine/core/service_runtime/web_assets/README.md)).
-- `index.html` loads two stylesheets and five scripts with the `defer`
-  attribute, all from `/assets/`. Four are written by hand:
-  `architecture-story.js`, `catalogue-browser.js`, `client-access.js` and
-  `service.js`, 1,052 lines together on September 22, 2026. The fifth,
+- `index.html` loads three stylesheets and six scripts with the `defer`
+  attribute, all from `/assets/`. Five are written by hand:
+  `architecture-story.js`, `catalogue-browser.js`, `client-access.js`,
+  `documentation.js` and `service.js`. The sixth,
   `supabase-client.js`, is a generated bundle of 223,189 bytes. Its line
   count means nothing, because it is minified.
 - The response header `Content-Security-Policy` is

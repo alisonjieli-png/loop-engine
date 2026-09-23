@@ -1,0 +1,52 @@
+[
+  {
+    "input": {
+      "template": "Hello ${who}",
+      "variables": {
+        "who": "${later}"
+      }
+    },
+    "expected": {
+      "text": "Hello ${later}"
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "template": "${x}/${x}",
+      "variables": {
+        "x": "a"
+      }
+    },
+    "expected": {
+      "text": "a/a"
+    },
+    "expected_exit": 0
+  },
+  {
+    "input": {
+      "template": "Hello ${who}",
+      "variables": {}
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "template": "Hello",
+      "variables": {
+        "unused": "x"
+      }
+    },
+    "expected": null,
+    "expected_exit": 2
+  },
+  {
+    "input": {
+      "template": "${broken",
+      "variables": {}
+    },
+    "expected": null,
+    "expected_exit": 2
+  }
+]

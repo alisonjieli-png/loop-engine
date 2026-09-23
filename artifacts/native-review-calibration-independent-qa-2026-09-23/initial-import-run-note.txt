@@ -1,0 +1,1 @@
+The first uncalibrated-producer-family run failed while the integration import namespace changed: ModuleNotFoundError: tools. It was rerun with PYTHONPATH=.:src:tools; successor uncalibrated-producer-family-2.json is the product observation. The empty prior output is retained.

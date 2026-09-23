@@ -1,0 +1,116 @@
+{
+  "record_type": "candidate_intelligence_specifications/v3",
+  "population": 1,
+  "populations": 1,
+  "specifications": [
+    {
+      "id": "apportion_integer_quotas",
+      "layer": "code",
+      "family": "original_native_tool",
+      "title": "Apportion integer quotas",
+      "tags": [
+        "apportion integer quotas",
+        "bounded JSON tool",
+        "native harness instructions",
+        "python"
+      ],
+      "text": "# Apportion integer quotas\n\nAllocate an integer target sample count among nonnegative integer group weights using Hamilton largest remainders with exact Fraction arithmetic.\n",
+      "sources": [
+        "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json",
+        "LICENSE"
+      ],
+      "symbols": [
+        "apportion_integer_quotas"
+      ],
+      "kind": "tool",
+      "purpose": "Allocate an integer target sample count among nonnegative integer group weights using Hamilton largest remainders with exact Fraction arithmetic.",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "producer": {
+        "family": "minimax",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "ollama_cloud:minimax-m3"
+      },
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "b42070e15eb0970374e172bfd898eebfcae7d9589989075f4c65fbac6a7b8338",
+            "size_bytes": 5434,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "c0e0aaa8a7183270b9cb413328ad8e4e616236cd97f882b42c0034d82c966bba",
+            "size_bytes": 961,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "d98a123d5d35d3b8125617499d5e5cfe6692ee54689dd42aa0b5f24f5def4a3e",
+            "size_bytes": 1505,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "references/acceptance.md",
+            "digest": "55a3c20f88e6e5716feeb96de4ae9a5e82ecd764084d2ced443fa49adefbbdc3",
+            "size_bytes": 4157,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_apportion_integer_quotas.py",
+            "digest": "583b89da4166822f50e6a507d028e60471e700600d2215850aa14740ebaf7b77",
+            "size_bytes": 9324,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/apportion_integer_quotas.py",
+            "digest": "3bfe1c314c8fbdcdbc8eec9121be12ee84967cf61eeecee7b5ab7bce3f6ade3c",
+            "size_bytes": 9798,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_digest": "f058254050adf7f03f2f96577cae7c65930abe9e35b330c280e6f824834d3589",
+      "package_root": "packages/apportion_integer_quotas",
+      "body_path": "bodies/apportion_integer_quotas.package.json",
+      "provenance": {
+        "authoring": "original_assistant_authored",
+        "source_revision": "9f7cd80495e454ea6dac0a7ffafcf74a49113bd6",
+        "source_digests": {
+          "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json": "dcb47286f854ae417ae33f695fdc567415953e343b8d45aec73803354a045b91"
+        },
+        "license": {
+          "expression": "MIT",
+          "path": "LICENSE",
+          "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "record_type": "focused_step_markdown_check/v1",
+  "files": 9,
+  "issues": 0,
+  "exception": "MD041 disabled only for canonical CLAUDE.md import alias, which starts @AGENTS.md.",
+  "findings": {
+    "artifacts/focused-step-packet-2026-09-23/README.md": [],
+    "docs/verification/FOCUSED-STEP-CONTEXT-PACKET-2026-09-23.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/AGENTS.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/checklist.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/node_context.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/AGENTS.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/CLAUDE.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/checklist.md": [],
+    "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/node_context.md": []
+  }
+}

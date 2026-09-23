@@ -1,0 +1,89 @@
+{
+  "new_entries": 37,
+  "allowlist_sha256": "0936c44b187ec467d9a67da3c1168ada7e0e31b6b75c093027545f335c8f941e",
+  "classes": {
+    "STRATEGY_OR_PROVIDER_BINDING": 24,
+    "RESOURCE_OR_TEMPLATE": 1,
+    "CLOSED_CONTROLLED_VOCABULARY": 12
+  },
+  "signup_finding": {
+    "finding_id": "hardcoding.b8c2de715f0926b6fb499569",
+    "schema_version": "hardcoding_audit/v1",
+    "repository_snapshot_id": "hardcoding_source.sha256_f8ce1297e337a302e0b2a6079676a87578eba2cb9bea1ec2a197033520a629b0",
+    "path": "tools/check_service_workspace.mjs",
+    "symbol_ref": "url",
+    "start_line": 2199,
+    "end_line": 2199,
+    "syntactic_context": "text_url",
+    "semantic_context": "text_source",
+    "literal_kind": "string",
+    "literal_preview": "'https://checkout.stripe.com/'",
+    "literal_digest": "b3a8669ead4fa774044f59f91f118ab6007d11580cc2e3bc5f36e436decbdf88",
+    "sensitive_value_redacted": false,
+    "occurrence_group_id": "literal_group.a9523281010516696e38",
+    "reference_count": 2,
+    "affected_callers": [],
+    "affected_contracts": [],
+    "classification": "STRATEGY_OR_PROVIDER_BINDING",
+    "secondary_tags": [
+      "url"
+    ],
+    "proposed_abstraction_kind": "admitted_strategy_or_provider_binding",
+    "proposed_authority_ref": "tools.check_service_workspace.mjs:url",
+    "proposed_parameter_scope": null,
+    "owner": "tools.check_service_workspace.mjs:url",
+    "change_frequency_estimate": "versioned_or_rare",
+    "blast_radius": "local",
+    "security_risk": "medium",
+    "compatibility_risk": "low",
+    "behavior_risk": "high",
+    "testability": "text_fixture",
+    "severity": "high",
+    "confidence": 0.9,
+    "rationale": "An endpoint or external identity should be bound at its owner.",
+    "evidence_refs": [
+      "tools/check_service_workspace.mjs:2199"
+    ],
+    "suggested_next_action": "Review the owner and migrate through the proposed typed abstraction. Matching text alone does not prove shared meaning.",
+    "suppressed": true,
+    "suppression_ref": "/home/username/.le-codex-build/integration/devtools/hardcoding-allowlist.yaml:hardcoding.b8c2de715f0926b6fb499569"
+  },
+  "signup_summary": {
+    "record_type": "hardcoding_audit_summary/v1",
+    "schema_version": "hardcoding_audit/v1",
+    "repository_root_ref": "/home/username/.le-codex-build/integration",
+    "files_scanned": 1,
+    "files_by_type": {
+      ".mjs": 1
+    },
+    "literal_candidates_scanned": 211,
+    "findings": 7,
+    "unsuppressed_findings": 2,
+    "suppressed_findings": 5,
+    "by_classification": {
+      "LOOP_PROFILE_SETTING": 1,
+      "RESOURCE_OR_TEMPLATE": 1
+    },
+    "by_severity": {
+      "medium": 2
+    },
+    "by_owner": {
+      "tools/check_service_workspace.mjs": 2
+    },
+    "by_subsystem": {
+      "tools/check_service_workspace.mjs": 2
+    },
+    "by_proposed_abstraction": {
+      "versioned_loop_profile_setting": 1,
+      "versioned_resource_bundle": 1
+    },
+    "prompt_resource_findings": 1,
+    "string_state_findings": 0,
+    "configuration_findings": 1,
+    "skipped_files": [],
+    "allowlist_problems": []
+  },
+  "signup_blocking": [],
+  "initial139_to_current137_exact_set_agreement": true,
+  "baseline_unchanged": true
+}

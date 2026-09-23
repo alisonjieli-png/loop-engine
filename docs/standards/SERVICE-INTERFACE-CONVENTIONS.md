@@ -21,7 +21,7 @@ same. It does not create another runtime type.
   is `/mcp`. The website pages and assets are the fixed list `WEB_ASSETS` in
   `core.service_runtime.web_pages`.
 - A request body is one JSON object with a `record_type`, for example
-  `service_provisioning_request/v1`, `service_retrieval_request/v1`,
+  `service_provisioning_request/v1`, `service_retrieval_request/v2`,
   `service_client_access_request/v1` or `billing_session_request/v1`. The
   content type must be `application/json` (`unsupported_media_type`).
 - The adapter refuses a duplicate field, a value that is not finite, a body

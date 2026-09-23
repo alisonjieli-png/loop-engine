@@ -1,0 +1,10 @@
+{
+  "original_inventory_sha256": "fdfd23ea7ea160a66d5d3be7805261050595ea07597497b35c021da8a4ee68ff",
+  "original_inventory_record_type": "native_plugin_candidate_inventory/v1",
+  "original_package_id": "baltor-focused-brief-candidate",
+  "payload_files": 13,
+  "approval": false,
+  "new_logical_package_count": 0,
+  "reason": "Repackages the already authored 13-file plugin as a preparation/staging fixture; no new intelligence claimed.",
+  "prepared_revision": "9c57c9a4c813578bffa504108ef9d785b308bb86"
+}
