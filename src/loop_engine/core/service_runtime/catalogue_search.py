@@ -47,6 +47,9 @@ INDEX_RECORD_TYPE = "catalogue_view_index/v1"
 #: The same limits and token rule as `core.retrieval.SqliteFtsBackend`.
 LEXICAL_TERMS = 12
 VECTOR_DIMENSIONS = 512
+#: The retrieval modes the service offers, as `service_retrieval_request/v1` names them.
+SEARCH_MODES = ("lexical", "hybrid")
+LEXICAL_MODE, HYBRID_MODE = SEARCH_MODES
 _TOKEN = re.compile(r"[a-z0-9]+")
 
 
@@ -173,7 +176,7 @@ class ReleaseSearchIndex:
         """Best-first candidate pools and whether a larger pool could add anything."""
         lexical, exhausted = self._lexical(query, pool, eligible)
         pools = {"lexical": lexical}
-        if mode == "hybrid":
+        if mode == HYBRID_MODE:
             pools["vector"], vector_exhausted = self._vector(query, pool, eligible)
             exhausted = exhausted and vector_exhausted
         return pools, exhausted
@@ -239,7 +242,7 @@ def authorized_hits(view, fields, authorize):
     index = view.search_index()
     conditions = view.schema.filter_request(fields.get("filters"))
     eligible = index.eligible(conditions) if conditions else None
-    top_n, mode = fields.get("top_n", 10), fields.get("mode", "lexical")
+    top_n, mode = fields.get("top_n", 10), fields.get("mode", LEXICAL_MODE)
     pool = max(1, top_n * index.policy.candidate_pool_multiplier)
     total = max(1, len(index.identities))
     while True:

@@ -27,7 +27,7 @@ import threading
 import time
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
-from ..provisioning_server import (ProvisioningItemBinding, ProvisioningQualification,
+from ..provisioning_server import (QUALIFICATION_APPROVED, ProvisioningItemBinding, ProvisioningQualification,
                                    ProvisioningQualificationResolver)
 from .catalogue_packages import FILE_BODY, CataloguePackage, VolumeBodyStore, require_body_store
 from .catalogue_schema import EMPTY_SCHEMA
@@ -37,6 +37,8 @@ from .storage import ServiceCatalogBinding
 SOURCE_SETTINGS_VERSION = "service_catalogue_source/v1"
 SOURCES = ("image", "store")
 IMAGE_SOURCE, STORE_SOURCE = SOURCES
+#: A view built directly in code, as local fixtures build one, rather than by a host source.
+DIRECT_SOURCE = "direct"
 MINIMUM_REFRESH_SECONDS, MAXIMUM_REFRESH_SECONDS, DEFAULT_REFRESH_SECONDS = 5, 3600, 60
 STORE_RESOLVER_ID = "catalogue_release_review/v1"
 VIEW_SUMMARY_VERSION = "service_catalogue_view/v1"
@@ -91,7 +93,7 @@ class CatalogueView:
     catalogue: HarnessIntelligenceCatalogue
     qualification_resolver: ProvisioningQualificationResolver
     body_reader: object = field(repr=False)
-    source: str = "direct"
+    source: str = DIRECT_SOURCE
     release_id: str = ""
     content_digest: str = ""
     schema: object = EMPTY_SCHEMA
@@ -108,7 +110,7 @@ class CatalogueView:
 
     def approved_bindings(self):
         """identity -> exact binding of every item this view approves."""
-        if self.bindings or self.source != "direct":
+        if self.bindings or self.source != DIRECT_SOURCE:
             return self.bindings
         # A view built directly in code, as the local fixtures do, asks its own
         # resolver, so a grant can never reach further than the resolver does.
@@ -119,7 +121,7 @@ class CatalogueView:
                 decision = self.qualification_resolver.resolve(binding)
             except Exception:
                 continue
-            if isinstance(decision, ProvisioningQualification) and decision.status == "approved":
+            if isinstance(decision, ProvisioningQualification) and decision.status == QUALIFICATION_APPROVED:
                 approved[identity] = binding
         return approved
 

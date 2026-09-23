@@ -33,6 +33,8 @@ sys.path.insert(0, str(REPOSITORY / "src"))
 STARTER = REPOSITORY / "examples/29_intelligence_service/starter-catalogue"
 RESULT_RECORD_TYPE = "catalogue_release_scale_measurement/v1"
 QUERIES = 40
+PHASES = ("all", "prepare", "serve", "publish-second")
+ALL_PHASES, PREPARE_PHASE, SERVE_PHASE, PUBLISH_SECOND_PHASE = PHASES
 SECOND_RELEASE_NEW, SECOND_RELEASE_CHANGED = 100, 10
 
 
@@ -233,7 +235,7 @@ def serve(root, key, seed):
     refresher = CatalogueRefresher(binding, build=lambda current, token: next_view(
         current, token, config, settings, license_policy=DEFAULT_LICENSE_POLICY, family_policy=DEFAULT_FAMILY_POLICY),
         probe=lambda: state_token(config), interval_seconds=5)
-    second = subprocess.run([sys.executable, __file__, "--phase", "publish-second", "--root", str(root)],
+    second = subprocess.run([sys.executable, __file__, "--phase", PUBLISH_SECOND_PHASE, "--root", str(root)],
                             capture_output=True, text=True, check=True, env={**os.environ})
     results["second_publish"] = json.loads(second.stdout)
     started = time.perf_counter()
@@ -251,26 +253,23 @@ def main(argv=None):
     parser.add_argument("--items", type=int, default=10_000)
     parser.add_argument("--root", type=Path, required=True, help="An empty scratch folder outside the repository.")
     parser.add_argument("--seed", type=int, default=20260922)
-    parser.add_argument("--phase", choices=("all", "prepare", "serve", "publish-second"), default="all")
+    parser.add_argument("--phase", choices=PHASES, default=ALL_PHASES)
     parser.add_argument("--key", help="serve: the measurement account's key, from prepare.")
     options = parser.parse_args(argv)
     root = options.root.resolve()
-    if options.phase == "prepare":
-        print(json.dumps(prepare(options.items, root, options.seed)))
-        return 0
-    if options.phase == "publish-second":
-        print(json.dumps(publish_second(root)))
-        return 0
-    if options.phase == "serve":
-        print(json.dumps(serve(root, options.key, options.seed)))
+    phases = {PREPARE_PHASE: lambda: prepare(options.items, root, options.seed),
+              PUBLISH_SECOND_PHASE: lambda: publish_second(root),
+              SERVE_PHASE: lambda: serve(root, options.key, options.seed)}
+    if options.phase in phases:
+        print(json.dumps(phases[options.phase]()))
         return 0
     if root.exists() and any(root.iterdir()) or REPOSITORY in root.parents:
         parser.error("the root is an empty scratch folder outside the repository")
     root.mkdir(parents=True, exist_ok=True)
     run = [sys.executable, __file__, "--root", str(root), "--items", str(options.items), "--seed", str(options.seed)]
-    prepared = json.loads(subprocess.run([*run, "--phase", "prepare"], capture_output=True, text=True,
+    prepared = json.loads(subprocess.run([*run, "--phase", PREPARE_PHASE], capture_output=True, text=True,
                                          check=True).stdout)
-    served = json.loads(subprocess.run([*run, "--phase", "serve", "--key", prepared.pop("key")],
+    served = json.loads(subprocess.run([*run, "--phase", SERVE_PHASE, "--key", prepared.pop("key")],
                                        capture_output=True, text=True, check=True).stdout)
     import platform
     print(json.dumps({"record_type": RESULT_RECORD_TYPE, "label": "local measurement on one workstation, not a "
