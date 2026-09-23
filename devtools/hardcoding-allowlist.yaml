@@ -4668,6 +4668,1603 @@ entries:
     classification: RESOURCE_OR_TEMPLATE
     created_on: 2026-09-23
 
+  - finding_id: hardcoding.a360201c9db7776648fd7b38
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.design.json:provider.endpoint.key_variable
+    rationale: >-
+      Frozen design record of the overnight cheap model study (design.json, bound by
+      design-freeze.json). The literal is the name of the environment variable that
+      holds the provider key, never the key. The proxy reads the variable when it
+      forwards a request, sends the key only to the provider and never writes it to
+      the ledger, a saved body or a log; the study's tests check that.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.4ee6bcd22c783dea566d7152
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      the frozen task text of one family. Its digest is recorded as prompt_sha256 in
+      population/manifest.json and in design-freeze.json, which version it.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.2436876ca82a796b4e80cd53
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:address_rows.add
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3b5e9d1e2e581d34a66590d0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:value_row
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.88bae85a4d38be63b0fca0ee
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:value_row
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.db8db9ee2013801b5b52c72f
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:value_row
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0a7f720df543d48120e5e404
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0b093a7a431f9174f621e0cc
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.141fbc209192a18236b4eb3d
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.1616f72aeced3767a69e6d4f
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.1e3a7c2206c37847022e139c
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.1e833e286c0d3b48fca6d546
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.256e37225425731315793e56
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.2b63dc6d85797474d8e5254c
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3160670cab98f9d1ed50d6f5
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.37271d1909cb2f856c08b997
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3d6617f0fd21a6ca5bed62d5
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.4eef14198bca156e35a4f1b0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.51892d918d9ceb763296c59f
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5ae5941d0f0291afded77feb
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5cd0ac539a4612cf4792394e
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.6429f44f821bc1c23ce268e6
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.66c6edc02c59704f38de3641
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.66cf32fa42658a5827bee2fd
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.745e13143fe5f06995728cee
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.9329a3b272cdc4a425dc1ccb
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.93ed73933c3809b96c64efe0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.988a8bffc36ecc1d602cbc83
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.a54ab26da28c6f66ff7fa4f3
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.a6e207d5b5fdbe3d9e54092e
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.b4aa5d0ff3112823200d4871
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.cb24c41615d5342ac1adfa00
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d081fbd41624a14d2f713f0b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d535de6623a9edb70b6f296a
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d812867ad8c12af9946eafe0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e3dd4bd46e9fe2b65037294d
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e500cfc74a537c89e23aa1be
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e5b57cc39e86fe3b39bc1868
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.f669786b4b65e27a73a24fdf
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fa354b7bcb87768ac6f1aa08
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fd8c54b6ec4b139b9e0244f8
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.generate_population:website_rows
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.25551744c121824aa8f47b0e
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.prompt.txt:url
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.6b39691d5d614743a0556563
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.prompt.txt:url
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.71f8500226100a07b17646c9
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.prompt.txt:url
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0d884f0663fd353d83607af6
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[0].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.4df5d4661174a73fec714172
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[10].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.bff2fde18dd498486e6099aa
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[10].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.a9259b7a7e06b70d673620d3
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[11].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.ac60f0b2e6d4940d9fa5dddc
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[11].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3a49cba45214e33fe9edf05c
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[12].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.ba36327fc491a16ce7a94806
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[12].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0e2eabbf673a59b8290e185d
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[13].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.4e8915fe39c83373c1ecd10b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[14].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.8aaadddf8d6b8a0a2dceb0e2
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[15].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.bd4c8e47eccdcbe54058f298
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[15].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.504cb5b826e828a64451a574
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[16].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.bf368102252558576b16096a
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[16].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5c8bf038ee2a719dc40af8ed
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[18].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.9dcb7b913a2d4feee1908b68
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[18].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3fbdea390dd34951cef113db
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[19].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.115e7b4a8e50345dfda64f27
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[19].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.90675300625668c7b9d82853
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[1].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0d3a4edb540c5c11dddfba68
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[1].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.ee71aeb6d88ddfd90f61e659
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[21].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.19ff757f1ba6ae66d9a4b8db
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[21].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d005b2a8d3d3b1549d241182
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[23].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.776082831170e77cc89a7ead
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[24].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.9d6cdaf953517b73a37c8f74
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[24].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.24e2512d627034357f81bb81
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[25].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.a136a59757980781ee39ec9b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[25].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.303cfc1a5f0a14debc225825
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[26].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.b1ef8f66a6caf04e031a2468
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[26].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.79808876deb84fce1f2b7aea
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[27].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3a150c96b57ef7f932e1eb28
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[27].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.7f30712a80cad3d7f31adc4e
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[28].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.8a3de13aa6a7007beae26136
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[28].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.3d740faf62b2f1c36bcc21f0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[2].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.aab752aca472a5cabf1085e2
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[2].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.258d9bf28add13f58a303fdc
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[30].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5803bb5a91b0130801b494f4
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[31].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.dbffb8eb86241c73a57b7583
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[4].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.33ff1c9e2ccae82a9d35fc75
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[6].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.7057cce8d5e5ca2be3eb5d5a
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[6].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.24f320833c7ea404e8fba050
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[7].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.16a6545e6dc7bc88e2b3fd15
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[7].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fb99fc12ba07227f9de0c2fd
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[8].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fe9f61ad7410212086c4eccd
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[8].input
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0e95bd613b29aeb03ba0015b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.population.websites.truth.json:rows[9].expected
+    rationale: >-
+      Frozen synthetic population of the overnight cheap model study: its digest is
+      bound by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call. The literal is a web
+      address of the websites family written with the names RFC 2606 reserves for
+      documentation (example.com, example.org, example.net and the .example top level
+      domain) or the RFC 5737 documentation network. It is test data that the step
+      must clean or keep, not a provider binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5442a05e305276a766e2ed36
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.item_reference:decide
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d6802179f465d38b3cb2ac62
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.item_reference:decide
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0fc692b8eee9335bbb1f8cf6
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.meter:Upstream.headers
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      the empty default of an environment lookup for the provider key; an empty key
+      refuses the request before anything is sent.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.a8d110e366ed34bbae35dd3f
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      loopback address on this workstation: the study's own counting proxy, or a
+      closed local port that blocks other network access inside a step. It binds no
+      external provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.171a9a31c9ed24b955a252cf
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.28f5a99f36d43d772b355a28
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.9e1eb5f858acf49b233e110b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.b7da8051c0b36a6e19ff7d0d
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.bf4170cc1915f791b6def721
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.c054c38d5e668ae68992cbe8
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.f5e15c00de38dc465be07910
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      fixed value of the step environment that the isolation recipe builds from
+      nothing: the terminal type, the language, the harness offline and telemetry
+      switches, or the loopback exclusions of the proxy variables. The same values are
+      written in the frozen design record.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.14dcfb05bf45ff4ad68cc4a0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:build_step
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is a
+      loopback address on this workstation: the study's own counting proxy, or a
+      closed local port that blocks other network access inside a step. It binds no
+      external provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fdf1e8f2b78716913076d4f8
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:build_step
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      the name of a field of the frozen design record (the fixed PATH of a step), read
+      from design.json, not a deployment setting.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5ba792bea0b8e7eb2021c6cd
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.5ebb72e3673e2334174384fc
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.7b1a8a59385247e92b0f455b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.f0b9a18d37083a8c32b13116
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.f98a68af0dc3228673111b07
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      the empty default of an environment lookup for the provider key; an empty key
+      refuses the request before anything is sent.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.61a1d4de4813610a580fe9fe
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.985276e3434f5665a6912c99
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.f524f81fec4c332e194daa69
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0623d99fa1928cb47936ebb0
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.8c1d6b8e8298f2c73fee2d52
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.8e78f4506c0f182d3d521188
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d1cd13650b5a1a2ee0742030
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e2c343df54388893ff1ef573
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.fad5ce0c4043bcc4bd39e0f8
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.33fbfa7f167009ce3a11129b
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_value_family
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.df25936f19eb677637871f64
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.scorer.score_step:score_value_family
+    rationale: >-
+      Frozen experiment code of the overnight cheap model study: its digest is bound
+      by case-studies/overnight-cheap-model-with-and-without-baltor/design-
+      freeze.json, committed before the first counted model call, so moving the
+      literal would change the code that produces the recorded runs. The literal is
+      one value of the study's own closed vocabulary (truth row kinds, scorer
+      outcomes, review flags, duplicate decisions, step statuses, Pi event types,
+      runner phases or the outcomes of the apply, hold or escalate thresholds),
+      written the same way in the frozen design, truth and record files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.747fb405392f88819c922e11
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.trials.requests.jsonl:[0].upstream
+    rationale: >-
+      Recorded evidence of the overnight cheap model study: the request ledger lines
+      of the three probe requests of September 23, 2026 name the provider endpoint
+      that received them. Evidence bytes are kept as recorded. The frozen proxy no
+      longer repeats the endpoint on each line, so later ledger lines add no such
+      literal.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.03f7550be34b3ce593b19ad4
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.trials.requests.jsonl:[2].upstream
+    rationale: >-
+      Recorded evidence of the overnight cheap model study: the request ledger lines
+      of the three probe requests of September 23, 2026 name the provider endpoint
+      that received them. Evidence bytes are kept as recorded. The frozen proxy no
+      longer repeats the endpoint on each line, so later ledger lines add no such
+      literal.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d66ccf78ad91e7b733b94ffa
+    owner: case-studies.overnight-cheap-model-with-and-without-baltor.trials.requests.jsonl:[4].upstream
+    rationale: >-
+      Recorded evidence of the overnight cheap model study: the request ledger lines
+      of the three probe requests of September 23, 2026 name the provider endpoint
+      that received them. Evidence bytes are kept as recorded. The frozen proxy no
+      longer repeats the endpoint on each line, so later ledger lines add no such
+      literal.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

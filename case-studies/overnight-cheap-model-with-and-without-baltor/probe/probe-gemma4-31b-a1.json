@@ -1,0 +1,117 @@
+{
+ "record_type": "overnight_model_probe/v1",
+ "trial_id": "probe-gemma4-31b-a1",
+ "model": "gemma4:31b",
+ "prompt": "You are checking that your tools work. Use your bash tool to run the command `python3 -c \"print(6 * 7)\"`. Then use your write tool to create the file `answer.txt` whose only content is the number that the command printed. Then reply with the single word DONE.",
+ "started_request_sequence": 0,
+ "elapsed_seconds": 3.6,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "requests": {
+  "physical": 3,
+  "sent_without_completion": 0,
+  "refused": [],
+  "outcomes": {
+   "ok": 3
+  },
+  "usage_known_requests": 3,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 4194,
+  "completion_tokens_known_sum": 57,
+  "largest_prompt_tokens": 1437,
+  "model_seconds": 2.1,
+  "structured_tool_call_responses": 2,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "finish_reasons": [
+  "tool_calls",
+  "tool_calls",
+  "stop"
+ ],
+ "tool_calls_by_response": [
+  [
+   "bash"
+  ],
+  [
+   "write"
+  ],
+  []
+ ],
+ "harness_report": {
+  "assistant_messages": 3,
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 -c \\\"print(6 * 7)\\\"\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"content\": \"42\\n\", \"path\": \"answer.txt\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1362,
+    "output": 24,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1386,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 51,
+    "output": 27,
+    "cacheRead": 1344,
+    "cacheWrite": 0,
+    "totalTokens": 1422,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 61,
+    "output": 6,
+    "cacheRead": 1376,
+    "cacheWrite": 0,
+    "totalTokens": 1443,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "tools_run": [
+  "bash",
+  "write"
+ ],
+ "answer_text": "42",
+ "checks": {
+  "structured_tool_calls_in_responses": true,
+  "harness_ran_required_tools": true,
+  "answer_file_holds_expected_text": true,
+  "harness_exit_code_zero": true,
+  "usage_reported_for_every_request": true
+ },
+ "passed": true,
+ "runner_sha256": "aec2a985986c036a2758afc87997c1edadc6f71f8a173a52186311ef8161e82f",
+ "meter_sha256": "cd9c7830afc207a6360aac7ad87734becbddc54784bab4cec711fe192b737da9",
+ "recorded_at": "2026-09-23T13:13:04+00:00"
+}

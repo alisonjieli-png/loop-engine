@@ -1,0 +1,780 @@
+{
+ "record_type": "overnight_truth/v1",
+ "family": "duplicates",
+ "output_columns": [
+  "id_a",
+  "id_b",
+  "decision"
+ ],
+ "rows": [
+  {
+   "entity": "smith_sons",
+   "corruption": "ampersand_as_word",
+   "name": "Smith and Sons Hardware",
+   "address": "18 Harbor Road, Madison, WI 53703",
+   "email": "sales@smithsonshardware.com",
+   "phone": "608-555-0119",
+   "id": "1"
+  },
+  {
+   "entity": "globex",
+   "corruption": "short_suffix_and_expanded_street_type",
+   "name": "Globex Corp.",
+   "address": "1200 Industrial Parkway, Columbus, OH 43215",
+   "email": "contact@globex.com",
+   "phone": "614-555-0158",
+   "id": "2"
+  },
+  {
+   "entity": "atlas_movers",
+   "corruption": "ampersand_as_word_and_suffix_dropped",
+   "name": "Atlas Moving and Storage",
+   "address": "5 Depot Road, Albany, NY 12205",
+   "email": "",
+   "phone": "(518) 555-0149",
+   "id": "3"
+  },
+  {
+   "entity": "pinecrest",
+   "corruption": "upper_case_email_and_international_phone",
+   "name": "Pinecrest Veterinary Clinic",
+   "address": "22 Elm Avenue, Boston, MA 02108",
+   "email": "CARE@PINECRESTVET.COM",
+   "phone": "+1 617 555 0104",
+   "id": "4"
+  },
+  {
+   "entity": "globex_logistics",
+   "corruption": "original",
+   "name": "Globex Logistics LLC",
+   "address": "1200 Industrial Pkwy, Columbus, OH 43215",
+   "email": "logistics@globex.com",
+   "phone": "(614) 555-0158",
+   "id": "5"
+  },
+  {
+   "entity": "pinecrest",
+   "corruption": "original",
+   "name": "Pinecrest Veterinary Clinic",
+   "address": "22 Elm Ave, Boston, MA 02108",
+   "email": "care@pinecrestvet.com",
+   "phone": "(617) 555-0104",
+   "id": "6"
+  },
+  {
+   "entity": "st_louis_bread",
+   "corruption": "saint_abbreviated_and_short_suffix",
+   "name": "St. Louis Bread Co.",
+   "address": "88 Market Street, Saint Louis, MO 63101",
+   "email": "hello@stlbread.com",
+   "phone": "314-555-0127",
+   "id": "7"
+  },
+  {
+   "entity": "atlas_storage",
+   "corruption": "original",
+   "name": "Atlas Self Storage LLC",
+   "address": "5 Depot Rd, Albany, NY 12205",
+   "email": "units@atlasselfstorage.com",
+   "phone": "(518) 555-0150",
+   "id": "8"
+  },
+  {
+   "entity": "acme",
+   "corruption": "long_suffix_periods_and_missing_email",
+   "name": "Acme Widgets, Incorporated",
+   "address": "12 N. Main St., Ste. 4, Springfield IL 62704",
+   "email": "",
+   "phone": "(217) 555-0141",
+   "id": "9"
+  },
+  {
+   "entity": "northwind",
+   "corruption": "suffix_dropped_and_missing_phone",
+   "name": "Northwind Traders",
+   "address": "845 Oak Ave, Portland, OR 97205",
+   "email": "info@northwindtraders.com",
+   "phone": "",
+   "id": "10"
+  },
+  {
+   "entity": "coastal_cafe",
+   "corruption": "original",
+   "name": "Coastal Cafe",
+   "address": "12 Ocean Ave, Santa Cruz, CA 95060",
+   "email": "hi@coastalcafe.com",
+   "phone": "(831) 555-0175",
+   "id": "11"
+  },
+  {
+   "entity": "keystone",
+   "corruption": "long_suffix_and_expanded_address",
+   "name": "Keystone Plumbing Company",
+   "address": "2211 North Clark Street, Chicago, IL 60614",
+   "email": "",
+   "phone": "(312) 555-0126",
+   "id": "12"
+  },
+  {
+   "entity": "liberty_agency",
+   "corruption": "original",
+   "name": "Liberty Insurance Agency",
+   "address": "300 Main St Ste 400, Hartford, CT 06103",
+   "email": "agents@libertyia.com",
+   "phone": "(860) 555-0136",
+   "id": "13"
+  },
+  {
+   "entity": "globex",
+   "corruption": "original",
+   "name": "Globex Corporation",
+   "address": "1200 Industrial Pkwy, Columbus, OH 43215",
+   "email": "contact@globex.com",
+   "phone": "(614) 555-0158",
+   "id": "14"
+  },
+  {
+   "entity": "summit_dental",
+   "corruption": "abbreviated_word_and_street_type",
+   "name": "Summit Dental Grp",
+   "address": "3100 Lakeview Drive, Austin, TX 78701",
+   "email": "frontdesk@summitdental.com",
+   "phone": "(512) 555-0133",
+   "id": "15"
+  },
+  {
+   "entity": "greenleaf",
+   "corruption": "original",
+   "name": "Greenleaf Garden Center",
+   "address": "450 County Rd 12, Ames, IA 50010",
+   "email": "shop@greenleafgarden.com",
+   "phone": "(515) 555-0114",
+   "id": "16"
+  },
+  {
+   "entity": "bluebird_denver",
+   "corruption": "split_word_and_street_type",
+   "name": "Blue Bird Bakery",
+   "address": "77 Cedar Lane, Denver, CO 80202",
+   "email": "hello@bluebirdbakery.com",
+   "phone": "303-555-0187",
+   "id": "17"
+  },
+  {
+   "entity": "atlas_movers",
+   "corruption": "original",
+   "name": "Atlas Moving & Storage Inc",
+   "address": "5 Depot Rd, Albany, NY 12205",
+   "email": "moves@atlasmoving.com",
+   "phone": "(518) 555-0149",
+   "id": "18"
+  },
+  {
+   "entity": "greenleaf",
+   "corruption": "split_word_and_abbreviations",
+   "name": "Green Leaf Garden Ctr",
+   "address": "450 County Road 12, Ames, IA 50010",
+   "email": "shop@greenleafgarden.com",
+   "phone": "(515) 555-0114",
+   "id": "19"
+  },
+  {
+   "entity": "smith_sons",
+   "corruption": "original",
+   "name": "Smith & Sons Hardware",
+   "address": "18 Harbor Rd, Madison, WI 53703",
+   "email": "sales@smithsonshardware.com",
+   "phone": "(608) 555-0119",
+   "id": "20"
+  },
+  {
+   "entity": "granite",
+   "corruption": "abbreviated_word_and_missing_phone",
+   "name": "Granite State Insurance Agcy",
+   "address": "9 Market Square, Portsmouth, NH 03801",
+   "email": "agents@granitestateins.com",
+   "phone": "",
+   "id": "21"
+  },
+  {
+   "entity": "bluebird_denver",
+   "corruption": "original",
+   "name": "Bluebird Bakery",
+   "address": "77 Cedar Ln, Denver, CO 80202",
+   "email": "hello@bluebirdbakery.com",
+   "phone": "(303) 555-0187",
+   "id": "22"
+  },
+  {
+   "entity": "acme",
+   "corruption": "original",
+   "name": "Acme Widgets Inc",
+   "address": "12 N Main St Ste 4, Springfield, IL 62704",
+   "email": "orders@acmewidgets.com",
+   "phone": "(217) 555-0141",
+   "id": "23"
+  },
+  {
+   "entity": "brightside_pediatrics",
+   "corruption": "original",
+   "name": "Brightside Pediatrics",
+   "address": "700 Elm St Ste 210, Dallas, TX 75202",
+   "email": "office@brightsidepeds.com",
+   "phone": "(214) 555-0161",
+   "id": "24"
+  },
+  {
+   "entity": "pioneer_evanston",
+   "corruption": "original",
+   "name": "Pioneer Print Shop",
+   "address": "1602 Sherman Ave, Evanston, IL 60201",
+   "email": "evanston@pioneerprint.com",
+   "phone": "(847) 555-0131",
+   "id": "25"
+  },
+  {
+   "entity": "harbor_light",
+   "corruption": "original",
+   "name": "Harbor Light Legal PC",
+   "address": "400 W Madison St Fl 9, Chicago, IL 60606",
+   "email": "reception@madisonsuites.com",
+   "phone": "(312) 555-0190",
+   "id": "26"
+  },
+  {
+   "entity": "maple_leaf",
+   "corruption": "original",
+   "name": "Maple Leaf Movers Ltd",
+   "address": "16 Rue du Port, Quebec, QC G1K 4E3",
+   "email": "info@mapleleafmovers.ca",
+   "phone": "(418) 555-0143",
+   "id": "27"
+  },
+  {
+   "entity": "orchard",
+   "corruption": "original",
+   "name": "Orchard Street Dental",
+   "address": "905 Granville St, Vancouver, BC V6Z 1L3",
+   "email": "hello@orcharddental.ca",
+   "phone": "(604) 555-0181",
+   "id": "28"
+  },
+  {
+   "entity": "coastal_cafe",
+   "corruption": "accent_and_upper_case_email",
+   "name": "Coastal Caf\u00e9",
+   "address": "12 Ocean Avenue, Santa Cruz, CA 95060",
+   "email": "HI@COASTALCAFE.COM",
+   "phone": "831.555.0175",
+   "id": "29"
+  },
+  {
+   "entity": "riverbend",
+   "corruption": "original",
+   "name": "Riverbend Books",
+   "address": "58 Bay St, Toronto, ON M5J 2N8",
+   "email": "shop@riverbendbooks.ca",
+   "phone": "(416) 555-0122",
+   "id": "30"
+  },
+  {
+   "entity": "summit_rental",
+   "corruption": "original",
+   "name": "Summit Rental Group",
+   "address": "3180 Lakeview Dr, Austin, TX 78701",
+   "email": "office@summitrental.com",
+   "phone": "(512) 555-0177",
+   "id": "31"
+  },
+  {
+   "entity": "tidewater",
+   "corruption": "original",
+   "name": "Tidewater Marine Supply",
+   "address": "31 Harbor St, Norfolk, VA 23510",
+   "email": "orders@tidewatermarine.com",
+   "phone": "(757) 555-0170",
+   "id": "32"
+  },
+  {
+   "entity": "crestline",
+   "corruption": "original",
+   "name": "Crestline Consulting LLC",
+   "address": "400 W Madison St Fl 9, Chicago, IL 60606",
+   "email": "reception@madisonsuites.com",
+   "phone": "(312) 555-0190",
+   "id": "33"
+  },
+  {
+   "entity": "cobalt",
+   "corruption": "upper_case_and_expanded_address",
+   "name": "COBALT ANALYTICS INC.",
+   "address": "88 Harbor Boulevard, Suite 400, Long Beach, CA 90802",
+   "email": "",
+   "phone": "562-555-0138",
+   "id": "34"
+  },
+  {
+   "entity": "north_star",
+   "corruption": "shortened_word_and_international_phone",
+   "name": "North Star Tech Inc",
+   "address": "2600 Tech Pkwy, Raleigh NC 27606",
+   "email": "",
+   "phone": "+1 919 555 0183",
+   "id": "35"
+  },
+  {
+   "entity": "north_star",
+   "corruption": "original",
+   "name": "North Star Technologies Inc",
+   "address": "2600 Tech Pkwy, Raleigh, NC 27606",
+   "email": "info@northstartech.com",
+   "phone": "(919) 555-0183",
+   "id": "36"
+  },
+  {
+   "entity": "brightside_dental",
+   "corruption": "original",
+   "name": "Brightside Dental",
+   "address": "700 Elm St Ste 305, Dallas, TX 75202",
+   "email": "smile@brightsidedental.com",
+   "phone": "(214) 555-0162",
+   "id": "37"
+  },
+  {
+   "entity": "northwind",
+   "corruption": "original",
+   "name": "Northwind Traders LLC",
+   "address": "845 Oak Avenue, Portland, OR 97205",
+   "email": "info@northwindtraders.com",
+   "phone": "(503) 555-0112",
+   "id": "38"
+  },
+  {
+   "entity": "tidewater",
+   "corruption": "typo_in_name",
+   "name": "Tidewater Marine Suply",
+   "address": "31 Harbor St, Norfolk, VA 23510",
+   "email": "orders@tidewatermarine.com",
+   "phone": "(757) 555-0170",
+   "id": "39"
+  },
+  {
+   "entity": "pioneer_chicago",
+   "corruption": "upper_case_name_and_expanded_address",
+   "name": "PIONEER PRINT SHOP",
+   "address": "1020 West Lake Street, Chicago, IL 60607",
+   "email": "Chicago@PioneerPrint.com",
+   "phone": "312-555-0131",
+   "id": "40"
+  },
+  {
+   "entity": "cobalt",
+   "corruption": "original",
+   "name": "Cobalt Analytics Inc",
+   "address": "88 Harbor Blvd Suite 400, Long Beach, CA 90802",
+   "email": "hello@cobaltanalytics.io",
+   "phone": "(562) 555-0138",
+   "id": "41"
+  },
+  {
+   "entity": "lakeside",
+   "corruption": "original",
+   "name": "Lakeside Yoga Studio",
+   "address": "742 Maple Terrace, Springfield, IL 62701",
+   "email": "namaste@lakesideyoga.com",
+   "phone": "(217) 555-0166",
+   "id": "42"
+  },
+  {
+   "entity": "riverbend",
+   "corruption": "typo_and_postal_code_without_space",
+   "name": "Riverbnd Books",
+   "address": "58 Bay St., Toronto ON M5J2N8",
+   "email": "shop@riverbendbooks.ca",
+   "phone": "",
+   "id": "43"
+  },
+  {
+   "entity": "acme",
+   "corruption": "upper_case_suffix_and_expanded_address",
+   "name": "ACME WIDGETS INC",
+   "address": "12 North Main Street Suite 4, Springfield, IL 62704",
+   "email": "Orders@AcmeWidgets.com",
+   "phone": "217.555.0141",
+   "id": "44"
+  },
+  {
+   "entity": "keystone_lincoln",
+   "corruption": "original",
+   "name": "Keystone Plumbing Company",
+   "address": "2450 N Lincoln Ave, Chicago, IL 60614",
+   "email": "service@keystoneplumbing.com",
+   "phone": "(312) 555-0126",
+   "id": "45"
+  },
+  {
+   "entity": "evergreen",
+   "corruption": "original",
+   "name": "Evergreen Landscaping",
+   "address": "45 Kingsway, Burnaby, BC V5H 2A9",
+   "email": "info@evergreenlandscaping.ca",
+   "phone": "(604) 555-0152",
+   "id": "46"
+  },
+  {
+   "entity": "summit_dental",
+   "corruption": "original",
+   "name": "Summit Dental Group",
+   "address": "3100 Lakeview Dr, Austin, TX 78701",
+   "email": "frontdesk@summitdental.com",
+   "phone": "(512) 555-0133",
+   "id": "47"
+  },
+  {
+   "entity": "acme",
+   "corruption": "suite_omitted_and_extension",
+   "name": "Acme Widgets Inc",
+   "address": "12 N Main St, Springfield, IL 62704",
+   "email": "orders@acmewidgets.com",
+   "phone": "(217) 555-0141 ext 3",
+   "id": "48"
+  },
+  {
+   "entity": "st_louis_bread",
+   "corruption": "original",
+   "name": "Saint Louis Bread Company",
+   "address": "88 Market St, St. Louis, MO 63101",
+   "email": "hello@stlbread.com",
+   "phone": "(314) 555-0127",
+   "id": "49"
+  },
+  {
+   "entity": "riverbend",
+   "corruption": "expanded_street_and_missing_email",
+   "name": "Riverbend Books",
+   "address": "58 Bay Street, Toronto, ON M5J 2N8",
+   "email": "",
+   "phone": "416 555 0122",
+   "id": "50"
+  },
+  {
+   "entity": "liberty_group",
+   "corruption": "original",
+   "name": "Liberty Insurance Group",
+   "address": "300 Main St, Hartford, CT 06103",
+   "email": "claims@libertyig.com",
+   "phone": "(860) 555-0135",
+   "id": "51"
+  },
+  {
+   "entity": "cobalt",
+   "corruption": "suffix_dropped_and_missing_phone",
+   "name": "Cobalt Analytics",
+   "address": "88 Harbor Blvd Ste 400, Long Beach, CA 90802",
+   "email": "hello@cobaltanalytics.io",
+   "phone": "",
+   "id": "52"
+  },
+  {
+   "entity": "pioneer_chicago",
+   "corruption": "original",
+   "name": "Pioneer Print Shop",
+   "address": "1020 W Lake St, Chicago, IL 60607",
+   "email": "chicago@pioneerprint.com",
+   "phone": "(312) 555-0131",
+   "id": "53"
+  },
+  {
+   "entity": "keystone",
+   "corruption": "original",
+   "name": "Keystone Plumbing Co",
+   "address": "2211 N Clark St, Chicago, IL 60614",
+   "email": "service@keystoneplumbing.com",
+   "phone": "(312) 555-0126",
+   "id": "54"
+  },
+  {
+   "entity": "bluebird_seattle",
+   "corruption": "original",
+   "name": "Bluebird Bakery",
+   "address": "1509 Pine St, Seattle, WA 98101",
+   "email": "seattle@bluebirdbakery.com",
+   "phone": "(206) 555-0165",
+   "id": "55"
+  },
+  {
+   "entity": "brightside_pediatrics",
+   "corruption": "legal_suffix_added_and_missing_phone",
+   "name": "Brightside Pediatrics PLLC",
+   "address": "700 Elm Street Suite 210, Dallas, TX 75202",
+   "email": "office@brightsidepeds.com",
+   "phone": "",
+   "id": "56"
+  },
+  {
+   "entity": "north_star",
+   "corruption": "joined_words_and_zip_plus_four",
+   "name": "Northstar Technologies",
+   "address": "2600 Tech Parkway, Raleigh, NC 27606-1234",
+   "email": "info@northstartech.com",
+   "phone": "",
+   "id": "57"
+  },
+  {
+   "entity": "granite",
+   "corruption": "original",
+   "name": "Granite State Insurance Agency",
+   "address": "9 Market Sq, Portsmouth, NH 03801",
+   "email": "agents@granitestateins.com",
+   "phone": "(603) 555-0111",
+   "id": "58"
+  },
+  {
+   "entity": "redwood",
+   "corruption": "original",
+   "name": "Redwood Family Dental",
+   "address": "1600 Grand Ave NW, Washington, DC 20001",
+   "email": "smile@redwooddental.com",
+   "phone": "(202) 555-0129",
+   "id": "59"
+  }
+ ],
+ "duplicate_pairs": [
+  [
+   "1",
+   "20"
+  ],
+  [
+   "2",
+   "14"
+  ],
+  [
+   "3",
+   "18"
+  ],
+  [
+   "4",
+   "6"
+  ],
+  [
+   "7",
+   "49"
+  ],
+  [
+   "9",
+   "23"
+  ],
+  [
+   "9",
+   "44"
+  ],
+  [
+   "9",
+   "48"
+  ],
+  [
+   "10",
+   "38"
+  ],
+  [
+   "11",
+   "29"
+  ],
+  [
+   "12",
+   "54"
+  ],
+  [
+   "15",
+   "47"
+  ],
+  [
+   "16",
+   "19"
+  ],
+  [
+   "17",
+   "22"
+  ],
+  [
+   "21",
+   "58"
+  ],
+  [
+   "23",
+   "44"
+  ],
+  [
+   "23",
+   "48"
+  ],
+  [
+   "24",
+   "56"
+  ],
+  [
+   "30",
+   "43"
+  ],
+  [
+   "30",
+   "50"
+  ],
+  [
+   "32",
+   "39"
+  ],
+  [
+   "34",
+   "41"
+  ],
+  [
+   "34",
+   "52"
+  ],
+  [
+   "35",
+   "36"
+  ],
+  [
+   "35",
+   "57"
+  ],
+  [
+   "36",
+   "57"
+  ],
+  [
+   "40",
+   "53"
+  ],
+  [
+   "41",
+   "52"
+  ],
+  [
+   "43",
+   "50"
+  ],
+  [
+   "44",
+   "48"
+  ]
+ ],
+ "hard_negative_pairs": [
+  {
+   "pair": [
+    "17",
+    "55"
+   ],
+   "reason": "same_name_other_location"
+  },
+  {
+   "pair": [
+    "22",
+    "55"
+   ],
+   "reason": "same_name_other_location"
+  },
+  {
+   "pair": [
+    "15",
+    "31"
+   ],
+   "reason": "one_letter_name_difference_nearby_address"
+  },
+  {
+   "pair": [
+    "31",
+    "47"
+   ],
+   "reason": "one_letter_name_difference_nearby_address"
+  },
+  {
+   "pair": [
+    "26",
+    "33"
+   ],
+   "reason": "shared_floor_mailbox_and_switchboard"
+  },
+  {
+   "pair": [
+    "25",
+    "40"
+   ],
+   "reason": "same_name_other_location"
+  },
+  {
+   "pair": [
+    "25",
+    "53"
+   ],
+   "reason": "same_name_other_location"
+  },
+  {
+   "pair": [
+    "3",
+    "8"
+   ],
+   "reason": "shared_address_different_companies"
+  },
+  {
+   "pair": [
+    "8",
+    "18"
+   ],
+   "reason": "shared_address_different_companies"
+  },
+  {
+   "pair": [
+    "24",
+    "37"
+   ],
+   "reason": "same_building_other_suite_other_company"
+  },
+  {
+   "pair": [
+    "37",
+    "56"
+   ],
+   "reason": "same_building_other_suite_other_company"
+  }
+ ],
+ "ambiguous_pairs": [
+  {
+   "pair": [
+    "2",
+    "5"
+   ],
+   "reason": "related_names_same_address_and_phone"
+  },
+  {
+   "pair": [
+    "5",
+    "14"
+   ],
+   "reason": "related_names_same_address_and_phone"
+  },
+  {
+   "pair": [
+    "12",
+    "45"
+   ],
+   "reason": "same_company_name_phone_and_email_other_address"
+  },
+  {
+   "pair": [
+    "45",
+    "54"
+   ],
+   "reason": "same_company_name_phone_and_email_other_address"
+  },
+  {
+   "pair": [
+    "13",
+    "51"
+   ],
+   "reason": "similar_names_same_building"
+  }
+ ]
+}

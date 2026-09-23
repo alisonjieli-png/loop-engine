@@ -1,0 +1,221 @@
+{
+ "record_type": "overnight_model_metadata/v1",
+ "fetched_on": "2026-09-23",
+ "source": "Ollama Cloud metadata endpoints https://ollama.com/api/tags and https://ollama.com/api/show, called with the key in the environment. These are metadata requests, not model requests; they are not in the request ledger and do not count against the ceiling.",
+ "models_listed": [
+  {
+   "name": "glm-5.1",
+   "digest": "882e35812821",
+   "modified_at": "2026-04-07T08:00:00-07:00",
+   "size": 1507728316928
+  },
+  {
+   "name": "glm-5.2",
+   "digest": "f553240f6dc4",
+   "modified_at": "2026-06-16T08:00:00-07:00",
+   "size": 0
+  },
+  {
+   "name": "glm-5.3",
+   "digest": "632dfda18c6d",
+   "modified_at": "2026-08-28T08:00:00-07:00",
+   "size": 755433728000
+  },
+  {
+   "name": "nemotron-3-super",
+   "digest": "da11955bb451",
+   "modified_at": "2026-03-11T00:00:00Z",
+   "size": 230500000000
+  },
+  {
+   "name": "gpt-oss:20b",
+   "digest": "05afbac4bad6",
+   "modified_at": "2025-08-05T00:00:00Z",
+   "size": 13780162412
+  },
+  {
+   "name": "qwen3.5:397b",
+   "digest": "b909ca2f1b7f",
+   "modified_at": "2026-02-16T00:00:00Z",
+   "size": 397000000000
+  },
+  {
+   "name": "deepseek-v4-pro:0813",
+   "digest": "db976f1eacdd",
+   "modified_at": "2026-08-13T08:00:00-07:00",
+   "size": 892744322880
+  },
+  {
+   "name": "gemma4:31b",
+   "digest": "221b330d11a8",
+   "modified_at": "2026-04-02T09:00:00-08:00",
+   "size": 62546177752
+  },
+  {
+   "name": "glm-5.3-flash",
+   "digest": "0c238824336d",
+   "modified_at": "2026-08-26T07:00:00-07:00",
+   "size": 328250014584
+  },
+  {
+   "name": "deepseek-v4-flash:0731",
+   "digest": "4de9bf66c0eb",
+   "modified_at": "2026-07-31T08:00:00-07:00",
+   "size": 166878536440
+  },
+  {
+   "name": "kimi-k2.6",
+   "digest": "4764ecb21f85",
+   "modified_at": "2026-04-20T00:00:00Z",
+   "size": 595148192736
+  },
+  {
+   "name": "kimi-k2.7-code",
+   "digest": "1a7e88d8c572",
+   "modified_at": "2026-06-12T00:00:00Z",
+   "size": 595148192736
+  },
+  {
+   "name": "deepseek-v4.1-flash",
+   "digest": "97308b916fc3",
+   "modified_at": "2026-09-10T03:00:00Z",
+   "size": 486723007816
+  },
+  {
+   "name": "minimax-m2.7",
+   "digest": "d1008bea3761",
+   "modified_at": "2026-03-18T00:00:00Z",
+   "size": 480836588544
+  },
+  {
+   "name": "kimi-k3",
+   "digest": "d189309738f0",
+   "modified_at": "2026-07-27T08:00:00-07:00",
+   "size": 1560860324864
+  },
+  {
+   "name": "nemotron-3-nano:30b",
+   "digest": "a4b4f1851393",
+   "modified_at": "2025-12-15T00:00:00Z",
+   "size": 32645090390
+  },
+  {
+   "name": "minimax-m3",
+   "digest": "9ce5291d9c0e",
+   "modified_at": "2026-06-01T00:00:00Z",
+   "size": 0
+  },
+  {
+   "name": "mistral-large-3:675b",
+   "digest": "f7e3b2a16d5c",
+   "modified_at": "2025-12-02T00:00:00Z",
+   "size": 682000000000
+  },
+  {
+   "name": "nemotron-3-ultra",
+   "digest": "4eecabff7a75",
+   "modified_at": "2026-06-04T00:00:00Z",
+   "size": 0
+  },
+  {
+   "name": "gpt-oss:120b",
+   "digest": "d98fe6ba01e6",
+   "modified_at": "2025-08-05T00:00:00Z",
+   "size": 65290180781
+  }
+ ],
+ "gemma_models_listed": [
+  "gemma4:31b"
+ ],
+ "show": {
+  "gemma4:31b": {
+   "capabilities": [
+    "completion",
+    "thinking",
+    "tools",
+    "vision"
+   ],
+   "details": {
+    "parent_model": "gemma4:31b",
+    "format": "",
+    "family": "gemma4",
+    "families": null,
+    "parameter_size": "32682372656",
+    "quantization_level": "BF16"
+   },
+   "thinking": {
+    "values": [
+     false,
+     true
+    ],
+    "default": false
+   },
+   "modified_at": "2026-04-02T09:00:00-08:00",
+   "model_info": {
+    "gemma4.context_length": 262144,
+    "gemma4.embedding_length": 5376,
+    "general.architecture": "gemma4",
+    "general.parameter_count": 32682372656
+   }
+  },
+  "nemotron-3-nano:30b": {
+   "capabilities": [
+    "completion",
+    "tools",
+    "thinking"
+   ],
+   "details": {
+    "parent_model": "nemotron-3-nano:30b",
+    "format": "",
+    "family": "nemotron-3-nano",
+    "families": null,
+    "parameter_size": "32000000000",
+    "quantization_level": "FP8"
+   },
+   "thinking": {
+    "values": [
+     false,
+     true
+    ],
+    "default": true
+   },
+   "modified_at": "2025-12-15T00:00:00Z",
+   "model_info": {
+    "general.architecture": "nemotron-3-nano",
+    "general.parameter_count": 32000000000,
+    "nemotron-3-nano.context_length": 262144,
+    "nemotron-3-nano.embedding_length": 2880
+   }
+  },
+  "gpt-oss:20b": {
+   "capabilities": [
+    "completion",
+    "tools",
+    "thinking"
+   ],
+   "details": {
+    "parent_model": "gpt-oss:20b",
+    "format": "",
+    "family": "gptoss",
+    "families": null,
+    "parameter_size": "20914757184",
+    "quantization_level": "MXFP4"
+   },
+   "thinking": {
+    "values": [
+     "low",
+     "medium",
+     "high"
+    ],
+    "default": "medium"
+   },
+   "modified_at": "2025-08-05T00:00:00Z",
+   "model_info": {
+    "general.architecture": "gptoss",
+    "general.parameter_count": 20914757184,
+    "gptoss.context_length": 131072,
+    "gptoss.embedding_length": 2880
+   }
+  }
+ }
+}

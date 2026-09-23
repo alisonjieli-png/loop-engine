@@ -1,0 +1,49 @@
+id,house_number,street,unit,city,region,postal_code,country,review
+1,,350 Fifth Ave New York NY 10118,,,,,,no
+2,,"37-02 Main St, Flushing, NY 11354",,,,,,no
+3,,"Suite 400, 88 Harbor Blvd, Long Beach, CA 90802",,,,,,no
+4,,"77 Pine Road, Toronto ON M5V 2T6",,,,,,no
+5,,"2211 N Clark St Apt 3R, Chicago, IL 60614",,,,,,no
+6,,"P.O. Box 77, Halifax, NS B3J 2K9",,,,,,no
+7,,"1600 Grand Ave NW, Washington, DC 20001",,,,,,no
+8,,"12 1/2 Oak St, Ithaca, NY 14850",,,,,,no
+9,,"221 E 42nd St, New York, NY 10017",,,,,,no
+10,,"12 N Main St Apt 4B, Springfield, IL 62704, USA",,,,,,no
+11,,12 Main St West Springfield MA 01089,,,,,,no
+12,,"4500 US Highway 1, Princeton, NJ 08540",,,,,,no
+13,,"77 Cedar Ln #12, Denver, CO 80202",,,,,,no
+14,,"Flat 3, 22 Queen Street, Cardiff CF10 2BU, United Kingdom",,,,,,no
+15,,"PO Box 482, Springfield, IL 62705",,,,,,no
+16,,"5 Mill Lane, Ashford, Kent TN24 8AA",,,,,,no
+17,,"18 Harbor Rd Ste 5, Madison, WI 53703",,,,,,no
+18,,"1188 Avenue of the Americas, New York, NY 10036",,,,,,no
+19,,"742 Maple Terrace, Springfield",,,,,,no
+20,,"Unit 3, 15 Water St, Halifax, NS B3H 1A1",,,,,,no
+21,,"905 Granville St Unit 1402, Vancouver, BC V6Z1L3",,,,,,no
+22,,"3100 Lakeview Dr Suite 200, Austin, TX 78701-2243",,,,,,no
+23,,,,,,,,no
+24,,"Apartment 4, 7 Mill Lane, Ashford TN24 8AA",,,,,,no
+25,,n/a,,,,,,no
+26,,"400 W Madison Blvd Fl 9, Chicago, Illinois 60606",,,,,,no
+27,,"Rose Cottage, 5 Church Lane, Ashford TN23 1AB",,,,,,no
+28,,"22B Elm Ave, Boston, MA 02108",,,,,,no
+29,,"501 W 5th St Apt. 2, Austin, TX 78701",,,,,,no
+30,,"9 Birch Rd Unit #5, Burlington, VT 05401",,,,,,no
+31,,"10 High Street, Bristol BS1 4DJ",,,,,,no
+32,,"1200 Rue Sainte-Catherine O, Montréal, QC H3B 1K9, Canada",,,,,,no
+33,,"16 Rue du Port, Québec, QC G1K 4E3",,,,,,no
+34,,"12-345 King St W, Toronto, ON M5V 1K4",,,,,,no
+35,,88 Elm St Springfield MA 01103,,,,,,no
+36,,"400 W Madison St, Floor 9, Chicago, IL 60606",,,,,,no
+37,,"Post Office Box 12, Bangor, ME 04402",,,,,,no
+38,,"845 Oak Avenue, Portland, OR 97205",,,,,,no
+39,,2211 N Clark St Apt 3R Chicago IL 60614,,,,,,no
+40,,see notes,,,,,,no
+41,,"31 Park Row, Leeds LS1 5JL, UK",,,,,,no
+42,,"Main Street, Springfield",,,,,,no
+43,,"1509 Pine St, Seattle, WA",,,,,,no
+44,,"58 Bay St, Toronto",,,,,,no
+45,,"1500 Boul René-Lévesque O, Montréal, QC H3G 1T7",,,,,,no
+46,,"Corner of Main St and 2nd Ave, Springfield, IL",,,,,,no
+47,,"77 Cedar Ln, Denver, CO 80202 / 80 Cedar Ln, Denver, CO 80202",,,,,,no
+48,,"1509 Pine St Unit 3, Seattle, WA 98101, United States",,,,,,no

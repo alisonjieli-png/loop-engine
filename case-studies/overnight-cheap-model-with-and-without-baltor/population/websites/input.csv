@@ -1,0 +1,33 @@
+id,website
+1,blog.example.net/2026/09/Post-Title/
+2,https://acme-widgets.example/Catalog/
+3,https://example.com:443/
+4,
+5,Example.COM
+6,-
+7,https://www.example.org/About
+8,https://example.com/Docs/Guide
+9,http://Example.org/Search?Q=Red%20Shoes
+10,www.Example.org/About/
+11,https://Shop.Example.com/Products/Blue-Widget/
+12,http://example.com:8080/Admin
+13,https://example.com/
+14,example.com/path?Ref=ABC#Top
+15,HTTP://WWW.EXAMPLE.NET/INDEX.HTML
+16,https://-example.com
+17,https://Example.com:8443/Portal/
+18,n/a
+19,http://192.0.2.10/Status
+20,https://example.com/docs/#Intro
+21,"www.example.com, www.example.org"
+22,http://example.com:80/Store
+23,see our facebook page
+24,HTTPS://EXAMPLE.ORG:443/Blog/
+25,http://example.org:443/Legacy
+26,https://example.com
+27,https://example.com/?q=Widgets
+28,https://example..com
+29,https://exa mple.com
+30,mailto:info@example.com
+31, https://example.net 
+32,Https://Example.Com/About-Us/

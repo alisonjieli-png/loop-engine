@@ -1,0 +1,16 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: clean the `email` column. The table has the columns `id` and `email`.
+
+Write `output.csv` with the columns `id`, `email` and `review`, one row for each input row, in any order:
+- Write each address in lower case, without spaces, without a `mailto:` prefix, without angle brackets and without a display name.
+- Repair an address only when the intended address is certain. For example, `ann at example dot com` is certainly `ann@example.com`.
+- Leave an empty value or a null marker such as `n/a` exactly as it is, with `review` set to `no`.
+- When a value holds more than one address, or you cannot be certain of the intended address, do not guess: copy the input value exactly as it is and set `review` to `yes`.
+- Otherwise set `review` to `no`.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.

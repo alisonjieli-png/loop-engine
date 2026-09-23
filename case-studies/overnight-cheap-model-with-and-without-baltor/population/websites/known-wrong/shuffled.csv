@@ -1,0 +1,33 @@
+id,website,review
+1,https://example.org/Blog,no
+2,mailto:info@example.com,yes
+3,https://example.net,no
+4,https://example.com,no
+5,-,no
+6,https://example.com:8443/Portal,no
+7,https://www.example.org/About,no
+8,https://www.example.org/About,no
+9,https://example.com,no
+10,https://example.com,no
+11,https://example.com/About-Us,no
+12,https://-example.com,yes
+13,,no
+14,https://example..com,yes
+15,https://example.com/Docs/Guide,no
+16,https://example.com/docs#Intro,no
+17,https://shop.example.com/Products/Blue-Widget,no
+18,http://example.org:443/Legacy,no
+19,http://www.example.net/INDEX.HTML,no
+20,http://example.com:8080/Admin,no
+21,http://example.org/Search?Q=Red%20Shoes,no
+22,https://example.com/path?Ref=ABC#Top,no
+23,https://acme-widgets.example/Catalog,no
+24,http://192.0.2.10/Status,no
+25,https://exa mple.com,yes
+26,https://example.com,no
+27,see our facebook page,yes
+28,"www.example.com, www.example.org",yes
+29,n/a,no
+30,http://example.com/Store,no
+31,https://example.com?q=Widgets,no
+32,https://blog.example.net/2026/09/Post-Title,no

@@ -1,0 +1,17 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: clean the `website` column. The table has the columns `id` and `website`.
+
+Write `output.csv` with the columns `id`, `website` and `review`, one row for each input row, in any order:
+- Write each web address in one standard form: the scheme and the host name in small letters, because they are not case-sensitive; no default port (`:80` for `http`, `:443` for `https`); and no slash at the end of the path, so `https://example.com/` becomes `https://example.com`. Keep the rest of the path, the query and the fragment exactly as written, because they can be case-sensitive.
+- When an address has no scheme, add `https://`.
+- Keep `www.` when it is written, and do not add it.
+- Leave an empty value or a null marker such as `n/a` exactly as it is, with `review` set to `no`.
+- When a value is not one single web address, or it cannot be a valid address as written, for example because it has a space inside it or its host name is not valid, do not guess: copy the input value exactly as it is and set `review` to `yes`.
+- Otherwise set `review` to `no`.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.

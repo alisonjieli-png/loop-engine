@@ -1,0 +1,794 @@
+{
+ "record_type": "overnight_truth/v1",
+ "family": "addresses",
+ "output_columns": [
+  "id",
+  "house_number",
+  "street",
+  "unit",
+  "city",
+  "region",
+  "postal_code",
+  "country",
+  "review"
+ ],
+ "parts": [
+  "house_number",
+  "street",
+  "unit",
+  "city",
+  "region",
+  "postal_code",
+  "country"
+ ],
+ "rows": [
+  {
+   "case_type": "no_commas",
+   "input": "350 Fifth Ave New York NY 10118",
+   "kind": "split",
+   "expected": {
+    "house_number": "350",
+    "street": "Fifth Ave",
+    "unit": "",
+    "city": "New York",
+    "region": "NY",
+    "postal_code": "10118",
+    "country": ""
+   },
+   "review": "no",
+   "id": "1"
+  },
+  {
+   "case_type": "hyphenated_house_number_queens",
+   "input": "37-02 Main St, Flushing, NY 11354",
+   "kind": "split",
+   "expected": {
+    "house_number": "37-02",
+    "street": "Main St",
+    "unit": "",
+    "city": "Flushing",
+    "region": "NY",
+    "postal_code": "11354",
+    "country": ""
+   },
+   "review": "no",
+   "id": "2"
+  },
+  {
+   "case_type": "unit_before_number",
+   "input": "Suite 400, 88 Harbor Blvd, Long Beach, CA 90802",
+   "kind": "split",
+   "expected": {
+    "house_number": "88",
+    "street": "Harbor Blvd",
+    "unit": "Suite 400",
+    "city": "Long Beach",
+    "region": "CA",
+    "postal_code": "90802",
+    "country": ""
+   },
+   "review": "no",
+   "id": "3"
+  },
+  {
+   "case_type": "canada_no_comma_before_province",
+   "input": "77 Pine Road, Toronto ON M5V 2T6",
+   "kind": "split",
+   "expected": {
+    "house_number": "77",
+    "street": "Pine Road",
+    "unit": "",
+    "city": "Toronto",
+    "region": "ON",
+    "postal_code": "M5V 2T6",
+    "country": ""
+   },
+   "review": "no",
+   "id": "4"
+  },
+  {
+   "case_type": "united_states",
+   "input": "2211 N Clark St Apt 3R, Chicago, IL 60614",
+   "kind": "split",
+   "expected": {
+    "house_number": "2211",
+    "street": "N Clark St",
+    "unit": "Apt 3R",
+    "city": "Chicago",
+    "region": "IL",
+    "postal_code": "60614",
+    "country": ""
+   },
+   "review": "no",
+   "id": "5"
+  },
+  {
+   "case_type": "post_office_box_with_periods",
+   "input": "P.O. Box 77, Halifax, NS B3J 2K9",
+   "kind": "split",
+   "expected": {
+    "house_number": "",
+    "street": "P.O. Box 77",
+    "unit": "",
+    "city": "Halifax",
+    "region": "NS",
+    "postal_code": "B3J 2K9",
+    "country": ""
+   },
+   "review": "no",
+   "id": "6"
+  },
+  {
+   "case_type": "street_with_direction_suffix",
+   "input": "1600 Grand Ave NW, Washington, DC 20001",
+   "kind": "split",
+   "expected": {
+    "house_number": "1600",
+    "street": "Grand Ave NW",
+    "unit": "",
+    "city": "Washington",
+    "region": "DC",
+    "postal_code": "20001",
+    "country": ""
+   },
+   "review": "no",
+   "id": "7"
+  },
+  {
+   "case_type": "fractional_house_number",
+   "input": "12 1/2 Oak St, Ithaca, NY 14850",
+   "kind": "split",
+   "expected": {
+    "house_number": "12 1/2",
+    "street": "Oak St",
+    "unit": "",
+    "city": "Ithaca",
+    "region": "NY",
+    "postal_code": "14850",
+    "country": ""
+   },
+   "review": "no",
+   "id": "8"
+  },
+  {
+   "case_type": "ordinal_street",
+   "input": "221 E 42nd St, New York, NY 10017",
+   "kind": "split",
+   "expected": {
+    "house_number": "221",
+    "street": "E 42nd St",
+    "unit": "",
+    "city": "New York",
+    "region": "NY",
+    "postal_code": "10017",
+    "country": ""
+   },
+   "review": "no",
+   "id": "9"
+  },
+  {
+   "case_type": "united_states_full",
+   "input": "12 N Main St Apt 4B, Springfield, IL 62704, USA",
+   "kind": "split",
+   "expected": {
+    "house_number": "12",
+    "street": "N Main St",
+    "unit": "Apt 4B",
+    "city": "Springfield",
+    "region": "IL",
+    "postal_code": "62704",
+    "country": "USA"
+   },
+   "review": "no",
+   "id": "10"
+  },
+  {
+   "case_type": "hold_street_or_city_boundary",
+   "input": "12 Main St West Springfield MA 01089",
+   "kind": "hold",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "yes",
+   "id": "11"
+  },
+  {
+   "case_type": "numbered_highway",
+   "input": "4500 US Highway 1, Princeton, NJ 08540",
+   "kind": "split",
+   "expected": {
+    "house_number": "4500",
+    "street": "US Highway 1",
+    "unit": "",
+    "city": "Princeton",
+    "region": "NJ",
+    "postal_code": "08540",
+    "country": ""
+   },
+   "review": "no",
+   "id": "12"
+  },
+  {
+   "case_type": "united_states_hash_unit",
+   "input": "77 Cedar Ln #12, Denver, CO 80202",
+   "kind": "split",
+   "expected": {
+    "house_number": "77",
+    "street": "Cedar Ln",
+    "unit": "#12",
+    "city": "Denver",
+    "region": "CO",
+    "postal_code": "80202",
+    "country": ""
+   },
+   "review": "no",
+   "id": "13"
+  },
+  {
+   "case_type": "united_kingdom_flat_before_number",
+   "input": "Flat 3, 22 Queen Street, Cardiff CF10 2BU, United Kingdom",
+   "kind": "split",
+   "expected": {
+    "house_number": "22",
+    "street": "Queen Street",
+    "unit": "Flat 3",
+    "city": "Cardiff",
+    "region": "",
+    "postal_code": "CF10 2BU",
+    "country": "United Kingdom"
+   },
+   "review": "no",
+   "id": "14"
+  },
+  {
+   "case_type": "post_office_box",
+   "input": "PO Box 482, Springfield, IL 62705",
+   "kind": "split",
+   "expected": {
+    "house_number": "",
+    "street": "PO Box 482",
+    "unit": "",
+    "city": "Springfield",
+    "region": "IL",
+    "postal_code": "62705",
+    "country": ""
+   },
+   "review": "no",
+   "id": "15"
+  },
+  {
+   "case_type": "united_kingdom_with_county",
+   "input": "5 Mill Lane, Ashford, Kent TN24 8AA",
+   "kind": "split",
+   "expected": {
+    "house_number": "5",
+    "street": "Mill Lane",
+    "unit": "",
+    "city": "Ashford",
+    "region": "Kent",
+    "postal_code": "TN24 8AA",
+    "country": ""
+   },
+   "review": "no",
+   "id": "16"
+  },
+  {
+   "case_type": "united_states_suite_abbreviation",
+   "input": "18 Harbor Rd Ste 5, Madison, WI 53703",
+   "kind": "split",
+   "expected": {
+    "house_number": "18",
+    "street": "Harbor Rd",
+    "unit": "Ste 5",
+    "city": "Madison",
+    "region": "WI",
+    "postal_code": "53703",
+    "country": ""
+   },
+   "review": "no",
+   "id": "17"
+  },
+  {
+   "case_type": "street_type_first",
+   "input": "1188 Avenue of the Americas, New York, NY 10036",
+   "kind": "split",
+   "expected": {
+    "house_number": "1188",
+    "street": "Avenue of the Americas",
+    "unit": "",
+    "city": "New York",
+    "region": "NY",
+    "postal_code": "10036",
+    "country": ""
+   },
+   "review": "no",
+   "id": "18"
+  },
+  {
+   "case_type": "street_and_city_only",
+   "input": "742 Maple Terrace, Springfield",
+   "kind": "split",
+   "expected": {
+    "house_number": "742",
+    "street": "Maple Terrace",
+    "unit": "",
+    "city": "Springfield",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "19"
+  },
+  {
+   "case_type": "canada_unit_word_before_number",
+   "input": "Unit 3, 15 Water St, Halifax, NS B3H 1A1",
+   "kind": "split",
+   "expected": {
+    "house_number": "15",
+    "street": "Water St",
+    "unit": "Unit 3",
+    "city": "Halifax",
+    "region": "NS",
+    "postal_code": "B3H 1A1",
+    "country": ""
+   },
+   "review": "no",
+   "id": "20"
+  },
+  {
+   "case_type": "canada_postal_code_without_space",
+   "input": "905 Granville St Unit 1402, Vancouver, BC V6Z1L3",
+   "kind": "split",
+   "expected": {
+    "house_number": "905",
+    "street": "Granville St",
+    "unit": "Unit 1402",
+    "city": "Vancouver",
+    "region": "BC",
+    "postal_code": "V6Z1L3",
+    "country": ""
+   },
+   "review": "no",
+   "id": "21"
+  },
+  {
+   "case_type": "united_states_zip_plus_four",
+   "input": "3100 Lakeview Dr Suite 200, Austin, TX 78701-2243",
+   "kind": "split",
+   "expected": {
+    "house_number": "3100",
+    "street": "Lakeview Dr",
+    "unit": "Suite 200",
+    "city": "Austin",
+    "region": "TX",
+    "postal_code": "78701-2243",
+    "country": ""
+   },
+   "review": "no",
+   "id": "22"
+  },
+  {
+   "case_type": "null_marker",
+   "input": "",
+   "kind": "keep",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "23"
+  },
+  {
+   "case_type": "united_kingdom_apartment_before_number",
+   "input": "Apartment 4, 7 Mill Lane, Ashford TN24 8AA",
+   "kind": "split",
+   "expected": {
+    "house_number": "7",
+    "street": "Mill Lane",
+    "unit": "Apartment 4",
+    "city": "Ashford",
+    "region": "",
+    "postal_code": "TN24 8AA",
+    "country": ""
+   },
+   "review": "no",
+   "id": "24"
+  },
+  {
+   "case_type": "null_marker",
+   "input": "n/a",
+   "kind": "keep",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "25"
+  },
+  {
+   "case_type": "region_written_in_full",
+   "input": "400 W Madison Blvd Fl 9, Chicago, Illinois 60606",
+   "kind": "split",
+   "expected": {
+    "house_number": "400",
+    "street": "W Madison Blvd",
+    "unit": "Fl 9",
+    "city": "Chicago",
+    "region": "Illinois",
+    "postal_code": "60606",
+    "country": ""
+   },
+   "review": "no",
+   "id": "26"
+  },
+  {
+   "case_type": "hold_building_name",
+   "input": "Rose Cottage, 5 Church Lane, Ashford TN23 1AB",
+   "kind": "hold",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "yes",
+   "id": "27"
+  },
+  {
+   "case_type": "house_number_with_letter",
+   "input": "22B Elm Ave, Boston, MA 02108",
+   "kind": "split",
+   "expected": {
+    "house_number": "22B",
+    "street": "Elm Ave",
+    "unit": "",
+    "city": "Boston",
+    "region": "MA",
+    "postal_code": "02108",
+    "country": ""
+   },
+   "review": "no",
+   "id": "28"
+  },
+  {
+   "case_type": "unit_with_period",
+   "input": "501 W 5th St Apt. 2, Austin, TX 78701",
+   "kind": "split",
+   "expected": {
+    "house_number": "501",
+    "street": "W 5th St",
+    "unit": "Apt. 2",
+    "city": "Austin",
+    "region": "TX",
+    "postal_code": "78701",
+    "country": ""
+   },
+   "review": "no",
+   "id": "29"
+  },
+  {
+   "case_type": "unit_word_and_hash",
+   "input": "9 Birch Rd Unit #5, Burlington, VT 05401",
+   "kind": "split",
+   "expected": {
+    "house_number": "9",
+    "street": "Birch Rd",
+    "unit": "Unit #5",
+    "city": "Burlington",
+    "region": "VT",
+    "postal_code": "05401",
+    "country": ""
+   },
+   "review": "no",
+   "id": "30"
+  },
+  {
+   "case_type": "united_kingdom",
+   "input": "10 High Street, Bristol BS1 4DJ",
+   "kind": "split",
+   "expected": {
+    "house_number": "10",
+    "street": "High Street",
+    "unit": "",
+    "city": "Bristol",
+    "region": "",
+    "postal_code": "BS1 4DJ",
+    "country": ""
+   },
+   "review": "no",
+   "id": "31"
+  },
+  {
+   "case_type": "canada_french_street",
+   "input": "1200 Rue Sainte-Catherine O, Montr\u00e9al, QC H3B 1K9, Canada",
+   "kind": "split",
+   "expected": {
+    "house_number": "1200",
+    "street": "Rue Sainte-Catherine O",
+    "unit": "",
+    "city": "Montr\u00e9al",
+    "region": "QC",
+    "postal_code": "H3B 1K9",
+    "country": "Canada"
+   },
+   "review": "no",
+   "id": "32"
+  },
+  {
+   "case_type": "canada_french_street",
+   "input": "16 Rue du Port, Qu\u00e9bec, QC G1K 4E3",
+   "kind": "split",
+   "expected": {
+    "house_number": "16",
+    "street": "Rue du Port",
+    "unit": "",
+    "city": "Qu\u00e9bec",
+    "region": "QC",
+    "postal_code": "G1K 4E3",
+    "country": ""
+   },
+   "review": "no",
+   "id": "33"
+  },
+  {
+   "case_type": "canada_unit_hyphen_civic_number",
+   "input": "12-345 King St W, Toronto, ON M5V 1K4",
+   "kind": "split",
+   "expected": {
+    "house_number": "345",
+    "street": "King St W",
+    "unit": "12",
+    "city": "Toronto",
+    "region": "ON",
+    "postal_code": "M5V 1K4",
+    "country": ""
+   },
+   "review": "no",
+   "id": "34"
+  },
+  {
+   "case_type": "no_commas",
+   "input": "88 Elm St Springfield MA 01103",
+   "kind": "split",
+   "expected": {
+    "house_number": "88",
+    "street": "Elm St",
+    "unit": "",
+    "city": "Springfield",
+    "region": "MA",
+    "postal_code": "01103",
+    "country": ""
+   },
+   "review": "no",
+   "id": "35"
+  },
+  {
+   "case_type": "unit_after_comma",
+   "input": "400 W Madison St, Floor 9, Chicago, IL 60606",
+   "kind": "split",
+   "expected": {
+    "house_number": "400",
+    "street": "W Madison St",
+    "unit": "Floor 9",
+    "city": "Chicago",
+    "region": "IL",
+    "postal_code": "60606",
+    "country": ""
+   },
+   "review": "no",
+   "id": "36"
+  },
+  {
+   "case_type": "post_office_box_in_words",
+   "input": "Post Office Box 12, Bangor, ME 04402",
+   "kind": "split",
+   "expected": {
+    "house_number": "",
+    "street": "Post Office Box 12",
+    "unit": "",
+    "city": "Bangor",
+    "region": "ME",
+    "postal_code": "04402",
+    "country": ""
+   },
+   "review": "no",
+   "id": "37"
+  },
+  {
+   "case_type": "united_states",
+   "input": "845 Oak Avenue, Portland, OR 97205",
+   "kind": "split",
+   "expected": {
+    "house_number": "845",
+    "street": "Oak Avenue",
+    "unit": "",
+    "city": "Portland",
+    "region": "OR",
+    "postal_code": "97205",
+    "country": ""
+   },
+   "review": "no",
+   "id": "38"
+  },
+  {
+   "case_type": "no_commas_with_unit",
+   "input": "2211 N Clark St Apt 3R Chicago IL 60614",
+   "kind": "split",
+   "expected": {
+    "house_number": "2211",
+    "street": "N Clark St",
+    "unit": "Apt 3R",
+    "city": "Chicago",
+    "region": "IL",
+    "postal_code": "60614",
+    "country": ""
+   },
+   "review": "no",
+   "id": "39"
+  },
+  {
+   "case_type": "hold_not_an_address",
+   "input": "see notes",
+   "kind": "hold",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "yes",
+   "id": "40"
+  },
+  {
+   "case_type": "united_kingdom_short_country",
+   "input": "31 Park Row, Leeds LS1 5JL, UK",
+   "kind": "split",
+   "expected": {
+    "house_number": "31",
+    "street": "Park Row",
+    "unit": "",
+    "city": "Leeds",
+    "region": "",
+    "postal_code": "LS1 5JL",
+    "country": "UK"
+   },
+   "review": "no",
+   "id": "41"
+  },
+  {
+   "case_type": "no_house_number",
+   "input": "Main Street, Springfield",
+   "kind": "split",
+   "expected": {
+    "house_number": "",
+    "street": "Main Street",
+    "unit": "",
+    "city": "Springfield",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "42"
+  },
+  {
+   "case_type": "no_postal_code",
+   "input": "1509 Pine St, Seattle, WA",
+   "kind": "split",
+   "expected": {
+    "house_number": "1509",
+    "street": "Pine St",
+    "unit": "",
+    "city": "Seattle",
+    "region": "WA",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "43"
+  },
+  {
+   "case_type": "street_and_city_only",
+   "input": "58 Bay St, Toronto",
+   "kind": "split",
+   "expected": {
+    "house_number": "58",
+    "street": "Bay St",
+    "unit": "",
+    "city": "Toronto",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "no",
+   "id": "44"
+  },
+  {
+   "case_type": "canada_french_boulevard",
+   "input": "1500 Boul Ren\u00e9-L\u00e9vesque O, Montr\u00e9al, QC H3G 1T7",
+   "kind": "split",
+   "expected": {
+    "house_number": "1500",
+    "street": "Boul Ren\u00e9-L\u00e9vesque O",
+    "unit": "",
+    "city": "Montr\u00e9al",
+    "region": "QC",
+    "postal_code": "H3G 1T7",
+    "country": ""
+   },
+   "review": "no",
+   "id": "45"
+  },
+  {
+   "case_type": "hold_intersection",
+   "input": "Corner of Main St and 2nd Ave, Springfield, IL",
+   "kind": "hold",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "yes",
+   "id": "46"
+  },
+  {
+   "case_type": "hold_two_addresses",
+   "input": "77 Cedar Ln, Denver, CO 80202 / 80 Cedar Ln, Denver, CO 80202",
+   "kind": "hold",
+   "expected": {
+    "house_number": "",
+    "street": "",
+    "unit": "",
+    "city": "",
+    "region": "",
+    "postal_code": "",
+    "country": ""
+   },
+   "review": "yes",
+   "id": "47"
+  },
+  {
+   "case_type": "united_states_country_words",
+   "input": "1509 Pine St Unit 3, Seattle, WA 98101, United States",
+   "kind": "split",
+   "expected": {
+    "house_number": "1509",
+    "street": "Pine St",
+    "unit": "Unit 3",
+    "city": "Seattle",
+    "region": "WA",
+    "postal_code": "98101",
+    "country": "United States"
+   },
+   "review": "no",
+   "id": "48"
+  }
+ ]
+}
