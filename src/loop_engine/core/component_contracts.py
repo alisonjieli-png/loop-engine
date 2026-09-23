@@ -331,10 +331,14 @@ def self_test() -> dict:
         "unknown_state": {**first, "implementation_state": "shipped"},
         "extra_field": {**first, "request_version": "v1"},
         "missing_field": {key: value for key, value in first.items() if key != "privacy"},
+        "field_not_a_token": {**first, "operation": "Select Context"},
+        "identifier_not_an_identifier": {**first, "interaction_id": "Context Selection"},
+        "untyped_field": {**first, "retry": 3},
     }
     refused_rows = sorted(name for name, row in wrong_rows.items()
                           if interaction_row_errors(row, ontology))
     duplicated = {**interactions, "interactions": [first, first]}
+    extra_catalog_key = {**interactions, "owner": "fixture"}
     unregistered_refused = False
     try:
         load_component_resource("forbidden_paths.json", "forbidden_paths/v1")
@@ -360,6 +364,7 @@ def self_test() -> dict:
                    == len(interactions["interactions"])
                    and not interaction_catalog_errors(interactions, ontology)
                    and bool(interaction_catalog_errors(duplicated, ontology))
+                   and bool(interaction_catalog_errors(extra_catalog_key, ontology))
                    and refused_rows == sorted(wrong_rows)),
         "detail": (f"{len(interactions['interactions'])} rows typed; refused "
                    f"{refused_rows}; installed errors "

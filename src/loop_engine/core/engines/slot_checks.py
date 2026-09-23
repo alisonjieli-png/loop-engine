@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import replace
+from types import MappingProxyType
 from unittest.mock import patch
 
 from ..component_contracts import (
@@ -88,18 +89,66 @@ def _boundary_join_holds(base, sources, rules) -> bool:
                        work_boundaries=["external harness executoin"])
     unbound = _with(base, slot_id="fixture_unbound", work_boundaries=[],
                     planned_work_boundaries=[])
-    codes = _codes((misspelled, unbound), sources, rules)
+    # A plan that names a row the registry already holds is stale.
+    stale = _with(base, slot_id="fixture_stale_boundary",
+                  planned_work_boundaries=[{"boundary": "model invocation", "added_by": "F3"}])
+    codes = _codes((misspelled, unbound, stale), sources, rules)
     return (("fixture_misspelled", "boundary_not_registered") in codes
-            and ("fixture_unbound", "run_time_slot_without_boundary") in codes)
+            and ("fixture_unbound", "run_time_slot_without_boundary") in codes
+            and ("fixture_stale_boundary", "planned_boundary_already_registered") in codes)
 
 
 def _suite_rule_holds(base, sources, rules) -> bool:
-    """The condition of the collected-suite check, for one rule set."""
-    parked = _with(base, slot_id="fixture_parked_suite",
-                   implementation_state="active", planned_symbols=[],
+    """The condition of the collected-suite check, for one rule set.
+
+    Each fixture isolates one guard: a suite listed as parked, a suite the
+    main self-test does not fold in, and a suite that does not exist."""
+    active = {"implementation_state": "active", "planned_symbols": []}
+    parked = _with(base, slot_id="fixture_parked_suite", **active,
                    conformance_suite="core.capability_directory")
+    adopted = _with(base, slot_id="fixture_adopted", **active)
+    listed_as_parked = replace(
+        sources, parked_suites=sources.parked_suites | {base.conformance_suite})
+    not_folded = replace(
+        sources, collected_suites=sources.collected_suites - {base.conformance_suite})
+    ghost = _with(base, slot_id="fixture_ghost_suite", conformance_suite="core.no_such_suite")
+    not_collected = ("fixture_adopted", "active_slot_suite_not_collected")
     return (("fixture_parked_suite", "active_slot_suite_not_collected")
-            in _codes((parked,), sources, rules))
+            in _codes((parked,), sources, rules)
+            and not_collected in _codes((adopted,), listed_as_parked, rules)
+            and not_collected in _codes((adopted,), not_folded, rules)
+            and ("fixture_ghost_suite", "slot_suite_not_found") in _codes((ghost,), sources, rules))
+
+
+#: One module for each way a symbol resolves: a class or function, a class
+#: member, and a module-level table (the module path itself is the fourth).
+_HIDDEN_WHILE_RESOLVING = {
+    "loop_engine.core.external_harness": "core.external_harness.ExternalHarnessAdapter",
+    "loop_engine.catalog.stores.sqlite_store": "catalog.stores.sqlite_store.SQLiteRecordStore.put",
+    "loop_engine.core.decisions.configuration": "core.decisions.configuration.ADAPTER_FACTORIES",
+}
+
+
+def _modules_imported_while_resolving(symbols) -> list:
+    """Resolve symbols while their modules are taken out of ``sys.modules``.
+
+    A resolver that imported a module to answer would put it back, so a
+    hidden module present afterwards names an import. Every module is
+    restored as it was, whatever the answer (the pattern of
+    ``backend_isolation.base_import_report``)."""
+    saved = {name: sys.modules.pop(name, None) for name in _HIDDEN_WHILE_RESOLVING}
+    try:
+        fresh = current_join_sources()
+        for symbol in (*_HIDDEN_WHILE_RESOLVING.values(), "core.decisions.configuration",
+                       *symbols):
+            fresh.resolve_symbol(symbol)
+        return sorted(name for name in saved if name in sys.modules)
+    finally:
+        for name, module in saved.items():
+            if module is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = module
 
 
 def self_test() -> dict:
@@ -111,16 +160,14 @@ def self_test() -> dict:
     catalog = load_engine_slot_catalog()
     sources = current_join_sources()
     report = slot_index_report(catalog, sources)
-    # Everything the index itself needs is imported now; resolving every
-    # symbol again through a fresh resolver must import nothing further.
-    before_modules = set(sys.modules)
     fresh = current_join_sources()
     symbols = sorted({symbol for slot in catalog.slots for symbol in slot.symbol_references()})
     unresolved_symbols = [symbol for symbol in symbols if not fresh.resolve_symbol(symbol)
                           and symbol not in {planned for slot in catalog.slots
                                              for planned in slot.planned_symbols}]
-    imported_while_resolving = sorted(
-        name for name in set(sys.modules) - before_modules if name.startswith("loop_engine."))
+    # Resolving must read source only: modules taken out of sys.modules stay
+    # out while a fresh resolver answers for every symbol the catalogue names.
+    imported_while_resolving = _modules_imported_while_resolving(symbols)
     by_id = {slot.slot_id: slot for slot in catalog.slots}
     step = by_id["step_executor"]
     store = by_id["record_store"]
@@ -139,6 +186,8 @@ def self_test() -> dict:
         EngineSlotCatalog("1.0.0", (planned_without_envelope,)), sources)
     check("every_engine_slot_names_registered_work_boundaries_or_a_release_reason",
           _boundary_join_holds(step, sources, SLOT_RULES)
+          and _refused(lambda: _with(step, planned_work_boundaries=[
+              {"boundary": "external harness execution", "added_by": "X3"}]))
           and ("fixture_planned_naming_nothing", "planned_slot_names_no_envelope_row")
           in _codes((planned_naming_nothing,), sources)
           and fixture_report["planned_without_envelope"]
@@ -152,6 +201,11 @@ def self_test() -> dict:
 
     # 2. The edge is read from the interaction rows, never restated.
     edge = slot_edge_contracts(step, sources)
+    orphan = {**sources.interaction_rows[step.interactions[0]],
+              "interaction_id": "core.interaction.fixture.orphan"}
+    with_orphan = replace(sources, interaction_rows=MappingProxyType(
+        {**sources.interaction_rows, orphan["interaction_id"]: orphan}))
+    refused_rows = replace(sources, interaction_errors=("fixture:unknown_field:extra",))
     check("every_engine_slot_edge_is_read_from_its_interaction_rows",
           _refused(lambda: EngineSlot.from_dict(
               {**step.to_dict(), "request_contract": "step_run_request/v1"}))
@@ -161,6 +215,18 @@ def self_test() -> dict:
           and ("fixture_unknown_row", "interaction_not_catalogued") in _codes(
               (_with(step, slot_id="fixture_unknown_row",
                      interactions=["core.interaction.step.no_such_row"]),), sources)
+          and ("fixture_no_edge", "run_time_slot_without_interaction") in _codes(
+              (_with(step, slot_id="fixture_no_edge", interactions=[]),), sources)
+          and ("fixture_active_edge", "interaction_state_differs_from_slot") in _codes(
+              (_with(step, slot_id="fixture_active_edge", implementation_state="active",
+                     planned_symbols=[]),), sources)
+          and ("fixture_first,fixture_second", "interaction_joined_by_several_slots") in _codes(
+              (_with(step, slot_id="fixture_first"), _with(step, slot_id="fixture_second")),
+              sources)
+          and any(item.code == "candidate_interaction_joined_by_no_slot"
+                  and item.detail == orphan["interaction_id"]
+                  for item in validate_slot_catalog(catalog, with_orphan))
+          and ("", "interaction_catalogue_refused") in _codes((step,), refused_rows)
           and not [item for item in findings if item.rule == "interaction_join"],
           f"step edge newest first: {edge}")
 
@@ -192,6 +258,10 @@ def self_test() -> dict:
               (_with(step, slot_id="fixture_stale_plan",
                      planned_symbols=[*step.planned_symbols,
                                       "core.external_harness.HarnessRegistry"]),), sources)
+          and _refused(lambda: _with(step, engine_protocol="core.external harness"))
+          and _refused(lambda: _with(step, native_registry=""))
+          and _refused(lambda: _with(step, planned_symbols=[
+              *step.planned_symbols, "core.no_such_component.engines"]))
           and not [item for item in findings if item.rule == "symbol_resolution"]
           and not unresolved_symbols and not imported_while_resolving,
           f"{len(symbols)} symbols read from source; imported {imported_while_resolving}")
@@ -199,6 +269,11 @@ def self_test() -> dict:
     # 5. An active slot's conformance suite is collected by the main self-test.
     check("every_active_engine_slot_conformance_suite_is_collected",
           _suite_rule_holds(step, sources, SLOT_RULES)
+          # Both suite lists were read: the step slot's suite is folded into
+          # the main self-test and the capability directory's is parked.
+          and step.conformance_suite in sources.collected_suites
+          and "core.capability_directory" in sources.parked_suites
+          and _refused(lambda: _with(step, conformance_suite=""))
           and not [item for item in findings if item.rule == "suite_collection"],
           f"candidate suites not collected: {report['candidate_suites_not_collected']}")
     check("removed_collected_suite_requirement_is_detected",
@@ -222,24 +297,56 @@ def self_test() -> dict:
           and all(slot.unavailable_result.value for slot in catalog.slots),
           "a slot without a declared unavailable answer is refused")
 
-    # 7. Every enumerated field uses its closed vocabulary.
+    # 7. Every enumerated field uses its closed vocabulary, and a run-time slot
+    # lists the failure kinds every engine can report. Each fixture breaks one
+    # field and nothing else, so each guard is shown on its own: the selection
+    # mode is changed on a slot that ranks nothing, because a ranked slot with
+    # another mode is already refused by the evidence rule.
+    binding = step.bindings[0].to_dict()
     check("every_slot_uses_the_closed_vocabularies",
-          _refused(lambda: _with(step, selection_mode="sometimes"))
+          _refused(lambda: _with(store, selection_mode="sometimes"))
           and _refused(lambda: _with(step, fallback_ceiling="always"))
-          and _refused(lambda: _with(step, failure_kinds=["engine_tired"]))
+          and _refused(lambda: _with(step, failure_kinds=[*step.failure_kinds, "engine_tired"]))
+          and _refused(lambda: _with(step, failure_kinds=["engine_unavailable"]))
           and _refused(lambda: _with(step, implementation_state="shipped"))
-          and _refused(lambda: _with(step, scope_fields=["similar_task"])),
-          "selection mode sometimes and fallback ceiling always are refused")
+          and _refused(lambda: _with(step, scope_fields=["similar_task"]))
+          and _refused(lambda: _with(step, design_table="unknown_table"))
+          and _refused(lambda: _with(step, ranking_objectives=["popularity"]))
+          and _refused(lambda: _with(by_id["model_access"], nesting_scope_rule="loosely_nested"))
+          and _refused(lambda: _with(step, unavailable_result={
+              "form": "exception", "value": "unavailable", "answer_exists": True}))
+          and _refused(lambda: _with(step, engine_kind_groups={"fast": list(step.engine_kinds)}))
+          and _refused(lambda: _with(step, engine_kinds=[], engine_kind_groups={}))
+          and all(_refused(lambda change=change: _with(step, bindings=[{**binding, **change}]))
+                  for change in ({"context": "browser"}, {"selection_phase": "sometime"},
+                                 {"binding_site": "somewhere"})),
+          "a value outside each closed vocabulary is refused, one field at a time")
 
     # 8. Release-time slots are not run-time boundaries.
+    release_binding = release.bindings[0].to_dict()
+    hosted = by_id["secret_resolver"]
     check("release_slots_name_no_run_time_boundary_and_state_a_reason",
           _refused(lambda: _with(release, work_boundaries=["api endpoint"]))
           and _refused(lambda: _with(release, release_reason=""))
           and _refused(lambda: _with(release, fallback_ceiling="before_dispatch_only"))
           and _refused(lambda: _with(step, release_reason="deployment choice"))
+          # A release slot binds only in the release record; a run-time slot never does.
+          and _refused(lambda: _with(release, bindings=[binding]))
+          and _refused(lambda: _with(step, bindings=[binding, release_binding]))
+          and _refused(lambda: _with(release, bindings=[
+              {**release_binding, "selection_phase": "host_start"}]))
+          and _refused(lambda: _with(release, unavailable_result={
+              "form": "result_status", "value": "unavailable", "answer_exists": False}))
+          and _refused(lambda: _with(step, unavailable_result={
+              "form": "release_refused", "value": "engine_not_bound", "answer_exists": True}))
+          # One binding for each context, and a hosted binding at host start.
+          and _refused(lambda: _with(step, bindings=[]))
+          and _refused(lambda: _with(step, bindings=[binding, binding]))
+          and _refused(lambda: _with(hosted, bindings=[
+              {**hosted.bindings[0].to_dict(), "selection_phase": "per_attempt"}]))
           and all(slot.release_reason and not slot.work_boundaries
                   for slot in catalog.slots if slot.design_table == "release_time"),
-          "release slots carry a reason and no boundary")
+          "release slots carry a reason and no boundary, and bind only at release")
 
     # 9. The catalogue holds every slot of the design tables.
     tables = {"engine_side_run_time": DESIGN_ENGINE_SIDE_SLOTS,
@@ -251,7 +358,10 @@ def self_test() -> dict:
     check("every_slot_of_the_design_tables_is_catalogued",
           all(sorted(placed[table]) == sorted(ids) for table, ids in tables.items())
           and all(slot.roadmap_steps for slot in additions)
-          and len(catalog.slots) == sum(map(len, tables.values())) + len(additions),
+          and len(catalog.slots) == sum(map(len, tables.values())) + len(additions)
+          and _refused(lambda: EngineSlotCatalog("1.0.0", (step, step)))
+          and _refused(lambda: _with(step, design_table="roadmap_addition", roadmap_steps=[]))
+          and _refused(lambda: _with(step, slot_id="Step Executor")),
           f"{len(catalog.slots)} slots; additions {[slot.slot_id for slot in additions]}")
 
     # 10. Slots nest at every level, from a whole step down to search and
@@ -290,6 +400,7 @@ def self_test() -> dict:
           and not _codes((planned_home,), sources) & {("fixture_planned_home",
                                                        "folder_row_missing")}
           and home_report["planned_folder_without_row"] == ["fixture_planned_home"]
+          and _refused(lambda: _with(step, component_folder=""))
           and not [item for item in findings if item.rule == "folder_join"],
           f"planned folders without a row: {report['planned_folder_without_row']}")
 
@@ -320,8 +431,9 @@ def self_test() -> dict:
           and _refused(lambda: EngineSlot.from_dict(newer))
           and _refused(lambda: EngineSlotCatalog.from_dict(
               {**catalog.to_dict(), "record_type": "engine_slot_catalog/v2"}))
-          and _refused(lambda: EngineSlotCatalog.from_dict({**catalog.to_dict(), "owner": "x"})),
-          "an engine list or a newer version is refused")
+          and _refused(lambda: EngineSlotCatalog.from_dict({**catalog.to_dict(), "owner": "x"}))
+          and _refused(lambda: _with(step, engine_protocol_version="external_harness_adapter")),
+          "an engine list, a newer version or an unversioned protocol is refused")
     with patch.object(slot_module, "_refuse_unknown_keys", lambda value, fields, label: None):
         accepted_without_guard = not _refused(lambda: EngineSlot.from_dict(extra))
     check("removed_slot_unknown_key_refusal_is_detected",
@@ -346,9 +458,12 @@ def self_test() -> dict:
                                      ranking_objectives=["tokens"]))
           and _refused(lambda: _with(by_id["secret_resolver"], ranking_objectives=["tokens"],
                                      evidence_minimum_floor=10))
+          and _refused(lambda: _with(by_id["secret_resolver"], evidence_minimum_floor=10))
+          and _refused(lambda: _with(step, scope_fields=[]))
           and all(slot.evidence_minimum_floor >= 10 for slot in catalog.slots
                   if slot.ranking_objectives),
-          "a floor of three, or objectives on a never-ranked slot, are refused")
+          "a floor of three, a floor without objectives, objectives on a never-ranked "
+          "slot, or a run-time slot without a scope, are refused")
 
     # 16. A nested slot fixes its parent in its scope, or says why not.
     check("a_nested_slot_fixes_its_parent_in_scope_or_states_why_not",
@@ -357,9 +472,15 @@ def self_test() -> dict:
               field for field in by_id["model_access"].scope_fields
               if field != "parent_installation"]))
           and _refused(lambda: _with(step, nesting_scope_rule="independent_of_parent"))
+          and _refused(lambda: _with(by_id["model_access"],
+                                     nesting_scope_rule="joint_selection_with_parent"))
+          and _refused(lambda: _with(step, nesting_scope_rule="parent_installation_in_scope",
+                                     scope_fields=[*step.scope_fields, "parent_installation"]))
           and ("fixture_one_sided", "joined_slots_not_symmetric") in _codes(
               (_with(step, slot_id="fixture_one_sided", joined_with=["typed_decision"]),
-               by_id["typed_decision"]), sources),
+               by_id["typed_decision"]), sources)
+          and ("fixture_lonely", "joined_slot_not_catalogued") in _codes(
+              (_with(step, slot_id="fixture_lonely", joined_with=["no_such_slot"]),), sources),
           "joined slots name each other; nested slots fix or explain their parent")
 
     # 17. A slot with weaker isolation engines never falls back automatically.
