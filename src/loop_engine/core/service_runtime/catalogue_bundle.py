@@ -244,9 +244,20 @@ def read_bundle(folder, *, license_policy, family_policy, verify_blobs=True):
 
 
 def bundle_payloads(blobs, entry):
-    """Yield the verified bytes of every file of one bundle item, in path order."""
+    """Yield the verified bytes of every file of one bundle item that the bundle carries, in path order.
+
+    A bundle may leave out a file whose exact bytes the body store already
+    holds, so a new release of a large library carries only new and changed
+    files. Publishing refuses to activate a release until every file it names
+    is stored and reads back under its digest.
+    """
     for file in entry.package.files:
-        payload = blobs.read(file.digest, file.size_bytes)
+        try:
+            payload = blobs.read(file.digest, file.size_bytes)
+        except ServiceRuntimeError as error:
+            if error.code == "body_missing":
+                continue
+            raise
         if entry.package.body_form == FILE_BODY:
             try:
                 payload.decode("utf-8")
@@ -268,7 +279,8 @@ def write_bundle(folder, *, schema, lines, payloads, notes="", change_notes=None
     (root / BLOBS_FOLDER).mkdir(parents=True)
     blobs = VolumeBodyStore(str((root / BLOBS_FOLDER).resolve()), writes_authorized=True)
     for payload in payloads:
-        blobs.put(payload)
+        blobs.put(payload, durable=False)
+    blobs.sync()
     rendered = b"".join(canonical_bytes(line) + b"\n"
                         for line in sorted(lines, key=lambda line: line["reference"]["identity"]))
     (root / ITEMS_FILE).write_bytes(rendered)

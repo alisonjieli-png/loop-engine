@@ -225,7 +225,9 @@ class CatalogueBodyStore(Protocol):
 
     def read(self, digest: str, size_bytes: int) -> bytes: ...
 
-    def put(self, payload: bytes, *, expected_digest: "str | None" = None) -> dict: ...
+    def put(self, payload: bytes, *, expected_digest: "str | None" = None, durable: bool = True) -> dict: ...
+
+    def sync(self) -> None: ...
 
 
 def require_body_store(store, *, write=False):
@@ -265,6 +267,7 @@ class VolumeBodyStore:
         if type(maximum_file_bytes) is not int or not 1 <= maximum_file_bytes <= MAXIMUM_PACKAGE_BYTES:
             _refuse("body_store_root_invalid", "the file allowance is a positive bounded byte count")
         self.root = path
+        self._root = str(path)
         self.writes_authorized = writes_authorized
         self.maximum_file_bytes = maximum_file_bytes
 
@@ -281,9 +284,9 @@ class VolumeBodyStore:
 
     def _folders(self, digest, *, create=False):
         """Return the object's folder after checking every folder on the way is real."""
-        folder = self.root
+        folder = self._root
         for part in ("sha256", digest[:2]):
-            folder = folder / part
+            folder = os.path.join(folder, part)
             try:
                 info = os.lstat(folder)
             except FileNotFoundError:
@@ -304,7 +307,7 @@ class VolumeBodyStore:
             _refuse("body_size_mismatch", "a read names the exact size it expects")
         if size_bytes > self.maximum_file_bytes:
             _refuse("body_too_large", "the object is larger than this store's file allowance")
-        target = self._folders(digest) / digest
+        target = os.path.join(self._folders(digest), digest)
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
         try:
             descriptor = os.open(target, flags)
@@ -326,8 +329,12 @@ class VolumeBodyStore:
             _refuse("body_digest_mismatch", "the object bytes differ from their digest")
         return payload
 
-    def put(self, payload, *, expected_digest=None):
-        """Store bytes under their digest once; an existing different object is never replaced."""
+    def put(self, payload, *, expected_digest=None, durable=True):
+        """Store bytes under their digest once; an existing different object is never replaced.
+
+        `durable=False` leaves the flush to one later `sync()`, for a caller
+        that writes many objects and syncs once before anything refers to them.
+        """
         if not self.writes_authorized:
             _refuse("body_store_writes_not_authorized", "this body store was opened for reading")
         if not isinstance(payload, bytes):
@@ -340,19 +347,20 @@ class VolumeBodyStore:
         folder = self._folders(digest, create=True)
         if self._present(digest, len(payload)):
             return {"digest": digest, "size_bytes": len(payload), "written": False}
-        temporary = folder / f".{digest}.{secrets.token_hex(8)}.partial"
+        temporary = os.path.join(folder, f".{digest}.{secrets.token_hex(8)}.partial")
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
         descriptor = os.open(temporary, flags, 0o444)
         try:
             with os.fdopen(descriptor, "wb") as handle:
                 handle.write(payload)
                 handle.flush()
-                os.fsync(handle.fileno())
+                if durable:
+                    os.fsync(handle.fileno())
             try:
                 # A hard link creates the name only when it is absent, so a
                 # second writer, a crash or a planted file can never be
                 # replaced by this write.
-                _link_once(temporary, folder / digest)
+                _link_once(temporary, os.path.join(folder, digest))
             except FileExistsError:
                 pass
         finally:
@@ -360,10 +368,15 @@ class VolumeBodyStore:
                 os.unlink(temporary)
             except FileNotFoundError:
                 pass
-        _sync_folder(folder)
+        if durable:
+            _sync_folder(folder)
         if not self._present(digest, len(payload)):
             _refuse("body_store_write_failed", "the stored object could not be read back")
         return {"digest": digest, "size_bytes": len(payload), "written": True}
+
+    def sync(self):
+        """Make every object written with `durable=False` durable before anything refers to it."""
+        os.sync()
 
     def _present(self, digest, size_bytes):
         try:

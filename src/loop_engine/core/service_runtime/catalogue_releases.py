@@ -241,7 +241,9 @@ def publish(context, bundle, *, expected_release=None, clock=time.time):
     from .catalogue_bundle import bundle_payloads
     for entry in bundle.items:
         for payload, file in bundle_payloads(blobs, entry):
-            written += body_store.put(payload, expected_digest=file.digest)["written"]
+            written += body_store.put(payload, expected_digest=file.digest, durable=False)["written"]
+    # One flush for every body written above, before any record names them.
+    body_store.sync()
     _write_immutable(binding, [(SCHEMA_KIND, bundle.schema.digest, bundle.schema.to_dict())]
                      + [(ITEM_KIND, entry.version, entry.document) for entry in bundle.items])
     now = int(clock())
@@ -307,8 +309,14 @@ def require_complete_release(binding, store, document, body_store):
         row = binding.read(store, ITEM_KIND, version)
         if row is None:
             _refuse("catalogue_release_incomplete", "the release names an item version the store does not hold")
-        for file in CataloguePackage.from_dict(row["payload"]["package"]).files:
-            body_store.read(file.digest, file.size_bytes)
+        package = CataloguePackage.from_dict(row["payload"]["package"])
+        for file in package.files:
+            data = body_store.read(file.digest, file.size_bytes)
+            if package.body_form == "file":
+                try:
+                    data.decode("utf-8")
+                except UnicodeDecodeError:
+                    _refuse("package_file_not_text", "the file body form serves UTF-8 text only")
 
 
 def rollback(context, *, to_release, expected_release, clock=time.time):
@@ -366,6 +374,8 @@ def withdraw(context, *, identity, note_text, item_version=None, all_versions=Fa
                 item_version = dict(active.items).get(identity) if active is not None else None
             _item_row, payload = (_payload(binding, store, ITEM_KIND, item_version, ITEM_VERSION_RECORD_TYPE)
                                   if item_version else (None, None))
+            if payload is not None and payload["reference"]["identity"] != identity:
+                _refuse("catalogue_item_not_found", "that item version belongs to another identity")
             chosen = {item_version: payload} if payload is not None else {}
     if not chosen:
         _refuse("catalogue_item_not_found", "the store holds no version of that item to withdraw")

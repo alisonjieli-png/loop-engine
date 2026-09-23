@@ -107,6 +107,8 @@ class Fixture:
         self.payloads = [data for line in lines for data in self._bytes.get(line["reference"]["identity"], ())]
         return publish(self.context, self.bundle(lines, **{k: v for k, v in fields.items() if k != "expected"}),
                        expected_release=fields.get("expected"))
+    # `payloads` passed to `publish` travels to `bundle`, which writes exactly
+    # those bodies, so a check can write an incremental bundle.
 
     _bytes = {}
 
@@ -354,6 +356,17 @@ def _release_checks(check):
                 outcome = refused(lambda: case.publish(lines), "catalogue_release_incomplete")
             return outcome and status(case.context)["active_release_id"] == second["release_id"]
         check("a_partial_publish_never_becomes_active", partial())
+        # An incremental bundle may leave out a body the store already holds,
+        # and never one it lacks.
+        reused = case.publish([case.line("clean_names", "# Clean names\ntwo\n", attributes={"domain": ["data"]}),
+                               case.line("profile_column", "# Profile\none\n"), case.line("new_item", "# New\n"),
+                               case.line("carried_only", "# Carried\n")], payloads=[b"# Carried\n"])
+        absent = [case.line("clean_names", "# Clean names\ntwo\n", attributes={"domain": ["data"]}),
+                  case.line("never_stored", "# Never stored\n")]
+        check("an_incremental_bundle_reuses_stored_bodies_and_never_names_a_missing_one",
+              reused["state"] == "published" and reused["bodies_written"] == 1
+              and refused(lambda: case.publish(absent, payloads=[]), "body_missing")
+              and status(case.context)["active_release_id"] == reused["release_id"])
         with patch.object(catalogue_releases, "require_complete_release", lambda *arguments: None):
             check("removed_complete_release_rule_is_detected", not partial())
     _withdrawal_checks(check)
@@ -449,6 +462,38 @@ def _refresh_and_grant_checks(check):
                   not keeps_previous() and binding.current_view().release_id == third["release_id"])
 
 
+def _schema_as_data_checks(check):
+    """A keyword attribute nobody has used before is published, searched and filtered as data."""
+    from .catalogue_search import authorized_hits
+    added = {**SCHEMA, "attributes": [*SCHEMA["attributes"], {
+        "name": "harness_layout", "type": "keyword", "searchable": True, "filterable": True, "shown": True}]}
+
+    def new_attribute_works():
+        with fixture() as case:
+            try:
+                case.publish([case.line("layout_one", "# One\n", attributes={"harness_layout": "skill_folder"}),
+                              case.line("layout_two", "# Two\n", attributes={"harness_layout": "single_file"})],
+                             schema=added)
+            except ServiceRuntimeError:
+                return False
+            view = case.view()
+            binding = case.binding(view)
+            principal = case.runtime.authenticate_key(case.key.key)
+
+            def authorize(candidates):
+                listing = binding.invoke_for_principal(principal, "list", view=view, candidates=candidates)
+                return {row["identity"]: row for row in listing["items"]}
+            hits, _rows = authorized_hits(view, {"query": "purpose layout", "top_n": 5,
+                                                 "filters": {"harness_layout": {"equals": "skill_folder"}}}, authorize)
+            return ([identity for identity, _score, _modes in hits] == ["layout_one"]
+                    and view.shown_attributes("layout_one") == {"harness_layout": "skill_folder"})
+    check("a_new_keyword_attribute_is_data_and_needs_no_code_change", new_attribute_works())
+    known = {"domain", "origin_layer", "batch"}
+    with patch.object(catalogue_schema, "attribute_name_refusal",
+                      lambda name: "" if name in known else "attribute_name_invalid"):
+        check("a_closed_attribute_list_is_detected", not new_attribute_works())
+
+
 def _new_account_checks(check):
     from ..provisioning_server import ProvisioningItemBinding
     from .records import SubjectTenantRegistration
@@ -529,6 +574,7 @@ def run_checks(check=None):
     _release_checks(check)
     _refresh_and_grant_checks(check)
     _new_account_checks(check)
+    _schema_as_data_checks(check)
     with tempfile.TemporaryDirectory(prefix="catalogue-gates-") as directory:
         _gate_checks(check, directory)
     return {"record_type": "catalogue_release_checks/v1", "tests": tests,

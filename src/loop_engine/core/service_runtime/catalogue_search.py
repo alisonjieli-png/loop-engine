@@ -27,15 +27,17 @@ from __future__ import annotations
 
 from array import array
 from bisect import bisect_left, bisect_right
+from collections import Counter
 from dataclasses import dataclass
 import heapq
 from itertools import repeat
+import math
 from operator import add, mul
 import re
 import sqlite3
 import threading
 
-from ..retrieval import hash_vector, record_search_text
+from ..retrieval import _bucket, hash_vector, record_search_text
 from ..retrieval_backends import RetrievalRankingPolicy
 from ..store_serve import StoreRecord
 from .catalogue_schema import DATE, EMPTY_SCHEMA, KEYWORD_LIST, NUMBER
@@ -46,6 +48,41 @@ INDEX_RECORD_TYPE = "catalogue_view_index/v1"
 LEXICAL_TERMS = 12
 VECTOR_DIMENSIONS = 512
 _TOKEN = re.compile(r"[a-z0-9]+")
+
+
+class _TokenBuckets:
+    """The same features as `core.retrieval.hash_vector`, computed once for each distinct word.
+
+    Before normalization a hash vector holds whole-number counts, so adding one
+    word's contributions in any order gives exactly the same sums, and the
+    normalized vector equals `hash_vector` bit for bit. A library repeats its
+    words, so each word's buckets are worked out once for the whole index.
+    """
+
+    def __init__(self):
+        self._held = {}
+
+    def contributions(self, token):
+        held = self._held.get(token)
+        if held is None:
+            counts = {}
+            bucket = _bucket("tok", token)
+            counts[bucket] = counts.get(bucket, 0.0) + 2.0
+            padded = f"##{token}##"
+            for start in range(len(padded) - 2):
+                bucket = _bucket("3g", padded[start:start + 3])
+                counts[bucket] = counts.get(bucket, 0.0) + 1.0
+            held = self._held[token] = tuple(counts.items())
+        return held
+
+    def vector(self, text):
+        """Nonzero (dimension, weight) pairs of the normalized hash vector of one text."""
+        counts = {}
+        for token, times in Counter(_TOKEN.findall((text or "").lower())).items():
+            for bucket, amount in self.contributions(token):
+                counts[bucket] = counts.get(bucket, 0.0) + amount * times
+        norm = math.sqrt(sum(value * value for value in counts.values())) or 1.0
+        return [(bucket, value / norm) for bucket, value in counts.items()]
 
 
 def entry_text(item, extra=""):
@@ -88,8 +125,9 @@ class ReleaseSearchIndex:
             column = array("f")
             column.frombytes(zero)
             self._columns.append(column)
+        buckets = _TokenBuckets()
         for position, entry in enumerate(entries):
-            for dimension, weight in enumerate(hash_vector(entry.text)):
+            for dimension, weight in buckets.vector(entry.text):
                 if weight:
                     self._columns[dimension][position] = weight
         self._sets, self._ranges = {}, {}
