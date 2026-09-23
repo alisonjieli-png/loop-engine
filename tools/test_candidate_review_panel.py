@@ -31,6 +31,8 @@ What the panel must guarantee
     ├── a stopped run, run again, asks only the reviewers still missing
     ├── a finished run, run again, makes no call
     ├── a call that was dispatched and never completed is not repeated
+    ├── a run identity the ledger already holds is refused, so a dispatch that
+    │   never completed can never take the name of a later completed call
     └── changed bytes are a new review subject
 ```
 
@@ -60,7 +62,7 @@ from candidate_review import verdicts  # noqa: E402
 from candidate_review.catalogue import StarterCatalogue  # noqa: E402
 from candidate_review.ledger import ReviewLedger  # noqa: E402
 from candidate_review.prompt import build_prompt  # noqa: E402
-from candidate_review.records import digest  # noqa: E402
+from candidate_review.records import CandidateReviewError, digest  # noqa: E402
 from candidate_review.reviewers.fixture import FixtureReviewer  # noqa: E402
 
 ROOT = HERE.parent
@@ -491,6 +493,76 @@ class CursorTest(unittest.TestCase):
             self.assertEqual(harness.calls("a"), [])
             self.assertEqual(len(harness.calls("d")), 1)
             self.assertIn(key, result.interrupted)
+
+    def test_a_run_identity_the_ledger_already_holds_is_refused(self):
+        """The cursor names a call by its run identity and sequence number, so a second run under one
+        identity would give its first call the name of an earlier dispatch."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"a": approving, "b": approving, "c": approving},
+                              families=("zhipu", "deepseek", "openai"))
+            harness.run([_request()], run_id="resume")
+            with self.assertRaises(CandidateReviewError) as caught:
+                harness.run([_request(SECOND)], run_id="resume")
+            self.assertEqual(caught.exception.code, "run_identity_repeated")
+            self.assertEqual([row["run_id"] for row in ReviewLedger(harness.ledger_path).runs()], ["resume"])
+
+    def test_a_ledger_file_that_holds_one_run_identity_twice_is_refused(self):
+        """Such a ledger cannot tell two calls of the same name apart, so it is never read as a cursor."""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = {"record_type": panel_module.RUN_RECORD, "run_id": "resume", "started_at": "2026-09-22T00:00:00Z",
+                   "policy_sha256": BASE.policy.sha256, "call_ceiling": 1, "token_ceiling": 1, "fixture_run": True,
+                   "requests": []}
+            line = json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
+            path.write_text(line + line, encoding="utf-8")
+            with self.assertRaises(CandidateReviewError) as caught:
+                ReviewLedger(path)
+            self.assertEqual(caught.exception.code, "run_identity_repeated")
+
+    @staticmethod
+    def _stopped_run(directory):
+        """A ledger in which run "resume" dispatched reviewer "a" for the first item and never completed it."""
+        harness = Harness(directory, {"a": approving, "b": approving, "c": approving, "d": approving},
+                          families=("zhipu", "deepseek", "openai", "alibaba"))
+        request = _request()
+        installation = harness.configuration.installation("a")
+        key = panel_module.review_key(installation, request, build_prompt(request, installation, INSTRUCTIONS))
+        ledger = ReviewLedger(harness.ledger_path)
+        ledger.start_run({
+            "record_type": panel_module.RUN_RECORD, "run_id": "resume", "started_at": "2026-09-22T00:00:00Z",
+            "policy_sha256": harness.configuration.policy.sha256, "call_ceiling": 10, "token_ceiling": 10,
+            "fixture_run": True, "requests": [request.request_sha256]})
+        ledger.dispatch({
+            "record_type": panel_module.DISPATCH_RECORD, "run_id": "resume", "sequence": 1, "review_key": key,
+            "installation_id": "a", "identity": request.identity, "body_sha256": request.body_sha256,
+            "request_sha256": request.request_sha256, "dispatched_at": "2026-09-22T00:00:01Z"})
+        return harness, request, key
+
+    def test_a_reused_run_identity_never_turns_an_interrupted_dispatch_into_a_completed_call(self):
+        """Known-wrong case: a stopped run left a dispatch with no call row. A second run under the same
+        identity would complete a call with the same name, the ledger would read the dispatch as completed,
+        and a later run would ask the same reviewer about the same bytes again."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness, request, key = self._stopped_run(directory)
+            try:
+                harness.run([_request(SECOND)], run_id="resume")
+            except CandidateReviewError:
+                pass
+            self.assertTrue(ReviewLedger(harness.ledger_path).interrupted(key))
+            result = harness.run([request], run_id="later")
+            self.assertEqual(harness.calls("a"), [])
+            self.assertIn(key, result.interrupted)
+
+    def test_the_run_identity_check_is_what_keeps_the_dispatch_interrupted(self):
+        """Mutant control: with the run identity check removed, the reused identity hides the dispatch and
+        the reviewer is asked about the same bytes again."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness, request, key = self._stopped_run(directory)
+            with mock.patch.object(ReviewLedger, "_run_identity_is_new", lambda self, row: None):
+                harness.run([_request(SECOND)], run_id="resume")
+                self.assertFalse(ReviewLedger(harness.ledger_path).interrupted(key))
+                harness.run([request], run_id="later")
+            self.assertEqual(len(harness.calls("a")), 2)
 
     def test_changed_bytes_are_a_new_review_subject(self):
         with tempfile.TemporaryDirectory() as directory:

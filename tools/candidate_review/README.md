@@ -201,7 +201,12 @@ call and a call row after it. A later command with the same ledger reuses every
 verdict already given for the same installation, the same exact request and
 the same exact prompt, and never repeats a call that was dispatched and not
 completed. Such a call's outcome and usage are unknown, and the dated record
-lists it under `interrupted_dispatches`.
+lists it under `interrupted_dispatches`. A call is named by its run identity and
+its sequence number, so every command on one ledger needs a new run identity:
+the ledger refuses a run identity it already holds, and refuses a ledger file
+that holds one twice. A reused identity would give a new call the name of an
+earlier dispatch that never completed, and that dispatch would then read as
+completed.
 
 ## Records
 

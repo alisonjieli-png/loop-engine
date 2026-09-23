@@ -96,7 +96,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--item-concurrency", type=int, default=1, help="Items reviewed at the same time.")
     parser.add_argument("--program", action="append", default=[],
                         help="Where a pre-check engine's program is on this machine, as ENGINE_ID=PATH.")
-    parser.add_argument("--run-id", default="", help="The run identity. Defaults to the start time.")
+    parser.add_argument("--run-id", default="",
+                        help="The run identity, new for every command on one ledger; the ledger refuses an "
+                             "identity it already holds. Defaults to the start time.")
     parser.add_argument("--record", type=Path, help="Write the dated review record here, inside the repository.")
     parser.add_argument("--recorded-at", default="", help="The date the record states, as YYYY-MM-DD.")
     parser.add_argument("--replace-record", action="store_true", help="Replace an existing record at --record.")

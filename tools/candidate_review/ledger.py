@@ -13,6 +13,13 @@ written when the engine answers. A later run reads the ledger first:
 - a completed call that produced no verdict (a failure) may be tried again in a
   later run, because it produced nothing to reuse.
 
+A call is named by its run identity and its sequence number within the run, so
+each run identity appears once in a ledger. A new run under an identity the
+ledger already holds is refused, and so is a ledger file that holds one
+identity twice: a reused identity would give a new call the name of an earlier
+dispatch that never completed, that dispatch would read as completed, and a
+later run would ask the same reviewer about the same bytes again.
+
 Rows are strict ``name/vN`` records. A row of an unknown type, with an unknown
 or missing field, or a line that is not JSON refuses the whole ledger: an
 unknown commit is never read as a success.
@@ -56,6 +63,7 @@ class ReviewLedger:
         self.path = Path(path)
         self._lock = threading.Lock()
         self._rows, self._verdicts, self._dispatched, self._completed = [], {}, {}, set()
+        self._run_ids = set()
         if self.path.is_symlink():
             refuse("ledger_unsafe", "the ledger path is a link")
         if self.path.exists():
@@ -69,10 +77,19 @@ class ReviewLedger:
                     refuse("ledger_row_unreadable", f"line {number} of the ledger is not JSON")
                 self._index(read_row(value))
 
+    def _run_identity_is_new(self, row: dict) -> None:
+        """Refuse a run row whose identity the ledger already holds. A mutant control removes this guard."""
+        if row["record_type"] == RUN_RECORD and row["run_id"] in self._run_ids:
+            refuse("run_identity_repeated", f"the ledger already holds a run named {row['run_id']!r}; "
+                                            "a new run needs a new identity")
+
     def _index(self, row: dict) -> None:
+        self._run_identity_is_new(row)
         self._rows.append(row)
         kind = row["record_type"]
-        if kind == DISPATCH_RECORD:
+        if kind == RUN_RECORD:
+            self._run_ids.add(row["run_id"])
+        elif kind == DISPATCH_RECORD:
             self._dispatched.setdefault(row["review_key"], []).append(row)
         elif kind == CALL_RECORD:
             self._completed.add((row["run_id"], row["sequence"]))
@@ -82,6 +99,8 @@ class ReviewLedger:
     def _append(self, rows) -> None:
         payload = b"".join(canonical_bytes(read_row(row)) + b"\n" for row in rows)
         with self._lock:
+            for row in rows:
+                self._run_identity_is_new(row)
             descriptor = os.open(self.path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0),
                                  0o600)
             try:

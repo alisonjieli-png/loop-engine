@@ -223,7 +223,7 @@ item could have been put to it: Claude Code wrote them all.
 | `attempt-2/record-rewrite-command-summary.json` | The command summary of writing the record again from the stored verdicts, with no model call. |
 | `comparison.json`, `compare_attempts.py` | The comparison of the two attempts and the script that writes it from the ledgers. |
 | `claude-code-bare-probe.json` | The one probe of the Claude Code command line. |
-| `check-first/` | The new checks of attempt 2's changes, run before each change and failing. |
+| `check-first/` | The new checks of attempt 2's changes, run before each change and failing. `run-identity-checks-before-the-change.txt` holds the checks of a repair made by the adversarial verification that followed the pilot, run the same way before the repair. |
 | `source_mutants.py` | Removes each guard from the source in turn, in a scratch copy, and records which checks then fail. |
 | `source-mutants-1.json` | The first run. Not valid: the scratch copy lacked a folder that one catalogue item cites, so the unmutated checks already failed and every mutant counted as failing. The script now links every cited folder and runs no mutant against a failing baseline. |
 | `source-mutants-2.json` | A run on an intermediate tree, before the record builder's path and version corrections; kept, superseded by the next run. |
