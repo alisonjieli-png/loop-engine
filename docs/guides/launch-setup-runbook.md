@@ -412,9 +412,14 @@ volume or public deployment was created during the GitHub connection setup.
 
 ### Publish and roll back a catalogue release
 
-This procedure is written and tested locally. It has not been run against
-the live Machine. It needs a deployed release that includes catalogue
-releases; release 16 and every earlier release do not. The design is in
+This procedure needs a deployed release that includes catalogue releases;
+release 16 and every earlier release do not. It was first run against the live
+Machine on September 23, 2026, after Fly release 17. Step 7 of the first
+release then named `--all-tenants` and moved every account to grants that
+follow the release, including `pilot-boundary`, the diagnostic account that
+proves isolation. Step 7 now names the account to move, and
+[the design record](../architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md#the-first-live-run-and-the-isolation-repair)
+records what happened and how it was repaired. The design is in
 [the catalogue release design record](../architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md).
 Library bodies are private: a bundle is built outside this public repository,
 travels only over `fly ssh sftp` from this workstation, and is removed from the
@@ -468,12 +473,23 @@ For each release:
 6. The first time only, change the host file's `source` to `"store"` and
    restart the Machine. After that, every release reaches the running service
    within `refresh_seconds` without a restart.
-7. The first time only, move accounts to grants that follow the release:
-   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --all-tenants" --app baltor-pilot --json`.
+7. The first time only, move each account that the packaged manifest grants
+   to grants that follow the release, with one command for each account. The
+   pilot manifest grants `pilot-owner` alone:
+   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --tenant pilot-owner" --app baltor-pilot --json`.
+   An account that follows the release receives every item published later.
+   Never name `pilot-boundary`, the diagnostic account that proves an account
+   without grants reads nothing, the billing check accounts or `baltor-admin`.
+   Never use `--all-tenants` on a host with diagnostic or isolation accounts.
+   Up to Fly release 17 it moved every registered account. A release that
+   carries the repair moves only the accounts already granted every item the
+   service offers and lists every other account under `left_out` with the
+   reason, but the rule stays: name each account.
 8. Verify: `/api/v1/health` names the new `release_id` under
    `catalogue_release` and the `catalogue_view_current` check passes;
    `loop-engine service catalogue-status` names it as active; run
-   `tools/check_hosted_catalogue.py`.
+   `tools/check_hosted_catalogue.py`; and run the isolation check described
+   below, which must pass all 19 of its checks.
 9. Remove the incoming copy:
    `flyctl machine exec MACHINE "AS_SERVICE rm -r /data/incoming/NAME /data/incoming/NAME.tar" --app baltor-pilot`.
    The body store keeps its own copy, and two copies of a large library take a
@@ -486,6 +502,38 @@ The target is verified completely before the pointer moves, and every
 withdrawal stays honoured. To withdraw one item at once, run
 `loop-engine service withdraw-catalogue-item --config /data/host.json --identity IDENTITY --note "REASON"`;
 a body read is refused immediately and the next view leaves the item out.
+
+**Return an account to a fixed list.** An account that follows the release
+receives every item published later, minus the items it denies. To end that
+for one account, run
+`flyctl machine exec MACHINE "AS_SERVICE loop-engine service stop-following-catalogue-release --config /data/host.json --tenant ACCOUNT" --app baltor-pilot --json`
+once for each account. The account keeps exactly the items it receives from
+the served release now, as a fixed list like the one `apply-grants` writes, and
+an item published later does not reach it. An account that follows with every
+current item denied keeps an empty list. The answer is one
+`service_catalogue_grant_engine/v1` record whose `engine` is `snapshot` and
+whose `grants` is the number of items the account kept. The command refuses an
+account that does not follow the release with `account_not_following_release`.
+It refuses with `catalogue_state_changed` when a release, a rollback or a
+withdrawal was committed while it read the served release; run it again.
+
+Then check isolation from this workstation:
+`python3 tools/check_hosted_service.py --origin https://baltor-pilot.fly.dev --account pilot-owner --isolated-account pilot-boundary --identity IDENTITY --digest DIGEST --query "QUERY" --authorize-metered-read --output REPORT`.
+`IDENTITY` and `DIGEST` name one item the owner receives, as the host release
+manifest lists it, and `REPORT` is a new file under
+`artifacts/architecture-audit-2026-09-19/`. The check makes one metered read
+for the owner. All 19 checks must pass, among them
+`isolated_tenant_has_no_owner_grants` and `another_tenant_cannot_read_the_body`.
+
+**Open repair from September 23, 2026.** After the first live run the five
+accounts other than `pilot-owner` (`pilot-boundary`, `billing-check`,
+`billing-check-2`, `billing-check-3` and `baltor-admin`) follow the release
+with every current item denied, so an item published later would reach them.
+Publish nothing new until a release that carries
+`stop-following-catalogue-release` is deployed. Then return each of the five to
+a fixed list with the command above; each answer must report `"grants": 0`.
+Leave `pilot-owner` following, run the isolation check, and only then publish
+the next release.
 
 ## 2. Create the Supabase account, then connect it
 

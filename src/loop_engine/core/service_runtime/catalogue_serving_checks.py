@@ -4,6 +4,11 @@ A real service answers on a loopback socket over a real temporary store and
 body folder. A release is published while it runs and reaches search and
 download without a restart. A request that started before a swap finishes on
 the view it started with. No provider or external network is used.
+
+The runbook's first catalogue release, and the live repair of September 23,
+2026, are replayed through the service entry point with a host file: an
+account the packaged manifest does not grant must hold no grant to any item,
+including an item published afterwards.
 """
 from __future__ import annotations
 
@@ -11,6 +16,7 @@ from contextlib import redirect_stdout
 import io
 import json
 from pathlib import Path
+import tempfile
 import time
 from unittest.mock import patch
 
@@ -206,7 +212,7 @@ def _command_checks(check, root):
           and application.catalogue_refresher is not None
           and application.catalogue_refresher.interval_seconds == 5)
     withdrawn = command("withdraw-catalogue-item", "--identity", "command_item", "--note", "operator check")
-    followed = command("follow-catalogue-release", "--all-tenants")
+    followed = command("follow-catalogue-release", "--tenant", "alpha")
     check("withdraw_and_follow_answer_through_the_service_entry_point",
           withdrawn[1]["state"] == "withdrawn" and followed[1]["tenants"] == ["alpha"])
 
@@ -234,9 +240,231 @@ def _without_section(host, configuration):
         host.write_text(json.dumps(configuration))
 
 
+#: The first-time follow step of the runbook section "Publish and roll back a
+#: catalogue release", as the service entry point receives it after
+#: `--config`. `tools/test_catalogue_release_runbook.py` requires the runbook
+#: to document exactly this step, so the procedure replayed here is the one an
+#: operator reads.
+FIRST_RELEASE_FOLLOW_STEP = ("follow-catalogue-release", "--tenant", "pilot-owner")
+#: The same step as the runbook documented it for release 17, which moved
+#: every account on the live Machine on September 23, 2026.
+RELEASE_17_FOLLOW_STEP = ("follow-catalogue-release", "--all-tenants")
+OWNER, ISOLATED, BILLING = "pilot-owner", "pilot-boundary", "billing-check"
+FIRST_ITEMS = {"clean_supplier_names": b"# Clean supplier names\n", "profile_one_column": b"# Profile one column\n"}
+LATER_ITEM = ("rank_new_candidates", b"# Rank new candidates\n")
+
+
+class RunbookHost:
+    """A host as a deployed image leaves it before the runbook's first catalogue release.
+
+    The packaged manifest grants its items to the owner account alone, the way
+    the pilot manifest is built with `--grant pilot-owner:bodies:required`.
+    `configure` registered the owner, the isolation account and a billing check
+    account, and `apply-grants` gave the owner the manifest's items. Every
+    later step goes through the service entry point with the host file, as an
+    operator runs it on the Machine.
+    """
+
+    def __init__(self, root):
+        from .catalogue_bundle import write_bundle
+        self.root, self.count, self.write_bundle = Path(root).resolve(), 0, write_bundle
+        image = self.root / "image"
+        (image / "bodies").mkdir(parents=True)
+        (self.root / "bodies").mkdir()
+        items = []
+        for identity, body in FIRST_ITEMS.items():
+            (image / "bodies" / (identity + ".md")).write_bytes(body)
+            items.append({"reference": self.line(identity, body)["reference"], "body_path": f"bodies/{identity}.md",
+                          "approval_ref": "review:" + identity,
+                          "grants": [{"tenant_id": OWNER, "body_allowed": True, "metering": "required"}]})
+        (image / "manifest.json").write_text(json.dumps({
+            "record_type": "host_attested_intelligence_manifest/v1", "artifact_root": str(image), "items": items}))
+        until = int(time.time()) + 3600
+        entitled = {"valid_until": until, "evidence_ref": "local-check-not-payment"}
+        self.host = self.root / "host.json"
+        self.configuration = {
+            "record_type": "service_http_host_configuration/v1",
+            "runtime": {"database_path": str(self.root / "service.db"), "writes_authorized": True},
+            "http": {"public_base_url": "http://127.0.0.1:8080", "allowed_hosts": ["127.0.0.1:8080"],
+                     "allow_loopback_http": True},
+            "authentication": {}, "manifest_path": str(image / "manifest.json"),
+            "tenants": [{"tenant_id": OWNER, "namespace": "tenant:" + OWNER, "operator_entitlement": entitled},
+                        {"tenant_id": ISOLATED, "namespace": "tenant:" + ISOLATED, "operator_entitlement": entitled},
+                        {"tenant_id": BILLING, "namespace": "tenant:" + BILLING}]}
+        self.save()
+        self.run("configure")
+        self.run("apply-grants")
+        from .records import ServiceRuntimeConfig, TenantKeyIssue
+        from .runtime import ServiceRuntime
+        self.runtime = ServiceRuntime(ServiceRuntimeConfig(**self.configuration["runtime"]))
+        self.keys = {tenant: self.runtime.issue_key(TenantKeyIssue(tenant, "runbook check")).key
+                     for tenant in (OWNER, ISOLATED, BILLING)}
+
+    @staticmethod
+    def line(identity, body):
+        return bundle_line(identity, [("SKILL.md", body, "text/markdown", "skill_definition")])
+
+    def save(self):
+        self.host.write_text(json.dumps(self.configuration))
+
+    def run(self, *arguments):
+        """One operator command through the service entry point: its exit status and record, or its refusal."""
+        from .http_entrypoint import main
+        printed = io.StringIO()
+        try:
+            with redirect_stdout(printed):
+                status = main([*arguments, "--config", str(self.host)])
+            return status, json.loads(printed.getvalue())
+        except (SystemExit, Exception) as error:  # noqa: BLE001 - a refusal is an answer here
+            return None, getattr(error, "code", str(error))
+
+    def catalogue_source(self, source):
+        """Once-before step 2 names the image source; first-release step 6 moves it to the store."""
+        self.configuration["catalogue"] = {"record_type": "service_catalogue_source/v1", "source": source,
+                                           "body_store_root": str(self.root / "bodies"), "refresh_seconds": 60,
+                                           "new_accounts_follow_release": False}
+        self.save()
+
+    def publish(self, items):
+        from .catalogue_schema import CatalogueAttributeSchema
+        self.count += 1
+        folder = self.root / f"incoming-{self.count}"
+        digest = self.write_bundle(folder, schema=CatalogueAttributeSchema.from_dict(SCHEMA),
+                                   lines=[self.line(identity, body) for identity, body in items.items()],
+                                   payloads=list(items.values()))
+        return self.run("publish-catalogue", "--bundle", str(folder), "--expected-bundle-digest", digest)
+
+    def first_release(self, follow_step):
+        """The runbook's first-time procedure: section, first publish, store source, the follow step."""
+        self.catalogue_source("image")
+        self.publish(FIRST_ITEMS)
+        self.catalogue_source("store")
+        return self.run(*follow_step)
+
+    def served(self):
+        """What each account is offered by the application the host file starts, and one refused read."""
+        from .http_entrypoint import load_host_application
+        from .runtime import GRANTS
+        application, _configuration = load_host_application(str(self.host))
+        offered = {tenant: sorted(row["identity"] for row in application.provisioning.invoke(key, "list")["items"])
+                   for tenant, key in self.keys.items()}
+        records = {}
+        with self.runtime._catalog.store() as store:
+            for tenant in self.keys:
+                row = self.runtime._catalog.read(store, GRANTS, tenant)
+                records[tenant] = row["payload"] if row is not None else None
+        read = refused(lambda: application.provisioning.invoke(self.keys[ISOLATED], "read", identity=LATER_ITEM[0],
+                                                               request_id="isolation-read"))
+        return {"offered": offered, "records": records, "isolated_read_refused": read}
+
+
+def _ungranted_accounts_hold_nothing(outcome):
+    """The isolation account and the billing check account hold no grant, and the owner still follows."""
+    if not isinstance(outcome, dict):
+        return False
+    empty = all(outcome["records"][tenant] is None
+                or (outcome["records"][tenant]["record_type"] == "service_grants/v1"
+                    and outcome["records"][tenant]["grants"] == [])
+                for tenant in (ISOLATED, BILLING))
+    return (empty and outcome["offered"][ISOLATED] == [] and outcome["offered"][BILLING] == []
+            and outcome["isolated_read_refused"]
+            and outcome["offered"][OWNER] == sorted([*FIRST_ITEMS, LATER_ITEM[0]]))
+
+
+def _release_17_rules():
+    """Release 17's `--all-tenants`, which moved every registered account whatever it held."""
+    from . import catalogue_grants
+    return patch.object(catalogue_grants, "left_out_reason", lambda *arguments: "")
+
+
+#: What an operator runs on the live Machine after the release that carries
+#: the repair: the workflow's `apply-grants`, then one stop for each account
+#: that follows the release and must not.
+LIVE_REPAIR = (("apply-grants",),
+               *(("stop-following-catalogue-release", "--tenant", tenant) for tenant in (ISOLATED, BILLING)))
+
+
+def _procedure(root, follow_step, *, incident=False, after=()):
+    """Replay the first-time procedure, then `after`, a later deploy and a later release.
+
+    With `incident`, the follow step runs under release 17's rules and every
+    account that must not follow is then given the denials the live accounts
+    were given on September 23, 2026: every item published so far.
+    """
+    try:
+        host = RunbookHost(tempfile.mkdtemp(dir=root))
+        if incident:
+            with _release_17_rules():
+                host.first_release(follow_step)
+            denied = [argument for identity in sorted(FIRST_ITEMS) for argument in ("--deny", identity)]
+            for tenant in (ISOLATED, BILLING):
+                host.run("follow-catalogue-release", "--tenant", tenant, *denied)
+        else:
+            host.first_release(follow_step)
+        for step in after:
+            host.run(*step)
+        # The release workflow applies the manifest grants after every deploy.
+        host.run("apply-grants")
+        host.publish({**FIRST_ITEMS, LATER_ITEM[0]: LATER_ITEM[1]})
+        return host.served()
+    except Exception:  # noqa: BLE001 - a procedure that stops part way is a failed check
+        return None
+
+
+def _runbook_checks(check, root):
+    """The runbook's first catalogue release, replayed through the entry point, never widens an account."""
+    from . import catalogue_grants
+    check("the_documented_first_release_procedure_leaves_ungranted_accounts_with_nothing",
+          _ungranted_accounts_hold_nothing(_procedure(root, FIRST_RELEASE_FOLLOW_STEP)))
+    check("the_first_release_step_as_written_for_release_17_now_leaves_ungranted_accounts_with_nothing",
+          _ungranted_accounts_hold_nothing(_procedure(root, RELEASE_17_FOLLOW_STEP)))
+    try:
+        with _release_17_rules():
+            wrong = _procedure(root, RELEASE_17_FOLLOW_STEP)
+    except AttributeError:
+        wrong = None
+    everything = sorted([*FIRST_ITEMS, LATER_ITEM[0]])
+    check("the_release_17_procedure_under_release_17_rules_is_detected",
+          isinstance(wrong, dict) and not _ungranted_accounts_hold_nothing(wrong)
+          and wrong["offered"][ISOLATED] == everything)
+    check("the_live_repair_empties_the_denied_accounts_and_keeps_the_owner_following",
+          _ungranted_accounts_hold_nothing(_procedure(root, RELEASE_17_FOLLOW_STEP, incident=True, after=LIVE_REPAIR)))
+    # Without the fixed list each account keeps following with the denials it
+    # held, as the live accounts did after the mitigation, and the later item
+    # reaches it.
+    try:
+        with patch.object(catalogue_grants, "snapshot_payload", lambda tenant_id, grants:
+                          catalogue_grants.release_following_payload(tenant_id, sorted(FIRST_ITEMS))):
+            left = _procedure(root, RELEASE_17_FOLLOW_STEP, incident=True, after=LIVE_REPAIR)
+    except AttributeError:
+        left = None
+    check("removed_stop_following_snapshot_is_detected",
+          isinstance(left, dict) and LATER_ITEM[0] in left["offered"][ISOLATED])
+    try:
+        host = RunbookHost(tempfile.mkdtemp(dir=root))
+        host.first_release(FIRST_RELEASE_FOLLOW_STEP)
+        answers = [host.run("stop-following-catalogue-release", "--all-tenants"),
+                   host.run("stop-following-catalogue-release"),
+                   host.run("stop-following-catalogue-release", "--tenant", OWNER, "--deny", "x"),
+                   host.run("stop-following-catalogue-release", "--tenant", ISOLATED),
+                   host.run("stop-following-catalogue-release", "--tenant", OWNER)]
+    except Exception:  # noqa: BLE001 - a setup that stops part way is a failed check
+        answers = []
+    stopped = answers[-1][1] if answers and isinstance(answers[-1][1], dict) else {}
+    check("stop_following_names_one_following_account_and_nothing_else",
+          [answer[1] for answer in answers[:4]] == ["invalid_request", "invalid_request", "invalid_request",
+                                                     "account_not_following_release"]
+          and answers[-1][0] == 0 and stopped.get("tenants") == [OWNER] and stopped.get("grants") == len(FIRST_ITEMS))
+
+
 def run_checks(check, root):
     folder = Path(root)
     (folder / "serving").mkdir()
     (folder / "commands").mkdir()
+    (folder / "runbook").mkdir()
     _serving_checks(check, folder / "serving")
     _command_checks(check, folder / "commands")
+    try:
+        _runbook_checks(check, folder / "runbook")
+    except Exception:  # noqa: BLE001 - a group that stops part way is a failure with a name
+        check("the_runbook_checks_ran_to_completion", False)

@@ -44,7 +44,8 @@ Catalogue release, published while the service runs
 ├── Operator commands in `loop-engine service`
 │   ├── publish-catalogue, rollback-catalogue, withdraw-catalogue-item
 │   ├── catalogue-status (reads only)
-│   └── follow-catalogue-release (grants that follow the active release)
+│   ├── follow-catalogue-release (grants that follow the active release)
+│   └── stop-following-catalogue-release (back to a fixed list of grants)
 └── Serving
     ├── one immutable view for each release, with one reusable search index
     ├── a refresher in the application lifespan that verifies every body, then swaps
@@ -108,7 +109,11 @@ existing contract was checked first.
 5. **Grants can follow the release.** Version 2 of the grants record gives an
    account every approved item of the served view minus explicit denials.
    Version 1, the snapshot, stays the other engine. `apply-grants` never writes
-   a snapshot over a following account.
+   a snapshot over a following account. An account moves to version 2 when an
+   operator names it, and `--all-tenants` moves only the accounts already
+   granted every item the service offers. `stop-following-catalogue-release`
+   moves one account back to a snapshot of exactly what it receives now. The
+   [first live run](#the-first-live-run-and-the-isolation-repair) is why.
 6. **Withdrawals outlive releases, rollbacks and images.** A withdrawal names an
    item identity and the exact body digest. A release that lists a withdrawn
    version is refused, a rolled-back view leaves it out, and every manifest and
@@ -143,6 +148,87 @@ target first. Removing the section to start release 15 would serve image items
 the store has withdrawn and would let its `apply-grants` turn a following
 account back into a snapshot, so the runbook forbids it while any catalogue
 state exists.
+
+## The first live run and the isolation repair
+
+The procedure in the runbook ran for the first time against the live Machine
+on September 23, 2026, after Fly release 17. At 06:17 UTC the host file gained
+its `catalogue` section, at 06:18 the first catalogue release was published
+from a bundle of the 43 approved items, and at 06:20 the source moved to the
+store. At 06:21 the runbook's first-time step
+`follow-catalogue-release --all-tenants` moved all six accounts to grants that
+follow the release: `baltor-admin`, `billing-check`, `billing-check-2`,
+`billing-check-3`, `pilot-boundary` and `pilot-owner`. Only `pilot-owner` held
+grants before; the pilot manifest is built with
+`--grant pilot-owner:bodies:required`. `pilot-boundary` is the diagnostic
+account whose purpose is to prove isolation, and `tools/check_hosted_service.py`
+then failed `isolated_tenant_has_no_owner_grants` and
+`another_tenant_cannot_read_the_body`. At 06:30 the five other accounts were
+moved to follow the release with every current item denied, and the check
+passed 19 of 19 again. No customer account exists, and between 06:21 and 06:30
+no body was read by those accounts except by the check.
+
+Two gaps stayed open. A denial names an item identity, so an item published
+later would reach the five accounts. And no command returned an account to a
+snapshot: `apply-grants` deliberately never writes over a following account,
+and it names only the accounts the manifest grants.
+
+```text
+The repair
+├── stop-following-catalogue-release --tenant ACCOUNT
+│   ├── writes a version 1 snapshot of exactly what the account receives from the
+│   │   view the host serves now; an account denying every current item keeps none
+│   ├── one atomic batch guarded on the account, the version 2 record it replaces
+│   │   and the catalogue state marker, like the batch that moves an account forward
+│   └── refuses an account that does not follow, and a view built before the
+│       catalogue last changed (catalogue_state_changed)
+├── follow-catalogue-release --all-tenants
+│   ├── moves only accounts already granted every item the view offers, on the
+│   │   terms following gives, so following adds only what is published later
+│   ├── leaves an account that follows already alone, with its denials
+│   └── names every account it left alone and the reason, under left_out
+└── The runbook's first-time step names the account the manifest grants,
+    --tenant pilot-owner, and never --all-tenants on a host with diagnostic
+    or isolation accounts
+```
+
+**Why `--all-tenants` was restricted rather than put behind an acknowledgement
+flag.** Both were considered. A flag that names the effect records that the
+operator read a sentence. It does not say which accounts gain what, and the
+command that caused this came from a runbook, which could as easily have
+carried the flag. The restriction makes the wrong outcome unreachable through
+the bulk path: an account moves only when following adds nothing it does not
+already receive, and giving an account more is a statement about that account,
+made by naming it with `--tenant`. Nothing is lost: `--tenant` still moves any
+account, and a host whose accounts all hold the whole library still moves them
+with one command. "Accounts that hold grants today" was read strictly. Holding
+one grant is not enough, because a partly granted account would then receive
+every item at once. Holding every item on narrower terms is not enough either:
+an account granted metadata only would gain the bodies. When the view offers an
+account nothing, holding every item proves nothing, and the account stays where
+it is.
+
+**Why an account that already follows is left alone.** Moving it again with
+the command's denials would replace its own. Its denials may name items that
+are not published yet, and replacing them would let those items reach it the
+day they are published. Naming the account with `--tenant` changes its denials
+on purpose.
+
+**Why the snapshot comes from the served view.** The snapshot has to equal what
+the account receives at the moment it stops following, so the command builds
+the view the way the service builds it at start and refuses when the marker
+revision differs from the one that view was built from. A snapshot of an older
+view could keep an item version the service no longer serves and miss the one
+it does.
+
+Before the repair, the checks listed below were run on revision `3d2fe4e` with
+only the checks added. The first-time step as written for release 17 gave
+`pilot-boundary` and `billing-check` every item, including one published
+afterwards, and the isolation read succeeded. After the denials of the live
+mitigation, the item published afterwards still reached both. The stop command
+did not exist, and the engine checks could not import it. The documented step
+naming `--tenant pilot-owner` passed even then, because naming the account is
+enough on its own; the restriction keeps the old step safe as well.
 
 ## Local measurement at 10,000 and 100,000 items
 
@@ -237,5 +323,12 @@ the guard patched away and requires the check's own predicate to fail.
 | A runnable file without the process effect | `a_package_with_a_runnable_file_declares_the_process_effect` | `removed_process_effect_rule_is_detected` |
 | A denied item reaching a following account | `a_denied_item_never_reaches_a_following_account` | `removed_denial_rule_is_detected` |
 | `apply-grants` turning a following account into a snapshot | `apply_grants_keeps_a_following_account_on_its_engine` | `removed_following_account_rule_is_detected` |
+| `--all-tenants` giving an account without every item every item, as on September 23 | `all_tenants_moves_only_accounts_that_already_receive_every_item` | `removed_all_tenants_restriction_is_detected` |
+| `--all-tenants` replacing the denials of an account that follows already | `all_tenants_keeps_the_denials_of_an_account_that_already_follows` | `removed_already_following_rule_is_detected` |
+| A later item reaching an account that stopped following | `an_account_that_stops_following_keeps_exactly_what_it_received` and `a_later_item_never_reaches_an_account_that_stopped_following` | `removed_snapshot_rule_is_detected` |
+| A snapshot or a bulk move decided on a view the host no longer serves | `a_grant_decision_on_a_view_the_host_no_longer_serves_is_refused` | `removed_served_view_rule_is_detected` |
+| The runbook's first-time procedure, run as documented, giving an ungranted account any item | `the_documented_first_release_procedure_leaves_ungranted_accounts_with_nothing` and `the_first_release_step_as_written_for_release_17_now_leaves_ungranted_accounts_with_nothing`, through the service entry point | `the_release_17_procedure_under_release_17_rules_is_detected` |
+| The live accounts left following with every current item denied | `the_live_repair_empties_the_denied_accounts_and_keeps_the_owner_following` | `removed_stop_following_snapshot_is_detected` |
+| A runbook follow step that names every account or another account | `test_the_first_time_follow_step_is_the_step_the_service_checks_replay` in `tools/test_catalogue_release_runbook.py` | `test_the_first_time_step_as_written_for_release_17_is_refused` |
 | A release that needs a code change to add a keyword attribute | `a_new_keyword_attribute_is_data_and_needs_no_code_change` | `a_closed_attribute_list_is_detected` |
 | Two bodies with one file name sharing one release path | `test_two_bodies_with_the_same_file_name_are_refused_before_writing` in `tools/test_build_host_catalogue_manifest.py` | the test failed before the repair |
