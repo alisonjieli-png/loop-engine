@@ -23,21 +23,185 @@
   </header>
   <main id="main" tabindex="-1">
     <section data-view="home">
+      <div class="home-band band-hero" data-band="hero">
       <div class="hero product-hero">
         <div class="hero-copy"><p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Harness and agent optimized operation</p><h1>Supercharge your developers<br><span>and AI agents.</span></h1><p class="hero-subhead">Give your AI agents what they need for each step.</p><p class="hero-positioning">Harness and agent optimized operation means your coding agent can request material for each step. A harness is the program that runs it, such as OpenCode, Codex or Claude Code.</p><p class="hero-split">Free to install. Paid access to the library. A subscription covers selected downloads from Baltor.</p><p class="hero-value">Your model keys stay with you. Baltor never asks you for a provider key. Your tools use the model connection you control.</p><div class="actions hero-actions"><a class="button primary" id="hero-primary" href="/connect" data-page="setup" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span> <span aria-hidden="true">↗</span></a><a class="text-link" id="hero-how-it-works" href="/how-it-works#task-breakdown" data-page="about">See how it works</a></div><p class="caption hero-note" id="hero-access-note">Accounts open in small groups. Get started to ask for an invitation; a person reads every request.</p><p class="caption hero-price">Paid access is one plan, 29 United States dollars each month.</p></div>
-        <aside class="hero-example" aria-labelledby="hero-example-title"><div class="hero-example-bar"><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span><p id="hero-example-title">What your coding agent sees at one step</p></div><div class="hero-example-body"><p class="hero-example-line" data-example-part="search"><span class="hero-example-tag">search</span>format phone numbers with country code</p><ol class="hero-example-results" aria-label="References the search returned"><li data-example-item="normalize_phone_numbers"><strong>normalize_phone_numbers</strong><span>skill · MIT · 2.6 KB · sha256 dcd89dab…</span></li><li data-example-item="split_address_lines_into_components"><strong>split_address_lines_into_components</strong><span>skill · MIT · 3.0 KB · sha256 86e7af1d…</span></li><li data-example-item="detect_malformed_values_by_dominant_pattern"><strong>detect_malformed_values_by_dominant_pattern</strong><span>skill · MIT · 2.8 KB · sha256 51d0b990…</span></li></ol><p class="hero-example-line" data-example-part="download"><span class="hero-example-tag">download</span>normalize_phone_numbers</p><p class="hero-example-done" data-example-part="checked">Bytes match the digest. One download recorded in your usage.</p></div><p class="caption">A real search of the live library on September 22, 2026. Search is free; one downloaded item is the measured unit.</p></aside>
+<section class="step-demo" id="step-demo" aria-labelledby="step-demo-title" data-step-demo>
+<div class="step-demo-bar"><span class="step-demo-dots" aria-hidden="true"><span></span><span></span><span></span></span><h2 id="step-demo-title">One step of a task, from start to finish</h2></div>
+<fieldset class="step-demo-stages"><legend class="sr-only">Show one stage of the step</legend>
+<input type="radio" name="step-demo-stage" id="step-demo-split" value="split" aria-controls="step-demo-panel-split" checked><label for="step-demo-split"><span class="step-demo-number" aria-hidden="true">1</span> Split</label>
+<input type="radio" name="step-demo-stage" id="step-demo-search" value="search" aria-controls="step-demo-panel-search"><label for="step-demo-search"><span class="step-demo-number" aria-hidden="true">2</span> Search</label>
+<input type="radio" name="step-demo-stage" id="step-demo-download" value="download" aria-controls="step-demo-panel-download"><label for="step-demo-download"><span class="step-demo-number" aria-hidden="true">3</span> Download</label>
+<input type="radio" name="step-demo-stage" id="step-demo-folder" value="folder" aria-controls="step-demo-panel-folder"><label for="step-demo-folder"><span class="step-demo-number" aria-hidden="true">4</span> Folder</label>
+<input type="radio" name="step-demo-stage" id="step-demo-check" value="check" aria-controls="step-demo-panel-check"><label for="step-demo-check"><span class="step-demo-number" aria-hidden="true">5</span> Check</label>
+</fieldset>
+<div class="step-demo-panels">
+<section class="step-demo-panel" id="step-demo-panel-split" data-demo-stage="split" data-demo-evidence="illustration" aria-labelledby="step-demo-heading-split"><p class="step-demo-kind is-illustration" data-demo-label="illustration">Illustration of the design being built</p>
+<h3 id="step-demo-heading-split">A task becomes small steps.</h3>
+<p class="step-demo-line"><span class="step-demo-tag">task</span> Clean a customer contact list before an import.</p>
+<ol class="step-demo-steps">
+<li><strong>Profile the columns</strong><span>Find the phone, address and email columns.</span></li>
+<li class="is-current" aria-current="step"><strong>Normalize phone numbers</strong><span>This step: one column, one skill, one check.</span></li>
+<li><strong>Split address lines</strong><span>Street, city and postal code into their own fields.</span></li>
+<li><strong>Compare with the original</strong><span>Every change is listed, and the original file stays as it was.</span></li>
+</ol>
+<p class="step-demo-note">Each step starts in a fresh harness that holds only the files that step needs. That part is being built and is not live yet.</p>
+</section>
+<section class="step-demo-panel" id="step-demo-panel-search" data-demo-stage="search" data-demo-evidence="recorded" aria-labelledby="step-demo-heading-search"><p class="step-demo-kind is-recorded" data-demo-label="recorded">Recorded from this release's library</p>
+<h3 id="step-demo-heading-search">The step asks the library for what it needs.</h3>
+<p class="step-demo-line"><span class="step-demo-tag">search</span> <code data-demo-query>format phone numbers with country code</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="normalize_phone_numbers"><strong>normalize_phone_numbers</strong><span><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.6 KB</span> · sha256 <span data-fact="digest">b451b366</span>…</span></li>
+<li data-demo-item="split_address_lines_into_components"><strong>split_address_lines_into_components</strong><span><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">3.0 KB</span> · sha256 <span data-fact="digest">1c97907b</span>…</span></li>
+<li data-demo-item="detect_malformed_values_by_dominant_pattern"><strong>detect_malformed_values_by_dominant_pattern</strong><span><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.8 KB</span> · sha256 <span data-fact="digest">5009f181</span>…</span></li>
+</ol>
+<p class="step-demo-note">Each reference carries the kind, the licence, the size and the digest of one exact version. The first is downloaded next.</p>
+<p class="step-demo-note">References only: no file was loaded, and search is free.</p>
+</section>
+<section class="step-demo-panel" id="step-demo-panel-download" data-demo-stage="download" data-demo-evidence="recorded" aria-labelledby="step-demo-heading-download"><p class="step-demo-kind is-recorded" data-demo-label="recorded">Recorded from this release's library</p>
+<h3 id="step-demo-heading-download">It downloads one file and checks it.</h3>
+<p class="step-demo-line"><span class="step-demo-tag">download</span> <code data-demo-download="normalize_phone_numbers">normalize_phone_numbers</code></p>
+<ul class="step-demo-log">
+<li><span data-fact="size">2.6 KB</span> received.</li>
+<li>sha256 <span data-fact="digest">b451b3663599c097</span>…, the digest the reference named.</li>
+<li class="step-demo-ok">Bytes match the digest. One download recorded in your usage.</li>
+</ul>
+<figure class="step-demo-file"><figcaption>The file begins</figcaption><pre class="step-demo-quote" data-demo-excerpt># Normalize phone numbers only when the digit count is explainable
+
+Rewrite a phone number to an international form when its digits can be explained. Leave every other value unchanged and send it to review.</pre></figure>
+<p class="step-demo-note">The measured unit is one downloaded item. Today a download is one Markdown file.</p>
+</section>
+<section class="step-demo-panel" id="step-demo-panel-folder" data-demo-stage="folder" data-demo-evidence="illustration" aria-labelledby="step-demo-heading-folder"><p class="step-demo-kind is-illustration" data-demo-label="illustration">Illustration of the design being built</p>
+<h3 id="step-demo-heading-folder">The step's folder holds every file its harness reads.</h3>
+<ul class="step-demo-tree" aria-label="The folder for this step">
+<li class="is-folder" data-demo-folder="step-2-normalize-phones/"><span class="step-demo-path">step-2-normalize-phones/</span>
+<ul>
+<li data-demo-path="AGENTS.md"><details><summary><span class="step-demo-path">AGENTS.md</span><span class="step-demo-what">Instructions for this step only</span><span class="step-demo-digest">sha256 <span data-fact="digest">4897de35</span>…</span></summary><pre class="step-demo-code" data-demo-body="AGENTS.md" tabindex="0" aria-label="AGENTS.md"># Step 2 of 4: normalize phone numbers
+
+Work only on the phone column of data/contacts.csv.
+Follow the skill in .agents/skills/normalize-phone-numbers/SKILL.md.
+The declared country code is 1, and a national number has 10 digits.
+Write out/contacts.csv and leave the original file unchanged.
+Hold or escalate a number you cannot explain. Do not guess.
+The step is finished when every check in the skill passes.
+</pre></details></li>
+<li data-demo-path="CLAUDE.md"><details><summary><span class="step-demo-path">CLAUDE.md</span><span class="step-demo-what">One line that brings in AGENTS.md for Claude Code</span><span class="step-demo-digest">sha256 <span data-fact="digest">336cc4fb</span>…</span></summary><pre class="step-demo-code" data-demo-body="CLAUDE.md" tabindex="0" aria-label="CLAUDE.md">@AGENTS.md
+</pre></details></li>
+<li class="is-folder" data-demo-folder=".agents/skills/normalize-phone-numbers/"><span class="step-demo-path">.agents/skills/normalize-phone-numbers/</span>
+<ul>
+<li data-demo-path=".agents/skills/normalize-phone-numbers/SKILL.md"><details><summary><span class="step-demo-path">SKILL.md</span><span class="step-demo-what">The downloaded skill, under a header that names it</span><span class="step-demo-digest">sha256 <span data-fact="digest">b451b366</span>…</span></summary><pre class="step-demo-code" data-demo-preview tabindex="0" aria-label="The first lines of SKILL.md">---
+name: "normalize-phone-numbers"
+description: "Normalize phone numbers to an international form with a plus sign and a country code, keep extensions, and hold or escalate numbers whose digit count cannot be explained. No guessed country codes."
+---
+# Normalize phone numbers only when the digit count is explainable
+…</pre><p class="step-demo-note">After the header come the downloaded bytes, unchanged. The lock keeps their digest.</p></details></li>
+<li data-demo-path=".agents/skills/normalize-phone-numbers/scripts/normalize_phones.py"><details><summary><span class="step-demo-path">scripts/normalize_phones.py</span><span class="step-demo-what">The code the skill runs</span><span class="step-demo-digest">sha256 <span data-fact="digest">44782871</span>…</span></summary><pre class="step-demo-code" data-demo-body=".agents/skills/normalize-phone-numbers/scripts/normalize_phones.py" tabindex="0" aria-label="scripts/normalize_phones.py">"""The phone rule of SKILL.md for one value. Standard library only."""
+import re
+
+
+def normalize(value, country="1", national=10):
+    """Return the new value and the reason. A number that cannot be explained comes back unchanged."""
+    text, extension = value.strip(), ""
+    found = re.search(r"(?:ext\.?|extension|x)\s*(\d{1,6})\s*$", text, re.IGNORECASE)
+    if found:
+        extension, text = found.group(1), text[:found.start()].strip()
+    digits = re.sub(r"\D", "", text)
+    if text.startswith("+") and 8 &lt;= len(digits) &lt;= 15:
+        number, reason = "+" + digits, "international prefix kept"
+    elif country and len(digits) == national:
+        number, reason = "+" + country + digits, "default country code applied"
+    elif country and digits.startswith(country) and len(digits) == len(country) + national:
+        number, reason = "+" + digits, "country code present"
+    elif not country and len(digits) == national:
+        return digits, "held: no default country code"
+    else:
+        return value, f"escalated: digit_count_unexpected:{len(digits)}"
+    return number + (" ext " + extension if extension else ""), reason
+</pre></details></li>
+</ul></li>
+<li data-demo-path=".mcp.json"><details><summary><span class="step-demo-path">.mcp.json</span><span class="step-demo-what">One protocol server: the library, to ask for more</span><span class="step-demo-digest">sha256 <span data-fact="digest">10617984</span>…</span></summary><pre class="step-demo-code" data-demo-body=".mcp.json" tabindex="0" aria-label=".mcp.json">{
+  "mcpServers": {
+    "baltor": {
+      "type": "http",
+      "url": "https://baltor.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"
+      }
+    }
+  }
+}
+</pre></details></li>
+<li data-demo-path=".baltor/step.lock.json"><details><summary><span class="step-demo-path">.baltor/step.lock.json</span><span class="step-demo-what">Every placed file and its digest</span></summary><pre class="step-demo-code" data-demo-lock tabindex="0" aria-label="step.lock.json">{
+  "step": "2 of 4: normalize phone numbers",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "from": "written for this step",
+      "sha256": "4897de35bc8036495376f8e441da4831ec5bc5f988e78b19be6ebb31f5cde780"
+    },
+    {
+      "path": "CLAUDE.md",
+      "from": "written for this step",
+      "sha256": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    {
+      "path": ".agents/skills/normalize-phone-numbers/SKILL.md",
+      "from": "library",
+      "item": "normalize_phone_numbers",
+      "body_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63"
+    },
+    {
+      "path": ".agents/skills/normalize-phone-numbers/scripts/normalize_phones.py",
+      "from": "skill package, being built",
+      "sha256": "44782871dc7eb2ed6abadc710447b7ef82c455798feef6a3f9b3ad9c2ac7a9c5"
+    },
+    {
+      "path": ".mcp.json",
+      "from": "written for this step",
+      "sha256": "106179840cd3f1dd7ab431be3e108eb774214c51be0d8395021828552ffdc751"
+    }
+  ]
+}
+</pre></details></li>
+<li class="is-plain" data-demo-path="data/contacts.csv"><span class="step-demo-path">data/contacts.csv</span><span class="step-demo-what">Your file. Baltor never receives it.</span></li>
+</ul></li>
+</ul>
+<p class="step-demo-note">Harness material is any file a harness reads from its folder: instructions, skills with their scripts, tool and protocol server settings. It is not only Markdown. Packages of several files, such as a skill with its scripts, are being built.</p>
+</section>
+<section class="step-demo-panel" id="step-demo-panel-check" data-demo-stage="check" data-demo-evidence="illustration" aria-labelledby="step-demo-heading-check"><p class="step-demo-kind is-illustration" data-demo-label="illustration">Illustration of the design being built</p>
+<h3 id="step-demo-heading-check">The step ends when its checks pass.</h3>
+<table class="step-demo-table"><caption class="sr-only">The four checks written in the downloaded skill, with what the script in the step's folder returns</caption>
+<thead><tr><th scope="col">Input</th><th scope="col">Result</th><th scope="col">Why</th></tr></thead>
+<tbody>
+<tr data-demo-check="1"><td data-cell="input" data-label="Input">(415) 555-0100</td><td data-cell="output" data-label="Result">+14155550100</td><td data-cell="why" data-label="Why">default country code applied</td></tr>
+<tr data-demo-check="2"><td data-cell="input" data-label="Input">415-555-0100 ext. 12</td><td data-cell="output" data-label="Result">+14155550100 ext 12</td><td data-cell="why" data-label="Why">default country code applied</td></tr>
+<tr data-demo-check="3"><td data-cell="input" data-label="Input">+44 20 7946 0958</td><td data-cell="output" data-label="Result">+442079460958</td><td data-cell="why" data-label="Why">international prefix kept</td></tr>
+<tr data-demo-check="4"><td data-cell="input" data-label="Input">555-0100</td><td data-cell="output" data-label="Result">555-0100</td><td data-cell="why" data-label="Why">escalated: digit_count_unexpected:7</td></tr>
+</tbody></table>
+<p class="step-demo-ok">4 of 4 checks pass. The original file is unchanged.</p>
+<p class="step-demo-note">The four cases are the checks written in the downloaded skill, and each result is what the script in the step's folder returns. The lock and the result stay with the record of the task.</p>
+</section>
+</div>
+<p class="step-demo-legend"><span class="is-recorded">Recorded</span> stages are a real search and download of this release's library, checked against it before each release. <span class="is-illustration">Illustration</span> stages show the per-step design being built.</p>
+</section>
       </div>
+      </div>
+      <div class="home-band band-plain" data-band="start">
       <section class="start-strip" aria-labelledby="start-heading"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="start-heading">Ask, choose, keep the record.</h2><p>You do not install a model, move your project or change how your tools run. You connect the tools you already use.</p></div><ol class="start-steps">
         <li data-start-step="connect"><span class="start-index">01</span><h3>Connect the tools you already use</h3><p>Copy one reviewed connection entry for OpenCode, Codex or Claude Code. It carries this service address and the name of an environment variable, never a key.</p></li>
         <li data-start-step="ask"><span class="start-index">02</span><h3>Ask for what a step needs</h3><p>Search permitted material by what the work needs. The answer is a short list of references with their source, version and digest, not a pile of files.</p></li>
         <li data-start-step="keep"><span class="start-index">03</span><h3>Download and keep the record</h3><p>Access is checked again at download, the bytes are compared with the version you selected, and the download is recorded in your usage.</p></li>
       </ol><p class="caption">These three steps work today. The wider workflow on the How it works page is still being built.</p></section>
+      </div>
+      <div class="home-band" data-band="offer">
       <section class="product-section offer-section" id="what-you-get" aria-labelledby="offer-heading"><div class="section-title"><p class="eyebrow">What works right now</p><h2 id="offer-heading">Four things you can do today.</h2><p>Each one is working on the live service. Nothing here needs a model key or access to your files.</p></div><div class="offer-grid">
         <article data-offer="search"><span class="feature-index">Search</span><h3>Search what your account may see</h3><p>Sign in and describe what the step needs. Results are references: identity, purpose, source, licence, size, declared effects and the exact version. Search is text matching. It is not a learned model of meaning, and the service says so in the capabilities record that anyone can read without signing in.</p></article>
         <article data-offer="downloads"><span class="feature-index">Selected downloads</span><h3>Download an exact version and check it</h3><p>Choosing an item checks your access again before the file is read. The response carries a digest of the bytes, so your tool can confirm it received the version it selected and not another one.</p></article>
         <article data-offer="recipes"><span class="feature-index">Connection settings</span><h3>Connect the tools you already run</h3><p>Copy one reviewed entry for OpenCode, Codex or Claude Code. It carries this service address and the name of an environment variable, never a key.</p></article>
         <article data-offer="usage"><span class="feature-index">Usage</span><h3>See what your tools took</h3><p>Every delivery is recorded under your account with the item, the version and the amount. Service usage is separate from the model calls your own tools make, and those we never see.</p><p id="offer-usage-keys">Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.</p></article>
       </div><p class="caption offer-limit">The library holds a small first collection of reviewed items today, and a new item arrives only after independent review. We would rather tell you that than let you find out after paying.</p></section>
+      </div>
+      <div class="home-band band-plain" data-band="benefits">
       <section class="product-section benefit-section" aria-labelledby="benefit-heading"><div class="section-title"><p class="eyebrow">What it does</p><h2 id="benefit-heading">Six things your agents get for each step.</h2><p>Open one to see how it works and where the part behind it still has a limit. Point at a title, move to it with the keyboard, or press it.</p></div>
         <ul class="benefit-list" data-benefit-list>
           <li data-benefit="material"><h3><button type="button" class="benefit-title" id="benefit-title-material" data-benefit-title="material" aria-expanded="true" aria-controls="benefit-detail-material"><span class="benefit-index">01</span><span class="benefit-name">Each step gets the material it needs</span><span class="benefit-mark" aria-hidden="true"></span></button></h3><div class="benefit-detail" id="benefit-detail-material" data-benefit-detail="material" role="region" aria-labelledby="benefit-title-material"><p>A search returns short references, not whole files. Each reference tells your tool what the item is, where it came from, how large it is, its licence and the exact version. Your tool then downloads only the one it chose.</p><p class="benefit-status">A small step stops carrying the whole history. It carries the material it asked for, and nothing else.</p></div></li>
@@ -48,10 +212,18 @@
           <li data-benefit="resume"><h3><button type="button" class="benefit-title" id="benefit-title-resume" data-benefit-title="resume" aria-expanded="false" aria-controls="benefit-detail-resume"><span class="benefit-index">06</span><span class="benefit-name">Work that can stop and start again</span><span class="benefit-mark" aria-hidden="true"></span></button></h3><div class="benefit-detail" id="benefit-detail-resume" data-benefit-detail="resume" role="region" aria-labelledby="benefit-title-resume"><p>Long work gets interrupted: a restart, a full disk, a provider that stops answering. Baltor keeps reserving, pausing, saving a checkpoint and cancelling as four separate actions, so that picking work up again does not repeat something that already happened outside your machine. Each tool instance is started with a written assignment that names only the permissions that step holds.</p><p class="benefit-status">Hand a bounded step to a smaller model and let it work while you are away. The record tells you where it stopped and what it already did.</p></div></li>
         </ul>
       </section>
+      </div>
+      <div class="home-band band-tint" data-band="decisions">
       <section class="optimization-callout"><div><p class="eyebrow">One workflow for the decisions behind the work</p><h2>Spend more time on the problem.<br>Less time assembling an optimization stack.</h2><p>Model selection, context sizing, tool choice and code reuse belong together. Baltor's goal is to let you configure, compare and improve those decisions against the same requirements.</p></div><div class="optimization-priorities"><strong>You define success.</strong><p>Set the quality standard, budget, allowed tools and data access. A cheaper approach is useful only when it still satisfies the task.</p><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See the approach →</a></div></section>
       <section class="scoping-callout"><div><p class="eyebrow">A useful starting point for every step</p><h2>Plan, build and review with the information each step needs.</h2><p>Explore how a task becomes focused assignments, each with selected material and a way to request more when the work calls for it.</p><a class="button primary" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><div class="briefing-preview"><div><span>For planning</span><p>Relevant methods, requirements and previous findings</p></div><div><span>For building</span><p>Eligible code, selected skills and clear output requirements</p></div><div><span>For reviewing</span><p>The candidate result, acceptance criteria and known failure cases</p></div></div></section>
+      </div>
+      <div class="home-band band-plain" data-band="pricing">
       <section class="pricing-teaser" aria-labelledby="pricing-teaser-heading"><div><p class="eyebrow">Pricing</p><h2 id="pricing-teaser-heading">One plan. Search is free.</h2><p>Baltor Pro costs 29 United States dollars each month. The measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups.</p></div><div class="pricing-teaser-side"><a class="button quiet" href="/pricing" data-page="pricing">See what is included</a><p class="caption" id="pricing-teaser-note">Payment is not open yet. Nothing on this page charges you today.</p></div></section>
-      <section class="closing-band closing-callout"><div><p class="eyebrow">Get started</p><h2>Bring your next task to Baltor.</h2><p>Install the free part, connect the tools you already run, and search what your account is allowed to see. Accounts open in small groups, and the Get started page shows what this service offers you today.</p></div><div class="closing-actions"><a class="button primary" id="closing-primary" href="/connect" data-page="setup" data-access-state="waiting"><span data-access-label id="closing-primary-label">Get started</span> <span aria-hidden="true">↗</span></a><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See how it works</a></div></section><p class="caption benefit-limits">Token savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
+      </div>
+      <div class="home-band band-night" data-band="closing">
+      <section class="closing-band closing-callout"><div><p class="eyebrow">Get started</p><h2>Bring your next task to Baltor.</h2><p>Install the free part, connect the tools you already run, and search what your account is allowed to see. Accounts open in small groups, and the Get started page shows what this service offers you today.</p></div><div class="closing-actions"><a class="button primary" id="closing-primary" href="/connect" data-page="setup" data-access-state="waiting"><span data-access-label id="closing-primary-label">Get started</span> <span aria-hidden="true">↗</span></a><a class="text-link" href="/how-it-works#task-breakdown" data-page="about">See how it works</a></div></section>
+      <p class="caption benefit-limits">Token savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
+      </div>
     </section>
     <section data-view="pricing" hidden class="pricing-page">
       <div class="page-heading"><div><p class="eyebrow">Pricing</p><h1>One plan.<br>Search is free.</h1></div><p class="intro">Baltor Pro is for one person and the devices that person connects. You bring your own tools and your own model keys.</p></div>

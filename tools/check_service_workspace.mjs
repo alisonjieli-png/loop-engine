@@ -113,6 +113,8 @@ const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root
 const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const checks=[],errors=[],network=[]; let browser;
+/* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
+let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
 const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
@@ -206,7 +208,87 @@ const startLead=target=>target.evaluate(()=>{
 });
 const sameLead=(lead,state)=>lead.state===state&&JSON.stringify(lead.shown)===JSON.stringify([state])&&lead.form===(state==="invite")&&lead.register===(state==="register")&&lead.signIn&&lead.leads;
 const openGetStarted=async target=>{await target.locator('header nav a[data-page="setup"]').click();return startLead(target);};
-
+/* Visual structure. The owner, September 22, 2026: "there is too much white, no clear seperations or off white or best
+   practices or horizontal breaks seperating sections". The page ground is not plain white, every top-level part of the
+   homepage is a band, and each band is set off from the one above it by a change of ground, a visible rule, or both. A colour
+   that is fully transparent is read through to the colour behind it, and a rule counts only when it differs from both grounds. */
+const homeBands=target=>target.evaluate(()=>{
+  const home=document.querySelector('[data-view="home"]');
+  const transparent=color=>color==="transparent"||/rgba\([^)]*,\s*0\)$/.test(color);
+  const painted=node=>{for(let current=node;current;current=current.parentElement){const color=getComputedStyle(current).backgroundColor;if(!transparent(color))return color;}return "rgb(255, 255, 255)";};
+  const edge=(node,side,grounds)=>{const style=getComputedStyle(node),color=style["border"+side+"Color"];return parseFloat(style["border"+side+"Width"])>0&&style["border"+side+"Style"]!=="none"&&!transparent(color)&&!grounds.includes(color)?color:"";};
+  const bands=home?[...home.children].filter(node=>getComputedStyle(node).display!=="none"&&node.getBoundingClientRect().height>0):[];
+  return {count:bands.length,ground:painted(document.body),pairs:bands.slice(1).map((node,index)=>{const above=bands[index],grounds=[painted(above),painted(node)];
+    return {above:above.dataset.band||above.className,below:node.dataset.band||node.className,grounds,rule:edge(above,"Bottom",grounds)||edge(node,"Top",grounds)};})};
+});
+const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured.count+" bands, fewer than six"]:[]),...(["","rgb(255, 255, 255)"].includes(measured.ground)?["the page ground is plain white"]:[]),
+  ...measured.pairs.filter(pair=>pair.grounds[0]===pair.grounds[1]&&pair.rule==="").map(pair=>pair.above+" runs into "+pair.below+" with no change of ground and no rule")];
+/* The one-step demonstration. Five stages, one shown at a time. The search and the download are recorded from this release's
+   library; splitting the task, the step's folder and its check illustrate the per-step design that is being built. The names,
+   sizes and digests are compared with this release's packaged manifest, read from the source tree, and the order of the search
+   is compared with a real search of that library by tools/test_homepage_demonstration.py. */
+const demoStages=[["split","illustration"],["search","recorded"],["download","recorded"],["folder","illustration"],["check","illustration"]];
+const demoLabelWords={recorded:"Recorded from this release's library",illustration:"Illustration"};
+const demoState=target=>target.evaluate(()=>{
+  const demo=document.getElementById("step-demo"),visible=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+  const panels=demo?[...demo.querySelectorAll("[data-demo-stage]")]:[];
+  return {stages:panels.map(panel=>[panel.dataset.demoStage,panel.dataset.demoEvidence||""]),shown:panels.filter(visible).map(panel=>panel.dataset.demoStage),
+    checked:demo?.querySelector('input[name="step-demo-stage"]:checked')?.value||"",
+    labels:Object.fromEntries(panels.map(panel=>{const label=panel.querySelector("[data-demo-label]");return [panel.dataset.demoStage,label?[label.dataset.demoLabel,label.textContent.replace(/\s+/g," ").trim()]:["",""]];})),
+    text:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,panel.textContent.replace(/\s+/g," ")]))};
+});
+const demoLabelProblems=state=>[...(JSON.stringify(state.stages)!==JSON.stringify(demoStages)?["the stages are "+JSON.stringify(state.stages)]:[]),
+  ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])).map(([stage,evidence])=>"the "+stage+" stage does not say "+JSON.stringify(demoLabelWords[evidence]))];
+const livePathProblems=state=>[
+  ...(/\bsearch\b/.test(state.text.search||"")&&/sha256/.test(state.text.search||"")?[]:["the search stage shows no search with digests"]),
+  ...(/\bdownload\b/.test(state.text.download||"")&&/Bytes match the digest/.test(state.text.download||"")?[]:["the download stage shows no checked download"]),
+  ...["search","download"].filter(stage=>/illustration|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" stage carries illustrated or planned words")];
+const demoFacts=target=>target.evaluate(()=>{
+  const demo=document.getElementById("step-demo"),fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
+  const panel=demo?.querySelector('[data-demo-stage="download"]');
+  let lock=null;try{lock=JSON.parse(demo?.querySelector("[data-demo-lock]")?.textContent||"");}catch(_){}
+  return {items:demo?[...demo.querySelectorAll("[data-demo-item]")].map(node=>({identity:node.dataset.demoItem,kind:fact(node,"kind"),licence:fact(node,"licence"),size:fact(node,"size"),digest:fact(node,"digest")})):[],
+    download:panel?{identity:panel.querySelector("[data-demo-download]")?.dataset.demoDownload||"",size:fact(panel,"size"),digest:fact(panel,"digest")}:null,lock};
+});
+const releasedReferences=Object.fromEntries(JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8")).items.map(item=>[item.reference.identity,item.reference]));
+const kilobytes=size=>(size/1000).toFixed(1)+" KB";
+const shownDigestProblem=(place,shown,expected)=>/^[0-9a-f]{8,64}$/.test(shown)&&typeof expected==="string"&&expected.startsWith(shown)?"":place+" shows sha256 "+(shown||"(nothing)")+" and this release has "+(expected||"no such item");
+const demoFactProblems=facts=>[
+  ...(facts.items.length?[]:["the demonstration shows no search result"]),
+  ...facts.items.flatMap((item,index)=>{const released=releasedReferences[item.identity],place="search result "+(index+1)+" ("+item.identity+")";
+    if(!released)return [place+" is not an item of this release's library"];
+    return [...(item.kind!==released.kind?[place+" shows the kind "+item.kind]:[]),...(item.licence!==released.license?[place+" shows the licence "+item.licence]:[]),
+      ...(item.size!==kilobytes(released.size_bytes)?[place+" shows "+item.size+" and this release has "+kilobytes(released.size_bytes)]:[]),shownDigestProblem(place,item.digest,released.digest)].filter(Boolean);}),
+  ...(facts.download&&releasedReferences[facts.download.identity]?[...(facts.download.size!==kilobytes(releasedReferences[facts.download.identity].size_bytes)?["the download shows "+facts.download.size]:[]),
+    shownDigestProblem("the download",facts.download.digest,releasedReferences[facts.download.identity].digest)].filter(Boolean):["the download names no item of this release's library"]),
+  ...(facts.lock?.files||[]).filter(entry=>"item" in entry&&entry.body_sha256!==releasedReferences[entry.item]?.digest).map(entry=>"the lock lists "+entry.path+" with a digest this release does not serve")];
+/* Every file the step folder shows is listed in its lock with the SHA-256 of the bytes the page shows, measured in the page. */
+const demoLockProblems=target=>target.evaluate(async ()=>{
+  const demo=document.getElementById("step-demo");
+  let lock=null;try{lock=JSON.parse(demo?.querySelector("[data-demo-lock]")?.textContent||"");}catch(_){}
+  if(!lock||!Array.isArray(lock.files)||!lock.files.length)return ["the step folder shows no readable lock file"];
+  const hex=async text=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(text)))].map(value=>value.toString(16).padStart(2,"0")).join("");
+  const bodies=Object.fromEntries([...demo.querySelectorAll("[data-demo-body]")].map(node=>[node.dataset.demoBody,node.textContent]));
+  const rows=Object.fromEntries([...demo.querySelectorAll("[data-demo-path]")].map(node=>[node.dataset.demoPath,node.querySelector('[data-fact="digest"]')?.textContent.trim()||""]));
+  const problems=[],listed=new Set();
+  for(const entry of lock.files){
+    listed.add(entry.path);
+    const full=entry.sha256||entry.body_sha256||"";
+    if(!("item" in entry)&&!(entry.path in bodies))problems.push(entry.path+" is listed and its bytes are not shown");
+    else if(!("item" in entry)&&await hex(bodies[entry.path])!==entry.sha256)problems.push(entry.path+" is listed with a digest that is not the digest of the bytes shown");
+    if(!rows[entry.path]||!full.startsWith(rows[entry.path]))problems.push(entry.path+" is not in the folder with the digest the lock lists");
+  }
+  for(const [path,digest] of Object.entries(rows))if(digest&&!listed.has(path))problems.push(path+" is placed in the folder and missing from the lock");
+  return problems;
+});
+const folderPaths=target=>target.evaluate(()=>[...document.querySelectorAll("#step-demo [data-demo-path]")].map(node=>node.dataset.demoPath));
+const folderProblems=paths=>paths.some(path=>!/\.md$/i.test(path))?[]:["the step folder shows only Markdown files"];
+/* No layout shift from late script. The first screen is measured as served, with the page script held back, and again once
+   the script has run and the service has answered. Nothing measured here may move by more than one pixel. */
+const heroBoxes=target=>target.evaluate(()=>Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-how-it-works","#hero-access-note",".hero-price","#step-demo",'[data-band="start"]'].map(selector=>{
+  const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
+  return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];})));
+const boxesMoved=(served,after)=>Object.keys(served).filter(key=>!served[key]||!after[key]||served[key].some((value,index)=>Math.abs(value-after[key][index])>1));
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
 const sameValue=(left,right)=>JSON.stringify(ordered(left))===JSON.stringify(ordered(right));
@@ -408,8 +490,13 @@ try {
   check("subhead_check_rejects_a_sentence_that_never_names_the_step",["Baltor is a library your coding tools can search.","Supercharge your developers and AI agents."].every(claim=>!namesTheStep(claim))&&namesTheStep("Give your AI agents what they need for each step."));
   check("homepage_says_the_model_keys_stay_with_the_customer",(await page.locator(".hero-value").innerText()).includes("Your model keys stay with you")&&(await page.locator(".hero-value").innerText()).includes("never asks you for a provider key")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
+  /* The light ground is an off-white, not white, so the rule reads the ground the page paints in a light system setting and
+     requires the same light ground in a dark one. Every channel of a light ground is at least 230. */
+  const lightGround=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+  const isLight=color=>{const channels=(color.match(/\d+(?:\.\d+)?/g)||[]).slice(0,3).map(Number);return channels.length===3&&channels.every(value=>value>=230);};
   await page.emulateMedia({colorScheme:"dark"});await page.reload();
-  check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light"&&getComputedStyle(document.body).backgroundColor==="rgb(255, 255, 255)"));
+  check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light")&&isLight(lightGround)&&await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)===lightGround,{ground:lightGround});
+  check("light_ground_check_rejects_a_dark_ground",!isLight("rgb(12, 20, 36)")&&isLight("rgb(243, 245, 250)"));
   await page.emulateMedia({colorScheme:"light"});
   check("optimization_message_does_not_guarantee_daily_improvement",(await page.locator(".optimization-callout").innerText()).includes("Model selection, context sizing, tool choice and code reuse")&&(await page.locator(".benefit-limits").innerText()).includes("guaranteed daily performance gain"));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
@@ -436,33 +523,82 @@ try {
   check("homepage_starts_with_the_current_customer_path",currentPathFirst(homeFlow),homeFlow);
   check("homepage_flow_check_rejects_the_workflow_rail_and_old_order",!currentPathFirst({...homeFlow,hasWorkflowRail:true})&&!currentPathFirst({...homeFlow,startBeforeOffer:false})&&!currentPathFirst({...homeFlow,offerBeforeBenefits:false}));
   /* The owner saw the hero as one narrow column with empty space on both sides. At desktop width the hero spans the
-     page like every section below it, and the example sits beside the text. The example shows only the live path:
-     one search, the references it returned, one download whose bytes match its digest. */
+     page like every band below it, and the demonstration of one step sits beside the text. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector('.product-hero'),copy=hero.querySelector('.hero-copy'),example=hero.querySelector('.hero-example');
+    const hero=home.querySelector('.product-hero'),copy=hero.querySelector('.hero-copy'),example=hero.querySelector('.step-demo');
     const next=home.querySelector('.start-strip');
     const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0};
     return {heroWidth:box(hero).width,pageWidth:box(next).width,copyRight:box(copy).right,exampleLeft:box(example).left,
-      exampleTop:box(example).top,copyTop:box(copy).top,hasExample:Boolean(example),viewport:innerWidth,
-      exampleText:example?example.innerText:""};
+      exampleTop:box(example).top,copyTop:box(copy).top,hasExample:Boolean(example),viewport:innerWidth};
   });
   const heroFillsThePage=m=>m.viewport<1100||(m.hasExample&&m.heroWidth>=0.95*m.pageWidth&&m.exampleLeft>=m.copyRight-1);
-  check("homepage_hero_spans_the_page_with_the_example_beside_it",heroFillsThePage(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_narrow_column_and_a_missing_example",
+  check("homepage_hero_spans_the_page_with_the_demonstration_beside_it",heroFillsThePage(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_narrow_column_and_a_missing_demonstration",
     !heroFillsThePage({...heroLayout,viewport:1440,heroWidth:820})&&!heroFillsThePage({...heroLayout,viewport:1440,hasExample:false})
     &&!heroFillsThePage({...heroLayout,viewport:1440,exampleLeft:heroLayout.copyRight-200}));
-  const showsOnlyTheLivePath=text=>/\bsearch\b/.test(text)&&/\bdownload\b/.test(text)&&/sha256/.test(text)
-    &&/Bytes match the digest/.test(text)&&!/workflow|illustration|reusable solution|coming soon/i.test(text);
-  const exampleItems=await page.locator('[data-view="home"] .hero-example [data-example-item]').evaluateAll(items=>items.map(item=>item.dataset.exampleItem));
-  check("hero_example_shows_only_the_live_search_and_download_path",showsOnlyTheLivePath(heroLayout.exampleText)&&exampleItems.length===3,{exampleItems});
-  check("hero_example_check_rejects_a_workflow_illustration",
-    !showsOnlyTheLivePath(heroLayout.exampleText+" Example workflow")&&!showsOnlyTheLivePath("Prepare a customer import. Illustration."));
-  /* The example names real items. Each one must be an approved item of the released catalogue, so withdrawing an
-     item forces the example to change instead of leaving the page naming something the library no longer serves. */
-  const releasedIdentities=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8")).items.map(item=>item.reference.identity);
+  /* The demonstration of one step, read from the page as served. Five stages, one shown at a time, each labelled as recorded
+     or as an illustration. The recorded stages show only the live path: one search, the references it returned, one download
+     whose bytes match its digest. */
+  const demo=await demoState(page);
+  check("demo_shows_five_stages_one_at_a_time",JSON.stringify(demo.stages.map(([stage])=>stage))===JSON.stringify(demoStages.map(([stage])=>stage))&&JSON.stringify(demo.shown)===JSON.stringify(["split"])&&demo.checked==="split",{stages:demo.stages,shown:demo.shown,checked:demo.checked});
+  check("demo_labels_each_stage_as_recorded_or_as_an_illustration",demoLabelProblems(demo).length===0,{problems:demoLabelProblems(demo)});
+  check("demo_label_check_rejects_a_missing_label_and_an_illustration_called_recorded",demoLabelProblems({...demo,labels:{...demo.labels,folder:["",""]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,split:["recorded",demoLabelWords.recorded]}}).length===1);
+  check("demo_recorded_stages_show_only_the_live_search_and_download_path",demo.stages.length===5&&livePathProblems(demo).length===0,{problems:livePathProblems(demo)});
+  check("demo_live_path_check_rejects_an_illustration_in_a_recorded_stage",livePathProblems({...demo,text:{...demo.text,search:(demo.text.search||"")+" An illustration of a workflow."}}).length===1&&livePathProblems({...demo,text:{...demo.text,download:""}}).length===1);
+  /* The names, kinds, licences, sizes and digests the demonstration shows are this release's, read from the packaged manifest.
+     A catalogue release rewrites every body and so every digest, and the page must follow it. */
+  const shownFacts=await demoFacts(page);
+  check("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(shownFacts).length===0,{problems:demoFactProblems(shownFacts)});
+  const oneDigestChanged=JSON.parse(JSON.stringify(shownFacts));
+  if(oneDigestChanged.items[1])oneDigestChanged.items[1].digest=oneDigestChanged.items[1].digest.replace(/.$/,last=>last==="0"?"1":"0");
+  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",shownFacts.items.length===3&&demoFactProblems(oneDigestChanged).length===1,{problems:demoFactProblems(oneDigestChanged)});
+  const releasedIdentities=Object.keys(releasedReferences);
   const namesOnlyReleasedItems=names=>names.length>0&&names.every(name=>releasedIdentities.includes(name));
-  check("hero_example_names_only_released_catalogue_items",namesOnlyReleasedItems(exampleItems),{exampleItems});
-  check("hero_example_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...exampleItems,"invented_item_nobody_approved"]));
+  check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownFacts.items.map(item=>item.identity)),{items:shownFacts.items.map(item=>item.identity)});
+  check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownFacts.items.map(item=>item.identity),"invented_item_nobody_approved"]));
+  /* The step folder. Harness material is any file a harness reads, so the folder shows files that are not Markdown, and its lock
+     lists every placed file with the digest of the bytes the page shows. */
+  const lockProblems=await demoLockProblems(page);
+  check("demo_lock_lists_the_digest_of_every_file_it_shows",lockProblems.length===0,{problems:lockProblems});
+  const plantedBody=await page.evaluate(()=>{const body=document.querySelector('#step-demo [data-demo-body="AGENTS.md"]');if(!body)return false;body.dataset.saved=body.textContent;body.textContent+="Also rewrite the address column.\n";return true;});
+  const changedLockProblems=await demoLockProblems(page);
+  await page.evaluate(()=>{const body=document.querySelector('#step-demo [data-demo-body="AGENTS.md"]');if(body&&"saved" in body.dataset){body.textContent=body.dataset.saved;delete body.dataset.saved;}});
+  check("lock_check_rejects_a_file_changed_after_its_digest",plantedBody&&changedLockProblems.length===1&&(await demoLockProblems(page)).length===0,{problems:changedLockProblems});
+  const shownPaths=await folderPaths(page);
+  check("demo_folder_holds_a_file_that_is_not_markdown",folderProblems(shownPaths).length===0&&(demo.text.folder||"").includes("not only Markdown"),{paths:shownPaths});
+  check("folder_check_rejects_a_folder_of_markdown_files_only",folderProblems(shownPaths.filter(path=>/\.md$/i.test(path))).length===1&&folderProblems(["AGENTS.md","scripts/run.py"]).length===0);
+  /* The stages answer a press and the arrow keys with no page script: each stage is a radio button in one group, so the browser
+     moves the choice. The label of the focused stage carries a visible focus mark. */
+  const stageOrder=demoStages.map(([stage])=>stage),viaKeys=[],viaPress=[];
+  if(await page.locator("#step-demo-split").count()===1){
+    await page.locator("#step-demo-split").focus();
+    for(let press=0;press<stageOrder.length;press++){await page.keyboard.press("ArrowRight");const state=await demoState(page);
+      viaKeys.push({checked:state.checked,shown:state.shown,focusMark:await page.evaluate(()=>{const focused=document.activeElement,label=focused?.id?document.querySelector('label[for="'+focused.id+'"]'):null;return label?getComputedStyle(label).outlineStyle:"none";})});}
+    for(const stage of stageOrder){await page.click('label[for="step-demo-'+stage+'"]');viaPress.push((await demoState(page)).shown);}
+    await page.click('label[for="step-demo-split"]');
+  }
+  const keyOrder=[...stageOrder.slice(1),stageOrder[0]];
+  check("demo_stages_follow_the_arrow_keys_with_a_visible_focus_mark",viaKeys.length===5&&viaKeys.every((item,index)=>item.checked===keyOrder[index]&&JSON.stringify(item.shown)===JSON.stringify([keyOrder[index]])&&item.focusMark!=="none"),{viaKeys});
+  check("demo_stages_follow_a_press",viaPress.length===5&&viaPress.every((shown,index)=>JSON.stringify(shown)===JSON.stringify([stageOrder[index]])),{viaPress});
+  /* No request and no movement of its own: choosing stages asks the network for nothing, and the chosen stage stays chosen. */
+  const demoRequests=[],onDemoRequest=request=>demoRequests.push(request.url());
+  page.on("request",onDemoRequest);
+  for(const stage of stageOrder)if(await page.locator('label[for="step-demo-'+stage+'"]').count())await page.click('label[for="step-demo-'+stage+'"]');
+  page.off("request",onDemoRequest);
+  const settled=await demoState(page);await page.waitForTimeout(1200);const later=await demoState(page);
+  const moving=await page.evaluate(()=>[...document.querySelectorAll("#step-demo, #step-demo *")].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);
+  check("demo_makes_no_request_and_does_not_move_by_itself",settled.checked==="check"&&demoRequests.length===0&&later.checked===settled.checked&&JSON.stringify(later.shown)===JSON.stringify(settled.shown)&&moving===0,{requests:demoRequests.length,moving,checked:later.checked});
+  if(await page.locator('label[for="step-demo-split"]').count())await page.click('label[for="step-demo-split"]');
+  /* The bands. The page ground is an off-white, and each band is set off from the next. The known-wrong page paints two
+     neighbouring bands alike and takes their rules away through the style object, which the page policy allows, and then
+     puts them back. */
+  const bands=await homeBands(page);
+  check("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(bands).length===0,{problems:bandProblems(bands),count:bands.count,ground:bands.ground});
+  const plantedBands=await page.evaluate(()=>{const bands=[...(document.querySelector('[data-view="home"]')?.children||[])];if(bands.length<3)return false;
+    const [upper,lower]=[bands[1],bands[2]];lower.style.backgroundColor=getComputedStyle(upper).backgroundColor;upper.style.borderBottom="0";lower.style.borderTop="0";return true;});
+  const runTogether=bandProblems(await homeBands(page));
+  await page.evaluate(()=>{for(const node of [...(document.querySelector('[data-view="home"]')?.children||[])].slice(1,3))node.removeAttribute("style");});
+  check("band_check_rejects_two_bands_that_run_together_and_a_white_ground",plantedBands&&runTogether.length===1&&bandProblems(await homeBands(page)).length===0&&bandProblems({...bands,ground:"rgb(255, 255, 255)"}).length===1,{problems:runTogether});
   const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
   check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
@@ -497,6 +633,27 @@ try {
   await plain.goto(fixture.base+"/");
   const plainShown=await shownBenefits(plain),plainText=await plain.locator(".benefit-section").innerText();
   check("benefit_detail_reads_when_the_script_has_not_run",plainShown.length===6&&JSON.stringify(plainShown)===JSON.stringify(benefitNames)&&benefitSentences.every(sentence=>plainText.includes(sentence))&&benefitTitles.every(title=>plainText.includes(title)),{shown:plainShown});
+  /* The demonstration needs no script either: a browser that never receives the page script still moves between the stages. */
+  const plainStages=[];
+  for(const [stage] of demoStages){
+    if(await plain.locator('label[for="step-demo-'+stage+'"]').count())await plain.click('label[for="step-demo-'+stage+'"]');
+    const state=await demoState(plain);plainStages.push({stage,shown:state.shown,characters:(state.text[stage]||"").trim().length});
+  }
+  check("demo_reads_when_the_script_has_not_run",plainStages.length===5&&plainStages.every(item=>JSON.stringify(item.shown)===JSON.stringify([item.stage])&&item.characters>40),{plainStages});
+  /* No layout shift from late script. The first screen is measured without the page script, then on a page whose script has
+     run and whose service has answered, at the desktop and the phone width. */
+  const steadiness=[];
+  for(const width of [1440,390]){
+    await plain.setViewportSize({width,height:1000});await plain.goto(fixture.base+"/");const served=await heroBoxes(plain);
+    const scripted=await context.newPage();scripted.on("pageerror",error=>errors.push(safeError(error.message)));
+    await scripted.setViewportSize({width,height:1000});await scripted.goto(fixture.base+"/");
+    await scripted.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+    steadiness.push({width,served,moved:boxesMoved(served,await heroBoxes(scripted))});await scripted.close();
+  }
+  servedHeroBoxes=steadiness[0].served;
+  check("homepage_first_screen_does_not_move_when_the_script_runs",steadiness.length===2&&steadiness.every(item=>item.moved.length===0&&Object.values(item.served).every(Boolean)),{moved:steadiness.map(item=>({width:item.width,moved:item.moved}))});
+  const nudged=Object.fromEntries(Object.entries(servedHeroBoxes).map(([key,box])=>[key,key==="#hero-primary"&&box?box.map((value,index)=>index===1?value+3:value):box]));
+  check("steadiness_check_rejects_a_first_screen_that_moves",JSON.stringify(boxesMoved(servedHeroBoxes,nudged))===JSON.stringify(["#hero-primary"]));
   await plain.close();await withoutScript.close();
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
@@ -667,6 +824,22 @@ try {
   const homeFits=[];
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
+  /* Every stage of the demonstration fits a phone screen, at normal and at doubled text, with no sideways page scroll. A code
+     block or a table may scroll inside itself; the page may not. */
+  const demoFits=[];
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");
+    for(const size of ["","200%"]){
+      await page.evaluate(value=>document.documentElement.style.fontSize=value,size);
+      for(const [stage] of demoStages){
+        if(await page.locator('label[for="step-demo-'+stage+'"]').count())await page.click('label[for="step-demo-'+stage+'"]');
+        demoFits.push({width,size:size||"100%",stage,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,
+          wide:[...document.querySelectorAll("#step-demo *")].filter(node=>{const box=node.getBoundingClientRect();return box.width&&box.right>innerWidth+1&&!node.closest("pre, .step-demo-scroll");}).slice(0,6).map(node=>node.tagName+"."+String(node.className))}))});
+      }
+    }
+    await page.evaluate(()=>document.documentElement.style.fontSize="");
+  }
+  check("demo_fits_small_screens_and_enlarged_text_in_every_stage",demoFits.length===20&&demoFits.every(item=>!item.overflow&&item.wide.length===0),{problems:demoFits.filter(item=>item.overflow||item.wide.length)});
   await page.setViewportSize({width:1440,height:1000});
   /* The capabilities the service can report, for account creation, for a waiting list, for payment and for personal keys,
      each read from a real service, with the removed-guard controls for both directions and for the record version the page
@@ -828,6 +1001,40 @@ try {
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},scenario=scenarios[control.scenario];
     let applied=false,problem="";
     try{const {page:changed,state}=await openPublic(fixture[scenario.origin],{find:control.find,replacement:control.replacement},scenario.version);applied=state.applied;await scenario.run(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
+  }
+  /* Removed-guard controls for the homepage itself: one digest of the demonstration changed, the band grounds and rules taken
+     away, and a note that grows after the script runs. Each serves changed bytes of one or more files in memory, never a
+     source file, and must fail its own named check. */
+  const openChanged=async changes=>{
+    const opened=await context.newPage(),found=new Set();
+    opened.on("pageerror",()=>{});
+    const paths=[...new Set(changes.map(change=>change.path))];
+    for(const path of paths)await opened.route(url=>url.origin===new URL(fixture.base).origin&&url.pathname===path,async route=>{
+      const response=await route.fetch(),source=await response.text();let body=source;
+      for(const change of changes.filter(change=>change.path===path)){if(body.includes(change.find))found.add(change);body=body.split(change.find).join(change.replacement);}
+      await route.fulfill({response,body});});
+    await opened.goto(fixture.base+"/");
+    await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+    return {page:opened,applied:()=>changes.every(change=>found.has(change))};
+  };
+  const firstShown=releasedReferences.normalize_phone_numbers?.digest.slice(0,8)||"(none)";
+  const homepageControls=[
+    {name:"change_one_digest_in_the_demonstration",changes:[{path:"/",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
+     run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened)).length===0),
+     expected:["demo_names_sizes_and_digests_agree_with_this_release_manifest"]},
+    {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/architecture.css",find:"--band:#ffffff",replacement:"--band:#f3f5fa"},{path:"/assets/architecture.css",find:"--rule:#d3dbe8",replacement:"--rule:transparent"}],
+     run:async (opened,note)=>note("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(await homeBands(opened)).length===0),
+     expected:["homepage_sets_every_band_apart_on_an_off_white_ground"]},
+    {name:"lengthen_the_hero_note_after_the_script_runs",changes:[{path:"/assets/service.js",find:'$("hero-access-note").textContent = state.note;',replacement:'$("hero-access-note").textContent = state.note + " " + state.note + " " + state.note;'}],
+     run:async (opened,note)=>note("homepage_first_screen_does_not_move_when_the_script_runs",boxesMoved(servedHeroBoxes,await heroBoxes(opened)).length===0),
+     expected:["homepage_first_screen_does_not_move_when_the_script_runs"]}];
+  for(const control of homepageControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,applied:wasApplied}=await openChanged(control.changes);await control.run(changed,note);applied=wasApplied();await changed.close();}catch(error){problem=safeError(error);}
     const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});

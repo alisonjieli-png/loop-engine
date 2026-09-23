@@ -1,6 +1,35 @@
 /* Public product explanation. The working account surface keeps its own layout. */
-body[data-page=home]{background:var(--paper)}
-:root{--bg:#f7f9fc;--border:#e2e8f2;--accent:#2b5de2;--soft:#eff4ff}
+/* Colour tokens. The page ground is an off-white leaning a little toward the brand blue, never plain white. Bands alternate
+   between that ground and white, one band is tinted, and the closing band is night blue. Every text colour on every ground
+   here meets WCAG AA at 4.5 to 1 or better; the dark window of the demonstration has its own set. The dark theme redefines
+   every token below. */
+:root{--bg:#f3f5fa;--border:#dbe2ee;--accent:#2b5de2;--soft:#eaf0ff;
+  --ground:#f3f5fa;--band:#ffffff;--band-tint:#e9eef8;--rule:#d3dbe8;
+  --night:#0f1a30;--night-ink:#eef3ff;--night-muted:#b4c2dc;--night-rule:#26344f;--night-accent:#9ab6ff;
+  --code-bg:#0f1a2e;--code-bar:#16223a;--code-ink:#e6ecf8;--code-muted:#9aabc8;--code-accent:#8fb0ff;--code-rule:#26344f;
+  --code-recorded:#7fe0b0;--code-illustration:#f2c46b;--code-dot:#3a4863;
+  --code-accent-wash:rgba(143,176,255,.08);--code-recorded-wash:rgba(95,211,155,.1);--code-recorded-edge:rgba(95,211,155,.35);
+  --code-illustration-wash:rgba(242,196,107,.08);--code-illustration-edge:rgba(242,196,107,.35);--code-hover:rgba(255,255,255,.04);--code-well:rgba(0,0,0,.18);
+  --hero-glow:rgba(43,93,226,.11);
+  --card-shadow:0 1px 2px rgba(16,28,56,.05),0 10px 28px -14px rgba(16,28,56,.16);
+  --window-shadow:0 30px 60px -32px rgba(10,20,40,.6),0 2px 6px rgba(10,20,40,.14);
+  /* Type, spacing and shape. A design change swaps these values here and touches no rule below. */
+  --font-ui:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:var(--font-mono);
+  --text-hero:clamp(2.2rem,2.75vw,2.9rem);--text-closing:clamp(1.6rem,2.6vw,2.25rem);--text-lead:clamp(1.35rem,2.2vw,1.7rem);
+  --text-demo:.9rem;--text-demo-mono:.84rem;--text-demo-code:.8rem;--text-demo-small:.78rem;
+  --content-max:1320px;--band-gutter:max(1rem,4vw);--band-pad:clamp(3rem,6vw,5rem);
+  --hero-pad-top:clamp(2rem,4.5vw,3.75rem);--hero-pad-bottom:clamp(3rem,5.5vw,4.75rem);--hero-gap:clamp(2.5rem,4vw,4rem);
+  --demo-panel-min:30rem;--radius-window:16px;--radius-card:14px;--radius-panel:12px;--radius-inner:10px}
+@media(max-width:680px){:root{--band-gutter:1rem}}
+:root[data-theme=dark]{--ground:#0c1424;--band:#111b2e;--band-tint:#15213a;--rule:#2a3a57;
+  --night:#070d1a;--night-ink:#eef3ff;--night-muted:#abb9d3;--night-rule:#1d2a42;--night-accent:#9ab6ff;
+  --code-bg:#0a1120;--code-bar:#101a2e;--code-ink:#e6ecf8;--code-muted:#9aabc8;--code-accent:#8fb0ff;--code-rule:#2a3a57;
+  --code-recorded:#7fe0b0;--code-illustration:#f2c46b;--code-dot:#33415c;--card-shadow:none}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){--ground:#0c1424;--band:#111b2e;--band-tint:#15213a;--rule:#2a3a57;
+  --night:#070d1a;--night-ink:#eef3ff;--night-muted:#abb9d3;--night-rule:#1d2a42;--night-accent:#9ab6ff;
+  --code-bg:#0a1120;--code-bar:#101a2e;--code-ink:#e6ecf8;--code-muted:#9aabc8;--code-accent:#8fb0ff;--code-rule:#2a3a57;
+  --code-recorded:#7fe0b0;--code-illustration:#f2c46b;--code-dot:#33415c;--card-shadow:none}}
 .header{padding-top:1.25rem;padding-bottom:1.25rem}.brand-mark{background:var(--accent)}
 .header-access{display:inline-flex;align-items:center;gap:.55rem;justify-content:center;background:var(--ink);color:var(--paper);padding:.65rem 1.2rem;border-radius:999px;min-height:44px}
 .button{border-radius:999px;padding:.75rem 1.25rem}.hero-value{max-width:590px;color:var(--muted);font-size:1rem}
@@ -105,7 +134,6 @@ body[data-page=home]{background:var(--paper)}
 .pricing-teaser-side .caption{margin:0}
 .closing-callout{align-items:center}
 .closing-actions{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;flex-shrink:0}
-body[data-page=pricing]{background:var(--paper)}
 .pricing-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:1.5rem;align-items:start}
 .plan-card .section-heading{align-items:start}
 .plan-price{font-size:clamp(2rem,3.6vw,2.7rem);line-height:1.05;letter-spacing:-.03em;font-weight:700;margin:.4rem 0 0}
@@ -137,38 +165,157 @@ footer{flex-wrap:wrap;align-items:center}
 .actions .button,.closing-actions .button,.pricing-teaser-side .button{max-width:100%;flex-shrink:1;flex-wrap:wrap;gap:.5rem;white-space:normal}
 .closing-actions,.pricing-teaser-side,.plan-card .actions{min-width:0}
 
-/* The example beside the hero shows only the path that works on the live service: one search, the short
-   references it returned, one download whose bytes match its digest. It is drawn from a real search. */
-.hero-example{background:var(--paper);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
-.hero-example-bar{display:flex;align-items:center;gap:.45rem;padding:.7rem 1rem;border-bottom:1px solid var(--border);background:var(--soft)}
-.hero-example-bar>span{width:10px;height:10px;border-radius:50%;background:var(--border)}
-.hero-example-bar p{margin:0 0 0 .5rem;font-size:.85rem;color:var(--muted)}
-.hero-example-body{padding:1.2rem 1.25rem 1rem;font:.88rem/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.hero-example-line{margin:0 0 .8rem;overflow-wrap:anywhere}
-.hero-example-tag{display:inline-block;min-width:5.6rem;color:var(--accent);font-weight:600}
-.hero-example-results{list-style:none;margin:0 0 .9rem;padding:0;border-top:1px solid var(--border)}
-.hero-example-results li{padding:.6rem 0;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
-.hero-example-results strong{display:block;font-weight:600;color:var(--ink)}
-.hero-example-results span{display:block;color:var(--muted);font-size:.8rem}
-.hero-example-done{margin:0;color:var(--accent);font-weight:600}
-.hero-example>.caption{margin:0;padding:.75rem 1.25rem 1rem;border-top:1px solid var(--border);color:var(--muted)}
-.product-hero .hero-split,.product-hero .hero-value{max-width:560px}
-.hero.product-hero h1{font-size:clamp(2.1rem,3.3vw,3.15rem)}
 
-/* The hero offers one action. The note under it changes with the reported state and keeps two lines of room, so the
-   state that the served page does not show first still fits without moving the lines below it. */
+/* The homepage is a stack of bands. While the home view is shown, the main column spans the window and each band paints its
+   own ground, draws a rule on its top edge and holds its content in one column of at most 1320 pixels. The selector reads the
+   served markup, not the page script, so nothing moves when the script runs. */
+main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
+.home-band{padding:var(--band-pad) max(var(--band-gutter),calc((100% - var(--content-max)) / 2));background:var(--ground);border-top:1px solid var(--rule);min-width:0}
+.home-band.band-plain{background:var(--band)}
+.home-band.band-tint{background:var(--band-tint)}
+.home-band.band-night{background:var(--night);color:var(--night-ink);border-top-color:var(--night)}
+.home-band.band-hero{border-top:0;padding-top:var(--hero-pad-top);padding-bottom:var(--hero-pad-bottom);background:radial-gradient(60rem 34rem at 90% -12%,var(--hero-glow),transparent 70%),var(--ground)}
+.home-band>.start-strip,.home-band>.product-section{margin:0;padding-block:0;border-top:0}
+.home-band>.pricing-teaser{margin:0}
+.band-plain .start-steps li{background:var(--ground)}
+/* The six benefits: the section title on the left and the list on the right from 1000 pixels, so a row is not wider than
+   the sentence it opens. */
+@media(min-width:1000px){.home-band>.benefit-section{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.35fr);gap:4rem;align-items:start}
+  .home-band>.benefit-section .benefit-list{margin-top:.4rem}}
+.band-plain .start-steps li,.home-band .offer-grid article{box-shadow:var(--card-shadow)}
+.band-plain .start-strip>.caption,.home-band .offer-limit{margin-bottom:0}
+.band-tint .optimization-callout,.band-tint .scoping-callout{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--card-shadow)}
+.band-tint .scoping-callout{margin-top:1.25rem}
+.band-night .closing-band{background:transparent;border:0;border-radius:0;padding:0;margin:0;color:var(--night-ink)}
+.band-night .closing-band h2{font-size:var(--text-closing);line-height:1.2;letter-spacing:-.025em}
+.band-night .closing-band .eyebrow,.band-night .text-link{color:var(--night-accent)}
+.band-night .closing-band p:last-child{color:var(--night-muted)}
+.band-night .benefit-limits{color:var(--night-muted);max-width:none;margin:2.5rem 0 0;padding-top:1.25rem;border-top:1px solid var(--night-rule)}
+.band-night :focus-visible{outline-color:var(--night-accent)}
+/* The hero: the text on the left and the demonstration of one step beside it from 1100 pixels, one column below that. */
+.band-hero .hero.product-hero{grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:start;padding:0;margin:0}
+@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:var(--hero-gap)}
+  .band-hero .hero.product-hero h1{font-size:var(--text-hero)}}
+.band-hero .hero-copy{padding-top:.5rem;min-width:0}
+.hero.product-hero h1{font-size:clamp(2.1rem,3.3vw,3.15rem)}
+.product-hero .hero-split,.product-hero .hero-value{max-width:560px}
+.band-hero .hero-positioning{border-left-color:var(--rule)}
 .hero-actions{margin:1.6rem 0 .9rem}
+/* The note under the hero action changes with the reported state. It keeps two lines of room, so the state that the served
+   page does not show first still fits without moving the lines below it. */
 .hero-note{margin:0;max-width:30rem;min-height:3.1em}
 .hero-note+.hero-price{margin:.3rem 0 0}
 
+/* The demonstration of one step: a dark window with five stages. Five radio buttons in one group choose the stage, so the
+   browser moves the choice with a press or the arrow keys and the page script plays no part. Without :has() every stage reads
+   one after another. Beside the hero text every stage is shorter than the text, so changing stage never moves the band
+   below. Nothing here moves by itself. */
+.step-demo{container:step-demo/inline-size;min-width:0;background:var(--code-bg);color:var(--code-ink);border:1px solid var(--code-rule);border-radius:var(--radius-window);box-shadow:var(--window-shadow);overflow:hidden;font-size:var(--text-demo);line-height:1.55}
+.step-demo :focus-visible{outline-color:var(--code-accent)}
+.step-demo-bar{display:flex;align-items:center;gap:.8rem;padding:.75rem 1.1rem;background:var(--code-bar);border-bottom:1px solid var(--code-rule)}
+.step-demo-dots{display:flex;gap:.4rem;flex-shrink:0}.step-demo-dots span{width:10px;height:10px;border-radius:50%;background:var(--code-dot)}
+.step-demo-bar h2{margin:0;font-size:.875rem;font-weight:600;letter-spacing:0;color:var(--code-ink);min-width:0;overflow-wrap:anywhere}
+.step-demo-stages{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0;padding:0;border:0;border-bottom:1px solid var(--code-rule);min-width:0}
+.step-demo-stages input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.step-demo-stages label{display:flex;align-items:center;justify-content:center;gap:.45rem;min-width:0;min-height:48px;margin:0;padding:.55rem .35rem;font-size:.84rem;font-weight:600;color:var(--code-muted);cursor:pointer;border-bottom:2px solid transparent;text-align:center;overflow-wrap:anywhere}
+.step-demo-stages label:hover{color:var(--code-ink)}
+.step-demo-stages input:checked+label{color:var(--code-ink);border-bottom-color:var(--code-accent);background:var(--code-accent-wash)}
+.step-demo-stages input:focus-visible+label{outline:3px solid var(--code-accent);outline-offset:-3px}
+.step-demo-number{display:inline-grid;place-items:center;flex-shrink:0;width:1.45rem;height:1.45rem;border-radius:50%;border:1px solid currentColor;font:600 .72rem/1 var(--font-mono)}
+.step-demo-stages input:checked+label .step-demo-number{background:var(--code-accent);border-color:var(--code-accent);color:var(--code-bg)}
+.step-demo-panels{display:flex;flex-direction:column;padding:1.15rem 1.25rem 1.2rem;min-width:0}
+.step-demo-panel{flex:1 0 auto;flex-direction:column;min-width:0}
+.step-demo-panel>.step-demo-note:last-child{margin-top:auto;padding-top:.35rem}
+@media(min-width:1100px){.step-demo-panels{min-height:var(--demo-panel-min)}}
+@supports selector(:has(*)){
+  .step-demo-panel{display:none}
+  .step-demo:has(#step-demo-split:checked) #step-demo-panel-split,.step-demo:has(#step-demo-search:checked) #step-demo-panel-search,
+  .step-demo:has(#step-demo-download:checked) #step-demo-panel-download,.step-demo:has(#step-demo-folder:checked) #step-demo-panel-folder,
+  .step-demo:has(#step-demo-check:checked) #step-demo-panel-check{display:flex}
+}
+@supports not selector(:has(*)){.step-demo-panel+.step-demo-panel{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--code-rule)}}
+.step-demo-kind{display:inline-flex;align-self:flex-start;align-items:center;gap:.45rem;margin:0 0 .75rem;padding:.18rem .6rem;border:1px solid;border-radius:999px;font-size:.76rem;font-weight:600}
+.step-demo-kind::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:currentColor;flex-shrink:0}
+.step-demo-kind.is-recorded{color:var(--code-recorded);background:var(--code-recorded-wash);border-color:var(--code-recorded-edge)}
+.step-demo-kind.is-illustration{color:var(--code-illustration);background:var(--code-illustration-wash);border-color:var(--code-illustration-edge)}
+.step-demo-kind.is-illustration::before{background:transparent;border:1.5px solid currentColor}
+.step-demo-panel h3{margin:0 0 .85rem;font-size:1.05rem;line-height:1.35;color:var(--code-ink)}
+.step-demo-line{margin:0 0 .8rem;font:var(--text-demo-mono)/1.55 var(--font-mono);overflow-wrap:anywhere}
+.step-demo-tag{display:inline-block;min-width:5.6rem;color:var(--code-accent);font-weight:600}
+.step-demo code{font:inherit;color:var(--code-ink)}
+.step-demo-note{margin:.85rem 0 0;color:var(--code-muted);font-size:.84rem}
+.step-demo-ok{color:var(--code-recorded);font-weight:600}
+.step-demo-steps{list-style:none;counter-reset:demo-step;display:grid;gap:.45rem;margin:0;padding:0}
+.step-demo-steps li{counter-increment:demo-step;display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 .75rem;align-items:start;padding:.55rem .75rem;border:1px solid var(--code-rule);border-radius:10px}
+.step-demo-steps li::before{content:counter(demo-step);grid-row:span 2;display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;border:1px solid var(--code-muted);color:var(--code-muted);font:600 .72rem/1 var(--font-mono)}
+.step-demo-steps strong{font-size:.88rem;color:var(--code-ink)}
+.step-demo-steps span{font-size:.8rem;color:var(--code-muted)}
+.step-demo-steps .is-current{border-color:var(--code-accent);background:var(--code-accent-wash)}
+.step-demo-steps .is-current::before{background:var(--code-accent);border-color:var(--code-accent);color:var(--code-bg)}
+.step-demo-results{list-style:none;margin:0;padding:0;border-top:1px solid var(--code-rule);font:var(--text-demo-mono)/1.5 var(--font-mono)}
+.step-demo-results li{padding:.6rem 0;border-bottom:1px solid var(--code-rule);overflow-wrap:anywhere}
+.step-demo-results strong{display:block;font-weight:600;color:var(--code-ink)}
+.step-demo-results li:first-child strong{color:var(--code-accent)}
+.step-demo-results li>span{display:block;color:var(--code-muted);font-size:.78rem}
+.step-demo-log{list-style:none;margin:0 0 .9rem;padding:0;font:var(--text-demo-mono)/1.6 var(--font-mono)}
+.step-demo-log li{padding:.1rem 0;overflow-wrap:anywhere}
+.step-demo-log li::before{content:"› ";color:var(--code-muted)}
+.step-demo-log .step-demo-ok::before{content:"✓ ";color:var(--code-recorded)}
+.step-demo-file{margin:0;border:1px solid var(--code-rule);border-radius:var(--radius-inner);overflow:hidden}
+.step-demo-file figcaption{padding:.35rem .75rem;font-size:.75rem;color:var(--code-muted);border-bottom:1px solid var(--code-rule)}
+.step-demo pre{margin:0;max-height:none;background:transparent;border:0;border-radius:0;color:var(--code-ink);font:var(--text-demo-code)/1.6 var(--font-mono)}
+.step-demo .step-demo-quote{padding:.6rem .75rem;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal}
+.step-demo .step-demo-code{margin:.15rem 0 .55rem 1.1rem;padding:.65rem .8rem;max-height:18rem;overflow:auto;white-space:pre;overflow-wrap:normal;word-break:normal;border:1px solid var(--code-rule);border-radius:8px;background:var(--code-well)}
+.step-demo-tree,.step-demo-tree ul{list-style:none;margin:0;padding:0;min-width:0}
+.step-demo-tree ul{margin-left:.5rem;padding-left:.75rem;border-left:1px solid var(--code-rule)}
+.step-demo-tree li{min-width:0}
+.step-demo-path{font:600 .82rem/1.5 var(--font-mono);color:var(--code-ink);overflow-wrap:anywhere}
+.step-demo-tree .is-folder>.step-demo-path{display:block;padding:.3rem 0;color:var(--code-accent)}
+.step-demo-tree summary,.step-demo-tree .is-plain{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.05rem .75rem;padding:.4rem .35rem .4rem 1.1rem;border-radius:6px;list-style:none}
+.step-demo-tree summary{position:relative;cursor:pointer}
+.step-demo-tree summary::-webkit-details-marker{display:none}
+.step-demo-tree summary::before{content:"▸";position:absolute;left:.15rem;top:.4rem;color:var(--code-muted)}
+.step-demo-tree details[open]>summary::before{content:"▾"}
+.step-demo-tree summary:hover{background:var(--code-hover)}
+.step-demo-tree summary:focus-visible{outline:3px solid var(--code-accent);outline-offset:0}
+.step-demo-what{grid-column:1;color:var(--code-muted);font-size:.78rem;line-height:1.4}
+.step-demo-digest{grid-column:2;grid-row:1;font:.74rem/1.5 var(--font-mono);color:var(--code-muted);white-space:nowrap}
+.step-demo-tree details>.step-demo-note{margin:0 0 .6rem 1.1rem}
+.step-demo-table{width:100%;border-collapse:collapse;margin:0 0 .85rem;font:var(--text-demo-code)/1.45 var(--font-mono)}
+.step-demo-table th{padding:.35rem .6rem .35rem 0;text-align:left;border-bottom:1px solid var(--code-rule);color:var(--code-muted);font:600 .72rem/1.4 var(--font-ui);letter-spacing:.06em;text-transform:uppercase}
+.step-demo-table td{padding:.5rem .6rem .5rem 0;border-bottom:1px solid var(--code-rule);vertical-align:top;color:var(--code-ink);overflow-wrap:anywhere}
+.step-demo-table td[data-cell=why]{color:var(--code-muted)}
+.step-demo-legend{margin:0;padding:.7rem 1.25rem .85rem;border-top:1px solid var(--code-rule);color:var(--code-muted);font-size:.78rem}
+.step-demo-legend .is-recorded{color:var(--code-recorded);font-weight:600}
+.step-demo-legend .is-illustration{color:var(--code-illustration);font-weight:600}
+/* The window reads its own width. At 560 pixels and wider a file row is one line: its name, what it is and its digest. */
+@container step-demo (min-width:560px){
+  .step-demo-tree summary,.step-demo-tree .is-plain{grid-template-columns:minmax(0,max-content) minmax(0,1fr) auto;align-items:baseline}
+  .step-demo-what{grid-column:2;grid-row:1}
+  .step-demo-digest{grid-column:3}
+}
+@container step-demo (max-width:559px){
+  .step-demo-panels{padding:1rem .9rem 1.1rem}.step-demo-bar{padding:.65rem .9rem}
+  .step-demo-stages label{flex-direction:column;gap:.2rem;font-size:.78rem;padding:.5rem .15rem}
+  .step-demo-digest{grid-column:1;grid-row:auto;white-space:normal;overflow-wrap:anywhere}
+  .step-demo-tree summary,.step-demo-tree .is-plain{grid-template-columns:minmax(0,1fr)}
+  .step-demo .step-demo-code{margin-left:0;white-space:pre-wrap;overflow-wrap:anywhere}
+  .step-demo-table thead{display:none}
+  .step-demo-table,.step-demo-table tbody,.step-demo-table tr,.step-demo-table td{display:block;width:100%}
+  .step-demo-table tr{padding:.45rem 0;border-bottom:1px solid var(--code-rule)}
+  .step-demo-table td{border:0;padding:.08rem 0}
+  .step-demo-table td::before{content:attr(data-label);display:inline-block;min-width:4.4rem;color:var(--code-muted);font:600 .7rem/1.4 var(--font-ui);letter-spacing:.05em;text-transform:uppercase}
+}
+@media(prefers-reduced-motion:no-preference){.step-demo-stages label,.step-demo-tree summary{transition:color .15s ease,background-color .15s ease}}
+
 /* The panel that leads the Get started page. The service's record chooses which of its three panels shows: the invitation
    request form, account creation, or the way to reach the operator, which is also the careful state. */
-.start-access{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.5rem 3rem;align-items:start;margin:0 0 1.5rem;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.start-access{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.5rem 3rem;align-items:start;margin:0 0 1.5rem;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--card-shadow)}
 .start-access-intro{min-width:0}
-.start-access-intro h2{font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.25;margin:.7rem 0 .4rem}
+.start-access-intro h2{font-size:var(--text-lead);line-height:1.25;margin:.7rem 0 .4rem}
 .start-access-intro>p{color:var(--muted)}
 .start-access-intro>.start-signin{color:var(--ink);font-weight:600}
-.start-invite,.start-register,.start-operator{min-width:0;padding:1.5rem;background:var(--bg);border:1px solid var(--border);border-radius:12px}
+.start-invite,.start-register,.start-operator{min-width:0;padding:1.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-panel)}
 .start-invite h3,.start-register h3,.start-operator h3{margin:0;font-size:1.1rem}
 .start-invite .section-heading{margin-bottom:.3rem}
 .start-invite>p:not(.secondary),.start-register p,.start-operator p{color:var(--muted)}
