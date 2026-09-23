@@ -1,0 +1,51 @@
+{
+ "record_type": "data_cleanup_population/v1",
+ "seed": 20260922,
+ "families": {
+  "phones": {
+   "rows": 38,
+   "input_sha256": "5f696b91515c9ef97819ce9a67a29cb0093e9297d0c1ee56d2ae72ebe65f603b",
+   "truth_sha256": "964121494d456ac3922be5dc84737817379bf9b35f6af9990fe15b1816d46ff6",
+   "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+   "known_wrong_sha256": {
+    "all-null.csv": "aa5dff6fbf6f0449b6bbd0785e5a72fa49c1d547b346055cd438851e0c2f3844",
+    "copied-input.csv": "990a576df462420e6712e8389e9ef6c8ff1772c0c35c4580cc7554803088cc39",
+    "shuffled.csv": "7565b4dec8cd588df51899b90806cb716b15840edab8b09b313a00e609ee7adb"
+   }
+  },
+  "emails": {
+   "rows": 35,
+   "input_sha256": "7196dcaa7ae6d139b0c91ed4d9bc1e93c152094982a3d4bce9c4f1a1b1d2631e",
+   "truth_sha256": "d3539b210bbcb8c5a02e32c77b229e247d606cf18c1c2564c70b5655a5736dde",
+   "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+   "known_wrong_sha256": {
+    "all-null.csv": "96670ce370e3ae9660a8c4daea46a585ced17f7fc7f6842b1cfdc70f562607e2",
+    "copied-input.csv": "df53b308ec7f155b89f51f093446d48fab144cbe04f5a5a861ea79833ba1d58a",
+    "shuffled.csv": "dd6cfe713ade41bb8b7975d427a8e2ef310aaf36657c6ef81c9b46e51ec32e9d"
+   }
+  },
+  "addresses": {
+   "rows": 32,
+   "input_sha256": "421f68532d9f5742000dfdea141740aba2d3145626e0fc13a2f78564e260c1bf",
+   "truth_sha256": "33e1ad97e93d724b4cca06457e116d1a8828fa120b570a5791344ba92b9ae7d7",
+   "prompt_sha256": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+   "known_wrong_sha256": {
+    "all-null.csv": "fa7fa47f1f817b71f6c34d983ee0e369f886d5327bae73761b05ce5853d10acc",
+    "copied-input.csv": "30ce3c8afd35215e47e570ead10e6812d4e4f726a41d5a64c950c05fae5a4499",
+    "shuffled.csv": "9b5fef341837e179f3db31c38f0efec8b3dcaaccca962a51a9e7b69fcf23e0cd"
+   }
+  },
+  "duplicates": {
+   "rows": 38,
+   "input_sha256": "c5e5cff3a83321eb1b20163686af6971e8ad4aae7b7e17316788291f30c94afd",
+   "truth_sha256": "d9b2412ebaef2ee341eb46c398c07e148adff1f08f9de7801b231a4c23b19439",
+   "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+   "known_wrong_sha256": {
+    "all-null.csv": "3bf4c1f0b07a851de9051b1b8da129fad83282e1cd28e418e711fb7f42f40f04",
+    "copied-input.csv": "c5e5cff3a83321eb1b20163686af6971e8ad4aae7b7e17316788291f30c94afd",
+    "every-pair-same.csv": "c825e28fdb304025f71b61a5f4e7f482cd97aa15cc35a2b7754473ea6fa7786d",
+    "shuffled.csv": "0edbad6719fb51d810187bb655066ff5bf9734055604ac866555f92810dc81b0"
+   }
+  }
+ }
+}

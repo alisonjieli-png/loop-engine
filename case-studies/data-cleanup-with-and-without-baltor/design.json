@@ -1,0 +1,89 @@
+{
+ "record_type": "data_cleanup_run_design/v1",
+ "frozen_on": "2026-09-22",
+ "question": "Does an approved Baltor item placed in a fresh harness step raise a small or cheap model's independently checked data cleanup result, and does it close the gap to a larger model without the item?",
+ "request_ceiling": 400,
+ "step_request_cap": 8,
+ "step_timeout_seconds": 1200,
+ "repetitions": 3,
+ "order_seed": 20260922,
+ "families": ["phones", "emails", "addresses", "duplicates"],
+ "models": {
+  "small": {"id": "qwen2.5-coder:7b", "where": "local Ollama server on this workstation, RTX 3060 12 GB", "parameters": "7.6B", "context_window_declared": 32768},
+  "flash": {"id": "glm-5.3-flash:cloud", "where": "Ollama Cloud through the local Ollama server, existing subscription", "parameters": "321B as listed by the local server", "context_window_declared": 131072},
+  "large": {"id": "glm-5.2:cloud", "where": "Ollama Cloud through the local Ollama server, existing subscription", "parameters": "756B as listed by the local server", "context_window_declared": 131072}
+ },
+ "arms": {
+  "small-none": {"model": "small", "material": "none"},
+  "small-agents": {"model": "small", "material": "agents_file"},
+  "flash-none": {"model": "flash", "material": "none"},
+  "flash-agents": {"model": "flash", "material": "agents_file"},
+  "large-none": {"model": "large", "material": "none"}
+ },
+ "optional_arms": {
+  "small-prompt": {"model": "small", "material": "prompt"}
+ },
+ "optional_rule": {
+  "minimum_remaining_requests": 96,
+  "statement": "The optional arm runs only after the main plan is finished, and only if at least 96 requests (12 steps at the step cap) remain under the ceiling. Its results are reported beside the main arms with their own denominator."
+ },
+ "prompt_material_heading": "Reference material for this step:",
+ "material_selection_rule": "For each family, the approved starter catalogue items that the catalogue's own search fixtures (search-queries.json, written before this study) name as the expected answer for a query that describes the family's step. Items must be approved in reviews.json and their bytes must match the reviewed digest.",
+ "material": {
+  "phones": ["normalize_phone_numbers"],
+  "emails": ["normalize_and_recover_email_addresses"],
+  "addresses": ["split_address_lines_into_components"],
+  "duplicates": ["find_duplicate_records_with_blocking_keys", "score_duplicate_pairs_by_weakest_signal"]
+ },
+ "material_queries": {
+  "phones": ["format phone numbers with country code"],
+  "emails": ["fix typos in email domains like gmail.con"],
+  "addresses": ["parse street address into parts"],
+  "duplicates": ["dedupe my contacts csv", "fuzzy match two company records"]
+ },
+ "harness": {
+  "name": "Pi",
+  "package": "@mariozechner/pi-coding-agent",
+  "version": "0.73.1",
+  "node": "v22.22.1",
+  "flags": ["--no-session", "--offline", "--no-skills", "--mode", "json", "--provider", "meter", "--model", "<model id>", "-p", "<prompt>"],
+  "tools": "Pi defaults: read, bash, edit, write",
+  "max_tokens": 8192,
+  "pi_settings": {"retry": {"enabled": false}, "compaction": {"enabled": false}},
+  "isolation": "Empty HOME, PI_CODING_AGENT_DIR set to a new folder per step holding only models.json and settings.json, the step folder is its own git root under a parent with no AGENTS.md or CLAUDE.md, env -i with a fixed PATH, proxies for other network access set to a closed local port, Python 3.14 standard library only.",
+  "material_delivery": {"none": "no AGENTS.md", "agents_file": "the item bytes written to AGENTS.md in the step folder; two items are joined with one empty line", "prompt": "the item bytes appended to the prompt after the heading"}
+ },
+ "pilot": {
+  "trials": [
+   {"family": "phones", "arm": "small-none"},
+   {"family": "phones", "arm": "flash-none"}
+  ],
+  "probe_models": ["large"],
+  "probe_prompt": "Reply with the single word READY.",
+  "rule": "The pilot checks the plumbing only. Its trials are recorded and excluded from results. After the pilot, only harness plumbing may change, and any change is recorded as an amendment with its reason. The population, prompts, arms, models, metrics, thresholds and claim rules may not change."
+ },
+ "outage_policy": {
+  "wait_seconds": [60, 120, 300, 600, 900],
+  "max_total_wait_seconds": 7200,
+  "statement": "A step with any upstream rate limit, provider error or unreachable upstream is recorded as a provider outage attempt, excluded from results and run again after a wait. Its requests still count toward the ceiling."
+ },
+ "metrics": {
+  "phones": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]},
+  "emails": {"primary": "record_accuracy", "also": ["value_accuracy", "change_precision", "change_recall", "wrong_change_rate_on_correct_values", "correct_hold_rate", "guess_rate_on_hold_rows", "missing_rows"]},
+  "addresses": {"primary": "record_accuracy", "also": ["part_accuracy", "rewritten_parts", "rewritten_part_rate", "correct_hold_rate", "unneeded_review_rate", "missing_rows"]},
+  "duplicates": {"primary": "pair_f1", "also": ["pair_precision", "pair_recall", "closure_pair_f1", "false_merges", "hard_negative_merges", "correct_hold_rate"]}
+ },
+ "thresholds": {
+  "phones": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0},
+  "emails": {"record_accuracy_at_least": 0.9, "wrong_changes_to_correct_values": 0},
+  "addresses": {"record_accuracy_at_least": 0.9, "rewritten_parts": 0},
+  "duplicates": {"pair_f1_at_least": 0.9, "hard_negative_merges": 0}
+ },
+ "claim_rules": [
+  "A difference between two arms on one family is called clear only when every repetition of one arm scores above every repetition of the other on the primary metric. With three repetitions each, this is a one-sided exact permutation probability of 1 in 20.",
+  "Otherwise the difference is reported as not separated, with the means and ranges.",
+  "A statement that material helps across families needs a clear difference in the same direction in at least three of the four families, and no clear difference in the other direction.",
+  "A statement that the small model with material matches the larger model needs the small-agents arm to be not clearly worse than large-none in at least three of the four families.",
+  "Steps that end for any reason other than a provider outage count, including crashes, timeouts, cap stops and malformed outputs. They score as the scorer scores their output file, or zero when there is none."
+ ]
+}

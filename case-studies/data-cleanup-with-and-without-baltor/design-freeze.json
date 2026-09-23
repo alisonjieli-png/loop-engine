@@ -1,0 +1,60 @@
+{
+ "files": {
+  "design.json": "4b692d6b0628399c1b95c73db4ca0a840c1600dbbb9e3aad658fc56b2610c673",
+  "population/addresses/input.csv": "421f68532d9f5742000dfdea141740aba2d3145626e0fc13a2f78564e260c1bf",
+  "population/addresses/known-wrong/all-null.csv": "fa7fa47f1f817b71f6c34d983ee0e369f886d5327bae73761b05ce5853d10acc",
+  "population/addresses/known-wrong/copied-input.csv": "30ce3c8afd35215e47e570ead10e6812d4e4f726a41d5a64c950c05fae5a4499",
+  "population/addresses/known-wrong/shuffled.csv": "9b5fef341837e179f3db31c38f0efec8b3dcaaccca962a51a9e7b69fcf23e0cd",
+  "population/addresses/prompt.txt": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+  "population/addresses/truth.json": "33e1ad97e93d724b4cca06457e116d1a8828fa120b570a5791344ba92b9ae7d7",
+  "population/duplicates/input.csv": "c5e5cff3a83321eb1b20163686af6971e8ad4aae7b7e17316788291f30c94afd",
+  "population/duplicates/known-wrong/all-null.csv": "3bf4c1f0b07a851de9051b1b8da129fad83282e1cd28e418e711fb7f42f40f04",
+  "population/duplicates/known-wrong/copied-input.csv": "c5e5cff3a83321eb1b20163686af6971e8ad4aae7b7e17316788291f30c94afd",
+  "population/duplicates/known-wrong/every-pair-same.csv": "c825e28fdb304025f71b61a5f4e7f482cd97aa15cc35a2b7754473ea6fa7786d",
+  "population/duplicates/known-wrong/shuffled.csv": "0edbad6719fb51d810187bb655066ff5bf9734055604ac866555f92810dc81b0",
+  "population/duplicates/prompt.txt": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+  "population/duplicates/truth.json": "d9b2412ebaef2ee341eb46c398c07e148adff1f08f9de7801b231a4c23b19439",
+  "population/emails/input.csv": "7196dcaa7ae6d139b0c91ed4d9bc1e93c152094982a3d4bce9c4f1a1b1d2631e",
+  "population/emails/known-wrong/all-null.csv": "96670ce370e3ae9660a8c4daea46a585ced17f7fc7f6842b1cfdc70f562607e2",
+  "population/emails/known-wrong/copied-input.csv": "df53b308ec7f155b89f51f093446d48fab144cbe04f5a5a861ea79833ba1d58a",
+  "population/emails/known-wrong/shuffled.csv": "dd6cfe713ade41bb8b7975d427a8e2ef310aaf36657c6ef81c9b46e51ec32e9d",
+  "population/emails/prompt.txt": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+  "population/emails/truth.json": "d3539b210bbcb8c5a02e32c77b229e247d606cf18c1c2564c70b5655a5736dde",
+  "population/generate_population.py": "0bfb83e242495b334e1b40be0a50fcde54914bd66d04a2d7b9c47a26f566da02",
+  "population/manifest.json": "9ee5064a311351e1c49456fff7283d7a46f28edcbaa4c30191a31f7533a189eb",
+  "population/phones/input.csv": "5f696b91515c9ef97819ce9a67a29cb0093e9297d0c1ee56d2ae72ebe65f603b",
+  "population/phones/known-wrong/all-null.csv": "aa5dff6fbf6f0449b6bbd0785e5a72fa49c1d547b346055cd438851e0c2f3844",
+  "population/phones/known-wrong/copied-input.csv": "990a576df462420e6712e8389e9ef6c8ff1772c0c35c4580cc7554803088cc39",
+  "population/phones/known-wrong/shuffled.csv": "7565b4dec8cd588df51899b90806cb716b15840edab8b09b313a00e609ee7adb",
+  "population/phones/prompt.txt": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+  "population/phones/truth.json": "964121494d456ac3922be5dc84737817379bf9b35f6af9990fe15b1816d46ff6",
+  "runner/meter.py": "30c7b0de6575a7d63c1b1081f97e75e1c13ee9f40083e1b1690ef0a9a9e2f687",
+  "runner/run_trials.py": "779c63e25f41a6cad480f36c81a159c53a25dda8e6edd094805132ba0e7829af",
+  "runner/test_meter.py": "54fd1476a7b750a8430ba23653bb256df9a09725e5ad224f02b747715d672d8c",
+  "scorer/score_step.py": "d361780802994110f1654c788bf88194c4f226a0a8b89ccb96fcd684d7a2f653",
+  "scorer/test_score_step.py": "b0d251288b2de4e2f9e3c48e78dbb5bf83d99d35f4ae9e8466a48dd8da0736f5"
+ },
+ "items": {
+  "find_duplicate_records_with_blocking_keys": {
+   "path": "examples/29_intelligence_service/starter-catalogue/bodies/find_duplicate_records_with_blocking_keys.md",
+   "sha256": "80645d9eba97e1d4c27d1e5eefc4c30980dcae52069223e502fc40f0945ae6fa"
+  },
+  "normalize_and_recover_email_addresses": {
+   "path": "examples/29_intelligence_service/starter-catalogue/bodies/normalize_and_recover_email_addresses.md",
+   "sha256": "64ce838e3053982542820402655c12728f0844e7d70641fef3caa6b7cf732809"
+  },
+  "normalize_phone_numbers": {
+   "path": "examples/29_intelligence_service/starter-catalogue/bodies/normalize_phone_numbers.md",
+   "sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63"
+  },
+  "score_duplicate_pairs_by_weakest_signal": {
+   "path": "examples/29_intelligence_service/starter-catalogue/bodies/score_duplicate_pairs_by_weakest_signal.md",
+   "sha256": "4278146c5996b8774d2a7fceec1429818e09f81daae4d4874f3309bb015ce299"
+  },
+  "split_address_lines_into_components": {
+   "path": "examples/29_intelligence_service/starter-catalogue/bodies/split_address_lines_into_components.md",
+   "sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7"
+  }
+ },
+ "record_type": "data_cleanup_design_freeze/v1"
+}

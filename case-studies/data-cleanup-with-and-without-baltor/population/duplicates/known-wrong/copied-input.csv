@@ -1,0 +1,39 @@
+id,name,address,email,phone
+1,Pinecrest Veterinary Clinic,"22 Elm Avenue, Boston, MA 02108",CARE@PINECRESTVET.COM,+1 617 555 0104
+2,Riverbend Books,"58 Bay St, Toronto, ON M5J 2N8",shop@riverbendbooks.ca,(416) 555-0122
+3,Riverbend Books,"58 Bay Street, Toronto, ON M5J 2N8",,416 555 0122
+4,Cobalt Analytics Inc,"88 Harbor Blvd Suite 400, Long Beach, CA 90802",hello@cobaltanalytics.io,(562) 555-0138
+5,Evergreen Landscaping,"45 Kingsway, Burnaby, BC V5H 2A9",info@evergreenlandscaping.ca,(604) 555-0152
+6,Globex Corporation,"1200 Industrial Pkwy, Columbus, OH 43215",contact@globex.com,(614) 555-0158
+7,Bluebird Bakery,"77 Cedar Ln, Denver, CO 80202",hello@bluebirdbakery.com,(303) 555-0187
+8,Bluebird Bakery,"1509 Pine St, Seattle, WA 98101",seattle@bluebirdbakery.com,(206) 555-0165
+9,Smith and Sons Hardware,"18 Harbor Road, Madison, WI 53703",sales@smithsonshardware.com,608-555-0119
+10,Orchard Street Dental,"905 Granville St, Vancouver, BC V6Z 1L3",hello@orcharddental.ca,(604) 555-0181
+11,Granite State Insurance Agcy,"9 Market Square, Portsmouth, NH 03801",agents@granitestateins.com,
+12,Keystone Plumbing Company,"2450 N Lincoln Ave, Chicago, IL 60614",service@keystoneplumbing.com,(312) 555-0126
+13,Northwind Traders LLC,"845 Oak Avenue, Portland, OR 97205",info@northwindtraders.com,(503) 555-0112
+14,Keystone Plumbing Company,"2211 North Clark Street, Chicago, IL 60614",,(312) 555-0126
+15,Riverbnd Books,"58 Bay St., Toronto ON M5J2N8",shop@riverbendbooks.ca,
+16,Granite State Insurance Agency,"9 Market Sq, Portsmouth, NH 03801",agents@granitestateins.com,(603) 555-0111
+17,Globex Logistics LLC,"1200 Industrial Pkwy, Columbus, OH 43215",logistics@globex.com,(614) 555-0158
+18,Summit Dental Grp,"3100 Lakeview Drive, Austin, TX 78701",frontdesk@summitdental.com,(512) 555-0133
+19,Tidewater Marine Supply,"31 Harbor St, Norfolk, VA 23510",orders@tidewatermarine.com,(757) 555-0170
+20,Blue Bird Bakery,"77 Cedar Lane, Denver, CO 80202",hello@bluebirdbakery.com,303-555-0187
+21,Tidewater Marine Suply,"31 Harbor St, Norfolk, VA 23510",orders@tidewatermarine.com,(757) 555-0170
+22,Summit Rental Group,"3180 Lakeview Dr, Austin, TX 78701",office@summitrental.com,(512) 555-0177
+23,Harbor Light Legal PC,"400 W Madison St Fl 9, Chicago, IL 60606",reception@madisonsuites.com,(312) 555-0190
+24,Keystone Plumbing Co,"2211 N Clark St, Chicago, IL 60614",service@keystoneplumbing.com,(312) 555-0126
+25,Acme Widgets Inc,"12 N Main St Ste 4, Springfield, IL 62704",orders@acmewidgets.com,(217) 555-0141
+26,Smith & Sons Hardware,"18 Harbor Rd, Madison, WI 53703",sales@smithsonshardware.com,(608) 555-0119
+27,Crestline Consulting LLC,"400 W Madison St Fl 9, Chicago, IL 60606",reception@madisonsuites.com,(312) 555-0190
+28,Northwind Traders,"845 Oak Ave, Portland, OR 97205",info@northwindtraders.com,
+29,Cobalt Analytics,"88 Harbor Blvd Ste 400, Long Beach, CA 90802",hello@cobaltanalytics.io,
+30,COBALT ANALYTICS INC.,"88 Harbor Boulevard, Suite 400, Long Beach, CA 90802",,562-555-0138
+31,Summit Dental Group,"3100 Lakeview Dr, Austin, TX 78701",frontdesk@summitdental.com,(512) 555-0133
+32,Globex Corp.,"1200 Industrial Parkway, Columbus, OH 43215",contact@globex.com,614-555-0158
+33,Pinecrest Veterinary Clinic,"22 Elm Ave, Boston, MA 02108",care@pinecrestvet.com,(617) 555-0104
+34,Redwood Family Dental,"1600 Grand Ave NW, Washington, DC 20001",smile@redwooddental.com,(202) 555-0129
+35,ACME WIDGETS INC,"12 North Main Street Suite 4, Springfield, IL 62704",Orders@AcmeWidgets.com,217.555.0141
+36,Maple Leaf Movers Ltd,"16 Rue du Port, Quebec, QC G1K 4E3",info@mapleleafmovers.ca,(418) 555-0143
+37,Lakeside Yoga Studio,"742 Maple Terrace, Springfield, IL 62701",namaste@lakesideyoga.com,(217) 555-0166
+38,"Acme Widgets, Incorporated","12 N. Main St., Ste. 4, Springfield IL 62704",,(217) 555-0141
