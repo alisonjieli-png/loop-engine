@@ -141,7 +141,7 @@ only `src/loop_engine/core/settings_loader.py` (a self-test added by
 | Branch (tip) | Missing lines, main / line | Classification | Evidence |
 |---|---|---|---|
 | `pay/accounts` (`ce9036b`) | 13 / 21 | on main another way | Journal line 3: all 11 files the branch changed are byte-identical to the squash `8a161e3`. The 13 lines missing on main were all on main once and were rewritten later (`once_on_main` equals `missing` for every file). |
-| `pay/billing-customer` (`43a2c28`) | 37 / 35 | on main another way | Journal line 3: `34a6d04` brought in the repairs from `5dbed97` onward; the three high defects (a truncated empty search read as no customer, a reconciliation window below the search lag, a wedge after a provider account change) each fail named checks when their repair is removed, and the removed-guard runs were repeated at `f77b475` (journal line 8). 28 of the 32 `runtime.py` lines were moved to `records.py` to keep `runtime.py` under the size cap. The repairs have removed-guard evidence and no second review. |
+| `pay/billing-customer` (`43a2c28`) | 37 / 35 | on main another way | Journal line 3: `34a6d04` brought in the repairs from `5dbed97` onward; the three high defects (a truncated empty search read as no customer, a reconciliation window below the search lag, a wedge after a provider account change) each fail named checks when their repair is removed, and the removed-guard runs were repeated at `f77b475` (journal line 8). The missing `runtime.py` lines moved to `records.py`, two functions under new names (`billing_customer_request_differs_only_by_provider_account`, `billing_customer_search_can_show_the_previous_attempt`), to keep `runtime.py` under the size cap. On `381cc52` the Stripe session checks pass 121 of 121 and the runtime checks 45 of 45, including the named checks for the three defects. The repairs have removed-guard evidence and no second review. |
 | `pay/billing-setup` (`9d61690`) | 44 / 44 | on main another way | Journal line 3: the tip matches the squash `a8dc540` except the key fixtures in `tools/test_setup_stripe_sandbox.py`, which were rewritten to join a prefix and a body because push protection refuses key-shaped strings. |
 | `pay/container-journey` (`007cf9b`) | 10 / 4 | on main another way | Journal line 3: all three files are byte-identical to the squash `1f42fd8`; the missing lines were rewritten on main later. |
 | `pay/catalogue-release` (`0e2ca9b`) | 4151 / 4151 | still needs work | Two guards of its release builder are missing on main; the rest is on main another way or obsolete. See the g3 section. |
@@ -319,7 +319,7 @@ lost if the worktree goes. None of it is on main or on the line unless said.
 | `wf_eb5e10dc-951-2` (`wave10/status-page`) | `service_runtime/status.py` | still needs work, website line, only with its route: alone it is a module no request reaches, and its `health()` would be a second producer of `service_health/v2` in another shape |
 | `wf_bce6c2d4-baf-3` (`wave6/polish`) | wording for 14 refusal codes and next actions for `loop-engine report` refusals | still needs work: adapted on an export of main, refusals self-test 3 of 3 and its own self-test 2 of 2; drop the `forbidden` entry, which repeats the 403 wording; visitors see this wording, so it lands with the website line |
 | `wf_90f15b07-bb7-2` (`wave8/overnight-runnable`) | two constants with no caller | on main another way (`97e805f` registered the literals) |
-| `wf_2c5a17d0-bee-4` (`release/catalogue-round-two`) | a staged second round of review: the same three reviewers who approved main's 43 items judged the other 74 at `0cf19eb` and approved 71 under the same unanimous rule (the record totals 123 reviewed, 114 approved, 9 rejected), with a host release of those 71 items (before the carry tool existed, its generator withheld round one's 43, whose bytes had moved with the anchor; main later carried those 43) | still needs work, and the largest gain found: it was never committed, so main's record still names 74 items without a verdict and serves 43. The branch commit and its merge `e073d01` carry only round one. |
+| `wf_2c5a17d0-bee-4` (`release/catalogue-round-two`) | a staged second round of review: the same three reviewers who approved main's 43 items judged the other 74 at `0cf19eb` and approved 71 under the same unanimous rule (the record totals 123 reviewed, 114 approved, 9 rejected), with a host release of those 71 items (before the carry tool existed, its generator withheld round one's 43, whose bytes had moved with the anchor; main later carried those 43) | still needs work, and the largest gain found: it was never committed (`git log --all -S` finds no trace), so main's record still names 74 items without a verdict and serves 43. The branch commit and its merge `e073d01` carry only round one. For all 74 items the only difference between the bytes the reviewers read and today's body is the anchor line, so main's own carry rule carries the 71 approvals. |
 | `wf_059b60f1-136-4` (`release/catalogue-live`) | a guard in `tools/check_hosted_catalogue.py` that sends a keyring key to another hostname only when both answer with the same public capabilities record, and four release 9 check files | still needs work: prepared port `46b454aa` (six tests; the keyring is opened in both command checks when the guard is removed) |
 | `wf_17b40c64-552-1` (`release/carry-approvals`) | an anchor pass from `7ed4e85` to `add9b7c` | obsolete: anchored seven more times since, now to `40fce69` |
 | `wf_582812c1-fbf-2`, `wf_a9500b52-cd6-1` | a regenerated `architecture_conformance.json` only | obsolete |
@@ -366,9 +366,13 @@ group's findings, the line survival data and the saved patches.
    released. No record in the repository shows that the production store
    was read for version one records: main's guides describe the refusal, and
    only the consolidation line's handoff section (`96fda82`) names the read as
-   a precondition. None is expected, because nobody has subscribed and the
-   live checkout proof ran on Fly release 10, whose image writes no creation
-   record, but that is inferred, not observed.
+   a precondition. Only Fly releases 11 and 12 can have written one. Six
+   accounts exist (`baltor-admin`, `billing-check`, `billing-check-2`,
+   `billing-check-3`, `pilot-boundary`, `pilot-owner`); the three
+   `billing-check` accounts are the likely holders. Nobody has subscribed and
+   the live checkout proof ran on Fly release 10, whose image writes no
+   creation record, so none may exist, but that is inferred, not observed. No
+   operation that retires a version one record exists yet.
 2. The campaign pages need the release 18 access states. The consolidation
    line's `service.js` labels the access action "Create your account"
    (`/signup`) or "Join the waiting list" (`/signup#waiting-list`) and keeps a
@@ -426,13 +430,17 @@ side added must be present in the result or have a recorded replacement
 (roadmap D-18-T02).
 
 0. Now, before any merge, read the production store for
-   `service_billing_customer_effect/v1` records (hazard 1). Read the
-   service's record store on the volume without writing (a copy of the
-   database file, or SQLite opened read-only) and count the records of kind
-   `service_billing_customer_effect` whose `record_type` is version one.
-   Record the count in the handoff and the next release record. If any
-   exist, each account needs a planned host operation, a production data
-   change that is recorded before it is made.
+   `service_billing_customer_effect/v1` records (hazard 1). A read-only
+   check is prepared and was tested on a local copy, not in production:
+   `/home/username/.le-ci-tmp/d18-triage/catalogue-pay/v1check/check.py`. It
+   opens the store through the engine's own reader with writes switched off,
+   prints only counts by record version and the account identifiers that are
+   not on version two, and prints no provider identifier. Copy it to the
+   Machine and run it as the service user against `/data/host.json`. Record
+   the count in the handoff and the next release record. If any account has
+   a version one record, a host operation that retires it (keeping it as
+   evidence) must be built and qualified before that account can check out;
+   it is a production data change, recorded before it is made.
 1. Let release 18 (`a559dc34`, the redesign) reach main first. The rest of
    this plan is written against main after release 18.
 2. Merge the consolidation line `44a4b42` into main with a merge commit
@@ -530,7 +538,14 @@ side added must be present in the result or have a recorded replacement
       `starter_catalogue_independent_review/v3` in `restore-d18-catalogue-pay`),
       with every round two approval carried from the bytes at `0cf19eb` by
       `tools/carry_catalogue_approvals.py`, and the host release rebuilt. The
-      draft reports 114 approved, all by carry, none refused. A new record
+      draft reports 114 approved, all by carry, none refused, and every
+      recorded digest matches the bytes its round read (round one at
+      `81f341d`, round two at `ade90f0`). It has one known defect: its
+      REVIEW.md bullet names revision `ade90f0`, which the rule
+      `source_references_are_pinned` refuses; reword it, since `reviews.json`
+      names the revision. Until this step lands, the round two verdicts exist
+      only as staged blobs in that worktree's index and in the September 22
+      archive patch, not in any commit. A new record
       version means the older release refuses it, as the pre-launch version
       policy requires. This step moves the approved set from 43 to 114 items,
       so the record change needs an independent review of its own, and the
@@ -608,11 +623,10 @@ commits are on main or declined.
   written from the trial merge and the findings, not from a finished merge.
 - The prepared ports and drafts were checked by their authors only. None has
   had an independent review.
-- The catalogue and payment group stopped before it wrote its findings. Its
-  items are classified here from its commits and their messages, the
-  consolidation journal, and this record's own comparison of the review
-  records (main's, the `pay/catalogue-release` panel's and the staged round
-  two).
+- The catalogue and payment group's findings arrived after the first version
+  of this record and confirmed its classification; they added the read-only
+  check, the account list, the draft's known defect and the payment check
+  counts.
 - The missing-line counts against the consolidation line match exact paths
   only, so they overstate what a squash rewrote; the counts against main also
   match moved files.
