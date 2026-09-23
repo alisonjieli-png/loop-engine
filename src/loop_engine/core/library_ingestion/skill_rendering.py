@@ -28,6 +28,7 @@ CHANGE_NOTE = ("Baltor rewrote the frontmatter to the Agent Skills fields and mo
                "into metadata; the body is unchanged.")
 _DELIMITER = re.compile(r"---[ \t]*\r?\n")
 _HEADING = re.compile(r"^#[ \t]+(.+?)[ \t#]*$", re.M)
+_SETTING = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}")
 
 
 @dataclass(frozen=True)
@@ -36,8 +37,8 @@ class ParsedSkill:
     body: str
 
 
-def parse_skill(text: str) -> ParsedSkill:
-    """Split frontmatter from body. The body is everything after the closing line, unchanged."""
+def _split(text: str) -> tuple:
+    """(frontmatter block, body): the body is everything after the closing line, unchanged."""
     opening = _DELIMITER.match(text)
     if not opening:
         raise RenderRefused("frontmatter_missing", "the file does not open with a frontmatter block")
@@ -48,15 +49,54 @@ def parse_skill(text: str) -> ParsedSkill:
         break
     if closing is None:
         raise RenderRefused("frontmatter_invalid", "the frontmatter block is not closed")
+    return text[position:position + closing.start()], text[position + closing.end():]
+
+
+def parse_skill(text: str) -> ParsedSkill:
+    """Split frontmatter from body. The body is everything after the closing line, unchanged."""
+    block, body = _split(text)
     import yaml
 
     try:
-        values = yaml.safe_load(text[position:position + closing.start()])
+        values = yaml.safe_load(block)
     except yaml.YAMLError:
         raise RenderRefused("frontmatter_invalid", "the frontmatter is not valid YAML") from None
     if not isinstance(values, dict):
         raise RenderRefused("frontmatter_invalid", "the frontmatter is not a mapping")
-    return ParsedSkill(values, text[position + closing.end():])
+    return ParsedSkill(values, body)
+
+
+def parse_rule(text: str) -> ParsedSkill:
+    """A rule file's settings and body: YAML when it parses, otherwise one setting per line.
+
+    Cursor writes its own frontmatter in which a value such as **/*.tsx is
+    plain text, not YAML (where a star opens an alias). A line that is not
+    empty and not a name followed by a colon is refused; the file itself is
+    always copied unchanged.
+    """
+    if not _DELIMITER.match(text):
+        return ParsedSkill({}, text)
+    try:
+        block, body = _split(text)
+    except RenderRefused:
+        raise RenderRefused("instruction_frontmatter_invalid", "the frontmatter block is not closed") from None
+    import yaml
+
+    try:
+        values = yaml.safe_load(block)
+    except yaml.YAMLError:
+        values = None
+    if isinstance(values, dict):
+        return ParsedSkill(values, body)
+    settings = {}
+    for line in block.splitlines():
+        if not line.strip():
+            continue
+        key, separator, value = line.partition(":")
+        if not separator or not _SETTING.fullmatch(key.strip()):
+            raise RenderRefused("instruction_frontmatter_invalid", "a frontmatter line is not a setting")
+        settings[key.strip()] = value.strip()
+    return ParsedSkill(settings, body)
 
 
 def normalized_name(value) -> str:
@@ -164,20 +204,15 @@ def render_instruction(text: str, provenance, native_format: str, name: str, lic
     if native_format not in _NATIVE_PATHS:
         raise RenderRefused("render_failed", f"{native_format} is not an instruction format")
     safe = normalized_name(name)
-    if _DELIMITER.match(text):
-        try:
-            values = parse_skill(text).frontmatter
-        except RenderRefused:
-            raise RenderRefused("instruction_frontmatter_invalid", "the frontmatter does not parse") from None
-        scope = values.get("applyTo", values.get("globs"))
-        if scope is not None and not isinstance(scope, (str, list)):
-            raise RenderRefused("instruction_frontmatter_invalid", "the file scope is neither text nor a list")
+    rule = parse_rule(text)
+    scope = rule.frontmatter.get("applyTo", rule.frontmatter.get("globs"))
+    if scope is not None and not isinstance(scope, (str, list)):
+        raise RenderRefused("instruction_frontmatter_invalid", "the file scope is neither text nor a list")
     main = _NATIVE_PATHS[native_format].format(name=safe)
     files = [(main, text.encode("utf-8"))]
     if licence_file:
         files.append((f"licenses/{safe}/{PurePosixPath(licence_file[0]).name}", licence_file[1]))
     for path, data in notice_files:
         files.append((f"licenses/{safe}/{PurePosixPath(path).name}", data))
-    body = parse_skill(text).body if _DELIMITER.match(text) else text
-    title = first_heading(body) or safe.replace("-", " ").capitalize()
+    title = first_heading(rule.body) or safe.replace("-", " ").capitalize()
     return RenderedPackage(safe, main, tuple(files), ("copied_verbatim",), title)

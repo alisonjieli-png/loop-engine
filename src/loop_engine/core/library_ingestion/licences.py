@@ -12,7 +12,8 @@ file itself (a frontmatter licence or an SPDX header) must agree too.
 Everything else is decided conservatively. No licence file, an unrecognized
 text, a recognized licence the policy does not list, disagreeing signals or
 a disagreeing notice keep only an outline of the abstract purpose. A text
-that forbids derivative works refuses the outline as well. The stored word
+that forbids derivative works, or that makes reading or using the material an
+agreement to a provider's own terms, refuses the outline as well. The stored word
 sets come from github/choosealicense.com (MIT) at a pinned commit; the
 texts themselves are not stored. This is an engineering rule that carries
 out the owner's direction, not legal advice.
@@ -61,6 +62,13 @@ _PROHIBITION = re.compile(
     r"(?:may not|must not|shall not|not permitted to|prohibited from|you are not allowed to)"
     r"[^.]{0,240}?(?:derivative works?|reproduce|modify|adapt|translate)", re.S)
 _FILE_REFERENCE = re.compile(r"((?:licen[cs]e|copying)(?:\.(?:md|txt))?)\b", re.I)
+#: A notice that ties whoever reads or uses the material to a provider's own terms. Accepting
+#: outside terms is a legal commitment only the owner can make, so such material leaves nothing.
+_OUTSIDE_TERMS = (
+    re.compile(r"\bby\s+(?:accessing|downloading|using|installing|copying|viewing|reading)\b[^.]{0,300}?"
+               r"\byou\s+(?:agree|accept|consent)\b", re.S),
+    re.compile(r"\b(?:use|access|usage)\b[^.]{0,200}?\bis\s+governed\s+by\b[^.]{0,200}?"
+               r"\b(?:terms|agreement|conditions)\b", re.S))
 
 
 @dataclass(frozen=True)
@@ -197,6 +205,12 @@ def prohibits_recreation(text: str) -> bool:
     return bool(_PROHIBITION.search(re.sub(r"\s+", " ", text.lower())))
 
 
+def binds_to_outside_terms(text: str) -> bool:
+    """True when a licence text makes reading or using the material an agreement to other terms."""
+    folded = re.sub(r"\s+", " ", text.lower())
+    return any(pattern.search(folded) for pattern in _OUTSIDE_TERMS)
+
+
 def is_licence_file(path: str) -> bool:
     return bool(_LICENCE_NAME.match(PurePosixPath(path).name))
 
@@ -326,6 +340,8 @@ def decide_licence(item_path: str, licence_files: dict, *, root_path: "str | Non
     notice_texts = " ".join(notice.value for notice in file_notices)
     if notice_texts and prohibits_recreation(notice_texts):
         return outcome(NO_ASSERTION, REFUSED, "file_level_notice_prohibits_derivatives")
+    if notice_texts and binds_to_outside_terms(notice_texts):
+        return outcome(NO_ASSERTION, REFUSED, "file_level_notice_binds_to_outside_terms")
     if governing is None:
         return outcome(NO_LICENCE, OUTLINE_ONLY, "no_licence_file")
     if match.spdx is None:
@@ -334,6 +350,8 @@ def decide_licence(item_path: str, licence_files: dict, *, root_path: "str | Non
         # ("shall not", "derivative works") without forbidding an adaptation.
         if prohibits_recreation(governing.text):
             return outcome(NO_ASSERTION, REFUSED, "licence_prohibits_derivatives")
+        if binds_to_outside_terms(governing.text):
+            return outcome(NO_ASSERTION, REFUSED, "licence_binds_to_outside_terms")
         return outcome(NO_ASSERTION, OUTLINE_ONLY, f"licence_text_{match.reason}")
     if governing is root_file:
         github = root_file.github_spdx_id

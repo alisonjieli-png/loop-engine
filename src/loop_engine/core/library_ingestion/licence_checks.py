@@ -58,6 +58,14 @@ Notwithstanding anything in the agreement, users may not:
 """
 
 
+#: Written for this check in the shape of a notice that ties the reader to a provider's own terms.
+EXTERNAL_TERMS_FIXTURE = """Use of these example skills and related files ("Materials") is governed by the
+Example Developer Terms (available at https://example.invalid/legal/terms). By accessing, downloading,
+or using these Materials, including through automated systems or AI agents, you agree to the Example
+Developer Terms.
+"""
+
+
 def _file(path: str, text: str, github: "str | None" = None) -> LicenceFile:
     return LicenceFile(path, bytes_digest(text.encode()), text, github)
 
@@ -99,6 +107,17 @@ def self_test() -> dict:
           and no_file["spdx_expression"] == "NONE" and gpl["reason"] == "licence_not_on_accepted_list"
           and accepted["decision"] == VERBATIM and accepted["spdx_expression"] == "MIT",
           [no_file["reason"], unknown["reason"], gpl["reason"], accepted["reason"]])
+
+    external = _decide(item, [_file("skills/example/LICENSE.txt", EXTERNAL_TERMS_FIXTURE)])
+    plain_notice = _decide(item, [_file("skills/example/LICENSE.txt", "Share this freely with your team.\n")])
+    bound_notice = _decide(item, [_file("LICENSE", MIT_FIXTURE, "MIT")], root_path="LICENSE",
+                           frontmatter_licence="By using this skill you agree to the Example Terms of Service")
+    check("a_licence_that_binds_the_reader_to_outside_terms_leaves_nothing",
+          external["decision"] == REFUSED and external["reason"] == "licence_binds_to_outside_terms"
+          and bound_notice["decision"] == REFUSED
+          and bound_notice["reason"] == "file_level_notice_binds_to_outside_terms"
+          and plain_notice["decision"] == OUTLINE_ONLY,
+          [external["reason"], bound_notice["reason"], plain_notice["reason"]])
 
     proprietary = _decide(item, [_file("skills/example/LICENSE.txt", PROPRIETARY_FIXTURE)])
     check("proprietary_text_is_never_imported_or_recreated",

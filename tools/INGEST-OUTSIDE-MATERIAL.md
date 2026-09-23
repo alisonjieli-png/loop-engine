@@ -33,6 +33,7 @@ PYTHONPATH=src python tools/ingest_outside_material.py collect \
 | `--upstream-licence-lookups` | How many upstream code repositories of registry entries may have their licence read. Zero keeps every upstream licence unknown, never assumed. |
 | `--package-checks` | Refuse a registry entry whose npm or PyPI package does not exist at its exact version. Any answer other than found or not found is marked for the reviewer, never read as a pass. |
 | `--skillspector-program` | Adds the SkillSpector scanner. Without it the built-in rules scan alone, and the run records why SkillSpector was not chosen. |
+| `--reuse-fetched-bytes-from` | An earlier run folder whose fetched bytes may be reused; repeat for several. A file at a pinned commit never changes, so a rerun takes it from that quarantine instead of asking GitHub again, but only after hashing it again against the blob the current tree names; the reused item keeps the provenance of the fetch that produced it. The run report counts the reuse. |
 | `--authorize-model-calls`, `--outline-model`, `--model-call-ceiling` | Let the model outline engine write one sentence per outline through Ollama Cloud, stopping before the ceiling. Without all three the deterministic outline engine writes every outline. |
 
 The optional engines need libraries that the base package does not carry:

@@ -109,6 +109,15 @@ def self_test() -> dict:
           instruction.main_path == ".github/instructions/python.instructions.md"
           and instruction.main_text == "---\napplyTo: '**/*.py'\n---\nUse type hints.\n")
 
+    cursor_rule = "---\ndescription: \"Rules for React components\"\nglobs: **/*.tsx\nalwaysApply: false\n---\nUse strict mode.\n"
+    native_cursor = render_instruction(cursor_rule, provenance, "cursor_rules", "react-rules", ("LICENSE", b"MIT\n"))
+    broken_rule = _refused(lambda: render_instruction(
+        "---\ndescription: fine\nthis line is not a setting\n---\nText.\n", provenance, "cursor_rules", "broken",
+        ("LICENSE", b"MIT\n")))
+    check("a_cursor_rule_in_its_native_frontmatter_is_kept_and_a_malformed_one_refused",
+          native_cursor.main_text == cursor_rule and native_cursor.main_path == ".cursor/rules/react-rules.mdc"
+          and broken_rule == "instruction_frontmatter_invalid", broken_rule)
+
     registry = read_outside_provenance(fixture_registry_provenance())
     connection = render_connection(_entry(), registry)
     files = {row["harness"]: row for row in connection.document["files"]}

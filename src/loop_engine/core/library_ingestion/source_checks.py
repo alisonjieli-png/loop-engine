@@ -24,6 +24,7 @@ from .github_reader import GitHubResponse, ReadOnlyRequestRefused, allowed_reque
 from .github_reader import GhCliReader
 from .https_transport import HostNotDeclared, HttpsGetTransport, HttpsResponse
 from .licence_checks import MIT_FIXTURE, PROPRIETARY_FIXTURE
+from .fetch_cache import PinnedBlobCache
 from .quarantine import Quarantine
 from .record_rules import LibraryRecordError, bytes_digest, git_blob_identity
 from .registry_sync import reconcile, snapshot_index, withdrawals
@@ -138,6 +139,47 @@ class FakeRegistry:
         return HttpsResponse(200, body)
 
 
+def _cache_checks(check, files) -> None:
+    """A rerun takes a pinned blob from an earlier run only when the bytes are that very blob."""
+    table = repository_table(files)
+    with tempfile.TemporaryDirectory(prefix="library-cache-") as folder:
+        earlier = Path(folder) / "earlier"
+        first = GitHubPinnedRepositoriesSource(FakeGitHubReader(
+            table, RequestBudget(maximum_requests=50), RequestLog()), Quarantine(earlier / "quarantine")
+        ).read_candidates(declaration(), _request())
+        (earlier / "batches").mkdir()
+        (earlier / "batches" / "github.example.skills.json").write_text(json.dumps(first), encoding="utf-8")
+        cache = PinnedBlobCache.from_run_folders([earlier])
+        log = RequestLog()
+        second_quarantine = Quarantine(Path(folder) / "second")
+        second = GitHubPinnedRepositoriesSource(FakeGitHubReader(
+            table, RequestBudget(maximum_requests=50), log), second_quarantine, blob_cache=cache
+        ).read_candidates(declaration(), _request())
+        fetched = [row["target"] for row in log.records if "/contents/" in row["target"]]
+        check("a_rerun_reuses_verified_pinned_bytes_without_fetching_them_again",
+              second["candidates"] == first["candidates"] and not fetched and cache.hits > 0
+              and all(second_quarantine.has(row["provenance"]["source_digest"]) for row in second["candidates"]),
+              (len(fetched), cache.hits))
+
+        alpha = next(row for row in first["candidates"] if row["name"] == "alpha")
+        digest = alpha["provenance"]["source_digest"]
+        stored = earlier / "quarantine" / digest[:2] / digest
+        stored.chmod(0o600)
+        stored.write_bytes(b"bytes that are not the pinned blob any more")
+        spoiled = PinnedBlobCache.from_run_folders([earlier])
+        spoiled_log = RequestLog()
+        third = GitHubPinnedRepositoriesSource(FakeGitHubReader(
+            table, RequestBudget(maximum_requests=50), spoiled_log), Quarantine(Path(folder) / "third"),
+            blob_cache=spoiled).read_candidates(declaration(), _request())
+        refetched = [row["target"] for row in spoiled_log.records if "/contents/" in row["target"]]
+        # A fresh fetch has fresh fetch facts; the bytes, and so the candidate keys, are the same.
+        check("a_cached_file_that_is_not_the_pinned_blob_is_fetched_again",
+              [row["candidate_key"] for row in third["candidates"]]
+              == [row["candidate_key"] for row in first["candidates"]]
+              and any("skills/alpha/" in target for target in refetched) and spoiled.skipped == 1,
+              (refetched, spoiled.skipped))
+
+
 def self_test() -> dict:
     tests = []
 
@@ -216,6 +258,8 @@ def self_test() -> dict:
               and {row["provenance"]["licence_evidence"]["reason"] for row in outlined["candidates"]
                    if row["provenance"]["licence_evidence"]["decision"] == "outline_only"}
               == {"source_curated_for_outlines"}, outlined_decisions)
+
+        _cache_checks(check, files)
 
         submodule_batch = engine.read_candidates(declaration(include=["skills/**"]), _request())
         check("a_symbolic_link_and_a_submodule_are_never_imported",

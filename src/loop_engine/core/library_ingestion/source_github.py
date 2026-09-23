@@ -90,9 +90,10 @@ class GitHubPinnedRepositoriesSource:
     third_party = ("gh command line, the owner's existing login, GitHub REST contents, git trees "
                    "and licence interfaces")
 
-    def __init__(self, reader, quarantine, *, maximum_file_bytes: int = 262_144) -> None:
+    def __init__(self, reader, quarantine, *, maximum_file_bytes: int = 262_144, blob_cache=None) -> None:
         self.reader, self.quarantine = reader, quarantine
         self.maximum_file_bytes = maximum_file_bytes
+        self.blob_cache = blob_cache
 
     @classmethod
     def availability(cls, settings: dict):
@@ -105,7 +106,7 @@ class GitHubPinnedRepositoriesSource:
     @classmethod
     def from_settings(cls, settings: dict, resources: dict):
         """Construct from declared settings and the run's resources; nothing starts here."""
-        return cls(resources["github_reader"], resources["quarantine"])
+        return cls(resources["github_reader"], resources["quarantine"], blob_cache=resources.get("blob_cache"))
 
     def describe(self) -> dict:
         return {"engine_id": self.engine_id, "engine_version": self.engine_version,
@@ -224,6 +225,10 @@ class GitHubPinnedRepositoriesSource:
         return files, root_path, notices
 
     def _contents(self, repository, commit, path, blob) -> "bytes | None":
+        if self.blob_cache is not None:
+            cached = self.blob_cache.blob(blob["sha"])
+            if cached is not None:
+                return cached
         status, answer = self._json(f"repos/{repository}/contents/{quote_part(path, safe='/')}?ref={commit}")
         if answer is None or answer.get("encoding") != "base64":
             return None
@@ -240,13 +245,22 @@ class GitHubPinnedRepositoriesSource:
             refusals.append(refusal("fetch", "source_file_too_large",
                                     f"{blob.get('size')} bytes, above {self.maximum_file_bytes}", source=ref))
             return
-        status, answer = self._json(f"repos/{repository}/contents/{quote_part(path, safe='/')}?ref={commit}")
-        if answer is None or answer.get("encoding") != "base64":
-            reason = "source_file_too_large" if answer is not None else "fetch_failed"
-            refusals.append(refusal("fetch", reason, f"status {status}", source=ref))
-            return
-        request_row = self.reader.log.records[-1]
-        data = base64.b64decode(answer.get("content", ""))
+        cached = self.blob_cache.item(repository, commit, path, blob["sha"]) if self.blob_cache else None
+        if cached is not None:
+            # The earlier fetch's own facts travel with its bytes, so the provenance stays exact.
+            data, facts = cached
+            fetch_digest, request_digest, fetched_at = (facts["fetch_digest"], facts["request_digest"],
+                                                        facts["fetched_at"])
+        else:
+            status, answer = self._json(f"repos/{repository}/contents/{quote_part(path, safe='/')}?ref={commit}")
+            if answer is None or answer.get("encoding") != "base64":
+                reason = "source_file_too_large" if answer is not None else "fetch_failed"
+                refusals.append(refusal("fetch", reason, f"status {status}", source=ref))
+                return
+            request_row = self.reader.log.records[-1]
+            fetch_digest, request_digest, fetched_at = (request_row["body_digest"], request_row["request_digest"],
+                                                        now_utc())
+            data = base64.b64decode(answer.get("content", ""))
         if git_blob_identity(data) != blob["sha"]:
             refusals.append(refusal("fetch", "blob_identity_mismatch",
                                     "the fetched bytes are not the blob the tree names", source=ref))
@@ -271,8 +285,7 @@ class GitHubPinnedRepositoriesSource:
             evidence = cap_to_outline(evidence)
         provenance = OutsideSourceProvenance(
             GITHUB_ORIGIN, ORIGIN_HOSTS[GITHUB_ORIGIN], repository, commit, path, entry.digest,
-            entry.size_bytes, blob["sha"], request_row["body_digest"], evidence, now_utc(),
-            request_row["request_digest"])
+            entry.size_bytes, blob["sha"], fetch_digest, evidence, fetched_at, request_digest)
         scope, package = "", ()
         if kind == SKILL and folder not in (".", ""):
             scope = folder

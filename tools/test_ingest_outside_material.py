@@ -195,6 +195,20 @@ class OutsideIngestionChecks(unittest.TestCase):
         written = sorted(str(path.relative_to(self.root)).split("/")[0] for path in self.root.iterdir())
         self.assertEqual(written, ["run", "stage.db"])
 
+    def test_a_rerun_can_reuse_the_verified_bytes_of_an_earlier_run(self):
+        first = self._collect("first")
+        log = RequestLog()
+        github = FakeGitHubReader(self.table, RequestBudget(maximum_requests=200), log)
+        registry = FakeRegistry(self.pages, RequestBudget(maximum_requests=20), log)
+        options = CollectOptions(run_folder=self.root / "second", network_reads_authorized=True,
+                                 reuse_run_folders=(self.root / "first",))
+        second = collect(_sources(self.root), options, github_reader=github, registry_transport=registry,
+                         request_log=log)
+        self.assertEqual([row["target"] for row in log.records if "/contents/" in row["target"]], [])
+        self.assertEqual(second["counts"]["staged_rows"], first["counts"]["staged_rows"])
+        self.assertGreater(second["reused_fetches"]["hits"], 0)
+        self.assertIsNone(first["reused_fetches"])
+
     def test_the_run_folder_is_never_reused(self):
         self._collect()
         with self.assertRaises(FileExistsError):

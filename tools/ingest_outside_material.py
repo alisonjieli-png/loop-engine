@@ -46,6 +46,7 @@ from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore  # noqa: E
 from loop_engine.core.library_ingestion.candidates import candidate_request  # noqa: E402
 from loop_engine.core.library_ingestion.engines import (  # noqa: E402
     FACTORIES, FORMAT_SLOT, NEAR_DUPLICATE_SLOT, OUTLINE_SLOT, SAFETY_SLOT, SOURCE_SLOT)
+from loop_engine.core.library_ingestion.fetch_cache import PinnedBlobCache  # noqa: E402
 from loop_engine.core.library_ingestion.github_reader import GhCliReader  # noqa: E402
 from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport  # noqa: E402
 from loop_engine.core.library_ingestion.licences import match_licence  # noqa: E402
@@ -92,6 +93,7 @@ class CollectOptions:
     outline_model: str = ""
     model_call_ceiling: int = 0
     near_duplicate_threshold: float = 0.85
+    reuse_run_folders: tuple = ()
 
 
 COMPONENT_FOLDER = Path("src/loop_engine/core/library_ingestion")
@@ -192,8 +194,9 @@ def collect(sources_record: dict, options: CollectOptions, *, github_reader=None
                 "work_folder": str(run / "work"), "model_calls_authorized": options.model_calls_authorized,
                 "outline_model": options.outline_model, "model_call_ceiling": options.model_call_ceiling,
                 "maximum_pause_seconds": options.maximum_pause_seconds}
+    blob_cache = PinnedBlobCache.from_run_folders(options.reuse_run_folders) if options.reuse_run_folders else None
     resources = {"github_reader": github_reader, "registry_transport": registry_transport,
-                 "quarantine": quarantine, "schemas": schema_resources}
+                 "quarantine": quarantine, "schemas": schema_resources, "blob_cache": blob_cache}
     decisions, engines = _select(settings, resources)
     sources = {engine.engine_id: engine for engine in engines[SOURCE_SLOT.slot_id]}
     (run / "batches").mkdir()
@@ -256,6 +259,7 @@ def collect(sources_record: dict, options: CollectOptions, *, github_reader=None
                           "described": {slot: [engine.describe() for engine in chosen]
                                         for slot, chosen in engines.items()}},
               "schemas": schema_digests,
+              "reused_fetches": blob_cache.describe() if blob_cache is not None else None,
               "model_calls": model_call_summary(calls, options),
               "populations": [{"file": f"populations/specifications-{document['population']:03d}.json",
                                "rows": len(document["specifications"])} for document in documents],
@@ -366,6 +370,8 @@ def main(argv=None) -> int:
     gather.add_argument("--authorize-model-calls", action="store_true")
     gather.add_argument("--outline-model", default="")
     gather.add_argument("--model-call-ceiling", type=int, default=0)
+    gather.add_argument("--reuse-fetched-bytes-from", type=Path, action="append", default=[],
+                        help="an earlier run folder whose verified pinned bytes may be reused; repeatable")
     put = commands.add_parser("stage", help="stage a run folder's populations into an isolated database")
     put.add_argument("--run-folder", type=Path, required=True)
     put.add_argument("--database", type=Path, required=True)
@@ -383,7 +389,8 @@ def main(argv=None) -> int:
             options.run_folder, True, tuple(options.source_id), options.maximum_candidates_per_source,
             options.github_request_ceiling, options.https_request_ceiling, options.maximum_pause_seconds,
             options.upstream_licence_lookups, options.package_checks, options.skillspector_program,
-            options.authorize_model_calls, options.outline_model, options.model_call_ceiling))
+            options.authorize_model_calls, options.outline_model, options.model_call_ceiling,
+            reuse_run_folders=tuple(options.reuse_fetched_bytes_from)))
         print(json.dumps({"counts": report["counts"], "requests": report["requests"]["requests"]}, indent=2))
         return 0
     if options.command == "stage":

@@ -134,8 +134,9 @@ One fetched file
     ├── outline_only: no licence, an unrecognized or unaccepted licence, disagreeing
     │   signals, or a source curated for outlines; only the abstract purpose and the
     │   source identity are kept
-    └── refused: a licence or notice that forbids derivative works; nothing is kept
-        but the refusal
+    └── refused: a licence or notice that forbids derivative works, or that makes
+        reading or using the material an agreement to a provider's own terms;
+        nothing is kept but the refusal
 ```
 
 The accepted licences are MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC,
@@ -189,7 +190,8 @@ core/library_ingestion
 │   topic_words.json), duplicates.py, registry_sync.py
 ├── transports: https_transport.py (the one module that imports urllib),
 │   github_reader.py, processes.py (the one module that starts a process),
-│   request_log.py, quarantine.py, package_resolver.py
+│   request_log.py, quarantine.py, package_resolver.py, fetch_cache.py (the
+│   verified reuse of an earlier run's pinned bytes)
 ├── rendering: skill_rendering.py, connection_rendering.py
 ├── engines, one module each: source_github.py, source_mcp_registry.py,
 │   format_builtin.py, format_skills_ref.py, format_connection.py,
@@ -237,7 +239,9 @@ hold the known-wrong cases: a candidate without provenance, verbatim import
 without an accepted licence, a proprietary licence, a nested licence file, a
 licence answer that is not the pinned blob, a source curated for outlines,
 tampered bytes, symbolic links and submodules, a truncated tree, request
-ceilings and allowance pauses, registry status changes and vanished entries,
+ceilings and allowance pauses, a licence that binds the reader to outside
+terms, reuse of cached bytes that are not the pinned blob, registry status
+changes and vanished entries,
 secrets and plain addresses in connection files, the malicious and benign
 regression set of the scanner, duplicates, bundled files and outlines that
 repeat source words.

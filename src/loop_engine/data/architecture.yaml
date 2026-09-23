@@ -97,6 +97,8 @@ outside_library_ingestion:
     - a_registry_entry_is_link_only_and_its_connection_files_are_written_from_facts
     - an_outline_keeps_the_abstract_purpose_and_the_source_identity_never_the_text
     - a_licence_that_forbids_derivative_works_leaves_no_outline
+    - a_licence_that_binds_the_reader_to_outside_terms_leaves_nothing
+    - a_rerun_reuses_only_bytes_that_are_the_pinned_blob
     - every_network_request_is_read_only_bounded_and_recorded
     - every_model_call_is_recorded_and_unknown_usage_stays_unknown
     - scanner_findings_are_triage_for_reviewers_never_approval
