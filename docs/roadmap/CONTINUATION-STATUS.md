@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b56044c0d02268`.
+Plan fingerprint: `91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c87e561aa2cd61`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -749,7 +749,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-22: Learn from every request and grow the library by occupation and data work
 
-Owning steps: S-6.51, S-6.52, S-6.53, S-6.54, S-6.58. Acceptance dependencies: D-19.
+Owning steps: S-6.51, S-6.52, S-6.53, S-6.54, S-6.58, S-6.62, S-6.63, S-6.64. Acceptance dependencies: D-19.
 
 Owning boundaries: `src/loop_engine/core/retrieval.py`; `src/loop_engine/core/harness_intelligence_search.py`; `src/loop_engine/core/seeded_generation.py`.
 
@@ -904,6 +904,9 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.63 | An independent review panel of several model families | proposed | S-6.45 |
+| S-6.62 | Catalogue releases and library settings with good defaults | proposed | S-6.40 |
+| S-6.64 | Original rewrites for material without a permissive licence | proposed | S-6.63 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
 | S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
@@ -957,7 +960,7 @@ Legacy statuses remain historical component claims until current integration evi
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64 |
 | Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61 |
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30 |

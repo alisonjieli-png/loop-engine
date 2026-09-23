@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-22T23:20:00Z"
+  updated_at: "2026-09-23T01:00:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -885,7 +885,7 @@ continuation:
     - id: D-22
       title: Learn from every request and grow the library by occupation and data work
       stage: continued_improvement
-      steps: [S-6.51, S-6.52, S-6.53, S-6.54, S-6.58]
+      steps: [S-6.51, S-6.52, S-6.53, S-6.54, S-6.58, S-6.62, S-6.63, S-6.64]
       depends_on: [D-19]
       actions: [Record the item version with every request and detect wrong context and repeated asks., Analyse items fetched together and use the evidence for prefetch and ranking after the minimum sample., 'Add self-learning, hybrid BM25 and near-duplicate engines behind the search slot and measure each.', Generate candidate intelligence along the occupation grid with recorded licences., Build data-work packs as text and as tested code with typed inputs., Record the model and the decision method of each step and analyse them over many tasks.]
       acceptance: Ranking and prefetch improve from measured fetched-together evidence; the library grows by occupation and data work through independent review; every step records its model and decision method.
@@ -1156,7 +1156,7 @@ continuation:
       guide: docs/legal/README.md
       instructions: [Tell engineering the legal name and country of the company that operates Baltor., Choose the public contact address (for example hello at baltor.ai); engineering sets up inbound mail and publishes it., Approve or edit the drafted terms and privacy notice so the pages can be published.]
       return_fields: [legal entity name, country, public contact address, approval of the terms and privacy text]
-      completion: The footer names the operator, the contact address receives mail, and /terms and /privacy are live.
+      completion: 'The footer names the operator, the contact address receives mail, and /terms and /privacy are live. September 22: the owner approved the privacy notice with Baltor.AI as the operator and the postal contact address 1428 Bryn Mawr St, Saxton, PA 16678; the terms of service are still a draft.'
       safety: Legal text is a commitment only the owner can make; engineering never publishes it without approval.
     - id: OWNER-17
       title: Grant a model-call budget for measuring the launch benefits
@@ -1166,7 +1166,7 @@ continuation:
       guide: docs/guides/launch-benefits-and-evidence.md
       instructions: [Choose the models and the spending ceiling engineering may use for matched benefit runs., 'Say which benefits to measure first: overnight local work, fewer repeated tokens, or useful expertise for each step.']
       return_fields: [allowed models, spending ceiling, benefits to measure first]
-      completion: Measured results with their evidence support the numbers used on the website and in the application.
+      completion: 'Measured results with their evidence support the numbers used on the website and in the application. Done on September 22: model calls through Ollama Cloud with the key already held, within the existing subscription and with no extra purchase, and the Codex and Claude Code command lines for review.'
       safety: Model calls and spending need explicit owner authority; engineering records every call and stops before the ceiling.
     - id: OWNER-18
       title: Choose the paid identity and email plans, which take hosting above the recorded allowance
@@ -1176,7 +1176,7 @@ continuation:
       guide: docs/guides/launch-setup-runbook.md
       instructions: ['The Supabase Free plan pauses a project after a week of inactivity, and Pro costs 25 United States dollars a month.', 'The Resend free plan sends at most 100 emails a day, and Pro costs 20 dollars a month.', 'Both upgrades plus Fly come to about 56 dollars a month, above the recorded 50 dollar monthly infrastructure allowance. Say which upgrades to buy, or raise the allowance.']
       return_fields: [approved upgrades, 'new monthly infrastructure allowance, if changed']
-      completion: The identity project cannot pause during the beta, invitation email has room for the invited users, and the allowance covers both.
+      completion: 'The identity project cannot pause during the beta, invitation email has room for the invited users, and the allowance covers both. Answered on September 22: stay on the free plans; engineering keeps the identity project active, watches the email cap, and asks again only when usage nears a limit.'
       safety: Spending beyond the recorded allowance needs the owner; engineering keeps the free plans until the owner decides.
     - id: OWNER-19
       title: Name who approves and posts replies, and from which accounts
@@ -1204,7 +1204,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.63, S-6.62, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1306,7 +1306,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61]
@@ -2518,11 +2518,11 @@ steps:
     status: proposed
     depends_on: [S-6.30]
     boundary: [tools/build_host_catalogue_manifest.py, examples/29_intelligence_service/starter-catalogue/reviews.json]
-    verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library, 'a versioned per-source provenance contract for outside material: origin, immutable revision, path, source digest, licence evidence and fetch date', 'a multi-file package contract for skills with scripts, references and assets']
+    verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library, 'a versioned per-source provenance contract for outside material: origin, immutable revision, path, source digest, licence evidence and fetch date', 'a multi-file package contract for skills with scripts, references and assets', '10,000 approved, searchable and retrievable items, reached through permissive imports, registry link-mode connection files and original rewrites, with the count published only from the review record']
     adversarial: An item without an accepted licence must never be imported verbatim; a generated item must never approve itself; a duplicate of an existing item must be merged, not added.
     acceptance: The worker adds reviewed, licensed items continuously without manual work, and the library size and quality are measured and published only from evidence.
     evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served. tools/prepare_harness_candidates.py prepares local source-grounded text candidates in fifty-item populations; a temporary synthetic fixture prepared and staged 1,000 review-only candidates with no stale derived fields. External import, file-level rights, useful task outcomes and approval were not established.'
-    next_local_work: Survey the sources and their licences, then build the worker behind an ingestion engine slot.
+    next_local_work: Library wave 1 is building the per-source provenance record, the permissive and registry importers with duplicate removal and pre-checks, and the multi-model review panel with a measured pilot; then scale to 1,000 served items and measure review throughput before the next 9,000.
   - id: S-6.41
     phase: 6
     title: Harness run records for self-improvement
@@ -2754,3 +2754,36 @@ steps:
     acceptance: A task runs several steps in separate harnesses that reach the customer's cloud keys, local endpoints and protocol servers through the broker, and a planted known-wrong step that tries to read another step's key is refused.
     evidence: 'September 22 evening: the owner asked how every step''s harness gets the customer''s local endpoints, provider keys and protocol connections, and whether a shared credential layer with a secure fallback makes sense. Engineering decision: a local broker with per-step scoped access, and raw keys passed to a single process only as the recorded fallback.'
     next_local_work: Read how harness_process.py's broker socket forwards model requests today, compare LiteLLM's virtual keys and protocol server gateways, then define the edge and the keychain engine.
+  - id: S-6.62
+    phase: 6
+    title: Catalogue releases and library settings with good defaults
+    status: proposed
+    depends_on: [S-6.40]
+    boundary: [tools/build_host_catalogue_manifest.py, src/loop_engine/core/service_runtime/http_entrypoint.py]
+    verify: ['each catalogue release is a versioned record naming the items added, changed and withdrawn, with release notes a customer can read', 'grants follow the packaged manifest for every approved item, a host setting an older release refuses, so new items reach accounts without a hand list', 'a withdrawn or changed item is refused at download with its reason, and a client can pin a release', 'account library settings with good defaults: families, kinds, licences, harness layout, minimum review level and freshness, applied to search and downloads']
+    adversarial: A release that adds an item no reviewer approved, a grant list that drifts from the manifest, and a setting that widens what the account may receive beyond its plan must each fail a named check.
+    acceptance: A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.
+    evidence: 'September 22 evening: owner direction for 10,000 items, multi-model review, managed releases of new files, and user settings with good defaults.'
+    next_local_work: Design the catalogue release record and the grants-follow-the-manifest setting first.
+  - id: S-6.63
+    phase: 6
+    title: An independent review panel of several model families
+    status: proposed
+    depends_on: [S-6.45]
+    boundary: [tools/carry_catalogue_approvals.py, examples/29_intelligence_service/starter-catalogue/REVIEW.md]
+    verify: ['reviewer engines behind one edge: Ollama Cloud models such as Kimi K3, GLM 5.3, DeepSeek, Qwen and MiniMax, the Codex command line and the Claude Code command line', 'deterministic pre-checks before any model call: licence, format, safety scan, effects, secrets, duplicates', 'approval needs three approving reviewers from three model families, none of them the author''s family, bound to the exact bytes and naming each reviewer', 'a call ceiling, rate-limit pauses and a resumable cursor, with every call recorded']
+    adversarial: An approval from the authoring family, an approval not bound to the reviewed bytes, and a run that exceeds its declared ceiling must each be refused.
+    acceptance: Reviews of thousands of items run unattended within the owner's subscription, and every approval names independent reviewers.
+    evidence: 'September 22 evening: owner direction for 10,000 items, multi-model review, managed releases of new files, and user settings with good defaults.'
+    next_local_work: Library wave 1 builds the panel and runs a measured pilot on 30 of the 74 unreviewed starter items.
+  - id: S-6.64
+    phase: 6
+    title: Original rewrites for material without a permissive licence
+    status: proposed
+    depends_on: [S-6.63]
+    boundary: [tools/prepare_harness_candidates.py]
+    verify: [a candidate outline that keeps only the abstract purpose and the source identity of material whose licence does not allow copying, 'an original rewrite written by a model from that purpose, never shown the source text', a similarity check against the source that refuses a rewrite too close to it, improvement over the source measured where a task check exists]
+    adversarial: A rewrite whose text is too similar to a source it may not copy must be refused before review, and a generator must never be shown the protected text.
+    acceptance: Material the library may not copy still reaches customers as original, reviewed items with recorded inspiration and no copied text.
+    evidence: 'September 22 evening: owner direction for 10,000 items, multi-model review, managed releases of new files, and user settings with good defaults.'
+    next_local_work: Start after the review panel qualifies; generate from the outlines library wave 1 records.

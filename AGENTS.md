@@ -265,12 +265,23 @@ connection would allow it:
   (September 20, 2026);
 - a legal commitment, such as publishing terms of service or a privacy
   notice. The [drafts](docs/legal/README.md) wait for the owner
-  (September 20, 2026);
+  (September 20, 2026). On September 22, 2026 the owner approved the privacy
+  notice, with Baltor.AI as the operator and the postal contact address
+  1428 Bryn Mawr St, Saxton, PA 16678; the terms of service still wait;
 - identity or bank verification with a provider, which only the owner can
   complete (September 20, 2026).
 
 The authority recorded on September 20, 2026 does not cover model calls, live
-charges or opening public registration. A customer paying through the live
+charges or opening public registration. On September 22, 2026 the owner widened
+it for model calls, in their own words: "A model budget, we can just use Ollama
+cloud, you already have the key", and "You can use Claude Code, Kimi 3, GLM
+5.3, and other Ollama models as well as Codex models to conduct the review".
+Model calls may therefore run through Ollama Cloud with the key already in the
+environment, within the owner's existing subscription and with no extra
+purchase, and through the Codex and Claude Code command lines, for review,
+generation and measurement. Every call is recorded with its model, usage and
+outcome, and a run stops before a declared ceiling. Live charges and opening
+public registration still stay outside it. A customer paying through the live
 checkout is the product working, not a charge that engineering makes.
 Intelligence is published only after
 the independent review process in the decision table approves it, and a
@@ -309,8 +320,11 @@ direction. Each stands until the owner changes it.
 | Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. Invited beta users are free through an operator entitlement. |
 | Payments | Live since September 21, 2026. The first call was to build and qualify everything in Stripe test mode and to wait for the owner's identity and bank verification. The owner activated the live account and supplied its key that morning. The live account `acct_1UHZ972IF9bCskLc` is separate from the sandbox `acct_1UHZ9KCCxLfArYED`, with charges and payouts enabled and nothing outstanding. Checkout and the customer portal were proven against the deployed service and nobody was charged, as the [live payments record](artifacts/architecture-audit-2026-09-19/live-payments-enabled-1.json) shows. The key is in the system keyring under `stripe-live` and reaches a command only through `tools/operator_credentials.py`. |
 | Sign-up email | The service creates the confirmation link through the identity provider's administration interface and sends its own email, so the whole journey stays on the baltor.ai domain and needs no change to provider settings that engineering cannot reach. |
-| Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. On September 22, 2026 the browser is built on `pay/web-browse` and is not on `main` yet. |
+| Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. It reached `main` and the live service in release 13 on September 22, 2026. |
 | Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
+| Hosting plans | Stay on the free Supabase and Resend plans. The owner, September 22, 2026: "Why do we need supabase and resend paid plans? I thought we don't need that?" The free limits (a project pauses after a week without activity; 100 emails a day) fit an invited beta; engineering keeps the identity project active and watches the email cap, and asks again only when usage nears a limit. |
+| Operator and contact | Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States, as the owner gave on September 22, 2026. The privacy notice names it. |
+| A library of 10,000 items | The owner, September 22, 2026: 10,000 fully searchable, retrievable, indexed harness intelligence files; material without a licence that allows direct copying is used only as inspiration for an original rewrite; reviews by Claude Code, Kimi, GLM, other Ollama models and Codex models; managed releases of new files; user settings with good defaults. Engineering's plan is roadmap step S-6.40 and the steps it names. |
 
 ## Pre-launch version policy
 

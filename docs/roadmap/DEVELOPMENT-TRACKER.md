@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b56044c0d02268`.
+Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c87e561aa2cd61`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b5
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 53 |
+| Waiting on earlier work | 56 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -89,6 +89,9 @@ Source fingerprint: `sha256:b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b5
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.63 | An independent review panel of several model families | proposed | S-6.45 |
+| S-6.62 | Catalogue releases and library settings with good defaults | proposed | S-6.40 |
+| S-6.64 | Original rewrites for material without a permissive licence | proposed | S-6.63 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
 | S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
@@ -171,7 +174,7 @@ Source fingerprint: `sha256:b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b5
 | D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 7 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 0 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
-| D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 5 |
+| D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 

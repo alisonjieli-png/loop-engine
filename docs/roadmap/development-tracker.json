@@ -4,7 +4,7 @@
   "done": 41,
   "next": 11,
   "now": 32,
-  "waiting": 53
+  "waiting": 56
  },
  "lanes": {
   "blocked": [
@@ -1444,12 +1444,57 @@
      "S-6.30"
     ],
     "id": "S-6.40",
-    "next_local_work": "Survey the sources and their licences, then build the worker behind an ingestion engine slot.",
+    "next_local_work": "Library wave 1 is building the per-source provenance record, the permissive and registry importers with duplicate removal and pre-checks, and the multi-model review panel with a measured pilot; then scale to 1,000 served items and measure review throughput before the next 9,000.",
     "phase": 6,
     "status": "proposed",
     "title": "Grow the library: a scheduled ingestion worker for skills, plugins and context",
     "waiting_on": [
      "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "Reviews of thousands of items run unattended within the owner's subscription, and every approval names independent reviewers.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.45"
+    ],
+    "id": "S-6.63",
+    "next_local_work": "Library wave 1 builds the panel and runs a measured pilot on 30 of the 74 unreviewed starter items.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "An independent review panel of several model families",
+    "waiting_on": [
+     "S-6.45"
+    ]
+   },
+   {
+    "acceptance": "A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40"
+    ],
+    "id": "S-6.62",
+    "next_local_work": "Design the catalogue release record and the grants-follow-the-manifest setting first.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Catalogue releases and library settings with good defaults",
+    "waiting_on": [
+     "S-6.40"
+    ]
+   },
+   {
+    "acceptance": "Material the library may not copy still reaches customers as original, reviewed items with recorded inspiration and no copied text.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63"
+    ],
+    "id": "S-6.64",
+    "next_local_work": "Start after the review panel qualifies; generate from the outlines library wave 1 records.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Original rewrites for material without a permissive licence",
+    "waiting_on": [
+     "S-6.63"
     ]
    },
    {
@@ -2290,7 +2335,7 @@
    "title": "Activate the live Stripe account and say go"
   },
   {
-   "completion": "The footer names the operator, the contact address receives mail, and /terms and /privacy are live.",
+   "completion": "The footer names the operator, the contact address receives mail, and /terms and /privacy are live. September 22: the owner approved the privacy notice with Baltor.AI as the operator and the postal contact address 1428 Bryn Mawr St, Saxton, PA 16678; the terms of service are still a draft.",
    "id": "OWNER-16",
    "instructions": [
     "Tell engineering the legal name and country of the company that operates Baltor.",
@@ -2301,7 +2346,7 @@
    "title": "Give the legal entity name and a contact address, and approve the terms and privacy text"
   },
   {
-   "completion": "Measured results with their evidence support the numbers used on the website and in the application.",
+   "completion": "Measured results with their evidence support the numbers used on the website and in the application. Done on September 22: model calls through Ollama Cloud with the key already held, within the existing subscription and with no extra purchase, and the Codex and Claude Code command lines for review.",
    "id": "OWNER-17",
    "instructions": [
     "Choose the models and the spending ceiling engineering may use for matched benefit runs.",
@@ -2311,7 +2356,7 @@
    "title": "Grant a model-call budget for measuring the launch benefits"
   },
   {
-   "completion": "The identity project cannot pause during the beta, invitation email has room for the invited users, and the allowance covers both.",
+   "completion": "The identity project cannot pause during the beta, invitation email has room for the invited users, and the allowance covers both. Answered on September 22: stay on the free plans; engineering keeps the identity project active, watches the email cap, and asks again only when usage nears a limit.",
    "id": "OWNER-18",
    "instructions": [
     "The Supabase Free plan pauses a project after a week of inactivity, and Pro costs 25 United States dollars a month.",
@@ -3017,17 +3062,20 @@
    "id": "D-22",
    "stage": "continued_improvement",
    "status_counts": {
-    "proposed": 5
+    "proposed": 8
    },
    "steps": [
     "S-6.51",
     "S-6.52",
     "S-6.53",
     "S-6.54",
-    "S-6.58"
+    "S-6.58",
+    "S-6.62",
+    "S-6.63",
+    "S-6.64"
    ],
    "title": "Learn from every request and grow the library by occupation and data work",
-   "total_steps": 5
+   "total_steps": 8
   },
   {
    "acceptance": "Every release has a persona review; visitors find a recorded demonstration for their role; the scale plan names the first split and its trigger; replies go out only with a person's approval.",
@@ -3087,5 +3135,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:b782d7b6238df957c5752aed101493e5ee45d7994d3f4ca1a6b56044c0d02268"
+ "source_fingerprint": "sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c87e561aa2cd61"
 }
