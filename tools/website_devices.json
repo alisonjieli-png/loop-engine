@@ -1,0 +1,65 @@
+{
+  "record_type": "website_device_list/v1",
+  "purpose": "The screen sizes, engines and page addresses that tools/capture_website_devices.mjs measures. Addresses are paths; the origin and the hostnames come from the command line.",
+  "pages": {
+    "release_20": ["/", "/how-it-works", "/pricing", "/connect", "/waitlist", "/docs", "/examples", "/security", "/privacy", "/login", "/signup", "/app", "/account", "/admin"],
+    "target_site_map": ["/get-started", "/setup", "/use-cases", "/overnight", "/context", "/model-choice", "/tool-choice", "/for/coding-agents", "/for/engineering-teams", "/for/comparing-tools", "/for/protocol-and-client", "/status", "/terms", "/models", "/machine-fit", "/docs/what-baltor-is"]
+  },
+  "budgets": {
+    "homepage_max_css_px_at_1440": 4000,
+    "other_pages_max_screens": 3,
+    "first_screen_holds": ["h1", "lead", "primary_action"],
+    "homepage_first_screen_also_holds": ["price"]
+  },
+  "thresholds": {
+    "tap_target_css_px": 44,
+    "smallest_text_css_px": 12,
+    "phone_body_text_css_px": 15,
+    "phone_max_width_css_px": 600,
+    "max_characters_per_line": 90,
+    "empty_run_report_css_px": 96,
+    "empty_run_flag_share_of_screen": 0.5,
+    "fixed_header_flag_share_of_screen": 0.2,
+    "scroll_step_share_of_screen": 0.8
+  },
+  "throttle_profiles": {
+    "slow-4g-cpu-4x": {"latency_ms": 562.5, "download_kbps": 1440, "upload_kbps": 675, "cpu_slowdown": 4}
+  },
+  "devices": [
+    {"id": "phone-320x568", "group": "phone portrait", "width": 320, "height": 568, "scale": 2, "touch": true, "mobile": true},
+    {"id": "phone-360x800", "group": "phone portrait", "width": 360, "height": 800, "scale": 3, "touch": true, "mobile": true},
+    {"id": "phone-375x667", "group": "phone portrait", "width": 375, "height": 667, "scale": 2, "touch": true, "mobile": true},
+    {"id": "phone-390x844", "group": "phone portrait", "width": 390, "height": 844, "scale": 3, "touch": true, "mobile": true},
+    {"id": "phone-412x915", "group": "phone portrait", "width": 412, "height": 915, "scale": 3, "touch": true, "mobile": true},
+    {"id": "phone-430x932", "group": "phone portrait", "width": 430, "height": 932, "scale": 3, "touch": true, "mobile": true},
+    {"id": "phone-844x390", "group": "phone landscape", "width": 844, "height": 390, "scale": 3, "touch": true, "mobile": true},
+    {"id": "phone-915x412", "group": "phone landscape", "width": 915, "height": 412, "scale": 3, "touch": true, "mobile": true},
+    {"id": "tablet-600x960", "group": "tablet", "width": 600, "height": 960, "scale": 2, "touch": true, "mobile": true},
+    {"id": "tablet-768x1024", "group": "tablet", "width": 768, "height": 1024, "scale": 2, "touch": true, "mobile": true},
+    {"id": "tablet-820x1180", "group": "tablet", "width": 820, "height": 1180, "scale": 2, "touch": true, "mobile": true},
+    {"id": "tablet-1024x768", "group": "tablet", "width": 1024, "height": 768, "scale": 2, "touch": true, "mobile": true},
+    {"id": "tablet-1180x820", "group": "tablet", "width": 1180, "height": 820, "scale": 2, "touch": true, "mobile": true},
+    {"id": "desktop-1280x800", "group": "laptop and desktop", "width": 1280, "height": 800, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-1366x768", "group": "laptop and desktop", "width": 1366, "height": 768, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-1440x900", "group": "laptop and desktop", "width": 1440, "height": 900, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-1536x864", "group": "laptop and desktop", "width": 1536, "height": 864, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-1680x1050", "group": "laptop and desktop", "width": 1680, "height": 1050, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-1920x1080", "group": "laptop and desktop", "width": 1920, "height": 1080, "scale": 1, "touch": false, "mobile": false},
+    {"id": "desktop-2560x1440", "group": "laptop and desktop", "width": 2560, "height": 1440, "scale": 1, "touch": false, "mobile": false}
+  ],
+  "special_cases": [
+    {"id": "text200-1440x900", "base": "desktop-1440x900", "text_scale": 2, "note": "Root text size doubled by a style injected into the served page, as a reader's larger text setting would"},
+    {"id": "text200-390x844", "base": "phone-390x844", "text_scale": 2, "note": "Root text size doubled on a phone"},
+    {"id": "dark-390x844", "base": "phone-390x844", "color_scheme": "dark", "site_theme": "dark", "note": "Dark system preference, then the page's own appearance switch set to dark"},
+    {"id": "dark-1440x900", "base": "desktop-1440x900", "color_scheme": "dark", "site_theme": "dark"},
+    {"id": "reduced-motion-390x844", "base": "phone-390x844", "reduced_motion": true},
+    {"id": "reduced-motion-1440x900", "base": "desktop-1440x900", "reduced_motion": true},
+    {"id": "webkit-390x844", "base": "phone-390x844", "engine": "webkit", "note": "Stands in for Safari on iPhone"},
+    {"id": "webkit-820x1180", "base": "tablet-820x1180", "engine": "webkit", "note": "Stands in for Safari on iPad"},
+    {"id": "webkit-1440x900", "base": "desktop-1440x900", "engine": "webkit", "note": "Stands in for Safari on a Mac"},
+    {"id": "firefox-390x844", "base": "phone-390x844", "engine": "firefox", "note": "Firefox has no mobile viewport emulation; touch is on"},
+    {"id": "firefox-1440x900", "base": "desktop-1440x900", "engine": "firefox"},
+    {"id": "throttled-390x844", "base": "phone-390x844", "throttle": "slow-4g-cpu-4x", "note": "Chromium protocol network and processor throttling"},
+    {"id": "throttled-1440x900", "base": "desktop-1440x900", "throttle": "slow-4g-cpu-4x"}
+  ]
+}
