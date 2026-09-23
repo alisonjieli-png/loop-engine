@@ -19,6 +19,7 @@ import uuid
 from loop_engine.code_nodes.solution_model_port import ModelExecution, ModelInvocationRequest
 from loop_engine.core.context_artifacts import ContextArtifactManager, ContextArtifactServices, ContextArtifactStore, ContextArtifactStoreSpec
 from loop_engine.core.external_harness import HarnessAdapterInfo, HarnessModelCall, HarnessRegistry, HarnessRunResult
+from loop_engine.core.external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from loop_engine.core.harness_configuration import load_harness_binding, load_harness_fallback_binding
 from loop_engine.core.harness_fallback import HarnessFallbackPolicy, HarnessFailureKind
 from loop_engine.core.harness_execution_contracts import HarnessExecutionCapabilities
@@ -46,9 +47,13 @@ class NativeGatewayAdapter:
     """Native comparison arm: the same real broker without an external CLI."""
 
     def info(self):
+        # It calls the model broker in this process, so it declares the direct
+        # model step kind of the step executor slot, which never counts as delegation.
         return HarnessAdapterInfo('native_gateway', '1.1.0', 'loop-engine', available=True,
             features=('canonical_semantic_steps', 'gateway_broker'),
-            execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)))
+            execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)),
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind='direct_model_step',
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
     def run(self, request, services):
         client = services.runtime_binding.runtime_object
