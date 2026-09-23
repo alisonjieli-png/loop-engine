@@ -1,0 +1,54 @@
+.....E..
+======================================================================
+ERROR: test_the_run_level_refusal_is_what_stops_repeated_calls (tools.test_candidate_review_panel.BudgetTest)
+Mutant control: with no failure treated as lasting, the refused reviewer is asked for every item.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 438, in test_the_run_level_refusal_is_what_stops_repeated_calls
+    with mock.patch.object(panel_module, "LASTING_FAILURES", frozenset()):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.panel' from '/home/username/.le-library/ls2/tools/candidate_review/panel.py'> does not have the attribute 'LASTING_FAILURES'
+
+======================================================================
+FAIL: test_a_refused_login_is_asked_once_per_run_not_once_per_item (tools.test_candidate_review_panel.BudgetTest) (outcome='authentication_unavailable')
+A reviewer that cannot authenticate, or whose model the provider or the route policy refuses, stays
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 427, in test_a_refused_login_is_asked_once_per_run_not_once_per_item
+    self.assertEqual(len(harness.calls("a")), 1)
+AssertionError: 2 != 1
+
+======================================================================
+FAIL: test_a_refused_login_is_asked_once_per_run_not_once_per_item (tools.test_candidate_review_panel.BudgetTest) (outcome='model_not_found')
+A reviewer that cannot authenticate, or whose model the provider or the route policy refuses, stays
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 427, in test_a_refused_login_is_asked_once_per_run_not_once_per_item
+    self.assertEqual(len(harness.calls("a")), 1)
+AssertionError: 2 != 1
+
+======================================================================
+FAIL: test_a_refused_login_is_asked_once_per_run_not_once_per_item (tools.test_candidate_review_panel.BudgetTest) (outcome='refused_by_route_policy')
+A reviewer that cannot authenticate, or whose model the provider or the route policy refuses, stays
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 427, in test_a_refused_login_is_asked_once_per_run_not_once_per_item
+    self.assertEqual(len(harness.calls("a")), 1)
+AssertionError: 2 != 1
+
+======================================================================
+FAIL: test_a_refused_login_is_asked_once_per_run_not_once_per_item (tools.test_candidate_review_panel.BudgetTest) (outcome='engine_unavailable')
+A reviewer that cannot authenticate, or whose model the provider or the route policy refuses, stays
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 427, in test_a_refused_login_is_asked_once_per_run_not_once_per_item
+    self.assertEqual(len(harness.calls("a")), 1)
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.677s
+
+FAILED (failures=4, errors=1)

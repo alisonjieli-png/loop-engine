@@ -1,0 +1,41 @@
+{
+  "record_type": "candidate_review_command_summary/v1",
+  "run_id": "smoke-1",
+  "listing": {
+    "ok": true,
+    "error": "",
+    "withheld": [
+      "kimi-k3"
+    ]
+  },
+  "stop_reason": "completed",
+  "totals": {
+    "items": 1,
+    "approved": 0,
+    "rejected": 1,
+    "refused_before_review": 0,
+    "panel_incomplete": 0,
+    "not_started": 0,
+    "disagreements": 0,
+    "calls": 4,
+    "calls_by_outcome": {
+      "output_limit_reached": 1,
+      "verdict": 3
+    },
+    "physical_model_calls_known": 4,
+    "calls_with_unknown_physical_count": 0,
+    "calls_with_unknown_usage": 0,
+    "input_tokens_reported": 27520,
+    "output_tokens_reported": 9497,
+    "charged_tokens": 37017,
+    "pause_seconds": 0.0,
+    "elapsed_seconds": 88.835
+  },
+  "ineligible": {
+    "ollama.kimi-k3": "disabled",
+    "claude_code.bare": "producer_family"
+  },
+  "calibration": null,
+  "record": null,
+  "command_seconds": 89.133
+}

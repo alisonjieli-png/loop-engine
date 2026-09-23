@@ -1,0 +1,16 @@
+....................................F....
+======================================================================
+FAIL: test_one_reviewer_counted_twice_toward_a_quorum_is_refused (tools.test_candidate_review_record.ReviewerIdentityTest)
+Known-wrong case: under a policy of four approvals from three families, three reviewers with one
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 323, in test_one_reviewer_counted_twice_toward_a_quorum_is_refused
+    _refused(self, record, "reviewer_decided_twice")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 90, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 41 tests in 1.536s
+
+FAILED (failures=1)
