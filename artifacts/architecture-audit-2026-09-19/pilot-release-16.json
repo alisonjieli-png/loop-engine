@@ -1,0 +1,44 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T09:05:00+00:00",
+ "release": 16,
+ "fly_release_version": 18,
+ "source_revision": "519c82af947bdcd0cf7a89cd2117b522152c9f1b",
+ "image": "registry.fly.io/baltor-pilot@sha256:e63354aeee58b0c497672658e49fab8cf0d181600cce84cf8010df2d45f6e717",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35839419397, dispatched on main with operation deploy, after the continuous integration run 35837731317 passed on this exact revision. Fly created release 18 at 2026-09-23T08:52:16Z. Every workflow step passed, including the readiness poll, the catalogue grant step and the host billing policy step on the Machine.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T08:50:26Z",
+  "set_false_at": "2026-09-23T08:52:42Z"
+ },
+ "before_release": {
+  "host_file": "No change. The host file already has the catalogue section added on September 23 at 06:17 UTC; release 18 accepts it.",
+  "local_checks": "All 12 stages of the continuous integration command set passed on an export of 2b6037e (the website redesign merged onto release 17): self-test 3,208 of 3,208, tools 842 tests, browser 481 of 481 with 71 of 71 planted faults caught, conformance, component guides, hardcoding audit with no new high finding, examples 24 of 24, markdown lint 642 files, embodiment 106, qualification 3, publish guard and retired words; the hosted website check against a local service passed 81 of 81. On the merge with main's overnight records (519c82af): conformance, the hardcoding audit at the 632 high baseline, the records index, and 58 tests of the context routes, the catalogue anchor and the homepage demonstration."
+ },
+ "what_this_release_changes": "The website rebuilt from the design canvas: one invitation action per access state (Request an invitation while account creation is closed), the reason for a fresh harness per step in the opening message, the demonstration below it at full width with this release's digests, a 65 pixel phone header with a keyboard menu, the invitation email field in the first phone viewport of the page the action opens, an introduction band on inner pages, the dashboard side navigation on the signed-in pages, self-hosted Geist fonts, and the placeholder summit mark as header mark, favicon and app icon, served from the site's own origin under an img-src 'self' page policy.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "health": "service_health/v2, alive and ready; every check passing, including catalogue_view_current; the catalogue is served from the store, release ad4409822a07",
+  "hostnames": "All eight hostnames answered 200 for the home page and for /privacy and returned the same public capabilities record",
+  "capabilities": "registration_available false; waitlist_available true; billing checkout true, portal true, webhook true",
+  "website": "81 of 81 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 80 of 81 on baltor-pilot.fly.dev, the known host-name check. The homepage's connection example names https://baltor.ai/mcp and the placeholder mark is served as image/svg+xml",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19 with the phone item digest 32fca6ee4464cb2fb43eb06a5347fa0b6e87b0544910193565e8053dd562131c, including the isolation checks, one metered read and the official protocol client at both revisions",
+  "waiting_list": "One request from qa-release-18-waitlist@baltor.ai was recorded once in the waiting state with source_counted counted; a second request was refused with waitlist_address_already_listed; the operator tool removed it and erased its address and note, and a new listing no longer showed it",
+  "head": "HEAD on the root still answered 404 on baltor.ai"
+ },
+ "known_gaps": [
+  "HEAD on the root answers 404; every subdomain serves the homepage.",
+  "The signed-in header still shows Sign in and Request an invitation.",
+  "The homepage demonstration features normalize_phone_numbers, the item the data cleanup study found harmful on its population.",
+  "No new catalogue item may be published until the grant isolation fix ships (catalogue-release-activation-1.json)."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:cd593bc47b098f9b8c68987388be96fa2404611a76cb1868403ba0a9908d328c",
+  "fly_release_version": 17,
+  "host_file": "No host file change is needed.",
+  "effect": "Release 17 serves the previous website; release 16 and older refuse the current host file."
+ }
+}

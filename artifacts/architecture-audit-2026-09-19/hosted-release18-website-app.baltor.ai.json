@@ -1,0 +1,381 @@
+{
+  "record_type": "hosted_website_acceptance/v1",
+  "origin": "https://app.baltor.ai",
+  "observed_at": "2026-09-23T08:53:53.739Z",
+  "checks": [
+    {
+      "name": "HTTPS_homepage_is_available",
+      "passed": true
+    },
+    {
+      "name": "live_page_has_four_intelligence_layers",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_headline_names_the_developer_and_the_agent",
+      "passed": true
+    },
+    {
+      "name": "headline_check_rejects_a_headline_that_names_neither",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_subhead_names_the_unit_of_work",
+      "passed": true
+    },
+    {
+      "name": "live_default_appearance_is_light",
+      "passed": true
+    },
+    {
+      "name": "live_how_it_works_covers_five_optimization_problems",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_opens_with_the_owner_category_line",
+      "passed": true
+    },
+    {
+      "name": "live_owner_category_line_is_explained_in_plain_words",
+      "passed": true
+    },
+    {
+      "name": "category_line_explanation_check_rejects_a_bare_phrase",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_states_the_free_and_paid_split",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_bands_follow_the_design_and_are_set_apart",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_says_what_an_account_gives_you",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_calls_only_the_working_parts_available",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_offers_one_primary_action",
+      "passed": true
+    },
+    {
+      "name": "live_every_primary_action_carries_the_one_label",
+      "passed": true
+    },
+    {
+      "name": "live_phone_first_screen_holds_the_primary_action_under_a_compact_header",
+      "passed": true
+    },
+    {
+      "name": "live_invitation_action_lands_on_a_visible_email_field",
+      "passed": true
+    },
+    {
+      "name": "live_navigation_starts_with_how_it_works",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_entry_uses_the_deployed_origin",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_states_every_published_fact",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_reports_the_payment_state_from_the_service",
+      "passed": true
+    },
+    {
+      "name": "payment_state_rule_rejects_payment_open_beside_the_waiting_list",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_avoids_internal_runtime_names",
+      "passed": true
+    },
+    {
+      "name": "plain_word_check_rejects_a_page_that_names_the_runtime",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_address_is_served_directly",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_offers_no_purchase_control_while_checkout_is_closed",
+      "passed": true
+    },
+    {
+      "name": "live_personal_key_wording_follows_the_reported_capability",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_client-access.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_catalogue-browser.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture-story.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_client-recipes.json",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_supabase-client.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_geist.woff2",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_geist-mono.woff2",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_baltor-mark.svg",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_favicon-32.png",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_favicon-192.png",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_apple-touch-icon.png",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_separates_client_and_server",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_identifies_external_model_connection",
+      "passed": true
+    },
+    {
+      "name": "provider_boundary_check_rejects_wrong_secret_destination",
+      "passed": true
+    },
+    {
+      "name": "live_public_explanation_avoids_internal_runtime_names",
+      "passed": true
+    },
+    {
+      "name": "live_task_explorer_changes_selected_context",
+      "passed": true
+    },
+    {
+      "name": "live_task_explorer_supports_keyboard_selection",
+      "passed": true
+    },
+    {
+      "name": "guided_setup_uses_deployed_origin",
+      "passed": true
+    },
+    {
+      "name": "anonymous_connection_check_is_not_faked",
+      "passed": true
+    },
+    {
+      "name": "deployed_recipe_keeps_service_secret_as_reference",
+      "passed": true
+    },
+    {
+      "name": "deployed_example_prepares_an_explicit_search",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/security",
+      "passed": true
+    },
+    {
+      "name": "no_live_customer_page_describes_the_product_as_a_trial",
+      "passed": true
+    },
+    {
+      "name": "live_retired_word_check_rejects_a_known_wrong_page",
+      "passed": true
+    },
+    {
+      "name": "deployed_administration_still_requires_credentials",
+      "passed": true
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true
+    },
+    {
+      "name": "no_unexpected_third_party_requests",
+      "passed": true
+    }
+  ],
+  "passed": 81,
+  "total": 81,
+  "all_passed": true,
+  "errors": [],
+  "external": [],
+  "navigation": [
+    {
+      "path": "/",
+      "response_start_ms": 106,
+      "dom_content_loaded_ms": 293.1999999284744,
+      "load_ms": 422.5,
+      "transfer_bytes": 27735,
+      "resource_count": 12
+    },
+    {
+      "path": "/connect",
+      "response_start_ms": 242.5,
+      "dom_content_loaded_ms": 487.1999999284744,
+      "load_ms": 830,
+      "transfer_bytes": 27591,
+      "resource_count": 13
+    },
+    {
+      "path": "/examples",
+      "response_start_ms": 112.80000007152557,
+      "dom_content_loaded_ms": 421,
+      "load_ms": 573.3000000715256,
+      "transfer_bytes": 27471,
+      "resource_count": 12
+    },
+    {
+      "path": "/security",
+      "response_start_ms": 117.80000007152557,
+      "dom_content_loaded_ms": 411.7000000476837,
+      "load_ms": 593.5,
+      "transfer_bytes": 27273,
+      "resource_count": 13
+    },
+    {
+      "path": "/app",
+      "response_start_ms": 66,
+      "dom_content_loaded_ms": 331.5,
+      "load_ms": 538.4000000953674,
+      "transfer_bytes": 27259,
+      "resource_count": 13
+    }
+  ],
+  "navigation_limits": "One headless browser navigation per route from the development workstation; not field Core Web Vitals or an availability guarantee",
+  "credentials_used": false,
+  "external_mutations": false
+}
