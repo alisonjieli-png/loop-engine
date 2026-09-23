@@ -303,7 +303,7 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 @media(max-width:760px){.trust-grid{grid-template-columns:minmax(0,1fr)}}
 
 /* Pricing on the homepage: one plan card. */
-.home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:center;margin:0;padding:0;border:0;background:none}
+.home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:start;margin:0;padding:0;border:0;background:none}
 .plan-summary{display:flex;flex-direction:column;gap:1.5rem;padding:2.25rem;background:var(--paper);border:1px solid var(--line-strong);border-radius:20px;box-shadow:var(--card-shadow)}
 .plan-summary-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem}
 .plan-summary-head h3{margin:0;font-size:1.375rem;font-weight:700}

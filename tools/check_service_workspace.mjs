@@ -219,6 +219,13 @@ const homeBands=target=>target.evaluate(()=>{
 const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured.count+" bands, fewer than six"]:[]),...(["","rgb(255, 255, 255)"].includes(measured.ground)?["the page ground is plain white"]:[]),
   ...measured.pairs.filter(pair=>pair.grounds[0]===pair.grounds[1]).map(pair=>pair.above+" and "+pair.below+" share one ground"),
   ...measured.pairs.filter(pair=>pair.rule==="").map(pair=>pair.above+" meets "+pair.below+" with no rule")];
+/* The pricing band on a wide screen. The heading column and the plan card sit side by side, and the heading starts at the top of
+   the card, so no empty area opens above the heading beside the taller card. The review of September 23 found the column centred
+   beside the card. On a phone the two stack, and the reader reports the card below the heading instead of beside it. */
+const pricingColumns=target=>target.evaluate(async ()=>{await document.fonts.ready;const band=document.querySelector('[data-band="pricing"]'),box=selector=>band?.querySelector(selector)?.getBoundingClientRect()||null;
+  const title=box(".pricing-teaser > .section-title"),card=box(".pricing-teaser > .plan-summary");
+  return {width:innerWidth,titleTop:title?Math.round(title.top):null,titleLeft:title?Math.round(title.left):null,cardTop:card?Math.round(card.top):null,cardLeft:card?Math.round(card.left):null};});
+const headingMeetsTheCard=measured=>measured.titleTop!==null&&measured.cardTop!==null&&measured.cardLeft>measured.titleLeft&&Math.abs(measured.titleTop-measured.cardTop)<=1;
 /* The primary buttons a visitor can see: in the header, in the footer and in the page that is shown. */
 const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("header .button.primary, footer .button.primary, [data-view]:not([hidden]) .button.primary")]
   .filter(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden")
@@ -668,6 +675,14 @@ try {
   const plantedBandProblems={};
   for(const change of ["ground","rules","white"]){plantedBandProblems[change]=await plantBands(change)?bandProblems(await homeBands(page)):["not planted"];await restoreBands();}
   check("band_check_rejects_one_ground_for_two_bands_a_missing_rule_and_a_white_ground",Object.values(plantedBandProblems).every(problems=>problems.length===1&&problems[0]!=="not planted")&&bandProblems(await homeBands(page)).length===0,{problems:plantedBandProblems});
+  /* The pricing heading starts at the top of the plan card beside it on a wide screen. The known-wrong layouts are the heading
+     column centred beside the taller card, as the review of September 23 found it, the card stacked under the heading, and a band
+     without a card. A removed-guard control below serves the centred rule itself. */
+  const pricingSideBySide=await pricingColumns(page);
+  check("pricing_heading_lines_up_with_the_top_of_the_plan_card",pricingSideBySide.width>=1100&&headingMeetsTheCard(pricingSideBySide),pricingSideBySide);
+  check("pricing_alignment_check_rejects_a_centred_heading_a_stacked_card_and_a_missing_card",headingMeetsTheCard(pricingSideBySide)
+    &&!headingMeetsTheCard({...pricingSideBySide,titleTop:pricingSideBySide.cardTop+187})&&!headingMeetsTheCard({...pricingSideBySide,cardLeft:pricingSideBySide.titleLeft})
+    &&!headingMeetsTheCard({...pricingSideBySide,cardTop:null}),pricingSideBySide);
   /* Contrast and focus in both appearances. Every text on the public pages meets WCAG AA against the ground behind it, and each of
      the first stops the keyboard reaches on the homepage carries a visible focus mark. The known-wrong page plants one grey line
      on a white ground through the style object, which the page policy allows, and one focus stop without a mark. */
@@ -1154,9 +1169,9 @@ try {
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
   /* Removed-guard controls for the homepage itself: one digest of the demonstration changed, the band grounds and rules taken
-     away, a note that grows after the script runs, a part that is being built called available or live, and a second primary
-     action in the header. Each serves changed bytes of one or more files in memory, never a source file, and must fail its own
-     named check. */
+     away, a note that grows after the script runs, a part that is being built called available or live, a second primary
+     action in the header, and the pricing heading centred beside the plan card again. Each serves changed bytes of one or more
+     files in memory, never a source file, and must fail its own named check. */
   const openChanged=async changes=>{
     const opened=await context.newPage(),found=new Set();
     opened.on("pageerror",()=>{});
@@ -1198,7 +1213,10 @@ try {
      expected:["homepage_primary_actions_all_carry_the_one_label"]},
     {name:"lengthen_the_hero_note_after_the_script_runs",changes:[{path:"/assets/service.js",find:'$("hero-access-note").textContent = state.note;',replacement:'$("hero-access-note").textContent = state.note + " " + state.note + " " + state.note;'}],
      run:async (opened,note)=>note("homepage_first_screen_does_not_move_when_the_script_runs",boxesMoved(servedHeroBoxes,await heroBoxes(opened)).length===0),
-     expected:["homepage_first_screen_does_not_move_when_the_script_runs"]}];
+     expected:["homepage_first_screen_does_not_move_when_the_script_runs"]},
+    {name:"centre_the_pricing_heading_beside_the_plan_card",changes:[{path:"/assets/architecture.css",find:".home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:start;",replacement:".home-band .pricing-teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,30rem);gap:4.5rem;align-items:center;"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("pricing_heading_lines_up_with_the_top_of_the_plan_card",headingMeetsTheCard(await pricingColumns(opened)));},
+     expected:["pricing_heading_lines_up_with_the_top_of_the_plan_card"]}];
   for(const control of homepageControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
