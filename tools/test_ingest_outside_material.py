@@ -8,7 +8,9 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -213,6 +215,32 @@ class OutsideIngestionChecks(unittest.TestCase):
         self._collect()
         with self.assertRaises(FileExistsError):
             self._collect()
+
+    def test_a_run_that_stops_halfway_keeps_the_record_of_every_model_call_it_made(self):
+        sources = _sources(self.root)
+        sources["sources"] = [dict(sources["sources"][0], use="outline", expected_licence=None)]
+        answers = [SimpleNamespace(ok=True, text="Helps an assistant weigh measurements against saved numbers.",
+                                   model="fixture-model", prompt_tokens=40, eval_tokens=9, usage_reported=True,
+                                   error="", retry_after_seconds=None, response_received=True)]
+
+        def chat(*args, **kwargs):
+            if answers:
+                return answers.pop(0)
+            raise RuntimeError("the run stopped after its first model call")
+
+        log = RequestLog()
+        github = FakeGitHubReader(self.table, RequestBudget(maximum_requests=200), log)
+        registry = FakeRegistry(self.pages, RequestBudget(maximum_requests=20), log)
+        options = CollectOptions(run_folder=self.root / "halfway", network_reads_authorized=True,
+                                 model_calls_authorized=True, outline_model="fixture-model", model_call_ceiling=5)
+        with mock.patch("loop_engine.core.library_ingestion.outline_model._chat", return_value=chat):
+            with self.assertRaises(RuntimeError):
+                collect(sources, options, github_reader=github, registry_transport=registry, request_log=log)
+        written = self.root / "halfway" / "model-calls.jsonl"
+        self.assertTrue(written.is_file(), "the model call made before the stop was never written down")
+        rows = [json.loads(line) for line in written.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual([(row["outcome"], row["usage"]) for row in rows],
+                         [("ok", {"prompt_tokens": 40, "completion_tokens": 9})])
 
     def test_the_component_pipeline_checks_pass_here(self):
         result = pipeline_self_test()

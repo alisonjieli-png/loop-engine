@@ -53,7 +53,7 @@ The run folder holds:
 | `quarantine/` | Every fetched byte, read-only, named by its SHA-256 digest. Nothing executes it. |
 | `requests.jsonl` | One `library_network_request/v1` row per request, with its outcome and the provider's remaining allowance. No header, token or body is kept. |
 | `batches/` | Each source engine's `library_candidate_batch/v1`. |
-| `refusals.jsonl`, `outlines.jsonl`, `duplicates.jsonl`, `model-calls.jsonl` | Every refusal with its stage and reason, every outline, every duplicate link and every model call. |
+| `refusals.jsonl`, `outlines.jsonl`, `duplicates.jsonl`, `model-calls.jsonl` | Every refusal with its stage and reason, every outline, every duplicate link and every model call. A model call is appended the moment it returns, so a run that stops halfway still records every call it made. |
 | `engine-decisions.json` | The `library_engine_selection/v1` decision of every engine slot, made before any engine ran. |
 | `populations/` | The `candidate_intelligence_specifications/v2` rows, at most fifty to a file. |
 | `run-report.json` | `library_ingestion_run_report/v1`: the code revision and digest, each source's outcome, every count, the request and model call summaries and the limits. |

@@ -78,7 +78,7 @@ unknown field and a missing field before anything is built from the record.
 | `library_candidate_outline/v1` | For a source without a permissive licence: the abstract purpose and the source identity, never the text. | `candidates.read_outline` |
 | `library_engine_selection/v1` | Which engine of a slot was chosen and why each other one was not, recorded before anything runs. | `selection.select_engines` |
 | `library_network_request/v1` | One read-only request: transport, host, target, status, byte count and digest of the answer, time, outcome and the provider's remaining allowance. | `request_log.RequestLog` |
-| `library_model_call/v1` | One model call of the outline engine: the model asked for and the model that answered, the route, the prompt digest, the provider-reported usage (unknown stays unknown) and the outcome. | `outline_model.ModelOutline` |
+| `library_model_call/v1` | One model call of the outline engine: the model asked for and the model that answered, the route, the prompt digest, the provider-reported usage (unknown stays unknown) and the outcome, written to the run folder the moment the call returns. | `outline_model.ModelOutline` |
 | `candidate_intelligence_specifications/v2` | Staging rows of outside material: the rendered text, every provenance record, how the text was authored, its licence, its declared effects, its package files with digests and the triage notes. | `tools/stage_intelligence_candidates.py` |
 
 `require_provenance` refuses a candidate without provenance, and the

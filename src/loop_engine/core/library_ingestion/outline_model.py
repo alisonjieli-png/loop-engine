@@ -5,7 +5,9 @@ in the model's own words, then refuses the sentence if it repeats any run
 of five words from the source. Every call is recorded as
 library_model_call/v1 with the model asked for and the model that answered,
 the route, the digest of the prompt, the provider-reported token usage
-(unknown stays unknown, never zero) and the outcome. A 429 answer with a
+(unknown stays unknown, never zero) and the outcome. Given a record path,
+the engine appends each record there the moment the call returns, so a run
+that stops halfway still leaves the record of every call it made. A 429 answer with a
 stated wait pauses within a declared total and is tried once more. The
 engine stops before its declared call ceiling; the pipeline then uses the
 deterministic engine for the rest and records why. It is eligible only with
@@ -14,7 +16,9 @@ read by core.ollama_client at call time and never reaches a record.
 """
 from __future__ import annotations
 
+import json
 import time
+from pathlib import Path
 
 from .candidates import OUTLINE_RECORD_TYPE, read_outline
 from .outline_deterministic import copies_source
@@ -55,10 +59,11 @@ class ModelOutline:
     third_party = "Ollama Cloud chat interface through core.ollama_client"
 
     def __init__(self, model: str, call_ceiling: int, *, maximum_pause_seconds: float = 120.0,
-                 chat=None, sleep=time.sleep) -> None:
+                 chat=None, sleep=time.sleep, record_path=None) -> None:
         self.model, self.call_ceiling = model, call_ceiling
         self.maximum_pause_seconds, self.paused = maximum_pause_seconds, 0.0
         self.chat, self.sleep = chat or _chat(), sleep
+        self.record_path = None if record_path is None else Path(record_path)
         self.calls: list = []
 
     @classmethod
@@ -73,7 +78,8 @@ class ModelOutline:
     def from_settings(cls, settings: dict, resources: dict):
         """Construct from declared settings and the run's resources; nothing starts here."""
         return cls(settings["outline_model"], int(settings["model_call_ceiling"]),
-                   maximum_pause_seconds=float(settings.get("maximum_pause_seconds") or 120.0))
+                   maximum_pause_seconds=float(settings.get("maximum_pause_seconds") or 120.0),
+                   record_path=settings.get("model_call_log") or None)
 
     def describe(self) -> dict:
         return {"engine_id": self.engine_id, "engine_version": self.engine_version, "model": self.model,
@@ -92,6 +98,9 @@ class ModelOutline:
                "error_class": (getattr(result, "error", "") or "").split(":")[0][:80]}
         row["call_digest"] = canonical_digest(row)
         self.calls.append(row)
+        if self.record_path is not None:
+            with self.record_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(row, sort_keys=True, ensure_ascii=False) + "\n")
         return row
 
     def _call(self, prompt: str, source_digest: str):

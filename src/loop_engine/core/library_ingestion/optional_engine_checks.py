@@ -5,16 +5,19 @@ a broken one; where it is not installed the check reports that fact with the
 missing dependency instead of passing. The schema validator must accept the
 rendered connection files, refuse an unknown key, and become ineligible when
 a schema is missing or its digest changed. The model outline engine must
-record every call with unknown usage kept unknown, refuse a sentence that
-copies the source, pause within its bound on a rate limit and stop before
-its call ceiling. The package check must read 200 as resolving, 404 as
-missing and anything else as unknown. The scanner report mapping must block
-a skill SkillSpector recommends against and mark a skill it did not report.
+record every call, on disk as soon as it returns, with unknown usage kept
+unknown, refuse a sentence that copies the source, pause within its bound on
+a rate limit and stop before its call ceiling. The package check must read
+200 as resolving, 404 as missing and anything else as unknown. The scanner
+report mapping must block a skill SkillSpector recommends against and mark a
+skill it did not report.
 """
 from __future__ import annotations
 
 import json
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 
 from .connection_rendering import render_connection
 from .format_json_schema import ConnectionSchemaValidator
@@ -123,6 +126,18 @@ def self_test() -> dict:
           and call["usage_reported"] is False and call["outcome"] == "ok"
           and call["model_requested"] == "fixture-model" and "prompt" not in json.dumps(outline).lower()
           .replace("prompt_digest", ""), call)
+
+    # A call is on disk when it returns, not only when the run ends: a run that stops
+    # halfway must still leave the record of every call it made.
+    with tempfile.TemporaryDirectory(prefix="library-model-calls-") as folder:
+        log = Path(folder) / "model-calls.jsonl"
+        answers = [_Reply("Helps an assistant check a code change against what its author meant.")]
+        logged = ModelOutline("fixture-model", 3, chat=lambda *args, **kwargs: answers.pop(0),
+                              sleep=lambda s: None, record_path=log)
+        logged.outline(candidate, source)
+        on_disk = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    check("every_model_call_is_written_down_as_soon_as_it_returns",
+          len(on_disk) == 1 and on_disk == logged.calls, on_disk)
 
     copying = ModelOutline("fixture-model", 1, chat=lambda *args, **kwargs: _Reply(
         "Compare each change with the stated intent and flag surprises."), sleep=lambda s: None)

@@ -193,7 +193,8 @@ def collect(sources_record: dict, options: CollectOptions, *, github_reader=None
                 "schema_digests": schema_digests, "skillspector_program": options.skillspector_program,
                 "work_folder": str(run / "work"), "model_calls_authorized": options.model_calls_authorized,
                 "outline_model": options.outline_model, "model_call_ceiling": options.model_call_ceiling,
-                "maximum_pause_seconds": options.maximum_pause_seconds}
+                "maximum_pause_seconds": options.maximum_pause_seconds,
+                "model_call_log": str(run / "model-calls.jsonl")}
     blob_cache = PinnedBlobCache.from_run_folders(options.reuse_run_folders) if options.reuse_run_folders else None
     resources = {"github_reader": github_reader, "registry_transport": registry_transport,
                  "quarantine": quarantine, "schemas": schema_resources, "blob_cache": blob_cache}
@@ -242,7 +243,14 @@ def collect(sources_record: dict, options: CollectOptions, *, github_reader=None
     _write_lines(run / "refusals.jsonl", result["refusals"])
     _write_lines(run / "outlines.jsonl", result["outlines"])
     _write_lines(run / "duplicates.jsonl", result["duplicates"])
-    _write_lines(run / "model-calls.jsonl", result["model_calls"])
+    calls_file = run / "model-calls.jsonl"
+    if calls_file.exists():
+        # The outline engine wrote each call down as it returned; the file must hold exactly those calls.
+        written = [json.loads(line) for line in calls_file.read_text(encoding="utf-8").splitlines()]
+        if written != result["model_calls"]:
+            raise RuntimeError("the model call log does not hold exactly the calls this run made")
+    else:
+        _write_lines(calls_file, result["model_calls"])
     _write_json(run / "engine-decisions.json", decisions)
     calls = result["model_calls"]
     report = {"record_type": RUN_REPORT_RECORD_TYPE, "started_at": started, "finished_at": now_utc(),
