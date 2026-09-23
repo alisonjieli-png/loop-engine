@@ -79,7 +79,7 @@ try{
   check("live_personal_key_wording_follows_the_reported_capability",
     liveKeys!==""&&claimsKeys===(liveVersion&&liveCapabilities.website?.client_access_available===true));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
-  for(const asset of ["service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2"]){
+  for(const asset of ["service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2","baltor-mark.svg","favicon-32.png","favicon-192.png","apple-touch-icon.png"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));
   }

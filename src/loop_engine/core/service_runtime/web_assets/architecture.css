@@ -132,8 +132,8 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
    onto a second line instead of running off the screen. */
 .header{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;min-height:72px;padding:0 var(--band-gutter);background:var(--paper);border-bottom:1px solid var(--border)}
 .header .brand,.site-footer .brand{display:inline-flex;align-items:center;gap:.625rem;color:var(--ink);font-size:1.25rem;font-weight:700;letter-spacing:-.02em;text-decoration:none;white-space:nowrap}
-.brand .brand-mark{display:block;flex-shrink:0;width:28px;height:28px;background:none;border-radius:0}
-.brand-mark-ground{fill:var(--button)}.brand-mark-bar{fill:#FFFFFF}
+/* The mark is a placeholder the owner will replace: one file, baltor-mark.svg, used here and as the page icon. */
+.brand .brand-mark{display:block;flex-shrink:0;width:32px;height:32px;background:none;border-radius:7px}
 .header nav{display:flex;flex-wrap:wrap;align-items:center;gap:0 2rem;flex:1;order:0;flex-basis:auto;min-width:0;overflow:visible}
 .header nav a{padding:.5rem 0;color:var(--muted);font-size:.9375rem;font-weight:500;text-decoration:none;white-space:nowrap}
 .header nav a:hover{color:var(--ink)}

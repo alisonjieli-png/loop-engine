@@ -51,6 +51,12 @@ WEB_ASSETS = {
     # visitor's address reaches a font provider. Their licence travels in the notices below.
     "/assets/geist.woff2": ("geist.woff2", "font/woff2"),
     "/assets/geist-mono.woff2": ("geist-mono.woff2", "font/woff2"),
+    # The placeholder mark of the website and its page icons. The owner will choose the final mark; replacing
+    # these four files changes it everywhere, because the header, the footer and the icons all read them.
+    "/assets/baltor-mark.svg": ("baltor-mark.svg", "image/svg+xml"),
+    "/assets/favicon-32.png": ("favicon-32.png", "image/png"),
+    "/assets/favicon-192.png": ("favicon-192.png", "image/png"),
+    "/assets/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),
     # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }

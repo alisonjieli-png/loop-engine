@@ -448,6 +448,20 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
+  /* The placeholder mark: the header shows it as an image with an empty text alternative, because the name follows it, and the
+     page names it as its icon. Each file is served with its exact media type. */
+  const markState=await page.evaluate(()=>{const mark=document.querySelector("header .brand img.brand-mark");
+    return {src:mark?.getAttribute("src")||"",alt:mark?.getAttribute("alt"),loaded:Boolean(mark&&mark.complete&&mark.naturalWidth>0),named:document.querySelector("header .brand")?.getAttribute("aria-label")||"",
+      icons:[...document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]')].map(link=>[link.getAttribute("rel"),link.getAttribute("type")||"",link.getAttribute("href")])};});
+  const iconTypes={"/assets/baltor-mark.svg":"image/svg+xml","/assets/favicon-32.png":"image/png","/assets/favicon-192.png":"image/png","/assets/apple-touch-icon.png":"image/png"};
+  const servedTypes={};
+  for(const path of Object.keys(iconTypes)){const response=await page.request.get(fixture.base+path);servedTypes[path]=response.status()===200?(response.headers()["content-type"]||""):"status "+response.status();}
+  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the placeholder image with an empty alternative"]),
+    ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&href==="/assets/baltor-mark.svg")&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&href==="/assets/apple-touch-icon.png")?[]:["the page does not name its icons"]),
+    ...Object.entries(iconTypes).filter(([path,type])=>!(types[path]||"").startsWith(type)).map(([path])=>path+" is served as "+types[path])];
+  check("placeholder_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
+  check("mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",markProblems({...markState,icons:[]},servedTypes).length===1
+    &&markProblems(markState,{...servedTypes,"/assets/favicon-32.png":"text/plain"}).length===1&&markProblems({...markState,alt:"Baltor logo"},servedTypes).length===1);
   /* The typefaces come from this service, not from a font host: the page policy allows fonts from its own origin only, and every
      request to another origin is refused and reported by this suite. Both faces the design names are in use on the homepage. */
   const typefaces=await page.evaluate(async()=>{await document.fonts.ready;return [...new Set([...document.fonts].filter(face=>face.status==="loaded").map(face=>face.family.replace(/["']/g,"")))];});
@@ -667,8 +681,8 @@ try {
   /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
-     are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2"];
+     and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
+  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan

@@ -100,6 +100,8 @@ loop_engine = [
     "**/*.css",           # Packaged service workspace styling
     "**/*.js",            # Packaged service workspace behavior
     "**/*.woff2",         # Packaged website typefaces, served from the same origin
+    "core/service_runtime/web_assets/*.svg",  # The website mark, a placeholder
+    "core/service_runtime/web_assets/*.png",  # The page icons drawn from that mark
     "**/*.json",          # manifests, evidence, and published measurements
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections

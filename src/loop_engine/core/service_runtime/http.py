@@ -1210,7 +1210,7 @@ class ServiceHttpApplication:
     def _page_headers(self):
         """The headers every served page carries, refusals included."""
         identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
-        return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'"
+        return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'"
                 + identity_origin + "; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
                 "Referrer-Policy": "no-referrer", "X-Frame-Options": "DENY",
                 "Permissions-Policy": "camera=(), microphone=(), geolocation=()"}

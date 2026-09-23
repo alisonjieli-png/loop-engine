@@ -41,6 +41,11 @@ block at the top of `service.css`, so a change of design edits that block.
 Below 860 pixels the header links fold into a menu that a checkbox opens, so
 the menu works without the page script and nothing moves when the script runs.
 
+The mark is a placeholder that the owner will replace. It is one file,
+`baltor-mark.svg`, used in the header and the footer and as the page icon,
+with `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` drawn from
+it. Replacing those four files changes the mark everywhere.
+
 The typefaces are Geist and Geist Mono from version 1.7.2 of the `geist`
 package, under the SIL Open Font License 1.1, whose text is in
 `THIRD-PARTY-NOTICES.md`. The service serves them itself as `geist.woff2` and
