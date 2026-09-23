@@ -186,7 +186,7 @@ its own instructions, so each Codex call used about 17,000 input tokens.
 
 Arithmetic from these measured rates, not a forecast: 10,000 items reviewed
 the same way would take about 43 hours at three items at a time and about 336
-million tokens, of which about 170 million would go through the Codex command
+million tokens, of which about 182 million would go through the Codex command
 line. Whether a subscription allows that is not known.
 
 ## Model calls and authority
