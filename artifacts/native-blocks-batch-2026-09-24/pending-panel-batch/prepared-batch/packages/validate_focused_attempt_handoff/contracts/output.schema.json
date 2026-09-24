@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Validation Result",
+  "oneOf": [
+    {
+      "properties": {
+        "status": { "const": "success" },
+        "data": {
+          "type": "object",
+          "properties": {
+            "briefing": { "type": "string" },
+            "passive_state": {
+              "type": "object",
+              "properties": {
+                "task_id": { "type": "string" },
+                "attempt_id": { "type": "integer" },
+                "last_event_state": { "type": "string" },
+                "external_effects": { "type": ["object", "null"] }
+              },
+              "required": ["task_id", "attempt_id", "last_event_state"]
+            }
+          },
+          "required": ["briefing", "passive_state"]
+        }
+      },
+      "required": ["status", "data"]
+    },
+    {
+      "properties": {
+        "status": { "const": "refused" },
+        "error": { "type": "string" },
+        "code": { "type": "string" }
+      },
+      "required": ["status", "error", "code"]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+ "run": "tactical-run-validate-retry",
+ "model": "gemma-4-coding-abliterated",
+ "producer_family": "google",
+ "draft_format": {
+  "name": "blocks2",
+  "record_type": "original_native_file_blocks/v2"
+ },
+ "call_ceiling": 1,
+ "dispatches": 1,
+ "completions": 1,
+ "admitted": 1,
+ "prepared": 1,
+ "admission_rate": "1/1",
+ "known_input_tokens": 1824,
+ "known_output_tokens": 5019,
+ "calls_with_unknown_usage": 0,
+ "usage_complete": true,
+ "elapsed_seconds": 36.2,
+ "calls": [
+  {
+   "method_id": "validate_focused_attempt_handoff",
+   "attempt": 1,
+   "status": "candidate_prepared",
+   "error_code": "",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1824,
+   "output_tokens": 5019,
+   "elapsed_seconds": 36.216504,
+   "admitted": true,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "",
+   "package_digest": "be6acf4de7ed5d803cfec88fb488bfa4d6ed391c2e93bb19c7a1154af7125a63"
+  }
+ ]
+}

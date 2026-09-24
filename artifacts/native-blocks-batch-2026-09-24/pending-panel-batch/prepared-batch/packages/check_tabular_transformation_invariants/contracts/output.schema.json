@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#",
+  "type": "object",
+  "properties": {
+    "status": { "enum": ["success", "refused"] },
+    "message": { "type": "string" },
+    "code": { "type": "string" },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "field": { "type": "string" },
+          "type": { "type": "string" }
+        },
+        "required": ["id", "field", "type"]
+      }
+    }
+  },
+  "required": ["status"]
+}

@@ -1,0 +1,6 @@
+{
+  "server_id": "weather_service",
+  "url": "https://weather.example.com/mcp",
+  "env_var_name": "WEATHER_API_KEY",
+  "target_profile": "codex"
+}

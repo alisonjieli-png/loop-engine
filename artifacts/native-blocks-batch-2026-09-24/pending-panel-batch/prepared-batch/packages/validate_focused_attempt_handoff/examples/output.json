@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "data": {
+    "briefing": "Objective: Calculate prime factors of 104729. First Action: Initialize sieve. Required Outputs: [\"/tmp/factors.txt\"]",
+    "passive_state": {
+      "task_id": "task-123",
+      "attempt_id": 1,
+      "last_event_state": "accepted",
+      "external_effects": { "spawns_process": true }
+    }
+  }
+}

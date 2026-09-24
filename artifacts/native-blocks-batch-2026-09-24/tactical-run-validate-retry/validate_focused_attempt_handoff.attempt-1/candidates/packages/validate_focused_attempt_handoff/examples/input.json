@@ -1,0 +1,15 @@
+{
+  "task_id": "task-123",
+  "attempt_id": 1,
+  "objective": "Calculate prime factors of 104729",
+  "first_actions": ["Initialize sieve", "Scan range"],
+  "inputs": { "number": 104729 },
+  "output_paths": ["/tmp/factors.txt"],
+  "authority": "math-engine-01",
+  "events": [
+    { "sequence": 0, "state": "running" },
+    { "sequence": 1, "state": "candidate", "validator_id": "checker-01" },
+    { "sequence": 2, "state": "accepted", "validator_id": "checker-02", "evidence_digest": "sha256:abc123" }
+  ],
+  "external_effects": { "spawns_process": true }
+}

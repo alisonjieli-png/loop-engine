@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Focused Attempt Handoff",
+  "type": "object",
+  "properties": {
+    "task_id": { "type": "string" },
+    "attempt_id": { "type": "integer" },
+    "objective": { "type": "string" },
+    "first_actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "inputs": { "type": "object" },
+    "output_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "authority": { "type": "string" },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sequence": { "type": "integer" },
+          "state": { "enum": ["running", "failed", "cancelled", "candidate", "accepted"] },
+          "validator_id": { "type": "string" },
+          "evidence_digest": { "type": "string" }
+        },
+        "required": ["sequence", "state"]
+      }
+    },
+    "external_effects": { "type": "object" }
+  },
+  "required": ["task_id", "attempt_id", "objective", "first_actions", "inputs", "output_paths", "authority", "events"]
+}

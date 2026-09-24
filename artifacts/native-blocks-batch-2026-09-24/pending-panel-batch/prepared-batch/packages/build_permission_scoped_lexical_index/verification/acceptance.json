@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Tenant Filtering",
+    "description": "Ensure doc-3 (tenant-b) is excluded from tenant-a query",
+    "input": {
+      "mode": "query",
+      "tenant_id": "tenant-a",
+      "query_terms": ["bananas"],
+      "min_distinct_matches": 1,
+      "corpus": [
+        {"id": "d1", "text": "bananas", "tenant_id": "tenant-a", "source_hash": "h1"},
+        {"id": "d2", "text": "bananas", "tenant_id": "tenant-b", "source_hash": "h2"}
+      ]
+    },
+    "expected_status": "success",
+    "expected_count": 1
+  },
+  {
+    "name": "Boolean instead of Integer",
+    "description": "Reject min_distinct_matches if it is a boolean",
+    "input": {
+      "mode": "query",
+      "tenant_id": "t1",
+      "query_terms": ["a"],
+      "min_distinct_matches": true,
+      "corpus": [{"id": "d1", "text": "a", "tenant_id": "t1", "source_hash": "h1"}]
+    },
+    "expected_status": "refused",
+    "expected_code": "INVALID_MIN_DISTINCT"
+  },
+  {
+    "name": "Duplicate Key Refusal",
+    "description": "Detect duplicate keys in JSON input",
+    "input": "{\"mode\": \"build\", \"mode\": \"query\"}",
+    "expected_status": "refused",
+    "expected_code": "PARSE_ERROR"
+  },
+  {
+    "name": "Empty Query",
+    "description": "Zero results for non-matching query",
+    "input": {
+      "mode": "query",
+      "tenant_id": "t1",
+      "query_terms": ["xyz"],
+      "min_distinct_matches": 1,
+      "corpus": [{"id": "d1", "text": "abc", "tenant_id": "t1", "source_hash": "h1"}]
+    },
+    "expected_status": "success",
+    "expected_count": 0
+  }
+]

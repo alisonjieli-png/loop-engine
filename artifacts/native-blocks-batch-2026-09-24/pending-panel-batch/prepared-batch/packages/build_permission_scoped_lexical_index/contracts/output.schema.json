@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#",
+  "title": "Lexical Index Response",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "code": { "type": "string" },
+    "message": { "type": "string" },
+    "data": {
+      "type": "object",
+      "properties": {
+        "corpus_digest": { "type": "string" },
+        "tokenizer": { "type": "string" },
+        "doc_count": { "type": "integer" },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": ["string", "integer"] },
+              "score_distinct": { "type": "integer" },
+              "score_total": { "type": "integer" },
+              "snippet": { "type": "string" }
+            },
+            "required": ["id", "score_distinct", "score_total", "snippet"]
+          }
+        },
+        "count": { "type": "integer" }
+      }
+    }
+  },
+  "required": ["status"]
+}

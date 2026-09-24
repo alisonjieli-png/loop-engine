@@ -1,0 +1,22 @@
+{
+  "symbols": {
+    "sym_a": { "digest": "h1", "file_id": "f1" },
+    "sym_b": { "digest": "h2", "file_id": "f1" },
+    "sym_c": { "digest": "h3", "file_id": "f2" },
+    "sym_d": { "digest": "h4", "file_id": "f2" }
+  },
+  "files": {
+    "f1": { "digest": "fd1" },
+    "f2": { "digest": "fd2" }
+  },
+  "edges": [
+    ["sym_b", "sym_a"],
+    ["sym_c", "sym_b"],
+    ["sym_d", "sym_c"]
+  ],
+  "changed_symbol_ids": ["sym_a"],
+  "limits": {
+    "max_nodes": 100,
+    "max_depth": 10
+  }
+}

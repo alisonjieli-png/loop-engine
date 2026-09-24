@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "result": {
+      "type": "string"
+    },
+    "error_code": {
+      "type": "string"
+    }
+  },
+  "oneOf": [
+    {
+      "required": ["status", "result"],
+      "properties": {
+        "status": { "const": "success" }
+      }
+    },
+    {
+      "required": ["status", "error_code"],
+      "properties": {
+        "status": { "const": "refused" }
+      }
+    }
+  ]
+}

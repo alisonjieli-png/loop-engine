@@ -1,0 +1,133 @@
+{
+ "record_type": "original_native_generation_plan/v1",
+ "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+ "license": {
+  "expression": "MIT",
+  "path": "LICENSE",
+  "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+ },
+ "sources": {
+  "tools/install_selected_material.py": "a2e63f38c88e0834753f3f05a24d3f5dcd6e732dedf43a9b13588499a4bc8e5b",
+  "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f",
+  "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+  "src/loop_engine/core/harness_fresh_instances.py": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30"
+ },
+ "methods": [
+  {
+   "id": "validate_focused_attempt_handoff",
+   "title": "Validate a focused attempt handoff",
+   "purpose": "Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records.",
+   "sources": [
+    "src/loop_engine/core/instance_instructions.py"
+   ],
+   "layer": "code",
+   "family": "original_native_tool",
+   "search_tags": [
+    "validate a focused attempt handoff",
+    "harness workspace",
+    "native package",
+    "python"
+   ],
+   "tags": {
+    "domain": [
+     "software"
+    ],
+    "language": [
+     "en"
+    ]
+   },
+   "symbols": [
+    "validate_focused_attempt_handoff"
+   ],
+   "declared_effects": [
+    "reads_fs",
+    "spawns_process"
+   ],
+   "kind": "tool",
+   "styles": [
+    "codex",
+    "claude",
+    "opencode",
+    "pi"
+   ],
+   "dependencies": [
+    "python>=3.10"
+   ],
+   "brief": "Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records. Events carry contiguous sequence numbers and explicit running, failed, cancelled, candidate or accepted state. Accepted requires a validator identity and evidence digest; candidates cannot self-accept. Return a concise explicit startup briefing and validated passive state. Do not resume native conversations, create a new runtime class, grant effects or infer successful external actions from timeout. Unknown effects remain unknown. All implementations use Python3.10+ standard library only, no eval/exec, dynamic imports, network, filesystem mutation or subprocesses inside the helper. Read a maximum1MiB UTF-8 JSON request from stdin with duplicate-key and nonfinite-number refusal. Emit one bounded JSON success/refused object, stable error codes and no tracebacks. Reject booleans where integers are required. Tests may launch this exact helper in a caller-supplied sandbox. Write complete useful original contents, no placeholders or invented results. Keep examples small and independently calculable.",
+   "acceptance": [
+    "Reject a sequence gap, duplicate sequence and accepted state without validator evidence. Preserve unknown external-effect outcome. Repeated attempt id cannot become a new attempt. Briefing must contain the first action and output contract.",
+    "All references and helpers are present. Candidate-only; no automatic promotion or external effect.",
+    "Every file has a useful declared role. No duplicate filler, pseudocode, credentials, external runtime downloads or unverified benchmark claims."
+   ],
+   "files": [
+    {
+     "path": "AGENTS.md",
+     "role": "instruction_file",
+     "media_type": "text/markdown",
+     "purpose": "Focused task, exact first action, helper invocation, contract and refusal rules; this file guides but never grants permissions."
+    },
+    {
+     "path": "CLAUDE.md",
+     "role": "instruction_file",
+     "media_type": "text/markdown",
+     "purpose": "Claude Code entrypoint: one line, @AGENTS.md, importing the shared instructions, and nothing else."
+    },
+    {
+     "path": "tools/validate_focused_attempt_handoff.py",
+     "role": "executable_tool",
+     "media_type": "text/x-python",
+     "purpose": "Complete deterministic helper. Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records. Events carry contiguous sequence numbers and explicit running, failed, cancelled, candidate or accepted state. Accepted requires a validator identity and evidence digest; candidates cannot self-accept. Return a concise explicit startup briefing and validated passive state. Do not resume native conversations, create a new runtime class, grant effects or infer successful external actions from timeout. Unknown effects remain unknown. All implementations use Python3.10+ standard library only, no eval/exec, dynamic imports, network, filesystem mutation or subprocesses inside the helper. Read a maximum1MiB UTF-8 JSON request from stdin with duplicate-key and nonfinite-number refusal. Emit one bounded JSON success/refused object, stable error codes and no tracebacks. Reject booleans where integers are required. Tests may launch this exact helper in a caller-supplied sandbox. Write complete useful original contents, no placeholders or invented results. Keep examples small and independently calculable."
+    },
+    {
+     "path": "contracts/input.schema.json",
+     "role": "configuration",
+     "media_type": "application/json",
+     "purpose": "Closed JSON Schema2020-12 for the exact input contract, bounded sizes, no remote refs. It must declare \"$schema\": \"https://json-schema.org/draft/2020-12/schema\" and use only local \"#\" references."
+    },
+    {
+     "path": "contracts/output.schema.json",
+     "role": "configuration",
+     "media_type": "application/json",
+     "purpose": "Closed JSON Schema2020-12 for success/refusal and all output fields; no remote refs. It must declare \"$schema\": \"https://json-schema.org/draft/2020-12/schema\" and use only local \"#\" references."
+    },
+    {
+     "path": "examples/input.json",
+     "role": "skill_asset",
+     "media_type": "application/json",
+     "purpose": "Small valid request with an independently understandable answer."
+    },
+    {
+     "path": "examples/output.json",
+     "role": "skill_asset",
+     "media_type": "application/json",
+     "purpose": "Exact expected response to the bundled input, obtained from reasoning, not a claim that it was executed."
+    },
+    {
+     "path": "verification/acceptance.json",
+     "role": "skill_asset",
+     "media_type": "application/json",
+     "purpose": "Structured positive/negative cases with expected outputs or error codes, including supplied counterexamples."
+    },
+    {
+     "path": "tests/test_validate_focused_attempt_handoff.py",
+     "role": "executable_tool",
+     "media_type": "text/x-python",
+     "purpose": "Meaningful unittest checks using bundled fixture cases, invalid inputs and a known-wrong implementation case; do not install dependencies. Use only unittest and the standard library. Run the helper as a subprocess by its bundled path, or import it by its bare module name after adding its folder to sys.path; never import a package named tools or tests."
+    },
+    {
+     "path": "references/method.md",
+     "role": "skill_reference",
+     "media_type": "text/markdown",
+     "purpose": "Explain algorithm, conventions, bounds, first actions, known-wrong approach, and limitations. No performance or independent-review claims."
+    },
+    {
+     "path": "references/compatibility.json",
+     "role": "other",
+     "media_type": "application/json",
+     "purpose": "Passive metadata: exact intended host entrypoint, explicit/helper discovery, Python requirement, requested effects, automatic discovery limits and status candidate. Do not claim unperformed native tests."
+    }
+   ],
+   "opportunity": "Original method responding to the owner's September23 request for flexible harness directories, compiler engines, tool/context distinction, code graphs, indexes and100 useful files. The first-party source records the relevant existing boundary; it is not proof that this newly generated implementation works."
+  }
+ ]
+}

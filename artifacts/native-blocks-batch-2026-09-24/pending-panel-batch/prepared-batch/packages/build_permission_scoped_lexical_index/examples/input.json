@@ -1,0 +1,32 @@
+{
+  "mode": "query",
+  "tenant_id": "tenant-a",
+  "query_terms": ["apple", "banana"],
+  "min_distinct_matches": 1,
+  "corpus": [
+    {
+      "id": "doc-1",
+      "text": "An apple a day keeps the doctor away.",
+      "tenant_id": "tenant-a",
+      "source_hash": "hash1"
+    },
+    {
+      "id": "doc-2",
+      "text": "Banana split with apple slices.",
+      "tenant_id": "tenant-a",
+      "source_hash": "hash2"
+    },
+    {
+      "id": "doc-3",
+      "text": "Only bananas here.",
+      "tenant_id": "tenant-b",
+      "source_hash": "hash3"
+    },
+    {
+      "id": "doc-4",
+      "text": "Apple apple apple.",
+      "tenant_id": "tenant-a",
+      "source_hash": "hash4"
+    }
+  ]
+}

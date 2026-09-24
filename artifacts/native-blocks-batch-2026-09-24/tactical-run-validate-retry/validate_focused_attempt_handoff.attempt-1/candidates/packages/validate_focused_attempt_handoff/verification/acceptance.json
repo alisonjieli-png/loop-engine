@@ -1,0 +1,43 @@
+[
+  {
+    "case": "valid_handoff",
+    "input_ref": "examples/input.json",
+    "expected_status": "success"
+  },
+  {
+    "case": "sequence_gap",
+    "input": {
+      "task_id": "t1", "attempt_id": 1, "objective": "o", "first_actions": ["a"], "inputs": {}, "output_paths": [], "authority": "a",
+      "events": [{"sequence": 0, "state": "running"}, {"sequence": 2, "state": "running"}]
+    },
+    "expected_status": "refused",
+    "expected_code": "SEQUENCE_GAP"
+  },
+  {
+    "case": "duplicate_sequence",
+    "input": {
+      "task_id": "t1", "attempt_id": 1, "objective": "o", "first_actions": ["a"], "inputs": {}, "output_paths": [], "authority": "a",
+      "events": [{"sequence": 0, "state": "running"}, {"sequence": 0, "state": "running"}]
+    },
+    "expected_status": "refused",
+    "expected_code": "DUPLICATE_SEQUENCE"
+  },
+  {
+    "case": "accepted_missing_evidence",
+    "input": {
+      "task_id": "t1", "attempt_id": 1, "objective": "o", "first_actions": ["a"], "inputs": {}, "output_paths": [], "authority": "a",
+      "events": [{"sequence": 0, "state": "accepted"}]
+    },
+    "expected_status": "refused",
+    "expected_code": "INVALID_STATE"
+  },
+  {
+    "case": "boolean_instead_of_int",
+    "input": {
+      "task_id": "t1", "attempt_id": true, "objective": "o", "first_actions": ["a"], "inputs": {}, "output_paths": [], "authority": "a",
+      "events": [{"sequence": 0, "state": "running"}]
+    },
+    "expected_status": "refused",
+    "expected_code": "TYPE_MISMATCH"
+  }
+]

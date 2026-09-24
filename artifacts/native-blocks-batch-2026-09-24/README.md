@@ -95,3 +95,17 @@ because it does not report its answering model. The record does not list
 the Claude reviewer. The likely reason, inferred and not stated by the
 record, is that with every Ollama reviewer stopped fewer than three families
 remained, so no item could reach quorum.
+
+## Retry and the batch waiting for the panel
+
+- `native-profile-plan-23c063fa-validate-retry.json` and
+  `tactical-run-validate-retry/`: one Tactical call for the method whose
+  candidate the prechecks refused for invalid Python. It was admitted strictly
+  and prepared. It used 1,824 input and 5,019 output tokens, and the
+  original run folder is unchanged.
+- `merge_pending_batch.py` and `pending-panel-batch/`: the seven passing
+  candidates plus the retry, prepared once by the factory. All eight pass
+  every native precheck, with zero calls. The batch waits for the panel until
+  the Ollama weekly allowance resets.
+- `tactical-run-validate-retry-summary.json`: that call with its model,
+  usage and outcome. Tactical used 27 of 40 calls in all.

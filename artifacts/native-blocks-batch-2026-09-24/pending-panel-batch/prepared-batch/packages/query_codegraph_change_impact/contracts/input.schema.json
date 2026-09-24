@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Code Graph Change Impact Input",
+  "type": "object",
+  "properties": {
+    "symbols": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "digest": { "type": "string" },
+          "file_id": { "type": "string" }
+        },
+        "required": ["digest", "file_id"]
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "digest": { "type": "string" }
+        },
+        "required": ["digest"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": { "type": "string" }
+      }
+    },
+    "changed_symbol_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "max_nodes": { "type": "integer" },
+        "max_depth": { "type": "integer" }
+      },
+      "required": ["max_nodes", "max_depth"]
+    }
+  },
+  "required": ["symbols", "files", "edges", "changed_symbol_ids", "limits"]
+}

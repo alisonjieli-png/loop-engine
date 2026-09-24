@@ -1,0 +1,46 @@
+{
+  "test_cases": [
+    {
+      "name": "Mandatory exceeds budget",
+      "input": {
+        "budget": 10,
+        "sections": [
+          { "id": "c1", "text": "A", "cost": 6, "mandatory": true, "priority": 1, "predecessors": [] },
+          { "id": "c2", "text": "B", "cost": 5, "mandatory": true, "priority": 1, "predecessors": ["c1"] }
+        ]
+      },
+      "expected": { "status": "refused", "code": "ERR_BUDGET_EXCEEDED" }
+    },
+    {
+      "name": "Cyclic dependency",
+      "input": {
+        "budget": 100,
+        "sections": [
+          { "id": "a", "text": "A", "cost": 1, "mandatory": false, "priority": 1, "predecessors": ["b"] },
+          { "id": "b", "text": "B", "cost": 1, "mandatory": false, "priority": 1, "predecessors": ["a"] }
+        ]
+      },
+      "expected": { "status": "refused", "code": "ERR_CYCLIC_DEPENDENCY" }
+    },
+    {
+      "name": "Type mismatch (boolean for cost)",
+      "input": {
+        "budget": 100,
+        "sections": [
+          { "id": "a", "text": "A", "cost": true, "mandatory": false, "priority": 1, "predecessors": [] }
+        ]
+      },
+      "expected": { "status": "refused", "code": "ERR_TYPE_MISMATCH" }
+    },
+    {
+      "name": "Missing dependency",
+      "input": {
+        "budget": 100,
+        "sections": [
+          { "id": "a", "text": "A", "cost": 1, "mandatory": false, "priority": 1, "predecessors": ["ghost"] }
+        ]
+      },
+      "expected": { "status": "refused", "code": "ERR_MISSING_DEPENDENCY" }
+    }
+  ]
+}

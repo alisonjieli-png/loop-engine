@@ -1,0 +1,11 @@
+{
+  "intended_host_entrypoint": "plan_workspace_file_transitions",
+  "discovery_method": "explicit_helper_invocation",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": "candidate_only",
+  "status": "candidate"
+}

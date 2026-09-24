@@ -1,0 +1,28 @@
+{
+  "status": "success",
+  "selected": [
+    {
+      "id": "cost5",
+      "text": "Base setup.",
+      "byte_range": [0, 12]
+    },
+    {
+      "id": "cost6",
+      "text": "Advanced config.",
+      "byte_range": [12, 29]
+    },
+    {
+      "id": "opt1",
+      "text": "Optional extra.",
+      "byte_range": [29, 45]
+    },
+    {
+      "id": "opt2",
+      "text": "High priority extra.",
+      "byte_range": [45, 66]
+    }
+  ],
+  "omitted": [],
+  "total_units": 81,
+  "budget": 100
+}

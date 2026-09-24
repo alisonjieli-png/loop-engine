@@ -1,0 +1,15 @@
+{
+  "base": {
+    "src/main.py": "sha256-aaa",
+    "README.md": "sha256-bbb"
+  },
+  "current": {
+    "src/main.py": "sha256-aaa",
+    "README.md": "sha256-ccc"
+  },
+  "desired": {
+    "src/main.py": "sha256-ddd",
+    "README.md": "sha256-ccc",
+    "docs/api.md": "sha256-eee"
+  }
+}

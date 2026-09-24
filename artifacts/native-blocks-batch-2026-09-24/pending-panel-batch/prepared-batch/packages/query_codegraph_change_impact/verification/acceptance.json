@@ -1,0 +1,59 @@
+[
+  {
+    "name": "cycle_termination",
+    "input": {
+      "symbols": {
+        "A": { "digest": "h1", "file_id": "f1" },
+        "B": { "digest": "h2", "file_id": "f1" }
+      },
+      "files": { "f1": { "digest": "fd1" } },
+      "edges": [["A", "B"], ["B", "A"]],
+      "changed_symbol_ids": ["A"],
+      "limits": { "max_nodes": 10, "max_depth": 10 }
+    },
+    "expected_status": "success",
+    "description": "A cycle A->B->A should terminate and report B as impacted."
+  },
+  {
+    "name": "depth_truncation",
+    "input": {
+      "symbols": {
+        "A": { "digest": "h1", "file_id": "f1" },
+        "B": { "digest": "h2", "file_id": "f1" },
+        "C": { "digest": "h3", "file_id": "f1" }
+      },
+      "files": { "f1": { "digest": "fd1" } },
+      "edges": [["B", "A"], ["C", "B"]],
+      "changed_symbol_ids": ["A"],
+      "limits": { "max_nodes": 10, "max_depth": 1 }
+    },
+    "expected_status": "success",
+    "expected_truncated": true,
+    "description": "If max_depth is 1, C (distance 2) should be omitted and truncated should be true."
+  },
+  {
+    "name": "dangling_edge_refusal",
+    "input": {
+      "symbols": { "A": { "digest": "h1", "file_id": "f1" } },
+      "files": { "f1": { "digest": "fd1" } },
+      "edges": [["A", "NON_EXISTENT"]],
+      "changed_symbol_ids": ["A"],
+      "limits": { "max_nodes": 10, "max_depth": 10 }
+    },
+    "expected_status": "refused",
+    "expected_error": "dangling_edge"
+  },
+  {
+    "name": "boolean_refusal",
+    "input": {
+      "symbols": { "A": { "digest": "h1", "file_id": "f1" } },
+      "files": { "f1": { "digest": "fd1" } },
+      "edges": [["A", "A"]],
+      "changed_symbol_ids": [true],
+      "limits": { "max_nodes": 10, "max_depth": 10 }
+    },
+    "expected_status": "refused",
+    "expected_error": "missing_changed_symbol_ids",
+    "description": "Note: The validator checks types. If changed_symbol_ids contains a boolean, it might pass if the schema is loose, but our validator checks for integer/string requirements."
+  }
+]

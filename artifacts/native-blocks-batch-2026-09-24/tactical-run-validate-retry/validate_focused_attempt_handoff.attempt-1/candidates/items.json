@@ -1,0 +1,142 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "validate_focused_attempt_handoff",
+        "kind": "tool",
+        "purpose": "Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records.",
+        "digest": "be6acf4de7ed5d803cfec88fb488bfa4d6ed391c2e93bb19c7a1154af7125a63",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/instance_instructions.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 2073,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/validate_focused_attempt_handoff.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "6f9f78f4261841eee184e63d266c121729b9a2614da43f352e3ea0082997c9ae",
+            "size_bytes": 1360,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "0a771d8e2ac954a08bb5b71c202983f2085eac2bf90446b402eb6b4b6be9e61a",
+            "size_bytes": 1088,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "6039c5153a0abf2a21deed5d1ecb74a520c5fb0689ae2e918d8877638cffabb3",
+            "size_bytes": 1060,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "46143932f418e44c12f70f63ed35679e29ad07e1316f534ae33773e662cd60b3",
+            "size_bytes": 557,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "a426dae1f536af1d4640ae454bed8e4236f89965ac1edc5a15669f16f6d26ebf",
+            "size_bytes": 353,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "3ebbcf771077c8a8cbb9f6b43f98ef0a931b7addaac5b512743c9c38eca4abcd",
+            "size_bytes": 281,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "d632cb073e293918a7e1e2b470ceaf8ef6caa8d040c106537b5eb18b101da66e",
+            "size_bytes": 1189,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_validate_focused_attempt_handoff.py",
+            "digest": "d7fa39f0889b1d60801e467b373882825c7ae316833a70190215d6a4b1ab9fdd",
+            "size_bytes": 4181,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/validate_focused_attempt_handoff.py",
+            "digest": "d5e7ae540d4c2da10582c47890868168812032131af95ac6571d91e87e39836d",
+            "size_bytes": 4781,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "9f6ac581d32b42534f75220502d04f9634fce103f84f1d4f5a6096eb8f0b64b0",
+            "size_bytes": 1497,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_root": "packages/validate_focused_attempt_handoff",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

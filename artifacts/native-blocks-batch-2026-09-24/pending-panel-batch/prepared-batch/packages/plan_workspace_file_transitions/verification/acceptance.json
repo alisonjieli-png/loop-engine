@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Conflict: base=A, current=B, desired=C",
+    "input": {
+      "base": {"f.txt": "A"},
+      "current": {"f.txt": "B"},
+      "desired": {"f.txt": "C"}
+    },
+    "expected_op": "conflict",
+    "expected_digest": "A"
+  },
+  {
+    "name": "Update: base=A, current=A, desired=C",
+    "input": {
+      "base": {"f.txt": "A"},
+      "current": {"f.txt": "A"},
+      "desired": {"f.txt": "C"}
+    },
+    "expected_op": "update",
+    "expected_digest": "A"
+  },
+  {
+    "name": "Conflict: base=null, current=B, desired=C",
+    "input": {
+      "base": {},
+      "current": {"f.txt": "B"},
+      "desired": {"f.txt": "C"}
+    },
+    "expected_op": "conflict",
+    "expected_digest": null
+  },
+  {
+    "name": "Noop: base=A, current=B, desired=B",
+    "input": {
+      "base": {"f.txt": "A"},
+      "current": {"f.txt": "B"},
+      "desired": {"f.txt": "B"}
+    },
+    "expected_op": "noop",
+    "expected_digest": "B"
+  },
+  {
+    "name": "Noop: current=desired even if base differs",
+    "input": {
+      "base": {"f.txt": "A"},
+      "current": {"f.txt": "B"},
+      "desired": {"f.txt": "B"}
+    },
+    "expected_op": "noop",
+    "expected_digest": "B"
+  }
+]
