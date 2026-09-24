@@ -32,7 +32,7 @@ from licensed_import.licensing import decide_package
 from licensed_import.packaging import PackageRefused, build_candidate, fetch_identity
 from licensed_import.records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PLUGIN_MANIFEST, PROTOCOL_SERVER,
-    RULES, SKILL, SUBAGENT)
+    RULES, SETTINGS, SKILL, SUBAGENT)
 
 TREE = ["LICENSE", "README.md", "AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md",
         "skills/pdf/SKILL.md", "skills/pdf/scripts/extract.py", "skills/pdf/references/api.md",
@@ -41,6 +41,7 @@ TREE = ["LICENSE", "README.md", "AGENTS.md", "CLAUDE.md", ".github/copilot-instr
         "plugins/review/skills/lint/SKILL.md", ".claude/agents/planner.md", ".claude/commands/deploy.md",
         ".cursor/rules/python.mdc", "prompts/tests.prompt.md", "agents/security.agent.md", ".mcp.json",
         ".claude-plugin/marketplace.json", ".opencode/tool/lookup.ts", "node_modules/x/SKILL.md",
+        ".claude/settings.json", ".claude/settings.local.json", ".codex/config.toml",
         "tests/fixtures/y/SKILL.md", "schemas/a.json", "docs/agents/notes.md"]
 
 
@@ -63,14 +64,15 @@ class ClassificationChecks(unittest.TestCase):
                     ".claude/commands/deploy.md": COMMAND, ".cursor/rules/python.mdc": RULES,
                     "prompts/tests.prompt.md": COMMAND, "agents/security.agent.md": SUBAGENT,
                     ".mcp.json": PROTOCOL_SERVER, ".claude-plugin/marketplace.json": MARKETPLACE,
-                    ".opencode/tool/lookup.ts": CODE_MODULE}
+                    ".opencode/tool/lookup.ts": CODE_MODULE, ".claude/settings.json": SETTINGS,
+                    ".codex/config.toml": SETTINGS}
         for primary, kind in expected.items():
             self.assertIn(primary, self.by_primary, primary)
             self.assertEqual(self.by_primary[primary].kind, kind, primary)
 
     def test_vendored_fixture_and_unrelated_files_are_not_packages(self):
         for path in ("node_modules/x/SKILL.md", "tests/fixtures/y/SKILL.md", "docs/agents/notes.md", "README.md",
-                     "schemas/a.json", "LICENSE"):
+                     "schemas/a.json", "LICENSE", ".claude/settings.local.json"):
             self.assertNotIn(path, self.by_primary, path)
 
     def test_a_nested_skill_is_its_own_package(self):

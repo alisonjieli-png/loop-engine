@@ -45,7 +45,7 @@ from loop_engine.core.library_ingestion.skill_rendering import parse_rule, parse
 from loop_engine.core.facets import EFFECTS
 from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES
 
-from .records import HOOK, PROTOCOL_SERVER
+from .records import HOOK, PROTOCOL_SERVER, SETTINGS
 
 _CODE_SUFFIXES = frozenset({".py", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".sh", ".bash", ".zsh", ".rb", ".pl",
                             ".ps1", ".go", ".rs", ".php", ".lua"})
@@ -115,6 +115,9 @@ def package_cautions(kind: str, files: dict) -> list:
     found = []
     if kind == HOOK:
         found.append({"rule": "runs_on_harness_event", "severity": CAUTION, "line": 0,
+                      "engine_id": IMPORT_RULES_ENGINE, "path": ""})
+    if kind == SETTINGS:
+        found.append({"rule": "changes_harness_settings", "severity": CAUTION, "line": 0,
                       "engine_id": IMPORT_RULES_ENGINE, "path": ""})
     if kind == PROTOCOL_SERVER:
         for path, data in files.items():
@@ -283,6 +286,11 @@ def package_effects(kind: str, files: dict, roles: dict) -> tuple:
             found.setdefault("spawns_process", f"holds_an_executable_file {PurePosixPath(path).name}")
     if kind == HOOK:
         found.setdefault("spawns_process", "a_hook_runs_commands_on_harness_events")
+    if kind == SETTINGS:
+        # Settings can add hooks, protocol servers and permissions, so they declare the widest
+        # effects on purpose: a step without those authorities is never offered them.
+        found.setdefault("spawns_process", "harness_settings_can_start_hooks_and_servers")
+        found.setdefault("network", "harness_settings_can_connect_servers")
     if kind == PROTOCOL_SERVER:
         for data in files.values():
             for server in _servers(data):

@@ -45,7 +45,8 @@ from .checks import blocking_rules, package_cautions, package_effects
 from .dedup import BATCH, DuplicateIndex, Subject, owner_of
 from .discovery import SOURCE_PRIORITY
 from .github_api import MAXIMUM_BATCH, ReadRefused, metadata_query
-from .harness_kinds import BLOB_TYPE, SourceScope, ancestors_licence_paths, file_role, licence_paths, plan_packages
+from .harness_kinds import (
+    BLOB_TYPE, SourceScope, ancestors_licence_paths, file_role, licence_only, licence_paths, plan_packages)
 from .licensing import decide_package
 from .packaging import PackageRefused, build_candidate, comparison_text, fetch_identity
 from .records import (
@@ -357,7 +358,10 @@ class SyncRound:
             outcome.state = EMPTY_STATE
             return
         oids = {entry.path: entry.oid for entry in snapshot.entries if entry.object_type == BLOB_TYPE}
-        licence_index = licence_paths(snapshot.entries)
+        # A package's primary file is harness material even when its name looks like a licence
+        # file (a command named license-check.md), so it never governs its neighbours.
+        primaries = {package.primary for package in package_plans if not licence_only(package.primary)}
+        licence_index = {path: oid for path, oid in licence_paths(snapshot.entries).items() if path not in primaries}
         wanted = set()
         for package in package_plans:
             if not package.problems:
@@ -372,6 +376,12 @@ class SyncRound:
         fetch_digest, request_digest = fetch_identity(engine.engine_id, repository, snapshot.commit)
         ready = {}
         for package in package_plans:
+            if licence_only(package.primary):
+                # A unit that is only a licence text is no material to copy; its text still
+                # governs the files beside it through the licence gate.
+                outcome.refusals.append(refusal("package", "unit_is_only_a_licence_file", repository=repository,
+                                                revision=snapshot.commit, path=package.primary, source_ids=plan.sources))
+                continue
             if package.problems:
                 outcome.refusals.append(refusal("package", package.problems[0], repository=repository,
                                                 revision=snapshot.commit, path=package.primary, source_ids=plan.sources))

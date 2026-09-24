@@ -237,6 +237,18 @@ class SyncChecks(unittest.TestCase):
         self.assertNotIn("k3", resolution.kept)
         self.assertEqual(len(resolution.kept), 6)
 
+    def test_a_unit_that_is_only_a_licence_text_is_skipped_with_its_reason(self):
+        repositories = {**REPOSITORIES, "acme/tools": {**REPOSITORIES["acme/tools"], "files": {
+            **REPOSITORIES["acme/tools"]["files"], ".claude/commands/LICENSE.md": support.MIT.encode(),
+            ".claude/commands/license-check.md": b"Check every dependency licence before a release is cut.\n"}}}
+        _engine, _sync, outcomes, resolution, candidates, _written, _plans = self._round("licence", repositories, LICENCES)
+        reasons = [row for outcome in outcomes for row in outcome.refusals if row["reason"] == "unit_is_only_a_licence_file"]
+        self.assertEqual([row["path"] for row in reasons], [".claude/commands/LICENSE.md"])
+        names = {candidates[key]["name"] for key in resolution.kept}
+        self.assertIn("license-check", names)
+        skill = next(candidates[key] for key in resolution.kept if candidates[key]["name"] == "join-check")
+        self.assertIn("LICENSE", {entry["path"] for entry in skill["package"]["files"]})
+
     def test_one_repository_failing_unexpectedly_never_stops_the_round(self):
         from unittest import mock
         from licensed_import import sync as sync_module
@@ -290,6 +302,10 @@ class SyncChecks(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             review_export.export(kept, reader, self.folder / "export", code_revision="a" * 40, first_source=first,
                                  summary={})
+        earlier = review_export.exported_record_ids([self.folder / "export"])
+        self.assertEqual(earlier, {payload["record_id"] for payload in kept})
+        rest = [payload for payload in payloads if payload["record_id"] not in earlier]
+        self.assertEqual(rest, [])
 
     def test_resolved_metadata_is_cached_and_not_read_again(self):
         repositories = {f"o/r{index}": {"commit": "1" * 40, "licence": "MIT"} for index in range(3)}

@@ -43,7 +43,7 @@ from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
 from .checks import blocking_rules
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PLUGIN_MANIFEST, PROTOCOL_SERVER,
-    RULES, SKILL, SUBAGENT, refusal)
+    RULES, SETTINGS, SKILL, SUBAGENT, refusal)
 
 ITEMS_RECORD_TYPE = "starter_catalogue_candidate_items/v3"
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v3"
@@ -60,7 +60,8 @@ POPULATION_SIZE = 50
 #: The panel's item kinds; the harness file kind stays on the specification and in the tags.
 REFERENCE_KINDS = {SKILL: "skill", INSTRUCTION_FILE: "instruction_file", RULES: "instruction_file",
                    SUBAGENT: "instruction_file", COMMAND: "instruction_file", HOOK: "tool", PLUGIN_MANIFEST: "tool",
-                   MARKETPLACE: "tool", PROTOCOL_SERVER: "tool", CONTRACT_SCHEMA: "tool", CODE_MODULE: "reusable_code"}
+                   MARKETPLACE: "tool", PROTOCOL_SERVER: "tool", CONTRACT_SCHEMA: "tool", CODE_MODULE: "reusable_code",
+                   SETTINGS: "tool"}
 _IDENTITY = re.compile(r"[^a-z0-9]+")
 
 
@@ -139,6 +140,16 @@ def scan_selection(chosen, body_reader, checks, *, target: int, scan_workers: in
         if len(kept) >= target:
             break
     return kept, refused
+
+
+def exported_record_ids(folders) -> set:
+    """Store record identities already handed to review in earlier export folders."""
+    found = set()
+    for folder in folders:
+        for path in sorted(Path(folder).glob("specifications-[0-9][0-9][0-9].json")):
+            for spec in json.loads(path.read_text(encoding="utf-8"))["specifications"]:
+                found.add(spec["provenance"]["store_record_id"])
+    return found
 
 
 def _reference(identity: str, payload: dict, package: CataloguePackage) -> dict:

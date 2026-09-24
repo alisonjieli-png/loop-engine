@@ -244,6 +244,9 @@ def export_review(args) -> dict:
     try:
         payloads = [row["payload"] for row in store.records.query(
             IntelligenceQuery(namespaces=(NAMESPACE,), lifecycle=("candidate",)))]
+        earlier = review_export.exported_record_ids(args.exclude_export or ())
+        stored = len(payloads)
+        payloads = [payload for payload in payloads if payload["record_id"] not in earlier]
         sizes = {entry["digest"]: entry["size_bytes"] for payload in payloads for entry in payload["package"]["files"]}
         reader = lambda digest: store.bodies.read(digest, sizes[digest])  # noqa: E731
         first_source = {}
@@ -264,7 +267,9 @@ def export_review(args) -> dict:
         started = time.monotonic()
         kept, refused = review_export.scan_selection(chosen, reader, checks, target=args.target,
                                                      scan_workers=args.scan_workers)
-        summary = {"stored_candidates": len(payloads), "limit": args.limit, "target": args.target,
+        summary = {"stored_candidates": stored, "already_exported": len(earlier),
+                   "earlier_exports": sorted(Path(folder).name for folder in args.exclude_export or ()),
+                   "limit": args.limit, "target": args.target,
                    "per_repository": args.per_repository, "selected": len(chosen),
                    "not_selected": dict(skipped), "scanned": len(chosen) if checks else 0,
                    "scan_seconds": round(time.monotonic() - started, 1),
@@ -330,6 +335,7 @@ def parser() -> argparse.ArgumentParser:
     four.add_argument("--target", type=int, default=2000)
     four.add_argument("--per-repository", type=int, default=15)
     four.add_argument("--work-folder", default="")
+    four.add_argument("--exclude-export", action="append", help="an earlier export folder whose items are skipped")
     four.add_argument("--scan-workers", type=int, default=8)
     four.add_argument("--skillspector-program")
     four.add_argument("--cisco-scanner-program")

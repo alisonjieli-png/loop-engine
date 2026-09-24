@@ -48,8 +48,9 @@ MARKETPLACE = "marketplace"
 PROTOCOL_SERVER = "protocol_server_configuration"
 CONTRACT_SCHEMA = "contract_schema"
 CODE_MODULE = "code_module"
+SETTINGS = "harness_settings"
 PACKAGE_KINDS = (SKILL, INSTRUCTION_FILE, RULES, SUBAGENT, COMMAND, HOOK, PLUGIN_MANIFEST, MARKETPLACE,
-                 PROTOCOL_SERVER, CONTRACT_SCHEMA, CODE_MODULE)
+                 PROTOCOL_SERVER, CONTRACT_SCHEMA, CODE_MODULE, SETTINGS)
 
 #: The catalogue layer each kind's record is written under: instructions for a model are
 #: Context Intelligence, and anything a harness runs or connects to is Code Intelligence.
@@ -57,7 +58,7 @@ CONTEXT_LAYER, CODE_LAYER = "context", "code"
 KIND_LAYERS = {SKILL: CONTEXT_LAYER, INSTRUCTION_FILE: CONTEXT_LAYER, RULES: CONTEXT_LAYER,
                SUBAGENT: CONTEXT_LAYER, COMMAND: CONTEXT_LAYER, HOOK: CODE_LAYER, PLUGIN_MANIFEST: CODE_LAYER,
                MARKETPLACE: CODE_LAYER, PROTOCOL_SERVER: CODE_LAYER, CONTRACT_SCHEMA: CODE_LAYER,
-               CODE_MODULE: CODE_LAYER}
+               CODE_MODULE: CODE_LAYER, SETTINGS: CODE_LAYER}
 
 #: What a file inside a package came from.
 UPSTREAM_FILE, LICENCE_TEXT, ATTRIBUTION_FILE = "upstream", "licence_text", "attribution"
@@ -87,7 +88,8 @@ REASONS = {
                  "repository_declared_excluded", "repository_job_failed"),
     PACKAGE: ("package_path_invalid", "package_too_many_files", "package_too_large", "file_above_fetch_limit",
               "file_bytes_mismatch", "symbolic_link_in_package", "submodule_in_package", "empty_package",
-              "primary_file_not_text", "primary_file_too_short", "manifest_not_json"),
+              "primary_file_not_text", "primary_file_too_short", "manifest_not_json",
+              "unit_is_only_a_licence_file"),
     LICENCE: ("licence_prohibits_derivatives", "licence_binds_to_outside_terms",
               "file_level_notice_prohibits_derivatives", "file_level_notice_binds_to_outside_terms"),
     CHECK: ("blocked_by_static_check",),

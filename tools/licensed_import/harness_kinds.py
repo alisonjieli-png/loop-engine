@@ -17,6 +17,7 @@ Package kinds, each found by its native path
 ├── plugin_manifest: .claude-plugin/plugin.json, .codex-plugin/plugin.json, gemini-extension.json
 ├── marketplace: .claude-plugin/marketplace.json, .agents/plugins/marketplace.json
 ├── protocol_server_configuration: .mcp.json, .vscode/mcp.json, .cursor/mcp.json
+├── harness_settings: .claude/settings.json, .gemini/settings.json, .codex/config.toml, opencode.json
 ├── contract_schema: JSON schemas, only where a source declares them
 └── code_module: a module with its tests, only where a source declares them
 ```
@@ -44,7 +45,7 @@ from loop_engine.core.service_runtime.catalogue_packages import MAXIMUM_PACKAGE_
 
 from .records import (
     CODE_MODULE, COMMAND, CONTRACT_SCHEMA, HOOK, INSTRUCTION_FILE, MARKETPLACE, PACKAGE_KINDS,
-    PLUGIN_MANIFEST, PROTOCOL_SERVER, RULES, SKILL, SUBAGENT)
+    PLUGIN_MANIFEST, PROTOCOL_SERVER, RULES, SETTINGS, SKILL, SUBAGENT)
 
 #: Git tree modes and object types that are never a file with bytes to copy.
 BLOB_TYPE, TREE_TYPE, COMMIT_TYPE = "blob", "tree", "commit"
@@ -55,7 +56,7 @@ EXCLUDED_SEGMENTS = frozenset({"node_modules", "vendor", ".venv", "venv", "site-
                                ".next", "target", ".tox", ".cache"})
 #: Kinds imported unless a source narrows them; schemas and code modules only where declared.
 DEFAULT_KINDS = (SKILL, INSTRUCTION_FILE, RULES, SUBAGENT, COMMAND, HOOK, PLUGIN_MANIFEST, MARKETPLACE,
-                 PROTOCOL_SERVER, CODE_MODULE)
+                 PROTOCOL_SERVER, CODE_MODULE, SETTINGS)
 #: The subfolders of a skill that sits at a repository root; the rest of the root is the repository's.
 ROOT_SKILL_FOLDERS = ("scripts", "references", "assets", "templates", "examples", "resources", "reference")
 
@@ -68,6 +69,10 @@ _COMMAND_FOLDERS = ((".claude", "commands"), (".opencode", "command"), (".openco
 _PLUGIN_MANIFESTS = ((".claude-plugin", "plugin.json"), (".codex-plugin", "plugin.json"))
 _MARKETPLACES = ((".claude-plugin", "marketplace.json"), (".agents", "plugins", "marketplace.json"))
 _PROTOCOL_FILES = ((".vscode", "mcp.json"), (".cursor", "mcp.json"))
+#: Shared project settings a harness reads; a personal settings.local.json is never imported.
+_SETTINGS_FILES = {(".claude", "settings.json"): "claude_settings", (".gemini", "settings.json"): "gemini_settings",
+                   (".codex", "config.toml"): "codex_config"}
+_OPENCODE_SETTINGS = ("opencode.json", "opencode.jsonc")
 _TOOL_FOLDERS = ((".opencode", "tool"), (".opencode", "tools"))
 _PLUGIN_CODE_FOLDERS = ((".opencode", "plugin"), (".opencode", "plugins"))
 _SCRIPT_SUFFIXES = (".sh", ".py", ".js", ".mjs", ".ts")
@@ -137,6 +142,19 @@ class SourceScope:
 
 def _parts(path: str) -> tuple:
     return tuple(PurePosixPath(path).parts)
+
+
+#: File names that are a licence or notice text and nothing else. A name such as license-check.md
+#: also matches the licence file pattern, but it is a command about licences, so only these exact
+#: names mark a unit that holds nothing but a licence text.
+_LICENCE_ONLY_NAMES = frozenset({"license", "licence", "license.md", "licence.md", "license.txt", "licence.txt",
+                                 "license.rst", "copying", "copying.md", "copying.txt", "unlicense", "unlicense.md",
+                                 "unlicense.txt", "notice", "notice.md", "notice.txt"})
+
+
+def licence_only(path: str) -> bool:
+    """True for a file that is only a licence or notice text by its exact name."""
+    return PurePosixPath(path).name.lower() in _LICENCE_ONLY_NAMES
 
 
 def excluded(path: str) -> bool:
@@ -237,6 +255,11 @@ def classify(path: str, roots: dict) -> "tuple | None":
         return PROTOCOL_SERVER, "protocol_server_configuration"
     if _ends_with(path, (".cursor", "hooks.json")):
         return HOOK, "cursor_hooks"
+    for tail, native in _SETTINGS_FILES.items():
+        if _ends_with(path, tail):
+            return SETTINGS, native
+    if lower in _OPENCODE_SETTINGS:
+        return SETTINGS, "opencode_config"
     if lower.endswith(_SCRIPT_SUFFIXES) and _under(path, (".claude", "hooks")):
         return HOOK, "claude_hook_script"
     if lower.endswith((".ts", ".js", ".mjs")) and any(_under(path, folder) for folder in _TOOL_FOLDERS):
@@ -370,7 +393,7 @@ def plan_packages(entries, scope: SourceScope = SourceScope(), repository: str =
             root = path
             members = [path]
             stem = item_stem(path)
-            if kind == INSTRUCTION_FILE or kind == PLUGIN_MANIFEST or kind == MARKETPLACE or kind == PROTOCOL_SERVER:
+            if kind in (INSTRUCTION_FILE, PLUGIN_MANIFEST, MARKETPLACE, PROTOCOL_SERVER, SETTINGS):
                 parent = PurePosixPath(path).parent
                 while parent.name.startswith(".") and str(parent) != ".":
                     parent = parent.parent
@@ -447,6 +470,8 @@ def file_role(kind: str, package_root: str, path: str) -> str:
         return "protocol_server_configuration"
     if kind == CODE_MODULE:
         return "executable_tool" if suffix in _CODE_SUFFIXES else "other"
+    if kind == SETTINGS:
+        return "configuration"
     return "other"
 
 
@@ -492,6 +517,10 @@ _NATIVE_PLACEMENTS = {
     "gemini_command": (("gemini-cli", ".gemini/commands/{name}.toml"),),
     "cursor_hooks": (("cursor", ".cursor/hooks.json"),),
     "claude_hook_script": (("claude-code", ".claude/hooks/{name}"),),
+    "claude_settings": (("claude-code", ".claude/settings.json"),),
+    "gemini_settings": (("gemini-cli", ".gemini/settings.json"),),
+    "codex_config": (("codex", ".codex/config.toml"),),
+    "opencode_config": (("opencode", "opencode.json"),),
     "opencode_tool": (("opencode", ".opencode/tool/{name}"),),
     "opencode_plugin": (("opencode", ".opencode/plugin/{name}"),),
 }
