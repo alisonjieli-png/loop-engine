@@ -9,6 +9,10 @@ and ``tools/build_host_catalogue_manifest.py`` read: ``items.json``
 (``starter_catalogue_independent_review/v2``), the bodies and an attribute
 schema that declares the tier.
 
+When scan records are given (``--scan-record``, written by a package safety
+scanner such as SkillSpector in static mode), every item needs a passing result
+there too, bound to its package digest.
+
 The tier follows the "Library tiers" row of the decision table in AGENTS.md:
 
 - ``verified``: at least two named reviewers from distinct families, none of
@@ -160,6 +164,14 @@ def write(options) -> dict:
         ledgers.append((Path(path).name, ledger, {(row["run_id"], row["sequence"]): row
                                                   for row in ledger.calls() + ledger.batch_calls()}))
     rows, items, bodies, left_out = [], [], {}, []
+    scans = None
+    if options.scan_record:
+        scans = {}
+        for path in options.scan_record:
+            record = _json(Path(path))
+            if record.get("record_type") != "package_safety_scan/v1":
+                refuse("scan_record_unsupported", "a scan record is package_safety_scan/v1")
+            scans.update(record["packages"])
     for identity in catalogue.identities():
         request = catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
         producer = request.producer
@@ -175,6 +187,15 @@ def write(options) -> dict:
         if prechecks.refused:
             left_out.append({"identity": identity, "reason": "refused by a pre-check: " + ", ".join(prechecks.reasons)})
             continue
+        if scans is not None:
+            scan = scans.get(reference["digest"])
+            if scan is None:
+                left_out.append({"identity": identity, "reason": "the declared safety scanner has no result for it"})
+                continue
+            if scan["refused"]:
+                left_out.append({"identity": identity, "reason": "refused by the safety scanner: "
+                                                                 + ", ".join(scan["refusals"])})
+                continue
         decisions, missing, scripted = [], [], False
         for reviewer in reviewers:
             found = verdicts_for(ledgers, reviewer, request, instructions)
@@ -302,6 +323,8 @@ def main(argv=None) -> int:
     parser.add_argument("--tier", required=True, choices=TIERS)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--recorded-at", required=True)
+    parser.add_argument("--scan-record", action="append", default=[],
+                        help="A package safety scan record; when given, every item needs a passing result in one.")
     parser.add_argument("--allow-fixture", action="store_true", help=argparse.SUPPRESS)
     options = parser.parse_args(argv)
     try:

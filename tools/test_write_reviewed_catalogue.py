@@ -133,12 +133,24 @@ class WriterTest(unittest.TestCase):
                                       fixture_run=True, collect_below_quorum_reason="one family in this check"))
         return folder
 
-    def write(self, folder, *, allow_fixture=True, output=None):
+    def write(self, folder, *, allow_fixture=True, output=None, scan_record=()):
         options = argparse.Namespace(repository=ROOT, panel=self.root / "panel.json", catalogue=folder,
                                      ledger=[str(self.root / "ledger.jsonl")], reviewer=["fixture.reviewer"],
                                      tier="community", output=output or self.root / "reviewed",
-                                     recorded_at="2026-09-24", allow_fixture=allow_fixture)
+                                     recorded_at="2026-09-24", allow_fixture=allow_fixture,
+                                     scan_record=list(scan_record))
         return writer.write(options)
+
+    def test_a_refusing_or_missing_safety_scan_leaves_the_item_out(self):
+        folder = self.review()
+        digest = json.loads((folder / "items.json").read_text())["items"][0]["reference"]["digest"]
+        for packages in ({digest: {"identity": "check_a_sum", "refused": True, "refusals": ["skillspector_issue"],
+                                   "notes": []}}, {}):
+            with self.subTest(packages=bool(packages)):
+                path = self.root / "scan.json"
+                path.write_text(json.dumps({"record_type": "package_safety_scan/v1", "packages": packages}))
+                with self.assertRaisesRegex(writer.WriterError, "no_judged_items"):
+                    self.write(folder, scan_record=[str(path)])
 
     def test_a_community_approval_is_written_and_the_bundle_builder_carries_its_tier(self):
         summary = self.write(self.review())
