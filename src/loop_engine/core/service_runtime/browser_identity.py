@@ -182,7 +182,9 @@ class BrowserIdentityAdapter:
                 "project_url": self.configuration.project_url, "publishable_key": self._publishable_key(),
                 "registration_enabled": self.configuration.registration_enabled,
                 "email_signup_enabled": self.configuration.email_signup_enabled,
-                "passwords_owned_by": "configured_identity_provider", "session_persistence": "page_memory",
+                # The website keeps an email sign-in for the life of the browser tab, in its session storage, once the
+                # account has opened; the refresh token is never kept (web_assets/service.js, September 24, 2026).
+                "passwords_owned_by": "configured_identity_provider", "session_persistence": "browser_tab",
                 "model_keys_requested": False}
 
     def _identity(self, credential):

@@ -11,7 +11,7 @@
 
    The page script, service.js, chooses the view from the address. It calls show() whenever the Documentation view opens
    or its address changes, and this file calls show() once when it loads. A link inside this view moves through the site's
-   own history, so a signed-in page keeps its sign-in, which lives only in the memory of the page. */
+   own history, so a signed-in page keeps its sign-in without loading the page again. */
 window.BaltorDocumentation = (() => {
   const INDEX_ADDRESS = "/assets/documentation-index.json", INDEX_VERSION = "website_documentation_index/v1";
   const HOME = "/docs", PAGE_PREFIX = "/docs/";

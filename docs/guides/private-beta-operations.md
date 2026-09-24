@@ -667,8 +667,10 @@ identity provider with disposable accounts that had a password, while account
 creation was open. Nobody has observed them with an invited person, and
 nobody has observed step 3 against a service with account creation closed.
 
-The browser keeps the session in page memory only. A reload signs the person
-out, and the sign-in token lasts one hour.
+Since September 24, 2026 the browser keeps an email sign-in for the life of
+the tab, in the tab's session storage, so a reload keeps the person signed in.
+Closing the tab or signing out ends it. The sign-in token still lasts one
+hour, and the page keeps no refresh token.
 
 ## Reissue a link
 

@@ -973,6 +973,23 @@ was changed." The browser checks
 `a_password_set_without_an_open_account_says_so_and_offers_sign_in` hold the
 activation request back to reproduce a slow connection.
 
+An email sign-in lasts as long as the browser tab. Once the service has opened
+the account, the page keeps the identity provider's access token and its
+expiry, and nothing else, in the tab's session storage under
+`baltor.identity-session`, and opens the account again after a reload or an
+address typed in the same tab, on the page asked for. Signing out, a refused
+session or another sign-in removes it. No refresh token is kept, so a kept
+sign-in ends when its access token expires. A confirmation's session is kept
+only after its new password is set and the account opened, and a page opened
+by a confirmation link starts from the link instead of a kept sign-in. The
+browser checks `the_kept_sign_in_holds_the_access_token_and_its_expiry_alone`,
+`a_reload_and_a_typed_address_keep_an_email_sign_in`,
+`signing_out_forgets_the_kept_sign_in`,
+`a_page_opened_by_a_confirmation_link_starts_from_the_link`,
+`a_confirmation_whose_password_is_not_set_is_never_kept`,
+`a_service_token_is_never_kept` and
+`a_reload_keeps_the_administration_link_and_view_for_staff` hold these rules.
+
 Sign-up is email first. `service_account_signup_request/v2` carries the
 address alone, and the retired version 1, which carried a caller's password,
 is refused. The provider's interface needs a password to create a user, so

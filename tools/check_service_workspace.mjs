@@ -2359,7 +2359,10 @@ try {
   const personalToken=await page.inputValue("#client-issued-token");secrets.push(personalToken);
   const personalSession=await page.request.get(fixture.account_base+"/api/v1/session",{headers:{Authorization:"Bearer "+personalToken}});
   check("customer_dashboard_creates_real_personal_access",personalSession.status()===200&&(await personalSession.json()).result.principal.tenant_id.startsWith("browser-customers."));
-  check("customer_token_secret_stays_out_of_text_and_browser_storage",!(await page.locator("body").innerText()).includes(personalToken)&&await page.evaluate(()=>localStorage.length===0&&sessionStorage.length===0));
+  /* Since September 24, 2026 the tab keeps the email sign-in, under one key that holds the identity provider's access token and its
+     expiry. The client token the account page just created is in no storage at all. */
+  check("customer_token_secret_stays_out_of_text_and_browser_storage",!(await page.locator("body").innerText()).includes(personalToken)&&await page.evaluate(token=>localStorage.length===0
+    &&Object.keys(sessionStorage).every(key=>key==="baltor.identity-session")&&!Object.values(sessionStorage).some(value=>value.includes(token))&&document.cookie==="",personalToken));
   check("customer_token_cannot_manage_more_credentials",(await page.request.get(fixture.account_base+"/api/v1/account/access",{headers:{Authorization:"Bearer "+personalToken}})).status()===403);
   await page.click("#clear-client-token");check("customer_can_clear_the_one_time_secret",await page.inputValue("#client-issued-token")==="");
   page.once("dialog",dialog=>dialog.accept());await page.getByRole("button",{name:"Revoke My laptop",exact:true}).click();
@@ -2686,6 +2689,87 @@ try {
         &&about.includes("Anyone can create an account on Get started."),{facts});
     }else note("no_page_offers_account_creation_while_registration_is_closed",wrong.length===0&&facts&&security.includes("This service is not taking new accounts right now."),{wrong,facts});
   };
+  /* Fix 5 of the persona journeys of September 24, 2026: a reload or an address typed in the same tab signed the person out,
+     because the sign-in lived only in the memory of the page. An email sign-in now lasts as long as the tab: once the service has
+     opened the account, the identity provider's access token and its expiry, and nothing else, are kept in the tab's session
+     storage. Signing out forgets it, a service token is never kept, a confirmation whose password is not set yet is never kept, a
+     page opened by a confirmation link starts from the link, and a staff member's Administration link and view come back. The
+     readers return key and field names only, never a stored value. */
+  const keptKey="baltor.identity-session";
+  const keptFacts=target=>target.evaluate(key=>{let kept=null;try{kept=JSON.parse(sessionStorage.getItem(key)||"null");}catch(_){kept="unreadable";}
+    return {keys:Object.keys(sessionStorage),local:localStorage.length,cookie:document.cookie,fields:kept&&typeof kept==="object"?Object.keys(kept).sort():[],
+      connected:document.getElementById("connection-state")?.textContent||"",path:location.pathname,account:document.getElementById("header-account")?.hidden===false,
+      signIn:document.querySelector("header .nav-sign-in")?.hidden===false,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view)};},keptKey);
+  const waitConnected=(target,want="Connected")=>target.waitForFunction(want=>document.getElementById("connection-state")?.textContent===want,want,{timeout:10000}).catch(()=>{});
+  const settled=target=>target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
+  const confirmedAccount=async (target,password)=>{
+    const address=journeyAddress("kept");
+    const asked=await target.request.post(fixture.confirm_base+"/api/v1/account/signup",{data:{record_type:"service_account_signup_request/v2",email:address}});
+    const link=asked.status()===202?await newestLink(target,address):"";
+    if(link){await target.goto(link);await target.waitForFunction(()=>document.getElementById("confirm-button")?.disabled===false,null,{timeout:10000}).catch(()=>{});
+      await target.fill("#confirm-password",password);await target.fill("#confirm-password-again",password);await target.click("#confirm-button");
+      await waitConnected(target);await target.waitForFunction(()=>location.pathname!=="/auth/confirm",null,{timeout:5000}).catch(()=>{});}
+    return {address,link};
+  };
+  const keptSignIn=async (target,note)=>{
+    await confirmedAccount(target,"kept-owner-"+randomBytes(8).toString("hex"));
+    const opened=await keptFacts(target);
+    note("the_kept_sign_in_holds_the_access_token_and_its_expiry_alone",opened.connected==="Connected"&&JSON.stringify(opened.keys)===JSON.stringify([keptKey])
+      &&JSON.stringify(opened.fields)===JSON.stringify(["access_token","expires_at"])&&opened.local===0&&opened.cookie==="",{opened});
+    await target.evaluate(()=>{history.pushState({},"","/setup");dispatchEvent(new PopStateEvent("popstate"));});
+    await target.reload();await settled(target);await waitConnected(target);await target.waitForTimeout(200);
+    const reloaded=await keptFacts(target);
+    await target.goto(fixture.confirm_base+"/account");await settled(target);await waitConnected(target);await target.waitForTimeout(200);
+    const typed=await keptFacts(target);
+    const signedIn=(facts,path,view)=>facts.connected==="Connected"&&facts.path===path&&JSON.stringify(facts.views)===JSON.stringify([view])&&facts.account&&!facts.signIn&&JSON.stringify(facts.keys)===JSON.stringify([keptKey]);
+    note("a_reload_and_a_typed_address_keep_an_email_sign_in",signedIn(reloaded,"/setup","setup")&&signedIn(typed,"/account","account"),{reloaded,typed});
+    if(await target.locator("#header-sign-out").isVisible()){await signOutFromHeader(target);await waitConnected(target,"Not connected");}
+    const signedOut=await keptFacts(target);
+    await target.reload();await settled(target);await target.waitForTimeout(800);
+    const afterSignOut=await keptFacts(target);
+    note("signing_out_forgets_the_kept_sign_in",signedOut.keys.length===0&&afterSignOut.keys.length===0&&afterSignOut.connected==="Not connected"&&!afterSignOut.account&&afterSignOut.signIn,{signedOut,afterSignOut});
+    /* A page opened by a confirmation link starts from the link, even in a tab that keeps a sign-in. */
+    await confirmedAccount(target,"kept-other-"+randomBytes(8).toString("hex"));
+    const address=journeyAddress("link");
+    const asked=await target.request.post(fixture.confirm_base+"/api/v1/account/signup",{data:{record_type:"service_account_signup_request/v2",email:address}});
+    const link=asked.status()===202?await newestLink(target,address):"";
+    if(link){await target.goto(link);await settled(target);await target.waitForFunction(()=>document.getElementById("confirm-button")?.disabled===false,null,{timeout:10000}).catch(()=>{});}
+    await target.waitForTimeout(500);
+    const byLink=await target.evaluate(()=>({form:Boolean(document.getElementById("confirm-form")?.getClientRects().length),unusable:document.getElementById("confirm-unusable")?.hidden===false}));
+    const linkFacts=await keptFacts(target);
+    note("a_page_opened_by_a_confirmation_link_starts_from_the_link",Boolean(link)&&byLink.form&&!byLink.unusable&&linkFacts.connected==="Not connected"&&linkFacts.keys.length===0,{byLink,linkFacts});
+    /* The same link with a password the page refuses after the provider verified it: the verified session is held for the retry,
+       and is never kept, so a reload elsewhere in the tab does not open the account. */
+    if(link){await target.fill("#confirm-password",address);await target.fill("#confirm-password-again",address);await target.click("#confirm-button");
+      await target.waitForFunction(()=>document.getElementById("confirm-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});}
+    const pending=await keptFacts(target);
+    await target.evaluate(()=>{history.pushState({},"","/account");dispatchEvent(new PopStateEvent("popstate"));});
+    await target.reload();await settled(target);await target.waitForTimeout(800);
+    const pendingReloaded=await keptFacts(target);
+    note("a_confirmation_whose_password_is_not_set_is_never_kept",Boolean(link)&&pending.keys.length===0&&pending.connected==="Not connected"
+      &&pendingReloaded.keys.length===0&&pendingReloaded.connected==="Not connected"&&pendingReloaded.path==="/account",{pending,pendingReloaded});
+    /* A service token pasted on the sign-in page stays in page memory only. */
+    await target.goto(fixture.base+"/login");await target.fill("#access-token",fixture.token);await target.click("#connect-button");await waitConnected(target);
+    const byToken=await keptFacts(target);
+    await target.reload();await settled(target);await target.waitForTimeout(800);
+    const tokenReloaded=await keptFacts(target);
+    note("a_service_token_is_never_kept",byToken.connected==="Connected"&&byToken.keys.length===0&&tokenReloaded.keys.length===0&&tokenReloaded.connected==="Not connected",{byToken,tokenReloaded});
+  };
+  /* A staff member reloads the Administration view, then opens it again from the header without a new page load. */
+  const keptStaffSignIn=async (target,note)=>{
+    await staffSignIn(target);
+    await target.reload();await settled(target);await waitConnected(target);
+    await target.waitForFunction(()=>document.querySelectorAll("#staff-accounts article").length>=2,null,{timeout:10000}).catch(()=>{});
+    const reloaded=await target.evaluate(()=>({path:location.pathname,link:document.getElementById("admin-nav")?.hidden===false,section:document.getElementById("staff-admin")?.hidden===false,
+      rows:document.querySelectorAll("#staff-accounts article").length}));
+    await target.evaluate(()=>{window.__samePage=true;history.pushState({},"","/account");dispatchEvent(new PopStateEvent("popstate"));});
+    if(await target.locator("#admin-nav").isVisible())await headerLink(target,"admin").catch(()=>{});
+    await target.waitForTimeout(300);
+    const reopened=await target.evaluate(()=>({path:location.pathname,samePage:window.__samePage===true,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),
+      section:document.getElementById("staff-admin")?.hidden===false}));
+    note("a_reload_keeps_the_administration_link_and_view_for_staff",reloaded.path==="/admin"&&reloaded.link&&reloaded.section&&reloaded.rows>=2
+      &&reopened.path==="/admin"&&reopened.samePage&&JSON.stringify(reopened.views)===JSON.stringify(["admin"])&&reopened.section,{reloaded,reopened});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2716,7 +2800,8 @@ try {
     free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
     confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true),
-    access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false)};
+    access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false),
+    kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2766,6 +2851,21 @@ try {
      expected:["security_and_how_it_works_state_the_self_service_account_facts"]},
     {name:"state_that_anyone_can_create_an_account_in_every_state",scenario:"access_facts_closed",path:"/assets/service.js",find:'sentence.dataset.registrationState !== (open ? "open" : "closed")',replacement:'sentence.dataset.registrationState !== "open"',
      expected:["no_page_offers_account_creation_while_registration_is_closed"]},
+    {name:"keep_no_sign_in_across_a_reload",scenario:"kept_sign_in",path:"/assets/service.js",find:'if (authenticationMode === "browser_identity") keptSession.write(supplied);',replacement:"",
+     expected:["the_kept_sign_in_holds_the_access_token_and_its_expiry_alone","a_reload_and_a_typed_address_keep_an_email_sign_in"]},
+    {name:"keep_no_staff_sign_in_across_a_reload",scenario:"kept_staff_sign_in",path:"/assets/service.js",find:'if (authenticationMode === "browser_identity") keptSession.write(supplied);',replacement:"",
+     expected:["a_reload_keeps_the_administration_link_and_view_for_staff"]},
+    {name:"open_the_workspace_instead_of_the_page_asked_for_after_a_reload",scenario:"kept_sign_in",path:"/assets/service.js",find:"if (!stay) {",replacement:"if (true) {",
+     expected:["a_reload_and_a_typed_address_keep_an_email_sign_in"]},
+    {name:"keep_the_sign_in_after_sign_out",scenario:"kept_sign_in",path:"/assets/service.js",find:'generation++; token = ""; keptSession.clear();',replacement:'generation++; token = "";',
+     expected:["signing_out_forgets_the_kept_sign_in"]},
+    {name:"keep_every_token_the_page_holds",scenario:"kept_sign_in",path:"/assets/service.js",find:'if (authenticationMode === "browser_identity") keptSession.write(supplied);',
+     replacement:'sessionStorage.setItem("baltor.identity-session", JSON.stringify({access_token:supplied, expires_at:0}));',expected:["a_service_token_is_never_kept"]},
+    {name:"keep_the_session_of_a_confirmation_before_its_password_is_set",scenario:"kept_sign_in",path:"/assets/service.js",
+     find:'flow.session = verified.data.session; flow.email = verified.data.user?.email || "";',replacement:'flow.session = verified.data.session; flow.email = verified.data.user?.email || ""; keptSession.write(flow.session.access_token);',
+     expected:["a_confirmation_whose_password_is_not_set_is_never_kept"]},
+    {name:"restore_a_kept_sign_in_over_a_confirmation_link",scenario:"kept_sign_in",path:"/assets/service.js",find:"if (kept && !confirmation && ",replacement:"if (kept && ",
+     expected:["a_page_opened_by_a_confirmation_link_starts_from_the_link"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

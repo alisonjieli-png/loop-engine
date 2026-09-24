@@ -89,8 +89,17 @@ The header follows the sign-in that the page holds. A visitor who is not signed
 in sees Sign in and the one primary action. A signed-in person sees the account
 entry, which opens the account page, and Sign out, which ends the sign-in and
 opens the sign-in page, and no longer sees Sign in or the invitation action.
-The phone menu folds the same entries. The served page is the signed-out state,
-because the sign-in lives only in the memory of the page.
+The phone menu folds the same entries. The served page is the signed-out state.
+An email sign-in lasts as long as the browser tab: once the service has opened
+the account, the page keeps the identity provider's access token and its
+expiry, and nothing else, in the tab's session storage, so a reload or an
+address typed in the same tab opens the account again on the page asked for.
+Closing the tab ends it, and signing out, a refused session or another sign-in
+removes it. The refresh token is never kept, so a kept sign-in ends when its
+access token expires. A service token or client token is never kept. A page
+opened by a confirmation link starts from the link and forgets a kept sign-in,
+and a confirmation's session is kept only after its new password is set and
+the account opened.
 
 The mark is traced from the owner's logo sheet of September 23, 2026:
 variation 52, a white husky head in profile on a navy rounded tile. It is one

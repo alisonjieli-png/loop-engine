@@ -21,7 +21,8 @@ window.BaltorClientAccess = {
     function connectionChanged() {
       controls();
       if (eligible()) message("client-access-message", "Load your tokens to connect a development tool. These are not model-provider keys.");
-      else if (!current().available) message("client-access-message", "Customer token management is not enabled on this service. Your operator issues and revokes your access.");
+      // A sign-in kept by the tab can open before the service has said what it offers, so "not enabled" waits for the answer.
+      else if (current().known && !current().available) message("client-access-message", "Client token management is not enabled on this service.");
     }
     async function refresh() {
       if (!eligible() || active) return;

@@ -115,12 +115,32 @@
   const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  /* An email sign-in lasts as long as this browser tab. Once the service has opened the account, the page keeps the identity
+     provider's access token and its expiry, and nothing else, in the tab's session storage, so a reload or an address typed in
+     this tab opens the same account again. Closing the tab ends it; signing out, a refused session and any other sign-in remove
+     it at once. The refresh token is never kept, so a kept sign-in ends when its access token expires. A service token or a
+     client token is never kept, and the identity client itself keeps nothing. A confirmation link's session is kept only after
+     its new password is set and the account opened, so a reload never opens an account whose password was not replaced. Fix 5
+     of the persona journeys of September 24, 2026. */
+  const keptSessionKey = "baltor.identity-session";
+  const keptSession = {
+    read() {
+      try { const value = JSON.parse(sessionStorage.getItem(keptSessionKey) || "null");
+        return value && typeof value.access_token === "string" && value.access_token && Number.isFinite(value.expires_at) ? value : null; } catch (_) { return null; }
+    },
+    write(accessToken) {
+      let expiry = NaN;
+      try { expiry = JSON.parse(atob(accessToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).exp; } catch (_) {}
+      if (!Number.isFinite(expiry)) return;
+      try { sessionStorage.setItem(keptSessionKey, JSON.stringify({access_token:accessToken, expires_at:expiry})); } catch (_) {}
+    },
+    clear() { try { sessionStorage.removeItem(keptSessionKey); } catch (_) {} }
+  };
   let theme = "light";
   $("theme").addEventListener("click", () => { theme = themes[(themes.indexOf(theme) + 1) % themes.length]; if (theme === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme; $("theme").textContent = "Appearance: " + theme; });
   /* The header follows the sign-in this page holds. Signed in, it shows the account entry and Sign out, and hides Sign in and the
      invitation action, which are for a visitor who is not signed in. The phone menu is the same navigation folded, so it follows
-     too. The served page is the signed-out state, and a reload always starts signed out, because the sign-in lives only in the
-     memory of the page. */
+     too. The served page is the signed-out state; a reload in a tab that keeps an email sign-in opens it again. */
   const showSignedIn = signedIn => {
     document.querySelectorAll("[data-signed-in]").forEach(item => { item.hidden = !signedIn; });
     document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });
@@ -134,7 +154,7 @@
     // A pending confirmation belongs to the identity session that verified its link.
     // Connecting another account or signing out invalidates it before any retry.
     confirmation = null; $("confirm-password").value = ""; $("confirm-password-again").value = ""; showConfirmation();
-    generation++; token = ""; principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
+    generation++; token = ""; keptSession.clear(); principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
     $("access-token").value = ""; $("identity").hidden = true; $("connect-form").hidden = false; $("connection-state").textContent = "Not connected";
     ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = true; });
     $("results").replaceChildren(element("p", "Connect to search permitted material.", "empty")); $("identity-facts").replaceChildren();
@@ -228,7 +248,7 @@
   }
   function facts(target, entries) { target.replaceChildren(); for (const [name, value] of entries) target.append(element("dt", name), element("dd", value ?? "Unknown")); }
   clientAccess = window.BaltorClientAccess.create({request, element, message,
-    current:() => ({connected:!!token, mode:authenticationMode, generation,
+    current:() => ({connected:!!token, mode:authenticationMode, generation, known:capabilities !== null,
       available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
   // Browsing the permitted catalogue lives in its own file. It is given the same authenticated request
   // boundary and reads the connection state rather than keeping its own copy of the token.
@@ -237,12 +257,13 @@
         current:() => ({connected:!!token, generation, scopes:principalScopes})})
     : null;
   if (!catalogueBrowser) message("browse-message", "Browsing is not available on this page. Search above still works.", true);
-  async function connectService(supplied, activate = false) {
+  async function connectService(supplied, activate = false, {stay = false} = {}) {
     disconnect(); token = supplied; message("connection-message", "Checking access…");
     try {
       if (activate) await request("/api/v1/account/activate", {record_type:"service_account_activation_request/v1"});
       const value = await request("/api/v1/session");
       authenticationMode = value.authentication_mode;
+      if (authenticationMode === "browser_identity") keptSession.write(supplied);
       accessSource = typeof value.access_source === "string" ? value.access_source : "";
       staffRole = typeof value.staff_role === "string" ? value.staff_role : "";
       $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Baltor Pro.";
@@ -261,7 +282,8 @@
       $("setup-identity").textContent = "Connected as " + value.principal.tenant_id + ". Client setup uses a separate local copy of your service token.";
       $("admin-nav").hidden = !administrator && !staffRole; $("refresh-access").disabled = !administrator;
       renderFunnel();
-      const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app"));
+      // A kept sign-in opened again by a reload stays on the page the person asked for.
+      if (!stay) { const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app")); }
       if (administrator) await loadAccess();
       if (staffRole) await loadStaff().catch(error => message("staff-message", error.message, true));
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
@@ -879,6 +901,11 @@
     finally { connectionBusy = false; if (epoch === generation) $("test-protocol").disabled = !token || !principalScopes.includes("provisioning:metadata"); }
   });
   $("try-example").addEventListener("click", () => { navigate("/app"); $("query").value = "review inputs"; message("search-message", token ? "Example query prepared. Select Search to retrieve permitted references." : "Sign in first. This button does not submit a query or download a file."); });
+  /* A reload or a typed address in a tab that keeps an email sign-in opens the same account again, on the page asked for. A page
+     opened by a message link starts from that link instead and forgets a kept sign-in, and an expired one is forgotten. */
+  const kept = keptSession.read();
+  if (kept && !confirmation && kept.expires_at > Date.now() / 1000 + 30) connectService(kept.access_token, false, {stay:true});
+  else keptSession.clear();
   request("/api/v1/capabilities", null, false).then(value => {
     capabilities = value; $("service-status").textContent = "Service available";
     clientAccess.connectionChanged();

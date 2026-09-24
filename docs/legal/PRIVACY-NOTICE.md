@@ -36,9 +36,10 @@ once the one-hour counting window has passed.
 
 ## What the service does not do
 
-- It sets no cookies and uses no browser storage for your sign-in. Your
-  session lives in the memory of the page, so closing or reloading the page
-  signs you out.
+- It sets no cookies. When you sign in with your email address, the page
+  keeps your sign-in in your browser tab's session storage until you close
+  the tab or sign out, so reloading the page keeps you signed in. A key you
+  enter on the sign-in page is kept only in the memory of the page.
 - It runs no analytics, advertising or tracking scripts. Every script on the
   site is served from the site itself.
 - It keeps no log of requests that succeed. Refused requests are recorded
