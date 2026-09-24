@@ -2,6 +2,7 @@
    Removed-guard controls change the served page script in memory only, never a source file. */
 import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
 import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
+import {runDirectoryChecks} from "./directory_browser_checks.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
@@ -10,7 +11,6 @@ import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
 import {runDeckChecks} from "./deck_checks.mjs";
 import {LISTING_TEXT_ATTRIBUTE,listingTextPages,listingTextRegistration,registerListingText,withoutListingText} from "./listing_text.mjs";
-import {runDirectoryChecks} from "./directory_browser_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 /* Version queries are exact content identities, not permission to match arbitrary queries or origins. */

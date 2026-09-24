@@ -1387,7 +1387,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1504,7 +1504,7 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
@@ -3483,6 +3483,22 @@ steps:
     acceptance: "The owner can bring named people in from the Administration view without a second way in, and nobody who opens a sign-up link can press Confirm before the page can use it."
     evidence: "September 24, 2026, the owner asked, through the main session, to let a superadmin type email addresses and invite people to sign up, with the email naming who invited them and an optional free monthly Baltor Pro, and to keep Confirm disabled until the sign-in settings are ready. Built and checked locally the same day; see docs/verification/STAFF-SIGN-UP-LINKS-2026-09-24.md."
     next_local_work: "Release the committed revision, then send one live sign-up link to a fresh address with free monthly ticked, open it, choose a password and confirm that the account opens with free monthly Baltor Pro and leaves the pending list."
+  - id: S-6.102
+    phase: 6
+    title: "A free public directory of MCP servers and agent APIs at /directory"
+    status: offline_verified
+    depends_on: [S-6.62]
+    boundary: [tools/build_mcp_directory.py, tools/mcp_directory, src/loop_engine/core/service_runtime/web_assets/directory.html, src/loop_engine/core/service_runtime/commercial_relationship.py]
+    verify:
+      - "one row for each offering that the official MCP Registry, GitHub's MCP directory, the Docker MCP Catalog or a reviewed publisher record lists, with its category, what it is, where to get it, transport, declared sign-in, licence when a code host or package registry reports one, documentation, who listed it and the date each source was last checked"
+      - "a duplicate listing is one row with an alias, a deprecated or deleted server is left out also after an incremental read, and a listing with no place to get it is left out"
+      - "the registry is read by cursor, then only with updated_since, and a stopped read resumes from its saved cursor"
+      - "the page loads every row the manifest names, searches, filters by category chip, draws only the rows in view, opens a direct link to one row, reads at 1440 and 390 pixels and needs no sign-in"
+      - "every row carries a commercial_relationship with kind none; ordering, filtering and inclusion never read it; a paid link is labelled Paid link with rel sponsored, an ad sits in a band headed Ads, and one sentence sits above the list exactly while a paid link is active"
+    adversarial: "A duplicate listing, a deprecated server, a listing without a location, a credential-shaped field, a ranking or inclusion rule that reads the commercial field, a paid link without its label, an ad inside the list, the paid link sentence shown without a paid link or missing with one, and a paid link on a row its publisher did not list must each fail a named check with its removed-guard control."
+    acceptance: "Anyone can open baltor.ai/directory without an account, find a server or agent API by name, package or purpose, and see where to get it, how it connects and whether a listing comes from its publisher."
+    evidence: "September 24, 2026, the owner asked for a public free database of third party services and the MCPs they offer, with rows for every company, SaaS or project offering an MCP or agent controlled API setup; the same day the owner asked whether the public lists could earn from advertising or affiliate links, and the coordinator decided the typed commercial_relationship design that the affiliate research record then refined. Built and checked locally the same day: 35,278 rows from four sources, eight row files of 9.6 MB before compression; see tools/mcp_directory/SOURCES.md."
+    next_local_work: "Release the committed revision, check /directory and /mcp-directory on the live hostnames, then add the footer link in index.html once the session editing it has merged, and turn on the daily refresh workflow's first run."
   - id: S-6.110
     phase: 6
     title: "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger"

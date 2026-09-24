@@ -1,7 +1,7 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 45,
+  "done": 46,
   "next": 15,
   "now": 42,
   "waiting": 120
@@ -82,6 +82,21 @@
     "title": "Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings",
     "waiting_on": [
      "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "Anyone can open baltor.ai/directory without an account, find a server or agent API by name, package or purpose, and see where to get it, how it connects and whether a listing comes from its publisher.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62"
+    ],
+    "id": "S-6.102",
+    "next_local_work": "Release the committed revision, check /directory and /mcp-directory on the live hostnames, then add the footer link in index.html once the session editing it has merged, and turn on the daily refresh workflow's first run.",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "A free public directory of MCP servers and agent APIs at /directory",
+    "waiting_on": [
+     "S-6.62"
     ]
    },
    {
@@ -4669,5 +4684,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:76b189b57b5ba5416e91bc0073826a1f563c86424c92c48857c07845efc37522"
+ "source_fingerprint": "sha256:bb18d7ba99acdef9f01198724a53ceacd4f9f0799cd44d7c04d7d025ad5c8e05"
 }
