@@ -91,6 +91,12 @@
     for (const panel of document.querySelectorAll("[data-start-state]")) panel.hidden = panel.dataset.startState !== state;
     $("start-access").dataset.startAccess = state;
   };
+  /* Sentences that state whether this service takes new accounts, on Security and How it works, follow the same record. Each is
+     served hidden, so a page that has not heard from the service states neither. The sentences beside them state only what is
+     true in both states: people sign in with their email address and password, and client tokens come from the account page. */
+  const applyRegistrationState = open => {
+    for (const sentence of document.querySelectorAll("[data-registration-state]")) sentence.hidden = sentence.dataset.registrationState !== (open ? "open" : "closed");
+  };
   const applyPaymentState = name => {
     const state = paymentStates[name] || paymentStates.closed;
     $("pricing-state").textContent = state.badge; $("pricing-payment-state").textContent = state.note;
@@ -525,7 +531,7 @@
   }
   function renderResults(hits) {
     $("results").replaceChildren(); $("result-count").textContent = hits.length + " references";
-    if (!hits.length) { $("results").append(element("p", "No permitted matches. Try a different description or ask your operator about access.", "empty")); return; }
+    if (!hits.length) { $("results").append(element("p", "No permitted matches. Try a different description.", "empty")); return; }
     for (const hit of hits) {
       const card = element("article", "", "result"); card.append(element("h3", hit.purpose), element("p", hit.reference.identity), element("span", hit.kind, "badge"));
       const detail = document.createElement("details"), list = document.createElement("dl");
@@ -885,6 +891,7 @@
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
       registrationOpen = value.website.registration_available === true;
       applyAccessState(value.website.registration_available === true);
+      applyRegistrationState(registrationOpen);
       applyStartState(startState(value.website));
       applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));
       applyClientAccessState(value.website.client_access_available === true);
@@ -900,7 +907,7 @@
         const signupOpen = settings.email_signup_enabled === true && settings.signup_available === true;
         $("email-login").hidden = false; $("email-signup").hidden = !signupOpen; $("signup-closed").hidden = signupOpen;
         $("email-recovery").hidden = settings.recovery_available !== true;
-        $("login-access-description").textContent = "Sign in with your verified email account, or use a service token issued by your operator.";
+        $("login-access-description").textContent = "Sign in with your email address and password.";
         $("email-access-note").textContent = "Email credentials are checked by the configured identity provider. Model keys are separate.";
         $("email-signin-limit").textContent = signupOpen ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";
         showConfirmation();

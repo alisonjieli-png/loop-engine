@@ -2659,6 +2659,33 @@ try {
       &&after.setText.includes("Your password is set.")&&after.setText.includes("Sign in with your email address and your new password.")&&after.signIn==="/login"
       &&after.error&&after.status==="The service did not open your account."&&after.connected==="Not connected"&&await standInSignIn(target,address,password)===200,{held,drawn,after});
   };
+  /* Finding 2 of the persona journeys of September 24, 2026: Security and How it works said that public account creation was not
+     open and that access came from an operator, beside a Get started button that opened working self-service sign-up. Where the
+     service reports registration open, no page a visitor reads says that account creation is closed, that an operator issues access,
+     or names test tokens, and Security and How it works state the live facts. Where it reports registration closed, no page says
+     that anyone can create an account. The sentences that depend on the state are read after the service has answered. */
+  const closedAccessWords=/account creation (?:is|remains) (?:not open|closed)|public account creation|not open yet|comes? from your operator|issued? by your operator|operator gave you|ask your operator|test tokens?|not taking new accounts|email sign-in is not enabled/i;
+  const openAccessWords=/anyone can create an account/i;
+  const accessFactPages=["/security","/how-it-works","/login","/setup","/get-started","/pricing","/examples","/docs","/"];
+  const accessFacts=(base,open)=>async (target,note)=>{
+    const found={};
+    for(const path of accessFactPages){
+      await target.goto(base+path);
+      await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
+      if(open)await target.waitForFunction(()=>document.getElementById("email-login")?.hidden===false,null,{timeout:10000}).catch(()=>{});
+      found[path]=await target.evaluate(()=>{const view=[...document.querySelectorAll("[data-view]")].find(item=>!item.hidden);
+        return [document.querySelector("header")?.innerText||"",view?.innerText||"",document.querySelector("footer")?.innerText||""].join("\n");});
+    }
+    const wrong=Object.entries(found).map(([path,words])=>[path,(open?closedAccessWords:openAccessWords).exec(words)?.[0]||""]).filter(([,words])=>words);
+    const security=found["/security"]||"",about=found["/how-it-works"]||"";
+    const facts=["You sign in with your email address and password.","Client tokens for your tools are created and revoked on your account page"].every(text=>security.includes(text))
+      &&about.includes("you sign in with your email address and password, create a client token for each of your tools on your account page");
+    if(open){
+      note("no_page_says_account_creation_is_closed_while_registration_is_open",wrong.length===0,{wrong});
+      note("security_and_how_it_works_state_the_self_service_account_facts",facts&&security.includes("Anyone can create an account on Get started: you give your email address, open the link we send and choose a password.")
+        &&about.includes("Anyone can create an account on Get started."),{facts});
+    }else note("no_page_offers_account_creation_while_registration_is_closed",wrong.length===0&&facts&&security.includes("This service is not taking new accounts right now."),{wrong,facts});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2688,7 +2715,8 @@ try {
     invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false),
     free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
-    confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true)};
+    confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true),
+    access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2728,6 +2756,16 @@ try {
     {name:"say_the_link_cannot_be_used_after_the_password_is_set",scenario:"password_refused",path:"/assets/service.js",
      find:'if (passwordSet === "set") { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = true; return; }',replacement:"",
      expected:["a_password_set_without_an_open_account_says_so_and_offers_sign_in"]},
+    {name:"bring_back_the_closed_account_creation_sentence_on_security",scenario:"access_facts_open",path:"/security",
+     find:'You sign in with your email address and password. Client tokens',replacement:'Public account creation is not open. Access comes from your operator, who can issue and revoke test tokens. Client tokens',
+     expected:["no_page_says_account_creation_is_closed_while_registration_is_open","security_and_how_it_works_state_the_self_service_account_facts"]},
+    {name:"bring_back_the_operator_revocation_sentence_on_get_set_up",scenario:"access_facts_open",path:"/setup",
+     find:'<p id="client-revoke-note">Open your account page,',replacement:'<p id="client-revoke-note">If your operator gave you the token, ask your operator to revoke it. Open your account page,',
+     expected:["no_page_says_account_creation_is_closed_while_registration_is_open"]},
+    {name:"never_state_that_the_service_takes_new_accounts",scenario:"access_facts_open",path:"/assets/service.js",find:"applyRegistrationState(registrationOpen);",replacement:"",
+     expected:["security_and_how_it_works_state_the_self_service_account_facts"]},
+    {name:"state_that_anyone_can_create_an_account_in_every_state",scenario:"access_facts_closed",path:"/assets/service.js",find:'sentence.dataset.registrationState !== (open ? "open" : "closed")',replacement:'sentence.dataset.registrationState !== "open"',
+     expected:["no_page_offers_account_creation_while_registration_is_closed"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

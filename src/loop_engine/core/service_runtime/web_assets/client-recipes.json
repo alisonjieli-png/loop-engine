@@ -2,7 +2,7 @@
   "record_type": "website_client_recipes/v2",
   "reviewed_at": "2026-09-24",
   "credential_variable": "BALTOR_SERVICE_TOKEN",
-  "revocation_note": "If you created this token on your Account page, open Account, find it under Your client tokens and select Revoke. If your operator gave you the token, ask your operator to revoke it. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.",
+  "revocation_note": "Open your account page, find the token under Your client tokens and select Revoke. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.",
   "recipes": [
     {
       "id": "codex",

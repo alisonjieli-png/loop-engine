@@ -51,6 +51,20 @@ closed. A named check presses the hero action on a service that keeps a list
 and finds the email field in the first screen; the old address
 `/signup#waiting-list` fails it.
 
+Security and How it works say who can create an account from the same
+record. A sentence that says anyone can create an account on Get started
+shows when `website.registration_available` is true, a sentence that says the
+service is not taking new accounts shows when it is false, and both are served
+hidden. The sentences beside them state only what holds in both states: people
+sign in with their email address and password, and client tokens come from
+the account page. Before September 24, 2026 both pages said that public
+account creation was not open and that access came from an operator, beside a
+working sign-up. Named checks read nine pages on a service that takes new
+accounts and on one that does not. They fail on a sentence that says account
+creation is closed, that an operator issues or revokes access, or that names
+test tokens, and on one that offers account creation where the service takes
+none.
+
 The header, signed out, lists How it works, Library, Pricing and Docs, then
 Sign in and "Get started"; signed in, it lists Workspace, Get set up, Library
 and Docs, then Account, Administration for an operator, and Sign out. A
