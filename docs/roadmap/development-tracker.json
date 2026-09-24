@@ -798,13 +798,13 @@
     ]
    },
    {
-    "acceptance": "A first-time visitor can see what is in the library, request an invitation, and follow Get started to a working connection without contradictions, on every hostname.",
+    "acceptance": "A first-time visitor can see what is in the library, create an account, and follow Get started to a working connection without contradictions, on every hostname.",
     "blocked_on": "",
     "depends_on": [
      "S-6.12"
     ],
     "id": "S-6.33",
-    "next_local_work": "Follow the ordered work of docs/context/SESSION-HANDOFF-2026-09-23.md: merge the saved patches (sign-up and funnel, documentation pages, use-case pages), land the design standards with tools/test_website_site_map.py and tools/check_website_layout.mjs switched on in CI, apply the homepage polish patch and the scroll budgets (first screen holds the h1, lead and action; 64 px band padding; homepage under 4,000 px at 1440 wide; no dark bands), then per-page crawler titles and descriptions, robots.txt, a sitemap, a www redirect, HEAD on every page and long caching for versioned files; release and run the device lab and acceptance tests on the live site.",
+    "next_local_work": "Distinct surfaces for the four newer hostnames, per-page crawler titles and descriptions, robots.txt and sitemap.xml from the typed site map, HEAD on every page, and the site map and layout checks switched on in continuous integration (S-6.67). The account release (S-6.89) replaces the list path of the funnel with direct account creation once the sign-up guard is live.",
     "phase": 6,
     "status": "building",
     "title": "Website fixes from the persona and interface reviews",
@@ -3749,5 +3749,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:fdad924c5b2c7b9da71322c40120cbe42a60f0d3e96387501038904e4eb800a4"
+ "source_fingerprint": "sha256:999b63b768264a664cf2780997b78afbbbf94bbfb7fc3cc073258c17d4ecef60"
 }

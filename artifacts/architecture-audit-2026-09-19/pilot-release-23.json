@@ -1,0 +1,71 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 23,
+  "source_revision": "bcd05095b204ee1b7e455f92c82cf8158f480ba0",
+  "continuous_integration_run": 35986097491,
+  "deployment_workflow_run": 35987773322,
+  "image_digest": "sha256:5fc60a3ded5522b0a6e8b4b3dc96e007f7bb39d5786d8c87993cb18662d6a10b",
+  "deployed_at": "2026-09-24T10:34:04Z",
+  "deploy_setting_after": "false",
+  "rollback_fly_release": 22,
+  "rollback_image_digest": "sha256:76088e33805ca933ade44ac6629e20b4b2a22ded0201c034b95fee481ead931a",
+  "catalogue_release_served": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75",
+  "host_file_changed": false,
+  "live_checks": {
+    "hostnames": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "baltor-pilot.fly.dev",
+      "demo.baltor.ai",
+      "examples.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai"
+    ],
+    "http_addresses_200": [
+      120,
+      120
+    ],
+    "same_capabilities": true,
+    "required_health_checks_passed_on_every_hostname": true,
+    "pi_extension_served_byte_for_byte": [
+      8,
+      8
+    ],
+    "hosted_browser_checks_per_hostname": [
+      163,
+      163
+    ],
+    "hosted_browser_first_attempts_preserved": {
+      "hostnames": [
+        "baltor.ai",
+        "www.baltor.ai",
+        "app.baltor.ai",
+        "baltor-pilot.fly.dev"
+      ],
+      "result": "each stopped at the examples journey step (89 of 90, or 91 of 92 on www.baltor.ai) after a 30 second wait for the example button",
+      "run_shape": "four browsers at once from one client address, started two minutes after the deployment",
+      "successor": "the same check run one hostname at a time passed 163 of 163 on each",
+      "cause": "inferred, not measured: the per-address failed-attempt limit of 30 refused attempts in 60 seconds, reached by four concurrent anonymous browsers"
+    },
+    "catalogue": [
+      6,
+      6
+    ],
+    "catalogue_offered_items": 34,
+    "catalogue_withheld_for_undeclared_authority": 9,
+    "service": [
+      19,
+      19
+    ],
+    "service_first_attempt_preserved": "16 of 17 executed checks passed, then the official protocol client checks stopped because the release worktree had no .venv link to the qualified protocol environment; the successor with the link passed 19 of 19",
+    "diagnostic_metered_reads": 2,
+    "physical_model_calls": 0
+  },
+  "new_registration_open": false,
+  "evidence_folder": "artifacts/release-23-2026-09-24",
+  "limits": [
+    "A browser acceptance run and a transport check are not a customer task or a paid-release benchmark.",
+    "Registration stays closed until the account release lands the sign-up guard and closes the identity provider's own sign-up."
+  ]
+}

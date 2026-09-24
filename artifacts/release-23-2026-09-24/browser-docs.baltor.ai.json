@@ -1,0 +1,709 @@
+{
+  "record_type": "hosted_website_acceptance/v1",
+  "origin": "https://docs.baltor.ai",
+  "observed_at": "2026-09-24T10:36:50.936Z",
+  "checks": [
+    {
+      "name": "HTTPS_homepage_is_available",
+      "passed": true
+    },
+    {
+      "name": "live_asset_versions_bind_to_exact_packaged_bytes",
+      "passed": true
+    },
+    {
+      "name": "live_asset_identity_check_refuses_foreign_origins_stale_versions_and_extra_parameters",
+      "passed": true
+    },
+    {
+      "name": "live_page_has_four_intelligence_layers",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_hero_says_what_baltor_is_and_the_pain_it_removes",
+      "passed": true
+    },
+    {
+      "name": "hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",
+      "passed": true
+    },
+    {
+      "name": "live_default_appearance_is_light",
+      "passed": true
+    },
+    {
+      "name": "live_how_it_works_covers_five_optimization_problems",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_opens_with_headline_without_category_badge",
+      "passed": true
+    },
+    {
+      "name": "category_badge_check_rejects_the_removed_pill",
+      "passed": true
+    },
+    {
+      "name": "live_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",
+      "passed": true
+    },
+    {
+      "name": "category_line_check_rejects_a_shortened_line_a_missing_harness_and_a_status",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_hero_states_the_plan_and_the_price",
+      "passed": true
+    },
+    {
+      "name": "hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_bands_follow_the_design_and_are_set_apart",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_says_what_an_account_gives_you",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_cards_carry_no_status_word_and_link_the_three_use_cases",
+      "passed": true
+    },
+    {
+      "name": "card_check_rejects_a_status_word_and_a_missing_use_case",
+      "passed": true
+    },
+    {
+      "name": "live_demonstration_folder_is_labelled_as_an_example_layout",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_offers_get_started_and_get_set_up_and_says_how_they_differ",
+      "passed": true
+    },
+    {
+      "name": "hero_action_check_rejects_a_second_primary_and_a_missing_guide",
+      "passed": true
+    },
+    {
+      "name": "live_every_primary_action_carries_the_one_label",
+      "passed": true
+    },
+    {
+      "name": "live_phone_first_screen_holds_the_primary_action_under_a_compact_header",
+      "passed": true
+    },
+    {
+      "name": "live_primary_action_lands_on_the_funnel_email_field",
+      "passed": true
+    },
+    {
+      "name": "live_top_bar_lists_the_pages_the_guide_and_the_get_started_action",
+      "passed": true
+    },
+    {
+      "name": "top_bar_check_rejects_a_bar_without_the_guide",
+      "passed": true
+    },
+    {
+      "name": "live_footer_links_get_started_get_set_up_and_the_use_cases_and_not_the_waitlist",
+      "passed": true
+    },
+    {
+      "name": "footer_check_rejects_a_waitlist_link_and_a_missing_use_case",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_entry_uses_the_deployed_origin",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_states_every_published_fact",
+      "passed": true
+    },
+    {
+      "name": "pricing_fact_check_rejects_free_search_free_invited_accounts_and_another_price",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_reports_the_payment_state_from_the_service",
+      "passed": true
+    },
+    {
+      "name": "payment_state_rule_asks_for_the_account_first_while_account_creation_is_closed",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_avoids_internal_runtime_names",
+      "passed": true
+    },
+    {
+      "name": "plain_word_check_rejects_a_page_that_names_the_runtime",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_address_is_served_directly",
+      "passed": true
+    },
+    {
+      "name": "live_pricing_view_offers_no_purchase_control_while_checkout_is_closed",
+      "passed": true
+    },
+    {
+      "name": "live_personal_key_wording_follows_the_reported_capability",
+      "passed": true
+    },
+    {
+      "name": "live_terms_address_is_served_directly",
+      "passed": true
+    },
+    {
+      "name": "live_footer_links_the_terms_of_service",
+      "passed": true
+    },
+    {
+      "name": "live_terms_open_from_the_footer_with_the_operator_and_the_date",
+      "passed": true
+    },
+    {
+      "name": "live_terms_say_the_same_words_as_the_approved_text",
+      "passed": true
+    },
+    {
+      "name": "terms_word_check_rejects_a_changed_word_and_a_missing_date",
+      "passed": true
+    },
+    {
+      "name": "live_account_form_names_and_links_the_terms_and_the_privacy_notice",
+      "passed": true
+    },
+    {
+      "name": "consent_check_rejects_a_missing_link_a_sentence_below_the_button_and_a_hidden_sentence_while_open",
+      "passed": true
+    },
+    {
+      "name": "no_live_page_says_the_terms_are_unpublished",
+      "passed": true
+    },
+    {
+      "name": "unpublished_terms_check_rejects_the_old_footer_note",
+      "passed": true
+    },
+    {
+      "name": "live_signup_funnel_follows_registration_and_request_list_capabilities",
+      "passed": true
+    },
+    {
+      "name": "signup_funnel_check_rejects_password_collection_and_missing_consent",
+      "passed": true
+    },
+    {
+      "name": "live_waitlist_address_opens_the_get_started_funnel",
+      "passed": true
+    },
+    {
+      "name": "live_use_case_page_opens_use-cases",
+      "passed": true
+    },
+    {
+      "name": "live_use_case_page_opens_overnight",
+      "passed": true
+    },
+    {
+      "name": "live_use_case_page_opens_efficiency",
+      "passed": true
+    },
+    {
+      "name": "live_use_case_page_opens_learning",
+      "passed": true
+    },
+    {
+      "name": "live_invalid_confirmation_clears_query_without_opening_a_password_form",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_documentation-index.json",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_documentation.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_documentation.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/what-baltor-is.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/your-account.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/searching-and-retrieving.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/usage-and-what-you-pay-for.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/troubleshooting.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_docs/serving-and-connections.html",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_client-access.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_catalogue-browser.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture-story.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_client-recipes.json",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_supabase-client.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_geist.woff2",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_geist-mono.woff2",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_baltor-mark.svg",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_favicon-32.png",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_favicon-192.png",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_apple-touch-icon.png",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_separates_client_and_server",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_identifies_external_model_connection",
+      "passed": true
+    },
+    {
+      "name": "provider_boundary_check_rejects_wrong_secret_destination",
+      "passed": true
+    },
+    {
+      "name": "live_public_explanation_avoids_internal_runtime_names",
+      "passed": true
+    },
+    {
+      "name": "live_task_explorer_changes_selected_context",
+      "passed": true
+    },
+    {
+      "name": "live_task_explorer_supports_keyboard_selection",
+      "passed": true
+    },
+    {
+      "name": "guided_setup_uses_deployed_origin",
+      "passed": true
+    },
+    {
+      "name": "live_every_harness_the_hero_names_has_steps_on_the_guide",
+      "passed": true
+    },
+    {
+      "name": "named_harness_check_rejects_a_harness_the_guide_does_not_set_up",
+      "passed": true
+    },
+    {
+      "name": "anonymous_connection_check_is_not_faked",
+      "passed": true
+    },
+    {
+      "name": "deployed_recipe_keeps_service_secret_as_reference",
+      "passed": true
+    },
+    {
+      "name": "deployed_example_prepares_an_explicit_search",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/what-baltor-is",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/your-account",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/searching-and-retrieving",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/usage-and-what-you-pay-for",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/troubleshooting",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/docs/serving-and-connections",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/use-cases",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/overnight",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/efficiency",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/learning",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/get-started",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/terms",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/what-baltor-is",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/your-account",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/searching-and-retrieving",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/usage-and-what-you-pay-for",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/troubleshooting",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/docs/serving-and-connections",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/use-cases",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/overnight",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/efficiency",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/learning",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/get-started",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/terms",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/what-baltor-is",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/your-account",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/searching-and-retrieving",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/usage-and-what-you-pay-for",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/troubleshooting",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/docs/serving-and-connections",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/use-cases",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/overnight",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/efficiency",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/learning",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/get-started",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/pricing",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/terms",
+      "passed": true
+    },
+    {
+      "name": "live_retired_word_exemption_still_reads_a_word_beside_the_terms",
+      "passed": true
+    },
+    {
+      "name": "live_retired_word_check_allows_exact_service_origin_but_refuses_adjacent_claim",
+      "passed": true
+    },
+    {
+      "name": "no_live_customer_page_describes_the_product_as_a_trial",
+      "passed": true
+    },
+    {
+      "name": "live_retired_word_check_rejects_a_known_wrong_page",
+      "passed": true
+    },
+    {
+      "name": "no_live_customer_page_uses_the_words_of_an_invitation_only_service",
+      "passed": true
+    },
+    {
+      "name": "live_invitation_word_check_rejects_a_known_wrong_page",
+      "passed": true
+    },
+    {
+      "name": "live_invitation_word_exemption_still_reads_a_word_beside_the_privacy_notice",
+      "passed": true
+    },
+    {
+      "name": "deployed_administration_still_requires_credentials",
+      "passed": true
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true
+    },
+    {
+      "name": "no_unexpected_third_party_requests",
+      "passed": true
+    }
+  ],
+  "passed": 163,
+  "total": 163,
+  "all_passed": true,
+  "errors": [],
+  "external": [],
+  "navigation": [
+    {
+      "path": "/",
+      "response_start_ms": 56.89999997615814,
+      "dom_content_loaded_ms": 180.69999992847443,
+      "load_ms": 276.10000002384186,
+      "transfer_bytes": 30953,
+      "resource_count": 14
+    },
+    {
+      "path": "/connect",
+      "response_start_ms": 56.39999997615814,
+      "dom_content_loaded_ms": 188.5,
+      "load_ms": 264.5,
+      "transfer_bytes": 30825,
+      "resource_count": 14
+    },
+    {
+      "path": "/examples",
+      "response_start_ms": 49.40000009536743,
+      "dom_content_loaded_ms": 177.70000004768372,
+      "load_ms": 264.5,
+      "transfer_bytes": 31012,
+      "resource_count": 14
+    },
+    {
+      "path": "/security",
+      "response_start_ms": 59.10000002384186,
+      "dom_content_loaded_ms": 202.79999995231628,
+      "load_ms": 297.6999999284744,
+      "transfer_bytes": 30870,
+      "resource_count": 15
+    },
+    {
+      "path": "/app",
+      "response_start_ms": 53.800000071525574,
+      "dom_content_loaded_ms": 193.5,
+      "load_ms": 286.60000002384186,
+      "transfer_bytes": 31109,
+      "resource_count": 14
+    }
+  ],
+  "navigation_limits": "One headless browser navigation per route from the development workstation; not field Core Web Vitals or an availability guarantee",
+  "credentials_used": false,
+  "external_mutations": false
+}
