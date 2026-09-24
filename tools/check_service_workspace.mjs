@@ -51,6 +51,7 @@ const holdDigestScript=()=>{
 };
 const program=`from contextlib import ExitStack
 from dataclasses import replace
+from datetime import datetime,timedelta,timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json,sys,time,uuid
@@ -147,17 +148,19 @@ with ExitStack() as stack:
     staff_users={person:{"id":person,"email":address,"role":"authenticated","is_anonymous":False,"email_confirmed_at":"2026-01-01T00:00:00Z","app_metadata":{ACCOUNT_MARKER:ACCOUNT_MARK}} for person,address in staff_people.items()}
     def staff_user(request):
         return staff_users[jwt.decode(request.access_token,options={"verify_signature":False})["sub"]]
-    def staff_listing(request,secret):
-        first="page=1" in request.url
-        return ProviderAnswer(200,{"users":[{**record,"created_at":"2026-09-2%dT00:00:00Z"%index,"last_sign_in_at":"2026-09-23T00:00:00Z"} for index,record in enumerate(staff_users.values(),start=1)] if first else []})
+    # The staff service's identity project is a stand-in with an administration interface and an outbox, so a superadmin's
+    # sign-up link creates a real marked account there. The two people above are seeded into it, confirmed and marked.
+    staff_project=IdentityProjectStandIn()
+    for person,address in staff_people.items():
+        staff_project._new_user(address,"browser-fixture-unused-password").update(id=person,confirmed_at=datetime.now(timezone.utc)-timedelta(days=1),app_metadata={ACCOUNT_MARKER:ACCOUNT_MARK})
     staff_identity=BrowserIdentityAdapter(staff.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-staff",registration_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",transport=staff_user)
     staff_tokens={}
     for person in staff_people:
         record_origin(staff.runtime,provider+"/auth/v1",person,"signup")
         staff_tokens[person]=jwt.encode({"iss":provider+"/auth/v1","aud":"authenticated","sub":person,"exp":int(time.time())+1800,"iat":int(time.time()),"role":"authenticated","is_anonymous":False},private_key,algorithm="RS256",headers={"kid":"browser-test"})
         staff_identity.activate(staff_tokens[person])
-    staff_administration=AccountAdministration(staff.runtime,ServiceAccountPolicy(staff=({"role":"superadmin","provider_user_id":staff_subject},)),provider+"/auth/v1",origins=AccountOrigins(staff.runtime,provider+"/auth/v1",SupabaseIdentityAdministration(provider,allow_network=True,transport=staff_listing)),identity_secret=lambda:"sb_secret_browser_fixture")
-    staff_base,_=stack.enter_context(running_http(staff,application_factory=lambda config:ServiceHttpApplication(staff.runtime,staff.provisioning,config,browser_identity=staff_identity,account_administration=staff_administration),display_name="Baltor"))
+    staff_administration=AccountAdministration(staff.runtime,ServiceAccountPolicy(staff=({"role":"superadmin","provider_user_id":staff_subject,"name":"Staff Tester"},)),provider+"/auth/v1",origins=AccountOrigins(staff.runtime,provider+"/auth/v1",SupabaseIdentityAdministration(provider,allow_network=True,transport=staff_project.admin)),identity_secret=lambda:"sb_secret_browser_fixture")
+    staff_base,_=stack.enter_context(running_http(staff,application_factory=lambda config:ServiceHttpApplication(staff.runtime,staff.provisioning,config,browser_identity=staff_identity,account_administration=staff_administration,account_email=account_email(config,staff_project,provider,staff.runtime)),display_name="Baltor",request_limits=stated))
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
@@ -2546,7 +2549,8 @@ try {
   };
   /* Staff administration through the website. A superadmin named in the service's accounts policy signs in like anyone,
      sees the Administration link, every account with its plan, and grants free monthly Baltor Pro to one of them. */
-  const staffJourney=async (target,note)=>{
+  /* Staff sign in like anyone: the identity provider's token address answers with the staff member's session. */
+  const staffSignIn=async target=>{
     await target.route(fixture.identity_origin+"/auth/v1/token**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":fixture.staff_base,"Access-Control-Allow-Headers":"*","Access-Control-Allow-Methods":"POST, OPTIONS"},body:JSON.stringify({access_token:fixture.staff_token,refresh_token:"local-fixture-refresh",expires_in:1800,token_type:"bearer",user:fixture.staff_user})}));
     await target.route(fixture.identity_origin+"/auth/v1/logout**",route=>route.fulfill({status:204,headers:{"Access-Control-Allow-Origin":fixture.staff_base,"Access-Control-Allow-Headers":"*"}}));
     await target.goto(fixture.staff_base+"/login");await target.waitForSelector("#email-login:not([hidden])",{timeout:10000});
@@ -2554,6 +2558,11 @@ try {
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
     await target.evaluate(()=>{history.pushState({},"","/admin");dispatchEvent(new PopStateEvent("popstate"));});
     await target.waitForFunction(()=>document.querySelectorAll("#staff-accounts article").length>=2,null,{timeout:10000}).catch(()=>{});
+  };
+  /* Staff administration through the website. A superadmin named in the service's accounts policy signs in like anyone,
+     sees the Administration link, every account with its plan, and grants free monthly Baltor Pro to one of them. */
+  const staffJourney=async (target,note)=>{
+    await staffSignIn(target);
     const read=()=>target.evaluate(()=>({link:!document.getElementById("admin-nav")?.hidden,section:document.getElementById("staff-admin")?.hidden===false,
       role:document.getElementById("staff-role")?.textContent||"",rows:[...document.querySelectorAll("#staff-accounts article")].map(item=>({title:item.querySelector("h3")?.textContent||"",plan:item.querySelector(".badge")?.textContent||"",
       text:item.innerText}))}));
@@ -2565,7 +2574,42 @@ try {
     await target.waitForFunction(()=>/is done\.$/.test(document.getElementById("staff-message")?.textContent||""),null,{timeout:10000}).catch(()=>{});
     const after=await read(),changed=after.rows.find(row=>row.title==="customer-test@example.invalid");
     note("a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view",before.link&&before.section&&before.role==="superadmin"
-      &&before.rows.length===2&&/Confirmed/.test(customer?.text||"")&&changed?.plan===(granting?"Free monthly":"None"),{before,after,granting});
+      &&["staff-test@example.invalid","customer-test@example.invalid"].every(title=>before.rows.some(row=>row.title===title))
+      &&/Confirmed/.test(customer?.text||"")&&changed?.plan===(granting?"Free monthly":"None"),{before,after,granting});
+  };
+  /* The owner's request of September 24, 2026: a superadmin types an address and the person is sent Baltor's own sign-up link.
+     The account shows as waiting until the person chooses a password. The words stay those of a staff tool. */
+  const staffLinkJourney=async (target,note)=>{
+    await staffSignIn(target);
+    const address=journeyAddress("link");
+    const form=await target.evaluate(()=>document.getElementById("staff-links-form")?.hidden===false);
+    if(form){await target.fill("#staff-link-addresses",address);await target.check("#staff-link-free");await target.click("#staff-link-button");
+      await target.waitForFunction(()=>/^Link sent to /.test(document.getElementById("staff-message")?.textContent||"")||document.getElementById("staff-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});}
+    /* A picture of the staff view for review, from the real run only; the removed-guard runs change the page. */
+    if(note===check)await target.locator("#staff-admin").screenshot({path:output.replace(/\.json$/,"-staff-links.png")}).catch(()=>{});
+    const shown=await target.evaluate(address=>({message:document.getElementById("staff-message")?.textContent||"",
+      row:[...document.querySelectorAll("#staff-accounts article")].map(item=>item.innerText).find(text=>text.includes(address))||"",
+      formWords:document.getElementById("staff-links-form")?.innerText||""}),address);
+    note("a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting",form&&shown.message==="Link sent to "+address+"."
+      &&/Sign-up link sent/.test(shown.row)&&/Free monthly Baltor Pro starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
+      &&!invitationWords.test(shown.message+" "+shown.row+" "+shown.formWords),{form,...shown});
+  };
+  /* The confirmation page keeps Confirm disabled, with a short note, until its sign-in settings have loaded, so a quick click
+     is never refused with the link unused. The settings request is held here, then released. */
+  const confirmWait=async (target,note)=>{
+    let release=()=>{};const held=new Promise(resolve=>{release=resolve;});
+    await target.route(url=>new URL(url).pathname==="/api/v1/account/identity",async route=>{await held;await route.continue();});
+    await target.goto(fixture.confirm_base+"/auth/confirm?token_hash=pkce_browser0wait0check&type=signup",{waitUntil:"domcontentloaded"});
+    await target.waitForFunction(()=>document.querySelector('[data-view="confirm"]')?.hidden===false,null,{timeout:10000}).catch(()=>{});
+    const read=()=>target.evaluate(()=>({disabled:document.getElementById("confirm-button")?.disabled===true,loading:document.getElementById("confirm-loading")?.hidden===false,
+      text:document.getElementById("confirm-loading")?.textContent||""}));
+    const waiting=await read();
+    if(note===check)await target.locator("#confirm-card").screenshot({path:output.replace(/\.json$/,"-confirm-waiting.png")}).catch(()=>{});
+    release();
+    await target.waitForFunction(()=>document.getElementById("confirm-button")?.disabled===false,null,{timeout:10000}).catch(()=>{});
+    const ready=await read();
+    note("the_confirm_button_waits_for_the_sign_in_settings",waiting.disabled&&waiting.loading&&waiting.text==="Loading the sign-in settings…"
+      &&!ready.disabled&&!ready.loading,{waiting,ready});
   };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
@@ -2595,7 +2639,8 @@ try {
     funnel_open:funnelScenario(fixture.confirm_base,true),funnel_closed:funnelScenario(fixture.base,false),funnel_waitlist:funnelScenario(fixture.account_base,false,true),list_request:listRequest,
     invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false),
     free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
-    staff:(target,note)=>staffJourney(target,note)};
+    staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
+    confirm_wait:(target,note)=>confirmWait(target,note)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2626,6 +2671,8 @@ try {
     {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Baltor Pro"',replacement:'free_monthly:{title:"Your account covers Baltor Pro"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
+    {name:"hide_the_sign_up_link_form",scenario:"staff_links",path:"/assets/service.js",find:'$("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");',replacement:'$("staff-links-form").hidden = true;',expected:["a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting"]},
+    {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};

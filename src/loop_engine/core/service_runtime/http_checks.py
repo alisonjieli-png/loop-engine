@@ -537,6 +537,9 @@ def self_test():
     from .account_administration_checks import run_checks as account_administration_checks
     with tempfile.TemporaryDirectory(prefix="service-account-administration-") as directory:
         account_administration_checks(check, Path(directory))
+    from .staff_sign_up_link_checks import run_checks as staff_sign_up_link_checks
+    with tempfile.TemporaryDirectory(prefix="service-staff-sign-up-links-") as directory:
+        staff_sign_up_link_checks(check, Path(directory))
     from .waitlist_checks import run_all_checks as waiting_list_checks
     with tempfile.TemporaryDirectory(prefix="service-waitlist-") as directory:
         for row in waiting_list_checks(Path(directory))["tests"]:

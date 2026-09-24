@@ -233,6 +233,17 @@ class BrowserIdentityAdapter:
             self._verifier.configuration.issuer, claims["sub"], self.configuration.namespace_prefix,
             self.configuration.allowed_scopes, self._starter_bindings,
             follows_active_release=self._follows_active_release))
+        # A sign-up link a superadmin sent is completed first, so free monthly
+        # Baltor Pro it asked for is held before the founding offer is weighed,
+        # and a founding place is kept for someone who came on their own.
+        from .staff_sign_up_links import PENDING, complete_on_activation
+        try:
+            link = complete_on_activation(self.runtime, self._verifier.configuration.issuer, claims["sub"],
+                                          activation["tenant_id"])
+        except ServiceRuntimeError:
+            link = PENDING
+        if link is not None:
+            activation = {**activation, "sign_up_link": link}
         if self.founding_accounts is not None and identity.origin == account_origin.SIGNUP_ORIGIN:
             from .free_monthly import DEFERRED, consider_founding_offer
             try:

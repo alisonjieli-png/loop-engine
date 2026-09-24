@@ -44,8 +44,10 @@ GRANT_FREE_MONTHLY = "accounts.grant_free_monthly"
 REVOKE_FREE_MONTHLY = "accounts.revoke_free_monthly"
 DISABLE_ACCOUNT = "accounts.disable"
 ENABLE_ACCOUNT = "accounts.enable"
+#: Start Baltor's own sign-up for a few addresses, owner request of September 24, 2026.
+SEND_SIGN_UP_LINKS = "accounts.send_sign_up_links"
 PERMISSIONS = (ACCOUNTS_LIST, ACCOUNT_COUNTS, USAGE_COUNTS, SERVICE_DIAGNOSTICS,
-               GRANT_FREE_MONTHLY, REVOKE_FREE_MONTHLY, DISABLE_ACCOUNT, ENABLE_ACCOUNT)
+               GRANT_FREE_MONTHLY, REVOKE_FREE_MONTHLY, DISABLE_ACCOUNT, ENABLE_ACCOUNT, SEND_SIGN_UP_LINKS)
 #: What each role may do. This table is the only source of a permission.
 ROLE_PERMISSIONS = MappingProxyType({
     SUPERADMIN: frozenset(PERMISSIONS),
@@ -62,7 +64,9 @@ MOST_FOUNDING_ACCOUNTS = 10_000
 MOST_STAFF_MEMBERS = 50
 #: The provider's user identity is a lower-case UUID.
 PROVIDER_USER_ID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
-_STAFF_FIELDS = frozenset({"role", "provider_user_id", "email"})
+_STAFF_FIELDS = frozenset({"role", "provider_user_id", "email", "name"})
+#: The name a sign-up link message gives for the staff member who sent it.
+LONGEST_STAFF_NAME = 64
 
 
 def permissions_for(role):
@@ -90,8 +94,15 @@ class StaffMember:
     role: str
     provider_user_id: str = ""
     email: str = ""
+    #: How a message this person sends names them, such as "Sam at Baltor".
+    #: Optional; without it the message names the person's address.
+    name: str = ""
 
     def __post_init__(self):
+        if (not isinstance(self.name, str) or len(self.name) > LONGEST_STAFF_NAME or self.name != self.name.strip()
+                or any(not (ch.isalnum() or ch in " .-'") for ch in self.name)):
+            raise ServiceRuntimeError("invalid_staff_member",
+                                      "a staff name is up to 64 letters, digits, spaces, points, hyphens or apostrophes")
         if self.role not in STAFF_ROLES:
             raise ServiceRuntimeError("unknown_staff_role", "a staff role is superadmin, developer or analytics")
         if not isinstance(self.provider_user_id, str) or not isinstance(self.email, str):
@@ -150,11 +161,16 @@ class ServiceAccountPolicy:
                 "an accounts block names its record version, the founding count and the staff list, and nothing else")
         return cls(**value)
 
-    def role_for(self, provider_user_id, email):
-        """The staff role of one verified identity, or empty text for everyone else."""
+    def member_for(self, provider_user_id, email):
+        """The staff entry of one verified identity, or None for everyone else."""
         address = email.lower() if isinstance(email, str) else ""
         for member in self.staff:
             if ((member.provider_user_id and member.provider_user_id == provider_user_id)
                     or (member.email and address and member.email == address)):
-                return member.role
-        return ""
+                return member
+        return None
+
+    def role_for(self, provider_user_id, email):
+        """The staff role of one verified identity, or empty text for everyone else."""
+        member = self.member_for(provider_user_id, email)
+        return member.role if member is not None else ""

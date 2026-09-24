@@ -409,6 +409,8 @@
     for (const id of ["confirm-password", "confirm-password-again"]) $(id).minLength = minimumPassword();
     $("confirm-new-link").setAttribute("href", recovery ? "/login" : "/signup"); $("confirm-new-link").dataset.page = recovery ? "login" : "signup";
     $("confirm-password-step").hidden = !usable; $("confirm-unusable").hidden = usable;
+    // Confirm stays disabled until the sign-in settings have loaded, so a quick click is never refused.
+    $("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);
   }
   $("confirm-form").addEventListener("submit", async event => {
     event.preventDefault(); if (busy || !confirmation) return;
@@ -438,7 +440,7 @@
       await connectService(accessToken, identityConfiguration.registration_enabled);
       if (!token) message("confirm-message", "Your password is set, but the service did not open your account. Sign in from the sign-in page.", true);
     } catch (error) { if (current()) message("confirm-message", error.message, true); }
-    finally { busy = false; $("confirm-button").disabled = false; }
+    finally { busy = false; $("confirm-button").disabled = !identityClient; }
   });
   showConfirmation();
   /* The Get started funnel. One card shows the step a visitor is on, beside the five steps, with one primary action in every
@@ -628,6 +630,7 @@
       ["Switched off", String(counts.switched_off)]] : []), ...(usage ? [["Downloads in 30 days", String(usage.downloads_in_the_last_30_days)]] : []),
       ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : [])]);
     $("staff-accounts").replaceChildren();
+    $("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");
     if (!overview.permissions.includes("accounts.list")) { message("staff-message", "Your role reads the figures above. Account changes need a superadmin."); return; }
     const listing = await request("/api/v1/admin/accounts");
     for (const row of listing.accounts) {
@@ -635,6 +638,8 @@
       item.append(element("h3", row.email || row.provider_user_id), element("span", planNames[row.plan_state] || row.plan_state, "badge"));
       item.append(element("p", "Created " + when(row.created_at) + " · " + (row.email_confirmed ? "Confirmed" : "Not confirmed") + " · Last use " + when(row.last_item_at || row.last_sign_in_at)));
       if (row.founding) item.append(element("p", "Founding account", "caption"));
+      if (row.sign_up_link?.state === "pending") item.append(element("p", "Sign-up link sent " + when(row.sign_up_link.sent_at) + ", waiting for this person to choose a password"
+        + (row.sign_up_link.free_monthly ? ". Free monthly Baltor Pro starts when the account opens." : "."), "caption"));
       if (row.enabled === false) item.append(element("p", "Switched off", "caption"));
       const free = row.plan_state === "free_monthly" || row.plan_state === "founding_free_monthly";
       const actions = !row.tenant_id ? [] : [[free ? "revoke_free_monthly" : "grant_free_monthly", free ? "Revoke free monthly" : "Grant free monthly"],
@@ -656,6 +661,28 @@
     message("staff-message", listing.total + " accounts. Founding places used: " + listing.founding_holders + " of " + listing.founding_limit + ".");
   }
   $("refresh-staff").addEventListener("click", () => loadStaff().catch(error => message("staff-message", error.message, true)));
+  /* A superadmin starts Baltor's own sign-up for a few addresses. Each person gets one message from this service and chooses
+     their own password on the confirmation page; an address that already has an account gets nothing. */
+  let staffLinkRequest = null;
+  const linkOutcomes = {sent:"Link sent to ", address_has_an_account:"No email sent, the account already exists: ",
+    address_sent_recently:"No email sent, a link went out recently: ", failed:"The link could not be sent: "};
+  $("staff-links-form").addEventListener("submit", async event => {
+    event.preventDefault(); if (staffBusy) return;
+    const addresses = $("staff-link-addresses").value.split(/[\s,;]+/).map(value => value.trim()).filter(Boolean);
+    if (!addresses.length) { message("staff-message", "Enter at least one email address.", true); return; }
+    if (addresses.length > 10) { message("staff-message", "Send at most 10 links at a time.", true); return; }
+    const fields = {record_type:"service_staff_sign_up_link_request/v1", addresses, free_monthly:$("staff-link-free").checked};
+    const signature = JSON.stringify(fields);
+    if (!staffLinkRequest || staffLinkRequest.signature !== signature) staffLinkRequest = {signature, id:crypto.randomUUID()};
+    staffBusy = true; $("staff-link-button").disabled = true;
+    try {
+      const result = await request("/api/v1/admin/sign-up-links", {...fields, request_id:staffLinkRequest.id});
+      staffLinkRequest = null; $("staff-link-addresses").value = ""; $("staff-link-free").checked = false;
+      await loadStaff();
+      message("staff-message", result.links.map(row => (linkOutcomes[row.outcome] || row.outcome + ": ") + row.address + ".").join(" "));
+    } catch (error) { message("staff-message", error.message + " Refresh to see the current state; an exact retry reuses this request identity.", true); }
+    finally { staffBusy = false; $("staff-link-button").disabled = false; }
+  });
   $("issue-access").addEventListener("submit", async event => {
     event.preventDefault(); if (accessBusy || !accessOptions) return;
     const fields = {record_type:"service_access_request/v1", operation:"issue", tenant_id:$("token-tenant").value, label:$("token-label").value.trim(),
@@ -867,6 +894,7 @@
         showConfirmation();
       }).catch(() => {
         message("identity-message", "Email sign-in configuration is unavailable. Operator service tokens remain separate.", true);
+        $("confirm-loading").hidden = true;
         if (confirmation) message("confirm-message", "Sign-in settings are unavailable, so this link cannot be finished now. Your link was not used; open it again later.", true);
       });
     }

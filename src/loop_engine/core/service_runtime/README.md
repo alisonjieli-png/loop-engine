@@ -55,6 +55,7 @@ Existing service boundary
 ├── account_origin.py: the one way in, the identity administration edge and the marking command
 ├── account_policy.py: staff roles and permissions fixed in code, and the host's accounts block
 ├── account_administration.py: the staff overview, the account list and superadmin actions
+├── staff_sign_up_links.py: sign-up links a superadmin sends through Baltor's own sign-up
 ├── free_monthly.py: free monthly Baltor Pro, the founding offer and the monthly renewal
 ├── web_pages.py: the served page address table and the packaged files behind it
 ├── catalogue_*.py: catalogue releases, the body store edge and the served view
@@ -1125,6 +1126,61 @@ status and bytes do not. The founding decision is kept for each account, so an
 account that finished sign-up while the places were full is not granted later.
 The account list reads every provider user on each request, which suits a
 young service and needs paging before many thousands of accounts.
+
+### Sign-up links a superadmin sends
+
+The owner's request of September 24, 2026: a superadmin types one or more
+addresses, and each person gets one message that names who sent it and links
+to the same `/auth/confirm` page. `send_sign_up_links` in
+`staff_sign_up_links.py` is Baltor's own sign-up started by a staff member, so
+it adds no way in.
+
+- `StaffSignUpLinkRequest` refuses a record of another version, an unknown
+  field, more than `MOST_ADDRESSES` (ten) addresses and an address named twice,
+  before any request to the identity provider.
+- The permission is `accounts.send_sign_up_links`, which only the superadmin
+  row of `ROLE_PERMISSIONS` holds. The route rechecks the staff session like
+  every staff action.
+- The request identity is reserved first, as an audit record in progress. A
+  completed identity replays its first result; an identity still in progress
+  is refused with `sign_up_links_in_progress`, so an interrupted batch is never
+  sent twice under it.
+- For each address, an account the service already holds a sign-in for, or a
+  confirmed account with both marks, is refused before any count or message.
+  Then the allowance for one address that public sign-up keeps is checked and
+  counted, then `AccountOrigins.prepare_signup` prepares the account with both
+  marks, and the link must name the prepared provider user.
+- The pending link records and the completed audit record commit in one
+  write. They hold digests of the addresses, never an address.
+- `complete_on_activation` runs from the browser identity adapter's
+  activation, before the founding offer. It completes the pending record and,
+  when free monthly Baltor Pro was asked for, commits the grant in the same
+  write. An account that already holds free monthly or a paid plan keeps it.
+
+| Guard | Named check | Removed-guard control |
+|---|---|---|
+| Only a superadmin sends | `developer_analytics_and_customers_cannot_send_sign_up_links` | `removed_sign_up_link_permission_is_detected` |
+| No second message for an open account | `an_address_that_already_has_an_account_is_refused_without_a_second_message` | `removed_existing_account_rule_is_detected` |
+| At most ten addresses | `a_batch_over_the_limit_is_refused_before_any_provider_request` | `removed_batch_limit_is_detected` |
+| The allowance for one address | `a_repeat_within_the_allowance_sign_up_keeps_for_one_address_is_refused_without_a_message` | `removed_allowance_for_one_address_is_detected` |
+| Free monthly when the account opens | `free_monthly_is_granted_when_the_account_opens_and_the_link_leaves_the_pending_list` | `removed_free_monthly_on_activation_is_detected` |
+| The staff form in the Administration view | `a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting`, in the browser suite | `hide_the_sign_up_link_form` |
+| Confirm waits for the sign-in settings | `the_confirm_button_waits_for_the_sign_in_settings`, in the browser suite | `let_confirm_run_before_the_sign_in_settings_load` |
+
+Other named checks in `staff_sign_up_link_checks.py`, run from the service
+smoke run: a superadmin's batch prepares each account with both marks and
+sends one message naming the sender; a batch and its audit record share one
+request identity and hold no address; an interrupted batch is not sent twice;
+and the route serves a superadmin over HTTP and refuses an analytics staff
+member, a customer, a host key, a foreign browser origin, a query string and a
+batch over the limit.
+
+Limits. The allowance for one address is kept in process memory, as it is for
+public sign-up, so a restart starts it again. A batch interrupted after its
+reservation leaves any account it prepared without a pending record, so that
+account opens without the free monthly grant; a superadmin grants it from the
+account list. A batch of ten addresses makes up to about fifty requests to the
+identity provider and the mail sender in one staff request.
 
 ## Waiting list
 

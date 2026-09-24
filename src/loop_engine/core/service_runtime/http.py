@@ -96,6 +96,8 @@ WAITLIST_PATH, ADMIN_WAITLIST_PATH = "/api/v1/waitlist", "/api/v1/admin/waitlist
 #: Staff administration. A signed-in staff member reads the overview their role
 #: allows; a superadmin reads every account and applies one action at a time.
 ADMIN_OVERVIEW_PATH, ADMIN_ACCOUNTS_PATH = "/api/v1/admin/overview", "/api/v1/admin/accounts"
+#: A superadmin starts Baltor's own sign-up for a few addresses at once.
+ADMIN_SIGN_UP_LINKS_PATH = "/api/v1/admin/sign-up-links"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -122,6 +124,7 @@ API_ROUTES = {
     ADMIN_WAITLIST_PATH: ("GET", "POST"),
     ADMIN_OVERVIEW_PATH: ("GET",),
     ADMIN_ACCOUNTS_PATH: ("GET", "POST"),
+    ADMIN_SIGN_UP_LINKS_PATH: ("POST",),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
     "/api/v1/provisioning": ("POST",),
@@ -144,8 +147,10 @@ DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
 #: it. Promotion redemption carries a code that grants paid access to whoever
 #: holds it. Their bodies never reach a failure record, whatever the host chose
 #: to capture, because no recording choice may record a credential. The refusal
-#: itself is still recorded.
-CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH)
+#: itself is still recorded. A staff sign-up link request carries email
+#: addresses, which the published privacy notice keeps with the identity
+#: provider, so its body is never kept either.
+CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH, ADMIN_SIGN_UP_LINKS_PATH)
 
 
 class ServiceHttpError(ValueError):
@@ -528,7 +533,7 @@ def _status(error):
                 "waitlist_address_already_listed", "waitlist_address_has_account",
                 "waitlist_transition_refused", "waitlist_decision_identity_conflict",
                 "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
-                "account_administration_request_identity_conflict"):
+                "account_administration_request_identity_conflict", "sign_up_links_in_progress"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -1032,6 +1037,14 @@ class ServiceHttpApplication:
             return self.account_administration.accounts(staff)
         return self.account_administration.apply(staff, AccountAdministrationRequest.from_dict(fields))
 
+    def _send_sign_up_links(self, context, fields):
+        """Revalidate the staff session at the provider, then send one batch within the superadmin role."""
+        from .staff_sign_up_links import StaffSignUpLinkRequest, send_sign_up_links
+        current = self.authenticator.revalidate(context)
+        staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
+        return send_sign_up_links(self.account_administration, self.account_email, staff,
+                                  StaffSignUpLinkRequest.from_dict(fields))
+
     def _staff_diagnostics(self):
         """What a developer reads: the measured health record and the newest refusal codes, counted."""
         from .billing_policy import billing_policy_refusal
@@ -1521,6 +1534,15 @@ class ServiceHttpApplication:
                 # route also draws on the share of work that waits on another service.
                 output = await self._work(lambda: invoke_http_service_as_loop("account_administration",
                     lambda: self._administer_accounts(context, path, fields)),
+                    shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
+            elif path == ADMIN_SIGN_UP_LINKS_PATH and method == "POST":
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                if self.account_administration is None:
+                    raise ServiceHttpError("sign_up_links_unavailable", 503)
+                fields = _parse_json(await self._body(request))
+                output = await self._work(lambda: invoke_http_service_as_loop("staff_sign_up_links",
+                    lambda: self._send_sign_up_links(context, fields)),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif path == BILLING_PLANS_PATH and method == "GET":
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("billing_plans",

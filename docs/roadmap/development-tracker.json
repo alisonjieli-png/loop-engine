@@ -1,7 +1,7 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 43,
+  "done": 44,
   "next": 13,
   "now": 40,
   "waiting": 78
@@ -64,6 +64,22 @@
     "phase": 6,
     "status": "live_qualified",
     "title": "Superadmin user management and the first 10 accounts free each month",
+    "waiting_on": [
+     "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "The owner can bring named people in from the Administration view without a second way in, and nobody who opens a sign-up link can press Confirm before the page can use it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.89"
+    ],
+    "id": "S-6.99",
+    "next_local_work": "Release the committed revision, then send one live sign-up link to a fresh address with free monthly ticked, open it, choose a password and confirm that the account opens with free monthly Baltor Pro and leaves the pending list.",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings",
     "waiting_on": [
      "S-6.85"
     ]
@@ -3706,12 +3722,13 @@
     "D-17",
     "D-24"
    ],
-   "done_steps": 1,
+   "done_steps": 2,
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
     "building": 3,
     "live_qualified": 1,
+    "offline_verified": 1,
     "proposed": 4
    },
    "steps": [
@@ -3722,10 +3739,11 @@
     "S-6.68",
     "S-6.38",
     "S-6.46",
-    "S-6.89"
+    "S-6.89",
+    "S-6.99"
    ],
    "title": "Go fully live: open registration and self-serve paid onboarding",
-   "total_steps": 8
+   "total_steps": 9
   },
   {
    "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
@@ -3882,5 +3900,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393"
+ "source_fingerprint": "sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24dcd95b62337d"
 }

@@ -651,8 +651,7 @@ class AccountEmailAdapter:
         token_hash = self._token_hash(prepared)
         signup = prepared.action == SIGNUP_ACTION
         if token_hash:
-            link = (self.public_base_url + CONFIRM_PAGE + "?token_hash=" + quote(token_hash, safe="")
-                    + "&type=" + prepared.action)
+            link = self.confirm_link(token_hash, prepared.action)
             subject, body = (confirmation_message(self.display_name, link) if signup
                              else recovery_message(self.display_name, link))
         else:
@@ -701,8 +700,18 @@ class AccountEmailAdapter:
             # Its owner gets the notice, exactly as for a confirmed account.
             if expected_user is None:
                 return ""
+        return self.generated_link(prepared.action, prepared.email, password, secret, expected_user)
+
+    def generated_link(self, action, email, password, secret, expected_user=""):
+        """Ask the identity provider for one link and return its token hash, or empty text when it refused.
+
+        Public sign-up, recovery and a superadmin's sign-up link all use it, so
+        every link is bound the same way to its address, its action and the
+        account the one way in prepared.
+        """
+        configuration = self.configuration
         answer = self._ask(self._identity_transport,
-            IdentityLinkRequest(configuration.identity_origin + GENERATE_LINK_PATH, prepared.action, prepared.email,
+            IdentityLinkRequest(configuration.identity_origin + GENERATE_LINK_PATH, action, email,
                                 password, configuration.timeout_seconds, configuration.maximum_response_bytes),
             secret, "identity_link_unavailable")
         if 400 <= answer.status_code < 500:
@@ -720,13 +729,25 @@ class AccountEmailAdapter:
         # for. Without this, an answer naming another address would be put in a
         # message to the requesting address, and whoever opened it could
         # confirm that other account and then set its password.
-        if (not names_the_same_address(answer.payload, prepared.email)
-                or not names_the_same_action(answer.payload, prepared.action)):
+        if (not names_the_same_address(answer.payload, email)
+                or not names_the_same_action(answer.payload, action)):
             raise AccountEmailError("identity_link_unusable", 503)
         # A sign-up link opens exactly the account the one way in prepared.
         if expected_user and answer.payload.get("id") != expected_user:
             raise AccountEmailError("identity_link_unusable", 503)
         return value
+
+    def confirm_link(self, token_hash, action):
+        """The link to this service's confirmation page for one token hash and one action."""
+        return self.public_base_url + CONFIRM_PAGE + "?token_hash=" + quote(token_hash, safe="") + "&type=" + action
+
+    def identity_secret(self):
+        """The identity provider's server key, refused when it is of another kind."""
+        return self._secret(self.configuration.identity_service_key_ref, IDENTITY_SECRET_PREFIX)
+
+    def send_message(self, recipient, subject, body):
+        """Send exactly one message through the mail provider, as sign-up and recovery do."""
+        self._send(recipient, subject, body)
 
     def _send(self, recipient, subject, body):
         configuration = self.configuration

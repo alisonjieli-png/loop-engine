@@ -62,7 +62,7 @@ MODULE_MAP = {
         "promotions", "promotion_checks",
         "account_email", "account_email_checks",
         "account_origin", "account_origin_checks", "account_policy", "account_administration",
-        "account_administration_checks", "free_monthly",
+        "account_administration_checks", "free_monthly", "staff_sign_up_links", "staff_sign_up_link_checks",
         "observability", "observability_checks",
         "waitlist", "waitlist_checks",
         "protocol_checks",

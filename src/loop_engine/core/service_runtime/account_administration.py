@@ -83,6 +83,8 @@ class StaffSession:
     role: str
     credential_digest: str = field(repr=False)
     expires_at: float
+    #: The verified address of the staff member, which a sign-up link message names.
+    email: str = field(default="", repr=False)
 
 
 class AccountAdministration:
@@ -113,7 +115,7 @@ class AccountAdministration:
         if not role:
             raise ServiceRuntimeError("staff_role_required")
         return StaffSession(authentication.principal, authentication.identity.subject, role, credential_digest,
-                            float(authentication.expires_at))
+                            float(authentication.expires_at), authentication.identity.email)
 
     def _current_session(self, store, staff):
         """Recheck the staff member's account, the sign-out record and the expiry inside one read."""
@@ -190,10 +192,12 @@ class AccountAdministration:
     def accounts(self, staff):
         """Every account, joined from the identity provider and the service records (superadmin)."""
         self._require(staff, ACCOUNTS_LIST)
+        from .staff_sign_up_links import links_by_subject
         with self.runtime._catalog.store() as store:
             self._current_session(store, staff)
             service = self._accounts(store)
             holders = set(free_monthly.founding_holders(self.runtime))
+            links = links_by_subject(self.runtime, store, self.issuer)
         users, details = [], False
         if self.origins is not None and self._identity_secret is not None:
             users, details = self.origins.administration.all_users(self._identity_secret()), True
@@ -205,12 +209,14 @@ class AccountAdministration:
                          "email_confirmed": bool(user.email_confirmed_at),
                          "email_confirmed_at": user.email_confirmed_at, "last_sign_in_at": user.last_sign_in_at,
                          "created_by_this_service": self.origins.honoured(user),
-                         "founding": held.get("tenant_id") in holders, **self._service_fields(held)})
+                         "founding": held.get("tenant_id") in holders, "sign_up_link": links.get(user.user_id),
+                         **self._service_fields(held)})
         for subject, held in service.items():
             if subject not in seen:
                 rows.append({"provider_user_id": subject, "email": "", "created_at": "", "email_confirmed": None,
                              "email_confirmed_at": "", "last_sign_in_at": "", "created_by_this_service": None,
-                             "founding": held["tenant_id"] in holders, **self._service_fields(held)})
+                             "founding": held["tenant_id"] in holders, "sign_up_link": links.get(subject),
+                             **self._service_fields(held)})
         rows.sort(key=lambda row: (row["created_at"] or "", row["provider_user_id"]), reverse=True)
         return {"record_type": LISTING_VERSION, "accounts": rows[:DISPLAY_LIMIT], "total": len(rows),
                 "display_limit": DISPLAY_LIMIT, "identity_details_available": details,

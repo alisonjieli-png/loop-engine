@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393`.
+Source fingerprint: `sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24dcd95b62337d`.
 
 ## Where things stand
 
@@ -13,7 +13,7 @@ Source fingerprint: `sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de
 | Can start next | 13 |
 | Waiting on earlier work | 78 |
 | Blocked | 2 |
-| Done | 43 |
+| Done | 44 |
 
 ## Being built now
 
@@ -209,7 +209,7 @@ Source fingerprint: `sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 1 of 8 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 9 |
 | D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
@@ -240,10 +240,11 @@ Source fingerprint: `sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (43 steps)
+## Done (44 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
+- S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)

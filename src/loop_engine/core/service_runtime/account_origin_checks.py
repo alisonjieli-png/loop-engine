@@ -449,7 +449,7 @@ def _replacement_checks(check, root):
     check("a_sign_up_link_for_another_account_is_refused_before_any_message",
           sign_up(wrong, "linked.elsewhere@example.com") == "identity_link_unusable"
           and len(project.messages) == sent_before)
-    with mutated(account_email_module.AccountEmailAdapter, "_token_hash",
+    with mutated(account_email_module.AccountEmailAdapter, "generated_link",
                  "if expected_user and answer.payload.get(\"id\") != expected_user:", "if False:"):
         check("removed_link_to_prepared_account_rule_is_detected",
               sign_up(wrong, "linked.again@example.com") != "identity_link_unusable")

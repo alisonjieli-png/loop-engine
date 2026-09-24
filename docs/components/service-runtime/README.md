@@ -57,7 +57,8 @@ Hosted intelligence service
 │   ├── one way in: only accounts its own sign-up created, marked in two places
 │   ├── customer-owned client keys and their scopes
 │   ├── administrator access grants
-│   └── staff roles fixed in code, and superadmin account administration
+│   ├── staff roles fixed in code, and superadmin account administration
+│   └── sign-up links a superadmin sends through Baltor's own sign-up
 ├── Authenticated delivery
 │   ├── catalogue discovery, listing and manifests
 │   ├── one selected body, inline or by download
@@ -105,6 +106,7 @@ effect, so an older release cannot silently reinterpret a newer request.
 | Staff overview | none | `service_staff_overview/v1` |
 | Account list | none | `service_account_listing/v1` |
 | Account action | `service_account_administration_request/v1` | `service_account_administration_result/v1` |
+| Staff sign-up links | `service_staff_sign_up_link_request/v1` | `service_staff_sign_up_link_result/v1` |
 
 These are the addresses the service answers on. They are read from
 `core.service_runtime.http`, so a route renamed in the source fails the
@@ -126,6 +128,7 @@ component guide check rather than surviving here.
 | `/api/v1/admin/access` | Administrator grants. |
 | `/api/v1/admin/overview` | A staff member's role, its permissions and what the role may read. |
 | `/api/v1/admin/accounts` | The account list and one account action, for a superadmin. |
+| `/api/v1/admin/sign-up-links` | Baltor's own sign-up link for up to ten addresses, sent by a superadmin. |
 | `/api/v1/billing/plans` | The plans on offer. |
 | `/api/v1/billing/checkout` | Start a checkout session. |
 | `/api/v1/billing/portal` | Open the customer portal. |
@@ -221,6 +224,8 @@ These are the refusals a client meets most often:
 | `account_origin_unverified` | The sign-in was not created through Baltor's sign-up. Sign up again with the same address. |
 | `staff_role_required` | The caller holds no staff role. |
 | `account_administration_forbidden` | The caller's staff role does not include that action. |
+| `sign_up_link_batch_too_large` | One request named more than ten addresses. Nothing was sent. |
+| `sign_up_links_in_progress` | A batch under this request identity started and did not finish. It is never sent again under that identity. |
 
 The request limit is separate. When a client address exceeds the configured
 failed-attempt limit, the service answers with
@@ -366,6 +371,73 @@ request under the same identity is refused. The action and its audit record,
 refused when the staff session was signed out or expired meanwhile. A
 superadmin cannot switch off their own account, and a host tenant without a
 browser sign-in is not an account here.
+
+## Sign-up links a superadmin sends
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it.
+
+The owner asked on September 24, 2026 for a way for a superadmin to type email
+addresses and have those people sign up. A sign-up link is Baltor's own
+email-first sign-up, started by a staff member instead of by the visitor, so
+it adds no way in. The account gets the same two marks, the link opens the same
+`/auth/confirm` page, and the person chooses their own password there.
+
+```text
+One request from a superadmin, service_staff_sign_up_link_request/v1
+├── refused before any request to the identity provider
+│   ├── a caller without the permission accounts.send_sign_up_links
+│   ├── more than ten addresses, or one address named twice
+│   └── a service whose own sign-up is switched off
+├── the request identity reserved in the audit record
+├── for each address
+│   ├── an account is already open under it
+│   │   └── refused as address_has_an_account, and no message
+│   ├── the allowance for one address that sign-up keeps is used up
+│   │   └── refused as address_sent_recently, and no message
+│   └── otherwise
+│       ├── the account is prepared with both marks by prepare_signup
+│       ├── one link to the /auth/confirm page
+│       └── one message that names the staff member who sent it
+└── one write: a pending record for each link and the completed audit record
+When the person chooses a password and the account opens
+└── the pending record is completed, and free monthly Baltor Pro is granted
+    in the same write when the superadmin ticked the box
+```
+
+The message subject is "Sam at Baltor invited you to Baltor" when the
+staff entry in the host file's `accounts` block has the optional `name`
+"Sam at Baltor". Without a name, the message names the staff member's
+verified address. The message asks for nothing but a password, and it says
+that the account includes Baltor Pro free each month when the box was ticked.
+
+A sign-up link counts against the same allowance for one address as a public
+sign-up, three an hour by default, so a staff member cannot send more messages
+to one person than a visitor could ask for. An address whose account is open,
+or whose account the service already holds a sign-in for, gets no message; the
+answer names it.
+
+The audit record `service_account_administration_event/v1`, with operation
+`send_sign_up_links`, holds the request identity, a digest of each address and
+the result. The pending record `service_staff_sign_up_link/v1` holds the
+provider user, a digest of the address, who sent it, when, and whether free
+monthly Baltor Pro was asked for. Neither record holds an address. The account
+list reads the address from the identity provider, as it does for every
+account, and shows "Sign-up link sent, waiting for this person to choose a
+password" with the date until the account opens.
+
+A repeated request identity returns the first result. A batch interrupted
+after its reservation stays in progress under its identity and is never sent
+again under it. The superadmin sends the addresses again as a new request,
+and the allowance for one address still applies.
+
+An account opened with free monthly Baltor Pro from a sign-up link holds that
+grant and takes no founding place, because the link is completed before the
+founding offer is considered. An account opened from a link without the box
+is considered for the founding offer like any other account.
+
+The public pages do not change. Anyone can still sign up on the Get started
+page, and the Administration view calls this a sign-up link.
 
 ## Free monthly Baltor Pro and the founding offer
 

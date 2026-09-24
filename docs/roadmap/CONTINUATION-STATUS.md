@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393`.
+Plan fingerprint: `dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24dcd95b62337d`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -846,7 +846,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-25: Go fully live: open registration and self-serve paid onboarding
 
-Owning steps: S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89. Acceptance dependencies: D-17, D-24.
+Owning steps: S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89, S-6.99. Acceptance dependencies: D-17, D-24.
 
 Owning boundaries: `src/loop_engine/core/service_runtime/browser_identity.py`; `src/loop_engine/core/service_runtime/web_pages.py`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/check_hosted_website.mjs`; `.github/workflows/fly-pilot.yml`.
 
@@ -1070,6 +1070,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.65 | Open public registration with email-first sign-up | building | S-6.24, S-6.46 |
 | S-6.85 | One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code | building | S-6.65 |
 | S-6.89 | Superadmin user management and the first 10 accounts free each month | live_qualified | S-6.85 |
+| S-6.99 | Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings | offline_verified | S-6.85, S-6.89 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | S-6.17 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
@@ -1176,7 +1177,7 @@ Legacy statuses remain historical component claims until current integration evi
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13, S-6.57 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84 |
 | Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90 |
 
