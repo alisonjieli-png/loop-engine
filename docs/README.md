@@ -19,9 +19,9 @@ and what still needs the owner, are in the
 [commit, push and release authority](../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md. No other document restates them.
 
-The [September 23 session handoff](context/SESSION-HANDOFF-2026-09-23.md) is
+The [September 24 session handoff](context/SESSION-HANDOFF-2026-09-24.md) is
 the newest dated record of the live state and the work in flight; the
-[September 22 session handoff](context/SESSION-HANDOFF-2026-09-22.md) is the
+[September 23 session handoff](context/SESSION-HANDOFF-2026-09-23.md) is the
 one before it. The
 [takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records the
 working cycle, the open findings of September 20 and the private beta

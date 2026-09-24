@@ -12,12 +12,16 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 23 session handoff](SESSION-HANDOFF-2026-09-23.md). It records the
-live state, the owner's website directions of September 23 with the decisions
-made and why, every line of work at the wrap-up with its commit or patch, and
-the ordered work that remains. The
-[September 22 session handoff](SESSION-HANDOFF-2026-09-22.md) before it
-records releases 12 to 15, the merge losses and their repair. Then read the
+[September 24 session handoff](SESSION-HANDOFF-2026-09-24.md). It records the
+live state after release 24 with public registration open, the owner's
+requests of September 24 with the decisions made and why, every line of work
+in flight with its worktree, the scheduled jobs, how to re-arm the research
+team, and the ordered work that remains. The
+[September 23 session handoff](SESSION-HANDOFF-2026-09-23.md) before it
+records the owner's website directions of September 23 and every line of work
+at that wrap-up, and the
+[September 22 session handoff](SESSION-HANDOFF-2026-09-22.md) records
+releases 12 to 15, the merge losses and their repair. Then read the
 [takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md) for the working cycle
 for changes, tests, checkpoints and releases, the repairs of September 20 and
 the private beta definition. Its live-state table describes September 20.
