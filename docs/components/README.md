@@ -21,6 +21,14 @@ Self-improvement is a Practitioner workflow, not another component. Read
 [Self-improvement as a Practitioner task](self-improvement/) after the core
 component map.
 
+Every functional component follows the
+[functional component standard](../architecture/FUNCTIONAL-COMPONENT-STANDARD.md):
+one fixed, typed and versioned edge contract, one engine slot, and engines,
+written here or adapted from an outside project, that a host can install,
+select, test and replace without changing a caller. The design and its
+reasons are in
+[engines behind fixed edges](../architecture/ENGINES-BEHIND-FIXED-EDGES.md).
+
 Every source directory that runs a registered operational boundary is mapped to
 the guide that owns it in
 [the component guide map](COMPONENT-GUIDE-MAP.yaml). The check in

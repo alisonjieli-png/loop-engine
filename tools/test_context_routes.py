@@ -84,6 +84,25 @@ AUTHORITY_RULES = (
       'select the most efficient engine"',
       '"projects, repos, github, designs, or papers that we could use / leverage so we '
       "don't have to reinvent the wheel\"")),
+    # The owner's direction of September 23, 2026: functional components with
+    # several engines behind a typed edge, tests alone and in groups, one index
+    # of words, and every outside project beside our own engine. Only the
+    # owner's words are protected here; FUNCTIONAL_COMPONENT_STANDARD holds the
+    # link to the standard, whose engineering wording may improve.
+    ("functional_components_with_selectable_engines",
+     ('September 23, 2026: "ways we can have functional components, that have multiple '
+      'functional engines that are wrapped around a contract/edge/typed input output"',
+      '"testing functional components individual, in groups"',
+      '"contracting component functionality even if different engines operate the actual '
+      'functional execution"',
+      '"create a clear index and manage that to make sure discussions, nomeclature, and '
+      'things are simple, non-conflicting, non-conflcated"',
+      '"everytime we pull a project from github, we should containerize/wrap it as a '
+      "functionality component then build our own variation and allow easy selection and "
+      'swap out of functional engines that accomplish that task"',
+      '"a typed versioned component interface with selectable engines for all aspects of '
+      'this project for maximum robustness, modularity, real time selection of preferences '
+      'of engine"')),
     ("destructive_operations_need_the_owner",
      ("destroying or deleting an application, a volume, a domain record, a name "
       "server delegation, a provider resource or a secret (September 20, 2026)",)),
@@ -136,6 +155,8 @@ AUTHORITY_RULES = (
      ("Only the owner widens this authority, in their own words in the current "
       "conversation",)),
 )
+#: The one standard that the swappable engine rule links, repository-relative.
+FUNCTIONAL_COMPONENT_STANDARD = "docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md"
 _COMMIT_WORD = r"(?:commit(?:s|ted|ting)?|push(?:es|ed|ing)?)"
 #: Sentence shapes that withhold the standing commit and push authority. Each
 #: is refused even when a writer means something narrower; a narrower rule is
@@ -332,6 +353,12 @@ def authority_findings(documents, root=ROOT):
         for phrase in phrases:
             if " ".join(phrase.split()).lower() not in section:
                 findings.append((AUTHORITY_SOURCE, "owner_rule_missing", f"{rule}: {phrase}"))
+    standard = (root / FUNCTIONAL_COMPONENT_STANDARD).resolve()
+    if not any((root / unquote(urlsplit(href).path)).resolve() == standard
+               for _, href in markdown_references(authority_section(source))[0]
+               if href and not urlsplit(href).scheme and urlsplit(href).path):
+        findings.append((AUTHORITY_SOURCE, "functional_component_standard_link_missing",
+                         FUNCTIONAL_COMPONENT_STANDARD))
     for path in ENTRY_ROUTES:
         text = documents[path]
         if not links_to_authority(root, path, text):
@@ -491,6 +518,14 @@ class ContextRouteTests(unittest.TestCase):
                 changed[AUTHORITY_SOURCE] = source.replace(section, removed + "\n")
                 self.assertIn((AUTHORITY_SOURCE, "owner_rule_missing", f"{rule}: {phrase}"),
                               authority_findings(changed), (rule, phrase))
+
+    def test_lost_functional_component_standard_link_is_detected(self):
+        changed = dict(self.authority_documents)
+        changed[AUTHORITY_SOURCE] = changed[AUTHORITY_SOURCE].replace(
+            "(" + FUNCTIONAL_COMPONENT_STANDARD + ")", "")
+        self.assertNotEqual(changed[AUTHORITY_SOURCE], self.authority_documents[AUTHORITY_SOURCE])
+        self.assertIn((AUTHORITY_SOURCE, "functional_component_standard_link_missing",
+                       FUNCTIONAL_COMPONENT_STANDARD), authority_findings(changed))
 
     def test_missing_authority_section_is_detected(self):
         changed = dict(self.authority_documents)

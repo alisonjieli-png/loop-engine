@@ -245,16 +245,44 @@ until the takeover session committed the work on September 20, 2026.
    has a fixed, typed and versioned edge, one or more engines behind it, room
    for custom variations, and runtime selection by declared order and
    recorded evidence. A new engine is added without changing its callers.
+   Every functional component outside the fixed frame that the standard
+   lists has one engine slot in
+   [`engine_slots.yaml`](src/loop_engine/data/engine_slots.yaml). Each of its
+   engines passes the slot's conformance kit alone, and components are also
+   tested in groups and end to end. A project taken from GitHub or another
+   source repository enters as an engine adapter pinned to its source
+   revision and licence, runs in the container or sandbox that its trust
+   requires, and gets a Baltor-native engine beside it that passes the same
+   kit, or a recorded reason why its slot needs none; a host setting or an
+   engine preference switches between them at run time without editing a
+   caller.
    Before building, search existing projects, repositories, published designs
    and papers for something to use or adapt, and record what was found and
    why it was adopted, adapted or rejected. An engine is an adapter that a
-   Loop uses, never a new runtime type. The owner, September 21, 2026: "every
+   Loop uses, never a new runtime type. The
+   [functional component standard](docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md)
+   states each requirement once, with the check that enforces it. Its
+   technical words have the meanings that
+   [`terminology.yaml`](terminology.yaml) gives them, and quoted owner words
+   keep the owner's meaning. The owner, September 21, 2026: "every
    functional unit should be wrapped so that we can replace the unit engine
    without impacting functional unit to unit edge communication". September
    22, 2026: engines "for each functional component so that the runtime can
    select the most efficient engine", and a search for "projects, repos,
    github, designs, or papers that we could use / leverage so we don't have
-   to reinvent the wheel".
+   to reinvent the wheel". September 23, 2026: "ways we can have functional
+   components, that have multiple functional engines that are wrapped around
+   a contract/edge/typed input output", "testing functional components
+   individual, in groups", "contracting component functionality even if
+   different engines operate the actual functional execution", "create a
+   clear index and manage that to make sure discussions, nomeclature, and
+   things are simple, non-conflicting, non-conflcated", "everytime we pull a
+   project from github, we should containerize/wrap it as a functionality
+   component then build our own variation and allow easy selection and swap
+   out of functional engines that accomplish that task", and "a typed
+   versioned component interface with selectable engines for all aspects of
+   this project for maximum robustness, modularity, real time selection of
+   preferences of engine".
 
 ### What still needs the owner, in the current conversation
 

@@ -360,6 +360,20 @@ forbidden_class_names:
 - PractitionerNode
 - IntelligenceNode
 - SolutionNode
+- EngineDefinition
+- EngineConfiguration
+- LifecycleProfile
+- PreferenceMode
+- PreparedPlan
+- StateRef
+- BindingSpec
+- SupportReport
+- ArtifactBundle
+- ActivationController
+- TransitionQualification
+- EngineCondition
+- ResourceClaim
+- WrapperEngine
 qualified_terms:
   memory:
     allowed:
@@ -1296,24 +1310,6 @@ vocabulary:
     must_not_appear:
     - public_website_pages
     status: decided_by_engineering_2026_09_22
-  engine (of an engine slot):
-    kind: technical_word
-    definition: >-
-      One interchangeable implementation behind one engine slot, identified
-      as engine_id@engine_version with a content digest. Qualification rule:
-      technical documents write engine for an implementation only with its
-      slot or its identifier (an engine of the step_executor slot, the engine
-      local.sqlite); the proper name Loop Engine, or the local engine, names
-      the product part and keeps the owner's definition.
-    pattern: '\bengines? of (?:an?|the|each|every|one) (?:\S+ )?(?:engine )?slots?\b'
-    case_sensitive: false
-    may_appear:
-    - source_code
-    - technical_documents
-    - command_output
-    must_not_appear:
-    - public_website_pages
-    status: decided_by_engineering_2026_09_22
   engine kind:
     kind: technical_word
     definition: >-
@@ -1407,6 +1403,945 @@ vocabulary:
     must_not_appear:
     - public_website_pages
     status: decided_by_engineering_2026_09_22
+  functional component:
+    kind: technical_word
+    definition: >-
+      A part of the system with one job and one owner, such as step
+      execution, model access, search, record storage or browser sign-in.
+      Neighbours reach it only through its edge contract, and its engines plug
+      in at its one engine slot. It is not a folder, a class, a graph vertex or
+      a LoopComponentDefinition, which is a passive semantic building block.
+      The owner's phrases functionality component and functional unit name the
+      same thing.
+    pattern: '\bfunctional components?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  edge contract:
+    kind: technical_word
+    definition: >-
+      The versioned request and result records that a functional component
+      accepts and returns, with its interaction rows in
+      data/component_interactions.yaml (delivery, retry, timeout,
+      cancellation, compatibility, authority transfer, failure, repair,
+      verification and Run History). Every engine behind the component returns
+      the same result record and keys. It is not the engine protocol, not a
+      graph edge between Loops and not a row of the boundary registry.
+    pattern: '\bedge contracts?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  graph edge:
+    kind: technical_word
+    definition: >-
+      A typed connection between two Loop ports in a Loop graph definition,
+      LoopGraphEdge in code. It is not an edge contract between functional
+      components.
+    pattern: '\bgraph edges?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  envelope Loop:
+    kind: technical_word
+    definition: >-
+      The registered boundary Loop that owns a functional component's work. It
+      validates each request, selects and binds an engine, measures the
+      attempt with its own clock, validates the result and owns cleanup, so the
+      edge contract stays the same while engines change. It is not a wrapper
+      layer and not a scheduler of its own.
+    pattern: '\benvelope Loops?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine protocol:
+    kind: technical_word
+    definition: >-
+      The small, versioned method surface that an engine slot calls on its
+      engines, engine_protocol and engine_protocol_version in engine_slot/v1.
+      Neighbours never see it. It is not a network or application protocol,
+      such as the Agent Client Protocol, that an engine may speak inside its
+      own code.
+    pattern: '\bengine protocols?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine adapter:
+    kind: technical_word
+    definition: >-
+      An engine whose code translates between its slot's engine protocol and
+      a project taken from outside. The outside project is pinned by exact
+      revision, SPDX licence and artifact digest inside the engine's
+      implementation digest, and its types never cross the edge. Wrapping an
+      outside project means writing its engine adapter. It is not a wrapper
+      layer and not a container: isolation is chosen separately. The
+      roadmap's wrapper engine and the compiler design's external adapter name
+      the same thing.
+    pattern: '\bengine adapters?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  Baltor-native engine:
+    kind: technical_word
+    definition: >-
+      An engine whose code is written in this repository, or a fork of an
+      outside project kept and maintained here. Each engine slot declares its
+      Baltor-native engine track as required, optional or not_applicable with
+      a reason; not_applicable fits hosted providers such as payment and
+      identity. It passes the same conformance kit as an engine adapter and is
+      qualified on its own. Code spells the origin own_code or own_fork
+      (engine_origin) and the track own_engine_track, because the brand never
+      names a contract field and bare native already names native
+      declarations, registries, sessions and controls.
+    pattern: '\bBaltor-native engines?\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  wrapper layer:
+    kind: technical_word
+    definition: >-
+      One identified, ordered layer inside one engine installation, around its
+      engine, with declared ownership of initialization, retry, timeout,
+      cancellation, credentials and accounting. The layered harness wrappers
+      of the step executor (WrapperLayer and WrapperComposition in code) are
+      the first case. A wrapper layer is not an envelope Loop, not an engine
+      adapter and not a container.
+    pattern: '\bwrapper layers?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  composite engine:
+    kind: technical_word
+    definition: >-
+      An engine of a strategy slot whose work passes through the nested slots
+      that its engine composition declares. Its positions run as attempt
+      Loops through the Loop runtime, each nested choice is recorded with its
+      parent decision, and the qualification of the nested engines never
+      qualifies the composite engine. It is not a Solution composition of
+      Loops.
+    pattern: '\bcomposite engines?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine composition:
+    kind: technical_word
+    definition: >-
+      The declared, versioned positions of a composite engine, each naming a
+      nested engine slot, with their typed connections, conversions, rules and
+      scheduling, carried as the capability record of the composite's
+      descriptor. The resolved engine composition names the exact engine
+      installation chosen for each position and is recorded in the selection
+      decision before the first nested dispatch.
+    pattern: '\b(?:resolved )?engine compositions?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine instance:
+    kind: technical_word
+    definition: >-
+      One constructed or started copy of an engine installation: an object in
+      this process, a started process, a loaded model runtime, or a
+      connection to a remote endpoint. Its identity is never reused, it has an
+      owned handle, and its fencing token rises at every restart,
+      reconfiguration or fence. Instance alone is never used for it.
+    pattern: '\bengine instances?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  harness instance:
+    kind: technical_word
+    definition: >-
+      One started harness process or container with its own working folder
+      and configuration, started fresh for each step unless a qualified
+      placement says otherwise. It is the engine instance of a step executor
+      engine.
+    pattern: '\bharness instances?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  fencing token:
+    kind: technical_word
+    definition: >-
+      A number that rises whenever ownership of a work item, an engine
+      instance or a piece of durable state changes hands, as fencing_token of
+      the work lease already does. A write, a lease or a status fact that
+      carries an older token is refused. It replaces the outside word
+      generation, which names content generation here.
+    pattern: '\bfencing tokens?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine lease:
+    kind: technical_word
+    definition: >-
+      One engine attempt's expiring hold on one shared engine instance,
+      bound to the instance's fencing token and counted against the number of
+      leases the instance declares it accepts. Ending one engine lease never
+      ends an instance that another live engine lease holds. It grants no
+      authority: permission comes from the owning Loop's grants, and memory
+      from a resource reservation. It is not a credential lease or a work
+      lease, and lease alone is never used.
+    pattern: '\bengine leases?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine session:
+    kind: technical_word
+    definition: >-
+      The state that one engine instance keeps across calls under the session
+      call pattern, inside one engine attempt unless a qualified placement
+      allows it to continue. For a step executor engine it is the harness's
+      native session. Session alone is never used for it.
+    pattern: '(?<!loop[ _-])\bengine sessions?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  native session:
+    kind: technical_word
+    definition: >-
+      A harness's own conversation state across its turns, such as an Agent
+      Client Protocol session or a Codex thread, owned by the harness and
+      named by reference in an instance checkpoint. Older documents also write
+      harness session. It is not a browser sign-in session, a payment
+      checkout session or an agent work session.
+    pattern: '\bnative sessions?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine attempt:
+    kind: technical_word
+    definition: >-
+      One dispatch of one invocation of a functional component to one bound
+      engine installation, measured by the envelope Loop with its own clock. A
+      declared fallback adds an engine attempt to the same invocation. A
+      physical call is one real request to an outside provider made during an
+      attempt and is counted separately; a request that never left the host
+      is not a physical call.
+    pattern: '\bengine attempts?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  execution specification:
+    kind: technical_word
+    definition: >-
+      Everything that fixes what one engine attempt runs (slot, installation
+      and descriptor digests, configuration digest, request contract digest
+      and the fencing token of its state binding), named by one digest that
+      is recorded with the attempt and compared when a decision is reused.
+      Renewing or revoking a lease never changes it; a changed specification
+      is a new attempt with a new decision. It replaces the outside prepared
+      plan.
+    pattern: '\bexecution specifications?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  state binding:
+    kind: technical_word
+    definition: >-
+      The durable state that one engine installation or engine attempt is
+      bound to: its owner, its category (cache, index or store), its format
+      version, its owner fencing token, its permitted lifetime and, for an
+      index, what it is rebuilt from. An engine refuses state whose format or
+      fencing token does not match, before any effect. It replaces the outside
+      state reference type; the exact reference kinds keep their names.
+    pattern: '\bstate bindings?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  call pattern:
+    kind: technical_word
+    definition: >-
+      How calls reach one engine instance: request_response, session,
+      durable_task, stream or desired_state (call_pattern in the engine
+      descriptor). It fixes the operations that the engine protocol must
+      offer. It is not a run mode, a step profile or the component lifecycle.
+    pattern: '\bcall patterns?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  instance lifetime:
+    kind: technical_word
+    definition: >-
+      How long one engine instance lives: per_call, per_attempt, per_run,
+      per_host_start, durable or external. The engine descriptor lists the
+      lifetimes an engine supports, the slot lists the ones it permits, and an
+      engine installation chooses one inside its installation digest; the
+      step executor's placement setting is one case. It is not the component
+      lifecycle.
+    pattern: '\binstance lifetimes?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  instance owner:
+    kind: technical_word
+    definition: >-
+      Who starts and stops one engine instance: the envelope, the host or an
+      outside party (instance_owner in the engine descriptor). It says nothing
+      about who may use the instance; that is authority.
+    pattern: '\binstance owners?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine swap:
+    kind: technical_word
+    definition: >-
+      A planned change of the engine that serves one slot scope, including a
+      new version of the same engine, made only under the slot's declared swap
+      rule: next call, next attempt, pinned until done, drain then switch,
+      replay by identity, or migrate with an atomic pointer. It is not a
+      fallback, which follows a declared failure and is recorded as a
+      FallbackTransition.
+    pattern: '\bengine swaps?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  swap qualification:
+    kind: technical_word
+    definition: >-
+      An engine qualification whose scope is one engine swap: an independent
+      record, bound to both installations and the slot scope, that the new
+      engine was run against a frozen population of the old engine's recorded
+      state and work in flight under the slot's swap rule. Two passing engine
+      qualifications do not make one. It replaces the outside transition
+      qualification.
+    pattern: '\bswap qualifications?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  selection mode:
+    kind: technical_word
+    definition: >-
+      How the engines of one slot serve an invocation (selection_mode in the
+      slot record): one_of, one engine with ordered fallbacks; set_of, one
+      member chosen by a dispatch key; derived, from another slot's declared
+      field; and, proposed, all_of, every eligible member in declared order
+      inside one envelope Loop with a declared merge rule. It is not a Loop run
+      mode and not a selection basis.
+    pattern: '\bselection modes?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  selection basis:
+    kind: technical_word
+    definition: >-
+      How much freedom one selection decision had, recorded on the decision
+      and derived from its policy, applied engine preferences and evidence
+      use: pinned (one engine, no fallback), preferred (the host's declared
+      order, narrowed or reordered by permitted preferences) or automatic
+      (approved evidence at or above the slot's floor reordered the choice for
+      the exact scope). It is not a mode. The outside names PIN, PREFER and
+      AUTO map onto it.
+    pattern: '\bselection bas(?:is|es)\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine qualification:
+    kind: technical_word
+    definition: >-
+      An independent record, engine_qualification, that one engine
+      installation passed its slot's conformance kit and trials at an exact
+      installation digest, for a named scope and proof level, until it
+      expires. Its producer, its reviewer and the engine are three different
+      identities. A swap qualification is an engine qualification whose scope
+      is one engine swap. Availability and declared capability are not
+      qualification.
+    pattern: '\bengine qualifications?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  conformance kit:
+    kind: technical_word
+    definition: >-
+      The one shared test kit of an engine slot, parameterized by engine, that
+      every engine of the slot passes alone through the edge with the same
+      fixtures. Each assertion names a broken engine that must fail it, and a
+      run writes a conformance_kit_report. The slot field conformance_suite
+      names the module that holds it. The roadmap's contract test kit and
+      contract kit name the same thing.
+    pattern: '\bconformance kits?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  composition test:
+    kind: technical_word
+    definition: >-
+      A test of two or more joined or nested engine slots over their typed
+      edges, covering all pairs of engines on every push and the full matrix
+      at night, whose report states the covering strength that an
+      in-repository counter measured.
+    pattern: '\bcomposition tests?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  journey test:
+    kind: technical_word
+    definition: >-
+      A test of one customer path end to end, in process on every push, in
+      containers at night and live after a release, keeping offered, fetched,
+      installed, reported, used and verified as separate facts.
+    pattern: '\bjourney tests?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  lifecycle drill:
+    kind: technical_word
+    definition: >-
+      A test that injects faults, kills at named points, timeouts, slow
+      dependencies and restarts through declared seams, and checks that every
+      fault ends in a typed refusal or a typed uncertain state with no torn
+      state and no unaccounted resource.
+    pattern: '\blifecycle drills?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine availability snapshot:
+    kind: technical_word
+    definition: >-
+      Three expiring facts about one engine instance at one fencing token:
+      alive, ready (with the configuration it has loaded) and capacity (as
+      numbers). Each fact is a ConfigurationFact that reads unknown after its
+      expiry; for model routes the existing ModelRouteAvailabilitySnapshot is
+      the snapshot. It is never qualification and never result verification.
+      It replaces the outside engine condition and activation words.
+    pattern: '\bengine availability snapshots?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  binding facts:
+    kind: technical_word
+    definition: >-
+      Five separate facts about one slot of one host, recorded in the bindings
+      report: desired (the configuration asked for, with its digest and
+      sequence number), prepared (evidence that its dependencies are ready),
+      routable (the binding site sends new requests to it), observed (what
+      actually ran, read from the engines' answers) and rejected (the last
+      desired configuration that failed to prepare, with its reason). It
+      replaces the outside activation controller.
+    pattern: '\bbinding facts?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  owned resource record:
+    kind: technical_word
+    definition: >-
+      One record for a resource that an attempt or an engine instance must
+      release (a process, a control group, a container, a run folder, a
+      socket, a capacity reservation, a model residency hold or a remote
+      sandbox), written before the acquisition and marked released only after
+      an observation confirms the release. An unknown outcome blocks reuse and
+      capacity release. Releasing it is cleanup, never compensation.
+    pattern: '\bowned resource records?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  advisory field:
+    kind: technical_word
+    definition: >-
+      A field of an edge request that an engine may ignore, with the ignoring
+      recorded in its attempt. Every other request field is required, and an
+      engine that cannot honour a required field refuses before any effect.
+      It replaces the outside optimization hint, because hint already has six
+      meanings here.
+    pattern: '\badvisory fields?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  work split:
+    kind: technical_word
+    definition: >-
+      An engine's answer about how much of an advisory optimization it
+      performs: all of it, part of it with the envelope completing and
+      checking the rest, or none of it. It is recorded in the attempt and is
+      never read as a compatibility verdict. DataFusion's exact, inexact and
+      unsupported pushdown answers are work splits.
+    pattern: '\bwork splits?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  validation profile:
+    kind: technical_word
+    definition: >-
+      How one validator run decides whether a value fits a schema: the
+      dialect and the rule for an unknown dialect, unknown keywords, the
+      formats asserted, references (local or pinned, never fetched), unknown
+      and missing fields, numbers, text, time, coercions, the match mode and
+      the validator implementation, recorded as validation_profile. It is not
+      the schema itself.
+    pattern: '\bvalidation profiles?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  conversion declaration:
+    kind: technical_word
+    definition: >-
+      The record of one conversion between two typed contracts or wire
+      formats: source and target, information class (exact, exact_one_way,
+      normalizing, bounded_lossy, dropping, substituting), the losses it
+      permits and counts, its rule for unknown input and for failure, data
+      ownership, effects and cost class. An Adapter Loop that converts names
+      one.
+    pattern: '\bconversion declarations?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  stream semantics:
+    kind: technical_word
+    definition: >-
+      The declared behaviour of one stream edge: framing, whether the stream
+      is emulated, byte, event and time limits with a total deadline beside
+      the idle timeout, ordering scope, what an acknowledgment means, the
+      terminal signal, the rules for in-band errors, malformed events and
+      unknown event types, where usage arrives, replay, cancellation and what
+      a partial result is.
+    pattern: '\bstream semantics\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  execution fields:
+    kind: technical_word
+    definition: >-
+      The separate fields that say how an engine runs: invocation mechanism
+      (direct call, supervised subprocess, local service or remote request),
+      application protocol with its exact revision, executable format with its
+      runtime, isolation and locality. No field stands for another, and no
+      single binding word replaces them. They replace the outside binding
+      specification; execution binding keeps its meaning in the owner's
+      dimensions document.
+    pattern: '\bexecution fields?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  harness compatibility profile:
+    kind: technical_word
+    definition: >-
+      Passive, versioned data that describes one exact harness client,
+      interface and runtime release and the files and settings it discovers
+      and loads, with the evidence for each; the native_client_layout_profile
+      record family holds it. Compiler engines of the Harness Working
+      Directory Compiler read it; it is not a Loop profile and grants nothing.
+      It is the one name for what other texts call a Harness File Profile, a
+      target profile or a harness layout profile.
+    pattern: '\bharness compatibility profiles?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_24
+  engine (of an engine slot):
+    kind: technical_word
+    definition: >-
+      One interchangeable implementation behind one engine slot, identified
+      as engine_id@engine_version with a content digest. Naming rule:
+      technical documents write engine for an implementation only with its
+      slot or its identifier (an engine of the step_executor slot, the engine
+      local.sqlite); the proper name Loop Engine, or the local engine, names
+      the product part and keeps the owner's definition. The owner's phrase
+      functional engine names the same thing as this term.
+    pattern: '\bengines? of (?:an?|the|each|every|one) (?:\S+ )?(?:engine )?slots?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine definition:
+    kind: retired_word
+    definition: A name from outside research for an engine's fixed identity. It is not used here.
+    replacement: engine identity (engine_id@engine_version with its implementation digest), or engine descriptor for its projection.
+    pattern: '(?<!loop[ _-])\bengine definitions?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  engine configuration:
+    kind: retired_word
+    definition: A name from outside research for an engine's resolved settings. It is not used here.
+    replacement: engine installation for one engine with its settings, or slot configuration for a host's record of one slot.
+    pattern: '(?<!loop[ _-])\bengine configurations?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  logical plan and physical plan:
+    kind: retired_word
+    definition: >-
+      Names from query optimizers for the declared work and its placement.
+      They are not used, because plan already names prices, task plans,
+      execution plans, route plans, placement plans and retired Loop plans.
+    replacement: >-
+      engine composition for the declared positions of a composite engine,
+      resolved engine composition for the exact engines chosen, and the Loop
+      graph definition for work between Loops.
+    pattern: '\b(?:logical|physical) plans?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The dated digest of September 18, 2026 records a test idea in the words
+      used that day, and the current rule is
+      physical_fusion_requires_logical_history in architecture.yaml. The
+      functional component standard and its research record name the outside
+      words that they replace, and the rendered ambiguity register quotes
+      each collision it records.
+    status: retired
+  lifecycle profile:
+    kind: retired_word
+    definition: >-
+      A name from outside research for how an engine is started, called and
+      stopped. It is not used, because lifecycle already names the component
+      lifecycle and profile already names role, step, executor and harness
+      compatibility profiles.
+    replacement: the three fields call pattern, instance lifetime and instance owner, and the slot's swap rule.
+    pattern: '\blifecycle profiles?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  preference mode:
+    kind: retired_word
+    definition: >-
+      A proposed name, never adopted, for pinned, preferred and automatic
+      selection. It is not used, because mode already names the Loop run mode
+      and the slot's selection mode.
+    replacement: selection basis.
+    pattern: '\bpreference modes?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  wrapper engine:
+    kind: retired_word
+    definition: >-
+      A roadmap name for an engine that wraps an outside project. It is not
+      used, because wrapper already names the layered harness wrappers.
+    replacement: engine adapter.
+    pattern: '\bwrapper engines?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  transition qualification:
+    kind: retired_word
+    definition: >-
+      A name from outside research for the proof that changing one engine to
+      another keeps state and work in flight. It is not used, because the
+      failure-driven FallbackTransition already owns the word transition.
+    replacement: swap qualification, for an engine swap.
+    pattern: '\btransition qualifications?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
+  activation controller:
+    kind: retired_word
+    definition: >-
+      A name from outside research for the part that makes a selected engine
+      ready. It is not used, because activation already names one finite
+      reactive Loop run (ActivationRecord), and the refresher, the host loader
+      and the envelope already own these moments.
+    replacement: binding facts for a slot's configuration, and the engine availability snapshot for readiness.
+    pattern: '\bactivation controllers?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/architecture/FUNCTIONAL-COMPONENT-STANDARD.md
+    - docs/research/ENGINE-COMPOSITION-AND-LIFECYCLE-VARIATIONS-RESEARCH-2026-09-24.md
+    - docs/architecture/AMBIGUITY-REGISTER.md
+    quotation_reason: >-
+      The functional component standard and its research record name the
+      outside words that they replace, and the rendered ambiguity register
+      quotes each collision it records.
+    status: retired
 proposed_renames:
   catalogue_and_catalog:
     same_idea_two_names: >-

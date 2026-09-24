@@ -249,6 +249,227 @@ findings:
     resolution: Technical documents write engine for an implementation only with its slot or identifier; Loop Engine keeps the owner's definition; StoreCapabilities.engine is pinned software inside the local.sqlite engine and is never copied into engine_id or engine_version.
     representation_decision: one qualified term, engine (of an engine slot), beside the unchanged proper name; no rename of the owner's text.
     status: IMPLEMENTED_PARTIALLY
+  - id: SEM-026
+    subsystem: functional_components
+    collision: Component names a functional component (one job reached through its edge contract), LoopComponentDefinition (a passive semantic building block), the component ontology kinds and the component guide folders.
+    evidence:
+      - loop_engine.core.component_contracts:LoopComponentDefinition
+      - loop_engine.core.component_contracts:INTERACTION_FIELDS
+      - loop_engine.core.engines.slots:SLOT_FIELDS
+    resolution: Write functional component in full for the part with one job and one edge contract; LoopComponentDefinition, component kinds and component guides keep their names.
+    representation_decision: one qualified vocabulary term; no rename of code identifiers.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-027
+    subsystem: functional_components
+    collision: Edge names the interaction rows between functional components, LoopGraphEdge between Loop ports, the edge_proxy slot and the release_edge slot field.
+    evidence:
+      - loop_engine.code_nodes.solution_graph:LoopGraphEdge
+      - loop_engine.core.component_contracts:INTERACTION_FIELDS
+      - loop_engine.core.engines.slots:SLOT_FIELDS
+    resolution: Edge contract for the interaction rows of a functional component, graph edge for LoopGraphEdge; the identifiers edge_proxy and release_edge stay.
+    representation_decision: two qualified vocabulary terms; identifiers unchanged.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-028
+    subsystem: engines_behind_fixed_edges
+    collision: Wrapper names the layered harness wrapper layers, the owner's verb wrap for an outside project, compatibility wrappers and the roadmap's wrapper engine.
+    evidence:
+      - loop_engine.core.harness_layering:WrapperLayer
+      - loop_engine.core.harness_layering:WrapperComposition
+    resolution: Wrapper layer for a layer inside one installation; wrapping an outside project means writing its engine adapter; isolation, such as a container, is declared separately.
+    representation_decision: wrapper layer and engine adapter as two terms; wrapper engine retired.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-029
+    subsystem: engines_behind_fixed_edges
+    collision: Binding names slot bindings, bound engines, boundary binding kinds, port, storage and runtime bindings, three meanings of execution binding, task Loop bindings and the Binding spec of a prompt document.
+    evidence:
+      - loop_engine.core.engines.slots:SlotBinding
+      - loop_engine.core.boundary_registry:BINDING_KINDS
+      - loop_engine.core.skill_state_context:SkillExecutionBinding
+      - loop_engine.core.development_planning:TaskLoopBinding
+      - loop_engine.loop.runtime_context:InternalRuntimeBinding
+    resolution: No general binding type; execution fields say how an engine runs, binding facts say what a slot desires, prepared, routes, observed and rejected, and state binding says what durable state an engine is bound to.
+    representation_decision: separate named fields and records; BindingSpec is a forbidden class name.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-030
+    subsystem: engine_lifecycle
+    collision: Instance names an engine instance, a harness instance, an instance of the Loop runtime and the instance_id of a credential lease holder.
+    evidence:
+      - loop_engine.core.local_resources:InstanceLedger
+      - loop_engine.core.credential_leases:Lease
+    resolution: Always say instance of what, as engine instance, harness instance or Loop instance.
+    representation_decision: qualified terms; a proposed engine_instance record replaces the ledger's instance record.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-031
+    subsystem: engine_lifecycle
+    collision: Session names the browser session record service_session/v1, payment checkout and portal sessions, the administrator session engine kind, a harness's own session, a step session process, a route-separated model session and the protocol sessions that revision 2026-07-28 removed.
+    evidence:
+      - loop_engine.core.service_runtime.http:ServiceHttpApplication
+      - loop_engine.core.opencode_step_session:OpenCodeStepSession
+      - loop_engine.core.route_separation:RouteSeparatedSession
+    resolution: Native session for a harness's own state and engine session for state one engine instance keeps inside one attempt; bare session is never used for engines.
+    representation_decision: qualified terms; no new session record.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-032
+    subsystem: engine_lifecycle
+    collision: Lease names the fenced work lease, the credential lease, the lease fields of billing session effects, provider machine leases and the proposed engine lease, which follow different expiry and renewal rules.
+    evidence:
+      - loop_engine.loop.reactive_activation:WorkLease
+      - loop_engine.core.credential_leases:LeaseBroker
+      - loop_engine.core.service_runtime.billing_effects:BillingSessionEffectStore
+    resolution: Always qualify the lease; one set of lease rules for every lease-like record (expiry final at use and judged by the owner's clock, a maximum lifetime, use bound to the holder and its fencing token, no secret value).
+    representation_decision: qualified terms and one rule set; capacity stays a resource reservation, never a lease.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-033
+    subsystem: engines_behind_fixed_edges
+    collision: Mode names the Loop run mode, the slot's selection mode, contract match modes, evaluation modes and executor modes; outside research adds PIN, PREFER and AUTO as modes.
+    evidence:
+      - loop_engine.core.model_routing_records:RUN_MODES
+      - loop_engine.core.engines.slots:SELECTION_MODES
+      - loop_engine.core.contract_matching:MATCH_MODES
+    resolution: Bare mode is the run mode; pinned, preferred and automatic are the selection basis recorded on a decision.
+    representation_decision: a selection_basis field on the version 2 decision; preference mode retired.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-034
+    subsystem: nomenclature
+    collision: Qualification names the independent evidence record of an engine and the grammar sense of a word that needs a qualifier (the engine entry's Qualification rule and the qualified_terms section).
+    evidence:
+      - loop_engine.core.engines.records:EngineQualification
+      - terminology.yaml#qualified_terms
+    resolution: The grammar sense becomes naming rule; qualification is the evidence record.
+    representation_decision: one edited vocabulary entry; the qualified_terms key may later become terms_that_need_a_qualifier.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-035
+    subsystem: harness_working_directory
+    collision: Five names describe the data about one harness release (native_client_layout_profile, harness_file_profile, Harness File Profile, target profile, harness layout profile) beside role, step and executor profiles; outside research adds lifecycle profile.
+    evidence:
+      - tools/install_selected_material.py:ClientLayoutProfile
+      - loop_engine.loop.loop_profile_catalog:LoopProfileSpec
+    resolution: Harness compatibility profile, bound to the native_client_layout_profile record family; call pattern, instance lifetime and instance owner instead of lifecycle profile.
+    representation_decision: one term for the harness data; lifecycle profile retired; roadmap wording changes through S-6.73.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-036
+    subsystem: planning_and_composition
+    collision: Plan names the price plan, PlanDefinition, the kernel ExecutionPlan, gateway route plans, the retired resolved Loop plan, the compiler's placement plan and the planned ModelCallStrategy.plan; outside research adds logical and physical plans.
+    evidence:
+      - loop_engine.core.development_planning:PlanDefinition
+      - loop_engine.loop.kernel:ExecutionPlan
+      - loop_engine.core.model_gateway:ModelGatewayConfig
+    resolution: Engine composition and resolved engine composition for composite engines; the other meanings keep their names.
+    representation_decision: two qualified terms; logical plan and physical plan retired.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-037
+    subsystem: engines_behind_fixed_edges
+    collision: One class name, EngineSlot, names the shared engine_slot/v1 record and library ingestion's local slot, which writes its own library_engine_selection/v1 decision.
+    evidence:
+      - loop_engine.core.engines.slots:EngineSlot
+      - loop_engine.core.library_ingestion.selection:EngineSlot
+    resolution: Library ingestion adopts the shared records and its slots enter engine_slots.yaml; until then its class is renamed so that one name names one class.
+    representation_decision: consolidate on the shared records; a ratchet over duplicated public class names.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-038
+    subsystem: functional_components
+    collision: Contract names the edge contract of a functional component, the component contract of passive Loop components, the capability contracts of harness adapters and the semantic category contract.
+    evidence:
+      - loop_engine.core.component_contracts:INTERACTION_FIELDS
+      - loop_engine.core.component_contracts:LoopComponentDefinition
+      - loop_engine.core.harness_execution_contracts:ISOLATIONS
+    resolution: Edge contract for a functional component's interface; the others keep their names.
+    representation_decision: one qualified term; no rename.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-039
+    subsystem: functional_components
+    collision: Boundary names a row of the boundary registry, execution boundary prose for where work runs, and the typed functional boundary of September 23 texts.
+    evidence:
+      - loop_engine.core.boundary_registry:BOUNDARIES
+    resolution: Bare boundary is the registry row; execution fields describe where and how an engine runs.
+    representation_decision: no new term; execution boundary keeps its prose meaning.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-040
+    subsystem: engine_lifecycle
+    collision: Activation names one finite reactive Loop run; outside research calls the part that makes a selected engine ready an activation controller.
+    evidence:
+      - loop_engine.loop.reactive_activation:ActivationRecord
+    resolution: Engine readiness is an engine availability snapshot and a configuration change is recorded as binding facts; activation keeps its reactive meaning.
+    representation_decision: activation controller retired; no controller class.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-041
+    subsystem: engines_behind_fixed_edges
+    collision: Native names the native declarations and registries of slots, native sessions, the native controls and retry of harnesses, native protocol harnesses and native client layouts; the roadmap adds Baltor-native engines.
+    evidence:
+      - loop_engine.core.engines.slots:SLOT_FIELDS
+      - loop_engine.core.harness_fallback:HarnessFallbackPolicy
+      - tools/install_selected_material.py:ClientLayoutProfile
+    resolution: Baltor-native engine in full for our own engines; code fields engine_origin (own_code, own_fork) and own_engine_track.
+    representation_decision: one qualified term; the brand never names a contract field.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-042
+    subsystem: engines_behind_fixed_edges
+    collision: set_of means one member per invocation chosen by a dispatch key in the slot catalogue, and every eligible member in library ingestion.
+    evidence:
+      - loop_engine.core.engines.slots:SELECTION_MODES
+      - loop_engine.core.library_ingestion.selection:select_engines
+    resolution: set_of stays dispatch; a fourth selection mode, all_of, with a declared merge rule, runs every member.
+    representation_decision: parameterize the selection mode; move the ingestion format and safety slots to all_of.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-043
+    subsystem: model_capability_stages
+    collision: Hint names repair, query, root and active step hints, protocol tool annotations, cache and order hints, and the provider capability hints of SEM-017; outside research adds optimization hints.
+    evidence:
+      - loop_engine.core.model_routes:ModelProviderCapabilities
+    resolution: Advisory field for a request field that an engine may ignore with the ignoring recorded.
+    representation_decision: one new term for edge requests; existing hint identifiers unchanged.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-044
+    subsystem: engine_lifecycle
+    collision: Orphan names a Spawned Loop that never reached a terminal state in the closure audit, and, in roadmap S-2.26, processes and containers left by a stopped attempt.
+    evidence:
+      - loop_engine.core.workspace_optional:DockerWorkspace
+    resolution: An unreleased owned resource record for processes and containers; orphaned keeps its closure audit meaning.
+    representation_decision: one new record family kept through the record store; no new word.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-045
+    subsystem: model_capability_stages
+    collision: circuit names a typed decision engine kind; circuit breaker names a failure-rate state machine (resilience4j, Polly) and connection and request limits (Envoy); the design says an open circuit breaker is an expiring availability fact.
+    evidence:
+      - loop_engine.core.decisions.configuration:ADAPTER_FACTORIES
+      - loop_engine.core.route_health:RouteHealthLedger
+    resolution: A route that failures set aside is an expiring route availability snapshot with a reason, and a shared instance declares how many engine leases it accepts at once.
+    representation_decision: reuse the route availability snapshot; circuit breaker is not retired because the design uses it.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-046
+    subsystem: engine_lifecycle
+    collision: Condition names the Loop condition, the exit condition and verification conditions; outside research and Kubernetes add readiness conditions.
+    evidence:
+      - loop_engine.loop.loop_profile_catalog:LoopProfileSpec
+      - loop_engine.core.model_routing_records:ModelRouteAvailabilitySnapshot
+    resolution: Engine readiness facts live in the engine availability snapshot, never as conditions.
+    representation_decision: reuse ConfigurationFact and the route snapshot; no condition record.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-047
+    subsystem: engine_lifecycle
+    collision: Generation names seeded generation and candidate generation; outside research and Kubernetes add generation counters for desired and observed configuration.
+    evidence:
+      - loop_engine.core.seeded_generation:SeedBatch
+      - loop_engine.loop.reactive_activation:WorkLease
+    resolution: Fencing token for ownership and sequence number for desired configuration, as the work lease and the catalogue pointer already do.
+    representation_decision: reuse existing counters; no generation field.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-048
+    subsystem: engine_lifecycle
+    collision: Claim names the claim operation of the work lease scheduler and the evidence label claim; Kubernetes adds ResourceClaim for device allocation, and outside research proposed resource claims for cleanup.
+    evidence:
+      - loop_engine.core.reactive_scheduler:SQLiteReactiveScheduler
+    resolution: Owned resource record for a resource that must be released.
+    representation_decision: one new term; ResourceClaim is a forbidden class name.
+    status: REQUIRED_NOT_IMPLEMENTED
+  - id: SEM-049
+    subsystem: engines_behind_fixed_edges
+    collision: Transition names the failure-driven FallbackTransition; outside research uses transition and transition qualification for a planned change of engine.
+    evidence:
+      - loop_engine.core.engines.decision_records:FallbackTransition
+    resolution: Engine swap and swap qualification for a planned change; FallbackTransition keeps its failure meaning.
+    representation_decision: two new terms; transition qualification retired.
+    status: REQUIRED_NOT_IMPLEMENTED
 
 verified_clear:
   - MemoryQuery and IntelligenceQuery have distinct lifecycle and cross-layer contracts.
