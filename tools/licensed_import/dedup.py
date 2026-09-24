@@ -163,7 +163,12 @@ class DuplicateIndex:
                     join(by_text[digest], key, "normalized_text", 1.0)
                 else:
                     by_text[digest] = key
-        documents = LazyShingles({key: self.subjects[key].text for key in keys})
+        # Members already joined by identity or exact text share their shingles, so only one
+        # representative per group is compared for near copies; a near match joins whole groups.
+        representatives = {}
+        for key in keys:
+            representatives.setdefault(root(key), key)
+        documents = LazyShingles({key: self.subjects[key].text for key in representatives.values()})
         if len(documents) > 1:
             for left, right, estimate in self.engine.pairs(documents, self.threshold):
                 join(left, right, "near_text", estimate)

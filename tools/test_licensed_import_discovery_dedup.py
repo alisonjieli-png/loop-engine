@@ -126,6 +126,18 @@ class DuplicateChecks(unittest.TestCase):
         self.assertEqual(len(result.merged_into), 2)
         self.assertEqual({row["match"] for row in result.links}, {"git_blob"})
 
+    def test_a_near_copy_of_an_exact_group_joins_the_whole_group(self):
+        index = _index()
+        long_text = " ".join(f"step{number} checks item{number % 37} before use" for number in range(120))
+        edited = long_text.replace("step7 checks", "step7 verifies").replace("step90 checks", "step90 tests")
+        index.add(Subject("served:x", dedup.SERVED, "x", (1, 0, "x", ""), edited))
+        index.add(Subject("a", BATCH, "a", (0, 0, "a", ""), long_text, blob="b" * 40))
+        index.add(Subject("b", BATCH, "b", (0, 1, "b", ""), long_text, blob="b" * 40))
+        index.add(Subject("c", BATCH, "c", (0, 2, "c", ""), long_text.upper()))
+        result = index.resolve()
+        self.assertEqual(result.kept, [])
+        self.assertEqual(result.merged_into, {"a": "x", "b": "x", "c": "x"})
+
     def test_a_copy_of_a_served_item_is_not_added(self):
         index = _index()
         index.add(Subject("served:x", dedup.SERVED, "x", (1, 0, "x", ""), TEXT))
