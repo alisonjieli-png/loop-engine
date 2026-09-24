@@ -960,6 +960,19 @@ password first. On submit it gives the token hash to the identity library's
 the identity provider generates for itself is never read and never appears in
 a message.
 
+Once `updateUser` has accepted the password, the card never again shows the
+notice that the link cannot be used. While the activation and the session
+request run, it keeps the password step with the status "Password set. Opening
+your account…". If the service does not open the account, the card says "Your
+password is set." and offers Sign in. The persona journeys of September 24,
+2026 recorded the earlier behavior: for a quarter to half a second after the
+password was accepted, the card said "This link cannot be used. ... Nothing
+was changed." The browser checks
+`password_set_keeps_its_card_while_the_account_opens`,
+`the_unusable_notice_never_appears_after_the_password_is_accepted` and
+`a_password_set_without_an_open_account_says_so_and_offers_sign_in` hold the
+activation request back to reproduce a slow connection.
+
 Sign-up is email first. `service_account_signup_request/v2` carries the
 address alone, and the retired version 1, which carried a caller's password,
 is refused. The provider's interface needs a password to create a user, so

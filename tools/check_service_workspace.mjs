@@ -2617,6 +2617,48 @@ try {
     note("the_confirm_button_waits_for_the_sign_in_settings",waiting.disabled&&waiting.loading&&waiting.text==="Loading the sign-in settings…"
       &&!ready.disabled&&!ready.loading,{waiting,ready});
   };
+  /* Finding 4 of the persona journeys of September 24, 2026: after the new password was accepted, the card said "This link cannot
+     be used ... Nothing was changed." until the account opened. Here the activation request is held, so the moment between the
+     accepted password and the open account lasts as long as a slow connection would make it, and every drawing of the notice is
+     recorded from the first script on. A second journey has the service refuse to open the account after the password is set. */
+  const watchTheUnusableNotice=()=>{window.__unusableShown=[];document.addEventListener("DOMContentLoaded",()=>{const node=document.getElementById("confirm-unusable");
+    if(node)new MutationObserver(()=>{if(!node.hidden)window.__unusableShown.push(document.getElementById("confirm-message")?.textContent||"");}).observe(node,{attributes:true,attributeFilter:["hidden"]});});};
+  const openingJourney=refuse=>async (target,note)=>{
+    await target.addInitScript(watchTheUnusableNotice);
+    const address=journeyAddress(refuse?"refused":"opening"),password="opening-owner-"+randomBytes(8).toString("hex");
+    const asked=await target.request.post(fixture.confirm_base+"/api/v1/account/signup",{data:{record_type:"service_account_signup_request/v2",email:address}});
+    const link=asked.status()===202?await newestLink(target,address):"";
+    let release=()=>{},held=false;const gate=new Promise(resolve=>{release=resolve;});
+    await target.route(url=>url.pathname==="/api/v1/account/activate",async route=>{held=true;await gate;
+      if(refuse)await route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({record_type:"service_http_error/v1",error:{code:"service_unavailable"}})});
+      else await route.continue();});
+    if(link){await target.goto(link);await target.waitForFunction(()=>document.getElementById("confirm-button")?.disabled===false,null,{timeout:10000}).catch(()=>{});
+      await target.fill("#confirm-password",password);await target.fill("#confirm-password-again",password);await target.click("#confirm-button");}
+    const deadline=Date.now()+10000;while(link&&!held&&Date.now()<deadline)await target.waitForTimeout(20);
+    await target.waitForTimeout(150);
+    const card=()=>target.evaluate(()=>{const shown=id=>{const node=document.getElementById(id);return Boolean(node&&node.getClientRects().length);};
+      return {path:location.pathname,unusable:shown("confirm-unusable"),form:shown("confirm-password-step"),set:shown("confirm-set"),signIn:shown("confirm-set-sign-in")?document.getElementById("confirm-set-sign-in").getAttribute("href"):"",
+        status:document.getElementById("confirm-message")?.textContent||"",error:document.getElementById("confirm-message")?.classList.contains("error")===true,
+        disabled:document.getElementById("confirm-button")?.disabled===true,setText:document.getElementById("confirm-set")?.innerText||"",connected:document.getElementById("connection-state")?.textContent||""};});
+    const opening=await card();
+    if(note===check&&!refuse)await target.locator("#confirm-card").screenshot({path:output.replace(/\.json$/,"-confirm-opening.png")}).catch(()=>{});
+    release();
+    if(refuse)await target.waitForFunction(()=>document.getElementById("confirm-message")?.classList.contains("error")===true,null,{timeout:10000}).catch(()=>{});
+    else{await target.waitForFunction(()=>document.getElementById("connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
+      await target.waitForFunction(()=>location.pathname!=="/auth/confirm",null,{timeout:5000}).catch(()=>{});}
+    await target.waitForTimeout(150);
+    const after=await card(),drawn=await target.evaluate(()=>window.__unusableShown||null);
+    if(!refuse){
+      note("password_set_keeps_its_card_while_the_account_opens",held&&opening.path==="/auth/confirm"&&!opening.unusable&&opening.form&&!opening.set
+        &&opening.status==="Password set. Opening your account…"&&!opening.error&&opening.disabled,{held,opening});
+      note("the_unusable_notice_never_appears_after_the_password_is_accepted",held&&Array.isArray(drawn)&&drawn.length===0&&after.connected==="Connected"
+        &&after.path==="/get-started"&&JSON.stringify(await shownViews(target))===JSON.stringify(["start"]),{held,drawn,after});
+      return;}
+    if(note===check)await target.locator("#confirm-card").screenshot({path:output.replace(/\.json$/,"-confirm-refused.png")}).catch(()=>{});
+    note("a_password_set_without_an_open_account_says_so_and_offers_sign_in",held&&Array.isArray(drawn)&&drawn.length===0&&after.path==="/auth/confirm"&&!after.unusable&&!after.form&&after.set
+      &&after.setText.includes("Your password is set.")&&after.setText.includes("Sign in with your email address and your new password.")&&after.signIn==="/login"
+      &&after.error&&after.status==="The service did not open your account."&&after.connected==="Not connected"&&await standInSignIn(target,address,password)===200,{held,drawn,after});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2646,7 +2688,7 @@ try {
     invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false),
     free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
-    confirm_wait:(target,note)=>confirmWait(target,note)};
+    confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2678,6 +2720,14 @@ try {
     {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
     {name:"hide_the_sign_up_link_form",scenario:"staff_links",path:"/assets/service.js",find:'$("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");',replacement:'$("staff-links-form").hidden = true;',expected:["a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting"]},
+    {name:"draw_the_unusable_notice_while_the_account_opens",scenario:"password_opening",path:"/assets/service.js",
+     find:'if (passwordSet === "opening") { $("confirm-password-step").hidden = false; $("confirm-unusable").hidden = true; $("confirm-button").disabled = true; $("confirm-loading").hidden = true; return; }',replacement:"",
+     expected:["password_set_keeps_its_card_while_the_account_opens","the_unusable_notice_never_appears_after_the_password_is_accepted"]},
+    {name:"keep_saying_setting_your_password_while_the_account_opens",scenario:"password_opening",path:"/assets/service.js",find:'message("confirm-message", "Password set. Opening your account…");',replacement:"",
+     expected:["password_set_keeps_its_card_while_the_account_opens"]},
+    {name:"say_the_link_cannot_be_used_after_the_password_is_set",scenario:"password_refused",path:"/assets/service.js",
+     find:'if (passwordSet === "set") { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = true; return; }',replacement:"",
+     expected:["a_password_set_without_an_open_account_says_so_and_offers_sign_in"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

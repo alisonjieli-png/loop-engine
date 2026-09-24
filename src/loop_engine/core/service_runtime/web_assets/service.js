@@ -399,7 +399,16 @@
     if (password !== again) return "The two passwords are not the same. Type them again.";
     return "";
   };
+  /* Once the identity provider has accepted the new password, the link has done its work, so the card never again says that it
+     cannot be used or that nothing was changed. While the account opens, the password card stays with the status "Password set.
+     Opening your account…", however long the activation takes. Afterwards the card says that the password is set; its signed-in
+     and signed-out lines follow the header, so it offers Sign in only while this page is signed out. Finding 4 of the persona
+     journeys of September 24, 2026. */
+  let passwordSet = "";
   function showConfirmation() {
+    $("confirm-set").hidden = passwordSet !== "set";
+    if (passwordSet === "opening") { $("confirm-password-step").hidden = false; $("confirm-unusable").hidden = true; $("confirm-button").disabled = true; $("confirm-loading").hidden = true; return; }
+    if (passwordSet === "set") { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = true; return; }
     if (!confirmation) { $("confirm-password-step").hidden = true; $("confirm-unusable").hidden = false; return; }
     const recovery = confirmation.type === "recovery", usable = Boolean(confirmation.tokenHash || confirmation.session);
     $("confirm-heading").textContent = recovery ? "Choose a new password." : "Choose your password.";
@@ -436,9 +445,12 @@
       if (updated.error) throw new Error("The password was not accepted. Choose a longer one that you use nowhere else, then try again.");
       $("confirm-password").value = ""; $("confirm-password-again").value = "";
       const accessToken = flow.session.access_token, recovery = flow.type === "recovery"; confirmation = null;
+      passwordSet = "opening"; showConfirmation(); message("confirm-message", "Password set. Opening your account…");
       afterLogin = recovery ? "/account" : "/get-started";
       await connectService(accessToken, identityConfiguration.registration_enabled);
-      if (!token) message("confirm-message", "Your password is set, but the service did not open your account. Sign in from the sign-in page.", true);
+      passwordSet = "set"; showConfirmation();
+      if (token) message("confirm-message", "");
+      else message("confirm-message", "The service did not open your account.", true);
     } catch (error) { if (current()) message("confirm-message", error.message, true); }
     finally { busy = false; $("confirm-button").disabled = !identityClient; }
   });
