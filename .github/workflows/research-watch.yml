@@ -1,0 +1,60 @@
+name: Research watch
+
+# A daily, read-only check of the primary sources in tools/research_source_watch.json:
+# protocol and harness specifications, registries and projects Baltor follows. It makes
+# bounded HTTPS reads and no model call, keeps its report as a run artifact, and opens
+# or updates one issue when a source changed, so the research team reads the change.
+on:
+  schedule:
+    - cron: "41 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: research-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Check every watched source
+        id: watch
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/research-watch.json"
+          PYTHONPATH=src:tools python tools/refresh_research_sources.py --online --max-online-sources 20 --output "$report" > "$RUNNER_TEMP/research-watch.log" 2>&1 || true
+          cat "$RUNNER_TEMP/research-watch.log"
+          python3 tools/summarize_research_watch.py "$report" > "$RUNNER_TEMP/research-watch.md"
+          echo "changed=$(python3 tools/summarize_research_watch.py "$report" --changed-count)" >> "$GITHUB_OUTPUT"
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: research-watch
+          path: |
+            ${{ runner.temp }}/research-watch.json
+            ${{ runner.temp }}/research-watch.md
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Open or update the research issue when a source changed
+        if: steps.watch.outputs.changed != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="Research watch: sources changed"
+          number="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body-file "$RUNNER_TEMP/research-watch.md"
+          else
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/research-watch.md"
+          fi
