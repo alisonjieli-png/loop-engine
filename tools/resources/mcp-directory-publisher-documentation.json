@@ -1,0 +1,6 @@
+{
+  "record_type": "mcp_directory_publisher_documentation/v1",
+  "reviewed_on": "2026-09-24",
+  "rule": "Each offering names the publisher's own page that documents it, as an https address, and at least one remote endpoint, package, agent interface or code repository that the page names. A reviewer opens the page before an offering is added. Offerings here join the registry's rows by endpoint or package and mark them as listed by the publisher.",
+  "offerings": []
+}

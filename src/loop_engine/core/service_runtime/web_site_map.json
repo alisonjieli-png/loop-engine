@@ -114,6 +114,30 @@
       "indexed": true
     },
     {
+      "address": "/directory",
+      "view": "directory",
+      "title": "MCP server and agent API directory",
+      "description": "A free, searchable list of MCP servers and agent APIs, with where to get each one, how it connects and how it signs in.",
+      "group": "Product",
+      "linked_from": [],
+      "unlinked_reason": "Added on September 24, 2026 as a page that stands on its own, because another session was editing the one-page app's index.html. The footer link goes in with that work; until then the page is reached by its address.",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/mcp-directory",
+      "view": "directory",
+      "title": "MCP server and agent API directory",
+      "description": "The second address of the directory of MCP servers and agent APIs.",
+      "group": "Product",
+      "linked_from": [],
+      "unlinked_reason": "A second address of the directory, for people who type or share it; search engines list the directory at /directory.",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
       "address": "/use-cases",
       "view": "use-cases",
       "title": "Use cases",

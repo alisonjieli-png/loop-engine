@@ -1,0 +1,396 @@
+{
+ "record_type": "mcp_directory_manifest/v1",
+ "generated_at": "2026-09-24T17:58:23Z",
+ "row_count": 35279,
+ "columns": [
+  "id",
+  "name",
+  "publisher",
+  "publisher_kind",
+  "description",
+  "category",
+  "offering",
+  "origin",
+  "locations",
+  "transports",
+  "auth",
+  "licence",
+  "licence_basis",
+  "website",
+  "repository",
+  "repository_state",
+  "sources",
+  "aliases",
+  "updated",
+  "commercial"
+ ],
+ "day_zero": "1970-01-01",
+ "parts": [
+  {
+   "address": "/assets/directory/rows-0.json",
+   "rows": 4471,
+   "sha256": "c6c5ef9221327a7ce194b40ef10147e47fe9a7b465c5cf56d316f72d4170384d",
+   "bytes": 1213909
+  },
+  {
+   "address": "/assets/directory/rows-1.json",
+   "rows": 4372,
+   "sha256": "5f21e143da9cdaa83dd6cb772d288e57dfd895696621127f31db22f81761ac02",
+   "bytes": 1191372
+  },
+  {
+   "address": "/assets/directory/rows-2.json",
+   "rows": 4420,
+   "sha256": "07f32a44c3f288f9bf4b812db649f5a2a98b52150fc5540bb4bf4b3e2cecd994",
+   "bytes": 1205666
+  },
+  {
+   "address": "/assets/directory/rows-3.json",
+   "rows": 4354,
+   "sha256": "dd0135d653972a422f4d45e42717ebcbcd9c25d47d8c98585437b7ab275ce31c",
+   "bytes": 1188630
+  },
+  {
+   "address": "/assets/directory/rows-4.json",
+   "rows": 4385,
+   "sha256": "ff90f96f687a5128db3a0ca13da797388505e8df1d607b7f2d552f3ecf521089",
+   "bytes": 1196071
+  },
+  {
+   "address": "/assets/directory/rows-5.json",
+   "rows": 4490,
+   "sha256": "5b14e84064e35c478fd8be1e8a1cbde8164e0464e9859319a40e8868bd44ba15",
+   "bytes": 1223817
+  },
+  {
+   "address": "/assets/directory/rows-6.json",
+   "rows": 4385,
+   "sha256": "03e41dddd0249ea2a66fe9881bc99d4509fba4eb2093ff7c7ce1d43d51cdc455",
+   "bytes": 1188184
+  },
+  {
+   "address": "/assets/directory/rows-7.json",
+   "rows": 4402,
+   "sha256": "3e30975f1382569a7201ac99be53b1a8d7cd4489b5c561bd769c89b67810543b",
+   "bytes": 1200765
+  }
+ ],
+ "categories": [
+  {
+   "id": "developer-tools",
+   "label": "Developer tools",
+   "rows": 2921
+  },
+  {
+   "id": "databases",
+   "label": "Databases and storage",
+   "rows": 754
+  },
+  {
+   "id": "search-web",
+   "label": "Search and web data",
+   "rows": 967
+  },
+  {
+   "id": "browser",
+   "label": "Browser automation",
+   "rows": 305
+  },
+  {
+   "id": "cloud",
+   "label": "Cloud and infrastructure",
+   "rows": 1362
+  },
+  {
+   "id": "observability",
+   "label": "Monitoring and observability",
+   "rows": 593
+  },
+  {
+   "id": "security",
+   "label": "Security",
+   "rows": 634
+  },
+  {
+   "id": "documents",
+   "label": "Documents and files",
+   "rows": 1223
+  },
+  {
+   "id": "productivity",
+   "label": "Notes and productivity",
+   "rows": 644
+  },
+  {
+   "id": "communication",
+   "label": "Communication",
+   "rows": 1201
+  },
+  {
+   "id": "project-management",
+   "label": "Project management",
+   "rows": 651
+  },
+  {
+   "id": "business",
+   "label": "Sales, marketing and commerce",
+   "rows": 2269
+  },
+  {
+   "id": "finance",
+   "label": "Finance and payments",
+   "rows": 1942
+  },
+  {
+   "id": "crypto",
+   "label": "Crypto and blockchain",
+   "rows": 1384
+  },
+  {
+   "id": "ai-models",
+   "label": "AI models and prompts",
+   "rows": 942
+  },
+  {
+   "id": "agents",
+   "label": "Agent tools and marketplaces",
+   "rows": 731
+  },
+  {
+   "id": "media",
+   "label": "Media and design",
+   "rows": 1344
+  },
+  {
+   "id": "knowledge",
+   "label": "Knowledge and memory",
+   "rows": 1044
+  },
+  {
+   "id": "data",
+   "label": "Data and analytics",
+   "rows": 757
+  },
+  {
+   "id": "maps-travel",
+   "label": "Maps, travel and weather",
+   "rows": 909
+  },
+  {
+   "id": "science-health",
+   "label": "Science, health and education",
+   "rows": 700
+  },
+  {
+   "id": "legal-public",
+   "label": "Legal, government and public data",
+   "rows": 1037
+  },
+  {
+   "id": "devices-home",
+   "label": "Devices and home",
+   "rows": 262
+  },
+  {
+   "id": "games-entertainment",
+   "label": "Games and entertainment",
+   "rows": 373
+  },
+  {
+   "id": "utilities",
+   "label": "Utilities and reference",
+   "rows": 1395
+  },
+  {
+   "id": "other",
+   "label": "Other",
+   "rows": 8935
+  }
+ ],
+ "location_kinds": [
+  "remote-http",
+  "remote-sse",
+  "npm",
+  "pypi",
+  "oci",
+  "nuget",
+  "cargo",
+  "mcpb",
+  "api"
+ ],
+ "publisher_kinds": [
+  "unknown",
+  "domain",
+  "github",
+  "repository"
+ ],
+ "origins": [
+  "unknown",
+  "maker",
+  "other"
+ ],
+ "offering_bits": {
+  "remote": 1,
+  "package": 2,
+  "source": 4,
+  "api": 8
+ },
+ "transport_bits": {
+  "stdio": 1,
+  "streamable-http": 2,
+  "sse": 4
+ },
+ "auth_bits": {
+  "none": 1,
+  "key": 2,
+  "oauth": 4,
+  "payment": 8
+ },
+ "licences": [
+  "",
+  "AGPL-3.0",
+  "AGPL-3.0-only",
+  "AGPL-3.0-or-later",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.1",
+  "CC-BY-4.0",
+  "CC-BY-SA-4.0",
+  "CC0-1.0",
+  "EUPL-1.2",
+  "GPL-2.0",
+  "GPL-3.0",
+  "ISC",
+  "LGPL-2.1",
+  "LGPL-3.0",
+  "MIT",
+  "MIT-0",
+  "MPL-2.0",
+  "Other",
+  "PostgreSQL",
+  "Unlicense",
+  "WTFPL"
+ ],
+ "licence_bases": [
+  "",
+  "repository",
+  "package"
+ ],
+ "repository_states": [
+  "unknown",
+  "found",
+  "missing",
+  "archived"
+ ],
+ "sources": [
+  {
+   "id": "registry",
+   "bit": 1,
+   "rows": 35016,
+   "checked": "2026-09-24"
+  },
+  {
+   "id": "codex",
+   "bit": 2,
+   "rows": 996,
+   "checked": "2026-09-23"
+  },
+  {
+   "id": "docs",
+   "bit": 4,
+   "rows": 0,
+   "checked": ""
+  },
+  {
+   "id": "github",
+   "bit": 8,
+   "rows": 288,
+   "checked": "2026-09-24"
+  },
+  {
+   "id": "docker",
+   "bit": 16,
+   "rows": 311,
+   "checked": "2026-09-24"
+  }
+ ],
+ "commercial_relationship_schema": "directory_commercial_relationship/v1",
+ "commercial_relationships": [
+  {
+   "kind": "none",
+   "program_name": "",
+   "program_terms_address": "",
+   "disclosure_label": "",
+   "outbound_link": "",
+   "canonical_address": "",
+   "status": "none",
+   "reviewed_at": ""
+  }
+ ],
+ "labels": {
+  "location_kinds": {
+   "remote-http": "Remote endpoint",
+   "remote-sse": "Remote endpoint, server-sent events",
+   "npm": "npm",
+   "pypi": "PyPI",
+   "oci": "Container image",
+   "nuget": "NuGet",
+   "cargo": "crates.io",
+   "mcpb": "MCP bundle",
+   "api": "Agent API"
+  },
+  "offering": {
+   "remote": "Remote MCP endpoint",
+   "package": "MCP server package",
+   "source": "Source code only",
+   "api": "Agent API or SDK"
+  },
+  "origins": {
+   "maker": "Publisher",
+   "other": "Community",
+   "unknown": "Not matched"
+  },
+  "transports": {
+   "stdio": "Local process (stdio)",
+   "streamable-http": "Streamable HTTP",
+   "sse": "Server-sent events"
+  },
+  "auth": {
+   "none": "No sign-in declared",
+   "key": "API key or token",
+   "oauth": "OAuth",
+   "payment": "Pays per call"
+  },
+  "publisher_kinds": {
+   "domain": "verified domain",
+   "github": "GitHub account",
+   "repository": "code owner",
+   "unknown": ""
+  },
+  "licence_bases": {
+   "": "",
+   "repository": "as the code host reports it",
+   "package": "as the package registry reports it"
+  },
+  "repository_states": {
+   "unknown": "",
+   "found": "",
+   "missing": "not found on GitHub when last checked",
+   "archived": "archived on GitHub"
+  },
+  "sources": {
+   "registry": "Official MCP Registry",
+   "codex": "Baltor research of September 23, 2026",
+   "docs": "Publisher documentation",
+   "github": "GitHub MCP directory",
+   "docker": "Docker MCP Catalog"
+  },
+  "package_pages": {
+   "npm": "www.npmjs.com/package/",
+   "pypi": "pypi.org/project/",
+   "nuget": "www.nuget.org/packages/",
+   "cargo": "crates.io/crates/"
+  }
+ }
+}

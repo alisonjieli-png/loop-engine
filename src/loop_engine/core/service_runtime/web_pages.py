@@ -56,6 +56,10 @@ WEB_ASSETS = {
     # The deck the owner asked for on September 24, 2026, a page with a file of its own. deck.baltor.ai opens it at its
     # root once the hostname table routes that name; tools/test_deck_page.py holds every number on it to a saved record.
     "/deck": ("deck.html", HTML_MEDIA_TYPE),
+    # The free public directory of MCP servers and agent APIs, a page that stands on its own outside the one-page
+    # app; /mcp-directory is its second address. tools/build_mcp_directory.py writes its data files and the
+    # generated parts of the page, and the page script reads the files listed at the end of this table.
+    "/directory": ("directory.html", HTML_MEDIA_TYPE), "/mcp-directory": ("directory.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
@@ -125,6 +129,19 @@ WEB_ASSETS = {
     "/assets/deck-card.png": ("deck-card.png", "image/png"),
     # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
+    # The directory page's stylesheet, script and data: a manifest that names the columns and labels, and eight row
+    # files. Their number is PART_COUNT in tools/mcp_directory/build.py, and `build_mcp_directory.py check` compares them.
+    "/assets/directory.css": ("directory.css", "text/css"),
+    "/assets/directory.js": ("directory.js", "text/javascript"),
+    "/assets/directory/manifest.json": ("directory/manifest.json", "application/json"),
+    "/assets/directory/rows-0.json": ("directory/rows-0.json", "application/json"),
+    "/assets/directory/rows-1.json": ("directory/rows-1.json", "application/json"),
+    "/assets/directory/rows-2.json": ("directory/rows-2.json", "application/json"),
+    "/assets/directory/rows-3.json": ("directory/rows-3.json", "application/json"),
+    "/assets/directory/rows-4.json": ("directory/rows-4.json", "application/json"),
+    "/assets/directory/rows-5.json": ("directory/rows-5.json", "application/json"),
+    "/assets/directory/rows-6.json": ("directory/rows-6.json", "application/json"),
+    "/assets/directory/rows-7.json": ("directory/rows-7.json", "application/json"),
 }
 #: Files written from the site map rather than packaged, with their media types.
 #: Each answers GET and HEAD like a packaged file, with a strong validator.

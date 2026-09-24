@@ -1,0 +1,7 @@
+{
+  "record_type": "mcp_directory_commercial_relationships/v1",
+  "schema": "directory_commercial_relationship/v1",
+  "decided_on": "2026-09-24",
+  "note": "Every row of the directory ships with the relationship none. Joining an affiliate, referral or sponsorship programme is the owner's legal and payout step, and the disclosure wording waits for the owner's approval. A row named here carries the reviewed relationship; ranking, ordering, filtering and inclusion never read it.",
+  "rows": []
+}

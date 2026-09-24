@@ -1,0 +1,95 @@
+name: MCP directory refresh
+
+# Refreshes the public directory of MCP servers and agent APIs at /directory once a day. It reads the official MCP
+# Registry from its saved cursor (a full traversal the first time, then only the entries updated since the last
+# complete traversal), GitHub's MCP directory, the Docker MCP Catalog at the commit its main branch names, and the
+# licence GitHub reports for repositories it has not asked about in thirty days. It then rebuilds the packaged data
+# files, runs the directory's checks and, when the data changed, commits the files to main and starts the CI workflow
+# for that commit. A release still carries the new data only after that CI run passes.
+#
+# The state folder lives in the Actions cache, so a stopped run resumes where it stopped. Set the repository variable
+# MCP_DIRECTORY_COMMIT to "off" to keep the refreshed files as a workflow artifact without committing them. The same two
+# commands refresh the data by hand; tools/build_mcp_directory.py names them.
+on:
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: mcp-directory
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install PyYAML "jsonschema>=4.20"
+
+      - name: Restore the directory state
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/mcp-directory-state
+          key: mcp-directory-state-${{ github.run_id }}
+          restore-keys: mcp-directory-state-
+
+      - name: Read the sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          PYTHONPATH=src:tools python tools/build_mcp_directory.py refresh
+          --state "$RUNNER_TEMP/mcp-directory-state" --licences 3000
+
+      - name: Save the directory state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/mcp-directory-state
+          key: mcp-directory-state-${{ github.run_id }}
+
+      - name: Build the data files and check them
+        run: |
+          PYTHONPATH=src:tools python tools/build_mcp_directory.py build --state "$RUNNER_TEMP/mcp-directory-state"
+          PYTHONPATH=src:tools python tools/build_mcp_directory.py check
+          PYTHONPATH=src:tools python -m unittest tools/test_build_mcp_directory.py
+
+      - name: Keep the build report and the data files
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mcp-directory
+          path: |
+            ${{ runner.temp }}/mcp-directory-state/build-report.json
+            src/loop_engine/core/service_runtime/web_assets/directory
+            src/loop_engine/core/service_runtime/web_assets/directory.html
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit changed data to main
+        if: vars.MCP_DIRECTORY_COMMIT != 'off'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          data="src/loop_engine/core/service_runtime/web_assets/directory src/loop_engine/core/service_runtime/web_assets/directory.html"
+          if git diff --quiet -- $data; then
+            echo "The directory data did not change."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $data
+          git commit -m "Refresh the MCP directory data" -m "Written by the MCP directory refresh workflow from its sources."
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run ci.yml --ref main

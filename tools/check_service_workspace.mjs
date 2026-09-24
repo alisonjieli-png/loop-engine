@@ -9,6 +9,8 @@ import {existsSync,readFileSync,writeFileSync} from "node:fs";
 import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
 import {runDeckChecks} from "./deck_checks.mjs";
+import {LISTING_TEXT_ATTRIBUTE,listingTextPages,listingTextRegistration,registerListingText,withoutListingText} from "./listing_text.mjs";
+import {runDirectoryChecks} from "./directory_browser_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 /* Version queries are exact content identities, not permission to match arbitrary queries or origins. */
@@ -17,7 +19,7 @@ const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/
 const sameOriginAsset=(value,origin,path,requireVersion=true)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&(url.search===""?!requireVersion:url.search==="?v="+assetDigest(path));}catch(_){return false;}};
 const assetRoute=(path,origin)=>url=>(origin?[origin]:serviceOrigins).some(base=>sameOriginAsset(url.href,base,path,false));
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png","-start-open-desktop.png","-start-open-mobile.png","-start-closed-desktop.png","-start-closed-mobile.png",...showcaseScreenshotSuffixes].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png","-start-open-desktop.png","-start-open-mobile.png","-start-closed-desktop.png","-start-closed-mobile.png",...showcaseScreenshotSuffixes,"-directory-desktop.png","-directory-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -208,7 +210,7 @@ const child=spawn(process.env.PYTHON||resolve(root,".venv/bin/python"),["-u","-c
 const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const serviceOrigins=[fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base];
-const checks=[],errors=[],network=[]; let browser;
+const checks=[],errors=[],network=[]; let browser,directoryResult=null;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
@@ -1053,6 +1055,8 @@ try {
   const docsIndex=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation-index.json"),"utf8"));
   const docsPagePaths=docsIndex.sections.flatMap(section=>section.pages).filter(entry=>entry.body&&entry.address.startsWith("/docs/")).map(entry=>entry.address);
   const servedRoutes=["/",...useCasePaths,"/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...docsPagePaths,...showcasePaths];
+  /* The directory page is read like every other page, with the listings other publishers wrote left out (tools/listing_text.mjs). */
+  servedRoutes.push("/directory");
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
@@ -1060,17 +1064,23 @@ try {
   servedRoutes.push("/deck");
   /* A page without the shared header or footer, such as the page for an address the service does not serve, is read
      as far as it goes, so an unserved address fails its own named checks instead of stopping the whole journey. */
-  const readShownText=target=>target.evaluate(()=>[document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n"));
+  const readShownText=target=>target.evaluate(([pages,attribute])=>{
+    const listing=pages.includes(location.pathname)?[...document.querySelectorAll("["+attribute+"]")].filter(node=>!node.hidden):[];
+    listing.forEach(node=>{node.hidden=true;});
+    try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
+    finally{listing.forEach(node=>{node.hidden=false;});}
+  },[listingTextPages(),LISTING_TEXT_ATTRIBUTE]);
   /* The same text for the retired-word rule and the invitation-word rule, without the approved terms and the approved privacy
      notice while each is shown with exactly the approved words. They are hidden only while this one reading is taken, and shown
      again at once. */
-  const readRetiredText=target=>target.evaluate(([terms,privacy])=>{
+  const readRetiredText=target=>target.evaluate(([terms,privacy,pages,attribute])=>{
     const words=text=>text.split(/\s+/).filter(Boolean),same=(node,approved)=>node.getClientRects().length>0&&JSON.stringify(words(node.innerText))===JSON.stringify(approved);
-    const exempt=[...[...document.querySelectorAll("[data-terms-of-service]")].filter(node=>same(node,terms)),...[...document.querySelectorAll("[data-privacy-notice]")].filter(node=>same(node,privacy))];
+    const listing=pages.includes(location.pathname)?[...document.querySelectorAll("["+attribute+"]")].filter(node=>!node.hidden):[];
+    const exempt=[...[...document.querySelectorAll("[data-terms-of-service]")].filter(node=>same(node,terms)),...[...document.querySelectorAll("[data-privacy-notice]")].filter(node=>same(node,privacy)),...listing];
     exempt.forEach(node=>{node.hidden=true;});
     try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
     finally{exempt.forEach(node=>{node.hidden=false;});}
-  },[approvedTermsWords,approvedPrivacyWords]);
+  },[approvedTermsWords,approvedPrivacyWords,listingTextPages(),LISTING_TEXT_ATTRIBUTE]);
   const scanShownText=(path,shownText,retiredText=shownText)=>{
     if(retiredAccessWords.test(retiredText))vocabularyProblems.push({path,rule:"retired access word",found:retiredText.match(retiredAccessWords)[0]});
     if(invitationWords.test(retiredText))vocabularyProblems.push({path,rule:"invitation word",found:retiredText.match(invitationWords)[0]});
@@ -1096,13 +1106,32 @@ try {
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   /* The deck's own files are read like every other served file. */
   servedFiles.push("/assets/deck.css","/assets/deck.js","/assets/deck-card.png");
+  /* The directory page and its files. Its row files hold only listings that other publishers wrote, so the strings under their
+     "rows" key are listing text; the page marks its listing fields with data-listing-text. Everything else is read. */
+  const directoryRowFiles=["/assets/directory/rows-0.json","/assets/directory/rows-1.json","/assets/directory/rows-2.json","/assets/directory/rows-3.json","/assets/directory/rows-4.json","/assets/directory/rows-5.json","/assets/directory/rows-6.json","/assets/directory/rows-7.json"];
+  servedFiles.push("/directory","/assets/directory.css","/assets/directory.js","/assets/directory/manifest.json",...directoryRowFiles);
+  for(const path of directoryRowFiles)registerListingText(path,{fields:["rows"]});
+  registerListingText("/directory",{page:true});
   check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
   check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];
   for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
   /* approved: the words the terms are compared with; a known-wrong case below passes another approved text. */
-  const retiredIn=(path,text,approved=approvedTermsWords)=>{const read=withoutApprovedTerms(text,approved);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
+  const retiredIn=(path,text,approved=approvedTermsWords)=>{const read=withoutApprovedTerms(withoutListingText(path,text),approved);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
   const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
+  /* The listing text rule leaves out only what a directory registered: the listing fields of a row file and the marked elements of
+     the directory page. A word in a row file's envelope, in an unregistered file, in a row file that does not parse, or in an
+     unmarked part of the page is still read. */
+  const plantedRows=(envelope,listing)=>JSON.stringify({record_type:"mcp_directory_rows/v1"+envelope,part:0,rows:[["io.github.x/tool",listing,"x",1,listing,0,1,0,[],0,1,0,0,"","",0,1,[],0,0]]});
+  check("listing_text_rule_reads_everything_but_registered_listing_fields",
+    retiredIn("/assets/directory/rows-0.json",plantedRows("","Private beta tools")).length===0
+    &&retiredIn("/assets/directory/rows-0.json",plantedRows(" beta","Tools")).length===1
+    &&retiredIn("/assets/unregistered-rows.json",plantedRows("","Private beta tools")).length===1
+    &&retiredIn("/assets/directory/rows-0.json",'{"rows":["Private beta"').length===1
+    &&retiredIn("/directory",'<li data-row><span data-listing-text>Private beta tools</span></li>').length===0
+    &&retiredIn("/directory",'<h2>Private beta</h2><li data-row><span data-listing-text>Tools</span></li>').length===1
+    &&invitationIn("/assets/directory/rows-0.json",plantedRows("","Invite your team")).length===0
+    &&invitationIn("/assets/directory/manifest.json",'{"labels":{"x":"Invite your team"}}').length===1);
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
   /* The words of an invitation-only service in the served files as well: the text of the served page and of every documentation
@@ -1120,8 +1149,8 @@ try {
   const privacyBlock=/<article id="privacy-notice" data-privacy-notice>[\s\S]*?<\/article>/;
   /* approved: the words each legal text is compared with; a known-wrong case below passes another approved text. */
   const withoutApprovedLegalText=(markup,approved={})=>withoutApprovedBlock(withoutApprovedTerms(markup,approved.terms||approvedTermsWords),privacyBlock,approved.privacy||approvedPrivacyWords);
-  const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
-  const invitationIn=(path,text,approved)=>{if(notOurText[path])return [];const read=customerText(path,text,approved);return invitationWords.test(read)?[{path:"the served file "+path,rule:"invitation word",found:read.match(invitationWords)[0]}]:[];};
+  const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")||listingTextRegistration(path)?.page?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
+  const invitationIn=(path,text,approved)=>{if(notOurText[path])return [];const read=customerText(path,withoutListingText(path,text),approved);return invitationWords.test(read)?[{path:"the served file "+path,rule:"invitation word",found:read.match(invitationWords)[0]}]:[];};
   /* A sentence written inside a legal text, just after the article's own opening tag, so the case depends on no word of the text. */
   const writtenInside=(block,sentence)=>block.replace(/^(<article[^>]*>)/,"$1<p>"+sentence+"</p>");
   const invitationFileProblems=servedTexts.flatMap(([path,text])=>invitationIn(path,text));
@@ -1152,7 +1181,7 @@ try {
   /* The terms of service are published, so no page and no served file may still say that they are not. The served files are
      read whole, hidden views included. */
   const unpublishedClaims=[...vocabularyProblems.filter(item=>item.rule==="terms called unpublished"),
-    ...servedTexts.filter(([,text])=>unpublishedTerms.test(text)).map(([path,text])=>({path:"the served file "+path,found:text.match(unpublishedTerms)[0]}))];
+    ...servedTexts.filter(([path,text])=>unpublishedTerms.test(withoutListingText(path,text))).map(([path,text])=>({path:"the served file "+path,found:withoutListingText(path,text).match(unpublishedTerms)[0]}))];
   check("no_public_page_says_the_terms_are_unpublished",servedTexts.length===servedFiles.length&&unpublishedClaims.length===0,{problems:unpublishedClaims});
   check("unpublished_terms_check_rejects_a_known_wrong_page",["Terms of service: not yet published","The terms of service are not published yet.","Our terms are still a draft."].every(claim=>unpublishedTerms.test(claim))
     &&!unpublishedTerms.test("Read the terms of service and the privacy notice. By creating an account you agree to the terms of service."));
@@ -3607,6 +3636,8 @@ try {
   /* The pages of September 24, 2026 and the page each hostname shows at its root, in tools/showcase_page_checks.mjs. */
   await runShowcasePageChecks({root,python:process.env.PYTHON||resolve(root,".venv/bin/python"),browser,context,fixture,check,mutants,output,safeError,localOnly,
     words:{retiredAccessWords,invitationWords,publicVocabulary}});
+  /* The directory page at /directory: tools/directory_browser_checks.mjs holds its checks and their removed-guard controls. */
+  directoryResult=await runDirectoryChecks({browser,base:fixture.base,check,mutants,errors,localOnly,screenshot:suffix=>output.replace(/\.json$/,suffix)});
   await page.goto(fixture.base+"/"); await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:output.replace(/\.json$/,"-desktop.png"),fullPage:true});
   await page.setViewportSize({width:390,height:1000}); await page.click("#theme");
@@ -3619,7 +3650,7 @@ finally{
   if(browser)await browser.close(); child.stdin.end("\n");
   await new Promise(resolve=>{if(child.exitCode!==null)return resolve();const timer=setTimeout(()=>{child.kill("SIGTERM");resolve();},5000);child.once("exit",()=>{clearTimeout(timer);resolve();});}); lines.close();
 }
-const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py','account_email.py','account_email_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
+const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py','account_email.py','account_email_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json','directory.html','directory.css','directory.js'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
 /* Version 2 of this report carries the removed-guard controls, and all_passed is true only when every check passed and every control was detected. Version 1 had neither. */
 const result={record_type:"service_workspace_browser_checks/v2",scope:"real browser and loopback service; provider fixtures only; every page asset is served by the service",external_provider_calls:0,
   /* What the check supplied instead of the running system, named on the face of the report. Offered,
@@ -3627,5 +3658,5 @@ const result={record_type:"service_workspace_browser_checks/v2",scope:"real brow
   harness_substitutions:["a removed-guard control answers /assets/catalogue-browser.js with changed bytes, in memory, for that control run only",
     "the held download checks wrap crypto.subtle.digest in the page so one measurement can be held, which puts the sign-out inside the window the guard defends",
     "the sign-up journey's identity project is the stand-in from account_email_checks.py on a loopback socket, and its mail provider is the same stand-in's outbox"],
-  checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
+  directory:directoryResult,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
 writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,mutants_detected:result.mutants_detected,mutants:mutants.length,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;

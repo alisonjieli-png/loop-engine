@@ -259,6 +259,30 @@ answer HEAD like GET, with a strong validator. The checks are
   files.
 - The four audience pages under `/for/`.
 
+## The directory page
+
+`directory.html` is the free public directory of Model Context Protocol
+servers and agent APIs, served at `/directory` and `/mcp-directory`. It stands
+on its own outside the one-page app, in the same design: it loads
+`service.css`, `architecture.css` and its own `directory.css`, and its script
+`directory.js` drives the search, the category chips, the filters, the
+listing detail, the appearance button and the status line.
+
+`tools/build_mcp_directory.py` writes `directory/manifest.json`, the eight row
+files beside it and the generated regions of the page: the header and footer
+copied from `index.html`, the facts line, the category chips, the first forty
+rows and the structured data. The rest of the page is written by hand. The
+script draws only the rows in view, so the list scrolls through tens of
+thousands of rows. Each row carries a `commercial_relationship` from
+`../commercial_relationship.py`; every row ships with the relationship none,
+and the order, the filters and the search never read it.
+
+Listings other publishers wrote carry `data-listing-text`. The word rules of
+`tools/check_service_workspace.mjs` leave that text out through
+`tools/listing_text.mjs` and read the rest of the page and its files.
+`tools/directory_browser_checks.mjs` holds the page's browser checks.
+`tools/mcp_directory/SOURCES.md` records the sources and their terms.
+
 ## Customer documentation
 
 The versioned `documentation-index.json` supplies the four sections and seven
