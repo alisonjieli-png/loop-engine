@@ -177,7 +177,7 @@ class ProviderBindingTest(unittest.TestCase):
                          (MODEL, 4096, True))
         self.assertNotIn(KEY, self.output_files_text())
         run = json.loads((self.root / "run/run.json").read_text())
-        self.assertEqual(run["record_type"], "original_native_generation_run/v5")
+        self.assertEqual(run["record_type"], "original_native_generation_run/v6")
         self.assertEqual(run["provider"], "fixture_box")
         self.assertEqual(run["producer_family"], "google")
         self.assertEqual(run["family_source_sha256"], generation.digest((self.repo / "evidence/family.json").read_bytes()))

@@ -44,6 +44,12 @@ from loop_engine.core.model_gateway import (
     builtin_provider_specs,
     provider_spec_from_endpoint,
 )
+from loop_engine.core.model_response_admission import (
+    ModelResponseAdmissionPolicy,
+    ModelResponseAdmissionRequest,
+    ModelResponseContract,
+    admit_model_response_as_loop,
+)
 from loop_engine.core.model_routes import ModelRoute, screen_route
 from loop_engine.core.model_token_preflight import ProviderTokenBound
 from loop_engine.core.service_runtime.catalogue_packages import (
@@ -60,8 +66,8 @@ from tools import prepare_harness_candidates as factory
 
 PLAN_TYPE = "original_native_generation_plan/v1"
 DRAFT_TYPE = "original_native_file_draft/v1"
-RUN_TYPE = "original_native_generation_run/v5"
-EVENT_TYPE = "original_native_generation_event/v2"
+RUN_TYPE = "original_native_generation_run/v6"
+EVENT_TYPE = "original_native_generation_event/v3"
 BINDING_TYPE = "original_native_generation_provider_binding/v1"
 CAPACITY_TYPE = "endpoint_output_capacity/v1"
 FAMILY_EVIDENCE_TYPE = "generation_producer_family_evidence/v1"
@@ -79,6 +85,18 @@ MAX_JOURNAL_BYTES = 64 * 1024 * 1024
 PROMPT_RESOURCE_TYPE = "original_native_generation_prompt/v1"
 PROMPT_RESOURCE_PATH = Path(__file__).resolve().parent / "resources/original-native-generation-prompt-v1.json"
 MAX_PROMPT_RESOURCE_BYTES = 32 * 1024
+#: The draft's own shape, checked by the existing response admission Loop
+#: before the exact draft parser. Admission may remove only one exact
+#: enclosing Markdown JSON fence, and records it; every other deviation stays
+#: a refusal.
+DRAFT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["record_type", "method_id", "files"],
+                "properties": {"record_type": {"const": DRAFT_TYPE}, "method_id": {"type": "string"},
+                               "files": {"type": "array", "items": {
+                                   "type": "object", "additionalProperties": False, "required": ["path", "content"],
+                                   "properties": {"path": {"type": "string"}, "content": {"type": "string"}}}}}}
+DRAFT_ADMISSION = ModelResponseContract(
+    DRAFT_TYPE, json.dumps(DRAFT_SCHEMA),
+    ModelResponseAdmissionPolicy(allowed_strategies=("strict_json", "json_markdown_fence_removed")))
 
 
 class GenerationError(ValueError):
@@ -363,6 +381,21 @@ def binding_provider_spec(repository, binding, credential_resolver):
     return replace(provider_spec_from_endpoint(endpoint), credential_ref="operator:" + binding.credential_reference)
 
 
+def admit_draft(text):
+    """Admit one model answer through the existing deterministic admission Loop.
+
+    Returns the typed admission result and its secret-free record. Strict JSON
+    is tried first; the only permitted repair removes one exact enclosing
+    Markdown JSON fence, and the record names it with its transformation.
+    """
+    result = admit_model_response_as_loop(ModelResponseAdmissionRequest(
+        text, DRAFT_ADMISSION.contract_ref, DRAFT_ADMISSION.content_digest, DRAFT_SCHEMA, DRAFT_ADMISSION.policy))
+    return result, {"admitted": result.admitted, "strategy": result.strategy, "failure_code": result.failure_code,
+                    "transformation_trace": list(result.transformation_trace),
+                    "normalized_sha256": result.normalized_digest,
+                    "schema_errors": list(result.schema_errors)}
+
+
 def write_new(path, raw):
     path = plain_path(path)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -500,12 +533,24 @@ def read_journal(path, method_ids):
             exact(row["data"], {"status", "error_code", "physical_model_calls", "input_tokens", "output_tokens",
                   "charged_tokens", "charge_basis", "gateway_model", "response_sha256", "response_saved_sha256",
                   "response_path", "proposal_path", "proposal_sha256", "prepared_path", "package_digest", "elapsed_seconds",
-                  "prepared_tree_sha256", "reported_model", "attempt_provider", "provider_request_digest"}, "completion_invalid")
+                  "prepared_tree_sha256", "reported_model", "attempt_provider", "provider_request_digest",
+                  "response_admission"}, "completion_invalid")
             if key not in pending:
                 refuse("completion_without_dispatch")
             data = row["data"]
             if data["status"] not in ("failed", "candidate_prepared", "outcome_unknown"):
                 refuse("completion_status_invalid")
+            admission = data["response_admission"]
+            if admission is not None:
+                exact(admission, {"admitted", "strategy", "failure_code", "transformation_trace", "normalized_sha256",
+                                  "schema_errors"}, "completion_admission_invalid")
+                if (type(admission["admitted"]) is not bool
+                        or admission["strategy"] not in ("strict_json", "json_markdown_fence_removed", "unparsed")
+                        or type(admission["transformation_trace"]) is not list
+                        or type(admission["schema_errors"]) is not list):
+                    refuse("completion_admission_invalid")
+            if data["status"] == "candidate_prepared" and (admission is None or admission["admitted"] is not True):
+                refuse("completion_admission_invalid")
             if data["charge_basis"] not in ("reported", "reserved_remaining", "unknown"):
                 refuse("completion_usage_invalid")
             for name in ("physical_model_calls", "input_tokens", "output_tokens", "charged_tokens"):
@@ -618,7 +663,8 @@ def implementation_digests(spec, extra=()):
     try:
         paths = (Path(__file__), Path(native.__file__), Path(factory.__file__),
                  Path(inspect.getfile(PromptResourceBundle)),
-                 Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)), *extra)
+                 Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)),
+                 Path(inspect.getfile(admit_model_response_as_loop)), *extra)
     except (TypeError, OSError):
         refuse("implementation_source_unavailable")
     result = {}
@@ -717,6 +763,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                   "token_bounds_source": getattr(token_bound_resolver, "source_sha256", "host-injected")
                       if token_bound_resolver is not None else None,
                   "provider_binding": binding.summary() if binding is not None else None,
+                  "draft_admission": {"contract": DRAFT_ADMISSION.to_dict(), "sha256": DRAFT_ADMISSION.content_digest},
                   "implementations": implementation_digests(spec, (
                       Path(runtime_settings.__file__), Path(settings_loader.__file__)) if binding is not None else ()),
                   "prompt_resource": prompt_binding}
@@ -798,6 +845,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
             complete_usage = type(input_tokens) is int and type(output_tokens) is int and input_tokens >= 0 and output_tokens >= 0
             charge = input_tokens + output_tokens if complete_usage else remaining
             proposal_path, prepared_path = "", ""
+            admission_record = None
             proposal_digest, package_digest, prepared_digest = "", "", ""
             status = "failed" if result is not None else "outcome_unknown"
             if result is not None:
@@ -813,8 +861,11 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                 elif remaining is not None and charge is not None and charge > remaining:
                     error_code = "token_bound_exceeded"
                 elif result.ok:
+                    admitted, admission_record = admit_draft(raw.decode("utf-8"))
                     try:
-                        proposal = parse_draft(raw, method, plan, producer)
+                        if not admitted.admitted:
+                            refuse("draft_json_not_admitted")
+                        proposal = parse_draft(canonical(admitted.value), method, plan, producer)
                         package, _bodies = native._files(proposal["proposals"][0]["files"], method["declared_effects"])
                         package_digest = package.package_digest
                         if any(row["data"]["package_digest"] == package_digest for row in successful.values()):
@@ -828,8 +879,9 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                         proposal_path, prepared_path = proposal_file.relative_to(output).as_posix(), prepared.relative_to(output).as_posix()
                         proposal_digest = digest(proposal_raw)
                         status = "candidate_prepared"
-                    except (GenerationError, factory.PreparationError, ValueError, KeyError, TypeError, UnicodeError):
-                        error_code = "candidate_draft_or_factory_refused"
+                    except (GenerationError, factory.PreparationError, ValueError, KeyError, TypeError, UnicodeError) as refusal:
+                        error_code = ("draft_json_not_admitted" if str(refusal) == "draft_json_not_admitted"
+                                      else "candidate_draft_or_factory_refused")
             data = {"status": status, "error_code": "" if status == "candidate_prepared" else error_code or "provider_failed", "physical_model_calls": physical,
                     "input_tokens": input_tokens, "output_tokens": output_tokens, "charged_tokens": charge,
                     "charge_basis": "reported" if complete_usage else ("reserved_remaining" if remaining is not None else "unknown"),
@@ -839,7 +891,8 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                     "package_digest": package_digest, "elapsed_seconds": elapsed_seconds,
                     "prepared_tree_sha256": prepared_digest, "reported_model": redacted(reported_model),
                     "attempt_provider": last_attempt.provider if last_attempt else "",
-                    "provider_request_digest": last_attempt.provider_request_digest if last_attempt else ""}
+                    "provider_request_digest": last_attempt.provider_request_digest if last_attempt else "",
+                    "response_admission": admission_record}
             append_event(journal, rows, "complete", identity, attempt, data)
             completed[(identity, attempt)] = rows[-1]
             if status == "candidate_prepared":

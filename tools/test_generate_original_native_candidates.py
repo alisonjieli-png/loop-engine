@@ -364,10 +364,12 @@ class GenerationTest(unittest.TestCase):
     def test_old_run_contract_is_refused_without_reinterpretation(self):
         gateway=FakeGateway();self.run_generation(gateway)
         p=self.root/'run/run.json';value=json.loads(p.read_text())
-        self.assertEqual(value['record_type'],'original_native_generation_run/v5')
-        self.assertEqual(value['journal_record_type'],'original_native_generation_event/v2')
+        self.assertEqual(value['record_type'],'original_native_generation_run/v6')
+        self.assertEqual(value['journal_record_type'],'original_native_generation_event/v3')
         self.assertIsNone(value['provider_binding'])
-        value['record_type']='original_native_generation_run/v4';p.write_text(json.dumps(value))
+        self.assertEqual(value['draft_admission']['contract']['normalization']['allowed_strategies'],
+                         ['strict_json','json_markdown_fence_removed'])
+        value['record_type']='original_native_generation_run/v5';p.write_text(json.dumps(value))
         with self.assertRaisesRegex(ValueError,'resume_binding_changed'):self.run_generation(gateway)
         self.assertEqual(len(gateway.calls),1)
 
@@ -422,6 +424,40 @@ class GenerationTest(unittest.TestCase):
         with self.assertRaisesRegex(generation.GenerationError, "implementation_source_unavailable"):
             generation.implementation_digests(replace(self.spec, adapter=unavailable))
 
+
+    def admission_of_last_completion(self):
+        return json.loads((self.root/'run/journal.jsonl').read_text().splitlines()[-1])['data']
+
+    def test_exact_markdown_json_fence_is_admitted_and_recorded_not_silent(self):
+        def fenced(result): result.text='```json\n'+result.text+'\n```'; return result
+        gateway=FakeGateway(fenced);result=self.run_generation(gateway)
+        self.assertEqual(result['candidate_count'],1)
+        data=self.admission_of_last_completion()
+        self.assertEqual(data['response_admission']['strategy'],'json_markdown_fence_removed')
+        self.assertEqual(data['response_admission']['transformation_trace'],['removed_exact_markdown_json_fence'])
+        raw=(self.root/'run/inspect_fixture.attempt-1/response.txt').read_bytes()
+        self.assertTrue(raw.startswith(b'```json'))
+        self.assertEqual(data['response_sha256'],generation.digest(raw))
+
+    def test_strict_json_draft_records_the_strict_strategy(self):
+        self.run_generation()
+        admission=self.admission_of_last_completion()['response_admission']
+        self.assertEqual((admission['admitted'],admission['strategy'],admission['transformation_trace']),
+                         (True,'strict_json',[]))
+
+    def test_other_wrappers_and_invalid_or_extended_drafts_are_not_admitted(self):
+        def text_outside(result): result.text='Here is the JSON:\n```json\n'+result.text+'\n```'; return result
+        def two_fences(result): result.text='```json\n'+result.text+'\n```\n```json\n{}\n```'; return result
+        def invalid_inside(result): result.text='```json\n'+result.text.replace('"content": "#','"content": [#',1)+'\n```'; return result
+        def echoed_role(result):
+            value=json.loads(result.text);value['files'][0]['role']='instruction_file';result.text=json.dumps(value);return result
+        for number,change in enumerate((text_outside,two_fences,invalid_inside,echoed_role)):
+            with self.subTest(change=change.__name__):
+                output=self.root/f'refused-{number}';result=self.run_generation(FakeGateway(change),output=output)
+                self.assertEqual(result['candidate_count'],0)
+                data=json.loads((output/'journal.jsonl').read_text().splitlines()[-1])['data']
+                self.assertEqual(data['error_code'],'draft_json_not_admitted')
+                self.assertFalse(data['response_admission']['admitted'])
 
 if __name__ == "__main__":
     unittest.main()

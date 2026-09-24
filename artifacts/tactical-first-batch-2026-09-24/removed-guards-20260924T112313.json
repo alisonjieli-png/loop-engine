@@ -1,0 +1,86 @@
+{
+ "record_type": "draft_admission_removed_guards/v1",
+ "provider_calls": 0,
+ "at": "2026-09-24T11:23:13.429985+00:00",
+ "source_sha256": "265ce0caaa1687aa1412546f8a960ee08882d05afa0c4979e8a588ef1fa9e249",
+ "all_detected": true,
+ "controls": 4,
+ "results": [
+  {
+   "guard": "fence_repair_not_permitted",
+   "checks": [
+    "test_exact_markdown_json_fence_is_admitted_and_recorded_not_silent"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "draft_schema_not_checked",
+   "checks": [
+    "test_other_wrappers_and_invalid_or_extended_drafts_are_not_admitted"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "unadmitted_draft_reaches_the_parser",
+   "checks": [
+    "test_other_wrappers_and_invalid_or_extended_drafts_are_not_admitted"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 4,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "repair_not_recorded",
+   "checks": [
+    "test_exact_markdown_json_fence_is_admitted_and_recorded_not_silent"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 0,
+    "errors": 1
+   },
+   "detected": true
+  }
+ ]
+}
