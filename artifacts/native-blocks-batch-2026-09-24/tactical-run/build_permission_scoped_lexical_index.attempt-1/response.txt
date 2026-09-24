@@ -1,0 +1,502 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v1
+method_id: build_permission_scoped_lexical_index
+<<<AGENTS.md>>>
+# Build Permission-Scoped Lexical Index
+
+## Focused Task
+Construct a deterministic, in-memory lexical index from a collection of documents. Support tenant-scoped querying with ranking based on term density and distinct matches.
+
+## First Action
+1. Read up to 1MiB of UTF-8 JSON from `stdin`.
+2. Validate the JSON structure against the provided schemas.
+3. Perform Unicode NFKC normalization and casefolding on all text.
+4. Tokenize via whitespace splitting.
+5. Build the inverted index or execute the query.
+
+## Helper Invocation
+The tool is invoked via `python3 tools/build_permission_scoped_lexical_index.py`. It expects a JSON payload on `stdin`.
+
+## Contract & Refusal Rules
+- **Refusal (Error Codes):**
+    - `INVALID_JSON`: Malformed JSON or duplicate keys.
+    - `SCHEMA_VIOLATION`: Missing required fields or type mismatches (e.g., boolean where integer expected).
+    - `SIZE_EXCEEDED`: Input exceeds 1MiB.
+    - `NONFINITE_NUMBER`: Input contains `NaN` or `Inf`.
+- **Ranking Logic:**
+    1. Count of distinct query terms matched.
+    2. Total count of all query term occurrences.
+    3. Lexical document ID (ascending).
+- **Filtering:** Documents must match the `tenant_id` provided in the query.
+- **Abstention:** If the number of distinct matched terms is less than `min_distinct_matches`, return zero results.
+
+## Constraints
+- Python 3.10+ standard library only.
+- No `eval`, `exec`, or dynamic imports.
+- No network or filesystem mutation.
+- No semantic/embedding logic; strictly lexical.
+<<<END AGENTS.md>>>
+<<<tools/build_permission_scoped_lexical_index.py>>>
+import sys
+import json
+import unicodedata
+import hashlib
+from collections import Counter, defaultdict
+from typing import Any, Dict, List, Tuple, Set
+
+def normalize_text(text: str) -> List[str]:
+    """NFKC normalization, casefold, and whitespace split."""
+    nfkc = unicodedata.normalize('NFKC', text)
+    casefolded = nfkc.casefold()
+    return casefolded.split()
+
+def calculate_corpus_digest(documents: List[Dict[str, Any]]) -> str:
+    """Stable digest of the document collection based on content and IDs."""
+    # Sort by ID to ensure stability
+    sorted_docs = sorted(documents, key=lambda x: str(x['id']))
+    hasher = hashlib.sha256()
+    for doc in sorted_docs:
+        hasher.update(str(doc['id']).encode('utf-8'))
+        hasher.update(doc['text'].encode('utf-8'))
+        hasher.update(doc['tenant_id'].encode('utf-8'))
+    return hasher.hexdigest()
+
+def validate_json_input(raw_data: bytes) -> Tuple[Dict[str, Any], str]:
+    """Validates JSON structure, size, and non-finite numbers."""
+    if len(raw_data) > 1024 * 1024:
+        return {}, "SIZE_EXCEEDED"
+    
+    try:
+        # json.loads handles duplicate keys by taking the last one. 
+        # To strictly detect duplicates, we'd need a custom decoder, 
+        # but standard behavior is often acceptable unless specified.
+        # Here we use a simple check for the 'duplicate-key' requirement.
+        # A more robust way is to use a custom object_pairs_hook.
+        
+        def dict_no_dupes(pairs):
+            d = {}
+            for k, v in pairs:
+                if k in d:
+                    raise ValueError("DUPLICATE_KEY")
+                d[k] = v
+            return d
+
+        data = json.loads(raw_data.decode('utf-8'), object_pairs_hook=dict_no_dupes)
+    except ValueError as e:
+        if str(e) == "DUPLICATE_KEY":
+            return {}, "INVALID_JSON"
+        return {}, "INVALID_JSON"
+    except Exception:
+        return {}, "INVALID_JSON"
+
+    # Check for non-finite numbers
+    def check_finite(obj):
+        if isinstance(obj, float):
+            if not (float('-inf') < obj < float('inf')):
+                raise ValueError("NONFINITE_NUMBER")
+        elif isinstance(obj, dict):
+            for v in obj.values(): check_finite(v)
+        elif isinstance(obj, list):
+            for v in obj: check_finite(v)
+            
+    try:
+        check_finite(data)
+    except ValueError:
+        return {}, "NONFINITE_NUMBER"
+
+    return data, ""
+
+def run_index_logic(payload: Dict[str, Any]) -> Dict[str, Any]:
+    mode = payload.get("mode")
+    if mode == "build":
+        docs = payload.get("documents", [])
+        # Validate types: reject booleans where integers are required
+        for doc in docs:
+            if not isinstance(doc.get("id"), int) or isinstance(doc.get("id"), bool):
+                return {"status": "refused", "code": "SCHEMA_VIOLATION", "message": "id must be int"}
+            if not isinstance(doc.get("tenant_id"), str):
+                return {"status": "refused", "code": "SCHEMA_VIOLATION", "message": "tenant_id must be str"}
+        
+        digest = calculate_corpus_digest(docs)
+        return {
+            "status": "success",
+            "data": {
+                "corpus_digest": digest,
+                "tokenizer": "NFKC_CASEFOLD_WHITESPACE",
+                "doc_count": len(docs)
+            }
+        }
+    
+    elif mode == "query":
+        # In a real scenario, 'index' would be passed or built. 
+        # For this tool, we assume 'documents' are provided in the query payload to simulate the state.
+        docs = payload.get("documents", [])
+        query_terms = normalize_text(payload.get("query_text", ""))
+        target_tenant = payload.get("tenant_id")
+        min_distinct = payload.get("min_distinct_matches", 0)
+        
+        if not isinstance(min_distinct, int) or isinstance(min_distinct, bool):
+             return {"status": "refused", "code": "SCHEMA_VIOLATION", "message": "min_distinct_matches must be int"}
+
+        # 1. Filter by tenant
+        tenant_docs = [d for d in docs if d['tenant_id'] == target_tenant]
+        
+        # 2. Build local inverted index for the tenant
+        inverted_index = defaultdict(list) # term -> list of (doc_id, count)
+        doc_term_counts = {} # doc_id -> Counter(terms)
+
+        for d in tenant_docs:
+            d_id = d['id']
+            terms = normalize_text(d['text'])
+            counts = Counter(terms)
+            doc_term_counts[d_id] = counts
+            for term, count in counts.items():
+                inverted_index[term].append((d_id, count))
+
+        # 3. Match query
+        matched_doc_ids: Dict[int, Dict[str, Any]] = {} # doc_id -> {distinct_count, total_count}
+        
+        query_set = set(query_terms)
+        if not query_set:
+            return {"status": "success", "data": {"results": [], "count": 0}}
+
+        for term in query_set:
+            if term in inverted_index:
+                for d_id, count in inverted_index[term]:
+                    if d_id not in matched_doc_ids:
+                        matched_doc_ids[d_id] = {"distinct": 0, "total": 0}
+                    matched_doc_ids[d_id]["distinct"] += 1
+                    matched_doc_ids[d_id]["total"] += count
+
+        # 4. Filter by min_distinct_matches
+        final_candidates = []
+        for d_id, stats in matched_doc_ids.items():
+            if stats["distinct"] >= min_distinct:
+                final_candidates.append((d_id, stats["distinct"], stats["total"]))
+
+        # 5. Sort: distinct desc, total desc, id asc
+        # Note: The prompt says "ranking uses number of distinct matched query terms, then total occurrences... then lexical id"
+        # Usually ranking is descending for scores.
+        final_candidates.sort(key=lambda x: (-x[1], -x[2], x[0]))
+
+        results = []
+        for d_id, dist, tot in final_candidates:
+            # Find original doc for snippet
+            orig_doc = next(d for d in tenant_docs if d['id'] == d_id)
+            results.append({
+                "id": d_id,
+                "snippet": orig_doc['text'][:100] # Simple snippet
+            })
+
+        return {
+            "status": "success",
+            "data": {
+                "results": results,
+                "count": len(results)
+            }
+        }
+    
+    return {"status": "refused", "code": "INVALID_MODE", "message": "mode must be build or query"}
+
+def main():
+    try:
+        raw_input = sys.stdin.buffer.read()
+        if not raw_input:
+            print(json.dumps({"status": "refused", "code": "EMPTY_INPUT"}))
+            return
+
+        payload, error_code = validate_json_input(raw_input)
+        if error_code:
+            print(json.dumps({"status": "refused", "code": error_code}))
+            return
+
+        result = run_index_logic(payload)
+        print(json.dumps(result))
+
+    except Exception as e:
+        # Fallback for unexpected errors to prevent tracebacks in output
+        print(json.dumps({"status": "refused", "code": "INTERNAL_ERROR", "message": str(e)}))
+
+if __name__ == "__main__":
+    main()
+<<<END FILE tools/build_permission_scoped_lexical_index.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lexical Index Request",
+  "type": "object",
+  "required": ["mode"],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["build", "query"]
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "tenant_id"],
+        "properties": {
+          "id": { "type": "integer" },
+          "text": { "type": "string" },
+          "tenant_id": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "query_text": { "type": "string" },
+    "tenant_id": { "type": "string" },
+    "min_distinct_matches": { "type": "integer" }
+  },
+  "additionalProperties": false
+}
+<<<END FILE contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lexical Index Response",
+  "type": "object",
+  "required": ["status"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "code": { "type": "string" },
+    "message": { "type": "string" },
+    "data": {
+      "type": "object",
+      "properties": {
+        "corpus_digest": { "type": "string" },
+        "tokenizer": { "type": "string" },
+        "doc_count": { "type": "integer" },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "snippet": { "type": "string" }
+            }
+          }
+        },
+        "count": { "type": "integer" }
+      }
+    }
+  }
+}
+<<<END FILE contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "mode": "query",
+  "documents": [
+    { "id": 1, "text": "The quick brown fox", "tenant_id": "t1" },
+    { "id": 2, "text": "Jumped over the lazy dog", "tenant_id": "t1" },
+    { "id": 3, "text": "The quick brown dog", "tenant_id": "t1" },
+    { "id": 4, "text": "Secret fox text", "tenant_id": "t2" }
+  ],
+  "query_text": "quick brown dog",
+  "tenant_id": "t1",
+  "min_distinct_matches": 2
+}
+<<<END FILE examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "data": {
+    "results": [
+      { "id": 3, "snippet": "The quick brown dog" }
+    ],
+    "count": 1
+  }
+}
+<<<END FILE examples/output.json>>>
+<<<fixtures/acceptance.json>>>
+{
+  "positive_cases": [
+    {
+      "name": "Exact match with tenant filtering",
+      "input": {
+        "mode": "query",
+        "documents": [
+          {"id": 10, "text": "apple banana", "tenant_id": "A"},
+          {"id": 11, "text": "apple cherry", "tenant_id": "B"}
+        ],
+        "query_text": "apple",
+        "tenant_id": "A",
+        "min_distinct_matches": 1
+      },
+      "expected_count": 1,
+      "expected_ids": [10]
+    },
+    {
+      "name": "Abstention via min_distinct_matches",
+      "input": {
+        "mode": "query",
+        "documents": [
+          {"id": 20, "text": "apple banana cherry", "tenant_id": "A"}
+        ],
+        "query_text": "apple banana",
+        "tenant_id": "A",
+        "min_distinct_matches": 3
+      },
+      "expected_count": 0,
+      "expected_ids": []
+    }
+  ],
+  "negative_cases": [
+    {
+      "name": "Duplicate key refusal",
+      "input": '{"mode": "build", "mode": "query"}',
+      "expected_code": "INVALID_JSON"
+    },
+    {
+      "name": "Boolean instead of integer",
+      "input": {
+        "mode": "query",
+        "documents": [{"id": 1, "text": "x", "tenant_id": "t"}],
+        "query_text": "x",
+        "tenant_id": "t",
+        "min_distinct_matches": true
+      },
+      "expected_code": "SCHEMA_VIOLATION"
+    },
+    {
+      "name": "Non-finite number",
+      "input": {
+        "mode": "build",
+        "documents": [{"id": 1, "text": "x", "tenant_id": "t"}],
+        "extra": "NaN"
+      },
+      "expected_code": "NONFINITE_NUMBER"
+    }
+  ]
+}
+<<<END FILE fixtures/acceptance.json>>>
+<<<tests/test_build_permission_scoped_lexical_index.py>>>
+import unittest
+import json
+import sys
+import io
+from tools.build_permission_scoped_lexical_index import run_index_logic
+
+class TestLexicalIndex(unittest.TestCase):
+    def test_build_mode_digest(self):
+        payload = {
+            "mode": "build",
+            "documents": [
+                {"id": 1, "text": "Hello world", "tenant_id": "t1"},
+                {"id": 2, "text": "Foo bar", "tenant_id": "t1"}
+            ]
+        }
+        result = run_index_logic(payload)
+        self.assertEqual(result["status"], "success")
+        self.assertIn("corpus_digest", result["data"])
+        self.assertEqual(result["data"]["doc_count"], 2)
+
+    def test_query_ranking_logic(self):
+        # Ranking: 1. Distinct terms, 2. Total occurrences, 3. ID
+        payload = {
+            "mode": "query",
+            "documents": [
+                {"id": 1, "text": "apple banana", "tenant_id": "t1"},
+                {"id": 2, "text": "apple apple banana", "tenant_id": "t1"},
+                {"id": 3, "text": "apple banana", "tenant_id": "t1"},
+                {"id": 4, "text": "apple banana", "tenant_id": "t2"} # Wrong tenant
+            ],
+            "query_text": "apple banana",
+            "tenant_id": "t1",
+            "min_distinct_matches": 1
+        }
+        result = run_index_logic(payload)
+        self.assertEqual(result["status"], "success")
+        # Doc 2 has 2 distinct (apple, banana) and 3 total (apple, apple, banana)
+        # Doc 1 and 3 have 2 distinct and 2 total.
+        # Doc 2 should be first.
+        # Between 1 and 3, 1 is smaller ID.
+        res_ids = [r["id"] for r in result["data"]["results"]]
+        self.assertEqual(res_ids, [2, 1, 3])
+
+    def test_tenant_isolation(self):
+        payload = {
+            "mode": "query",
+            "documents": [
+                {"id": 1, "text": "match", "tenant_id": "A"},
+                {"id": 2, "text": "match", "tenant_id": "B"}
+            ],
+            "query_text": "match",
+            "tenant_id": "B",
+            "min_distinct_matches": 1
+        }
+        result = run_index_logic(payload)
+        self.assertEqual(len(result["data"]["results"]), 1)
+        self.assertEqual(result["data"]["results"][0]["id"], 2)
+
+    def test_schema_refusal_boolean(self):
+        payload = {
+            "mode": "query",
+            "documents": [{"id": 1, "text": "x", "tenant_id": "t"}],
+            "query_text": "x",
+            "tenant_id": "t",
+            "min_distinct_matches": True # Boolean instead of int
+        }
+        result = run_index_logic(payload)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["code"], "SCHEMA_VIOLATION")
+
+    def test_empty_query(self):
+        payload = {
+            "mode": "query",
+            "documents": [{"id": 1, "text": "x", "tenant_id": "t"}],
+            "query_text": "",
+            "tenant_id": "t",
+            "min_distinct_matches": 0
+        }
+        result = run_index_logic(payload)
+        self.assertEqual(result["data"]["count"], 0)
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END FILE tests/test_build_permission_scoped_lexical_index.py>>>
+<<<references/method.md>>>
+# Lexical Reference Engine Algorithm
+
+## Overview
+A deterministic, in-memory lexical indexer designed for tenant-scoped document retrieval. It uses exact term matching without semantic embeddings.
+
+## Normalization Pipeline
+1. **Unicode NFKC**: Ensures compatibility between different character representations (e.g., combining characters).
+2. **Casefolding**: A more aggressive version of lowercasing to handle Unicode-specific casing rules.
+3. **Whitespace Splitting**: Tokens are defined by any whitespace sequence.
+
+## Query Ranking Criteria
+Results are returned in a strictly ordered list based on:
+1. **Distinct Match Count (Descending)**: Number of unique query terms found in the document.
+2. **Total Term Frequency (Descending)**: Total number of times any query term appears in the document.
+3. **Document ID (Ascending)**: Lexical tie-breaker for stable sorting.
+
+## Constraints & Refusals
+- **Tenant Scope**: A query for `tenant_id="A"` must never return a document where `tenant_id="B"`.
+- **Abstention**: If the number of distinct query terms found in a document is less than `min_distinct_matches`, the document is excluded.
+- **Type Safety**: The engine explicitly rejects booleans when integers are expected (e.g., `min_distinct_matches`).
+- **Input Bounds**: Maximum 1MiB UTF-8 JSON input.
+
+## Limitations
+- **No Semantic Similarity**: "Cat" will not match "Feline".
+- **No Stemming**: "Running" will not match "Run".
+- **In-Memory**: The index is rebuilt or queried per request; it is not a persistent database.
+<<<END FILE references/method.md>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "build_permission_scoped_lexical_index",
+  "discovery_method": "explicit_helper_invocation",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": "candidate_only",
+  "status": "candidate"
+}
+<<<END FILE references/compatibility.json>>>
+<<<END DRAFT>>>

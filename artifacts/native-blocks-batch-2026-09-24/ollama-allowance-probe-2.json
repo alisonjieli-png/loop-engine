@@ -1,0 +1,15 @@
+{
+ "record_type": "ollama_allowance_probe/v1",
+ "at": "2026-09-24T12:07:55.776258+00:00",
+ "model": "minimax-m3",
+ "model_calls": 1,
+ "ok": false,
+ "text": "",
+ "error": "HTTP 429: {\"error\":\"you ([account handle redacted]) have reached your weekly usage limit, add usage credits: https://ollama.com/settings (ref: 5a4a0278-d036-4b3c-8a6a-f32adcaffd69)\"}\n",
+ "retry_after_seconds": null,
+ "prompt_tokens": null,
+ "eval_tokens": null,
+ "physical_requests": 1,
+ "note": "the first probe of the same minute was refused by the adapter's own output-ceiling preflight, with zero physical requests",
+ "redaction": "the account handle in the provider's refusal text is replaced; nothing else changed"
+}

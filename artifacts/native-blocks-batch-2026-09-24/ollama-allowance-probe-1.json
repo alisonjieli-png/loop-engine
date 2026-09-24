@@ -1,0 +1,12 @@
+{
+ "record_type": "ollama_allowance_probe/v1",
+ "at": "2026-09-24T12:07:46.388453+00:00",
+ "model": "minimax-m3",
+ "model_calls": 1,
+ "ok": false,
+ "error": "requested output limit 16 is not the declared model maximum 131072; Loop Engine does not invent or reduce model output ceilings",
+ "retry_after_seconds": null,
+ "prompt_tokens": null,
+ "eval_tokens": null,
+ "physical_requests": 0
+}

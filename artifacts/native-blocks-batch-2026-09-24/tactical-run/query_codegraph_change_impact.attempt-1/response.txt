@@ -1,0 +1,489 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v1
+method_id: query_codegraph_change_impact
+<<<AGENTS.md>>>
+# Agent Instructions: query_codegraph_change_impact
+
+This tool calculates the "blast radius" of changes in a code dependency graph.
+
+## First Action
+1. Read the JSON input from `stdin`.
+2. Validate the input against the schema and constraints (size, types, duplicates).
+3. Construct the reverse adjacency list from the `depends_on` edges.
+4. Perform a Breadth-First Search (BFS) starting from the `changed_symbols`.
+5. Respect `max_depth` and `max_nodes` limits.
+6. Emit the JSON result to `stdout`.
+
+## Contract & Refusal Rules
+- **Refusal**: If the input exceeds 1MiB, contains duplicate keys, non-finite numbers, or invalid types (e.g., boolean where integer is expected), return a `refused` object with a stable error code.
+- **Incompleteness**: If `max_depth` or `max_nodes` is reached, the `is_complete` flag must be `false`.
+- **Dangling Edges**: If a dependency is listed but its symbol ID is not in the `symbols` registry, report a validation error.
+- **Cycles**: BFS naturally handles cycles; ensure the traversal terminates.
+- **Deterministic Path**: If multiple shortest paths exist, the witness path must be deterministic (e.g., based on symbol ID order).
+<<<END AGENTS.md>>>
+<<<tools/query_codegraph_change_impact.py>>>
+import sys
+import json
+import collections
+from typing import Any, Dict, List, Set, Tuple, Optional
+
+def parse_json_with_constraints(raw_data: bytes) -> Dict[str, Any]:
+    if len(raw_data) > 1_048_576:
+        raise ValueError("SIZE_EXCEEDED")
+    
+    # Python's json.loads handles duplicate keys by taking the last one.
+    # To strictly detect duplicates, we use a custom decoder or check the raw string.
+    # For this implementation, we use a simple check for duplicate keys in the raw text 
+    # to satisfy the "refusal" requirement without complex custom decoders.
+    # A more robust way is using a custom object_pairs_hook.
+    
+    def dict_with_dup_check(pairs):
+        d = {}
+        for k, v in pairs:
+            if k in d:
+                raise ValueError("DUPLICATE_KEY")
+            d[k] = v
+        return d
+
+    try:
+        data = json.loads(raw_data.decode('utf-8'), object_pairs_hook=dict_with_dup_check)
+    except json.JSONDecodeError:
+        raise ValueError("MALFORMED_JSON")
+    except ValueError as e:
+        if str(e) == "DUPLICATE_KEY":
+            raise ValueError("DUPLICATE_KEY")
+        raise e
+
+    # Validate non-finite numbers and booleans-as-integers
+    def validate_types(obj):
+        if isinstance(obj, float):
+            if not (float('-inf') < obj < float('inf')):
+                raise ValueError("NON_FINITE_NUMBER")
+        elif isinstance(obj, bool):
+            # The requirement says "Reject booleans where integers are required"
+            # This is checked during the specific field validation below.
+            pass
+        elif isinstance(obj, dict):
+            for k, v in obj.items():
+                validate_types(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                validate_types(item)
+
+    validate_types(data)
+    return data
+
+def solve() -> None:
+    try:
+        raw_input = sys.stdin.buffer.read()
+        data = parse_json_with_constraints(raw_input)
+    except ValueError as e:
+        print(json.dumps({"status": "refused", "error_code": str(e)}))
+        return
+    except Exception:
+        print(json.dumps({"status": "refused", "error_code": "UNKNOWN_ERROR"}))
+        return
+
+    try:
+        # 1. Extract and Validate Schema
+        symbols = data.get("symbols", {}) # id -> {file, range}
+        edges = data.get("depends_on", []) # list of [consumer, dependency]
+        changed_symbols = data.get("changed_symbols", [])
+        max_depth = data.get("max_depth", float('inf'))
+        max_nodes = data.get("max_nodes", float('inf'))
+
+        # Type validation for integers (reject booleans)
+        for field, val in [("max_depth", max_depth), ("max_nodes", max_nodes)]:
+            if isinstance(val, bool):
+                raise ValueError("BOOLEAN_INSTEAD_OF_INT")
+            if not isinstance(val, int):
+                raise ValueError("INVALID_INT_TYPE")
+
+        # 2. Build Graph and Validate
+        # We need reverse edges: dependency -> consumers
+        reverse_adj = collections.defaultdict(list)
+        all_symbol_ids = set(symbols.keys())
+        
+        for edge in edges:
+            if len(edge) != 2:
+                raise ValueError("MALFORMED_EDGE")
+            u, v = edge[0], edge[1]
+            # u is consumer, v is dependency. We want v -> u
+            if u not in all_symbol_ids or v not in all_symbol_ids:
+                raise ValueError("DANGLING_EDGE")
+            reverse_adj[v].append(u)
+
+        for sym_id in changed_symbols:
+            if sym_id not in all_symbol_ids:
+                raise ValueError("CHANGED_SYMBOL_NOT_IN_REGISTRY")
+            if isinstance(sym_id, bool):
+                raise ValueError("BOOLEAN_INSTEAD_OF_INT")
+
+        # 3. BFS
+        # queue stores (current_node, distance, path_to_node)
+        # path_to_node is a list of IDs
+        queue = collections.deque()
+        visited = {} # sym_id -> (distance, path)
+        
+        # Initialize BFS with changed symbols
+        # Sort changed_symbols to ensure deterministic start if multiple
+        for s in sorted(changed_symbols):
+            if s not in visited:
+                visited[s] = (0, [s])
+                queue.append(s)
+
+        is_complete = True
+        nodes_processed = 0
+
+        while queue:
+            curr = queue.popleft()
+            nodes_processed += 1
+            
+            if nodes_processed > max_nodes:
+                is_complete = False
+                break
+            
+            curr_dist, curr_path = visited[curr]
+            
+            if curr_dist >= max_depth:
+                continue
+
+            # Neighbors in reverse graph (consumers of curr)
+            # Sort neighbors for deterministic shortest path selection
+            neighbors = sorted(reverse_adj[curr])
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    new_dist = curr_dist + 1
+                    new_path = curr_path + [neighbor]
+                    visited[neighbor] = (new_dist, new_path)
+                    queue.append(neighbor)
+                else:
+                    # If already visited, BFS guarantees shortest path.
+                    # We don't update because we want the first one found.
+                    pass
+            
+            if nodes_processed >= max_nodes:
+                is_complete = False
+                break
+
+        # 4. Format Output
+        impacted_nodes = []
+        for sym_id, (dist, path) in visited.items():
+            # We report consumers of changed symbols. 
+            # The changed symbols themselves are distance 0.
+            # The prompt asks for "reverse-reachable consumers".
+            # Usually, this implies nodes > 0, but BFS includes the source.
+            # We include all nodes reached in the BFS.
+            impacted_nodes.append({
+                "symbol_id": sym_id,
+                "distance": dist,
+                "witness_path": path
+            })
+
+        # Sort output by distance then ID for stability
+        impacted_nodes.sort(key=lambda x: (x["distance"], x["symbol_id"]))
+
+        result = {
+            "status": "success",
+            "is_complete": is_complete,
+            "impacted_nodes": impacted_nodes
+        }
+        print(json.dumps(result))
+
+    except ValueError as e:
+        print(json.dumps({"status": "refused", "error_code": str(e)}))
+    except Exception as e:
+        print(json.dumps({"status": "refused", "error_code": f"INTERNAL_ERROR: {str(e)}"}))
+
+if __name__ == "__main__":
+    solve()
+<<<END FILE tools/query_codegraph_change_impact.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "symbols": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "range": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "required": ["file", "range"]
+      }
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "changed_symbols": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "max_depth": { "type": "integer" },
+    "max_nodes": { "type": "integer" }
+  },
+  "required": ["symbols", "depends_on", "changed_symbols"],
+  "additionalProperties": false
+}
+<<<END FILE contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "title": "Success",
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "is_complete": { "type": "boolean" },
+        "impacted_nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol_id": { "type": "string" },
+              "distance": { "type": "integer" },
+              "witness_path": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["symbol_id", "distance", "witness_path"]
+          }
+        }
+      },
+      "required": ["status", "is_complete", "impacted_nodes"]
+    },
+    {
+      "title": "Refusal",
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "error_code": { "type": "string" }
+      },
+      "required": ["status", "error_code"]
+    }
+  ]
+}
+<<<END FILE contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "symbols": {
+    "A": { "file": "a.py", "range": [0, 10] },
+    "B": { "file": "b.py", "range": [5, 15] },
+    "C": { "file": "c.py", "range": [0, 5] },
+    "D": { "file": "d.py", "range": [10, 20] }
+  },
+  "depends_on": [
+    ["A", "B"],
+    ["B", "C"],
+    ["D", "C"]
+  ],
+  "changed_symbols": ["C"],
+  "max_depth": 5,
+  "max_nodes": 100
+}
+<<<END FILE examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "is_complete": true,
+  "impacted_nodes": [
+    {
+      "symbol_id": "C",
+      "distance": 0,
+      "witness_path": ["C"]
+    },
+    {
+      "symbol_id": "B",
+      "distance": 1,
+      "witness_path": ["C", "B"]
+    },
+    {
+      "symbol_id": "D",
+      "distance": 1,
+      "witness_path": ["C", "D"]
+    },
+    {
+      "symbol_id": "A",
+      "distance": 2,
+      "witness_path": ["C", "B", "A"]
+    }
+  ]
+}
+<<<END FILE examples/output.json>>>
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "Cycle Detection",
+    "input": {
+      "symbols": { "X": {"file":"x.py", "range":[0,1]}, "Y": {"file":"y.py", "range":[0,1]} },
+      "depends_on": [["X", "Y"], ["Y", "X"]],
+      "changed_symbols": ["X"]
+    },
+    "expected_status": "success",
+    "expected_is_complete": true
+  },
+  {
+    "name": "Dangling Edge",
+    "input": {
+      "symbols": { "X": {"file":"x.py", "range":[0,1]} },
+      "depends_on": [["X", "Z"]],
+      "changed_symbols": ["X"]
+    },
+    "expected_status": "refused",
+    "expected_error": "DANGLING_EDGE"
+  },
+  {
+    "name": "Boolean instead of Int",
+    "input": {
+      "symbols": { "X": {"file":"x.py", "range":[0,1]} },
+      "depends_on": [],
+      "changed_symbols": ["X"],
+      "max_depth": true
+    },
+    "expected_status": "refused",
+    "expected_error": "BOOLEAN_INSTEAD_OF_INT"
+  },
+  {
+    "name": "Truncated by Depth",
+    "input": {
+      "symbols": { "A": {"file":"a.py", "range":[0,1]}, "B": {"file":"b.py", "range":[0,1]} },
+      "depends_on": [["B", "A"]],
+      "changed_symbols": ["A"],
+      "max_depth": 0
+    },
+    "expected_status": "success",
+    "expected_is_complete": true,
+    "note": "Depth 0 means only the changed symbol itself is reported"
+  }
+]
+<<<END FILE fixtures/acceptance.json>>>
+<<<tests/test_query_codegraph_change_impact.py>>>
+import unittest
+import json
+import io
+import sys
+from tools.query_codegraph_change_impact import solve
+
+class TestQueryCodegraph(unittest.TestCase):
+    def run_tool(self, input_dict):
+        input_str = json.dumps(input_dict)
+        sys.stdin = io.StringIO(input_str)
+        sys.stdout = io.StringIO()
+        solve()
+        output_str = sys.stdout.getvalue().strip()
+        return json.loads(output_str)
+
+    def test_basic_impact(self):
+        input_data = {
+            "symbols": {
+                "A": {"file": "a.py", "range": [0, 5]},
+                "B": {"file": "b.py", "range": [0, 5]}
+            },
+            "depends_on": [["A", "B"]],
+            "changed_symbols": ["B"]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "success")
+        # B is distance 0, A is distance 1
+        ids = [n["symbol_id"] for n in result["impacted_nodes"]]
+        self.assertIn("A", ids)
+        self.assertIn("B", ids)
+        
+        a_node = next(n for n in result["impacted_nodes"] if n["symbol_id"] == "A")
+        self.assertEqual(a_node["distance"], 1)
+        self.assertEqual(a_node["witness_path"], ["B", "A"])
+
+    def test_duplicate_keys(self):
+        # Manual construction to bypass json.dumps uniqueness
+        input_raw = '{"symbols": {"A": {"file": "a.py", "range": [0,1]}}, "symbols": {"B": {"file": "b.py", "range": [0,1]}}, "depends_on": [], "changed_symbols": ["A"]}'
+        sys.stdin = io.StringIO(input_raw)
+        sys.stdout = io.StringIO()
+        solve()
+        result = json.loads(sys.stdout.getvalue().strip())
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "DUPLICATE_KEY")
+
+    def test_max_nodes_limit(self):
+        input_data = {
+            "symbols": {
+                "A": {"file": "a.py", "range": [0,1]},
+                "B": {"file": "b.py", "range": [0,1]},
+                "C": {"file": "c.py", "range": [0,1]}
+            },
+            "depends_on": [["B", "A"], ["C", "A"]],
+            "changed_symbols": ["A"],
+            "max_nodes": 2
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "success")
+        self.assertFalse(result["is_complete"])
+
+    def test_dangling_edge(self):
+        input_data = {
+            "symbols": {"A": {"file": "a.py", "range": [0,1]}},
+            "depends_on": [["A", "NON_EXISTENT"]],
+            "changed_symbols": ["A"]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "DANGLING_EDGE")
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END FILE tests/test_query_codegraph_change_impact.py>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "query_codegraph_change_impact",
+  "discovery_method": "explicit_helper_invocation",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": "none",
+  "status": "candidate"
+}
+<<<END FILE references/compatibility.json>>>
+<<<references/method.md>>>
+# Algorithm: Reverse Dependency BFS
+
+## Overview
+The tool identifies all symbols that are transitively affected by a change in a set of target symbols. It treats the `depends_on` edges as directed edges from `consumer -> dependency`. To find the impact, we traverse the graph in the **reverse** direction (`dependency -> consumer`).
+
+## Algorithm Steps
+1. **Graph Construction**: Build an adjacency list where each key is a dependency and the value is a list of its consumers.
+2. **BFS Initialization**: 
+   - Create a queue containing the `changed_symbols`.
+   - Initialize a `visited` map to track `(distance, shortest_path)`.
+3. **Traversal**:
+   - Pop a symbol from the queue.
+   - For each consumer of that symbol:
+     - If not visited, record `distance = current_distance + 1` and `path = current_path + [consumer]`.
+     - Add consumer to queue.
+   - **Termination**: Stop if `max_depth` is reached or `max_nodes` is exceeded.
+4. **Determinism**: When multiple consumers exist, they are processed in lexicographical order of their symbol IDs to ensure a stable shortest path.
+
+## Complexity & Bounds
+- **Time**: $O(V + E)$ where $V$ is number of symbols and $E$ is number of edges.
+- **Space**: $O(V)$ to store the graph and visited states.
+- **Limits**: `max_depth` prevents deep traversal; `max_nodes` prevents large output.
+
+## Known-Wrong Approach
+A common mistake is to use a simple DFS. DFS does not guarantee the shortest path in an unweighted graph and can lead to incorrect `distance` reporting. Another mistake is to not handle cycles, leading to infinite loops.
+<<<END FILE references/method.md>>>
+<<<END DRAFT>>>

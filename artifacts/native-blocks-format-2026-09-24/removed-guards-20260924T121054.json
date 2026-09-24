@@ -1,0 +1,450 @@
+{
+ "record_type": "draft_blocks_removed_guards/v1",
+ "provider_calls": 0,
+ "at": "2026-09-24T12:10:54.844086+00:00",
+ "source_sha256": "8664671b3b108025961c9245cf3b54057bf795bab7427a3571dcbfde900ab9f9",
+ "all_detected": true,
+ "controls": 22,
+ "results": [
+  {
+   "guard": "unterminated_block_accepted",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "duplicate_path_accepted",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "escaping_path_not_checked",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "content_between_blocks_skipped",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "content_after_end_accepted",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "missing_file_not_named",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "missing_end_line_accepted",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "header_not_checked",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "empty_file_not_named",
+   "function": "parse_blocks",
+   "checks": [
+    "test_known_wrong_block_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "fence_removal_not_recorded",
+   "function": "admit_blocks",
+   "checks": [
+    "test_one_enclosing_fence_around_blocks_is_removed_and_recorded"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "fence_repair_absent",
+   "function": "admit_blocks",
+   "checks": [
+    "test_one_enclosing_fence_around_blocks_is_removed_and_recorded"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "format_not_named_in_run_record",
+   "function": "generate",
+   "checks": [
+    "test_blocks_draft_prepares_a_candidate_and_the_run_names_its_format"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_unterminated_block_accepted",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_marker_inside_a_file_kept_as_content",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_any_marker_ends_a_block",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_content_outside_skipped",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_duplicate_path_accepted",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_escaping_path_not_checked",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_header_not_checked",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_missing_file_not_named",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "v2_omitted_end_not_recorded",
+   "function": "parse_blocks_v2",
+   "checks": [
+    "test_blocks2_natural_spellings_are_admitted_and_omitted_ends_are_recorded"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "spent_allowance_does_not_stop",
+   "function": "STOP_ERROR_CODES",
+   "checks": [
+    "test_a_spent_allowance_stops_the_run_after_one_call"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  }
+ ]
+}

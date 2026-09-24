@@ -75,7 +75,8 @@ BINDING_FIELDS = {"record_type", "binding_id", "provider", "trust_anchor_sha256"
                   "family_evidence", "capacity", "credential_reference"}
 PANEL_PATH = "tools/candidate_review/resources/panel.json"
 STOP_ERROR_CODES = ("rate_limited", "provider_unavailable", "authentication_failed", "timeout",
-                    "model_identity_mismatch", "model_not_found", "missing_credential", "tls_trust_refused")
+                    "model_identity_mismatch", "model_not_found", "missing_credential", "tls_trust_refused",
+                    "usage_limit_reached", "payment_required")
 PLAN_FIELDS = {"record_type", "source_revision", "license", "sources", "methods"}
 METHOD_FIELDS = (native.NATIVE_FIELDS - {"files", "producer"}) | {"brief", "acceptance", "files", "opportunity"}
 FILE_FIELDS = {"path", "role", "media_type", "purpose"}
@@ -102,15 +103,28 @@ DRAFT_ADMISSION = ModelResponseContract(
 #: chooses the format; run.json names it.
 BLOCKS_TYPE = "original_native_file_blocks/v1"
 BLOCKS_PROMPT_RESOURCE_PATH = Path(__file__).resolve().parent / "resources/original-native-generation-blocks-prompt-v1.json"
+BLOCKS2_TYPE = "original_native_file_blocks/v2"
+BLOCKS2_PROMPT_RESOURCE_PATH = (Path(__file__).resolve().parent
+                                / "resources/original-native-generation-blocks-prompt-v2.json")
 DRAFT_FORMATS = {
-    "json": {"record_type": DRAFT_TYPE, "prompt": PROMPT_RESOURCE_PATH, "bundle_id": "original_native_generation"},
+    "json": {"record_type": DRAFT_TYPE, "prompt": PROMPT_RESOURCE_PATH, "bundle_id": "original_native_generation",
+             "version": "1.0.0"},
     "blocks": {"record_type": BLOCKS_TYPE, "prompt": BLOCKS_PROMPT_RESOURCE_PATH,
-               "bundle_id": "original_native_generation_blocks"},
+               "bundle_id": "original_native_generation_blocks", "version": "1.0.0"},
+    "blocks2": {"record_type": BLOCKS2_TYPE, "prompt": BLOCKS2_PROMPT_RESOURCE_PATH,
+                "bundle_id": "original_native_generation_blocks", "version": "2.0.0"},
 }
 BLOCKS_ADMISSION = {"record_type": BLOCKS_TYPE, "parser": "strict_line_blocks/v1",
                     "repair": "one exact enclosing Markdown fence may be removed, and is recorded",
                     "outside_blocks": "blank lines only"}
+BLOCKS2_ADMISSION = {"record_type": BLOCKS2_TYPE, "parser": "strict_line_blocks/v2",
+                     "file_lines": ["<<<path>>>", "<<<FILE path>>>"],
+                     "end_lines": ["<<<END path>>>", "<<<END FILE path>>>",
+                                   "omitted before the next planned file or END DRAFT, and recorded"],
+                     "repair": "one exact enclosing Markdown fence may be removed, and is recorded",
+                     "outside_blocks": "blank lines only", "inside_blocks": "no marker-shaped line"}
 DRAFT_BEGIN, DRAFT_END = "<<<DRAFT>>>", "<<<END DRAFT>>>"
+MARKER_LINE = re.compile(r"<<<[^<>\n]+>>>")
 FILE_BEGIN = re.compile(r"<<<FILE (?P<path>[^<>\n]+)>>>")
 HEADER_KEYS = ("record_type", "method_id")
 BLOCKS_FENCE = re.compile(r"\s*```(?P<info>[A-Za-z0-9_+-]*)[ \t]*\n(?P<body>.*)\n```[ \t]*\s*", re.DOTALL)
@@ -205,7 +219,7 @@ def load_prompt_resource(draft_format="json"):
     exact(value, {"record_type", "bundle_id", "version", "system"}, "prompt_resource_fields_invalid")
     if value["record_type"] != PROMPT_RESOURCE_TYPE:
         refuse("prompt_resource_version_unsupported")
-    if value["bundle_id"] != form["bundle_id"] or value["version"] != "1.0.0":
+    if value["bundle_id"] != form["bundle_id"] or value["version"] != form["version"]:
         refuse("prompt_resource_identity_unsupported")
     system = text(value["system"], MAX_PROMPT_RESOURCE_BYTES)
     if secret_present(system):
@@ -478,13 +492,108 @@ def parse_blocks(body, method):
     return {"record_type": DRAFT_TYPE, "method_id": method["id"], "files": files}
 
 
+def parse_blocks_v2(body, method):
+    """Read one original_native_file_blocks/v2 answer strictly.
+
+    A block opens with ``<<<path>>>`` or ``<<<FILE path>>>`` for a planned
+    path and closes with ``<<<END path>>>`` or ``<<<END FILE path>>>``, or
+    right before the next planned file or the END DRAFT line; each omitted
+    end is returned as a note. Inside a block any other marker-shaped line is
+    refused, so a file cannot silently absorb another. Outside blocks only
+    blank lines and the two header lines may appear.
+    """
+    planned = {row["path"] for row in method["files"]}
+    lines = body.split("\n")
+    index, header, files, found, notes = 0, {}, [], set(), []
+    while index < len(lines) and not lines[index].strip():
+        index += 1
+    if index == len(lines) or lines[index] != DRAFT_BEGIN:
+        refuse("draft_blocks_header_invalid")
+    index += 1
+
+    def opened(line):
+        """The path a FILE line names, or None when the line is not one."""
+        if not MARKER_LINE.fullmatch(line) or line == DRAFT_BEGIN or line.startswith("<<<END "):
+            return None
+        return line[3:-3].removeprefix("FILE ")
+
+    open_path, content, ended = None, [], False
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if open_path is not None:
+            follows = opened(line)
+            if line in (f"<<<END {open_path}>>>", f"<<<END FILE {open_path}>>>"):
+                closing = "explicit"
+            elif line == DRAFT_END or (follows in planned and follows not in found and follows != open_path):
+                closing = "omitted"
+            elif MARKER_LINE.fullmatch(line):
+                refuse("draft_path_duplicate" if follows in found or follows == open_path
+                       else "draft_marker_misplaced")
+            else:
+                content.append(line)
+                continue
+            if not "".join(content).strip():
+                refuse("draft_file_empty")
+            files.append({"path": open_path, "content": "\n".join(content) + "\n"})
+            found.add(open_path)
+            if closing == "omitted":
+                notes.append("block_end_omitted:" + open_path)
+            open_path, content = None, []
+            if line == DRAFT_END:
+                ended = True
+                break
+            if closing == "explicit":
+                continue
+        if not line.strip():
+            continue
+        if line == DRAFT_END:
+            ended = True
+            break
+        path = opened(line)
+        if path is None:
+            key, separator, value = line.partition(": ")
+            if not files and open_path is None and separator and key in HEADER_KEYS and key not in header:
+                header[key] = value
+                continue
+            refuse("draft_marker_misplaced" if MARKER_LINE.fullmatch(line) else "draft_content_outside_blocks")
+        try:
+            placement_path(path)
+        except ValueError:
+            refuse("draft_path_unsafe")
+        if path in found:
+            refuse("draft_path_duplicate")
+        if path not in planned:
+            refuse("draft_path_not_planned")
+        open_path, content = path, []
+    if open_path is not None:
+        refuse("draft_block_unterminated")
+    if not ended:
+        refuse("draft_blocks_end_missing")
+    if any(line.strip() for line in lines[index:]):
+        refuse("draft_content_after_end")
+    if header != {"record_type": BLOCKS2_TYPE, "method_id": method["id"]}:
+        refuse("draft_blocks_header_invalid")
+    if found != planned:
+        refuse("draft_missing_planned_files")
+    return {"record_type": DRAFT_TYPE, "method_id": method["id"], "files": files}, notes
+
+
+def draft_admission_binding(draft_format):
+    """The admission contract a run binds for its draft format, with its digest."""
+    if draft_format == "json":
+        return {"contract": DRAFT_ADMISSION.to_dict(), "sha256": DRAFT_ADMISSION.content_digest}
+    contract = BLOCKS2_ADMISSION if draft_format == "blocks2" else BLOCKS_ADMISSION
+    return {"contract": contract, "sha256": digest(canonical(contract))}
+
+
 @dataclass(frozen=True)
 class BlocksAdmission:
     admitted: bool
     value: dict | None = None
 
 
-def admit_blocks(text_value, method):
+def admit_blocks(text_value, method, grammar="blocks"):
     """Admit one block-format answer: strict first, then one recorded fence removal."""
     strategy, trace, body = "strict_blocks", [], text_value
     fenced = BLOCKS_FENCE.fullmatch(text_value)
@@ -494,7 +603,11 @@ def admit_blocks(text_value, method):
     try:
         if len(text_value.encode("utf-8")) > MAX_DRAFT_BYTES or secret_present(text_value):
             refuse("draft_too_large_or_secret_shaped")
-        value = parse_blocks(body, method)
+        if grammar == "blocks2":
+            value, notes = parse_blocks_v2(body, method)
+            trace = trace + notes
+        else:
+            value = parse_blocks(body, method)
     except GenerationError as refusal:
         return BlocksAdmission(False), {"admitted": False, "strategy": strategy, "failure_code": str(refusal),
                                         "transformation_trace": trace, "normalized_sha256": "", "schema_errors": []}
@@ -878,9 +991,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                       if token_bound_resolver is not None else None,
                   "provider_binding": binding.summary() if binding is not None else None,
                   "draft_format": {"name": request.draft_format, "record_type": form["record_type"]},
-                  "draft_admission": ({"contract": DRAFT_ADMISSION.to_dict(), "sha256": DRAFT_ADMISSION.content_digest}
-                                      if request.draft_format == "json" else
-                                      {"contract": BLOCKS_ADMISSION, "sha256": digest(canonical(BLOCKS_ADMISSION))}),
+                  "draft_admission": draft_admission_binding(request.draft_format),
                   "implementations": implementation_digests(spec, (
                       Path(runtime_settings.__file__), Path(settings_loader.__file__)) if binding is not None else ()),
                   "prompt_resource": prompt_binding}
@@ -978,8 +1089,8 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                 elif remaining is not None and charge is not None and charge > remaining:
                     error_code = "token_bound_exceeded"
                 elif result.ok:
-                    if request.draft_format == "blocks":
-                        admitted, admission_record = admit_blocks(raw.decode("utf-8"), method)
+                    if request.draft_format in ("blocks", "blocks2"):
+                        admitted, admission_record = admit_blocks(raw.decode("utf-8"), method, request.draft_format)
                     else:
                         admitted, admission_record = admit_draft(raw.decode("utf-8"))
                     try:
@@ -1061,7 +1172,8 @@ def main(argv=None):
                         help="repository-relative path of a committed provider binding")
     parser.add_argument("--provider-binding-sha256")
     parser.add_argument("--draft-format", choices=sorted(DRAFT_FORMATS), default="json",
-                        help="the answer format: json drafts or delimited file blocks")
+                        help="the answer format: json drafts, or delimited file blocks (blocks is version 1, "
+                             "blocks2 is version 2)")
     parser.add_argument("--timeout-seconds", type=float, default=180.0,
                         help="per-request timeout; bound in run.json")
     args = parser.parse_args(argv)

@@ -1,4 +1,4 @@
-"""Removed-guard controls for the delimited-block draft format.
+"""Removed-guard controls for the delimited-block draft formats, versions 1 and 2.
 
 Each control removes one guard in memory only and runs the named checks. A
 control is detected when the checks pass on the real source and fail with the
@@ -24,6 +24,8 @@ from tools import generate_original_native_candidates as generation
 CHECKS = "tools.test_generate_original_native_candidates.GenerationTest."
 KNOWN_WRONG = "test_known_wrong_block_answers_are_refused_with_their_reason"
 FENCE = "test_one_enclosing_fence_around_blocks_is_removed_and_recorded"
+KNOWN_WRONG_V2 = "test_blocks2_known_wrong_answers_are_refused_with_their_reason"
+NATURAL_V2 = "test_blocks2_natural_spellings_are_admitted_and_omitted_ends_are_recorded"
 CONTROLS = [
     ("unterminated_block_accepted", "parse_blocks", 'refuse("draft_block_unterminated")', "break", [KNOWN_WRONG]),
     ("duplicate_path_accepted", "parse_blocks", 'if path in found:\n            refuse("draft_path_duplicate")',
@@ -48,6 +50,29 @@ CONTROLS = [
     ("format_not_named_in_run_record", "generate",
      '"draft_format": {"name": request.draft_format, "record_type": form["record_type"]},', '"draft_format": None,',
      ["test_blocks_draft_prepares_a_candidate_and_the_run_names_its_format"]),
+    ("v2_unterminated_block_accepted", "parse_blocks_v2",
+     'if open_path is not None:\n        refuse("draft_block_unterminated")',
+     'if False:\n        refuse("draft_block_unterminated")', [KNOWN_WRONG_V2]),
+    ("v2_marker_inside_a_file_kept_as_content", "parse_blocks_v2", "elif MARKER_LINE.fullmatch(line):", "elif False:",
+     [KNOWN_WRONG_V2]),
+    ("v2_any_marker_ends_a_block", "parse_blocks_v2",
+     "follows in planned and follows not in found and follows != open_path", "follows is not None", [KNOWN_WRONG_V2]),
+    ("v2_content_outside_skipped", "parse_blocks_v2",
+     'refuse("draft_marker_misplaced" if MARKER_LINE.fullmatch(line) else "draft_content_outside_blocks")',
+     "continue", [KNOWN_WRONG_V2]),
+    ("v2_duplicate_path_accepted", "parse_blocks_v2", 'if path in found:\n            refuse("draft_path_duplicate")',
+     'if False:\n            refuse("draft_path_duplicate")', [KNOWN_WRONG_V2]),
+    ("v2_escaping_path_not_checked", "parse_blocks_v2", "            placement_path(path)\n", "            pass\n",
+     [KNOWN_WRONG_V2]),
+    ("v2_header_not_checked", "parse_blocks_v2",
+     'if header != {"record_type": BLOCKS2_TYPE, "method_id": method["id"]}:', "if False:", [KNOWN_WRONG_V2]),
+    ("v2_missing_file_not_named", "parse_blocks_v2",
+     'if found != planned:\n        refuse("draft_missing_planned_files")',
+     'if False:\n        refuse("draft_missing_planned_files")', [KNOWN_WRONG_V2]),
+    ("v2_omitted_end_not_recorded", "parse_blocks_v2", 'notes.append("block_end_omitted:" + open_path)', "pass",
+     [NATURAL_V2]),
+    ("spent_allowance_does_not_stop", "STOP_ERROR_CODES", None, None,
+     ["test_a_spent_allowance_stops_the_run_after_one_call"]),
 ]
 
 
@@ -72,7 +97,12 @@ def main():
     rows = []
     for identity, function, before, after, names in CONTROLS:
         baseline = run(names)
-        removed = mutant(function, before, after, names)
+        if function == "STOP_ERROR_CODES":
+            kept = tuple(code for code in generation.STOP_ERROR_CODES if code != "usage_limit_reached")
+            with patch.object(generation, "STOP_ERROR_CODES", kept):
+                removed = run(names)
+        else:
+            removed = mutant(function, before, after, names)
         rows.append({"guard": identity, "function": function, "checks": names, "baseline": baseline,
                      "removed": removed, "detected": baseline["passed"] and not removed["passed"]})
     report = {"record_type": "draft_blocks_removed_guards/v1", "provider_calls": 0,

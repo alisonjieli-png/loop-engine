@@ -1,0 +1,496 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v1
+method_id: plan_workspace_file_transitions
+<<<AGENTS.md>>>
+# Plan Workspace File Transitions
+
+## Focused Task
+Calculate the set of file system operations (create, update, noop, delete, conflict) required to move from a `current` state to a `desired` state, given a `base` state as a reference for change detection.
+
+## First Action
+1. Read exactly 1MiB from `stdin`.
+2. Parse as JSON, validating against the schema.
+3. Perform path collision and safety checks.
+4. Iterate through the union of keys in `base`, `current`, and `desired`.
+5. Apply transition logic to emit the plan.
+
+## Helper Invocation
+The tool is invoked via `python3 tools/plan_workspace_file_transitions.py`. It reads from `stdin` and writes a single JSON object to `stdout`.
+
+## Contract
+- **Input**: A JSON object containing `base`, `current`, and `desired` dictionaries. Keys are relative paths; values are SHA256 hex strings or `null`.
+- **Output**: A JSON object with `status` ("success" or "refused"), `plan` (list of operations), or `error` (code and message).
+- **Safety**: Paths must not contain `..`, absolute roots, or cause case-fold collisions.
+- **Conflict Rule**: An update or delete is a `conflict` if `current != base` and `current != desired`.
+
+## Refusal Rules
+- `INVALID_JSON`: Malformed syntax.
+- `SIZE_EXCEEDED`: Input > 1MiB.
+- `DUPLICATE_KEYS`: JSON contains duplicate keys (detected via custom parser).
+- `NONFINITE_NUMBER`: Contains `NaN` or `Infinity`.
+- `TYPE_MISMATCH`: e.g., a boolean where an integer/string is expected.
+- `UNSAFE_PATH`: Path traversal or collisions.
+- `SCHEMA_VIOLATION`: Missing keys or incorrect structure.
+<<<END AGENTS.md>>>
+
+<<<tools/plan_workspace_file_transitions.py>>>
+import sys
+import json
+from typing import Any, Dict, List, Optional, Union
+
+def parse_json_strict(raw_data: bytes) -> Dict[str, Any]:
+    """Parses JSON with strict checks for duplicates and non-finite numbers."""
+    # We use a custom decoder to detect duplicate keys because standard json.loads 
+    # silently overwrites them.
+    class StrictDecoder(json.JSONDecoder):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.seen_keys = set()
+
+    # To detect duplicates, we must use a more manual approach or a custom object_pairs_hook
+    def dict_with_dup_check(pairs):
+        d = {}
+        for k, v in pairs:
+            if k in d:
+                raise ValueError(f"DUPLICATE_KEY:{k}")
+            d[k] = v
+        return d
+
+    try:
+        # Check for non-finite numbers before parsing if we want to be very strict,
+        # but standard json.loads handles most. We'll check values after.
+        data = json.loads(raw_data, object_pairs_hook=dict_with_dup_check)
+        
+        # Check for non-finite numbers in the resulting structure
+        def check_finite(obj):
+            if isinstance(obj, float):
+                if not (float('-inf') < obj < float('inf')):
+                    raise ValueError("NONFINITE_NUMBER")
+            elif isinstance(obj, dict):
+                for k, v in obj.items():
+                    if isinstance(k, bool): # Reject booleans where strings/ints expected? 
+                        # The prompt says "Reject booleans where integers are required".
+                        # In the context of the dict keys (paths), they must be strings.
+                        pass 
+                    check_finite(v)
+            elif isinstance(obj, list):
+                for item in obj:
+                    check_finite(item)
+        
+        check_finite(data)
+        return data
+    except ValueError as e:
+        msg = str(e)
+        if "DUPLICATE_KEY" in msg:
+            raise Exception(f"DUPLICATE_KEY:{msg.split(':')[-1]}")
+        if "NONFINITE_NUMBER" in msg:
+            raise Exception("NONFINITE_NUMBER")
+        raise Exception(f"INVALID_JSON:{msg}")
+    except json.JSONDecodeError as e:
+        raise Exception(f"INVALID_JSON:{e.msg}")
+
+def validate_paths(inventories: List[Dict[str, Optional[str]]]) -> None:
+    """Checks for unsafe paths and case-fold collisions."""
+    all_paths = set()
+    for inv in inventories:
+        for path in inv.keys():
+            # Unsafe path checks
+            if ".." in path or path.startswith("/") or path.startswith("\\"):
+                raise Exception(f"UNSAFE_PATH:{path}")
+            
+            # Case-fold collision check
+            low_path = path.lower()
+            if low_path in all_paths:
+                # This is a simplified check; in a real tool we'd check if they are actually different
+                # but the prompt implies we reject collisions.
+                pass 
+            all_paths.add(low_path)
+    
+    # Re-verify all paths in the union for collisions
+    seen_low = {}
+    for inv in inventories:
+        for path in inv.keys():
+            lp = path.lower()
+            if lp in seen_low and seen_low[lp] != path:
+                raise Exception(f"CASE_COLLISION:{path} vs {seen_low[lp]}")
+            seen_low[lp] = path
+
+def solve() -> None:
+    try:
+        raw_input = sys.stdin.buffer.read(1024 * 1024)
+        if len(raw_input) == 0:
+            return # Or error
+        
+        if len(raw_input) >= 1024 * 1024:
+            print(json.dumps({"status": "refused", "error": {"code": "SIZE_EXCEEDED", "message": "Input exceeds 1MiB"}}))
+            return
+
+        data = parse_json_strict(raw_input)
+        
+        # Validate structure
+        for key in ["base", "current", "desired"]:
+            if key not in data:
+                print(json.dumps({"status": "refused", "error": {"code": "SCHEMA_VIOLATION", "message": f"Missing {key}"}}))
+                return
+            if not isinstance(data[key], dict):
+                print(json.dumps({"status": "refused", "error": {"code": "SCHEMA_VIOLATION", "message": f"{key} must be dict"}}))
+                return
+            # Check for booleans where strings/nulls are expected
+            for k, v in data[key].items():
+                if not isinstance(k, str):
+                    print(json.dumps({"status": "refused", "error": {"code": "TYPE_MISMATCH", "message": "Path must be string"}}))
+                    return
+                if v is not None and not isinstance(v, str):
+                    print(json.dumps({"status": "refused", "error": {"code": "TYPE_MISMATCH", "message": "Digest must be string or null"}}))
+                    return
+                if isinstance(v, bool): # Explicitly reject booleans
+                    print(json.dumps({"status": "refused", "error": {"code": "TYPE_MISMATCH", "message": "Boolean found instead of string/null"}}))
+                    return
+
+        validate_paths([data["base"], data["current"], data["desired"]])
+
+        base = data["base"]
+        current = data["current"]
+        desired = data["desired"]
+        
+        plan = []
+        all_keys = set(base.keys()) | set(current.keys()) | set(desired.keys())
+
+        for path in sorted(all_keys):
+            b = base.get(path)
+            c = current.get(path)
+            d = desired.get(path)
+
+            # Logic:
+            # 1. Current == Desired -> NOOP (even if base differs)
+            if c == d:
+                if c is not None:
+                    plan.append({"op": "noop", "path": path, "digest": c})
+                continue
+
+            # 2. Desired is null (Delete)
+            if d is None:
+                if c is None:
+                    # Already gone, but desired is null? Technically noop or nothing.
+                    # If it's not in current, it's already deleted.
+                    continue
+                else:
+                    # Attempting to delete. Only allowed if current == base.
+                    if c == b:
+                        plan.append({"op": "delete", "path": path, "digest": c})
+                    else:
+                        plan.append({"op": "conflict", "path": path, "digest": c})
+                continue
+
+            # 3. Current is null (Create)
+            if c is None:
+                # If current is null and desired is not null, it's a create.
+                # But wait: if base was not null, and current is null, that's a conflict?
+                # "base=null, current=B, desired=C is conflict" -> This implies if base is null, 
+                # and current is B, it's a conflict.
+                # If base is null and current is null, it's a create.
+                if b is None:
+                    plan.append({"op": "create", "path": path, "digest": d})
+                else:
+                    # base=A, current=null, desired=C. 
+                    # This means A was deleted, now we want C. 
+                    # Since current (null) != base (A), this is a conflict.
+                    plan.append({"op": "conflict", "path": path, "digest": b})
+                continue
+
+            # 4. Current is not null, Desired is not null (Update)
+            if c != d:
+                # Update allowed only if current == base
+                if c == b:
+                    plan.append({"op": "update", "path": path, "old_digest": c, "new_digest": d})
+                else:
+                    plan.append({"op": "conflict", "path": path, "digest": c})
+
+        print(json.dumps({"status": "success", "plan": plan}))
+
+    except Exception as e:
+        err_msg = str(e)
+        code = "INTERNAL_ERROR"
+        if ":" in err_msg:
+            code, msg = err_msg.split(":", 1)
+        else:
+            msg = err_msg
+        
+        # Map specific error types
+        if err_msg.startswith("DUPLICATE_KEY"): code = "DUPLICATE_KEY"
+        elif err_msg.startswith("NONFINITE_NUMBER"): code = "NONFINITE_NUMBER"
+        elif err_msg.startswith("INVALID_JSON"): code = "INVALID_JSON"
+        elif err_msg.startswith("UNSAFE_PATH"): code = "UNSAFE_PATH"
+        elif err_msg.startswith("CASE_COLLISION"): code = "CASE_COLLISION"
+        elif err_msg.startswith("TYPE_MISMATCH"): code = "TYPE_MISMATCH"
+        elif err_msg.startswith("SCHEMA_VIOLATION"): code = "SCHEMA_VIOLATION"
+        elif err_msg.startswith("SIZE_EXCEEDED"): code = "SIZE_EXCEEDED"
+
+        print(json.dumps({
+            "status": "refused",
+            "error": {"code": code, "message": msg.strip()}
+        }))
+
+if __name__ == "__main__":
+    solve()
+<<<END FILE tools/plan_workspace_file_transitions.py>>>
+
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workspace Transition Input",
+  "type": "object",
+  "properties": {
+    "base": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "current": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "desired": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"] }
+    }
+  },
+  "required": ["base", "current", "desired"],
+  "additionalProperties": false
+}
+<<<END FILE contracts/input.schema.json>>>
+
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workspace Transition Output",
+  "oneOf": [
+    {
+      "properties": {
+        "status": { "const": "success" },
+        "plan": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "properties": { "op": { "const": "create" }, "path": { "type": "string" }, "digest": { "type": "string" } }, "required": ["op", "path", "digest"], "additionalProperties": false },
+              { "properties": { "op": { "const": "update" }, "path": { "type": "string" }, "old_digest": { "type": "string" }, "new_digest": { "type": "string" } }, "required": ["op", "path", "old_digest", "new_digest"], "additionalProperties": false },
+              { "properties": { "op": { "const": "noop" }, "path": { "type": "string" }, "digest": { "type": "string" } }, "required": ["op", "path", "digest"], "additionalProperties": false },
+              { "properties": { "op": { "const": "delete" }, "path": { "type": "string" }, "digest": { "type": "string" } }, "required": ["op", "path", "digest"], "additionalProperties": false },
+              { "properties": { "op": { "const": "conflict" }, "path": { "type": "string" }, "digest": { "type": "string" } }, "required": ["op", "path", "digest"], "additionalProperties": false }
+            ]
+          }
+        }
+      },
+      "required": ["status", "plan"]
+    },
+    {
+      "properties": {
+        "status": { "const": "refused" },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": { "type": "string" },
+            "message": { "type": "string" }
+          },
+          "required": ["code", "message"]
+        }
+      },
+      "required": ["status", "error"]
+    }
+  ]
+}
+<<<END FILE contracts/output.schema.json>>>
+
+<<<examples/input.json>>>
+{
+  "base": {
+    "file1.txt": "hash_a",
+    "file2.txt": "hash_b"
+  },
+  "current": {
+    "file1.txt": "hash_a",
+    "file2.txt": "hash_c"
+  },
+  "desired": {
+    "file1.txt": "hash_a",
+    "file2.txt": "hash_b",
+    "file3.txt": "hash_d"
+  }
+}
+<<<END FILE examples/input.json>>>
+
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "plan": [
+    {
+      "op": "noop",
+      "path": "file1.txt",
+      "digest": "hash_a"
+    },
+    {
+      "op": "conflict",
+      "path": "file2.txt",
+      "digest": "hash_c"
+    },
+    {
+      "op": "create",
+      "path": "file3.txt",
+      "digest": "hash_d"
+    }
+  ]
+}
+<<<END FILE examples/output.json>>>
+
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "base=A, current=B, desired=C is conflict",
+    "input": {
+      "base": {"f": "A"}, "current": {"f": "B"}, "desired": {"f": "C"}
+    },
+    "expected_status": "success",
+    "expected_plan_first_op": "conflict"
+  },
+  {
+    "name": "base=A, current=A, desired=C is update",
+    "input": {
+      "base": {"f": "A"}, "current": {"f": "A"}, "desired": {"f": "C"}
+    },
+    "expected_status": "success",
+    "expected_plan_first_op": "update"
+  },
+  {
+    "name": "base=null, current=B, desired=C is conflict",
+    "input": {
+      "base": {}, "current": {"f": "B"}, "desired": {"f": "C"}
+    },
+    "expected_status": "success",
+    "expected_plan_first_op": "conflict"
+  },
+  {
+    "name": "base=A, current=B, desired=B is noop",
+    "input": {
+      "base": {"f": "A"}, "current": {"f": "B"}, "desired": {"f": "B"}
+    },
+    "expected_status": "success",
+    "expected_plan_first_op": "noop"
+  },
+  {
+    "name": "current=desired is noop even when base differs",
+    "input": {
+      "base": {"f": "A"}, "current": {"f": "B"}, "desired": {"f": "B"}
+    },
+    "expected_status": "success",
+    "expected_plan_first_op": "noop"
+  },
+  {
+    "name": "reject booleans where integers/strings required",
+    "input": {
+      "base": {"f": true}, "current": {"f": "A"}, "desired": {"f": "B"}
+    },
+    "expected_status": "refused",
+    "expected_error_code": "TYPE_MISMATCH"
+  }
+]
+<<<END FILE fixtures/acceptance.json>>>
+
+<<<tests/test_plan_workspace_file_transitions.py>>>
+import unittest
+import json
+import sys
+import io
+from tools.plan_workspace_file_transitions import solve
+
+class TestPlanWorkspace(unittest.TestCase):
+    def run_tool(self, input_dict):
+        input_str = json.dumps(input_dict).encode('utf-8')
+        sys.stdin = io.BytesIO(input_str)
+        sys.stdout = io.StringIO()
+        solve()
+        output = sys.stdout.getvalue()
+        return json.loads(output)
+
+    def test_acceptance_cases(self):
+        import json
+        with open('fixtures/acceptance.json', 'r') as f:
+            cases = json.load(f)
+        
+        for case in cases:
+            with self.subTest(name=case['name']):
+                res = self.run_tool(case['input'])
+                if "expected_status" in case:
+                    self.assertEqual(res['status'], case['expected_status'])
+                
+                if "expected_error_code" in case:
+                    self.assertEqual(res['error']['code'], case['expected_error_code'])
+                
+                if "expected_plan_first_op" in case:
+                    self.assertEqual(res['plan'][0]['op'], case['expected_plan_first_op'])
+
+    def test_duplicate_keys(self):
+        # Since json.dumps won't produce duplicate keys, we pass raw bytes
+        raw_input = b'{"base": {"f": "A", "f": "B"}, "current": {}, "desired": {}}'
+        sys.stdin = io.BytesIO(raw_input)
+        sys.stdout = io.StringIO()
+        solve()
+        res = json.loads(sys.stdout.getvalue())
+        self.assertEqual(res['status'], 'refused')
+        self.assertEqual(res['error']['code'], 'DUPLICATE_KEY')
+
+    def test_case_collision(self):
+        case = {
+            "base": {"File.txt": "A"},
+            "current": {"file.txt": "A"},
+            "desired": {"file.txt": "A"}
+        }
+        res = self.run_tool(case)
+        self.assertEqual(res['status'], 'refused')
+        self.assertEqual(res['error']['code'], 'CASE_COLLISION')
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END FILE tests/test_plan_workspace_file_transitions.py>>>
+
+<<<references/method.md>>>
+# Algorithm: Workspace File Transitions
+
+## Overview
+The tool computes a delta between a `current` state and a `desired` state, using a `base` state to distinguish between a clean update and a conflict.
+
+## Transition Logic Table
+
+| Base | Current | Desired | Operation | Condition / Note |
+| :--- | :--- | :--- | :--- | :--- |
+| A | B | B | `noop` | `current == desired` takes precedence. |
+| A | A | C | `update` | `current == base` and `current != desired`. |
+| A | B | C | `conflict` | `current != base` and `current != desired`. |
+| null | B | C | `conflict` | `base` is missing, but `current` is present. |
+| null | null | C | `create` | `base` and `current` are both missing. |
+| A | A | null | `delete` | `current == base` and `desired` is missing. |
+| A | B | null | `conflict` | `current != base` and `desired` is missing. |
+
+## Constraints
+1. **Path Safety**: No `..`, no absolute paths, no case-insensitive collisions (e.g., `a.txt` and `A.txt` in the same set).
+2. **Input Bounds**: Max 1MiB.
+3. **Types**: Keys must be strings. Values must be strings (SHA256) or `null`. Booleans are strictly forbidden.
+4. **Complexity**: $O(N \log N)$ where $N$ is the number of unique paths (due to sorting for deterministic output).
+
+## Known-Wrong Approaches
+- **Inferring Ownership**: Assuming a file is "new" just because it's in `desired` but not `current`, without checking if `current` was modified from `base`.
+- **Ignoring Base**: Calculating `current` vs `desired` without checking `base` leads to missing `conflict` states.
+- **Case Insensitivity**: Failing to catch that `File.txt` and `file.txt` are the same on many filesystems.
+<<<END FILE references/method.md>>>
+
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "tools/plan_workspace_file_transitions.py",
+  "discovery_method": "explicit_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": "candidate_only",
+  "status": "candidate"
+}
+<<<END DRAFT>>>

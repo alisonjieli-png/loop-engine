@@ -1,0 +1,92 @@
+{
+ "run": "tactical-run",
+ "model": "gemma-4-coding-abliterated",
+ "producer_family": "google",
+ "draft_format": {
+  "name": "blocks",
+  "record_type": "original_native_file_blocks/v1"
+ },
+ "call_ceiling": 40,
+ "dispatches": 6,
+ "completions": 5,
+ "admitted": 0,
+ "prepared": 0,
+ "admission_rate": "0/5",
+ "known_input_tokens": 8282,
+ "known_output_tokens": 27973,
+ "calls_with_unknown_usage": 0,
+ "usage_complete": true,
+ "elapsed_seconds": 194.9,
+ "calls": [
+  {
+   "method_id": "plan_workspace_file_transitions",
+   "attempt": 1,
+   "status": "failed",
+   "error_code": "draft_blocks_not_admitted",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1669,
+   "output_tokens": 5540,
+   "elapsed_seconds": 38.58093,
+   "admitted": false,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "draft_content_outside_blocks",
+   "package_digest": ""
+  },
+  {
+   "method_id": "assemble_bounded_instruction_sections",
+   "attempt": 1,
+   "status": "failed",
+   "error_code": "draft_blocks_not_admitted",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1635,
+   "output_tokens": 6372,
+   "elapsed_seconds": 44.341131,
+   "admitted": false,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "draft_content_outside_blocks",
+   "package_digest": ""
+  },
+  {
+   "method_id": "resolve_exact_package_dependency_closure",
+   "attempt": 1,
+   "status": "failed",
+   "error_code": "draft_blocks_not_admitted",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1613,
+   "output_tokens": 5749,
+   "elapsed_seconds": 40.024388,
+   "admitted": false,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "draft_content_outside_blocks",
+   "package_digest": ""
+  },
+  {
+   "method_id": "query_codegraph_change_impact",
+   "attempt": 1,
+   "status": "failed",
+   "error_code": "draft_blocks_not_admitted",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1670,
+   "output_tokens": 5031,
+   "elapsed_seconds": 35.116119,
+   "admitted": false,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "draft_content_outside_blocks",
+   "package_digest": ""
+  },
+  {
+   "method_id": "build_permission_scoped_lexical_index",
+   "attempt": 1,
+   "status": "failed",
+   "error_code": "draft_blocks_not_admitted",
+   "reported_model": "gemma-4-coding-abliterated",
+   "input_tokens": 1695,
+   "output_tokens": 5281,
+   "elapsed_seconds": 36.876485,
+   "admitted": false,
+   "admission_strategy": "strict_blocks",
+   "admission_failure": "draft_content_outside_blocks",
+   "package_digest": ""
+  }
+ ]
+}

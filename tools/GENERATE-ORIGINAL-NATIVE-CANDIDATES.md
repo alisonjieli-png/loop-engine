@@ -121,6 +121,24 @@ the removal. The admitted draft then passes the same exact draft parser as
 JSON. `--draft-format json` stays the default. The run chooses the format, and
 `run.json` names it in `draft_format`. Changing the format refuses resume.
 
+`--draft-format blocks2` selects version two,
+[`original_native_generation_blocks` 2.0.0](resources/original-native-generation-blocks-prompt-v2.json).
+In its first run, the Tactical model always wrote `<<<path>>>` instead of
+`<<<FILE path>>>`. It sometimes wrote `<<<END path>>>`, and it left out the
+last END line. Version two therefore defines these spellings:
+
+- a block opens with `<<<path>>>` or `<<<FILE path>>>` for a planned path;
+- it closes with `<<<END path>>>` or `<<<END FILE path>>>`;
+- the END line may be left out only right before the next planned file or
+  the END DRAFT line, and the completion records each one as
+  `block_end_omitted:PATH`.
+
+Inside a block, any other line that starts with `<<<` and ends with `>>>` is
+refused as `draft_marker_misplaced`, so one file can never silently take in
+another. Every other rule of version one holds. A run stops on
+`usage_limit_reached` or `payment_required`, because a spent allowance refuses
+every later call too.
+
 The controller constructs `harness_candidate_batch_proposals/v2`. The factory
 then produces `starter_catalogue_candidate_items/v3`, full package trees and
 `candidate_intelligence_specifications/v3`. Exact duplicate package digests
