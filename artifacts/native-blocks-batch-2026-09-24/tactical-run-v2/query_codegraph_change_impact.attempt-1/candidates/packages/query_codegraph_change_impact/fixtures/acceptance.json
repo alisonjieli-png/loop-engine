@@ -1,0 +1,48 @@
+[
+  {
+    "name": "valid_simple",
+    "input": {
+      "symbols": {"s1": {"file_id": "f1", "range": [0,1]}},
+      "files": {"f1": {"digest": "d1", "range": [0,1]}},
+      "edges": [],
+      "changed_symbols": ["s1"]
+    },
+    "expected_status": "success"
+  },
+  {
+    "name": "dangling_edge",
+    "input": {
+      "symbols": {"s1": {"file_id": "f1", "range": [0,1]}},
+      "files": {"f1": {"digest": "d1", "range": [0,1]}},
+      "edges": [{"consumer": "s1", "dependency": "s2", "evidence": "e1"}],
+      "changed_symbols": ["s1"]
+    },
+    "expected_status": "refused",
+    "expected_error": "GRAPH_INCONSISTENCY"
+  },
+  {
+    "name": "duplicate_key",
+    "input_raw": '{"a": 1, "a": 2}',
+    "expected_status": "refused",
+    "expected_error": "MALFORMED_INPUT"
+  },
+  {
+    "name": "depth_limit_truncation",
+    "input": {
+      "symbols": {
+        "s1": {"file_id": "f1", "range": [0,1]},
+        "s2": {"file_id": "f1", "range": [2,3]},
+        "s3": {"file_id": "f1", "range": [4,5]}
+      },
+      "files": {"f1": {"digest": "d1", "range": [0,5]}},
+      "edges": [
+        {"consumer": "s2", "dependency": "s1", "evidence": "e1"},
+        {"consumer": "s3", "dependency": "s2", "evidence": "e2"}
+      ],
+      "changed_symbols": ["s1"],
+      "depth_limit": 1
+    },
+    "expected_status": "success",
+    "expected_is_complete": false
+  }
+]

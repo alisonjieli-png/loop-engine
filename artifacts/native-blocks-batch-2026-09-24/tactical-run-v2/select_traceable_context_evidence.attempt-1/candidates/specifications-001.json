@@ -1,0 +1,137 @@
+{
+  "record_type": "candidate_intelligence_specifications/v3",
+  "population": 1,
+  "populations": 1,
+  "specifications": [
+    {
+      "id": "select_traceable_context_evidence",
+      "layer": "code",
+      "family": "original_native_tool",
+      "title": "Select traceable context evidence",
+      "tags": [
+        "select traceable context evidence",
+        "harness workspace",
+        "native package",
+        "python"
+      ],
+      "text": "# Select traceable context evidence\n\nCreate a real Agent Skill that helps a harness select traceable evidence for a focused question.\n",
+      "sources": [
+        "src/loop_engine/core/instance_instructions.py",
+        "LICENSE"
+      ],
+      "symbols": [
+        "select_traceable_context_evidence"
+      ],
+      "kind": "skill",
+      "purpose": "Create a real Agent Skill that helps a harness select traceable evidence for a focused question.",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": ".agents/skills/select-traceable-context-evidence/SKILL.md",
+            "digest": "f1966f33728dee1427872d5c49e46ccfed5791d9128fa246ea840513552350ff",
+            "size_bytes": 1740,
+            "media_type": "text/markdown",
+            "role": "skill_definition"
+          },
+          {
+            "path": ".agents/skills/select-traceable-context-evidence/scripts/select_evidence.py",
+            "digest": "fd9c12a3746260c2d8ef478d28d98b3b86f0e0f7fa6f11d18b7dd44bab6b719a",
+            "size_bytes": 5843,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "AGENTS.md",
+            "digest": "3c2b824201b2038c368601cab18cde6006dd30155668bc8ba0d7e02a02678370",
+            "size_bytes": 2192,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "fab57193a27fff216615cb976645afda850fd0d7dc44ddd4c93174efe82ee974",
+            "size_bytes": 1582,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "cb707ad86a8bc5f094491100f78bb483ab36ad8a854a8a711d26d7d914f41b3e",
+            "size_bytes": 611,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "a5cbabcfedbfda0145199ef13ba7ad94f1b84fa4c226c58baac1f9bc6bc0d3a7",
+            "size_bytes": 776,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "6532c61fc78a11e966858c0756643869be4ac368f7393f5ba2fa1fdeea3eb833",
+            "size_bytes": 256,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "5b2a5e4d7b76bd79121fde39bc6df8ae51961dc5bcaea975fe2553342aa7d792",
+            "size_bytes": 1530,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "18d940ec9dc63870c5f519a569a1a95abaeb102ad3d076ec9598c8b4d2bd3dc5",
+            "size_bytes": 1759,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_select_traceable_context_evidence.py",
+            "digest": "02251190144b7e1c5e60d90e92aa193b2f1aeb144e2d39db9c752a3396d4811b",
+            "size_bytes": 3004,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_digest": "91b5b81712313252c7f44ba702442a80720e7ee5826f233bdb71c4f38c90dd1a",
+      "package_root": "packages/select_traceable_context_evidence",
+      "body_path": "bodies/select_traceable_context_evidence.package.json",
+      "provenance": {
+        "authoring": "original_assistant_authored",
+        "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+        "source_digests": {
+          "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+        },
+        "license": {
+          "expression": "MIT",
+          "path": "LICENSE",
+          "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+        }
+      }
+    }
+  ]
+}

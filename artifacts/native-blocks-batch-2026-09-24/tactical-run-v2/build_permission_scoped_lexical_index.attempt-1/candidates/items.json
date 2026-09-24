@@ -1,0 +1,135 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "build_permission_scoped_lexical_index",
+        "kind": "tool",
+        "purpose": "Build or query a bounded in-memory lexical index from supplied documents with ids, exact text, source hashes and tenant scope.",
+        "digest": "e37944afec73de245ebca8d92991f884607a4b9671f576af36effe4720523e54",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 1916,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/build_permission_scoped_lexical_index.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "44b6260b5145829b6afddc141323a4cc0287e05a8775512faae8ebba319b27f8",
+            "size_bytes": 1587,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "7dffc1dbfc271cbf4fa0b58cbc54ca7e80cd02c72217160b3bff0ef0ef77b5be",
+            "size_bytes": 865,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1e121a080f6b4f46b8ae35b40a76aff185f722d94a1933b30d76de4a777a0024",
+            "size_bytes": 833,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "7e41ff3caa0b343fe74f8210577e605f0408d346c8957cfad971d829c5acd31d",
+            "size_bytes": 538,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "ce7e954dc9f7cab7de13518905efa8d38de2943e90fcde4061f340f666889249",
+            "size_bytes": 403,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "f7145496d3d4b257ac444315e498dfeb59b3155d2ad0aea53e1e80e2de5e75a8",
+            "size_bytes": 972,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "984e654087eddf717157f124a57727d784b5c51e731e4d13ba2fe3a8dd35b7e3",
+            "size_bytes": 305,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "bd0b29eab1eaa6d8d7515a0d19f459ad268acdda105e997fdd665aa44fa7c589",
+            "size_bytes": 1639,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_build_permission_scoped_lexical_index.py",
+            "digest": "12944f0f989eeb7ad0c396a85ddda13622edc2a332b7770789eec830c1eb6d25",
+            "size_bytes": 3181,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/build_permission_scoped_lexical_index.py",
+            "digest": "38e4cce775e280f4c95ec20a3556dc57d670fbe9e45529cd9c88cfeeadc56ca3",
+            "size_bytes": 9632,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_root": "packages/build_permission_scoped_lexical_index",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

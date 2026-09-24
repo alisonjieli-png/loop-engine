@@ -1,0 +1,16 @@
+{
+  "before": [
+    {"id": "a1", "val": 10, "meta": "keep", "flag": true},
+    {"id": "b2", "val": 20, "meta": "keep", "flag": false}
+  ],
+  "after": [
+    {"id": "a1", "val": 15, "meta": "keep", "flag": true},
+    {"id": "b2", "val": 15, "meta": "keep", "flag": false}
+  ],
+  "contract": {
+    "id_field": "id",
+    "preserved_fields": ["meta", "flag"],
+    "allowed_changed_fields": ["val"],
+    "integer_total_fields": ["val"]
+  }
+}

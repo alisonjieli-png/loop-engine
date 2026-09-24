@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "impacted_symbols": [
+    {
+      "symbol_id": "sym_b",
+      "distance": 1,
+      "witness_path": ["sym_a", "sym_b"],
+      "evidence": ["import_a"]
+    },
+    {
+      "symbol_id": "sym_c",
+      "distance": 2,
+      "witness_path": ["sym_a", "sym_b", "sym_c"],
+      "evidence": ["import_a", "call_b"]
+    }
+  ],
+  "metadata": {
+    "is_complete": true,
+    "nodes_processed": 3
+  }
+}

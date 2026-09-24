@@ -1,0 +1,46 @@
+[
+  {
+    "case": "valid_claude_json",
+    "input": {
+      "server_id": "chat_mcp",
+      "url": "https://chat.io",
+      "env_var_name": "CHAT_TOKEN",
+      "target_profile": "claude"
+    },
+    "expected_status": "success",
+    "expected_contains": "\"Authorization\": \"Bearer ${CHAT_TOKEN}\""
+  },
+  {
+    "case": "refuse_http_not_https",
+    "input": {
+      "server_id": "bad_scheme",
+      "url": "http://api.com",
+      "env_var_name": "TOKEN",
+      "target_profile": "codex"
+    },
+    "expected_status": "refused",
+    "expected_error": "invalid_scheme"
+  },
+  {
+    "case": "refuse_userinfo_in_url",
+    "input": {
+      "server_id": "bad_url",
+      "url": "https://user:pass@api.com",
+      "env_var_name": "TOKEN",
+      "target_profile": "codex"
+    },
+    "expected_status": "refused",
+    "expected_error": "url_has_userinfo"
+  },
+  {
+    "case": "refuse_unsupported_profile",
+    "input": {
+      "server_id": "bad_profile",
+      "url": "https://api.com",
+      "env_var_name": "TOKEN",
+      "target_profile": "vscode"
+    },
+    "expected_status": "refused",
+    "expected_error": "unsupported_profile"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "task_id": "task-123",
+  "attempt_id": 1,
+  "objective": "Summarize the text",
+  "first_actions": ["read_file"],
+  "immutable_inputs": {"file": "doc.txt"},
+  "required_output_paths": ["summary.txt"],
+  "authority_reference": "auth-001",
+  "event_records": [
+    {"sequence": 0, "state": "running"},
+    {"sequence": 1, "state": "candidate"},
+    {"sequence": 2, "state": "accepted", "validator_identity": "auth-002", "evidence_digest": "sha256:abc"}
+  ]
+}

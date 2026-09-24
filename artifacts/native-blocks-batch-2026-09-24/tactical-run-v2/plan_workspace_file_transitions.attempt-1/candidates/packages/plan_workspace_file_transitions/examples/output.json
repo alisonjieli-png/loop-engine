@@ -1,0 +1,19 @@
+{
+  "success": [
+    {
+      "path": "file1.txt",
+      "action": "noop",
+      "expected_digest": "sha_a"
+    },
+    {
+      "path": "file2.txt",
+      "action": "update",
+      "expected_digest": "sha_new"
+    },
+    {
+      "path": "new_file.txt",
+      "action": "noop",
+      "expected_digest": "sha_c"
+    }
+  ]
+}

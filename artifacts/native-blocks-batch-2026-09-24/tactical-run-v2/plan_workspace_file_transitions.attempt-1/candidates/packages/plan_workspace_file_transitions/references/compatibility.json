@@ -1,0 +1,11 @@
+{
+  "host_entrypoint": "python3 tools/plan_workspace_file_transitions.py",
+  "discovery": "explicit",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": "none",
+  "status": "candidate"
+}

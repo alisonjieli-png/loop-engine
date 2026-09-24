@@ -1,0 +1,142 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "check_tabular_transformation_invariants",
+        "kind": "tool",
+        "purpose": "Check a supplied before/after dataset and explicit contract for id field, preserved fields, allowed changed fields and integer total fields.",
+        "digest": "930df15a6e7ea2d8ef447224c8d63ad3c71b35f0c279b5fc7f4a36d972060f59",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 2084,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/check_tabular_transformation_invariants.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "5b4f325e0fa56ddb2c9a1def8e7985dda67f5d382bedc923e7fa142b46122d03",
+            "size_bytes": 1306,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "db38e5f3934c9aae130f2412895c64aff355f11321ad2a2e6bae9032200c643b",
+            "size_bytes": 816,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "94fb2744d4e5ca7824455602abd005a42fdc35e84bca79f66fc7767247c68f23",
+            "size_bytes": 565,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "24c0aafee343eb2d3e5c24827f6847dea966f5aa22e3f8c825d4f2d8e074d6ac",
+            "size_bytes": 436,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "f7cbc2071f864470af9774704b3a795c3efb9366aaf76f0c96343d86fe5fbf6b",
+            "size_bytes": 67,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "14717ce8b9ab62731071d74575ccc548e126e5b760172d1e06127c1aca9a7d22",
+            "size_bytes": 304,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "715a005daf5abb7883cac90f72c8af027f5236750169d6feae9a52107dba123d",
+            "size_bytes": 1745,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_check_tabular_transformation_invariants.py",
+            "digest": "96c58c4f274114292f2886b7b9f41f4ef8d3359a7d217d0910018bec5d9bb9da",
+            "size_bytes": 3635,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/check_tabular_transformation_invariants.py",
+            "digest": "4dedae63331e516ae7a6fe689adf9db0b72582bc21d3471fcbcd47939509bf18",
+            "size_bytes": 6742,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "0a32db93c8a843a6e03cf73347aa9d73af515c335473831deecf44115b24091a",
+            "size_bytes": 1332,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_root": "packages/check_tabular_transformation_invariants",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

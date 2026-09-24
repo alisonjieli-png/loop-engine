@@ -1,0 +1,16 @@
+{
+  "record_type": "harness_candidate_preparation_report/v2",
+  "complete": true,
+  "candidates": 10,
+  "payload_files": 100,
+  "unique_payload_digests": 100,
+  "population_files": [
+    "specifications-001.json"
+  ],
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "input_sha256": "134e93bc8496a5a7746814aa752c300551634d2de8a49d05a85e6a281f125e95",
+  "approved": false,
+  "hosted_publication": false,
+  "semantic_grounding_verified": false,
+  "limits": "Original candidate declarations and exact package bytes only; dependency resolution, native loading, rights, safety and usefulness require independent review."
+}

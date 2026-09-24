@@ -1,0 +1,40 @@
+[
+  {
+    "name": "tenant_isolation",
+    "input": {
+      "mode": "query",
+      "tenant_id": "t1",
+      "query_terms": ["secret"],
+      "documents": [
+        {"id": "d1", "text": "secret", "tenant_id": "t1", "source_hash": "h1"},
+        {"id": "d2", "text": "secret", "tenant_id": "t2", "source_hash": "h2"}
+      ]
+    },
+    "expected_code": "success",
+    "expected_count": 1
+  },
+  {
+    "name": "min_distinct_abstention",
+    "input": {
+      "mode": "query",
+      "tenant_id": "t1",
+      "min_distinct_matches": 2,
+      "query_terms": ["apple", "banana"],
+      "documents": [
+        {"id": "d1", "text": "apple apple", "tenant_id": "t1", "source_hash": "h1"}
+      ]
+    },
+    "expected_code": "success",
+    "expected_count": 0
+  },
+  {
+    "name": "reject_boolean_as_int",
+    "input": {
+      "mode": "query",
+      "min_distinct_matches": true,
+      "documents": []
+    },
+    "expected_code": "refused",
+    "expected_error": "type_mismatch"
+  }
+]

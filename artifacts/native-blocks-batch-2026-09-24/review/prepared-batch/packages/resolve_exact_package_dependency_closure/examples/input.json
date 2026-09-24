@@ -1,0 +1,29 @@
+{
+  "available_packages": {
+    "lib-a@1.0.0": {
+      "digest": "sha256-aaa",
+      "size": 100,
+      "effects": ["reads_fs"],
+      "dependencies": []
+    },
+    "lib-b@2.0.0": {
+      "digest": "sha256-bbb",
+      "size": 200,
+      "effects": ["network"],
+      "dependencies": [
+        { "id": "lib-a", "rev": "1.0.0", "digest": "sha256-aaa" }
+      ]
+    },
+    "app@1.0.0": {
+      "digest": "sha256-ccc",
+      "size": 50,
+      "effects": [],
+      "dependencies": [
+        { "id": "lib-b", "rev": "2.0.0", "digest": "sha256-bbb" }
+      ]
+    }
+  },
+  "requested_identities": [
+    { "id": "app", "rev": "1.0.0", "digest": "sha256-ccc" }
+  ]
+}

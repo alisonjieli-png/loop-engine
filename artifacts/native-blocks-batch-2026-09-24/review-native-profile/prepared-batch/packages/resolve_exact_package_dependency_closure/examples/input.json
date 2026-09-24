@@ -1,0 +1,26 @@
+{
+  "requested_ids": ["A"],
+  "records": {
+    "A": {
+      "revision": "1.0.0",
+      "digest": "sha256-aaa",
+      "size": 100,
+      "dependencies": ["B"],
+      "effects": ["reads_fs"]
+    },
+    "B": {
+      "revision": "2.0.0",
+      "digest": "sha256-bbb",
+      "size": 200,
+      "dependencies": ["C"],
+      "effects": ["network"]
+    },
+    "C": {
+      "revision": "3.0.0",
+      "digest": "sha256-ccc",
+      "size": 300,
+      "dependencies": [],
+      "effects": ["reads_fs"]
+    }
+  }
+}

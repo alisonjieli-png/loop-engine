@@ -1,0 +1,39 @@
+[
+  {
+    "name": "budget_exceeded_by_required",
+    "input": {
+      "byte_budget": 5,
+      "required_ids": ["r1"],
+      "registry": {"s1": {"v1": {"bounds": {"start": 0, "end": 10}}}},
+      "evidence_pool": [{"id": "r1", "source_id": "s1", "revision": "v1", "priority": 1, "content": "Longer than 5", "span": {"start": 0, "end": 5}}]
+    },
+    "expected": { "status": "refused", "error_code": "BUDGET_EXCEEDED_BY_REQUIRED" }
+  },
+  {
+    "name": "invalid_type_boolean_as_int",
+    "input": {
+      "byte_budget": 100,
+      "registry": {"s1": {"v1": {"bounds": {"start": 0, "end": 10}}}},
+      "evidence_pool": [{"id": "r1", "source_id": "s1", "revision": "v1", "priority": true, "content": "val", "span": {"start": 0, "end": 1}}]
+    },
+    "expected": { "status": "refused", "error_code": "INVALID_TYPE_BOOLEAN_AS_INT" }
+  },
+  {
+    "name": "unresolved_contradiction_visible",
+    "input": {
+      "byte_budget": 100,
+      "contradiction_groups": [["a", "b"]],
+      "registry": {"s1": {"v1": {"bounds": {"start": 0, "end": 100}}}},
+      "evidence_pool": [
+        {"id": "a", "source_id": "s1", "revision": "v1", "priority": 1, "content": "A", "span": {"start": 0, "end": 1}},
+        {"id": "b", "source_id": "s1", "revision": "v1", "priority": 1, "content": "B", "span": {"start": 2, "end": 3}}
+      ]
+    },
+    "expected": {
+      "status": "success",
+      "selected_records": [{"id": "a", "content": "A"}, {"id": "b", "content": "B"}],
+      "unresolved_contradictions": [],
+      "total_bytes": 2
+    }
+  }
+]

@@ -1,0 +1,132 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/harness_fresh_instances.py": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "review_json_with_native_claude_plugin",
+        "kind": "tool",
+        "purpose": "Create a candidate Claude Code plugin named baltor-json-review.",
+        "digest": "846af1df06395679458fd4b68b6a3c76ad36acce2dcd3c817c59a767aeea03fa",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/harness_fresh_instances.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 1896,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "claude"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/review_json_with_native_claude_plugin.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": ".claude-plugin/plugin.json",
+            "digest": "7578368eff323eefc317c9004b49e7c493eb9cfb8b5aa7cdc69901df44e87c2e",
+            "size_bytes": 240,
+            "media_type": "application/json",
+            "role": "plugin_manifest"
+          },
+          {
+            "path": "AGENTS.md",
+            "digest": "6f952c8c2ad51d2c8138a07e354bd63d421b30d3df75ccc1f70d6a00446730e3",
+            "size_bytes": 1150,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "agents/json-reviewer.md",
+            "digest": "c86782f28210f73a9dc4ed2470ec1d6572bbb4dab5d5ac929d09467d3665e3d2",
+            "size_bytes": 819,
+            "media_type": "text/markdown",
+            "role": "subagent_definition"
+          },
+          {
+            "path": "commands/review-json.md",
+            "digest": "4debf5cbb5535384ea221164c5e601c0a26c4915a36850b17a8efff6106de20b",
+            "size_bytes": 749,
+            "media_type": "text/markdown",
+            "role": "command"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "f3c42da161f03377afe64a1405eca07ed36b1109177cc16e663d02800dd330bb",
+            "size_bytes": 196,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "f967944c41b7c62f4a38a3a9c2dec24f2eadf04da8eb8c1bd0f6739a14f30176",
+            "size_bytes": 957,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "39a8f19a1c12339c8957e7fa041b9d93be426b636d4b9c4b6fc85117be3b32c6",
+            "size_bytes": 1167,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "3b237a5c6cfe8226b4004f732bad40ccde3e85fced628ffa318e61f78a8d5ecb",
+            "size_bytes": 1113,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "scripts/check_json.py",
+            "digest": "079a86cdde1233fe0d3646cc18cd6439aff76911ce8195f4b0e59194504d5a94",
+            "size_bytes": 4866,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tests/test_review_json_with_native_claude_plugin.py",
+            "digest": "5611749efbab15aca15537823be567e375d6e5f355faa0109357923b62b1ecd3",
+            "size_bytes": 2777,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_root": "packages/review_json_with_native_claude_plugin",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

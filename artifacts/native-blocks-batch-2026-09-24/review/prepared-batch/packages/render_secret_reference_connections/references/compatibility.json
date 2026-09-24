@@ -1,0 +1,14 @@
+{
+  "intended_host_entrypoint": "python3 tools/render_secret_reference_connections.py",
+  "discovery_method": "explicit_file_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs"
+  ],
+  "automatic_discovery_limits": {
+    "network": "none",
+    "filesystem_mutation": "none",
+    "subprocess": "none"
+  },
+  "status": "candidate"
+}

@@ -1,0 +1,14 @@
+{
+  "intended_host_entrypoint": "tools/resolve_exact_package_dependency_closure.py",
+  "discovery_method": "explicit_file_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": {
+    "recursive_search": false,
+    "environment_scanning": false
+  },
+  "status": "candidate"
+}

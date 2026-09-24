@@ -1,0 +1,4413 @@
+{
+  "record_type": "starter_catalogue_panel_review/v3",
+  "recorded_at": "2026-09-24",
+  "record_path": "artifacts/native-blocks-batch-2026-09-24/plan-preflight/review-prechecks.json",
+  "fixture_run": false,
+  "catalogue_folder": "artifacts/native-blocks-batch-2026-09-24/plan-preflight/prepared-synthetic",
+  "catalogue_items_record_type": "starter_catalogue_candidate_items/v3",
+  "catalogue_source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "complements_review_record": null,
+  "approval_ref_prefix": "artifacts/native-blocks-batch-2026-09-24/plan-preflight/review-prechecks.json#",
+  "decision_rule": "An item is approved only when at least three reviewers approve it, from at least three different model families, none of them the family that produced the item, and no reviewer rejects it. One written rejection keeps the item a candidate with its reasons. Deterministic pre-checks for licence, format, safety, effects, secrets and duplicates run first and refuse before any reviewer is asked.",
+  "what_an_approval_permits": "An approved row may be merged into the catalogue's review record by the lead engineer and then served by a host whose licence policy accepts the item's licence. Approval covers only the bytes named by the row's digest and grants no effect, network access, spending or model authority.",
+  "what_a_rejection_records": "A rejected row stays a candidate with each rejecting reviewer's reason and findings. It may be repaired and put to a new review, which judges new bytes.",
+  "what_a_row_without_a_verdict_records": "A row refused before review, incomplete, or not started has no standing verdict. It carries no approval reference and stays a candidate. Partial decisions are kept, and a later run reuses them without asking again.",
+  "population": {
+    "rule": "seeded_hash_order",
+    "seed": "layout-preflight-2026-09-24",
+    "eligible_count": 8,
+    "eligible": [
+      "plan_workspace_file_transitions",
+      "assemble_bounded_instruction_sections",
+      "resolve_exact_package_dependency_closure",
+      "query_codegraph_change_impact",
+      "build_permission_scoped_lexical_index",
+      "validate_focused_attempt_handoff",
+      "render_secret_reference_connections",
+      "check_tabular_transformation_invariants"
+    ],
+    "selected": [
+      "plan_workspace_file_transitions",
+      "render_secret_reference_connections",
+      "resolve_exact_package_dependency_closure",
+      "check_tabular_transformation_invariants",
+      "validate_focused_attempt_handoff",
+      "assemble_bounded_instruction_sections",
+      "query_codegraph_change_impact",
+      "build_permission_scoped_lexical_index"
+    ]
+  },
+  "producers": {
+    "record_type": "candidate_producer_declaration/v1",
+    "catalogue_folder": "artifacts/native-blocks-batch-2026-09-24/plan-preflight/prepared-synthetic",
+    "default_producer": {
+      "producer_identity": "layout-preflight:synthetic",
+      "family": "google"
+    },
+    "item_producers": [
+      {
+        "identity": "assemble_bounded_instruction_sections",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "build_permission_scoped_lexical_index",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "check_tabular_transformation_invariants",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "plan_workspace_file_transitions",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "query_codegraph_change_impact",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "render_secret_reference_connections",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "resolve_exact_package_dependency_closure",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      },
+      {
+        "identity": "validate_focused_attempt_handoff",
+        "producer_identity": "layout-preflight:synthetic",
+        "family": "google"
+      }
+    ],
+    "evidence": {
+      "path": "artifacts/native-blocks-batch-2026-09-24/plan-preflight/prepared-synthetic/items.json",
+      "quote": "Producer identity, family and versioned method are declared per item."
+    }
+  },
+  "policy": {
+    "record_type": "candidate_review_panel_policy/v1",
+    "minimum_approvals": 3,
+    "minimum_distinct_families": 3,
+    "exclude_producer_family": true,
+    "any_rejection_withholds_approval": true,
+    "reviewers_per_item": 3,
+    "stop_asking_after_first_rejection": false,
+    "prechecks": {
+      "licence": [
+        "native_licence_rules"
+      ],
+      "format": [
+        "native_format_rules"
+      ],
+      "safety": [
+        "native_safety_rules"
+      ],
+      "effects": [
+        "native_effects_rules"
+      ],
+      "secrets": [
+        "native_secret_rules"
+      ],
+      "duplicates": [
+        "native_duplicate_rules"
+      ]
+    },
+    "accepted_licences": [
+      "MIT",
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "ISC",
+      "CC0-1.0",
+      "CC-BY-4.0"
+    ],
+    "output_allocation_tokens": 8192,
+    "temperature": 0.0,
+    "rate_limit": {
+      "initial_seconds": 15.0,
+      "maximum_seconds": 120.0,
+      "maximum_total_seconds": 900.0,
+      "maximum_retries_per_call": 3
+    }
+  },
+  "configuration": {
+    "record_type": "candidate_review_panel/v1",
+    "policy": {
+      "record_type": "candidate_review_panel_policy/v1",
+      "minimum_approvals": 3,
+      "minimum_distinct_families": 3,
+      "exclude_producer_family": true,
+      "any_rejection_withholds_approval": true,
+      "reviewers_per_item": 3,
+      "stop_asking_after_first_rejection": false,
+      "prechecks": {
+        "licence": [
+          "native_licence_rules"
+        ],
+        "format": [
+          "native_format_rules"
+        ],
+        "safety": [
+          "native_safety_rules"
+        ],
+        "effects": [
+          "native_effects_rules"
+        ],
+        "secrets": [
+          "native_secret_rules"
+        ],
+        "duplicates": [
+          "native_duplicate_rules"
+        ]
+      },
+      "accepted_licences": [
+        "MIT",
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "CC0-1.0",
+        "CC-BY-4.0"
+      ],
+      "output_allocation_tokens": 8192,
+      "temperature": 0.0,
+      "rate_limit": {
+        "initial_seconds": 15.0,
+        "maximum_seconds": 120.0,
+        "maximum_total_seconds": 900.0,
+        "maximum_retries_per_call": 3
+      }
+    },
+    "families": [
+      "anthropic",
+      "openai",
+      "zhipu",
+      "deepseek",
+      "alibaba",
+      "minimax",
+      "moonshot",
+      "mistral",
+      "nvidia",
+      "google"
+    ],
+    "precheck_engines": {
+      "builtin_licence_rules": {
+        "licence_states_accepted": [
+          "declared"
+        ],
+        "licence_sentence": "Licence: {licence}."
+      },
+      "builtin_format_rules": {
+        "minimum_words": 150,
+        "maximum_words": 600,
+        "required_parts": [
+          "## When to use it",
+          "## Steps",
+          "## Checks",
+          "## Known-wrong example",
+          "## What to record",
+          "## Source"
+        ],
+        "grounding_sentences": {
+          "restates_cited_source": "Compiled from revision {revision}.",
+          "general_practice_beside_cited_source": "Written for this catalogue at revision {revision}."
+        },
+        "general_practice_grounding": "general_practice_beside_cited_source",
+        "general_practice_sentence": "The steps above are ordinary engineering practice, written for this catalogue in its own words.",
+        "maximum_description_characters": 1024,
+        "forbidden_patterns": [
+          "(?<![a-z0-9])loops?(?![a-z0-9])",
+          "(?<![a-z0-9])practitioners?(?![a-z0-9])",
+          "role[\\s_-]+profiles?",
+          "runtime[\\s_-]+classification",
+          "solution[\\s_-]+canvas",
+          "code[\\s_-]+nodes?",
+          "(?<![a-z0-9])spawn(?:s|ed|ing)?(?![a-z0-9])",
+          "starting[\\s_-]+(?:solution|intelligence)(?![a-z0-9])",
+          "run[\\s_-]+history",
+          "runtime[\\s_-]+(?:memory|history)",
+          "(?:context|code|solution|feedback)[\\s_-]+intelligence",
+          "intelligence[\\s_-]+(?:items?|quer(?:y|ies)|layers?)",
+          "(?<![a-z0-9])(?:grand)?\u0063hild(?:ren)?(?![a-z0-9])",
+          "[\u2014\u2013\u2015\u2212]",
+          "stop[\\s_-]+conditions?",
+          "(?<![a-z0-9])\u0072eceipts?(?![a-z0-9])",
+          "(?<![a-z0-9])\u0063hronicles?(?![a-z0-9])",
+          "what[\\s_-]*is[\\s_-]*next|what[\\s_-]+next|whats[\\s_-]*next"
+        ]
+      },
+      "agent_skills_reference": {
+        "program": "agentskills",
+        "arguments": [
+          "validate",
+          "{skill_folder}"
+        ],
+        "version_arguments": [
+          "--version"
+        ],
+        "timeout_seconds": 60
+      },
+      "builtin_static_rules": {},
+      "skillspector_static": {
+        "program": "skillspector",
+        "arguments": [
+          "scan",
+          "{skill_folder}",
+          "--no-llm",
+          "--format",
+          "json",
+          "--output",
+          "{report_path}"
+        ],
+        "version_arguments": [
+          "--version"
+        ],
+        "timeout_seconds": 180,
+        "tolerated_partial_reasons": [
+          "reference_missing"
+        ],
+        "refuse_at_or_above": "HIGH"
+      },
+      "builtin_effect_rules": {},
+      "builtin_secret_patterns": {
+        "extra_patterns": [
+          "sk_(?:live|test)_[A-Za-z0-9]{16,}",
+          "github_pat_[A-Za-z0-9_]{20,}",
+          "AIza[0-9A-Za-z_\\-]{35}",
+          "eyJ[A-Za-z0-9_\\-]{10,}\\.eyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}",
+          "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+        ]
+      },
+      "exact_shingle_jaccard": {
+        "shingle_words": 5,
+        "near_duplicate_threshold": 0.8,
+        "maximum_population": 5000
+      },
+      "datasketch_minhash_lsh": {
+        "shingle_words": 5,
+        "near_duplicate_threshold": 0.8,
+        "permutations": 128
+      },
+      "native_licence_rules": {},
+      "native_format_rules": {},
+      "native_safety_rules": {},
+      "native_effects_rules": {},
+      "native_secret_rules": {
+        "extra_patterns": [
+          "sk_(?:live|test)_[A-Za-z0-9]{16,}",
+          "github_pat_[A-Za-z0-9_]{20,}",
+          "AIza[0-9A-Za-z_\\-]{35}",
+          "eyJ[A-Za-z0-9_\\-]{10,}\\.eyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}",
+          "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+        ]
+      },
+      "native_duplicate_rules": {
+        "shingle_words": 5,
+        "near_duplicate_threshold": 0.8,
+        "maximum_population": 5000
+      }
+    },
+    "installations": [
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.deepseek-v4-pro",
+        "engine_kind": "model_gateway",
+        "family": "deepseek",
+        "model": "deepseek-v4-pro:0813",
+        "quota_group": "ollama_cloud",
+        "lens": "provenance_licence_and_safety",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.deepseek-v4-pro",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.qwen3.5-397b",
+        "engine_kind": "model_gateway",
+        "family": "alibaba",
+        "model": "qwen3.5:397b",
+        "quota_group": "ollama_cloud",
+        "lens": "correctness_and_usefulness",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.qwen3.5-397b",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "codex.gpt-6-sol",
+        "engine_kind": "command_line",
+        "family": "openai",
+        "model": "gpt-6-sol",
+        "quota_group": "codex_subscription",
+        "lens": "adversarial",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "program": "codex",
+          "arguments": [
+            "exec",
+            "--json",
+            "--sandbox",
+            "read-only",
+            "--skip-git-repo-check",
+            "--ephemeral",
+            "--ignore-user-config",
+            "--ignore-rules",
+            "--disable",
+            "shell_tool",
+            "--disable",
+            "unified_exec",
+            "--disable",
+            "apps",
+            "--disable",
+            "plugins",
+            "--disable",
+            "browser_use",
+            "--disable",
+            "computer_use",
+            "--disable",
+            "multi_agent",
+            "--disable",
+            "image_generation",
+            "--disable",
+            "view_image",
+            "-m",
+            "{model}",
+            "-c",
+            "model_reasoning_effort=\"medium\"",
+            "-C",
+            "{workdir}",
+            "-"
+          ],
+          "version_arguments": [
+            "--version"
+          ],
+          "output_protocol": "codex_exec_jsonl",
+          "timeout_seconds": 900.0,
+          "reserved_overhead_tokens": 16384
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.minimax-m3",
+        "engine_kind": "model_gateway",
+        "family": "minimax",
+        "model": "minimax-m3",
+        "quota_group": "ollama_cloud",
+        "lens": "provenance_licence_and_safety",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.minimax-m3",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.kimi-k2.6",
+        "engine_kind": "model_gateway",
+        "family": "moonshot",
+        "model": "kimi-k2.6",
+        "quota_group": "ollama_cloud",
+        "lens": "adversarial",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.kimi-k2.6",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.glm-5.3",
+        "engine_kind": "model_gateway",
+        "family": "zhipu",
+        "model": "glm-5.3",
+        "quota_group": "ollama_cloud",
+        "lens": "correctness_and_usefulness",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.glm-5.3",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072,
+          "output_allocation_tokens": 32768,
+          "answer_format": "json_after_reasoning"
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.mistral-large-3",
+        "engine_kind": "model_gateway",
+        "family": "mistral",
+        "model": "mistral-large-3:675b",
+        "quota_group": "ollama_cloud",
+        "lens": "adversarial",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.mistral-large-3",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.gpt-oss-120b",
+        "engine_kind": "model_gateway",
+        "family": "openai",
+        "model": "gpt-oss:120b",
+        "quota_group": "ollama_cloud",
+        "lens": "correctness_and_usefulness",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.gpt-oss-120b",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "ollama.kimi-k3",
+        "engine_kind": "model_gateway",
+        "family": "moonshot",
+        "model": "kimi-k3",
+        "quota_group": "ollama_cloud",
+        "lens": "adversarial",
+        "enabled": false,
+        "disabled_reason": "The owner named Kimi 3 on 22 September 2026, and the repository route policy refuses this model on every route and for every purpose (core/model_routes.py, and the conformance rule forbidden_model_mention). Lifting that refusal is a change to the model policy itself, outside this review panel. The same family is reviewed through kimi-k2.6.",
+        "settings": {
+          "provider_id": "ollama_cloud",
+          "route_name": "review.ollama.kimi-k3",
+          "purpose": "decide_label",
+          "timeout_seconds": 600.0,
+          "maximum_context_tokens": 131072
+        }
+      },
+      {
+        "record_type": "candidate_reviewer_installation/v1",
+        "installation_id": "claude_code.bare",
+        "engine_kind": "command_line",
+        "family": "anthropic",
+        "model": "claude-opus-5-5",
+        "quota_group": "anthropic_api",
+        "lens": "adversarial",
+        "enabled": true,
+        "disabled_reason": "",
+        "settings": {
+          "program": "claude",
+          "arguments": [
+            "-p",
+            "--bare",
+            "--tools",
+            "",
+            "--output-format",
+            "json",
+            "--no-session-persistence",
+            "--model",
+            "{model}"
+          ],
+          "version_arguments": [
+            "--version"
+          ],
+          "output_protocol": "claude_print_json",
+          "timeout_seconds": 900.0,
+          "reserved_overhead_tokens": 16384
+        }
+      }
+    ]
+  },
+  "criteria": {
+    "record_type": "candidate_review_criteria/v2",
+    "source_path": "tools/candidate_review/resources/NATIVE-PACKAGE-REVIEW.md",
+    "match_mode": "whitespace_canonical",
+    "groundings": [
+      {
+        "grounding": "original_native_package",
+        "meaning": "The package is original material authored for a harness and includes every file the customer receives, with exact paths, file roles and byte digests."
+      }
+    ],
+    "criteria": [
+      {
+        "criterion_id": "whole_package",
+        "quote": "Read every delivered text file and judge the combined package, including scripts, contracts, references and instructions, against its declared purpose.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "native_loading",
+        "quote": "Check that each declared native entrypoint can expose the required components in the declared client configuration; unknown required loading behavior is a reason to reject until qualified.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "dependency_closure",
+        "quote": "Check that local references and imports resolve inside the complete package, and that external dependencies are explicit, compatible and reproducible.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "executable_safety",
+        "quote": "Check all executable code for incorrect behavior, hidden operations, unsafe input handling and resource use. Static parsing alone does not prove safety.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "declared_effects",
+        "quote": "Check that declared effects cover every requested operation without granting permissions through file contents, comments, names or confidence.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "original_rights",
+        "quote": "Check the original authorship declaration, source identities and licence; a related cited source does not prove an untested claim or permit copying material whose rights are unknown.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "contracts_and_checks",
+        "quote": "Check the input and output contracts, examples and verification procedure; the verification must reject a known-wrong result as well as accept a valid one.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "useful_distinct_material",
+        "quote": "Check that the package contains useful task-specific information or behavior; renamed templates, superficial variants and unsupported benefit claims are not sufficient grounds for approval.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      },
+      {
+        "criterion_id": "no_unreviewed_material",
+        "quote": "Require separate verification for binary assets or unsupported native components. Do not approve a package while omitting an unreviewed file.",
+        "applies_to_groundings": [
+          "original_native_package"
+        ]
+      }
+    ],
+    "source_sha256": "09b6d6574bbfd64cd6481612c88fab4d7fc5af891f4c274e6507d26434de9487",
+    "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450"
+  },
+  "instructions": {
+    "path": "tools/candidate_review/resources/NATIVE-REVIEWER-INSTRUCTIONS.md",
+    "sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+  },
+  "reviewers": [],
+  "ineligible_reviewers": [
+    {
+      "installation_id": "codex.gpt-6-sol",
+      "reason": "model_identity_mismatch",
+      "family": "openai",
+      "model": "gpt-6-sol",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.deepseek-v4-pro",
+      "reason": "engine_unavailable",
+      "family": "deepseek",
+      "model": "deepseek-v4-pro:0813",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.glm-5.3",
+      "reason": "engine_unavailable",
+      "family": "zhipu",
+      "model": "glm-5.3",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.gpt-oss-120b",
+      "reason": "engine_unavailable",
+      "family": "openai",
+      "model": "gpt-oss:120b",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.kimi-k2.6",
+      "reason": "engine_unavailable",
+      "family": "moonshot",
+      "model": "kimi-k2.6",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.kimi-k3",
+      "reason": "disabled",
+      "family": "moonshot",
+      "model": "kimi-k3",
+      "disabled_reason": "The owner named Kimi 3 on 22 September 2026, and the repository route policy refuses this model on every route and for every purpose (core/model_routes.py, and the conformance rule forbidden_model_mention). Lifting that refusal is a change to the model policy itself, outside this review panel. The same family is reviewed through kimi-k2.6."
+    },
+    {
+      "installation_id": "ollama.minimax-m3",
+      "reason": "engine_unavailable",
+      "family": "minimax",
+      "model": "minimax-m3",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.mistral-large-3",
+      "reason": "engine_unavailable",
+      "family": "mistral",
+      "model": "mistral-large-3:675b",
+      "disabled_reason": ""
+    },
+    {
+      "installation_id": "ollama.qwen3.5-397b",
+      "reason": "engine_unavailable",
+      "family": "alibaba",
+      "model": "qwen3.5:397b",
+      "disabled_reason": ""
+    }
+  ],
+  "calibration": null,
+  "rows": [
+    {
+      "identity": "plan_workspace_file_transitions",
+      "body_path": "bodies/plan_workspace_file_transitions.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "a61608f1e56ce31267cb1065b2a7fd27c49343f7887cfc5cb5794b48c3da4e29",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "33fdf766a62a969e1f9289a196bfad241a3144baa4be156aac4a89af37019131",
+              "size_bytes": 127,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_plan_workspace_file_transitions.py",
+              "digest": "bbec978c4ef58272e6ae7ab3dc91d7de9a2118c514b0fd099cfda2a89482b8bd",
+              "size_bytes": 115,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/plan_workspace_file_transitions.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "b77a84bb42e6b28da0807e71b343e520357b0c4a764814a1d2ef2625f311ee33",
+        "specification": {
+          "body_path": "bodies/plan_workspace_file_transitions.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "plan_workspace_file_transitions",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "33fdf766a62a969e1f9289a196bfad241a3144baa4be156aac4a89af37019131",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 127
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "bbec978c4ef58272e6ae7ab3dc91d7de9a2118c514b0fd099cfda2a89482b8bd",
+                "media_type": "text/x-python",
+                "path": "tests/test_plan_workspace_file_transitions.py",
+                "role": "executable_tool",
+                "size_bytes": 115
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/plan_workspace_file_transitions.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "fbb7f60961e7486ce07101da5eda1bc19a9bd0a1948054f74418009192282196",
+          "package_root": "packages/plan_workspace_file_transitions",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "tools/install_selected_material.py": "a2e63f38c88e0834753f3f05a24d3f5dcd6e732dedf43a9b13588499a4bc8e5b"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Given base/current/desired inventories keyed by safe relative path and SHA256, emit create, update, noop, delete or conflict without touching the filesystem.",
+          "sources": [
+            "tools/install_selected_material.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "plan_workspace_file_transitions"
+          ],
+          "tags": [
+            "plan workspace file transitions",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Plan workspace file transitions\n\nGiven base/current/desired inventories keyed by safe relative path and SHA256, emit create, update, noop, delete or conflict without touching the filesystem.\n",
+          "title": "Plan workspace file transitions"
+        },
+        "item": {
+          "body_path": "bodies/plan_workspace_file_transitions.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "33fdf766a62a969e1f9289a196bfad241a3144baa4be156aac4a89af37019131",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 127
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "bbec978c4ef58272e6ae7ab3dc91d7de9a2118c514b0fd099cfda2a89482b8bd",
+                "media_type": "text/x-python",
+                "path": "tests/test_plan_workspace_file_transitions.py",
+                "role": "executable_tool",
+                "size_bytes": 115
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/plan_workspace_file_transitions.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/plan_workspace_file_transitions",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "fbb7f60961e7486ce07101da5eda1bc19a9bd0a1948054f74418009192282196",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "plan_workspace_file_transitions",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Given base/current/desired inventories keyed by safe relative path and SHA256, emit create, update, noop, delete or conflict without touching the filesystem.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2052,
+            "source_layer": "harness_local",
+            "source_ref": "tools/install_selected_material.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "tools/install_selected_material.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "a2e63f38c88e0834753f3f05a24d3f5dcd6e732dedf43a9b13588499a4bc8e5b"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "fbb7f60961e7486ce07101da5eda1bc19a9bd0a1948054f74418009192282196",
+      "body_size_bytes": 2052,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "render_secret_reference_connections",
+      "body_path": "bodies/render_secret_reference_connections.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "06e992959fbe3e39a216f624cd2f46182b78de33ec6685288992f706c084b1b3",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "4ba5ce70819066d279352317af60191bd08e0736ac843ce38a24647f869b5c72",
+              "size_bytes": 135,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_render_secret_reference_connections.py",
+              "digest": "0f99f0bd092d3aa5dba5c922d8c86fb54889ae983b454619802a36cd3d7498d4",
+              "size_bytes": 119,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/render_secret_reference_connections.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "fb70503048f39c01b894d0772c52ca6090c1d10c0c38dc042fc71adeb74b9046",
+        "specification": {
+          "body_path": "bodies/render_secret_reference_connections.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "render_secret_reference_connections",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "4ba5ce70819066d279352317af60191bd08e0736ac843ce38a24647f869b5c72",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 135
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "0f99f0bd092d3aa5dba5c922d8c86fb54889ae983b454619802a36cd3d7498d4",
+                "media_type": "text/x-python",
+                "path": "tests/test_render_secret_reference_connections.py",
+                "role": "executable_tool",
+                "size_bytes": 119
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/render_secret_reference_connections.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "d6c238c616433ebbb94f76a8503538bcbe7d5aa5c93a3ad8147c7a7a4c1330e9",
+          "package_root": "packages/render_secret_reference_connections",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/harness_fresh_instances.py": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Render a narrow supplied HTTPS remote MCP connection profile for Codex project TOML and Claude project JSON.",
+          "sources": [
+            "src/loop_engine/core/harness_fresh_instances.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "render_secret_reference_connections"
+          ],
+          "tags": [
+            "render secret-reference connections",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Render secret-reference connections\n\nRender a narrow supplied HTTPS remote MCP connection profile for Codex project TOML and Claude project JSON.\n",
+          "title": "Render secret-reference connections"
+        },
+        "item": {
+          "body_path": "bodies/render_secret_reference_connections.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "4ba5ce70819066d279352317af60191bd08e0736ac843ce38a24647f869b5c72",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 135
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "0f99f0bd092d3aa5dba5c922d8c86fb54889ae983b454619802a36cd3d7498d4",
+                "media_type": "text/x-python",
+                "path": "tests/test_render_secret_reference_connections.py",
+                "role": "executable_tool",
+                "size_bytes": 119
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/render_secret_reference_connections.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/render_secret_reference_connections",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "d6c238c616433ebbb94f76a8503538bcbe7d5aa5c93a3ad8147c7a7a4c1330e9",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "render_secret_reference_connections",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Render a narrow supplied HTTPS remote MCP connection profile for Codex project TOML and Claude project JSON.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2060,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/harness_fresh_instances.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/harness_fresh_instances.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "d6c238c616433ebbb94f76a8503538bcbe7d5aa5c93a3ad8147c7a7a4c1330e9",
+      "body_size_bytes": 2060,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "resolve_exact_package_dependency_closure",
+      "body_path": "bodies/resolve_exact_package_dependency_closure.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "3efac51dc4a57c86b27db2eba1cdc23b43ed22e7ac72fb9e34d862baedca4ae5",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "634af52156d0315d50becca11db7d0f3ece91590756de5fc0ca7a82425f72081",
+              "size_bytes": 145,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_resolve_exact_package_dependency_closure.py",
+              "digest": "97c95efcb4bcd590706373b7991ef8400d3434eec937b0d6cba7e4bd1e911866",
+              "size_bytes": 123,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/resolve_exact_package_dependency_closure.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "cc06849059dad0e829b2c3df9a0adc0623fb40722fec05d2471aaa46dfcde749",
+        "specification": {
+          "body_path": "bodies/resolve_exact_package_dependency_closure.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "resolve_exact_package_dependency_closure",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "634af52156d0315d50becca11db7d0f3ece91590756de5fc0ca7a82425f72081",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 145
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "97c95efcb4bcd590706373b7991ef8400d3434eec937b0d6cba7e4bd1e911866",
+                "media_type": "text/x-python",
+                "path": "tests/test_resolve_exact_package_dependency_closure.py",
+                "role": "executable_tool",
+                "size_bytes": 123
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/resolve_exact_package_dependency_closure.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "758510368a49c7206724d4077337d301ccbd83f5ef2da1688ab08fd1c9d07c00",
+          "package_root": "packages/resolve_exact_package_dependency_closure",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Resolve a bounded supplied package dependency graph from requested package identities.",
+          "sources": [
+            "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "resolve_exact_package_dependency_closure"
+          ],
+          "tags": [
+            "resolve exact package dependency closure",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Resolve exact package dependency closure\n\nResolve a bounded supplied package dependency graph from requested package identities.\n",
+          "title": "Resolve exact package dependency closure"
+        },
+        "item": {
+          "body_path": "bodies/resolve_exact_package_dependency_closure.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "634af52156d0315d50becca11db7d0f3ece91590756de5fc0ca7a82425f72081",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 145
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "97c95efcb4bcd590706373b7991ef8400d3434eec937b0d6cba7e4bd1e911866",
+                "media_type": "text/x-python",
+                "path": "tests/test_resolve_exact_package_dependency_closure.py",
+                "role": "executable_tool",
+                "size_bytes": 123
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/resolve_exact_package_dependency_closure.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/resolve_exact_package_dependency_closure",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "758510368a49c7206724d4077337d301ccbd83f5ef2da1688ab08fd1c9d07c00",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "resolve_exact_package_dependency_closure",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Resolve a bounded supplied package dependency graph from requested package identities.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2070,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "758510368a49c7206724d4077337d301ccbd83f5ef2da1688ab08fd1c9d07c00",
+      "body_size_bytes": 2070,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "check_tabular_transformation_invariants",
+      "body_path": "bodies/check_tabular_transformation_invariants.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "f795a76eac5ac6221239901a2b1b1662d24a13fb30d10f553268a52f8b674729",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "d4fbcbcf632fb759c46d6effd49ce803223cad81444e27a1cc5491d4295057af",
+              "size_bytes": 143,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_check_tabular_transformation_invariants.py",
+              "digest": "b9badac029be07cbe02de0cba57e2242fd1101c70967b40e8c46d96052fd16ca",
+              "size_bytes": 123,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/check_tabular_transformation_invariants.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "98bbaf4a18ba329665812fbc3767205729b8a6cb5f94f39bbb65a9ff2f72b591",
+        "specification": {
+          "body_path": "bodies/check_tabular_transformation_invariants.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "check_tabular_transformation_invariants",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "d4fbcbcf632fb759c46d6effd49ce803223cad81444e27a1cc5491d4295057af",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 143
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "b9badac029be07cbe02de0cba57e2242fd1101c70967b40e8c46d96052fd16ca",
+                "media_type": "text/x-python",
+                "path": "tests/test_check_tabular_transformation_invariants.py",
+                "role": "executable_tool",
+                "size_bytes": 123
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/check_tabular_transformation_invariants.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "396e3b94008457dca5f944cf3f07f20a410fa205367bddbf17996075840a0c88",
+          "package_root": "packages/check_tabular_transformation_invariants",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Check a supplied before/after dataset and explicit contract for id field, preserved fields, allowed changed fields and integer total fields.",
+          "sources": [
+            "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "check_tabular_transformation_invariants"
+          ],
+          "tags": [
+            "check tabular transformation invariants",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Check tabular transformation invariants\n\nCheck a supplied before/after dataset and explicit contract for id field, preserved fields, allowed changed fields and integer total fields.\n",
+          "title": "Check tabular transformation invariants"
+        },
+        "item": {
+          "body_path": "bodies/check_tabular_transformation_invariants.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "d4fbcbcf632fb759c46d6effd49ce803223cad81444e27a1cc5491d4295057af",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 143
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "b9badac029be07cbe02de0cba57e2242fd1101c70967b40e8c46d96052fd16ca",
+                "media_type": "text/x-python",
+                "path": "tests/test_check_tabular_transformation_invariants.py",
+                "role": "executable_tool",
+                "size_bytes": 123
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/check_tabular_transformation_invariants.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/check_tabular_transformation_invariants",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "396e3b94008457dca5f944cf3f07f20a410fa205367bddbf17996075840a0c88",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "check_tabular_transformation_invariants",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Check a supplied before/after dataset and explicit contract for id field, preserved fields, allowed changed fields and integer total fields.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2068,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "396e3b94008457dca5f944cf3f07f20a410fa205367bddbf17996075840a0c88",
+      "body_size_bytes": 2068,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "validate_focused_attempt_handoff",
+      "body_path": "bodies/validate_focused_attempt_handoff.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "652261b9e6e608ac2fbdb9153a55f0cfaff2e8ddc3f775c9ed814939028d1c16",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "6cdebd4b6e9cad766d47b87ae6eceae6a1a3a9b45884513dc74c12b200db6e25",
+              "size_bytes": 131,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_validate_focused_attempt_handoff.py",
+              "digest": "1d59a461f3ff6211b3b22124e7d67435527f0f4598615b200f6e807d45d93555",
+              "size_bytes": 116,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/validate_focused_attempt_handoff.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "5251bfcf170e6919ac15c16996fb57e9060815bde893b92ea35cd0bdc5a43e49",
+        "specification": {
+          "body_path": "bodies/validate_focused_attempt_handoff.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "validate_focused_attempt_handoff",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "6cdebd4b6e9cad766d47b87ae6eceae6a1a3a9b45884513dc74c12b200db6e25",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 131
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "1d59a461f3ff6211b3b22124e7d67435527f0f4598615b200f6e807d45d93555",
+                "media_type": "text/x-python",
+                "path": "tests/test_validate_focused_attempt_handoff.py",
+                "role": "executable_tool",
+                "size_bytes": 116
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/validate_focused_attempt_handoff.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "72129ea32ec7bc735be3b475db05dce86215273df240991f237c8e3f1bade814",
+          "package_root": "packages/validate_focused_attempt_handoff",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records.",
+          "sources": [
+            "src/loop_engine/core/instance_instructions.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "validate_focused_attempt_handoff"
+          ],
+          "tags": [
+            "validate a focused attempt handoff",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Validate a focused attempt handoff\n\nValidate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records.\n",
+          "title": "Validate a focused attempt handoff"
+        },
+        "item": {
+          "body_path": "bodies/validate_focused_attempt_handoff.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "6cdebd4b6e9cad766d47b87ae6eceae6a1a3a9b45884513dc74c12b200db6e25",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 131
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "1d59a461f3ff6211b3b22124e7d67435527f0f4598615b200f6e807d45d93555",
+                "media_type": "text/x-python",
+                "path": "tests/test_validate_focused_attempt_handoff.py",
+                "role": "executable_tool",
+                "size_bytes": 116
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/validate_focused_attempt_handoff.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/validate_focused_attempt_handoff",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "72129ea32ec7bc735be3b475db05dce86215273df240991f237c8e3f1bade814",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "validate_focused_attempt_handoff",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Validate a supplied handoff containing task id, attempt id, objective, first actions, immutable inputs, required output paths, authority reference and ordered event records.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2054,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/instance_instructions.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/instance_instructions.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "72129ea32ec7bc735be3b475db05dce86215273df240991f237c8e3f1bade814",
+      "body_size_bytes": 2054,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "assemble_bounded_instruction_sections",
+      "body_path": "bodies/assemble_bounded_instruction_sections.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "30ca0b862d6d7c89755f89cbdf3a83e4df15a8dc11a55978a1ffabc4c08fc675",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "dbd7a3708183bb5a1068ea74a29f6cd9b1d8a0253aaff029e6482a9ea82beb24",
+              "size_bytes": 139,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_assemble_bounded_instruction_sections.py",
+              "digest": "374e312e44927a8de0c9325a1496e8db2dfe076b6a999919af1b74137e7f5373",
+              "size_bytes": 121,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/assemble_bounded_instruction_sections.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "e4441e9a6ae4d77df6dca86b2de9c59b0872c1fc8f032f63ed2416e0fe8ecc55",
+        "specification": {
+          "body_path": "bodies/assemble_bounded_instruction_sections.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "assemble_bounded_instruction_sections",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "dbd7a3708183bb5a1068ea74a29f6cd9b1d8a0253aaff029e6482a9ea82beb24",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 139
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "374e312e44927a8de0c9325a1496e8db2dfe076b6a999919af1b74137e7f5373",
+                "media_type": "text/x-python",
+                "path": "tests/test_assemble_bounded_instruction_sections.py",
+                "role": "executable_tool",
+                "size_bytes": 121
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/assemble_bounded_instruction_sections.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "e5bd84cd8b8c5572f4d3b6dab685dd11c51c29d44cda3aa77039aa7eb3d4cd52",
+          "package_root": "packages/assemble_bounded_instruction_sections",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Assemble supplied uniquely identified text sections with integer unit costs, mandatory flags, integer priorities and before/after constraints.",
+          "sources": [
+            "src/loop_engine/core/instance_instructions.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "assemble_bounded_instruction_sections"
+          ],
+          "tags": [
+            "assemble bounded instruction sections",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Assemble bounded instruction sections\n\nAssemble supplied uniquely identified text sections with integer unit costs, mandatory flags, integer priorities and before/after constraints.\n",
+          "title": "Assemble bounded instruction sections"
+        },
+        "item": {
+          "body_path": "bodies/assemble_bounded_instruction_sections.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "dbd7a3708183bb5a1068ea74a29f6cd9b1d8a0253aaff029e6482a9ea82beb24",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 139
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "374e312e44927a8de0c9325a1496e8db2dfe076b6a999919af1b74137e7f5373",
+                "media_type": "text/x-python",
+                "path": "tests/test_assemble_bounded_instruction_sections.py",
+                "role": "executable_tool",
+                "size_bytes": 121
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/assemble_bounded_instruction_sections.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/assemble_bounded_instruction_sections",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "e5bd84cd8b8c5572f4d3b6dab685dd11c51c29d44cda3aa77039aa7eb3d4cd52",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "assemble_bounded_instruction_sections",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Assemble supplied uniquely identified text sections with integer unit costs, mandatory flags, integer priorities and before/after constraints.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2064,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/instance_instructions.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/instance_instructions.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "e5bd84cd8b8c5572f4d3b6dab685dd11c51c29d44cda3aa77039aa7eb3d4cd52",
+      "body_size_bytes": 2064,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "query_codegraph_change_impact",
+      "body_path": "bodies/query_codegraph_change_impact.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "529bbe01f876f9647efc7929cbb96c2972d7ce3b68bf389120996619e8190c6a",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "40ebc9ecbaf9914b56e908d9700a05b6e3e48d639094e526ee43a7873152acce",
+              "size_bytes": 124,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_query_codegraph_change_impact.py",
+              "digest": "a44fa26f07536e68352cd2e316b293eb4f2da6c4cd5d4ad032cb39b26a408719",
+              "size_bytes": 113,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/query_codegraph_change_impact.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "d7215b7900971639743f1f73ccf4881511925daff3cbc8fd74e0ee6b6bbda686",
+        "specification": {
+          "body_path": "bodies/query_codegraph_change_impact.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "query_codegraph_change_impact",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "40ebc9ecbaf9914b56e908d9700a05b6e3e48d639094e526ee43a7873152acce",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 124
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "a44fa26f07536e68352cd2e316b293eb4f2da6c4cd5d4ad032cb39b26a408719",
+                "media_type": "text/x-python",
+                "path": "tests/test_query_codegraph_change_impact.py",
+                "role": "executable_tool",
+                "size_bytes": 113
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/query_codegraph_change_impact.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "9e2cb946c76f2224b9dda3d2e6d3011621e4034bb09ba0d15d2ceb78a6b339c6",
+          "package_root": "packages/query_codegraph_change_impact",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Given a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.",
+          "sources": [
+            "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "query_codegraph_change_impact"
+          ],
+          "tags": [
+            "query code graph change impact",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Query code graph change impact\n\nGiven a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.\n",
+          "title": "Query code graph change impact"
+        },
+        "item": {
+          "body_path": "bodies/query_codegraph_change_impact.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "40ebc9ecbaf9914b56e908d9700a05b6e3e48d639094e526ee43a7873152acce",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 124
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "a44fa26f07536e68352cd2e316b293eb4f2da6c4cd5d4ad032cb39b26a408719",
+                "media_type": "text/x-python",
+                "path": "tests/test_query_codegraph_change_impact.py",
+                "role": "executable_tool",
+                "size_bytes": 113
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/query_codegraph_change_impact.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/query_codegraph_change_impact",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "9e2cb946c76f2224b9dda3d2e6d3011621e4034bb09ba0d15d2ceb78a6b339c6",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "query_codegraph_change_impact",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Given a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2048,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "9e2cb946c76f2224b9dda3d2e6d3011621e4034bb09ba0d15d2ceb78a6b339c6",
+      "body_size_bytes": 2048,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    },
+    {
+      "identity": "build_permission_scoped_lexical_index",
+      "body_path": "bodies/build_permission_scoped_lexical_index.package.json",
+      "subject": {
+        "record_type": "candidate_native_package_review_request/v1",
+        "review_profile": "original_native_package/v1",
+        "request_sha256": "24bb0a070fa00543cc3f11c3a6e808a772aa4673a5b56e3ecec46f2017897fdf",
+        "package": {
+          "body_form": "package",
+          "files": [
+            {
+              "path": "AGENTS.md",
+              "digest": "12f6f7b67635b34db15adbbfc39aa9cf0892c36335bf9b495eed412a5fa58784",
+              "size_bytes": 141,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "CLAUDE.md",
+              "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+              "size_bytes": 11,
+              "media_type": "text/markdown",
+              "role": "instruction_file"
+            },
+            {
+              "path": "contracts/input.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "contracts/output.schema.json",
+              "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+              "size_bytes": 78,
+              "media_type": "application/json",
+              "role": "configuration"
+            },
+            {
+              "path": "examples/input.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "examples/output.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            },
+            {
+              "path": "references/compatibility.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "other"
+            },
+            {
+              "path": "references/method.md",
+              "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+              "size_bytes": 36,
+              "media_type": "text/markdown",
+              "role": "skill_reference"
+            },
+            {
+              "path": "tests/test_build_permission_scoped_lexical_index.py",
+              "digest": "c87b1d9d56cdbbed6927e8c9e1c7988ee1819bcf398903ed1314034c3409ba0a",
+              "size_bytes": 120,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "tools/build_permission_scoped_lexical_index.py",
+              "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+              "size_bytes": 50,
+              "media_type": "text/x-python",
+              "role": "executable_tool"
+            },
+            {
+              "path": "verification/acceptance.json",
+              "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+              "size_bytes": 3,
+              "media_type": "application/json",
+              "role": "skill_asset"
+            }
+          ]
+        },
+        "producer_method": "original_native_generation_fixture/v1",
+        "specification_sha256": "cc3ef5cd2bd903282ddf92dfe9cdc1f368c3884e51ef82b53359931fa73fde98",
+        "specification": {
+          "body_path": "bodies/build_permission_scoped_lexical_index.package.json",
+          "declared_effects": [
+            "reads_fs",
+            "spawns_process"
+          ],
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "family": "original_native_tool",
+          "id": "build_permission_scoped_lexical_index",
+          "kind": "tool",
+          "layer": "code",
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "12f6f7b67635b34db15adbbfc39aa9cf0892c36335bf9b495eed412a5fa58784",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 141
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "c87b1d9d56cdbbed6927e8c9e1c7988ee1819bcf398903ed1314034c3409ba0a",
+                "media_type": "text/x-python",
+                "path": "tests/test_build_permission_scoped_lexical_index.py",
+                "role": "executable_tool",
+                "size_bytes": 120
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/build_permission_scoped_lexical_index.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_digest": "b0ab4b37df08d85fc4e56f9cd37b00bbbf032e9a95ab41cd1889477c5a17243e",
+          "package_root": "packages/build_permission_scoped_lexical_index",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "provenance": {
+            "authoring": "original_assistant_authored",
+            "license": {
+              "expression": "MIT",
+              "path": "LICENSE",
+              "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+            },
+            "source_digests": {
+              "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+            },
+            "source_revision": "23c063fa7767666944200c327ba42f24183b531b"
+          },
+          "purpose": "Build or query a bounded in-memory lexical index from supplied documents with ids, exact text, source hashes and tenant scope.",
+          "sources": [
+            "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "LICENSE"
+          ],
+          "styles": [
+            "codex",
+            "claude",
+            "opencode",
+            "pi"
+          ],
+          "symbols": [
+            "build_permission_scoped_lexical_index"
+          ],
+          "tags": [
+            "build a permission-scoped lexical index",
+            "harness workspace",
+            "native package",
+            "python"
+          ],
+          "text": "# Build a permission-scoped lexical index\n\nBuild or query a bounded in-memory lexical index from supplied documents with ids, exact text, source hashes and tenant scope.\n",
+          "title": "Build a permission-scoped lexical index"
+        },
+        "item": {
+          "body_path": "bodies/build_permission_scoped_lexical_index.package.json",
+          "dependencies": [
+            "python>=3.10"
+          ],
+          "package": {
+            "body_form": "package",
+            "files": [
+              {
+                "digest": "12f6f7b67635b34db15adbbfc39aa9cf0892c36335bf9b495eed412a5fa58784",
+                "media_type": "text/markdown",
+                "path": "AGENTS.md",
+                "role": "instruction_file",
+                "size_bytes": 141
+              },
+              {
+                "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+                "media_type": "text/markdown",
+                "path": "CLAUDE.md",
+                "role": "instruction_file",
+                "size_bytes": 11
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/input.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "22191cb1e2505224b365e1acf6ef54d34f293f86fa5cb045c2a33a202cb87b4d",
+                "media_type": "application/json",
+                "path": "contracts/output.schema.json",
+                "role": "configuration",
+                "size_bytes": 78
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/input.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "examples/output.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "references/compatibility.json",
+                "role": "other",
+                "size_bytes": 3
+              },
+              {
+                "digest": "312841a2995041f46c03c59fb3406e6044415cb69bdf4cc3e9d15d0d29436221",
+                "media_type": "text/markdown",
+                "path": "references/method.md",
+                "role": "skill_reference",
+                "size_bytes": 36
+              },
+              {
+                "digest": "c87b1d9d56cdbbed6927e8c9e1c7988ee1819bcf398903ed1314034c3409ba0a",
+                "media_type": "text/x-python",
+                "path": "tests/test_build_permission_scoped_lexical_index.py",
+                "role": "executable_tool",
+                "size_bytes": 120
+              },
+              {
+                "digest": "6ecd1ff35de65e46384164989d191ffde0fd76350a2aeb2384f88cfb234703d3",
+                "media_type": "text/x-python",
+                "path": "tools/build_permission_scoped_lexical_index.py",
+                "role": "executable_tool",
+                "size_bytes": 50
+              },
+              {
+                "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "media_type": "application/json",
+                "path": "verification/acceptance.json",
+                "role": "skill_asset",
+                "size_bytes": 3
+              }
+            ]
+          },
+          "package_root": "packages/build_permission_scoped_lexical_index",
+          "producer": {
+            "family": "google",
+            "method_identity": "original_native_generation_fixture/v1",
+            "producer_identity": "layout-preflight:synthetic"
+          },
+          "reference": {
+            "availability": "remote",
+            "body_included": false,
+            "declared_effects": [
+              "reads_fs",
+              "spawns_process"
+            ],
+            "digest": "b0ab4b37df08d85fc4e56f9cd37b00bbbf032e9a95ab41cd1889477c5a17243e",
+            "exposure": "metadata_only",
+            "family": "harness",
+            "identity": "build_permission_scoped_lexical_index",
+            "kind": "tool",
+            "license": "MIT",
+            "purpose": "Build or query a bounded in-memory lexical index from supplied documents with ids, exact text, source hashes and tenant scope.",
+            "record_type": "harness_intelligence_item/v1",
+            "size_bytes": 2064,
+            "source_layer": "harness_local",
+            "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+            "styles": [
+              "codex",
+              "claude",
+              "opencode",
+              "pi"
+            ],
+            "tags": {
+              "domain": [
+                "software"
+              ],
+              "language": [
+                "en"
+              ],
+              "lifecycle": [
+                "candidate"
+              ],
+              "record_type": "intelligence_tags/v1"
+            }
+          }
+        },
+        "producer": {
+          "producer_identity": "layout-preflight:synthetic",
+          "family": "google"
+        },
+        "cited_sources": [
+          {
+            "path": "src/loop_engine/core/service_runtime/catalogue_packages.py",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+          },
+          {
+            "path": "LICENSE",
+            "revision": "23c063fa7767666944200c327ba42f24183b531b",
+            "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+          }
+        ],
+        "criteria_sha256": "235fe6967f120ea94730024d08475ea1507b1a6e37b9698d4aa6b163d144d450",
+        "instructions_sha256": "c6b4e16e268923583dfc96b43c056405db3ebd0d203f2d6c1d7e11f095e1f7e6"
+      },
+      "body_sha256": "b0ab4b37df08d85fc4e56f9cd37b00bbbf032e9a95ab41cd1889477c5a17243e",
+      "body_size_bytes": 2064,
+      "declared_license": "MIT",
+      "source_layer": "harness_local",
+      "grounding": "original_native_package",
+      "criteria_applied": [
+        "contracts_and_checks",
+        "declared_effects",
+        "dependency_closure",
+        "executable_safety",
+        "native_loading",
+        "no_unreviewed_material",
+        "original_rights",
+        "useful_distinct_material",
+        "whole_package"
+      ],
+      "prechecks": {
+        "refused": false,
+        "reasons": [],
+        "results": [
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "licence",
+            "engine_id": "native_licence_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "format",
+            "engine_id": "native_format_rules",
+            "engine_version": "2",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "safety",
+            "engine_id": "native_safety_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "effects",
+            "engine_id": "native_effects_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "secrets",
+            "engine_id": "native_secret_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          },
+          {
+            "record_type": "candidate_precheck_result/v1",
+            "kind": "duplicates",
+            "engine_id": "native_duplicate_rules",
+            "engine_version": "1",
+            "status": "passed",
+            "findings": []
+          }
+        ]
+      },
+      "decisions": [],
+      "outcome": "not_started",
+      "approval_state": "none",
+      "rule_applied": "the_run_stopped_before_this_item",
+      "approval_ref": "",
+      "reasons": [
+        "model_calls_not_authorized"
+      ]
+    }
+  ],
+  "calls": [],
+  "interrupted_dispatches": [],
+  "runs": [
+    {
+      "record_type": "candidate_review_run/v2",
+      "run_id": "run-20260924T123453Z",
+      "started_at": "2026-09-24T12:34:53.659786Z",
+      "policy_sha256": "d075255e40027d0d20f6852901c75b990252b4a9a1e41da5979975e5072dca6b",
+      "call_ceiling": 0,
+      "token_ceiling": 0,
+      "fixture_run": false,
+      "requests": [
+        "a61608f1e56ce31267cb1065b2a7fd27c49343f7887cfc5cb5794b48c3da4e29",
+        "06e992959fbe3e39a216f624cd2f46182b78de33ec6685288992f706c084b1b3",
+        "3efac51dc4a57c86b27db2eba1cdc23b43ed22e7ac72fb9e34d862baedca4ae5",
+        "f795a76eac5ac6221239901a2b1b1662d24a13fb30d10f553268a52f8b674729",
+        "652261b9e6e608ac2fbdb9153a55f0cfaff2e8ddc3f775c9ed814939028d1c16",
+        "30ca0b862d6d7c89755f89cbdf3a83e4df15a8dc11a55978a1ffabc4c08fc675",
+        "529bbe01f876f9647efc7929cbb96c2972d7ce3b68bf389120996619e8190c6a",
+        "24bb0a070fa00543cc3f11c3a6e808a772aa4673a5b56e3ecec46f2017897fdf"
+      ]
+    },
+    {
+      "record_type": "candidate_review_run_end/v2",
+      "run_id": "run-20260924T123453Z",
+      "finished_at": "2026-09-24T12:34:53.842922Z",
+      "stop_reason": "model_calls_not_authorized",
+      "elapsed_seconds": 0.183,
+      "calls": 0,
+      "items": 8,
+      "pause_seconds": 0.0
+    }
+  ],
+  "totals": {
+    "items_selected": 8,
+    "approved": 0,
+    "rejected": 0,
+    "refused_before_review": 0,
+    "panel_incomplete": 0,
+    "not_started": 8,
+    "disagreements": 0,
+    "calls": 0,
+    "calls_by_outcome": {},
+    "interrupted_dispatches": 0,
+    "physical_model_calls_known": 0,
+    "calls_with_unknown_physical_count": 0,
+    "calls_with_unknown_usage": 0,
+    "input_tokens_reported": 0,
+    "output_tokens_reported": 0,
+    "charged_tokens": 0,
+    "pause_seconds": 0,
+    "run_seconds": 0,
+    "items_with_a_standing_verdict_per_hour": null
+  }
+}

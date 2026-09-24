@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Valid Handoff",
+    "input_file": "examples/input.json",
+    "expected_status": "success"
+  },
+  {
+    "name": "Sequence Gap",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": 0, "state": "running"}, {"sequence_number": 2, "state": "running"}]
+    },
+    "expected_code": "ERR_SEQUENCE_GAP"
+  },
+  {
+    "name": "Duplicate Sequence",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": 0, "state": "running"}, {"sequence_number": 0, "state": "running"}]
+    },
+    "expected_code": "ERR_SEQUENCE_DUPE"
+  },
+  {
+    "name": "Candidate Self-Accept",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [
+        {"sequence_number": 0, "state": "candidate", "validator_id": "v1"},
+        {"sequence_number": 1, "state": "accepted", "validator_id": "v1", "evidence_digest": "d1"}
+      ]
+    },
+    "expected_code": "ERR_INVALID_STATE",
+    "expected_reason": "candidate_self_accept"
+  },
+  {
+    "name": "Boolean instead of Integer",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": true, "state": "running"}]
+    },
+    "expected_code": "ERR_TYPE_MISMATCH"
+  }
+]

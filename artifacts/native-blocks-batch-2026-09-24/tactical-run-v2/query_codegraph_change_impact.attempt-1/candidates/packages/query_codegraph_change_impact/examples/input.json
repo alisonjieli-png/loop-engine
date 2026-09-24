@@ -1,0 +1,18 @@
+{
+  "symbols": {
+    "sym_a": { "file_id": "f1", "range": [0, 10] },
+    "sym_b": { "file_id": "f1", "range": [11, 20] },
+    "sym_c": { "file_id": "f2", "range": [0, 5] }
+  },
+  "files": {
+    "f1": { "digest": "abc", "range": [0, 20] },
+    "f2": { "digest": "def", "range": [0, 5] }
+  },
+  "edges": [
+    { "consumer": "sym_b", "dependency": "sym_a", "evidence": "import_a" },
+    { "consumer": "sym_c", "dependency": "sym_b", "evidence": "call_b" }
+  ],
+  "changed_symbols": ["sym_a"],
+  "depth_limit": 5,
+  "node_limit": 100
+}

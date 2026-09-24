@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CodeGraphChangeImpactInput",
+  "type": "object",
+  "properties": {
+    "symbols": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file_id": { "type": "string" },
+          "range": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "required": ["file_id", "range"]
+      }
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "digest": { "type": "string" },
+          "range": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "required": ["digest", "range"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "consumer": { "type": "string" },
+          "dependency": { "type": "string" },
+          "evidence": { "type": "string" }
+        },
+        "required": ["consumer", "dependency", "evidence"]
+      }
+    },
+    "changed_symbols": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "depth_limit": { "type": "integer" },
+    "node_limit": { "type": "integer" }
+  },
+  "required": ["symbols", "files", "edges", "changed_symbols"]
+}

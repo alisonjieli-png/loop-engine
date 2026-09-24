@@ -1,0 +1,57 @@
+[
+  {
+    "name": "missing_dependency",
+    "input": {
+      "available_packages": {
+        "A@1": { "digest": "d1", "dependencies": [{"id": "B", "rev": "1", "digest": "d2"}] }
+      },
+      "requested_identities": [{"id": "A", "rev": "1", "digest": "d1"}]
+    },
+    "expected_error": "MISSING_RECORD"
+  },
+  {
+    "name": "digest_mismatch",
+    "input": {
+      "available_packages": {
+        "A@1": { "digest": "d1" }
+      },
+      "requested_identities": [{"id": "A", "rev": "1", "digest": "wrong"}]
+    },
+    "expected_error": "DIGEST_MISMATCH"
+  },
+  {
+    "name": "cycle_detection",
+    "input": {
+      "available_packages": {
+        "A@1": { "digest": "d1", "dependencies": [{"id": "B", "rev": "1", "digest": "d2"}] },
+        "B@1": { "digest": "d2", "dependencies": [{"id": "A", "rev": "1", "digest": "d1"}] }
+      },
+      "requested_identities": [{"id": "A", "rev": "1", "digest": "d1"}]
+    },
+    "expected_error": "CYCLE_DETECTED"
+  },
+  {
+    "name": "identity_collision_different_digest",
+    "input": {
+      "available_packages": {
+        "A@1": { "digest": "d1" },
+        "A@2": { "digest": "d2" }
+      },
+      "requested_identities": [
+        {"id": "A", "rev": "1", "digest": "d1"},
+        {"id": "A", "rev": "2", "digest": "d2"}
+      ]
+    },
+    "expected_error": "IDENTITY_COLLISION"
+  },
+  {
+    "name": "boolean_instead_of_int",
+    "input": {
+      "available_packages": {
+        "A@1": { "digest": "d1", "size": true }
+      },
+      "requested_identities": [{"id": "A", "rev": "1", "digest": "d1"}]
+    },
+    "expected_error": "INVALID_JSON"
+  }
+]

@@ -1,0 +1,142 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/harness_fresh_instances.py": "e0650f9d5c47af40ccaa32eac5a5c12a137b642d9a65a889dc32fde493fe1d30"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "render_secret_reference_connections",
+        "kind": "tool",
+        "purpose": "Render a narrow supplied HTTPS remote MCP connection profile for Codex project TOML and Claude project JSON.",
+        "digest": "458c37bca37c8bd6a379516a2c572192bd0bfded50a8779ab8823ff34902afb0",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/harness_fresh_instances.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 2077,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/render_secret_reference_connections.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "d7a2cee71e11d8b494e868c5009123a80f33877019cdc6684bbef22edbb17707",
+            "size_bytes": 1274,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "8a66334dfe4f54abe120ea83e3393bc515fd25c4b88b56cf15b3693614bc8fd1",
+            "size_bytes": 555,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "f178653892683b2f1874f97f8458c0927cab36c6f4ab6726cbf4dba01933c5df",
+            "size_bytes": 555,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "ffdcb218c6bcf0856f4cfd01d8b3994f9bb2eb1dba3d5ac86197445a408cbb80",
+            "size_bytes": 147,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "35f46c2e0952dc5f5cfeec20316ab306530098aea2672baf23e232e44687e6ba",
+            "size_bytes": 157,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "8a82856925f83e413ec38708f3d6e2a26824db89dfc94334e787e6fa5344819d",
+            "size_bytes": 316,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "40c928370c95c0a96a6d77986547b70da0c7d2ca8a76f3de9a9367747c515d0b",
+            "size_bytes": 1716,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_render_secret_reference_connections.py",
+            "digest": "6c7507ecbde1b4e65c1abe4282986296763cee786fb419a721b4ec1c9fe39cfb",
+            "size_bytes": 3420,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/render_secret_reference_connections.py",
+            "digest": "2c7327f455a6f26cbb114b18e741cc369caeceac985c22507b0bba26dcf64aa1",
+            "size_bytes": 4404,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "f3a8280b302b12c74ea90db6fcbe53ecf7cbc971e4a3c130ad425c90174d0f1d",
+            "size_bytes": 1132,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_root": "packages/render_secret_reference_connections",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

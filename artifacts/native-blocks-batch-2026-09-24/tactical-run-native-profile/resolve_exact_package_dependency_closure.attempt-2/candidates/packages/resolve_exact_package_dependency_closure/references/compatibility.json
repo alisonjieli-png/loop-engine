@@ -1,0 +1,8 @@
+{
+  "intended_host_entrypoint": "python3 tools/resolve_exact_package_dependency_closure.py",
+  "discovery_method": "explicit_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": ["reads_fs", "spawns_process"],
+  "automatic_discovery_limits": "none",
+  "status": "candidate"
+}

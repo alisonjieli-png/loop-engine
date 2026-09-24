@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lexical Index Request",
+  "type": "object",
+  "required": ["mode", "documents"],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": ["build", "query"]
+    },
+    "min_distinct_matches": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tenant_id": {
+      "type": "string"
+    },
+    "query_terms": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "documents": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "tenant_id", "source_hash"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "tenant_id": { "type": "string" },
+          "source_hash": { "type": "string" }
+        }
+      }
+    }
+  }
+}

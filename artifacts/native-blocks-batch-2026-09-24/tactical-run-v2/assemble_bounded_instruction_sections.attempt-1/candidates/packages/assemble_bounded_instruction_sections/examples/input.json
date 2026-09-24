@@ -1,0 +1,34 @@
+{
+  "budget": 20,
+  "sections": [
+    {
+      "id": "cost1",
+      "text": "Step 1: ",
+      "cost": 5,
+      "priority": 10,
+      "mandatory": true
+    },
+    {
+      "id": "cost5",
+      "text": "Step 2: ",
+      "cost": 5,
+      "priority": 10,
+      "mandatory": true,
+      "predecessors": ["cost1"]
+    },
+    {
+      "id": "opt1",
+      "text": "Optional.",
+      "cost": 5,
+      "priority": 5,
+      "mandatory": false
+    },
+    {
+      "id": "opt2",
+      "text": "Too expensive.",
+      "cost": 15,
+      "priority": 100,
+      "mandatory": false
+    }
+  ]
+}

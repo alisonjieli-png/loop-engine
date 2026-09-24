@@ -1,0 +1,75 @@
+{
+  "valid_case": {
+    "input": {
+      "task_id": "T1",
+      "attempt_id": 0,
+      "objective": "test",
+      "first_actions": ["act"],
+      "immutable_inputs": {},
+      "required_output_paths": ["out"],
+      "authority_reference": "A1",
+      "event_records": [{"sequence": 0, "state": "running"}]
+    },
+    "expected_status": "success"
+  },
+  "gap_error": {
+    "input": {
+      "task_id": "T1",
+      "attempt_id": 0,
+      "objective": "test",
+      "first_actions": ["act"],
+      "immutable_inputs": {},
+      "required_output_paths": ["out"],
+      "authority_reference": "A1",
+      "event_records": [
+        {"sequence": 0, "state": "running"},
+        {"sequence": 2, "state": "running"}
+      ]
+    },
+    "expected_error": "SEQUENCE_GAP:2"
+  },
+  "duplicate_seq_error": {
+    "input": {
+      "task_id": "T1",
+      "attempt_id": 0,
+      "objective": "test",
+      "first_actions": ["act"],
+      "immutable_inputs": {},
+      "required_output_paths": ["out"],
+      "authority_reference": "A1",
+      "event_records": [
+        {"sequence": 0, "state": "running"},
+        {"sequence": 0, "state": "running"}
+      ]
+    },
+    "expected_error": "DUPLICATE_SEQUENCE:0"
+  },
+  "self_acceptance_error": {
+    "input": {
+      "task_id": "T1",
+      "attempt_id": 0,
+      "objective": "test",
+      "first_actions": ["act"],
+      "immutable_inputs": {},
+      "required_output_paths": ["out"],
+      "authority_reference": "A1",
+      "event_records": [
+        {"sequence": 0, "state": "accepted", "validator_identity": "A1", "evidence_digest": "d1"}
+      ]
+    },
+    "expected_error": "SELF_ACCEPTANCE_PROHIBITED"
+  },
+  "bool_instead_of_int_error": {
+    "input": {
+      "task_id": "T1",
+      "attempt_id": "true",
+      "objective": "test",
+      "first_actions": ["act"],
+      "immutable_inputs": {},
+      "required_output_paths": ["out"],
+      "authority_reference": "A1",
+      "event_records": [{"sequence": 0, "state": "running"}]
+    },
+    "expected_error": "TYPE_MISMATCH:attempt_id_expected_int_not_bool"
+  }
+}

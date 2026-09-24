@@ -1,0 +1,8 @@
+{
+  "intended_host_entrypoint": "validate_focused_attempt_handoff",
+  "discovery_method": "explicit",
+  "python_requirement": ">=3.10",
+  "requested_effects": ["reads_fs", "spawns_process"],
+  "automatic_discovery_limits": "candidate",
+  "status": "candidate"
+}

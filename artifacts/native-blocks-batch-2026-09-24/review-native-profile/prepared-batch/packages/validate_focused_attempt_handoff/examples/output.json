@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "briefing": {
+    "first_action": "initialize_constants",
+    "output_contract": ["/out/pi.txt"]
+  },
+  "passive_state": {
+    "task_id": "task-123",
+    "attempt_id": "att-001",
+    "current_state": "accepted",
+    "external_effects": {"files_created": 1}
+  }
+}

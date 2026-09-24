@@ -1,0 +1,14 @@
+{
+  "intended_host_entrypoint": "python3 tools/validate_focused_attempt_handoff.py",
+  "discovery_method": "explicit_file_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "automatic_discovery_limits": {
+    "max_depth": 1,
+    "max_files": 100
+  },
+  "status": "candidate"
+}

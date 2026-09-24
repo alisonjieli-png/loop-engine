@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "transitions": [
+    {
+      "path": "README.md",
+      "op": "noop",
+      "expected_digest": "sha256-ccc"
+    },
+    {
+      "path": "docs/api.md",
+      "op": "create",
+      "expected_digest": "sha256-eee"
+    },
+    {
+      "path": "src/main.py",
+      "op": "conflict",
+      "expected_digest": "sha256-aaa"
+    }
+  ]
+}

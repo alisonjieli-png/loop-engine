@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Connection Render Request",
+  "type": "object",
+  "properties": {
+    "server_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Must be HTTPS, no userinfo, no fragments."
+    },
+    "env_var_name": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "target_profile": {
+      "type": "string",
+      "enum": ["codex", "claude"]
+    }
+  },
+  "required": ["server_id", "url", "env_var_name", "target_profile"],
+  "additionalProperties": false
+}

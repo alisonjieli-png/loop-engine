@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "budget": { "type": "integer" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "cost": { "type": "integer" },
+          "priority": { "type": "integer" },
+          "mandatory": { "type": "boolean" },
+          "predecessors": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["id", "text", "cost", "priority"]
+      }
+    }
+  },
+  "required": ["budget", "sections"],
+  "additionalProperties": false
+}

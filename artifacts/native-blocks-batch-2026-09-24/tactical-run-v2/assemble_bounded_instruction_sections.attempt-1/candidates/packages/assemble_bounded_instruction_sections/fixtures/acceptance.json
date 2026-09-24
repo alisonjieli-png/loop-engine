@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Mandatory exceeds budget",
+    "input": {
+      "budget": 10,
+      "sections": [
+        { "id": "cost5", "text": "A", "cost": 6, "priority": 1, "mandatory": true, "predecessors": ["cost1"] },
+        { "id": "cost1", "text": "B", "cost": 5, "priority": 1, "mandatory": true }
+      ]
+    },
+    "expected_code": "ERR_MANDATORY_OVER_BUDGET"
+  },
+  {
+    "name": "Cyclic dependency",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "A", "text": "A", "cost": 1, "priority": 1, "predecessors": ["B"] },
+        { "id": "B", "text": "B", "cost": 1, "priority": 1, "predecessors": ["A"] }
+      ]
+    },
+    "expected_code": "ERR_CYCLIC_CONSTRAINT"
+  },
+  {
+    "name": "Unknown dependency",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "A", "text": "A", "cost": 1, "priority": 1, "predecessors": ["Ghost"] }
+      ]
+    },
+    "expected_code": "ERR_UNKNOWN_DEPENDENCY"
+  },
+  {
+    "name": "Boolean instead of integer",
+    "input": {
+      "budget": 10,
+      "sections": [
+        { "id": "A", "text": "A", "cost": true, "priority": 1 }
+      ]
+    },
+    "expected_code": "ERR_TYPE_MISMATCH"
+  },
+  {
+    "name": "Duplicate key",
+    "input": "{\"budget\": 10, \"budget\": 20, \"sections\": []}",
+    "expected_code": "ERR_DUPLICATE_KEY"
+  }
+]

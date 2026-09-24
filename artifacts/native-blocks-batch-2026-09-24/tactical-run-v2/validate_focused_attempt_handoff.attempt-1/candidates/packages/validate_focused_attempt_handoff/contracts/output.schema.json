@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HandoffOutput",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "briefing": { "type": "string" },
+        "validated_state": {
+          "type": "object",
+          "properties": {
+            "task_id": { "type": "string" },
+            "attempt_id": { "type": "integer" },
+            "last_sequence": { "type": "integer" },
+            "current_state": { "type": "string" }
+          },
+          "required": ["task_id", "attempt_id", "last_sequence", "current_state"]
+        }
+      },
+      "required": ["status", "briefing", "validated_state"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "error": { "type": "string" }
+      },
+      "required": ["status", "error"]
+    }
+  ]
+}

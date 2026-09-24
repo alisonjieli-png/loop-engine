@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/input.schema.json",
+  "type": "object",
+  "properties": {
+    "byte_budget": { "type": "integer", "minimum": 0 },
+    "required_ids": { "type": "array", "items": { "type": "string" } },
+    "contradiction_groups": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } },
+    "registry": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "bounds": {
+              "type": "object",
+              "properties": {
+                "start": { "type": "integer" },
+                "end": { "type": "integer" }
+              },
+              "required": ["start", "end"]
+            }
+          }
+        }
+      }
+    },
+    "evidence_pool": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "source_id": { "type": "string" },
+          "revision": { "type": "string" },
+          "priority": { "type": "integer" },
+          "content": { "type": "string" },
+          "span": {
+            "type": "object",
+            "properties": {
+              "start": { "type": "integer" },
+              "end": { "type": "integer" }
+            },
+            "required": ["start", "end"]
+          }
+        },
+        "required": ["id", "source_id", "revision", "content", "span"]
+      }
+    }
+  },
+  "required": ["byte_budget", "evidence_pool", "registry"]
+}

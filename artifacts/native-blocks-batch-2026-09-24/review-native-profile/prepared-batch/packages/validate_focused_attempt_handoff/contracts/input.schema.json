@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HandoffInput",
+  "type": "object",
+  "properties": {
+    "task_id": { "$ref": "#/$defs/id_string" },
+    "attempt_id": { "$ref": "#/$defs/id_string" },
+    "objective": { "type": "string" },
+    "first_actions": { "type": "array", "items": { "type": "string" } },
+    "immutable_inputs": { "type": "object" },
+    "required_output_paths": { "type": "array", "items": { "type": "string" } },
+    "authority_reference": { "$ref": "#/$defs/id_string" },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sequence_number": { "type": "integer" },
+          "state": { "enum": ["running", "failed", "cancelled", "candidate", "accepted"] },
+          "validator_id": { "$ref": "#/$defs/id_string" },
+          "evidence_digest": { "type": "string" }
+        },
+        "required": ["sequence_number", "state"]
+      }
+    },
+    "external_effects": { "type": "object" }
+  },
+  "required": ["task_id", "attempt_id", "objective", "first_actions", "immutable_inputs", "required_output_paths", "authority_reference", "events"],
+  "$defs": {
+    "id_string": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "dependencies": [
+    { "id": "lib-a", "rev": "1.0.0", "digest": "sha256-aaa" },
+    { "id": "lib-b", "rev": "2.0.0", "digest": "sha256-bbb" },
+    { "id": "app", "rev": "1.0.0", "digest": "sha256-ccc" }
+  ],
+  "total_size_bytes": 350,
+  "effects": ["network", "reads_fs"]
+}

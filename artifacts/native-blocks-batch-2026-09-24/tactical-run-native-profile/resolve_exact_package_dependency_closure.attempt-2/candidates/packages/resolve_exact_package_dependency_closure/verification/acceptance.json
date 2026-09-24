@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Valid dependency chain",
+    "input_file": "examples/input.json",
+    "expected_status": "success"
+  },
+  {
+    "name": "Missing dependency",
+    "input": {
+      "requested_ids": ["A"],
+      "records": {
+        "A": { "revision": "1", "digest": "d1", "size": 10, "dependencies": ["B"] }
+      }
+    },
+    "expected_status": "refused",
+    "expected_error": "MISSING_RECORD"
+  },
+  {
+    "name": "Cycle detection",
+    "input": {
+      "requested_ids": ["A"],
+      "records": {
+        "A": { "revision": "1", "digest": "d1", "size": 10, "dependencies": ["B"] },
+        "B": { "revision": "1", "digest": "d2", "size": 10, "dependencies": ["A"] }
+      }
+    },
+    "expected_status": "refused",
+    "expected_error": "CYCLE_DETECTED"
+  },
+  {
+    "name": "Boolean instead of integer",
+    "input": {
+      "requested_ids": ["A"],
+      "records": {
+        "A": { "revision": "1", "digest": "d1", "size": true }
+      }
+    },
+    "expected_status": "refused",
+    "expected_error": "TYPE_ERROR"
+  }
+]

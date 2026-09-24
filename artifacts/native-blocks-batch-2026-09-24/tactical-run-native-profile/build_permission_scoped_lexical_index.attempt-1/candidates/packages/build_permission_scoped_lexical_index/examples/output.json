@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "data": {
+    "results": [
+      {
+        "id": "doc-2",
+        "score_distinct": 2,
+        "score_total": 2,
+        "snippet": "Banana split with apple slices...."
+      },
+      {
+        "id": "doc-1",
+        "score_distinct": 1,
+        "score_total": 1,
+        "snippet": "An apple a day keeps the doctor away...."
+      },
+      {
+        "id": "doc-4",
+        "score_distinct": 1,
+        "score_total": 3,
+        "snippet": "Apple apple apple...."
+      }
+    ],
+    "count": 3
+  }
+}

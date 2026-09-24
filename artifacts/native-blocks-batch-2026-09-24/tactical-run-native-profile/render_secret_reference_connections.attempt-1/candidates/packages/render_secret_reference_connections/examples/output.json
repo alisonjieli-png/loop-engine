@@ -1,0 +1,4 @@
+{
+  "status": "success",
+  "result": "[server.\"weather_service\"]\nurl = \"https://weather.example.com/mcp\"\nbearer_token_env_var = \"WEATHER_API_KEY\""
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "name": "valid_nested_array",
+    "input": [true, null, 2, "x"],
+    "expected": {
+      "status": "success",
+      "counts": {
+        "object": 0,
+        "array": 1,
+        "string": 1,
+        "number": 1,
+        "boolean": 1,
+        "null": 1
+      },
+      "max_depth": 1
+    }
+  },
+  {
+    "name": "refuse_duplicate_keys",
+    "input": {"a": 1, "a": 2},
+    "expected": {
+      "status": "refused",
+      "error": "ERR_DUPLICATE_KEY"
+    }
+  },
+  {
+    "name": "refuse_depth_limit",
+    "input": {"a": {"b": {"c": {"d": "too_deep"}}} },
+    "note": "This is depth 4, but we test up to 32. For the sake of the fixture, we assume a small limit or just test the logic.",
+    "input_actual": [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[1]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],
+    "expected": {
+      "status": "refused",
+      "error": "ERR_DEPTH"
+    }
+  },
+  {
+    "name": "refuse_nonfinite",
+    "input": {"val": 1/0},
+    "note": "JSON doesn't support NaN natively, but if passed as a raw float in a stream:",
+    "input_raw": "{\"val\": NaN}",
+    "expected": {
+      "status": "refused",
+      "error": "ERR_NONFINITE_NUMBER"
+    }
+  }
+]

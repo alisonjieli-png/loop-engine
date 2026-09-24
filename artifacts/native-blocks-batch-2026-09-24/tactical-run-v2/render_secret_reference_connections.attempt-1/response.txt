@@ -1,0 +1,482 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v2
+method_id: render_secret_reference_connections
+<<<AGENTS.md>>>
+# Agent Instructions: render_secret_reference_connections
+
+## Task
+Render a narrow HTTPS remote MCP connection profile for either a Codex (TOML) or Claude (JSON) project. The goal is to create a configuration that references an environment variable for a secret, rather than embedding the secret itself.
+
+## First Action
+Invoke the helper `tools/render_secret_reference_connections.py` via `stdin` with a JSON payload containing:
+- `server_id`: A unique alphanumeric identifier.
+- `url`: A valid HTTPS URL (no userinfo, no fragments).
+- `env_var_name`: The name of the environment variable holding the secret.
+- `target_profile`: Either `"codex"` or `"claude"`.
+
+## Contract & Refusal Rules
+1. **Secret Safety**: The output must contain the `env_var_name` but **never** the actual secret value.
+2. **URL Validation**: 
+   - Must use `https://`.
+   - Must NOT contain `user:pass@` (userinfo).
+   - Must NOT contain `#` (fragments).
+   - If a URL contains a newline in the variable name or userinfo, it must be refused.
+3. **Profile Specifics**:
+   - `codex`: Uses `bearer_token_env_var = "NAME"`.
+   - `claude`: Uses `"authorization": "Bearer ${NAME}"`.
+4. **Input Constraints**:
+   - Max 1MiB UTF-8 JSON.
+   - Reject duplicate keys in input.
+   - Reject non-finite numbers (NaN, Inf).
+   - Reject booleans where integers are expected.
+5. **Output**: A single JSON object with `status` ("success" or "refused") and either `data` or `error_code`.
+<<<END AGENTS.md>>>
+<<<tools/render_secret_reference_connections.py>>>
+import sys
+import json
+from urllib.parse import urlparse
+
+def validate_input(data):
+    """Validates the input dictionary according to strict rules."""
+    # Check for non-finite numbers or booleans in place of integers
+    # Note: json.loads handles basic types, but we check logic
+    
+    required = {"server_id", "url", "env_var_name", "target_profile"}
+    if not all(k in data for k in required):
+        return "MISSING_FIELDS"
+
+    server_id = data["server_id"]
+    url_str = data["url"]
+    env_name = data["env_var_name"]
+    profile = data["target_profile"]
+
+    # Validate server_id (alphanumeric + underscores/hyphens)
+    if not isinstance(server_id, str) or not server_id.replace("_", "").replace("-", "").isalnum():
+        return "INVALID_SERVER_ID"
+
+    # Validate env_var_name
+    if not isinstance(env_name, str) or not env_name.isidentifier():
+        return "INVALID_ENV_VAR_NAME"
+
+    # Validate URL
+    try:
+        parsed = urlparse(url_str)
+        if parsed.scheme != "https":
+            return "INVALID_SCHEME"
+        if parsed.netloc != parsed.hostname: # Check for userinfo (user:pass@host)
+            return "URL_HAS_USERINFO"
+        if parsed.fragment:
+            return "URL_HAS_FRAGMENT"
+        if not parsed.netloc:
+            return "INVALID_URL_HOST"
+        # Check for newline in URL string
+        if "\n" in url_str:
+            return "URL_HAS_NEWLINE"
+    except Exception:
+        return "INVALID_URL_FORMAT"
+
+    if profile not in ["codex", "claude"]:
+        return "UNSUPPORTED_PROFILE"
+
+    return None
+
+def parse_json_strict(raw_bytes):
+    """Parses JSON with duplicate key and non-finite number detection."""
+    # Standard json.loads allows duplicate keys (last one wins). 
+    # To detect them, we use object_pairs_hook.
+    
+    def dict_with_order(pairs):
+        d = {}
+        for k, v in pairs:
+            if k in d:
+                raise ValueError("DUPLICATE_KEY")
+            d[k] = v
+        return d
+
+    # Check for non-finite numbers manually or via a custom decoder
+    # For simplicity in a single file, we check the raw string for NaN/Inf 
+    # which are technically valid in some JSON parsers but often disallowed.
+    # However, standard json.loads handles them. We want to reject them.
+    
+    # A more robust way is to check the parsed values.
+    try:
+        # We use a custom decoder to catch duplicates
+        data = json.loads(raw_bytes, object_pairs_hook=dict_with_order)
+        
+        # Check for non-finite numbers
+        def check_finite(obj):
+            if isinstance(obj, float):
+                if not (float('-inf') < obj < float('inf')):
+                    raise ValueError("NON_FINITE_NUMBER")
+            elif isinstance(obj, dict):
+                for v in obj.values(): check_finite(v)
+            elif isinstance(obj, list):
+                for v in obj: check_finite(v)
+        
+        check_finite(data)
+        return data, None
+    except ValueError as e:
+        if str(e) == "DUPLICATE_KEY":
+            return None, "DUPLICATE_KEY"
+        if str(e) == "NON_FINITE_NUMBER":
+            return None, "NON_FINITE_NUMBER"
+        return None, "INVALID_JSON"
+    except Exception:
+        return None, "INVALID_JSON"
+
+def main():
+    try:
+        raw_input = sys.stdin.buffer.read(1024 * 1024) # 1MiB limit
+        if not raw_input:
+            print(json.dumps({"status": "refused", "error_code": "EMPTY_INPUT"}))
+            return
+
+        data, err = parse_json_strict(raw_input)
+        if err:
+            print(json.dumps({"status": "refused", "error_code": err}))
+            return
+
+        # Check if env_var_name is a boolean where string expected
+        if not isinstance(data.get("env_var_name"), str):
+             print(json.dumps({"status": "refused", "error_code": "INVALID_TYPE_ENV_VAR"}))
+             return
+
+        validation_err = validate_input(data)
+        if validation_err:
+            print(json.dumps({"status": "refused", "error_code": validation_err}))
+            return
+
+        # Rendering
+        profile = data["target_profile"]
+        url = data["url"]
+        env_name = data["env_var_name"]
+        server_id = data["server_id"]
+
+        if profile == "codex":
+            # Codex uses TOML format
+            # We simulate the structure. Since we must emit JSON, 
+            # we return the data that would be serialized to TOML.
+            result = {
+                "server_id": server_id,
+                "url": url,
+                "bearer_token_env_var": env_name
+            }
+        else: # claude
+            # Claude uses JSON format
+            result = {
+                "server_id": server_id,
+                "url": url,
+                "authorization": f"Bearer ${{{env_name}}}"
+            }
+
+        print(json.dumps({"status": "success", "data": result}))
+
+    except Exception as e:
+        # Catch-all for unexpected errors to ensure stable output
+        print(json.dumps({"status": "refused", "error_code": "INTERNAL_ERROR"}))
+
+if __name__ == "__main__":
+    main()
+<<<END tools/render_secret_reference_connections.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Connection Render Request",
+  "type": "object",
+  "properties": {
+    "server_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Must be HTTPS, no userinfo, no fragments."
+    },
+    "env_var_name": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "target_profile": {
+      "type": "string",
+      "enum": ["codex", "claude"]
+    }
+  },
+  "required": ["server_id", "url", "env_var_name", "target_profile"],
+  "additionalProperties": false
+}
+<<<END contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Connection Render Response",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "server_id": { "type": "string" },
+        "url": { "type": "string" },
+        "bearer_token_env_var": { "type": "string" },
+        "authorization": { "type": "string" }
+      },
+      "required": ["server_id", "url"]
+    },
+    "error_code": {
+      "type": "string",
+      "enum": [
+        "MISSING_FIELDS",
+        "INVALID_SERVER_ID",
+        "INVALID_ENV_VAR_NAME",
+        "INVALID_SCHEME",
+        "URL_HAS_USERINFO",
+        "URL_HAS_FRAGMENT",
+        "INVALID_URL_HOST",
+        "URL_HAS_NEWLINE",
+        "INVALID_URL_FORMAT",
+        "UNSUPPORTED_PROFILE",
+        "DUPLICATE_KEY",
+        "NON_FINITE_NUMBER",
+        "INVALID_JSON",
+        "EMPTY_INPUT",
+        "INVALID_TYPE_ENV_VAR",
+        "INTERNAL_ERROR"
+      ]
+    }
+  },
+  "required": ["status"],
+  "oneOf": [
+    { "required": ["data"] },
+    { "required": ["error_code"] }
+  ]
+}
+<<<END contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "server_id": "mcp-remote-01",
+  "url": "https://api.example.com/v1/mcp",
+  "env_var_name": "MCP_SECRET_TOKEN",
+  "target_profile": "claude"
+}
+<<<END examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "data": {
+    "server_id": "mcp-remote-01",
+    "url": "https://api.example.com/v1/mcp",
+    "authorization": "Bearer ${MCP_SECRET_TOKEN}"
+  }
+}
+<<<END examples/output.json>>>
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "Valid Codex Profile",
+    "input": {
+      "server_id": "codex_srv",
+      "url": "https://mcp.io/connect",
+      "env_var_name": "API_KEY",
+      "target_profile": "codex"
+    },
+    "expected_status": "success",
+    "expected_data": {
+      "server_id": "codex_srv",
+      "url": "https://mcp.io/connect",
+      "bearer_token_env_var": "API_KEY"
+    }
+  },
+  {
+    "name": "Refuse URL with Userinfo",
+    "input": {
+      "server_id": "bad_url",
+      "url": "https://user:pass@mcp.io",
+      "env_var_name": "KEY",
+      "target_profile": "claude"
+    },
+    "expected_status": "refused",
+    "expected_error": "URL_HAS_USERINFO"
+  },
+  {
+    "name": "Refuse Non-HTTPS",
+    "input": {
+      "server_id": "http_srv",
+      "url": "http://mcp.io",
+      "env_var_name": "KEY",
+      "target_profile": "claude"
+    },
+    "expected_status": "refused",
+    "expected_error": "INVALID_SCHEME"
+  },
+  {
+    "name": "Refuse Duplicate Keys",
+    "input_raw": '{"server_id": "a", "server_id": "b", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude"}',
+    "expected_status": "refused",
+    "expected_error": "DUPLICATE_KEY"
+  },
+  {
+    "name": "Refuse Non-Finite Number",
+    "input_raw": '{"server_id": "a", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude", "extra": NaN}',
+    "expected_status": "refused",
+    "expected_error": "NON_FINITE_NUMBER"
+  }
+]
+<<<END fixtures/acceptance.json>>>
+<<<tests/test_render_secret_reference_connections.py>>>
+import unittest
+import json
+import subprocess
+import sys
+from io import BytesIO
+
+class TestRenderSecretConnections(unittest.TestCase):
+    def run_tool(self, input_data):
+        """Helper to run the tool via subprocess to simulate real environment."""
+        # We use sys.executable to run the current python interpreter
+        process = subprocess.Popen(
+            [sys.executable, "tools/render_secret_reference_connections.py"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        # If input_data is a string (raw), we pass it directly
+        # If it's a dict, we serialize it
+        if isinstance(input_data, dict):
+            input_str = json.dumps(input_data)
+        else:
+            input_str = input_data
+            
+        stdout, stderr = process.communicate(input=input_str)
+        return json.loads(stdout)
+
+    def test_success_claude(self):
+        payload = {
+            "server_id": "test-server",
+            "url": "https://mcp.example.com",
+            "env_var_name": "MY_SECRET",
+            "target_profile": "claude"
+        }
+        result = self.run_tool(payload)
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["data"]["authorization"], "Bearer ${MY_SECRET}")
+        self.assertEqual(result["data"]["url"], "https://mcp.example.com")
+
+    def test_success_codex(self):
+        payload = {
+            "server_id": "test_server",
+            "url": "https://mcp.example.com",
+            "env_var_name": "MY_SECRET",
+            "target_profile": "codex"
+        }
+        result = self.run_tool(payload)
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["data"]["bearer_token_env_var"], "MY_SECRET")
+
+    def test_refuse_userinfo(self):
+        payload = {
+            "server_id": "test",
+            "url": "https://user:pass@mcp.com",
+            "env_var_name": "KEY",
+            "target_profile": "claude"
+        }
+        result = self.run_tool(payload)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "URL_HAS_USERINFO")
+
+    def test_refuse_fragment(self):
+        payload = {
+            "server_id": "test",
+            "url": "https://mcp.com#section",
+            "env_var_name": "KEY",
+            "target_profile": "claude"
+        }
+        result = self.run_tool(payload)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "URL_HAS_FRAGMENT")
+
+    def test_refuse_duplicate_keys(self):
+        # Using raw string to ensure duplicate keys are passed to the parser
+        raw_input = '{"server_id": "a", "server_id": "b", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude"}'
+        result = self.run_tool(raw_input)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "DUPLICATE_KEY")
+
+    def test_refuse_non_finite(self):
+        # JSON standard doesn't strictly allow NaN, but many parsers do. 
+        # Our tool must explicitly reject it.
+        raw_input = '{"server_id": "a", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude", "val": NaN}'
+        # Note: Python's json.loads handles NaN by default, so we check if our logic catches it.
+        # We must use a string that contains NaN.
+        result = self.run_tool(raw_input)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "NON_FINITE_NUMBER")
+
+    def test_invalid_env_name(self):
+        payload = {
+            "server_id": "test",
+            "url": "https://mcp.com",
+            "env_var_name": "123_INVALID", # Starts with number
+            "target_profile": "claude"
+        }
+        result = self.run_tool(payload)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error_code"], "INVALID_ENV_VAR_NAME")
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END tests/test_render_secret_reference_connections.py>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "python3 tools/render_secret_reference_connections.py",
+  "discovery_method": "explicit_file_path",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs"
+  ],
+  "automatic_discovery_limits": {
+    "network": "none",
+    "filesystem_mutation": "none",
+    "subprocess": "none"
+  },
+  "status": "candidate"
+}
+<<<END references/compatibility.json>>>
+<<<references/method.md>>>
+# Method: render_secret_reference_connections
+
+## Algorithm
+1. **Read Input**: Read up to 1MiB from `stdin`.
+2. **Strict Parse**: 
+   - Use `object_pairs_hook` to detect duplicate keys in the JSON stream.
+   - Traverse the resulting object to ensure all `float` values are finite (not `NaN` or `Inf`).
+3. **Validation**:
+   - `server_id`: Must be alphanumeric (allowing `_` and `-`).
+   - `url`: Must be `https://`. Must not contain `userinfo` (e.g., `user:pass@host`) or `fragments` (e.g., `#anchor`).
+   - `env_var_name`: Must be a valid Python identifier (to ensure it can be used as an env var).
+   - `target_profile`: Must be exactly `"codex"` or `"claude"`.
+4. **Transformation**:
+   - If `codex`: Return a dictionary containing `bearer_token_env_var` set to the provided name.
+   - If `claude`: Return a dictionary containing `authorization` set to the string `"Bearer ${NAME}"`.
+5. **Output**: Emit a single JSON object with `status` and either `data` or `error_code`.
+
+## Conventions
+- **No Secrets**: The tool never accepts or returns the actual secret value, only the name of the environment variable.
+- **Deterministic**: The same input always produces the same output.
+- **Bounded**: The tool does not perform any side effects (no network, no disk writes).
+
+## Known-Wrong Approach
+- Using string interpolation (f-strings) to build the JSON/TOML string manually. This is prone to escaping errors and injection.
+- Using `eval()` to parse the input.
+- Allowing `http://` or `ftp://` schemes.
+- Allowing `user:pass@` in the URL.
+
+## Limitations
+- Does not validate if the environment variable actually exists (this is a runtime responsibility of the host).
+- Does not validate the content of the URL beyond scheme and structure.
+<<<END references/method.md>>>
+<<<END DRAFT>>>

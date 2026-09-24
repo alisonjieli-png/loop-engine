@@ -1,0 +1,13 @@
+{
+  "intended_host_entrypoint": "build_permission_scoped_lexical_index",
+  "python_requirement": ">=3.10",
+  "requested_effects": [
+    "reads_fs",
+    "spawns_process"
+  ],
+  "discovery_limits": {
+    "automatic_discovery": "candidate",
+    "external_dependencies": "none"
+  },
+  "status": "candidate"
+}

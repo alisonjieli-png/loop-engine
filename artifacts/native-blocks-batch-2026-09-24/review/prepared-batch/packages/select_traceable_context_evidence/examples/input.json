@@ -1,0 +1,36 @@
+{
+  "byte_budget": 100,
+  "required_ids": ["rec_1"],
+  "contradiction_groups": [["rec_1", "rec_2"]],
+  "registry": {
+    "src_a": {
+      "v1": { "bounds": { "start": 0, "end": 1000 } }
+    }
+  },
+  "evidence_pool": [
+    {
+      "id": "rec_1",
+      "source_id": "src_a",
+      "revision": "v1",
+      "priority": 10,
+      "content": "The sky is blue.",
+      "span": { "start": 0, "end": 16 }
+    },
+    {
+      "id": "rec_2",
+      "source_id": "src_a",
+      "revision": "v1",
+      "priority": 5,
+      "content": "The sky is red.",
+      "span": { "start": 20, "end": 35 }
+    },
+    {
+      "id": "rec_3",
+      "source_id": "src_a",
+      "revision": "v1",
+      "priority": 1,
+      "content": "Grass is green.",
+      "span": { "start": 50, "end": 65 }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "record_type": "candidate_intelligence_specifications/v3",
+  "population": 1,
+  "populations": 1,
+  "specifications": [
+    {
+      "id": "assemble_bounded_instruction_sections",
+      "layer": "code",
+      "family": "original_native_tool",
+      "title": "Assemble bounded instruction sections",
+      "tags": [
+        "assemble bounded instruction sections",
+        "harness workspace",
+        "native package",
+        "python"
+      ],
+      "text": "# Assemble bounded instruction sections\n\nAssemble supplied uniquely identified text sections with integer unit costs, mandatory flags, integer priorities and before/after constraints.\n",
+      "sources": [
+        "src/loop_engine/core/instance_instructions.py",
+        "LICENSE"
+      ],
+      "symbols": [
+        "assemble_bounded_instruction_sections"
+      ],
+      "kind": "tool",
+      "purpose": "Assemble supplied uniquely identified text sections with integer unit costs, mandatory flags, integer priorities and before/after constraints.",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "c4ba5fbf722f29126558f2a25a22545e58b9a9ab97ef86c04961b0c6696318df",
+            "size_bytes": 1317,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "901019279ac23f740e7ef873bb1df9fc9eae1abf511b901f65c0fb662de600ac",
+            "size_bytes": 753,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "942ab2005f00f5fc67ca6afe9c5f457ac1fd697d4a47c989503200589868736f",
+            "size_bytes": 1270,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "19efccb6fba2b884f8dd8c46daeb6d14b9ec5f86fbf81403b9bd1d55de815c0a",
+            "size_bytes": 680,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "9f855101f8fed5d56c2374857203200ee537721413365954d8030d6a1bafb1cd",
+            "size_bytes": 484,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "8cd383cadfe6b86d0408c1ce6eb6015a764b1d3a3086e3dfdc826d2a49787542",
+            "size_bytes": 302,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "2d0d5427e0669b3760a099977706c907b7d1281fef86925b3f03758ad10d71a2",
+            "size_bytes": 1797,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_assemble_bounded_instruction_sections.py",
+            "digest": "c17bfb4ae4a42ae58395bdd864f6faf3b6a365b6c31662bbfde6c185e8ce00ac",
+            "size_bytes": 3269,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/assemble_bounded_instruction_sections.py",
+            "digest": "1c70c038ddf540723a0a1116d2001b525282bcd6ef9ce14d883eadbd9b90e709",
+            "size_bytes": 9068,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "96a549d06f65e5e6a996b22d3ce85eff39f1f02d0313ff7ef45751e0e6cc218f",
+            "size_bytes": 1498,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_digest": "48b7a2cd7c283a97d33a6435b26ca7cb70aac7f2b9885c93fc5e3d656eb9fa76",
+      "package_root": "packages/assemble_bounded_instruction_sections",
+      "body_path": "bodies/assemble_bounded_instruction_sections.package.json",
+      "provenance": {
+        "authoring": "original_assistant_authored",
+        "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+        "source_digests": {
+          "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+        },
+        "license": {
+          "expression": "MIT",
+          "path": "LICENSE",
+          "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+        }
+      }
+    }
+  ]
+}

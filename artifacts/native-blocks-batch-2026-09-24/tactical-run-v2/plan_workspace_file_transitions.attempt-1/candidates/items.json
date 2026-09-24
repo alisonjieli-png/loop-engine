@@ -1,0 +1,135 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "tools/install_selected_material.py": "a2e63f38c88e0834753f3f05a24d3f5dcd6e732dedf43a9b13588499a4bc8e5b"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "plan_workspace_file_transitions",
+        "kind": "tool",
+        "purpose": "Given base/current/desired inventories keyed by safe relative path and SHA256, emit create, update, noop, delete or conflict without touching the filesystem.",
+        "digest": "e21dd5611b78513de0d67f9b2d2637d27e0aa8422b0c6cff06e42facb1f7acf3",
+        "source_layer": "harness_local",
+        "source_ref": "tools/install_selected_material.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 1906,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/plan_workspace_file_transitions.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "6b286b60e1f6e9c6ce66498ee5d4c01913d5b91063666aac558823b1932a788d",
+            "size_bytes": 2177,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "d149a3ebfc802b1cc527aea191ffd7927fb0026b8ccafe95705c723dd8e79cf0",
+            "size_bytes": 533,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "5e2e1d17207045f2390695bcb97630dffaa27d0cb14c66a29b0bc53ee4146d32",
+            "size_bytes": 1094,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "a7bbd44451eb7a19b1f3106d2cdbe516dd8e094613e11bb5eadd5a6fe84d0957",
+            "size_bytes": 273,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "578d83bc499115dcd7831ed596f68c1f72305e1e0b0e229e0a157ce768775a42",
+            "size_bytes": 320,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "d1f78433b41d51fd4093459b3b1d964c8ba69d706a824576d6a2c7d1b874d264",
+            "size_bytes": 1562,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "942fad6e7c5ec754358bec315da65edf967f744430a995cf59aa7bbd2935b3b8",
+            "size_bytes": 269,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "4e8521b8de697580d0ec244ae1121a17c900d5be8dda43d3e83c74c5e331c791",
+            "size_bytes": 1402,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_plan_workspace_file_transitions.py",
+            "digest": "f253d985eddaaf3f8f387c7ebc3b4d4d44b72d0da73caca0d4aa15ee3703bef6",
+            "size_bytes": 2885,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/plan_workspace_file_transitions.py",
+            "digest": "58aa7f2f9664d1759d96eab314f84ab57840e2af142b194b13e9aaabcbb501ab",
+            "size_bytes": 5282,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_root": "packages/plan_workspace_file_transitions",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

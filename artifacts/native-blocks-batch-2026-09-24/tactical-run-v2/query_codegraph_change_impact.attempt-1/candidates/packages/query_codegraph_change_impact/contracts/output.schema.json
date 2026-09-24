@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CodeGraphChangeImpactOutput",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "impacted_symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol_id": { "type": "string" },
+              "distance": { "type": "integer" },
+              "witness_path": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "evidence": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["symbol_id", "distance", "witness_path", "evidence"]
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "is_complete": { "type": "boolean" },
+            "nodes_processed": { "type": "integer" }
+          },
+          "required": ["is_complete", "nodes_processed"]
+        }
+      },
+      "required": ["status", "impacted_symbols", "metadata"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "error_code": { "type": "string" }
+      },
+      "required": ["status", "error_code"]
+    }
+  ]
+}

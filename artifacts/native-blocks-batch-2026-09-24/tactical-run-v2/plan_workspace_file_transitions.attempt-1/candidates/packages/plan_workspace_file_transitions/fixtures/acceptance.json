@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "name": "base=A, current=B, desired=C -> conflict",
+      "input": {
+        "base": {"f": "A"},
+        "current": {"f": "B"},
+        "desired": {"f": "C"}
+      },
+      "expected_action": "conflict"
+    },
+    {
+      "name": "base=A, current=A, desired=C -> update",
+      "input": {
+        "base": {"f": "A"},
+        "current": {"f": "A"},
+        "desired": {"f": "C"}
+      },
+      "expected_action": "update"
+    },
+    {
+      "name": "base=null, current=B, desired=C -> conflict",
+      "input": {
+        "base": {"f": null},
+        "current": {"f": "B"},
+        "desired": {"f": "C"}
+      },
+      "expected_action": "conflict"
+    },
+    {
+      "name": "base=A, current=B, desired=B -> noop",
+      "input": {
+        "base": {"f": "A"},
+        "current": {"f": "B"},
+        "desired": {"f": "B"}
+      },
+      "expected_action": "noop"
+    },
+    {
+      "name": "base=A, current=A, desired=A -> noop",
+      "input": {
+        "base": {"f": "A"},
+        "current": {"f": "A"},
+        "desired": {"f": "A"}
+      },
+      "expected_action": "noop"
+    },
+    {
+      "name": "base=A, current=A, desired=null -> delete",
+      "input": {
+        "base": {"f": "A"},
+        "current": {"f": "A"},
+        "desired": {"f": null}
+      },
+      "expected_action": "delete"
+    },
+    {
+      "name": "base=null, current=null, desired=A -> create",
+      "input": {
+        "base": {"f": null},
+        "current": {"f": null},
+        "desired": {"f": "A"}
+      },
+      "expected_action": "create"
+    }
+  ]
+}

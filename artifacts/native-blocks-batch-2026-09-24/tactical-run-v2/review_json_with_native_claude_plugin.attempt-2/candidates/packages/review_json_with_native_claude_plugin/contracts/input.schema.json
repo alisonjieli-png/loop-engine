@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON Review Input",
+  "description": "A single valid JSON value to be reviewed.",
+  "type": "any",
+  "maxSize": "1MiB"
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/output.schema.json",
+  "type": "object",
+  "properties": {
+    "status": { "enum": ["success", "refused"] },
+    "error_code": { "type": "string" },
+    "selected_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      }
+    },
+    "unresolved_contradictions": { "type": "array", "items": { "type": "string" } },
+    "total_bytes": { "type": "integer" }
+  },
+  "required": ["status"]
+}

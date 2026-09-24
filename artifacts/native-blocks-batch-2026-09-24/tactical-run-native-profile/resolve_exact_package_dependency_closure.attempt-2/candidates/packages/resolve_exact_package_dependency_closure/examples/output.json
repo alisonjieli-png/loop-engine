@@ -1,0 +1,6 @@
+{
+  "status": "success",
+  "resolved_dependencies": ["C", "B", "A"],
+  "total_size_bytes": 600,
+  "effects": ["network", "reads_fs"]
+}

@@ -1,0 +1,27 @@
+{
+  "task_id": "task-123",
+  "attempt_id": "att-001",
+  "objective": "Calculate pi",
+  "first_actions": ["initialize_constants"],
+  "immutable_inputs": {"precision": 10},
+  "required_output_paths": ["/out/pi.txt"],
+  "authority_reference": "auth-root",
+  "events": [
+    {
+      "sequence_number": 0,
+      "state": "running"
+    },
+    {
+      "sequence_number": 1,
+      "state": "candidate",
+      "validator_id": "val-01"
+    },
+    {
+      "sequence_number": 2,
+      "state": "accepted",
+      "validator_id": "val-02",
+      "evidence_digest": "sha256:abc"
+    }
+  ],
+  "external_effects": {"files_created": 1}
+}

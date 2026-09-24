@@ -1,0 +1,16 @@
+{
+  "before": [
+    {"id": "a1", "name": "Alice", "score": 10, "active": true},
+    {"id": "b2", "name": "Bob", "score": 20, "active": false}
+  ],
+  "after": [
+    {"id": "a1", "name": "Alice", "score": 15, "active": true},
+    {"id": "b2", "name": "Bob", "score": 15, "active": false}
+  ],
+  "contract": {
+    "id_field": "id",
+    "preserved_fields": ["name", "active"],
+    "allowed_changes": ["score"],
+    "integer_totals": ["score"]
+  }
+}

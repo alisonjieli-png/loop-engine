@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "before": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "after": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "contract": {
+      "type": "object",
+      "properties": {
+        "id_field": { "type": "string" },
+        "preserved_fields": { "type": "array", "items": { "type": "string" } },
+        "allowed_changes": { "type": "array", "items": { "type": "string" } },
+        "integer_totals": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id_field"]
+    }
+  },
+  "required": ["before", "after", "contract"]
+}

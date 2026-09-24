@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workspace Transition Input",
+  "type": "object",
+  "properties": {
+    "base": { "$ref": "#/definitions/inventory" },
+    "current": { "$ref": "#/definitions/inventory" },
+    "desired": { "$ref": "#/definitions/inventory" }
+  },
+  "required": ["base", "current", "desired"],
+  "additionalProperties": false,
+  "definitions": {
+    "inventory": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "null"]
+      }
+    }
+  }
+}

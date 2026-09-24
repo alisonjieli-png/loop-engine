@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "data": {
+    "server_id": "mcp-remote-01",
+    "url": "https://api.example.com/v1/mcp",
+    "authorization": "Bearer ${MCP_SECRET_TOKEN}"
+  }
+}

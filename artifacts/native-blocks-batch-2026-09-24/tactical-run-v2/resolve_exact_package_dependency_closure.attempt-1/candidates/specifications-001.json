@@ -1,0 +1,137 @@
+{
+  "record_type": "candidate_intelligence_specifications/v3",
+  "population": 1,
+  "populations": 1,
+  "specifications": [
+    {
+      "id": "resolve_exact_package_dependency_closure",
+      "layer": "code",
+      "family": "original_native_tool",
+      "title": "Resolve exact package dependency closure",
+      "tags": [
+        "resolve exact package dependency closure",
+        "harness workspace",
+        "native package",
+        "python"
+      ],
+      "text": "# Resolve exact package dependency closure\n\nResolve a bounded supplied package dependency graph from requested package identities.\n",
+      "sources": [
+        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "LICENSE"
+      ],
+      "symbols": [
+        "resolve_exact_package_dependency_closure"
+      ],
+      "kind": "tool",
+      "purpose": "Resolve a bounded supplied package dependency graph from requested package identities.",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "2f3932540fae31db78960bfb840f0a4b23cc12d63925c0781fc350fdce259a9a",
+            "size_bytes": 1703,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "d46dd17d7d984583b4d555f0565009d0e0961224ee1f28e1f932430d2c96a40d",
+            "size_bytes": 1296,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "42aff219ba6c105d1eacafdddad28960f5fe3d89bbffda3da50792cd55503591",
+            "size_bytes": 1035,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "44b6bc1ce9f60f4ebb4e8bb734a627c022703e07bd78fe758c56a80a430200df",
+            "size_bytes": 657,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "fcfcdd4b4d51b27e96176e0a1db2fa74f55bbf6b9f321e04f173ac7a51e63c44",
+            "size_bytes": 302,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "764366df73a5585352d4366bc6b8d9f76048addf51649702c2cbf86303e6280f",
+            "size_bytes": 1595,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "e2bf19d5acdfddcb637d14838e8ae2ae503297ec4e68c3966e74a862abf506d2",
+            "size_bytes": 360,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "9add70202efda90119fa6540261ff8b60b0f071663fc541223b1fa4802116832",
+            "size_bytes": 2204,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_resolve_exact_package_dependency_closure.py",
+            "digest": "67749f056b50bccf0f26c3dba9ba91aed71906539d85d068e7d287e63cc738b5",
+            "size_bytes": 3679,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/resolve_exact_package_dependency_closure.py",
+            "digest": "b61364308cef2842b2d36da3df5aaf0599cebc3359837a324af6bdc97223e44a",
+            "size_bytes": 9409,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_digest": "1b2eb6a821e2881254feac441efaf40c6d06507be3d74c8f415d09cb9774beab",
+      "package_root": "packages/resolve_exact_package_dependency_closure",
+      "body_path": "bodies/resolve_exact_package_dependency_closure.package.json",
+      "provenance": {
+        "authoring": "original_assistant_authored",
+        "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+        "source_digests": {
+          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+        },
+        "license": {
+          "expression": "MIT",
+          "path": "LICENSE",
+          "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+        }
+      }
+    }
+  ]
+}

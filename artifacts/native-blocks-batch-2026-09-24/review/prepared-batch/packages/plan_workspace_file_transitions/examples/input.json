@@ -1,0 +1,16 @@
+{
+  "base": {
+    "file1.txt": "sha_a",
+    "file2.txt": "sha_b"
+  },
+  "current": {
+    "file1.txt": "sha_a",
+    "file2.txt": "sha_b",
+    "new_file.txt": "sha_c"
+  },
+  "desired": {
+    "file1.txt": "sha_a",
+    "file2.txt": "sha_new",
+    "new_file.txt": "sha_c"
+  }
+}

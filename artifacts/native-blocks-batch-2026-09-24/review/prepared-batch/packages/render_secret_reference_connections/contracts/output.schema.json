@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Connection Render Response",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "server_id": { "type": "string" },
+        "url": { "type": "string" },
+        "bearer_token_env_var": { "type": "string" },
+        "authorization": { "type": "string" }
+      },
+      "required": ["server_id", "url"]
+    },
+    "error_code": {
+      "type": "string",
+      "enum": [
+        "MISSING_FIELDS",
+        "INVALID_SERVER_ID",
+        "INVALID_ENV_VAR_NAME",
+        "INVALID_SCHEME",
+        "URL_HAS_USERINFO",
+        "URL_HAS_FRAGMENT",
+        "INVALID_URL_HOST",
+        "URL_HAS_NEWLINE",
+        "INVALID_URL_FORMAT",
+        "UNSUPPORTED_PROFILE",
+        "DUPLICATE_KEY",
+        "NON_FINITE_NUMBER",
+        "INVALID_JSON",
+        "EMPTY_INPUT",
+        "INVALID_TYPE_ENV_VAR",
+        "INTERNAL_ERROR"
+      ]
+    }
+  },
+  "required": ["status"],
+  "oneOf": [
+    { "required": ["data"] },
+    { "required": ["error_code"] }
+  ]
+}

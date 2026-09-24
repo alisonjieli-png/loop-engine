@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "selected_records": [
+    {
+      "id": "rec_1",
+      "content": "The sky is blue."
+    },
+    {
+      "id": "rec_3",
+      "content": "Grass is green."
+    }
+  ],
+  "unresolved_contradictions": ["rec_2"],
+  "total_bytes": 32
+}

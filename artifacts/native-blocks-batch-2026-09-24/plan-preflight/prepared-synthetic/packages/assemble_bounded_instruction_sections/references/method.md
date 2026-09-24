@@ -1,0 +1,3 @@
+# method
+
+Synthetic layout fixture.

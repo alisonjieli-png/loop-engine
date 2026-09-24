@@ -1,0 +1,142 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "resolve_exact_package_dependency_closure",
+        "kind": "tool",
+        "purpose": "Resolve a bounded supplied package dependency graph from requested package identities.",
+        "digest": "01f01f40d4df71c99cec160fee3fd111f56bd1365d036b0db7e4a60d0eca59b7",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 2087,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/resolve_exact_package_dependency_closure.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "92f1b4d52611e775bb2bbe4bc6e1b2dcbdfcf4771d88311687bc3d546a2bed05",
+            "size_bytes": 1698,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "be9941b7f3adacc02128872bc799e04f2e9011962c9e91c23d7bf118dc8ec169",
+            "size_bytes": 817,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "65339fa742b97a74fe2393aacb65f9bfe9fd5ef0c5b40d33527ab152b01bee4e",
+            "size_bytes": 685,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "0ccc6311a2d9f797dae40819a6de879745126507ee0e7f692479c313594e4f86",
+            "size_bytes": 503,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "e47bba30abc03030f12f8dcecaaa9ec628bf857e6d41f72e7dac8b1c6dd382de",
+            "size_bytes": 135,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "aa10013e08132c68e1e13a9b7e6cf5602a4d1f37415e1d1f054cd38d44ecd6d4",
+            "size_bytes": 287,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "8d500712cc442a21455522cdc4ff079a973c786ac31dfb5ec9601135e5e13c1b",
+            "size_bytes": 1943,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_resolve_exact_package_dependency_closure.py",
+            "digest": "5f941a6f5f546f382ac8454aad601b86b28ba736848472b54f8b5574a7f27273",
+            "size_bytes": 3393,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/resolve_exact_package_dependency_closure.py",
+            "digest": "42d409708c8de69f84e76c782f24e6d8248da8fc9194c6f6db8e01a9f4fdd686",
+            "size_bytes": 5634,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "6c6cdf1c3695eb905b6cd06208c78895444ed6565e528252468cbf05c7d2c4d8",
+            "size_bytes": 1026,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_root": "packages/resolve_exact_package_dependency_closure",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

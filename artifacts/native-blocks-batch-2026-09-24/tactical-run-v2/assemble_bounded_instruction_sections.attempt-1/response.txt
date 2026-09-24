@@ -1,0 +1,592 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v2
+method_id: assemble_bounded_instruction_sections
+<<<AGENTS.md>>>
+# Agent Instructions: assemble_bounded_instruction_sections
+
+## First Action
+1. Validate the input JSON against `contracts/input.schema.json`.
+2. Check for duplicate keys in the input (requires custom parsing or strict schema validation).
+3. Verify all `cost`, `priority`, and `budget` values are integers (reject booleans).
+4. Build the dependency graph and check for cycles or unknown references.
+5. Calculate the mandatory closure cost. If it exceeds `budget`, return `REFUSED_MANDATORY_OVER_BUDGET`.
+6. Greedily add optional sections by descending `priority`, then by input order, ensuring all prerequisites fit the remaining budget.
+7. Perform a topological sort on the final selection to ensure stable output order.
+8. Calculate byte offsets for the final concatenated text.
+
+## Contract & Refusal Rules
+- **Refusal: `ERR_DUPLICATE_KEY`**: Input contains duplicate keys.
+- **Refusal: `ERR_NONFINITE_NUMBER`**: Cost or budget is not a finite integer.
+- **Refusal: `ERR_TYPE_MISMATCH`**: A boolean was provided where an integer was expected.
+- **Refusal: `ERR_UNKNOWN_DEPENDENCY`**: A section references a predecessor that does not exist.
+- **Refusal: `ERR_CYCLIC_CONSTRAINT`**: Precedence constraints form a cycle.
+- **Refusal: `ERR_MANDATORY_OVER_BUDGET`**: The sum of all mandatory sections and their required predecessors exceeds `budget`.
+- **Success**: Return `status: "SUCCESS"` with `selected_sections`, `omitted_sections`, `total_units`, and the `assembled_text` with byte ranges.
+<<<END AGENTS.md>>>
+<<<tools/assemble_bounded_instruction_sections.py>>>
+import sys
+import json
+from typing import Dict, List, Any, Set, Tuple
+
+def parse_strict_json(data: str) -> Dict[str, Any]:
+    """Parses JSON and checks for duplicate keys and non-finite numbers."""
+    # Using a custom decoder to detect duplicate keys
+    class DuplicateKeyDetector(json.JSONDecoder):
+        def __init__(self, *args, **kwargs):
+            super().__init__(object_pairs_hook=self.decode_pairs, *args, **kwargs)
+        
+        def decode_pairs(self, pairs):
+            keys = []
+            for k, v in pairs:
+                if k in keys:
+                    raise ValueError("ERR_DUPLICATE_KEY")
+                keys.append(k)
+            return dict(pairs)
+
+    try:
+        # Check size limit (1MiB)
+        if len(data.encode('utf-8')) > 1024 * 1024:
+            raise ValueError("ERR_INPUT_TOO_LARGE")
+        
+        obj = DuplicateKeyDetector().decode(data)
+        
+        # Check for non-finite numbers and type mismatches (booleans as ints)
+        def walk(node):
+            if isinstance(node, dict):
+                for k, v in node.items():
+                    # Check if value is a boolean where integer is expected in specific fields
+                    # The prompt says "Reject booleans where integers are required"
+                    # We'll check all numeric-intended fields
+                    if k in ['cost', 'priority', 'budget', 'id'] and isinstance(v, bool):
+                        raise TypeError("ERR_TYPE_MISMATCH")
+                    walk(v)
+            elif isinstance(node, list):
+                for item in node:
+                    walk(item)
+            elif isinstance(node, (int, float)):
+                if not isinstance(node, bool) and (node == float('inf') or node == float('-inf')):
+                    raise ValueError("ERR_NONFINITE_NUMBER")
+        
+        walk(obj)
+        return obj
+    except ValueError as e:
+        if str(e) == "ERR_DUPLICATE_KEY":
+            return {"status": "REFUSED", "code": "ERR_DUPLICATE_KEY"}
+        raise e
+    except TypeError as e:
+        if str(e) == "ERR_TYPE_MISMATCH":
+            return {"status": "REFUSED", "code": "ERR_TYPE_MISMATCH"}
+        raise e
+    except Exception:
+        return {"status": "REFUSED", "code": "ERR_INVALID_JSON"}
+
+def solve():
+    raw_input = sys.stdin.read()
+    if not raw_input:
+        print(json.dumps({"status": "REFUSED", "code": "ERR_EMPTY_INPUT"}))
+        return
+
+    try:
+        data = parse_strict_json(raw_input)
+    except Exception:
+        print(json.dumps({"status": "REFUSED", "code": "ERR_PARSE_FAILURE"}))
+        return
+
+    if isinstance(data, dict) and data.get("status") == "REFUSED":
+        print(json.dumps(data))
+        return
+
+    try:
+        budget = data['budget']
+        sections_list = data['sections']
+        
+        # Map sections by ID
+        sections: Dict[str, Dict] = {}
+        for s in sections_list:
+            sid = s['id']
+            if sid in sections:
+                print(json.dumps({"status": "REFUSED", "code": "ERR_DUPLICATE_ID"}))
+                return
+            sections[sid] = s
+
+        # Build dependency graph
+        adj = {sid: set(s.get('predecessors', [])) for sid, s in sections.items()}
+        
+        # Check for unknown dependencies and cycles
+        for sid, preds in adj.items():
+            for p in preds:
+                if p not in sections:
+                    print(json.dumps({"status": "REFUSED", "code": "ERR_UNKNOWN_DEPENDENCY"}))
+                    return
+
+        # Cycle detection (DFS)
+        visited = set()
+        path = set()
+        def has_cycle(u):
+            visited.add(u)
+            path.add(u)
+            for v in adj[u]:
+                if v not in visited:
+                    if has_cycle(v): return True
+                elif v in path:
+                    return True
+            path.remove(u)
+            return False
+
+        for sid in sections:
+            if sid not in visited:
+                if has_cycle(sid):
+                    print(json.dumps({"status": "REFUSED", "code": "ERR_CYCLIC_CONSTRAINT"}))
+                    return
+
+        # Helper to get full closure of a section
+        def get_closure(sid: str) -> Set[str]:
+            closure = {sid}
+            stack = [sid]
+            while stack:
+                curr = stack.pop()
+                for p in adj[curr]:
+                    if p not in closure:
+                        closure.add(p)
+                        stack.append(p)
+            return closure
+
+        # 1. Identify mandatory sections and their required closure
+        mandatory_ids = {s['id'] for s in sections_list if s.get('mandatory', False)}
+        mandatory_closure = set()
+        for mid in mandatory_ids:
+            mandatory_closure.update(get_closure(mid))
+        
+        mandatory_cost = sum(sections[sid]['cost'] for sid in mandatory_closure)
+        
+        if mandatory_cost > budget:
+            print(json.dumps({"status": "REFUSED", "code": "ERR_MANDATORY_OVER_BUDGET"}))
+            return
+
+        # 2. Add optional sections
+        # Sort optional by priority DESC, then by original input order
+        optional_candidates = []
+        for i, s in enumerate(sections_list):
+            if s['id'] not in mandatory_closure and not s.get('mandatory', False):
+                optional_candidates.append((s['priority'], -i, s['id']))
+        
+        optional_candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+
+        selected_ids = set(mandatory_closure)
+        current_cost = mandatory_cost
+        
+        for _, _, sid in optional_candidates:
+            closure = get_closure(sid)
+            # Only add if the entire closure (not already in) fits
+            new_elements = closure - selected_ids
+            new_cost = sum(sections[nid]['cost'] for nid in new_elements)
+            
+            if current_cost + new_cost <= budget:
+                selected_ids.update(new_elements)
+                current_cost += new_cost
+
+        # 3. Topological Sort for stable output order
+        # We use the order of input for tie-breaking in topological sort if needed, 
+        # but standard Kahn's or DFS is fine. The prompt asks for "stable topological input order".
+        # This usually means if multiple nodes can be picked, pick the one that appeared first in input.
+        
+        in_degree = {sid: 0 for sid in selected_ids}
+        sub_adj = {sid: [] for sid in selected_ids}
+        for sid in selected_ids:
+            for p in adj[sid]:
+                if p in selected_ids:
+                    # p is a predecessor of sid -> p -> sid
+                    sub_adj[p].append(sid)
+                    in_degree[sid] += 1
+        
+        # To ensure stable topological order based on input order:
+        # Use a min-priority queue where priority is the original index in sections_list
+        idx_map = {s['id']: i for i, s in enumerate(sections_list)}
+        import heapq
+        queue = []
+        for sid in selected_ids:
+            if in_degree[sid] == 0:
+                heapq.heappush(queue, (idx_map[sid], sid))
+        
+        final_order = []
+        while queue:
+            _, u = heapq.heappop(queue)
+            final_order.append(u)
+            for v in sub_adj[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    heapq.heappush(queue, (idx_map[v], v))
+
+        # 4. Construct Output
+        assembled_text_parts = []
+        selected_details = []
+        current_byte_offset = 0
+        
+        for sid in final_order:
+            text = sections[sid]['text']
+            text_bytes = text.encode('utf-8')
+            length = len(text_bytes)
+            
+            selected_details.append({
+                "id": sid,
+                "byte_range": [current_byte_offset, current_byte_offset + length]
+            })
+            assembled_text_parts.append(text)
+            current_byte_offset += length
+
+        # Note: The prompt says "Render selected sections in stable topological input order".
+        # If the text is concatenated, we need to decide if there are separators. 
+        # Usually, "assemble" implies direct concatenation.
+        full_text = "".join(assembled_text_parts)
+        # Re-calculate byte ranges on the final string to be safe with Unicode
+        # but since we are concatenating, the logic above is correct.
+        
+        omitted_ids = [s['id'] for s in sections_list if s['id'] not in selected_ids]
+        
+        print(json.dumps({
+            "status": "SUCCESS",
+            "selected_sections": selected_details,
+            "omitted_sections": omitted_ids,
+            "total_units": current_cost,
+            "assembled_text": full_text
+        }))
+
+    except KeyError as e:
+        print(json.dumps({"status": "REFUSED", "code": f"ERR_MISSING_FIELD_{str(e)}"}))
+    except Exception as e:
+        print(json.dumps({"status": "REFUSED", "code": f"ERR_INTERNAL_{type(e).__name__}"}))
+
+if __name__ == "__main__":
+    solve()
+<<<END tools/assemble_bounded_instruction_sections.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "budget": { "type": "integer" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "cost": { "type": "integer" },
+          "priority": { "type": "integer" },
+          "mandatory": { "type": "boolean" },
+          "predecessors": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["id", "text", "cost", "priority"]
+      }
+    }
+  },
+  "required": ["budget", "sections"],
+  "additionalProperties": false
+}
+<<<END contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "SUCCESS" },
+        "selected_sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "byte_range": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": ["id", "byte_range"]
+          }
+        },
+        "omitted_sections": { "type": "array", "items": { "type": "string" } },
+        "total_units": { "type": "integer" },
+        "assembled_text": { "type": "string" }
+      },
+      "required": ["status", "selected_sections", "omitted_sections", "total_units", "assembled_text"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "REFUSED" },
+        "code": { "type": "string" }
+      },
+      "required": ["status", "code"]
+    }
+  ]
+}
+<<<END contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "budget": 20,
+  "sections": [
+    {
+      "id": "cost1",
+      "text": "Step 1: ",
+      "cost": 5,
+      "priority": 10,
+      "mandatory": true
+    },
+    {
+      "id": "cost5",
+      "text": "Step 2: ",
+      "cost": 5,
+      "priority": 10,
+      "mandatory": true,
+      "predecessors": ["cost1"]
+    },
+    {
+      "id": "opt1",
+      "text": "Optional.",
+      "cost": 5,
+      "priority": 5,
+      "mandatory": false
+    },
+    {
+      "id": "opt2",
+      "text": "Too expensive.",
+      "cost": 15,
+      "priority": 100,
+      "mandatory": false
+    }
+  ]
+}
+<<<END examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "SUCCESS",
+  "selected_sections": [
+    {
+      "id": "cost1",
+      "byte_range": [0, 8]
+    },
+    {
+      "id": "cost5",
+      "byte_range": [8, 16]
+    },
+    {
+      "id": "opt1",
+      "byte_range": [16, 25]
+    }
+  ],
+  "omitted_sections": ["opt2"],
+  "total_units": 15,
+  "assembled_text": "Step 1: Step 2: Optional."
+}
+<<<END examples/output.json>>>
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "Mandatory exceeds budget",
+    "input": {
+      "budget": 10,
+      "sections": [
+        { "id": "cost5", "text": "A", "cost": 6, "priority": 1, "mandatory": true, "predecessors": ["cost1"] },
+        { "id": "cost1", "text": "B", "cost": 5, "priority": 1, "mandatory": true }
+      ]
+    },
+    "expected_code": "ERR_MANDATORY_OVER_BUDGET"
+  },
+  {
+    "name": "Cyclic dependency",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "A", "text": "A", "cost": 1, "priority": 1, "predecessors": ["B"] },
+        { "id": "B", "text": "B", "cost": 1, "priority": 1, "predecessors": ["A"] }
+      ]
+    },
+    "expected_code": "ERR_CYCLIC_CONSTRAINT"
+  },
+  {
+    "name": "Unknown dependency",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "A", "text": "A", "cost": 1, "priority": 1, "predecessors": ["Ghost"] }
+      ]
+    },
+    "expected_code": "ERR_UNKNOWN_DEPENDENCY"
+  },
+  {
+    "name": "Boolean instead of integer",
+    "input": {
+      "budget": 10,
+      "sections": [
+        { "id": "A", "text": "A", "cost": true, "priority": 1 }
+      ]
+    },
+    "expected_code": "ERR_TYPE_MISMATCH"
+  },
+  {
+    "name": "Duplicate key",
+    "input": "{\"budget\": 10, \"budget\": 20, \"sections\": []}",
+    "expected_code": "ERR_DUPLICATE_KEY"
+  }
+]
+<<<END fixtures/acceptance.json>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "python3 tools/assemble_bounded_instruction_sections.py",
+  "python_requirement": ">=3.10",
+  "requested_effects": ["reads_fs", "spawns_process"],
+  "automatic_discovery_limits": "candidate",
+  "status": "candidate"
+}
+<<<END references/compatibility.json>>>
+<<<references/method.md>>>
+# Algorithm: Bounded Instruction Section Assembly
+
+## Overview
+The goal is to select a subset of text sections that satisfy a budget constraint while respecting mandatory requirements and precedence constraints.
+
+## Steps
+1. **Parsing**: Read JSON from stdin. Detect duplicate keys and non-finite numbers. Ensure `cost` and `priority` are integers, not booleans.
+2. **Graph Construction**: Build a directed graph where an edge $u \to v$ exists if $u$ is a predecessor of $v$.
+3. **Validation**:
+   - Check for unknown dependencies.
+   - Check for cycles using DFS.
+4. **Mandatory Selection**:
+   - Identify all sections marked `mandatory`.
+   - For each mandatory section, compute its transitive closure of predecessors.
+   - Sum the costs of all unique sections in this mandatory set.
+   - If `sum > budget`, refuse with `ERR_MANDATORY_OVER_BUDGET`.
+5. **Greedy Optional Selection**:
+   - Identify optional sections not in the mandatory closure.
+   - Sort them by `priority` (descending) and then by their original index in the input array (ascending).
+   - For each candidate, compute its required closure (all predecessors).
+   - If the cost of the *new* sections introduced by this closure fits in the remaining budget, add them to the selected set.
+6. **Topological Sort**:
+   - Perform a topological sort on the selected set.
+   - To ensure stability, when multiple nodes have an in-degree of 0, select the one that appeared earliest in the original input list.
+7. **Output Generation**:
+   - Concatenate the text of selected sections in topological order.
+   - Calculate the UTF-8 byte offsets for each section.
+
+## Complexity
+- Time: $O(N \cdot (N + E))$ where $N$ is number of sections and $E$ is number of dependencies.
+- Space: $O(N + E)$.
+
+## Limitations
+- Does not attempt to optimize the budget via knapsack; uses a greedy priority-based approach.
+- Assumes all costs are positive integers.
+<<<END references/method.md>>>
+<<<tests/test_assemble_bounded_instruction_sections.py>>>
+import unittest
+import json
+import io
+import sys
+from tools.assemble_bounded_instruction_sections import solve
+
+class TestAssembleSections(unittest.TestCase):
+    def run_tool(self, input_data):
+        # If input_data is a dict, convert to JSON string
+        if isinstance(input_data, dict):
+            input_str = json.dumps(input_data)
+        else:
+            input_str = input_data
+            
+        # Mock stdin
+        sys.stdin = io.StringIO(input_str)
+        
+        # Capture stdout
+        from io import StringIO
+        old_stdout = sys.stdout
+        sys.stdout = StringIO()
+        
+        solve()
+        
+        output_str = sys.stdout.getvalue().strip()
+        sys.stdout = old_stdout
+        return json.loads(output_str)
+
+    def test_success_case(self):
+        input_data = {
+            "budget": 20,
+            "sections": [
+                {"id": "s1", "text": "A", "cost": 5, "priority": 10, "mandatory": True},
+                {"id": "s2", "text": "B", "cost": 5, "priority": 5, "mandatory": False, "predecessors": ["s1"]},
+                {"id": "s3", "text": "C", "cost": 15, "priority": 100, "mandatory": False}
+            ]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "SUCCESS")
+        self.assertEqual(result["total_units"], 10)
+        self.assertIn("s1", [x["id"] for x in result["selected_sections"]])
+        self.assertIn("s2", [x["id"] for x in result["selected_sections"]])
+        self.assertNotIn("s3", [x["id"] for x in result["selected_sections"]])
+
+    def test_mandatory_over_budget(self):
+        input_data = {
+            "budget": 5,
+            "sections": [
+                {"id": "s1", "text": "A", "cost": 6, "priority": 1, "mandatory": True}
+            ]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "REFUSED")
+        self.assertEqual(result["code"], "ERR_MANDATORY_OVER_BUDGET")
+
+    def test_cyclic_constraint(self):
+        input_data = {
+            "budget": 100,
+            "sections": [
+                {"id": "s1", "text": "A", "cost": 1, "priority": 1, "predecessors": ["s2"]},
+                {"id": "s2", "text": "B", "cost": 1, "priority": 1, "predecessors": ["s1"]}
+            ]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "REFUSED")
+        self.assertEqual(result["code"], "ERR_CYCLIC_CONSTRAINT")
+
+    def test_type_mismatch_boolean(self):
+        # cost is boolean instead of int
+        input_data = {
+            "budget": 10,
+            "sections": [
+                {"id": "s1", "text": "A", "cost": True, "priority": 1}
+            ]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "REFUSED")
+        self.assertEqual(result["code"], "ERR_TYPE_MISMATCH")
+
+    def test_duplicate_key(self):
+        # Manual string to ensure duplicate key is passed to parser
+        input_str = '{"budget": 10, "budget": 20, "sections": []}'
+        result = self.run_tool(input_str)
+        self.assertEqual(result["status"], "REFUSED")
+        self.assertEqual(result["code"], "ERR_DUPLICATE_KEY")
+
+    def test_unicode_byte_offsets(self):
+        # "🚀" is 4 bytes in UTF-8
+        input_data = {
+            "budget": 10,
+            "sections": [
+                {"id": "u1", "text": "🚀", "cost": 1, "priority": 1},
+                {"id": "u2", "text": "A", "cost": 1, "priority": 1}
+            ]
+        }
+        result = self.run_tool(input_data)
+        self.assertEqual(result["status"], "SUCCESS")
+        # u1 is [0, 4], u2 is [4, 5]
+        self.assertEqual(result["selected_sections"][0]["byte_range"], [0, 4])
+        self.assertEqual(result["selected_sections"][1]["byte_range"], [4, 5])
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END tests/test_assemble_bounded_instruction_sections.py>>>
+<<<END DRAFT>>>

@@ -1,0 +1,20 @@
+{
+  "status": "SUCCESS",
+  "selected_sections": [
+    {
+      "id": "cost1",
+      "byte_range": [0, 8]
+    },
+    {
+      "id": "cost5",
+      "byte_range": [8, 16]
+    },
+    {
+      "id": "opt1",
+      "byte_range": [16, 25]
+    }
+  ],
+  "omitted_sections": ["opt2"],
+  "total_units": 15,
+  "assembled_text": "Step 1: Step 2: Optional."
+}

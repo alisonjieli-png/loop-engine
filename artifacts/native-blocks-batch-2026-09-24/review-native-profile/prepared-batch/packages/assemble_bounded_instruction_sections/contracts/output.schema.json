@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "title": "Success",
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "selected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "byte_range": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "required": ["id", "text", "byte_range"]
+          }
+        },
+        "omitted": { "type": "array", "items": { "type": "string" } },
+        "total_units": { "type": "integer" },
+        "budget": { "type": "integer" }
+      },
+      "required": ["status", "selected", "omitted", "total_units", "budget"]
+    },
+    {
+      "title": "Refusal",
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "code": { "type": "string" },
+        "field": { "type": "string" },
+        "id": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "required": ["status", "code"]
+    }
+  ]
+}

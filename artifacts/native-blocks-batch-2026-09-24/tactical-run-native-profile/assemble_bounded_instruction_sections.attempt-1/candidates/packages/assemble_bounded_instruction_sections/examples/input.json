@@ -1,0 +1,37 @@
+{
+  "budget": 100,
+  "sections": [
+    {
+      "id": "cost5",
+      "text": "Base setup.",
+      "cost": 5,
+      "mandatory": true,
+      "priority": 10,
+      "predecessors": []
+    },
+    {
+      "id": "cost6",
+      "text": "Advanced config.",
+      "cost": 6,
+      "mandatory": true,
+      "priority": 10,
+      "predecessors": ["cost5"]
+    },
+    {
+      "id": "opt1",
+      "text": "Optional extra.",
+      "cost": 20,
+      "mandatory": false,
+      "priority": 5,
+      "predecessors": []
+    },
+    {
+      "id": "opt2",
+      "text": "High priority extra.",
+      "cost": 50,
+      "mandatory": false,
+      "priority": 10,
+      "predecessors": ["opt1"]
+    }
+  ]
+}

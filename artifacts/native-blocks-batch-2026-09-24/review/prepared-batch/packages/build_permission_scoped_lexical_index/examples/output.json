@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "data": {
+    "results": [
+      {
+        "id": "doc_1",
+        "snippet": "An apple and a banana...."
+      },
+      {
+        "id": "doc_2",
+        "snippet": "Only an apple here...."
+      }
+    ],
+    "count": 2,
+    "corpus_digest": "6896666666666666666666666666666666666666666666666666666666666666",
+    "tokenizer_identity": "unicode_nfkc_casefold_whitespace"
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "record_type": "candidate_intelligence_specifications/v3",
+  "population": 1,
+  "populations": 1,
+  "specifications": [
+    {
+      "id": "query_codegraph_change_impact",
+      "layer": "code",
+      "family": "original_native_tool",
+      "title": "Query code graph change impact",
+      "tags": [
+        "query code graph change impact",
+        "harness workspace",
+        "native package",
+        "python"
+      ],
+      "text": "# Query code graph change impact\n\nGiven a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.\n",
+      "sources": [
+        "src/loop_engine/core/service_runtime/catalogue_packages.py",
+        "LICENSE"
+      ],
+      "symbols": [
+        "query_codegraph_change_impact"
+      ],
+      "kind": "tool",
+      "purpose": "Given a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.",
+      "styles": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "4e3e918f98d144dd81f47f2f26e92bc6884aac4c58ba6805b6796e3f1dc66115",
+            "size_bytes": 1196,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "CLAUDE.md",
+            "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+            "size_bytes": 11,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "347890dfb61bfeda7bb4cf2d8d29c741a5cf254de7d8bc1b805c0bd9da0b0019",
+            "size_bytes": 1205,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "1d3a3ed221bb9cf2d701779c10c7c23911a481f3f90e7cfd58f9628425a167b4",
+            "size_bytes": 1046,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "b3f4907eba4f95c7e58fce78f073e17dcb9d61c88e2b5f6bb83966af48ab3fdf",
+            "size_bytes": 486,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "cba76ea53405bc2ac25b4941002adee30e2e8af059d8797e15f5ce7a5b1a5d4e",
+            "size_bytes": 493,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "c7c870410662641cac213574881e1dc92137317d43cb29eac62d53eb268a83f7",
+            "size_bytes": 294,
+            "media_type": "application/json",
+            "role": "other"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "330034918bcf04d8b121017ff8401e5c9bc495ab55dc4d1a1260ad3c643cf277",
+            "size_bytes": 1551,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_query_codegraph_change_impact.py",
+            "digest": "b5ce7953637aa841baa3f5c0a32ed600c81ac75c2f04b812ea244da608d983a6",
+            "size_bytes": 3682,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/query_codegraph_change_impact.py",
+            "digest": "54af1b3a0da5a71c98d3adfdd562e83074689158e4f64fda0d65094f783b6181",
+            "size_bytes": 6050,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "verification/acceptance.json",
+            "digest": "b6ca0263ffea8868df0036627217dc5e7d3ba04e3b5df331fb2fc73ac7d94612",
+            "size_bytes": 2011,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          }
+        ]
+      },
+      "package_digest": "3ee6e92162ae28ee8f72e27634953da5d6d595a0c7bb454de365fe1c97cf1050",
+      "package_root": "packages/query_codegraph_change_impact",
+      "body_path": "bodies/query_codegraph_change_impact.package.json",
+      "provenance": {
+        "authoring": "original_assistant_authored",
+        "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+        "source_digests": {
+          "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+        },
+        "license": {
+          "expression": "MIT",
+          "path": "LICENSE",
+          "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+        }
+      }
+    }
+  ]
+}

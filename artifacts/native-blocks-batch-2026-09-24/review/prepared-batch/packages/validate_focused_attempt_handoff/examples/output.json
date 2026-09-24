@@ -1,0 +1,10 @@
+{
+  "status": "success",
+  "briefing": "First Action: read_file. Output Contract: ['summary.txt']",
+  "validated_state": {
+    "task_id": "task-123",
+    "attempt_id": 1,
+    "last_sequence": 2,
+    "current_state": "accepted"
+  }
+}

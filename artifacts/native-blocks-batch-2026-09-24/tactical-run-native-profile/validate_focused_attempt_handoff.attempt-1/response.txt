@@ -1,0 +1,467 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v2
+method_id: validate_focused_attempt_handoff
+<<<AGENTS.md>>>
+# Focused Attempt Handoff Validation
+
+This tool validates the integrity of a task handoff. It ensures that the sequence of events is contiguous, that state transitions are valid, and that "accepted" states are backed by external validator evidence.
+
+## Core Logic
+1. **Input Parsing**: Reads a UTF-8 JSON from `stdin`. Rejects if > 1MiB, contains duplicate keys, or non-finite numbers.
+2. **Type Strictness**: Rejects booleans where integers are expected (e.g., `sequence_number: true` is invalid).
+3. **Event Validation**:
+   - Sequence numbers must be contiguous starting from 0.
+   - No duplicate sequence numbers.
+   - No gaps in sequence.
+   - `accepted` state requires `validator_id` and `evidence_digest`.
+   - `candidate` state cannot transition to `accepted` without a different `validator_id`.
+4. **Briefing Generation**: Returns the first action and the required output contract.
+
+## Refusal Rules
+- **ERR_DUPLICATE_KEY**: JSON contains duplicate keys.
+- **ERR_NON_FINITE**: JSON contains `NaN` or `Infinity`.
+- **ERR_TYPE_MISMATCH**: Boolean used where integer/string expected.
+- **ERR_SEQUENCE_GAP**: Missing sequence number.
+- **ERR_SEQUENCE_DUPE**: Repeated sequence number.
+- **ERR_INVALID_STATE**: `accepted` without evidence or `candidate` self-accepting.
+- **ERR_SIZE_EXCEEDED**: Input > 1MiB.
+
+## Execution
+Invoke via `python3 tools/validate_focused_attempt_handoff.py`.
+<<<END AGENTS.md>>>
+<<<CLAUDE.md>>>
+@AGENTS.md
+<<<END CLAUDE.md>>>
+<<<tools/validate_focused_attempt_handoff.py>>>
+import sys
+import json
+import math
+
+def validate_handoff():
+    try:
+        # Read stdin
+        raw_data = sys.stdin.buffer.read()
+        if len(raw_data) > 1024 * 1024:
+            print(json.dumps({"status": "refused", "code": "ERR_SIZE_EXCEEDED"}), file=sys.stderr)
+            sys.exit(0)
+        
+        # Manual check for duplicate keys and non-finite numbers
+        # json.loads handles duplicates by taking the last one; we need to detect them.
+        # We use a custom decoder or a simple scan for the purpose of this tool.
+        
+        # To strictly detect duplicate keys without complex regex, we use a custom object_pairs_hook
+        def dict_with_check(pairs):
+            keys = []
+            for k, v in pairs:
+                if k in keys:
+                    raise ValueError("DUPLICATE_KEY")
+                keys.append(k)
+            return dict(pairs)
+
+        try:
+            data = json.loads(raw_data.decode('utf-8'), object_pairs_hook=dict_with_check)
+        except ValueError as e:
+            code = "ERR_DUPLICATE_KEY" if str(e) == "DUPLICATE_KEY" else "ERR_INVALID_JSON"
+            print(json.dumps({"status": "refused", "code": code}), file=sys.stderr)
+            sys.exit(0)
+
+        # Check for non-finite numbers
+        def check_finite(obj):
+            if isinstance(obj, float):
+                if not math.isfinite(obj):
+                    raise ValueError("NON_FINITE")
+            elif isinstance(obj, dict):
+                for v in obj.values(): check_finite(v)
+            elif isinstance(obj, list):
+                for v in obj: check_finite(v)
+        
+        try:
+            check_finite(data)
+        except ValueError:
+            print(json.dumps({"status": "refused", "code": "ERR_NON_FINITE"}, file=sys.stderr)
+            sys.exit(0)
+
+        # Required Fields
+        required = ["task_id", "attempt_id", "objective", "first_actions", "immutable_inputs", "required_output_paths", "authority_reference", "events"]
+        for field in required:
+            if field not in data:
+                print(json.dumps({"status": "refused", "code": "ERR_MISSING_FIELD", "field": field}), file=sys.stderr)
+                sys.exit(0)
+
+        # Type Strictness: Reject booleans where integers are required
+        # Specifically checking sequence_number in events
+        events = data["events"]
+        if not isinstance(events, list):
+            print(json.dumps({"status": "refused", "code": "ERR_TYPE_MISMATCH", "field": "events"}, file=sys.stderr)
+            sys.exit(0)
+
+        last_seq = -1
+        for i, event in enumerate(events):
+            seq = event.get("sequence_number")
+            
+            # Strict type check: seq must be int, not bool
+            if not isinstance(seq, int) or isinstance(seq, bool):
+                print(json.dumps({"status": "refused", "code": "ERR_TYPE_MISMATCH", "field": f"events[{i}].sequence_number"}, file=sys.stderr)
+                sys.exit(0)
+            
+            if seq != i:
+                if seq <= last_seq:
+                    print(json.dumps({"status": "refused", "code": "ERR_SEQUENCE_DUPE"}, file=sys.stderr)
+                    sys.exit(0)
+                else:
+                    print(json.dumps({"status": "refused", "code": "ERR_SEQUENCE_GAP"}, file=sys.stderr)
+                    sys.exit(0)
+            
+            last_seq = seq
+            
+            # State validation
+            state = event.get("state")
+            if state == "accepted":
+                v_id = event.get("validator_id")
+                ev_dig = event.get("evidence_digest")
+                if not v_id or not ev_dig:
+                    print(json.dumps({"status": "refused", "code": "ERR_INVALID_STATE", "reason": "missing_evidence"}, file=sys.stderr)
+                    sys.exit(0)
+                
+                # Candidate cannot self-accept
+                if i > 0 and events[i-1].get("state") == "candidate":
+                    if events[i-1].get("validator_id") == v_id:
+                        print(json.dumps({"status": "refused", "code": "ERR_INVALID_STATE", "reason": "candidate_self_accept"}, file=sys.stderr)
+                        sys.exit(0)
+
+        # Success Output
+        briefing = {
+            "first_action": data["first_actions"][0] if data["first_actions"] else None,
+            "output_contract": data["required_output_paths"]
+        }
+        
+        # Preserve unknown external-effect outcome
+        # We assume 'external_effects' might exist in the input
+        external_effects = data.get("external_effects", {})
+
+        result = {
+            "status": "success",
+            "briefing": briefing,
+            "passive_state": {
+                "task_id": data["task_id"],
+                "attempt_id": data["attempt_id"],
+                "current_state": events[-1]["state"] if events else "idle",
+                "external_effects": external_effects
+            }
+        }
+        print(json.dumps(result))
+
+    except Exception as e:
+        # Fallback for unexpected errors
+        print(json.dumps({"status": "refused", "code": "ERR_INTERNAL", "message": str(e)}))
+
+if __name__ == "__main__":
+    validate_handoff()
+<<<END tools/validate_focused_attempt_handoff.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HandoffInput",
+  "type": "object",
+  "properties": {
+    "task_id": { "$ref": "#/$defs/id_string" },
+    "attempt_id": { "$ref": "#/$defs/id_string" },
+    "objective": { "type": "string" },
+    "first_actions": { "type": "array", "items": { "type": "string" } },
+    "immutable_inputs": { "type": "object" },
+    "required_output_paths": { "type": "array", "items": { "type": "string" } },
+    "authority_reference": { "$ref": "#/$defs/id_string" },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sequence_number": { "type": "integer" },
+          "state": { "enum": ["running", "failed", "cancelled", "candidate", "accepted"] },
+          "validator_id": { "$ref": "#/$defs/id_string" },
+          "evidence_digest": { "type": "string" }
+        },
+        "required": ["sequence_number", "state"]
+      }
+    },
+    "external_effects": { "type": "object" }
+  },
+  "required": ["task_id", "attempt_id", "objective", "first_actions", "immutable_inputs", "required_output_paths", "authority_reference", "events"],
+  "$defs": {
+    "id_string": { "type": "string", "minLength": 1 }
+  }
+}
+<<<END contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HandoffOutput",
+  "oneOf": [
+    { "$ref": "#/$defs/success" },
+    { "$ref": "#/$defs/refusal" }
+  ],
+  "$defs": {
+    "success": {
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "briefing": {
+          "type": "object",
+          "properties": {
+            "first_action": { "type": ["string", "null"] },
+            "output_contract": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["first_action", "output_contract"]
+        },
+        "passive_state": {
+          "type": "object",
+          "properties": {
+            "task_id": { "type": "string" },
+            "attempt_id": { "type": "string" },
+            "current_state": { "type": "string" },
+            "external_effects": { "type": "object" }
+          },
+          "required": ["task_id", "attempt_id", "current_state", "external_effects"]
+        }
+      },
+      "required": ["status", "briefing", "passive_state"]
+    },
+    "refusal": {
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "code": { "type": "string" },
+        "field": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "required": ["status", "code"]
+    }
+  }
+}
+<<<END contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "task_id": "task-123",
+  "attempt_id": "att-001",
+  "objective": "Calculate pi",
+  "first_actions": ["initialize_constants"],
+  "immutable_inputs": {"precision": 10},
+  "required_output_paths": ["/out/pi.txt"],
+  "authority_reference": "auth-root",
+  "events": [
+    {
+      "sequence_number": 0,
+      "state": "running"
+    },
+    {
+      "sequence_number": 1,
+      "state": "candidate",
+      "validator_id": "val-01"
+    },
+    {
+      "sequence_number": 2,
+      "state": "accepted",
+      "validator_id": "val-02",
+      "evidence_digest": "sha256:abc"
+    }
+  ],
+  "external_effects": {"files_created": 1}
+}
+<<<END examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "briefing": {
+    "first_action": "initialize_constants",
+    "output_contract": ["/out/pi.txt"]
+  },
+  "passive_state": {
+    "task_id": "task-123",
+    "attempt_id": "att-001",
+    "current_state": "accepted",
+    "external_effects": {"files_created": 1}
+  }
+}
+<<<END examples/output.json>>>
+<<<verification/acceptance.json>>>
+[
+  {
+    "name": "Valid Handoff",
+    "input_file": "examples/input.json",
+    "expected_status": "success"
+  },
+  {
+    "name": "Sequence Gap",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": 0, "state": "running"}, {"sequence_number": 2, "state": "running"}]
+    },
+    "expected_code": "ERR_SEQUENCE_GAP"
+  },
+  {
+    "name": "Duplicate Sequence",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": 0, "state": "running"}, {"sequence_number": 0, "state": "running"}]
+    },
+    "expected_code": "ERR_SEQUENCE_DUPE"
+  },
+  {
+    "name": "Candidate Self-Accept",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [
+        {"sequence_number": 0, "state": "candidate", "validator_id": "v1"},
+        {"sequence_number": 1, "state": "accepted", "validator_id": "v1", "evidence_digest": "d1"}
+      ]
+    },
+    "expected_code": "ERR_INVALID_STATE",
+    "expected_reason": "candidate_self_accept"
+  },
+  {
+    "name": "Boolean instead of Integer",
+    "input": {
+      "task_id": "t", "attempt_id": "a", "objective": "o", "first_actions": ["a"],
+      "immutable_inputs": {}, "required_output_paths": [], "authority_reference": "r",
+      "events": [{"sequence_number": true, "state": "running"}]
+    },
+    "expected_code": "ERR_TYPE_MISMATCH"
+  }
+]
+<<<END verification/acceptance.json>>>
+<<<tests/test_validate_focused_attempt_handoff.py>>>
+import unittest
+import json
+import subprocess
+import sys
+import os
+
+# Add current dir to sys.path to allow importing tools if needed, 
+# but we will use subprocess to test the CLI behavior as requested.
+class TestValidateHandoff(unittest.TestCase):
+    def setUp(self):
+        self.tool_path = os.path.join(os.path.dirname(__file__), "..", "tools", "validate_focused_attempt_handoff.py")
+
+    def run_tool(self, input_data):
+        input_str = json.dumps(input_data)
+        process = subprocess.Popen(
+            [sys.executable, self.tool_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        stdout, stderr = process.communicate(input=input_str)
+        return stdout, stderr
+
+    def test_valid_handoff(self):
+        valid_input = {
+            "task_id": "t1",
+            "attempt_id": "a1",
+            "objective": "obj",
+            "first_actions": ["act1"],
+            "immutable_inputs": {},
+            "required_output_paths": ["p1"],
+            "authority_reference": "auth",
+            "events": [{"sequence_number": 0, "state": "running"}]
+        }
+        stdout, stderr = self.run_tool(valid_input)
+        result = json.loads(stdout)
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["briefing"]["first_action"], "act1")
+
+    def test_sequence_gap(self):
+        gap_input = {
+            "task_id": "t1", "attempt_id": "a1", "objective": "obj", "first_actions": ["act1"],
+            "immutable_inputs": {}, "required_output_paths": ["p1"], "authority_reference": "auth",
+            "events": [
+                {"sequence_number": 0, "state": "running"},
+                {"sequence_number": 2, "state": "running"}
+            ]
+        }
+        stdout, stderr = self.run_tool(gap_input)
+        result = json.loads(stdout)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["code"], "ERR_SEQUENCE_GAP")
+
+    def test_duplicate_sequence(self):
+        dupe_input = {
+            "task_id": "t1", "attempt_id": "a1", "objective": "obj", "first_actions": ["act1"],
+            "immutable_inputs": {}, "required_output_paths": ["p1"], "authority_reference": "auth",
+            "events": [
+                {"sequence_number": 0, "state": "running"},
+                {"sequence_number": 0, "state": "running"}
+            ]
+        }
+        stdout, stderr = self.run_tool(dupe_input)
+        result = json.loads(stdout)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["code"], "ERR_SEQUENCE_DUPE")
+
+    def test_boolean_type_mismatch(self):
+        # JSON standard allows true/false, but we reject them for sequence_number
+        bool_input = {
+            "task_id": "t1", "attempt_id": "a1", "objective": "obj", "first_actions": ["act1"],
+            "immutable_inputs": {}, "required_output_paths": ["p1"], "authority_reference": "auth",
+            "events": [{"sequence_number": True, "state": "running"}]
+        }
+        stdout, stderr = self.run_tool(bool_input)
+        result = json.loads(stdout)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["code"], "ERR_TYPE_MISMATCH")
+
+    def test_candidate_self_accept(self):
+        self_accept = {
+            "task_id": "t1", "attempt_id": "a1", "objective": "obj", "first_actions": ["act1"],
+            "immutable_inputs": {}, "required_output_paths": ["p1"], "authority_reference": "auth",
+            "events": [
+                {"sequence_number": 0, "state": "candidate", "validator_id": "v1"},
+                {"sequence_number": 1, "state": "accepted", "validator_id": "v1", "evidence_digest": "d1"}
+            ]
+        }
+        stdout, stderr = self.run_tool(self_accept)
+        result = json.loads(stdout)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["code"], "ERR_INVALID_STATE")
+        self.assertEqual(result["reason"], "candidate_self_accept")
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END tests/test_validate_focused_attempt_handoff.py>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "validate_focused_attempt_handoff",
+  "discovery_method": "explicit",
+  "python_requirement": ">=3.10",
+  "requested_effects": ["reads_fs", "spawns_process"],
+  "automatic_discovery_limits": "candidate",
+  "status": "candidate"
+}
+<<<END references/compatibility.json>>>
+<<<references/method.md>>>
+# Method: Validate Focused Attempt Handoff
+
+## Algorithm
+The validator performs a single-pass validation of the handoff JSON. It enforces strict typing to prevent ambiguity (e.g., distinguishing `1` from `true`). It verifies that the `events` array represents a linear, unbroken progression of states.
+
+## Conventions
+- **Sequence Numbers**: Must start at `0` and increment by exactly `1`.
+- **States**: `running`, `failed`, `cancelled`, `candidate`, `accepted`.
+- **Acceptance**: An `accepted` state is only valid if a `validator_id` and `evidence_digest` are provided, and the `validator_id` must differ from the `validator_id` of a preceding `candidate` state in the same sequence.
+
+## Bounds
+- **Input Size**: Max 1MiB.
+- **Complexity**: O(N) where N is the number of events.
+- **Memory**: O(N) to hold the event list.
+
+## Known-Wrong Approach
+A common mistake is to use `json.loads()` and assume `sequence_number: 1` and `sequence_number: true` are treated differently in a way that allows `true` to pass as an integer. In Python, `isinstance(True, int)` is `True`, so explicit `isinstance(x, bool)` checks are required to enforce strict integer types.
+
+## Limitations
+- Does not validate the *content* of the `evidence_digest` (it is treated as an opaque string).
+- Does not validate the `authority_reference` against a live registry.
+<<<END references/method.md>>>
+<<<END DRAFT>>>

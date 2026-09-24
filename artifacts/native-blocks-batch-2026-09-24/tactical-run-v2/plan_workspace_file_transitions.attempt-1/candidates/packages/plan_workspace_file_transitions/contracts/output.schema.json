@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Workspace Transition Output",
+  "oneOf": [
+    { "$ref": "#/definitions/success" },
+    { "$ref": "#/definitions/refusal" }
+  ],
+  "definitions": {
+    "success": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "action": { "enum": ["create", "update", "delete", "noop", "conflict"] },
+              "expected_digest": { "type": ["string", "null"] }
+            },
+            "required": ["path", "action", "expected_digest"]
+          }
+        }
+      },
+      "required": ["success"]
+    },
+    "refusal": {
+      "type": "object",
+      "properties": {
+        "refused": {
+          "type": "object",
+          "properties": {
+            "code": { "type": "string" },
+            "message": { "type": "string" }
+          },
+          "required": ["code", "message"]
+        }
+      },
+      "required": ["refused"]
+    }
+  }
+}

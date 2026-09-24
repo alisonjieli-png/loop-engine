@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "message": { "type": "string" }
+      },
+      "required": ["status", "message"]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "field": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["id", "field", "reason"]
+          }
+        }
+      },
+      "required": ["status", "code"]
+    }
+  ]
+}

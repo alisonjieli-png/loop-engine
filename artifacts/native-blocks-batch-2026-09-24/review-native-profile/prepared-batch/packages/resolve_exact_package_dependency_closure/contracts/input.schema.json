@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dependency Request",
+  "type": "object",
+  "properties": {
+    "requested_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "records": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "revision": { "type": "string" },
+          "digest": { "type": "string" },
+          "size": { "type": "integer" },
+          "dependencies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "effects": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["revision", "digest", "size"]
+      }
+    }
+  },
+  "required": ["requested_ids", "records"]
+}

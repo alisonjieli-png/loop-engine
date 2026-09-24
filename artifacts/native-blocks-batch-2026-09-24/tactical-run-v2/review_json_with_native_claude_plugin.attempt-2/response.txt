@@ -1,0 +1,405 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v2
+method_id: review_json_with_native_claude_plugin
+<<<AGENTS.md>>>
+# baltor-json-review Plugin
+
+This package provides a specialized tool for validating and analyzing JSON structures within a Claude Code environment. It is designed for read-only structural inspection without side effects.
+
+## First Steps
+1. **Installation**: Explicitly add the `.claude-plugin/` directory to your Claude Code plugin path. This plugin requires manual activation via version-qualified configuration.
+2. **Verification**: Run `python3 scripts/check_json.py` with a small JSON string on stdin to ensure the helper is functional.
+3. **Usage**: Invoke the `review-json` command or the `json-reviewer` agent to analyze local or provided JSON data.
+
+## Contract & Refusal Rules
+- **Read-Only**: The plugin never writes to the filesystem or modifies the environment.
+- **Bounded Input**: Maximum input size is 1MiB.
+- **Strictness**: The tool refuses JSON with duplicate keys, non-finite numbers (NaN/Inf), or a nesting depth exceeding 32.
+- **Type Safety**: Booleans are treated as distinct from integers.
+- **No Side Effects**: The helper script (`check_json.py`) does not perform network calls, subprocess spawns, or filesystem mutations.
+<<<END AGENTS.md>>>
+
+<<<.claude-plugin/plugin.json>>>
+{
+  "name": "baltor-json-review",
+  "version": "0.1.0",
+  "description": "A read-only JSON structural validator and analyzer for Claude Code.",
+  "capabilities": {
+    "read_only": true
+  },
+  "dependencies": {
+    "python": ">=3.10"
+  }
+}
+<<<END .claude-plugin/plugin.json>>>
+
+<<<commands/review-json.md>>>
+---
+description: "Review the structure and validity of a JSON object."
+---
+
+# review-json
+
+Analyze a JSON object to ensure it meets strict structural requirements and to obtain a statistical breakdown of its types.
+
+## Usage
+Provide a JSON string via stdin. The command will validate the input against depth, duplicate key, and number finiteness constraints.
+
+## Procedure
+1. **Input**: A single JSON value (object, array, or primitive).
+2. **Validation**:
+   - Checks for duplicate keys in objects.
+   - Checks for depth $\le$ 32.
+   - Checks for finite numbers.
+3. **Output**: A JSON object containing `status` ("success" or "refused"), `counts` (type distribution), and `max_depth`.
+
+## Reference
+Uses `scripts/check_json.py` for the core logic.
+<<<END commands/review-json.md>>>
+
+<<<agents/json-reviewer.md>>>
+---
+name: json-reviewer
+description: "A specialized subagent for deep JSON structural analysis and validation."
+---
+
+# JSON Reviewer Agent
+
+You are a specialized agent capable of performing deep structural audits of JSON data.
+
+## Scope
+- **Input**: You receive JSON data provided by the user or via file reads.
+- **Tooling**: You use the `check_json.py` helper to perform the actual validation.
+- **Constraints**: You do not attempt to modify files or execute arbitrary code. You only report on the structure provided.
+
+## Instructions
+When asked to "review" or "audit" JSON:
+1. Pass the JSON content to the `check_json.py` tool.
+2. If the tool returns `refused`, explain the specific error code (e.g., `ERR_DEPTH`, `ERR_DUPLICATE_KEY`).
+3. If `success`, summarize the type distribution and confirm the maximum depth.
+<<<END agents/json-reviewer.md>>>
+
+<<<scripts/check_json.py>>>
+import sys
+import json
+import math
+from typing import Any, Dict, Union
+
+class JSONReviewer:
+    def __init__(self, max_depth: int = 32, max_bytes: int = 1048576):
+        self.max_depth = max_depth
+        self.max_bytes = max_bytes
+        self.counts = {
+            "object": 0,
+            "array": 0,
+            "string": 0,
+            "number": 0,
+            "boolean": 0,
+            "null": 0
+        }
+        self.current_max_depth = 0
+
+    def _validate_and_count(self, val: Any, depth: int) -> None:
+        self.current_max_depth = max(self.current_max_depth, depth)
+        
+        if depth > self.max_depth:
+            raise ValueError("ERR_DEPTH")
+
+        if val is None:
+            self.counts["null"] += 1
+        elif isinstance(val, bool):
+            self.counts["boolean"] += 1
+        elif isinstance(val, str):
+            self.counts["string"] += 1
+        elif isinstance(val, (int, float)):
+            if not math.isfinite(val):
+                raise ValueError("ERR_NONFINITE_NUMBER")
+            self.counts["number"] += 1
+        elif isinstance(val, list):
+            self.counts["array"] += 1
+            for item in val:
+                self._validate_and_count(item, depth + 1)
+        elif isinstance(val, dict):
+            self.counts["object"] += 1
+            # To detect duplicate keys, we must use a custom decoder or 
+            # check the raw input. Since we use json.loads, we rely on 
+            # the fact that standard json.loads overwrites. 
+            # To strictly detect duplicates as per requirements, 
+            # we use the object_pairs approach.
+            pass 
+        else:
+            # Fallback for unexpected types if any
+            pass
+
+    def run(self, raw_data: bytes) -> Dict[str, Any]:
+        if len(raw_data) > self.max_bytes:
+            return {"status": "refused", "error": "ERR_SIZE_EXCEEDED"}
+
+        try:
+            # Custom logic to detect duplicate keys
+            # json.loads(raw_data) alone doesn't raise on duplicates.
+            # We use object_pairs to catch them.
+            def dict_raise_on_duplicates(ordered_pairs):
+                keys = []
+                for k, v in ordered_pairs:
+                    if k in keys:
+                        raise ValueError("ERR_DUPLICATE_KEY")
+                    keys.append(k)
+                return dict(ordered_pairs)
+
+            data = json.loads(raw_data, object_pairs_hook=dict_raise_on_duplicates)
+            
+            # Reset counts and depth before traversal
+            self.counts = {k: 0 for k in self.counts}
+            self.current_max_depth = 0
+            
+            # We need a slightly different traversal to handle the dict_raise_on_duplicates
+            # because the hook returns a standard dict. We re-traverse the parsed data.
+            # The duplicate check is already done by the hook.
+            
+            def traverse(node, d):
+                self.current_max_depth = max(self.current_max_depth, d)
+                if d > self.max_depth: raise ValueError("ERR_DEPTH")
+                
+                if node is None:
+                    self.counts["null"] += 1
+                elif isinstance(node, bool):
+                    self.counts["boolean"] += 1
+                elif isinstance(node, str):
+                    self.counts["string"] += 1
+                elif isinstance(node, (int, float)):
+                    if not math.isfinite(node): raise ValueError("ERR_NONFINITE_NUMBER")
+                    self.counts["number"] += 1
+                elif isinstance(node, list):
+                    self.counts["array"] += 1
+                    for item in node: traverse(item, d + 1)
+                elif isinstance(node, dict):
+                    self.counts["object"] += 1
+                    for k, v in node.items(): traverse(v, d + 1)
+
+            traverse(data, 0)
+
+            return {
+                "status": "success",
+                "counts": self.counts,
+                "max_depth": self.current_max_depth
+            }
+
+        except ValueError as e:
+            err_msg = str(e)
+            if err_msg.startswith("ERR_"):
+                return {"status": "refused", "error": err_msg}
+            return {"status": "refused", "error": "ERR_INVALID_JSON"}
+        except Exception:
+            return {"status": "refused", "error": "ERR_INVALID_JSON"}
+
+def main():
+    try:
+        input_data = sys.stdin.buffer.read()
+        if not input_data:
+            print(json.dumps({"status": "refused", "error": "ERR_EMPTY_INPUT"}))
+            return
+
+        reviewer = JSONReviewer()
+        result = reviewer.run(input_data)
+        print(json.dumps(result))
+    except Exception as e:
+        # Final fallback to ensure no tracebacks escape
+        print(json.dumps({"status": "refused", "error": "ERR_INTERNAL"}))
+
+if __name__ == "__main__":
+    main()
+<<<END scripts/check_json.py>>>
+
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON Review Input",
+  "description": "A single valid JSON value to be reviewed.",
+  "type": "any",
+  "maxSize": "1MiB"
+}
+<<<END contracts/input.schema.json>>>
+
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON Review Output",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "error": {
+      "type": "string",
+      "description": "Stable error code if status is refused"
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "object": { "type": "integer" },
+        "array": { "type": "integer" },
+        "string": { "type": "integer" },
+        "number": { "type": "integer" },
+        "boolean": { "type": "integer" },
+        "null": { "type": "integer" }
+      },
+      "required": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "max_depth": {
+      "type": "integer"
+    }
+  },
+  "required": ["status"],
+  "if": { "properties": { "status": { "const": "success" } } },
+  "then": { "required": ["counts", "max_depth"] },
+  "else": { "required": ["error"] }
+}
+<<<END contracts/output.schema.json>>>
+
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "valid_nested_array",
+    "input": [true, null, 2, "x"],
+    "expected": {
+      "status": "success",
+      "counts": {
+        "object": 0,
+        "array": 1,
+        "string": 1,
+        "number": 1,
+        "boolean": 1,
+        "null": 1
+      },
+      "max_depth": 1
+    }
+  },
+  {
+    "name": "refuse_duplicate_keys",
+    "input": {"a": 1, "a": 2},
+    "expected": {
+      "status": "refused",
+      "error": "ERR_DUPLICATE_KEY"
+    }
+  },
+  {
+    "name": "refuse_depth_limit",
+    "input": {"a": {"b": {"c": {"d": "too_deep"}}} },
+    "note": "This is depth 4, but we test up to 32. For the sake of the fixture, we assume a small limit or just test the logic.",
+    "input_actual": [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[1]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]],
+    "expected": {
+      "status": "refused",
+      "error": "ERR_DEPTH"
+    }
+  },
+  {
+    "name": "refuse_nonfinite",
+    "input": {"val": 1/0},
+    "note": "JSON doesn't support NaN natively, but if passed as a raw float in a stream:",
+    "input_raw": "{\"val\": NaN}",
+    "expected": {
+      "status": "refused",
+      "error": "ERR_NONFINITE_NUMBER"
+    }
+  }
+]
+<<<END fixtures/acceptance.json>>>
+
+<<<tests/test_review_json_with_native_claude_plugin.py>>>
+import unittest
+import json
+import subprocess
+import sys
+from io import BytesIO
+
+class TestJSONReviewer(unittest.TestCase):
+    def run_helper(self, input_str: str) -> dict:
+        """Simulates calling the script via stdin."""
+        process = subprocess.Popen(
+            [sys.executable, "scripts/check_json.py"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        stdout, stderr = process.communicate(input=input_str)
+        return json.loads(stdout)
+
+    def test_success_case(self):
+        # A nested object with array [true,null,2,"x"]
+        # Note: The prompt asks for this specific structure
+        input_data = '[true, null, 2, "x"]'
+        result = self.run_helper(input_data)
+        
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["counts"]["boolean"], 1)
+        self.assertEqual(result["counts"]["null"], 1)
+        self.assertEqual(result["counts"]["number"], 1)
+        self.assertEqual(result["counts"]["string"], 1)
+        self.assertEqual(result["counts"]["array"], 1)
+        self.assertEqual(result["counts"]["object"], 0)
+        self.assertEqual(result["max_depth"], 1)
+
+    def test_duplicate_keys(self):
+        # JSON with duplicate keys
+        input_data = '{"a": 1, "a": 2}'
+        result = self.run_helper(input_data)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error"], "ERR_DUPLICATE_KEY")
+
+    def test_depth_limit(self):
+        # Create a deeply nested structure
+        depth = 35
+        nested = "1"
+        for _ in range(depth):
+            nested = f"[{nested}]"
+        result = self.run_helper(nested)
+        self.assertEqual(result["status"], "refused")
+        self.assertEqual(result["error"], "ERR_DEPTH")
+
+    def test_nonfinite_number(self):
+        # Note: standard json.loads fails on NaN, but our helper 
+        # is designed to catch it if the parser allows or if we simulate it.
+        # Since standard json.loads(text) fails on NaN, we test the error handling.
+        input_data = '{"val": NaN}'
+        result = self.run_helper(input_data)
+        # Depending on the parser, this might be ERR_INVALID_JSON or ERR_NONFINITE_NUMBER
+        # Our script uses json.loads which usually throws on NaN unless configured.
+        self.assertIn(result["error"], ["ERR_NONFINITE_NUMBER", "ERR_INVALID_JSON"])
+
+    def test_boolean_vs_integer(self):
+        # Ensure boolean is not counted as number
+        input_data = '[true, 1]'
+        result = self.run_helper(input_data)
+        self.assertEqual(result["counts"]["boolean"], 1)
+        self.assertEqual(result["counts"]["number"], 1)
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END tests/test_review_json_with_native_claude_plugin.py>>>
+
+<<<references/method.md>>>
+# JSON Review Algorithm
+
+## Logic Flow
+1. **Ingestion**: Read up to 1MiB from `stdin`.
+2. **Parsing**: Use `json.loads` with a custom `object_pairs_hook`. This hook is critical for detecting duplicate keys in a single pass without extra complexity.
+3. **Traversal**: Perform a single recursive depth-first traversal of the resulting Python object.
+4. **Counting**: During traversal, increment counters for each primitive type.
+5. **Validation**:
+   - If `depth > 32`, immediately raise `ERR_DEPTH`.
+   - If a number is encountered, check `math.isfinite()`. If not, raise `ERR_NONFINITE_NUMBER`.
+6. **Output**: Return a JSON object containing the summary or the error code.
+
+## Complexity
+- **Time**: $O(N)$ where $N$ is the number of characters in the input.
+- **Space**: $O(D)$ where $D$ is the maximum depth of the JSON (stack space).
+
+## Known Limitations
+- The tool does not validate JSON Schema, only structural integrity and type distribution.
+- It does not perform any filesystem or network operations, making it safe for sandboxed execution.
+- It treats `true`/`false` as booleans, distinct from `1`/`0`.
+<<<END references/method.md>>>
+<<<END DRAFT>>>

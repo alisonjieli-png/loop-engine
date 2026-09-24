@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "JSON Review Output",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "refused"]
+    },
+    "error": {
+      "type": "string",
+      "description": "Stable error code if status is refused"
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "object": { "type": "integer" },
+        "array": { "type": "integer" },
+        "string": { "type": "integer" },
+        "number": { "type": "integer" },
+        "boolean": { "type": "integer" },
+        "null": { "type": "integer" }
+      },
+      "required": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "max_depth": {
+      "type": "integer"
+    }
+  },
+  "required": ["status"],
+  "if": { "properties": { "status": { "const": "success" } } },
+  "then": { "required": ["counts", "max_depth"] },
+  "else": { "required": ["error"] }
+}

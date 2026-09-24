@@ -1,0 +1,11 @@
+{
+  "name": "baltor-json-review",
+  "version": "0.1.0",
+  "description": "A read-only JSON structural validator and analyzer for Claude Code.",
+  "capabilities": {
+    "read_only": true
+  },
+  "dependencies": {
+    "python": ">=3.10"
+  }
+}

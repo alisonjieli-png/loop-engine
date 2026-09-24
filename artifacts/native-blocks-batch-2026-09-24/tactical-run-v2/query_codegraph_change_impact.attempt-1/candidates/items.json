@@ -1,0 +1,135 @@
+{
+  "record_type": "starter_catalogue_candidate_items/v3",
+  "source_revision": "23c063fa7767666944200c327ba42f24183b531b",
+  "source_digests": {
+    "LICENSE": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+    "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77"
+  },
+  "publication": "not_published",
+  "items": [
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "query_codegraph_change_impact",
+        "kind": "tool",
+        "purpose": "Given a bounded graph snapshot of unique symbol ids, source file digests/ranges and directed depends_on edges (consumer to dependency), report reverse-reachable consumers of changed symbols using breadth-first traversal.",
+        "digest": "79a5923c492da0d44fa83526b8e849d75bf210220e7a05b55e198c8794267d42",
+        "source_layer": "harness_local",
+        "source_ref": "src/loop_engine/core/service_runtime/catalogue_packages.py@23c063fa7767666944200c327ba42f24183b531b",
+        "family": "harness",
+        "size_bytes": 1903,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [
+          "codex",
+          "claude",
+          "opencode",
+          "pi"
+        ],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "domain": [
+            "software"
+          ],
+          "language": [
+            "en"
+          ],
+          "lifecycle": [
+            "candidate"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/query_codegraph_change_impact.package.json",
+      "package": {
+        "body_form": "package",
+        "files": [
+          {
+            "path": "AGENTS.md",
+            "digest": "827f8f36a5067e0c6cf05c18add5f025068ba5708aa0465d2a27a2720d9c558c",
+            "size_bytes": 1503,
+            "media_type": "text/markdown",
+            "role": "instruction_file"
+          },
+          {
+            "path": "contracts/input.schema.json",
+            "digest": "a38f035684d9d9f161c6bae5ebba9b3df545beee59543390d8135dbdfc6b11cd",
+            "size_bytes": 1488,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "contracts/output.schema.json",
+            "digest": "0ddee35bd1dbc5c2eda52522d482c7f41d85f10dbb997745f2096e19cfa53383",
+            "size_bytes": 1350,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "examples/input.json",
+            "digest": "5e1a0ce9ab918b8f9b87652911cb5f9144e31fea89d0a081eff4c7d36149a4e3",
+            "size_bytes": 532,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "examples/output.json",
+            "digest": "4fda3e705f8b7da310889f70a6fdc69c65667a50dfda0d86a69c4807d703feb4",
+            "size_bytes": 414,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "fixtures/acceptance.json",
+            "digest": "664d298cc607de69ff6fd4dfadd353e79e14098d9304800314a0f772cdcc8883",
+            "size_bytes": 1355,
+            "media_type": "application/json",
+            "role": "skill_asset"
+          },
+          {
+            "path": "references/compatibility.json",
+            "digest": "3a4d445e33c7b7865087a7888f4ed37593b2a31bac1735f56b1f288327505c97",
+            "size_bytes": 284,
+            "media_type": "application/json",
+            "role": "configuration"
+          },
+          {
+            "path": "references/method.md",
+            "digest": "2257967f62447d06e99525a9b4bf5ac24ff968ecf4be66bef20d58d3e1add41b",
+            "size_bytes": 2045,
+            "media_type": "text/markdown",
+            "role": "skill_reference"
+          },
+          {
+            "path": "tests/test_query_codegraph_change_impact.py",
+            "digest": "c0ccb9fba3f1f6c660879474309c927855a23af12344292c6a5b3d9c5f141833",
+            "size_bytes": 4433,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          },
+          {
+            "path": "tools/query_codegraph_change_impact.py",
+            "digest": "0d87e3e6f2fcbdb9fab030c280d189df5c835afac4f801a7dfdcca8a221e771e",
+            "size_bytes": 8818,
+            "media_type": "text/x-python",
+            "role": "executable_tool"
+          }
+        ]
+      },
+      "package_root": "packages/query_codegraph_change_impact",
+      "producer": {
+        "family": "google",
+        "method_identity": "original_native_generation/v1",
+        "producer_identity": "tactical:gemma-4-coding-abliterated"
+      },
+      "dependencies": [
+        "python>=3.10"
+      ]
+    }
+  ]
+}

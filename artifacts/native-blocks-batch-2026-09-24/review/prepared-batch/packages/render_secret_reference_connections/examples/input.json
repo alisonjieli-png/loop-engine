@@ -1,0 +1,6 @@
+{
+  "server_id": "mcp-remote-01",
+  "url": "https://api.example.com/v1/mcp",
+  "env_var_name": "MCP_SECRET_TOKEN",
+  "target_profile": "claude"
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Valid Codex Profile",
+    "input": {
+      "server_id": "codex_srv",
+      "url": "https://mcp.io/connect",
+      "env_var_name": "API_KEY",
+      "target_profile": "codex"
+    },
+    "expected_status": "success",
+    "expected_data": {
+      "server_id": "codex_srv",
+      "url": "https://mcp.io/connect",
+      "bearer_token_env_var": "API_KEY"
+    }
+  },
+  {
+    "name": "Refuse URL with Userinfo",
+    "input": {
+      "server_id": "bad_url",
+      "url": "https://user:pass@mcp.io",
+      "env_var_name": "KEY",
+      "target_profile": "claude"
+    },
+    "expected_status": "refused",
+    "expected_error": "URL_HAS_USERINFO"
+  },
+  {
+    "name": "Refuse Non-HTTPS",
+    "input": {
+      "server_id": "http_srv",
+      "url": "http://mcp.io",
+      "env_var_name": "KEY",
+      "target_profile": "claude"
+    },
+    "expected_status": "refused",
+    "expected_error": "INVALID_SCHEME"
+  },
+  {
+    "name": "Refuse Duplicate Keys",
+    "input_raw": '{"server_id": "a", "server_id": "b", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude"}',
+    "expected_status": "refused",
+    "expected_error": "DUPLICATE_KEY"
+  },
+  {
+    "name": "Refuse Non-Finite Number",
+    "input_raw": '{"server_id": "a", "url": "https://x.com", "env_var_name": "K", "target_profile": "claude", "extra": NaN}',
+    "expected_status": "refused",
+    "expected_error": "NON_FINITE_NUMBER"
+  }
+]

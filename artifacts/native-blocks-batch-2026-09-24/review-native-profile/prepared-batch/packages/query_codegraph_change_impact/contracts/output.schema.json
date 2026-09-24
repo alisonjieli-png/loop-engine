@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Code Graph Change Impact Output",
+  "type": "object",
+  "properties": {
+    "status": { "enum": ["success", "refused"] },
+    "error": { "type": "string" },
+    "results": {
+      "type": "object",
+      "properties": {
+        "impacted_symbols": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol_id": { "type": "string" },
+              "distance": { "type": "integer" },
+              "witness_path": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["symbol_id", "distance", "witness_path"]
+          }
+        },
+        "truncated": { "type": "boolean" },
+        "nodes_processed": { "type": "integer" }
+      },
+      "required": ["impacted_symbols", "truncated", "nodes_processed"]
+    }
+  },
+  "oneOf": [
+    { "required": ["status", "results"] },
+    { "required": ["status", "error"] }
+  ]
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Valid transformation with allowed change",
+    "input": {
+      "before": [{"id": "1", "val": 10, "tag": "x"}],
+      "after": [{"id": "1", "val": 20, "tag": "x"}],
+      "contract": {"id_field": "id", "preserved_fields": ["tag"], "allowed_changes": ["val"], "integer_totals": ["val"]}
+    },
+    "expected": {"status": "success"}
+  },
+  {
+    "name": "Reject preserved field change (type mismatch)",
+    "input": {
+      "before": [{"id": "1", "flag": true}],
+      "after": [{"id": "1", "flag": 1}],
+      "contract": {"id_field": "id", "preserved_fields": ["flag"]}
+    },
+    "expected": {"status": "refused", "code": "INVARIANT_VIOLATION"}
+  },
+  {
+    "name": "Reject unauthorized field change",
+    "input": {
+      "before": [{"id": "1", "meta": "old"}],
+      "after": [{"id": "1", "meta": "new"}],
+      "contract": {"id_field": "id", "preserved_fields": [], "allowed_changes": []}
+    },
+    "expected": {"status": "refused", "code": "INVARIANT_VIOLATION"}
+  },
+  {
+    "name": "Reject integer total mismatch",
+    "input": {
+      "before": [{"id": "1", "sum": 10}, {"id": "2", "sum": 10}],
+      "after": [{"id": "1", "sum": 10}, {"id": "2", "sum": 11}],
+      "contract": {"id_field": "id", "integer_totals": ["sum"]}
+    },
+    "expected": {"status": "refused", "code": "TOTAL_MISMATCH"}
+  },
+  {
+    "name": "Reject boolean in integer total",
+    "input": {
+      "before": [{"id": "1", "sum": true}],
+      "after": [{"id": "1", "sum": 1}],
+      "contract": {"id_field": "id", "integer_totals": ["sum"]}
+    },
+    "expected": {"status": "refused", "code": "NON_INTEGER_TOTAL"}
+  }
+]

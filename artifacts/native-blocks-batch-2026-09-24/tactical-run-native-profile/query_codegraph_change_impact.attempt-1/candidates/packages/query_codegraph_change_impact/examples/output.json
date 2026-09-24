@@ -1,0 +1,24 @@
+{
+  "status": "success",
+  "results": {
+    "impacted_symbols": [
+      {
+        "symbol_id": "sym_b",
+        "distance": 1,
+        "witness_path": ["sym_a", "sym_b"]
+      },
+      {
+        "symbol_id": "sym_c",
+        "distance": 2,
+        "witness_path": ["sym_a", "sym_b", "sym_c"]
+      },
+      {
+        "symbol_id": "sym_d",
+        "distance": 3,
+        "witness_path": ["sym_a", "sym_b", "sym_c", "sym_d"]
+      }
+    ],
+    "truncated": false,
+    "nodes_processed": 4
+  }
+}

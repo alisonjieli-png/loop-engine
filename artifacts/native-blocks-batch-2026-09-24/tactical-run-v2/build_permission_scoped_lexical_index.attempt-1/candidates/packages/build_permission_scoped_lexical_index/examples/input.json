@@ -1,0 +1,26 @@
+{
+  "mode": "query",
+  "tenant_id": "tenant_a",
+  "min_distinct_matches": 1,
+  "query_terms": ["apple", "banana"],
+  "documents": [
+    {
+      "id": "doc_1",
+      "text": "An apple and a banana.",
+      "tenant_id": "tenant_a",
+      "source_hash": "hash1"
+    },
+    {
+      "id": "doc_2",
+      "text": "Only an apple here.",
+      "tenant_id": "tenant_a",
+      "source_hash": "hash2"
+    },
+    {
+      "id": "doc_3",
+      "text": "Banana split with apple.",
+      "tenant_id": "tenant_b",
+      "source_hash": "hash3"
+    }
+  ]
+}
