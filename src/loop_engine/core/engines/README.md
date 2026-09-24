@@ -13,6 +13,14 @@ Naming rule: one module for each part of the framework, named without an
 table module names engine classes and defines none; an engine module holds
 exactly one engine and lives in the folder its slot names.
 
+What is here: the engine records (`records.py`, `host_records.py`,
+`selection_records.py`, `decision_records.py`), the slot catalogue and its
+joins (`slots.py`, `slot_index.py`), selection for every slot
+(`selection.py`), attempt assessment and fallback (`fallback.py`) and the
+evidence that may order engines (`evidence.py`), each with its checks
+module. The guide is
+[Engine selection for every engine slot](../../../../docs/components/core-architecture/ENGINE-SELECTION.md).
+
 Version rule: every record is `name/vN`. Readers refuse unknown keys and
 unsupported versions before any effect, and a record that an older release
 must not honour gets a new version.

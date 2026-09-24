@@ -1199,9 +1199,9 @@ slots:
     inventory_records: [E23, E12]
     roadmap_steps: [S-6.30]
     implementation_state: candidate
-    work_boundaries: [configuration preference resolution, assignment harness selection]
-    planned_work_boundaries:
-      - {boundary: component engine selection, added_by: F3}
+    work_boundaries: [configuration preference resolution, assignment harness selection,
+                      component engine selection]
+    planned_work_boundaries: []
     release_reason: ""
     release_edge: ""
     interactions: [core.interaction.ranking.order_eligible_choices]
@@ -1243,8 +1243,10 @@ slots:
     existing_checks:
       - core.configuration_preference_checks:preference_cannot_restore_a_hard_rejected_harness
       - core.configuration_preference_checks:active_selector_cycle_refuses_without_fallback
-    planned_checks: [ranking_policy_must_end_with_the_declared_order,
-                     engine_selection_needs_no_selection_to_start]
+      - core.configuration_preference_checks:insufficient_evidence_is_recorded_as_a_fallback_not_an_engine_failure
+      - core.engines.selection_records_checks:ranking_policy_must_end_with_the_declared_order
+      - core.engines.selection_checks:engine_selection_needs_no_selection_to_start
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: configuration_setter
     slot_version: 1.0.0

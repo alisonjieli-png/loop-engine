@@ -79,6 +79,7 @@ MODULE_MAP = {
         "__init__", "records", "host_records", "selection_records", "decision_records",
         "records_checks", "selection_records_checks",
         "slots", "slot_index", "slot_checks",
+        "selection", "fallback", "selection_checks", "evidence", "evidence_checks",
     ),
     "core.step_execution": ("__init__",),
     "ontology": (

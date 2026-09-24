@@ -1,7 +1,7 @@
 """Offline checks for the engine selection records and every engine record's reader.
 
 Covers engine_selection_policy/v1, engine_selection_override/v1 and
-engine_selection_decision/v1, and the two rules every one of the ten engine
+engine_selection_decision/v2, and the two rules every one of the ten engine
 records keeps: its reader refuses unknown fields and unsupported versions
 before any effect, and it round-trips with an identical digest. Each check
 names its known-wrong case; each removed-guard control deletes one guard and
@@ -81,7 +81,8 @@ def decision(**changes) -> EngineSelectionDecision:
         propensity=Propensity(1, 1), fallbacks=("goose",), no_fallback=False, transition=None,
         consumed=ConsumedAuthority(0, 0, 0, 0.0, "known", 0.0), status="selected",
         selection_loop_id="fixture.loop2", as_of="2026-09-22T12:00:00Z", binding_site="runtime_context_internal",
-        parent_decision_digest="")
+        parent_decision_digest="", selection_basis="preferred", selection_path="first_choice",
+        request_digest=digest("selection request"))
     return replace(base, **changes)
 
 
@@ -92,7 +93,8 @@ def fallback_decision(**transition_changes) -> EngineSelectionDecision:
         "the step runs on the next declared engine", ("model_access",)), **transition_changes)
     return decision(phase="fallback", ranking=None, fallbacks=(), transition=transition,
                     selected=SelectedEngine("goose", goose.engine_ref, goose.content_digest),
-                    consumed=ConsumedAuthority(1, 120, 40, 2.5, "known", 0.01))
+                    consumed=ConsumedAuthority(1, 120, 40, 2.5, "known", 0.01),
+                    selection_path="fallback_after:" + transition.failure_kind)
 
 
 def every_record() -> tuple:
@@ -137,12 +139,15 @@ def rich_records() -> tuple:
     harness_exclude = override(sender=HARNESS, source_kind="intelligence_proposal", kind="exclude")
     objective = override(kind="objective", installations=(), objective="elapsed_seconds")
     outside = EligibilityEntry("cline", (EligibilityRefusal("engine_not_installed", "not in the host file"),))
+    # Evidence moved opencode ahead of the host's declared first choice, goose.
     evidenced = decision(
-        override=(override(kind="prefer", installations=("opencode",)),),
-        eligibility=decision().eligibility + (outside,), propensity=Propensity(1, 20),
+        override=(objective,), declared_order=("goose", "opencode"), order_without_override=("goose", "opencode"),
+        ranking=ranking_record(("opencode", "goose")), fallbacks=("goose",),
+        eligibility=decision().eligibility + (outside,), propensity=Propensity(1, 1),
         evidence=EvidenceUse("ranked_matched_reviewed_evidence", True, {"loss_upper_bound": 0.04, "tail": 0.01},
                              digest("snapshot"), ("history/run-1", "history/run-2"), "adoption/fixture.json"),
-        consumed=ConsumedAuthority(3, None, None, 1.5, "unknown", None), parent_decision_digest=digest("parent"))
+        consumed=ConsumedAuthority(3, None, None, 1.5, "unknown", None), parent_decision_digest=digest("parent"),
+        selection_basis="automatic", selection_path="evidence_reordered")
     return ((EngineDescriptor, engine), (EngineInstallation, installed), (EngineQualification, reviewed),
             (EngineRetirement, retired_version), (EngineSelectionPolicy, ranked),
             (EngineSelectionOverride, harness_exclude), (EngineSelectionOverride, objective),
@@ -161,6 +166,12 @@ def rich_records() -> tuple:
                 FamilyPolicyInForce("service_host_family_policy/v1", digest("family"), "declared by the host"))))
 
 
+def _next_version(record_type: str) -> str:
+    """The version after the one this release reads, which it must refuse."""
+    name, _, version = record_type.rpartition("/v")
+    return f"{name}/v{int(version) + 1}"
+
+
 def _changed(record: dict, **changes) -> dict:
     value = json.loads(json.dumps(record))
     value.update(changes)
@@ -177,7 +188,7 @@ def readers_refuse_unknown_fields_and_versions() -> bool:
         first = next(key for key in record if key != "record_type")
         missing = {key: item for key, item in record.items() if key != first}
         if not (refused(lambda: kind.from_dict(_changed(record, unexpected=1)), "unknown_record_fields")
-                and refused(lambda: kind.from_dict(_changed(record, record_type=name + "/v2")),
+                and refused(lambda: kind.from_dict(_changed(record, record_type=_next_version(record["record_type"]))),
                             "unsupported_record_version")
                 and refused(lambda: kind.from_dict(_changed(record, record_type="engine_unknown/v1")),
                             "unknown_record_type")
@@ -323,7 +334,8 @@ def decision_orders_only_eligible_installations() -> bool:
                                      order_without_override=("opencode", "cline")), "ineligible_engine_ordered")
             and refused(lambda: decision(override=(pinned,)), "pin_substituted")
             and accepted(lambda: decision(override=(override(kind="pin", installations=("opencode",)),),
-                                          fallbacks=())))
+                                          fallbacks=(), no_fallback=True, selection_basis="pinned",
+                                          selection_path="override_pin")))
 
 
 def fallback_follows_only_a_declared_failure() -> bool:
@@ -334,7 +346,8 @@ def fallback_follows_only_a_declared_failure() -> bool:
             and refused(lambda: fallback_decision(accounting_uncertain=True), "fallback_not_permitted")
             and accepted(fallback_decision)
             and accepted(lambda: decision(phase="fallback", status="terminal_failure", selected=None,
-                                          propensity=None, ranking=None, fallbacks=(), transition=terminal)))
+                                          propensity=None, ranking=None, fallbacks=(), transition=terminal,
+                                          no_fallback=True, selection_path="no_choice")))
 
 
 def an_initial_selection_keeps_its_ranking() -> bool:
@@ -492,6 +505,71 @@ def a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent() -> boo
     )) and accepted(decision) and accepted(fallback_decision)
 
 
+def the_selection_basis_agrees_with_the_overrides_and_the_evidence() -> bool:
+    """Known wrong (functional component standard LE-SELECT-005): automatic recorded
+    while a declared order only override applied; automatic with no evidence used;
+    pinned with two declared engines and no pin; a pin that still names fallbacks."""
+    only_declared = override(kind="declared_order_only", installations=())
+    pin = override(kind="pin", installations=("opencode",))
+    return (refused(lambda: decision(selection_basis="automatic"), "selection_basis_disagrees")
+            and refused(lambda: decision(override=(only_declared,), selection_basis="automatic"),
+                        "selection_basis_disagrees")
+            and refused(lambda: decision(declared_order=("opencode", "goose"),
+                                         order_without_override=("opencode", "goose"),
+                                         ranking=ranking_record(("opencode", "goose")), fallbacks=(),
+                                         no_fallback=True, selection_basis="pinned"), "selection_basis_disagrees")
+            and refused(lambda: decision(override=(pin,), selection_path="override_pin"), "pin_substituted")
+            and refused(lambda: decision(override=(pin,), fallbacks=(), selection_basis="pinned",
+                                         selection_path="override_pin"), "selection_basis_disagrees")
+            and refused(lambda: decision(override=(pin,), fallbacks=(), no_fallback=True,
+                                         selection_path="override_pin"), "selection_basis_disagrees")
+            and accepted(lambda: decision(override=(only_declared,)))
+            and accepted(lambda: decision(fallbacks=(), no_fallback=True, selection_basis="pinned")))
+
+
+def the_selection_path_names_how_the_engine_was_reached() -> bool:
+    """Known wrong: an evidence path for an order evidence did not change; a first-choice
+    path for a pinned or a fallback choice; a fallback path without its failure kind;
+    a chosen path on a decision that chose nothing."""
+    pin = override(kind="pin", installations=("opencode",))
+    return (refused(lambda: decision(selection_path="evidence_reordered"), "selection_path_disagrees")
+            and refused(lambda: decision(override=(pin,), fallbacks=(), no_fallback=True,
+                                         selection_basis="pinned"), "selection_path_disagrees")
+            and refused(lambda: replace(fallback_decision(), selection_path="first_choice"),
+                        "selection_path_disagrees")
+            and refused(lambda: decision(selection_path="fallback_after"), "invalid_vocabulary")
+            and refused(lambda: decision(selection_path="fallback_after:operator_whim"), "invalid_vocabulary")
+            and refused(lambda: decision(status="no_eligible_engine", selected=None, propensity=None,
+                                         declared_order=(), order_without_override=(), fallbacks=(),
+                                         no_fallback=True, ranking=None,
+                                         eligibility=tuple(EligibilityEntry(item.installation_id, (
+                                             EligibilityRefusal("engine_unavailable", ""),))
+                                             for item in decision().eligibility)),
+                        "selection_path_disagrees")
+            and accepted(fallback_decision))
+
+
+def a_ranking_that_differs_from_the_declared_order_needs_evidence() -> bool:
+    """Known wrong (LE-SELECT-009): a declared order (opencode, goose) whose ranking
+    selects goose with evidence not requested and the order unchanged."""
+    goose = descriptor(engine_id="goose", engine_version="1.0.0")
+    both = dict(declared_order=("opencode", "goose"), order_without_override=("opencode", "goose"),
+                fallbacks=(), no_fallback=True)
+    return (refused(lambda: decision(**both, ranking=ranking_record(("goose", "opencode")),
+                                     selected=SelectedEngine("goose", goose.engine_ref, goose.content_digest)),
+                    "ranking_changed_without_evidence")
+            and accepted(lambda: decision(**both, ranking=ranking_record(("opencode", "goose")))))
+
+
+def propensity_follows_the_selection_path() -> bool:
+    """Known wrong (LE-SELECT-013): a declared-order first choice recorded at 1/2."""
+    return (refused(lambda: decision(propensity=Propensity(1, 2)), "propensity_follows_the_selection_path")
+            and refused(lambda: replace(fallback_decision(), propensity=Propensity(1, 3)),
+                        "propensity_follows_the_selection_path")
+            and refused(lambda: decision(request_digest="not a digest"), "invalid_digest")
+            and accepted(decision))
+
+
 CHECKS = (
     ("every_engine_record_refuses_unknown_keys_and_unsupported_versions",
      readers_refuse_unknown_fields_and_versions,
@@ -537,6 +615,17 @@ CHECKS = (
     ("a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent",
      a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent,
      (("removed_claimed_precedence_rule_is_detected", ((decision_records, "_refuse_claimed_precedence"),)),)),
+    ("a_decision_selection_basis_agrees_with_its_policy_overrides_and_evidence",
+     the_selection_basis_agrees_with_the_overrides_and_the_evidence,
+     (("removed_selection_basis_rule_is_detected", ((decision_records, "_require_basis_to_agree"),)),)),
+    ("a_decision_names_the_path_that_reached_its_engine", the_selection_path_names_how_the_engine_was_reached,
+     (("removed_selection_path_rule_is_detected", ((decision_records, "_require_path_to_agree"),)),)),
+    ("a_ranking_that_differs_from_the_declared_order_needs_evidence_that_changed_it",
+     a_ranking_that_differs_from_the_declared_order_needs_evidence,
+     (("removed_changed_order_evidence_rule_is_detected",
+       ((decision_records, "_require_evidence_for_a_changed_order"),)),)),
+    ("propensity_follows_the_selection_path", propensity_follows_the_selection_path,
+     (("removed_propensity_path_rule_is_detected", ((decision_records, "_require_propensity_to_follow_the_path"),)),)),
     # Rules written inline in the readers and records: source mutants confirm
     # that removing each one fails the check.
     ("every_part_of_every_engine_record_refuses_unknown_fields", every_part_of_every_record_refuses_unknown_fields,

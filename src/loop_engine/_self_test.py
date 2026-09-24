@@ -89,6 +89,7 @@ def self_test() -> dict:
         "code_nodes.overnight_night_checks", "overnight_cli",
         "core.saas_routes", "core.store_serve", "core.model_gateway", "core.settings_loader", "core.parameter_resolution", "core.configuration_setters", "core.configuration_preferences",
         "core.engines.records_checks", "core.engines.selection_records_checks", "core.engines.slot_checks",
+        "core.engines.selection_checks", "core.engines.evidence_checks",
         "core.live_dependency_checks", "core.capability_directory", "core.heuristic_adoption", "core.context_artifacts",
         "core.outcome_vector", "core.model_capabilities", "core.contract_matching", "core.model_response_admission",
         "core.model_response_admission_checks", "core.custom_endpoint", "core.custom_endpoint_checks",
