@@ -1,0 +1,116 @@
+{
+ "record_type": "licensed_import_sources/v1",
+ "curated_on": "2026-09-24",
+ "curated_by": "Claude Code, licensed import (S-2.27, S-6.81)",
+ "note": "Every place the licensed import may look for harness files. A source grants nothing: network reads need the operator's flag and every file still passes the licence gate on its own. Repositories are read at their head commit when the round runs, and that exact commit is recorded. The September 23 curation (src/loop_engine/core/library_ingestion/outside_sources.yaml) is carried forward: its repositories are here, and the four collections it dropped are excluded.",
+ "repositories": [
+  {"source_id": "curated.anthropics.skills", "repository": "anthropics/skills", "note": "No repository licence; each skill folder carries its own LICENSE.txt (Apache-2.0 for most, a source-available licence that forbids derivative works for the document skills). Decided file by file."},
+  {"source_id": "curated.anthropics.claude-plugins-official", "repository": "anthropics/claude-plugins-official", "note": "Anthropic's managed directory of Claude Code plugins, Apache-2.0 at the root; plugin folders may carry their own licences."},
+  {"source_id": "curated.anthropics.claude-code", "repository": "anthropics/claude-code", "note": "Its plugins folder holds Anthropic's example plugins under Anthropic's own terms; read so that copies of them elsewhere are recognized as restricted."},
+  {"source_id": "curated.openai.plugins", "repository": "openai/plugins", "note": "The active OpenAI plugin collection (openai/skills is deprecated in its favour). No repository licence; decided file by file."},
+  {"source_id": "curated.nvidia.skills", "repository": "NVIDIA/skills", "note": "NVIDIA's agent skills, Apache-2.0, published with signed releases and evaluations."},
+  {"source_id": "curated.obra.superpowers", "repository": "obra/superpowers", "note": "MIT; skills, commands, agents and hooks by the repository author."},
+  {"source_id": "curated.huggingface.skills", "repository": "huggingface/skills", "note": "Apache-2.0 skills."},
+  {"source_id": "curated.mattpocock.skills", "repository": "mattpocock/skills", "exclude": ["skills/in-progress/**"], "note": "MIT; drafts under skills/in-progress are left out."},
+  {"source_id": "curated.addyosmani.web-quality-skills", "repository": "addyosmani/web-quality-skills", "note": "MIT skills."},
+  {"source_id": "curated.blader.humanizer", "repository": "blader/humanizer", "note": "MIT, one skill at the repository root."},
+  {"source_id": "curated.vercel-labs.skills", "repository": "vercel-labs/skills", "note": "MIT; includes the find-skills skill of the skills command line."},
+  {"source_id": "curated.vercel-labs.agent-skills", "repository": "vercel-labs/agent-skills", "note": "No licence file on September 22; read so that its skills become idea records and their copies are recognized."},
+  {"source_id": "curated.fission-ai.openspec", "repository": "Fission-AI/OpenSpec", "note": "MIT."},
+  {"source_id": "curated.github.spec-kit", "repository": "github/spec-kit", "note": "MIT; skills, commands and templates for spec-driven work."},
+  {"source_id": "curated.nextlevelbuilder.ui-ux-pro-max-skill", "repository": "nextlevelbuilder/ui-ux-pro-max-skill", "note": "MIT; most skills bundle scripts, which multi-file packages now carry."},
+  {"source_id": "curated.k-dense-ai.claude-scientific-skills", "repository": "K-Dense-AI/claude-scientific-skills", "note": "MIT; nested licence files are decided file by file."},
+  {"source_id": "curated.wshobson.agents", "repository": "wshobson/agents", "note": "MIT; a marketplace of plugins with agents, commands and skills."},
+  {"source_id": "curated.affaan-m.everything-claude-code", "repository": "affaan-m/everything-claude-code", "exclude": ["docs/**", ".agents/**", ".kiro/**", ".cursor/**"], "note": "MIT; translated and per-harness copies under docs, .agents, .kiro and .cursor are left out."},
+  {"source_id": "curated.github.awesome-copilot", "repository": "github/awesome-copilot", "note": "MIT, contributions under MIT by its contributing guide: agents, prompts, instructions, chat modes, skills, hooks and plugins."},
+  {"source_id": "curated.patrickjs.awesome-cursorrules", "repository": "PatrickJS/awesome-cursorrules", "note": "CC0-1.0 Cursor rule files."},
+  {"source_id": "curated.juliusbrussee.caveman", "repository": "JuliusBrussee/caveman", "note": "The owner's seed caveman; its licence matched no template on September 22, so its skills are expected to be idea records."},
+  {"source_id": "curated.coleam00.excalidraw-diagram-skill", "repository": "coleam00/excalidraw-diagram-skill", "note": "No licence file on September 22; idea records only."},
+  {"source_id": "curated.trailofbits.skills", "repository": "trailofbits/skills", "note": "CC-BY-SA-4.0, share-alike and not on the allowlist; idea records only."},
+  {"source_id": "curated.google-gemini.gemini-cli", "repository": "google-gemini/gemini-cli", "note": "Apache-2.0; Gemini CLI's own context files, commands and extension examples."},
+  {"source_id": "curated.voltagent.awesome-claude-code-subagents", "repository": "VoltAgent/awesome-claude-code-subagents", "note": "A collection of subagent definitions; its licence is read at run time."},
+  {"source_id": "curated.schemastore.schemastore", "repository": "SchemaStore/schemastore", "kinds": ["contract_schema"], "include": ["src/schemas/json/*.json"], "note": "Apache-2.0 JSON schemas for configuration files, the contracts and schemas kind; only the schema folder."}
+ ],
+ "excluded_repositories": [
+  {"repository": "dallay/agents-skills", "note": "MIT at the root, but it holds copies of other authors' skills, so its root licence cannot stand in for theirs (September 22 curation)."},
+  {"repository": "sickn33/antigravity-awesome-skills", "note": "An aggregation of thousands of third-party skills under one root licence (September 22 curation)."},
+  {"repository": "jeremylongshore/claude-code-plugins-plus-skills", "note": "An aggregation of third-party and generated skills under one root licence (September 22 curation)."},
+  {"repository": "davila7/claude-code-templates", "note": "An aggregation of third-party components under one root licence (September 22 curation)."}
+ ],
+ "owner_seeds": [
+  {"source_id": "seed.obra.superpowers", "seed": "obra/superpowers", "repository": "obra/superpowers", "note": "Named with its owner in the screenshot."},
+  {"source_id": "seed.gstack", "seed": "gstack", "names": ["gstack"], "queries": ["gstack in:name"], "note": "Named in the owner's screenshot beside superpowers."},
+  {"source_id": "seed.caveman", "seed": "caveman", "names": ["caveman"], "queries": ["caveman in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.ponytail", "seed": "ponytail", "names": ["ponytail"], "queries": ["ponytail in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.i-have-adhd", "seed": "i-have-adhd", "names": ["i-have-adhd"], "queries": ["i-have-adhd in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.codex-plugin-cc", "seed": "the codex-in-Claude-Code plugin", "names": ["codex-plugin-cc", "codex-claude-code", "claude-code-codex", "codex-cc"], "queries": ["codex-plugin-cc in:name", "codex claude code plugin in:name"], "note": "Named by description in the screenshot, so every accepted name is listed and nothing is guessed."},
+  {"source_id": "seed.ui-ux-pro-max", "seed": "ui-ux-pro-max", "names": ["ui-ux-pro-max-skill", "ui-ux-pro-max"], "queries": ["ui-ux-pro-max in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.taste-skill", "seed": "taste-skill", "names": ["taste-skill"], "queries": ["taste-skill in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.impeccable", "seed": "impeccable", "names": ["impeccable"], "queries": ["impeccable in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.hyperframes", "seed": "hyperframes", "names": ["hyperframes"], "queries": ["hyperframes in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.emil", "seed": "emil", "names": ["emil", "emil-skill", "emil-skills", "emil-design-skill"], "queries": ["emil skill in:name", "emil in:name"], "note": "Named in the screenshot with no owner; many repositories share the name, so only a clear match resolves it."},
+  {"source_id": "seed.gsap", "seed": "gsap", "names": ["gsap-skills", "gsap-skill", "gsap"], "queries": ["gsap skills in:name", "gsap skill in:name"], "note": "Named in the screenshot among design skills; the GSAP library itself is a different thing, so only a clear match resolves it."},
+  {"source_id": "seed.skill-creator", "seed": "skill-creator (anthropics/skills)", "repository": "anthropics/skills", "path": "skills/skill-creator/SKILL.md", "note": "Named with its repository in the screenshot."},
+  {"source_id": "seed.graphify", "seed": "graphify", "names": ["graphify"], "queries": ["graphify in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.last30days", "seed": "last30days", "names": ["last30days", "last30days-skill", "last-30-days"], "queries": ["last30days in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.agent-browser", "seed": "agent-browser", "names": ["agent-browser"], "queries": ["agent-browser in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.find-skills", "seed": "find-skills", "names": ["find-skills"], "queries": ["find-skills in:name"], "note": "Named in the screenshot; the find-skills skill is also inside vercel-labs/skills, which is curated above."},
+  {"source_id": "seed.claude-hud", "seed": "claude-hud", "names": ["claude-hud"], "queries": ["claude-hud in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.remotion", "seed": "remotion", "names": ["skills", "remotion-skills", "remotion-skill"], "queries": ["org:remotion-dev skills in:name", "remotion skills in:name"], "note": "Named in the screenshot among skills; the Remotion framework itself is a different repository, so only a skills repository resolves it."},
+  {"source_id": "seed.marketingskills", "seed": "marketingskills", "names": ["marketingskills"], "queries": ["marketingskills in:name"], "note": "Named in the screenshot."},
+  {"source_id": "seed.humanizer", "seed": "humanizer", "names": ["humanizer"], "queries": ["humanizer in:name"], "note": "Named in the screenshot; blader/humanizer is also curated above."},
+  {"source_id": "seed.social-media-skills", "seed": "social-media-skills", "names": ["social-media-skills"], "queries": ["social-media-skills in:name"], "note": "Named in the screenshot."}
+ ],
+ "research_seeds": [
+  {"source_id": "research.codex.skills", "file": "artifacts/harness-source-research-2026-09-23/skills-ranked.jsonl", "note": "Codex's 1,000 ranked skills from 80 repositories of the skills.sh leaderboard, September 23; their licence declarations were unverified, so the gate decides each file."},
+  {"source_id": "research.codex.plugins", "file": "artifacts/harness-source-research-2026-09-23/plugins-ranked.jsonl", "note": "Codex's 1,000 ranked plugins from 989 repositories, September 23; licences unverified, decided file by file."}
+ ],
+ "feeds": [
+  {"source_id": "clawhub.skills", "host": "clawhub.ai", "path": "/v1/feeds/skills", "note": "ClawHub's public skills feed of verified publishers; its robots file allows /v1/feeds/skills and disallows /api/."},
+  {"source_id": "clawhub.plugins", "host": "clawhub.ai", "path": "/v1/feeds/plugins", "note": "ClawHub's public plugins feed; allowed by its robots file."}
+ ],
+ "awesome_lists": [
+  {"source_id": "awesome.hesreallyhim.awesome-claude-code", "repository": "hesreallyhim/awesome-claude-code", "path": "README.md", "note": "A curated list of Claude Code skills, commands, hooks and plugins; its links are leads, read only under an allowlisted licence."},
+  {"source_id": "awesome.travisvn.awesome-claude-skills", "repository": "travisvn/awesome-claude-skills", "path": "README.md", "note": "A curated list of Claude skills."},
+  {"source_id": "awesome.punkpeye.awesome-mcp-servers", "repository": "punkpeye/awesome-mcp-servers", "path": "README.md", "note": "A curated list of protocol servers; their repositories may hold harness configuration."},
+  {"source_id": "awesome.voltagent.awesome-agent-skills", "repository": "VoltAgent/awesome-agent-skills", "path": "README.md", "note": "A curated list of agent skills."},
+  {"source_id": "awesome.composiohq.awesome-claude-skills", "repository": "ComposioHQ/awesome-claude-skills", "path": "README.md", "note": "A curated list of Claude skills; the list itself had no licence on September 22, and only its links are read."}
+ ],
+ "code_search": [
+  {"source_id": "code.skill", "kind": "skill", "terms": ["filename:SKILL.md"], "size_bands": [[0, 1500], [1501, 2200], [2201, 3000], [3001, 3800], [3801, 4700], [4701, 5800], [5801, 7200], [7201, 9000], [9001, 12000], [12001, 18000], [18001, 30000], [30001, 200000]], "pages": 10, "note": "Agent Skills definitions; 6.4 million hits on September 24, so the size bands pass the 1,000-result cap of one query."},
+  {"source_id": "code.plugin", "kind": "plugin_manifest", "terms": ["filename:plugin.json", "path:.claude-plugin"], "size_bands": [[0, 350], [351, 600], [601, 1200], [1201, 100000]], "pages": 10, "note": "Claude Code plugin manifests; a plugin's parts are packages of their own."},
+  {"source_id": "code.codex-plugin", "kind": "plugin_manifest", "terms": ["filename:plugin.json", "path:.codex-plugin"], "size_bands": [[0, 100000]], "pages": 10, "note": "Codex plugin manifests."},
+  {"source_id": "code.marketplace", "kind": "marketplace", "terms": ["filename:marketplace.json", "path:.claude-plugin"], "size_bands": [[0, 1000], [1001, 4000], [4001, 200000]], "pages": 10, "note": "Plugin marketplaces; their repositories hold many plugins."},
+  {"source_id": "code.subagent", "kind": "subagent", "terms": ["path:.claude/agents", "extension:md"], "size_bands": [[0, 2500], [2501, 5000], [5001, 9000], [9001, 100000]], "pages": 10, "note": "Claude Code subagent definitions."},
+  {"source_id": "code.command", "kind": "command", "terms": ["path:.claude/commands", "extension:md"], "size_bands": [[0, 1500], [1501, 3500], [3501, 100000]], "pages": 10, "note": "Claude Code command definitions."},
+  {"source_id": "code.hooks", "kind": "hook", "terms": ["filename:hooks.json", "path:hooks"], "size_bands": [[0, 100000]], "pages": 10, "note": "Plugin hook configurations."},
+  {"source_id": "code.copilot-agent", "kind": "subagent", "terms": ["path:.github/agents", "extension:md"], "size_bands": [[0, 100000]], "pages": 10, "note": "GitHub Copilot custom agents."},
+  {"source_id": "code.copilot-prompt", "kind": "command", "terms": ["path:.github/prompts", "extension:md"], "size_bands": [[0, 2000], [2001, 100000]], "pages": 10, "note": "GitHub Copilot prompt files."},
+  {"source_id": "code.copilot-instructions", "kind": "instruction_file", "terms": ["filename:copilot-instructions.md", "path:.github"], "size_bands": [[0, 3000], [3001, 100000]], "pages": 10, "note": "Repository instructions for GitHub Copilot."},
+  {"source_id": "code.cursor-rule", "kind": "rules", "terms": ["path:.cursor/rules", "extension:mdc"], "size_bands": [[0, 1500], [1501, 4000], [4001, 100000]], "pages": 10, "note": "Cursor project rules."},
+  {"source_id": "code.agents-md", "kind": "instruction_file", "terms": ["filename:AGENTS.md"], "size_bands": [[0, 3000], [3001, 8000], [8001, 200000]], "pages": 10, "note": "AGENTS.md instruction files; often project-specific, so reviewers judge their reuse."},
+  {"source_id": "code.claude-md", "kind": "instruction_file", "terms": ["filename:CLAUDE.md"], "size_bands": [[0, 3000], [3001, 8000], [8001, 200000]], "pages": 10, "note": "CLAUDE.md instruction files."},
+  {"source_id": "code.mcp-json", "kind": "protocol_server_configuration", "terms": ["filename:.mcp.json"], "size_bands": [[0, 100000]], "pages": 10, "note": "Project protocol server configurations."},
+  {"source_id": "code.gemini-extension", "kind": "plugin_manifest", "terms": ["filename:gemini-extension.json"], "size_bands": [[0, 100000]], "pages": 10, "note": "Gemini CLI extension manifests; the gallery lists these repositories."},
+  {"source_id": "code.opencode-tool", "kind": "code_module", "terms": ["path:.opencode/tool"], "size_bands": [[0, 100000]], "pages": 10, "note": "OpenCode custom tools, the first native code modules."}
+ ],
+ "topic_search": {
+  "topics": ["claude-code", "claude-skills", "agent-skills", "claude-code-plugin", "claude-code-skills", "mcp-server", "cursor-rules", "codex", "opencode", "agents-md", "ai-agents", "copilot-instructions"],
+  "created_ranges": [["2023-01-01", "2024-12-31"], ["2025-01-01", "2025-06-30"], ["2025-07-01", "2025-12-31"], ["2026-01-01", "2026-05-31"], ["2026-06-01", "2026-12-31"]],
+  "minimum_stars": 3,
+  "pages": 10,
+  "note": "Repositories by topic, sorted by stars, each topic partitioned by creation date to pass the 1,000-result cap."
+ },
+ "npm_search": {
+  "texts": ["keywords:mcp-server", "keywords:claude-code", "keywords:agent-skills", "keywords:claude-code-plugin", "keywords:mcp"],
+  "pages": 2,
+  "note": "npm packages by keyword; each package's declared GitHub repository is the lead, read only under an allowlisted licence."
+ },
+ "registry": {
+  "host": "registry.modelcontextprotocol.io",
+  "updated_since": "2026-09-23T04:39:43Z",
+  "page_size": 100,
+  "maximum_entries": 5000,
+  "note": "The official protocol server registry, entries changed since the September 23 ingestion run began; each entry's upstream GitHub repository is a lead."
+ }
+}
