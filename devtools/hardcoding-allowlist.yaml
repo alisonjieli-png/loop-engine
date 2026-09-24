@@ -7028,17 +7028,6 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-24
     expires_on: 2027-09-24
-  - finding_id: hardcoding.30a50a469b44c6be3745c874
-    owner: tools.operator_credentials.json:api_keys.tactical-model-generation.environment
-    rationale: >-
-      The environment variable name that the existing operator credential helper
-      uses when a trusted command asks for this keyring reference with the run
-      operation. It names where a value would be placed, never a value. The owner
-      supplied the Tactical key on 2026-09-23 and it lives only in the system
-      keyring.
-    classification: SECRET_OR_CREDENTIAL_REFERENCE
-    created_on: 2026-09-24
-    expires_on: 2027-09-24
   - finding_id: hardcoding.5643efb95fcf09aaa8f17c1a
     owner: tools.resources.original-native-generation-providers.tactical-gemma-4-coding-abliterated.json:provider.endpoint
     rationale: >-
