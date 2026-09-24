@@ -45,7 +45,7 @@ DECLARED_ENDPOINTS = {
         "base_url": "https://ollama.com/v1",
         "key_environment": "OLLAMA_API_KEY",
         "models": ("gpt-oss:20b", "gemma4:31b", "glm-5.3-flash", "kimi-k3",
-                    "nemotron-3-nano:30b"),
+                    "nemotron-3-nano:30b", "qwen3.5:397b", "deepseek-v4.1-flash"),
     },
     "tactical": {
         # The owner's Tactical Engineering model server, which also answers
@@ -498,6 +498,8 @@ DEFAULT_LANE_SPECS = [
     {"lane_id": "lane-ollama-gpt-oss-20b", "provider": "ollama-cloud", "model": "gpt-oss:20b"},
     {"lane_id": "lane-ollama-gemma4-31b", "provider": "ollama-cloud", "model": "gemma4:31b"},
     {"lane_id": "lane-ollama-glm-53-flash", "provider": "ollama-cloud", "model": "glm-5.3-flash"},
+    {"lane_id": "lane-ollama-kimi-k3", "provider": "ollama-cloud", "model": "kimi-k3"},
+    {"lane_id": "lane-ollama-nemotron-30b", "provider": "ollama-cloud", "model": "nemotron-3-nano:30b"},
     {"lane_id": "lane-tactical-gemma4", "provider": "tactical", "model": "gemma-4-coding-abliterated"},
 ]
 

@@ -242,8 +242,10 @@ class WatchdogChecks(MatrixOnce):
 
 class DeclaredLimitsChecks(unittest.TestCase):
     def test_declared_batch_defaults(self):
-        self.assertEqual(IDEA_PER_LANE * 4, 1000)
-        self.assertGreater(MAX_CALLS, 1000)
+        # Six lanes at 250 ideas each is the ten-thousand target with
+        # one retry of headroom per idea inside the ceiling.
+        self.assertEqual(IDEA_PER_LANE * 6, 1500)
+        self.assertGreaterEqual(MAX_CALLS, 10000)
         self.assertEqual(ATTEMPTS_PER_IDEA, 3)
 
 

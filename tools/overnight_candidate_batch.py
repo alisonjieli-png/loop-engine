@@ -61,8 +61,10 @@ from tools.opencode_generation_lanes import (  # noqa: E402
 BATCH_RECORD_TYPE = "overnight_candidate_batch/v1"
 JOURNAL_EVENT_TYPE = "overnight_batch_event/v1"
 STATUS_RECORD_TYPE = "overnight_batch_status/v1"
+#: Ideas per lane at the default ten-thousand scale (six lanes).
 IDEA_PER_LANE = 250
-MAX_CALLS = 1500
+#: Default call ceiling: the ten-thousand batch with headroom for retries.
+MAX_CALLS = 12000
 ATTEMPTS_PER_IDEA = 3
 DEGRADED_AFTER_CONSECUTIVE = 5
 OUTAGE_WAIT_SECONDS = (60, 180, 300)
@@ -503,7 +505,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--batch-directory", required=True)
     parser.add_argument("--matrix", required=True)
-    parser.add_argument("--ideas", type=int, default=1000)
+    parser.add_argument("--ideas", type=int, default=10000)
     parser.add_argument("--max-calls", type=int, default=MAX_CALLS)
     parser.add_argument("--lane-root", required=True)
     parser.add_argument("--watchdog", action="store_true",

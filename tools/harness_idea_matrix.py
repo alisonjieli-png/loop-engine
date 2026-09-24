@@ -77,6 +77,8 @@ FILE_KINDS = ("skill", "plugin_manifest", "harness_routing", "rules",
 #: The pinned O*NET selection of occupations with task statements.
 DEFAULT_OPPORTUNITIES = Path(__file__).resolve().parents[1] / (
     "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json")
+EXPANDED_OPPORTUNITIES = Path(__file__).resolve().parents[1] / (
+    "artifacts/occupation-grid-research-2026-09-22/task-opportunities-expanded.json")
 DEFAULT_SEEDS = Path(__file__).resolve().parents[1] / "src/loop_engine/data/occupation_seeds.yaml"
 MAX_IDEAS = 200000
 IDENTITY = re.compile(r"^[a-z0-9][a-z0-9-]{2,63}$")
@@ -381,6 +383,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="source kind; default is the pinned O*NET selection")
     parser.add_argument("--seed-file", default=None,
                         help="path override for the hand-authored seeds file")
+    parser.add_argument("--expanded", action="store_true",
+                        help="use the stratified 175-occupation expanded inventory")
     args = parser.parse_args(argv)
 
     output = Path(args.output)
@@ -390,7 +394,8 @@ def main(argv: list[str] | None = None) -> int:
     kinds = args.source or ["onet_pinned"]
     for kind in kinds:
         if kind == "onet_pinned":
-            sources.append(MatrixSource("onet_pinned", DEFAULT_OPPORTUNITIES))
+            path = EXPANDED_OPPORTUNITIES if args.expanded else DEFAULT_OPPORTUNITIES
+            sources.append(MatrixSource("onet_pinned", path))
         elif kind == "hand_authored":
             path = Path(args.seed_file) if args.seed_file else DEFAULT_SEEDS
             sources.append(MatrixSource("hand_authored", path))

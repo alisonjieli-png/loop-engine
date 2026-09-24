@@ -1,23 +1,38 @@
 # Overnight candidate batch handoff, September 24, 2026
 
-Kind: dated handoff record for the running 1,000-candidate generation
-batch. Written by Claude Code (GLM 5.3) so that Claude Code, Codex, GPT
-Astra or any other session can monitor, restart or collect the batch
-without re-deriving any of it. The
+Kind: dated handoff record for the running candidate generation batch.
+Written by Claude Code (GLM 5.3) so that Claude Code, Codex, GPT Astra or
+any other session can monitor, restart or collect the batch without
+re-deriving any of it. The
 [commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md remains the one statement of authority, and
 [roadmap.yaml](../roadmap/roadmap.yaml) (S-6.40, S-6.53) remains the
 task authority. This is a snapshot, not new authority.
 
+**Scale change, September 24 (owner direction):** the batch grew from
+1,000 to **10,000 ideas** with a **12,000-call ceiling**, on **six
+lanes** (five Ollama Cloud models plus Tactical), grounded in the
+**expanded stratified occupation inventory** (175 occupations across 22
+SOC major groups with 3,500 real O*NET task statements, up from 10
+occupations and 179 statements). The completed ~500 candidates from
+the 1,000-scale run were kept by journal replay. Diversity also grew
+along the file-kind axis: each method hypothesis now generates its
+best-fit one of seven harness file kinds (skill, harness routing file,
+subagent definition, workflow recipe, rules file, plugin manifest,
+hook).
+
 ## What is running and where
 
-A supervised overnight batch is generating **1,000 harness intelligence
-candidates** from the deterministic idea matrix, across **four separate
+A supervised batch is generating **10,000 harness intelligence
+candidates** from the deterministic idea matrix, across **six separate
 OpenCode setups** (lanes). Everything lives under one run root:
 
 ```text
 /home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/
-├── matrix.json          the 29,625-idea matrix (sha256 6a13fdc8a8ba...)
+├── matrix.json          the first 1,000-scale matrix (10-occupation)
+├── matrix-10k.json     the active matrix over the expanded inventory
+│                        (same 29,625 method identities; applicability
+│                        now rotates 175 occupations and 7 file kinds)
 ├── start-batch.sh       restartable launcher (resolves the Tactical key
 │                        from the system keyring inside the process)
 ├── batch/
@@ -39,13 +54,15 @@ evidence into `artifacts/` (the batch directory itself stays a run
 artifact, like the smoke run recorded in
 `artifacts/opencode-generation-lanes-2026-09-24/README.md`).
 
-## The four lanes
+## The six lanes
 
 | Lane | Provider | Model | Endpoint |
 |---|---|---|---|
 | lane-ollama-gpt-oss-20b | Ollama Cloud | gpt-oss:20b | https://ollama.com/v1 |
 | lane-ollama-gemma4-31b | Ollama Cloud | gemma4:31b | https://ollama.com/v1 |
 | lane-ollama-glm-53-flash | Ollama Cloud | glm-5.3-flash | https://ollama.com/v1 |
+| lane-ollama-kimi-k3 | Ollama Cloud | kimi-k3 | https://ollama.com/v1 |
+| lane-ollama-nemotron-30b | Ollama Cloud | nemotron-3-nano:30b | https://ollama.com/v1 |
 | lane-tactical-gemma4 | Tactical | gemma-4-coding-abliterated | https://ai.tacticalengineering.net:6969/v1 |
 
 No local model is installed, started or called. Any lane naming a local
@@ -63,9 +80,9 @@ disabled, the owner-documented trust model for that endpoint.
 # The live status record (updates after every idea):
 /home/username/loop-engine/.venv/bin/python tools/overnight_candidate_batch.py \
   --batch-directory /home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch \
-  --matrix /home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/matrix.json \
+  --matrix /home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/matrix-10k.json \
   --lane-root /home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/lanes \
-  --ideas 1000 --max-calls 1500 --status
+  --ideas 10000 --max-calls 12000 --status
 
 # Or directly:
 python3 -c "import json; print(json.dumps(json.load(open(
@@ -96,7 +113,7 @@ lane: `candidates`, `failed`, `degraded`, `consecutive_failures`.
 - **Lane degradation**: 5 consecutive failures mark a lane `degraded`
   in the journal and its unstarted ideas are reassigned round-robin to
   healthy lanes.
-- **Call ceiling**: 1,500 calls for 1,000 ideas. At the ceiling the
+- **Call ceiling**: 12,000 calls for 10,000 ideas. At the ceiling the
   batch records `ceiling_reached` and stops clean; that is a clean
   stop, not a crash.
 - **Watchdog**: cron runs `--watchdog` every 10 minutes (entry marked
@@ -157,7 +174,7 @@ pushed to `origin/main` with their checks passing.
   They are not this batch's work; resolve ownership before touching
   them. The two zero-tolerance conformance gates that fail on the dirty
   tree pass on a clean export of `HEAD`.
-- The 1,000 candidates will not fit the current hosted serving (the
+- The 10,000 candidates will not fit the current hosted serving (the
   100,000-row probe recorded the limits); they stay in the run
   directory until the S-6.62 store/release work lands.
 - Review throughput, not generation, is the constraint for the 10,000
