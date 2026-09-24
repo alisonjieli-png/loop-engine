@@ -201,7 +201,7 @@ def sync(args) -> dict:
     corpora, corpus_counts = _corpora(args)
     round_ = SyncRound(run_folder=run_folder, store=store, snapshot_engines=engines, checks=checks, near=near, api=api,
                        workers=args.workers, time_limit_seconds=args.time_limit_minutes * 60, corpora=corpora,
-                       batch_checks=batch_checks)
+                       batch_checks=batch_checks, scan_workers=args.scan_workers)
     reading = round_.run(plans)
     outcomes = list(round_.journal.finished().values())
     started_dedup = time.monotonic()
@@ -219,7 +219,7 @@ def sync(args) -> dict:
     _rewrite(run_folder / "restricted-copies.jsonl", restricted_refusals(resolution, candidates))
     _rewrite(run_folder / "metadata-refusals.jsonl", metadata_refusals)
     summary = {"record_type": "licensed_import_sync_summary/v1", "finished_at": now_utc(),
-               "workers": args.workers, "repositories_planned": len(plans), "metadata_seconds": metadata_seconds, "reading": reading,
+               "workers": args.workers, "scan_workers": args.scan_workers, "repositories_planned": len(plans), "metadata_seconds": metadata_seconds, "reading": reading,
                "dedup_seconds": dedup_seconds, "batch_scan_seconds": scan_seconds,
                "batch_scan_refusals": len(scan_refusals), "write_seconds": write_seconds, "written": written,
                "kept": len(resolution.kept), "merged": len(resolution.merged_into),
@@ -269,6 +269,7 @@ def parser() -> argparse.ArgumentParser:
     two.add_argument("--api-fallback", action="store_true")
     two.add_argument("--rest-request-ceiling", type=int, default=1000)
     two.add_argument("--maximum-pause-seconds", type=float, default=3700.0)
+    two.add_argument("--scan-workers", type=int, default=8, help="scanner chunk groups run in parallel")
     two.add_argument("--skillspector-program")
     two.add_argument("--cisco-scanner-program")
     two.add_argument("--corpus-served", action="append")

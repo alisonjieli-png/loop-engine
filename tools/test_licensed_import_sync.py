@@ -206,6 +206,37 @@ class SyncChecks(unittest.TestCase):
         self.assertEqual([row["repository"] for row in refusals], ["o/r3"])
         self.assertTrue(all(plans[f"o/r{index}"].metadata.get("head") for index in (0, 1, 2, 4, 5)))
 
+    def test_parallel_batch_scans_see_every_kept_package_once(self):
+        import threading
+        from licensed_import.dedup import Resolution
+
+        class Recording:
+            engine_id = "recording"
+
+            def __init__(self):
+                self.seen, self.lock = [], threading.Lock()
+
+            def scan_packages(self, packages):
+                with self.lock:
+                    self.seen.extend(packages)
+                return {key: ([{"rule": "x", "severity": "blocking", "line": 0, "engine_id": "recording",
+                                "path": ""}] if key == "k3" else []) for key in packages}
+
+        engine = Recording()
+        checks = StaticChecks({}, extra_engines=[engine])
+        checks.engines = [engine]
+        _engine, sync, _outcomes, _resolution, _candidates, _written, _plans = self._round("one", REPOSITORIES, LICENCES)
+        sync.batch_checks, sync.scan_workers = checks, 3
+        payload = next(iter(_candidates.values()))
+        candidates = {f"k{index}": {**payload, "findings": []} for index in range(7)}
+        resolution = Resolution(kept=sorted(candidates))
+        refused = sync.batch_scan(resolution, candidates)
+        self.assertEqual(sorted(engine.seen), sorted(candidates))
+        self.assertEqual(len(engine.seen), 7)
+        self.assertEqual([row["reason"] for row in refused], ["blocked_by_static_check"])
+        self.assertNotIn("k3", resolution.kept)
+        self.assertEqual(len(resolution.kept), 6)
+
     def test_resolved_metadata_is_cached_and_not_read_again(self):
         repositories = {f"o/r{index}": {"commit": "1" * 40, "licence": "MIT"} for index in range(3)}
         cache = self.folder / "metadata.jsonl"

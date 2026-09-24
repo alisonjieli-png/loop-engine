@@ -250,10 +250,11 @@ class SyncRound:
 
     def __init__(self, *, run_folder: Path, store, snapshot_engines, checks, near, api=None, workers: int = 6,
                  time_limit_seconds: float = 3600.0, imported_on: str = "", corpora=(),
-                 maximum_file_bytes: int = MAXIMUM_FILE_BYTES, clock=time.monotonic, batch_checks=None) -> None:
+                 maximum_file_bytes: int = MAXIMUM_FILE_BYTES, clock=time.monotonic, batch_checks=None,
+                 scan_workers: int = 1) -> None:
         self.run_folder, self.store, self.engines = Path(run_folder), store, list(snapshot_engines)
         self.checks, self.near, self.api, self.workers = checks, near, api, workers
-        self.batch_checks = batch_checks
+        self.batch_checks, self.scan_workers = batch_checks, max(1, int(scan_workers))
         self.time_limit_seconds, self.imported_on = time_limit_seconds, imported_on or now_utc()[:10]
         self.corpora, self.maximum_file_bytes, self.clock = list(corpora), maximum_file_bytes, clock
         self.journal = Journal(self.run_folder)
@@ -524,7 +525,14 @@ class SyncRound:
             payload = candidates[key]
             packages[key] = [(entry["path"], self.store.quarantine.get(entry["digest"]))
                              for entry in payload["package"]["files"]]
-        found = self.batch_checks.scan(packages)
+        # Each scanner starts one sandboxed process per chunk, so groups of packages are scanned
+        # in parallel; every package is in exactly one group and every finding is kept.
+        keys = sorted(packages)
+        groups = [keys[index::self.scan_workers] for index in range(self.scan_workers) if keys[index::self.scan_workers]]
+        found = {}
+        with ThreadPoolExecutor(max_workers=max(1, len(groups))) as pool:
+            for result in pool.map(lambda group: self.batch_checks.scan({key: packages[key] for key in group}), groups):
+                found.update(result)
         refused = []
         for key, findings in found.items():
             blocked = blocking_rules(findings)
