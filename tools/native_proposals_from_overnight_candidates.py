@@ -9,13 +9,18 @@ as committed at the checkout's commit:
 
 1. ``attribute`` reads the batch without changing it. Each candidate file is
    attributed to the lane the journal records as having written it, and to the
-   idea record of the matrix that was in effect when the journal records the
-   write (each matrix is declared with the time it took effect). It writes each
-   idea record as its own small source file, and one attribution record naming
-   every candidate's bytes by digest, the lane, the model the batch status names
-   for the lane, the family the operator declares for the lane (a family is
-   never inferred from a name), the file kind the producer was asked for, and
-   every file it could not attribute with the reason.
+   idea record the producer was given: the batch selected its ideas with
+   ``select_stratified`` of ``tools/overnight_candidate_batch.py``, which
+   replaces each idea's occupation and task statement with the next one of the
+   pinned occupation rotation, so the matrix record alone is not the brief. Each
+   matrix is declared with the time it took effect and the number of ideas the
+   batch selected from it, and the adapter repeats that selection after
+   checking that every pinned source still has the digest the matrix names. It
+   writes each idea record as its own small source file, and one attribution
+   record naming every candidate's bytes by digest, the lane, the model the
+   batch status names for the lane, the family the operator declares for the
+   lane (a family is never inferred from a name), the file kind the producer was
+   asked for, and every file it could not attribute with the reason.
 2. ``proposals`` reads the committed attribution record, checks every candidate
    file still has the recorded bytes, and writes one version-two proposal per
    candidate whose file kind has a qualified native placement: a skill becomes
@@ -32,8 +37,8 @@ judge whether that covers every operation the file asks for, and the effects
 pre-check refuses a file that holds a shell block without the process effect.
 
     PYTHONPATH=src python tools/native_proposals_from_overnight_candidates.py attribute \\
-        --batch-directory BATCH --matrix MATRIX.json@2026-09-24T04:00:00Z \\
-        --matrix MATRIX-10K.json@2026-09-24T07:45:19Z --lane LANE=FAMILY --output FOLDER
+        --batch-directory BATCH --matrix MATRIX.json@2026-09-24T04:49:38Z@1000 \\
+        --matrix MATRIX-10K.json@2026-09-24T07:45:19Z@10000 --lane LANE=FAMILY --output FOLDER
 
     PYTHONPATH=src python tools/native_proposals_from_overnight_candidates.py proposals \\
         --repository . --attribution FOLDER/attribution.json --batch-directory BATCH --output proposals.json
@@ -58,7 +63,8 @@ if __name__ == "__main__":
 
 from tools import prepare_harness_candidates as factory
 
-ATTRIBUTION_TYPE = "overnight_candidate_attribution/v1"
+ATTRIBUTION_TYPE = "overnight_candidate_attribution/v2"
+REPOSITORY = Path(__file__).resolve().parents[1]
 REPORT_TYPE = "overnight_candidate_conversion_report/v1"
 IDEA_TYPE = "harness_idea_record/v1"
 JOURNAL_EVENT_TYPE = "overnight_batch_event/v1"
@@ -126,18 +132,36 @@ def _journal(batch: Path) -> dict:
     return {"written": written, "sha256": digest(raw), "bytes": len(raw)}
 
 
+def batch_selection(record: dict, count: int) -> list:
+    """The ideas the batch selected from one matrix, with the rotated grounding each producer was given."""
+    from tools.overnight_candidate_batch import select_stratified
+    return select_stratified(record, count)
+
+
+def _pinned_sources_unchanged(record: dict) -> None:
+    """Every pinned source the selection reads must still have the digest the matrix names."""
+    for source in record.get("sources", []):
+        if not isinstance(source, dict) or source.get("kind") != "onet_pinned":
+            continue
+        path = REPOSITORY / str(source.get("path", ""))
+        if not path.is_file() or digest(path.read_bytes()) != source.get("sha256"):
+            refuse("pinned_source_changed")
+
+
 def _matrices(values) -> list:
-    """Declared matrices, each ``PATH@EFFECTIVE_FROM``, ordered by the time each took effect."""
+    """Declared matrices, each ``PATH@EFFECTIVE_FROM@SELECTED``, ordered by the time each took effect."""
     matrices = []
     for value in values:
-        path, separator, moment = value.rpartition("@")
-        if not separator:
+        parts = value.rsplit("@", 2)
+        if len(parts) != 3 or not parts[2].isdigit() or int(parts[2]) < 1:
             refuse("matrix_declaration_invalid")
+        path, moment, count = parts[0], parts[1], int(parts[2])
         raw = _regular(Path(path), 256 * 1024 * 1024)
         record = json.loads(raw)
-        ideas = {idea["id"]: idea for idea in record.get("ideas", []) if type(idea) is dict and "id" in idea}
+        _pinned_sources_unchanged(record)
+        ideas = {idea["id"]: idea for idea in batch_selection(record, count)}
         matrices.append({"path": str(Path(path).resolve()), "sha256": digest(raw), "effective_from": moment,
-                         "moment": _timestamp(moment), "ideas": ideas})
+                         "moment": _timestamp(moment), "ideas": ideas, "selected": count})
     if not matrices:
         refuse("matrix_required")
     return sorted(matrices, key=lambda matrix: matrix["moment"])
@@ -194,7 +218,9 @@ def attribute(batch: Path, matrices, lanes: dict, output: Path) -> dict:
               "journal": {"sha256_at_read": journal["sha256"], "bytes_at_read": journal["bytes"]},
               "status_updated_at": status.get("updated_at"),
               "matrices": [{"path": matrix["path"], "sha256": matrix["sha256"],
-                            "effective_from": matrix["effective_from"]} for matrix in declared],
+                            "effective_from": matrix["effective_from"], "selected": matrix["selected"],
+                            "selection": "tools/overnight_candidate_batch.py select_stratified, default seed"}
+                           for matrix in declared],
               "lanes": {lane: {"family": family, "provider": status["lanes"][lane]["provider"],
                                "model": status["lanes"][lane]["model"]} for lane, family in sorted(lanes.items())},
               "candidates": candidates, "excluded": excluded,

@@ -57,6 +57,20 @@ supervisor that reads it started at 07:46:00 UTC. Nine files whose ideas are
 subagents in the later matrix were written before 05:03 UTC under the first
 matrix, so they were asked for and are attributed as skills.
 
+**Correction.** The first attribution (`overnight-attribution/`, and
+`overnight-attribution-openai/` for the gpt-oss:20b lane) cited the raw matrix
+record of each idea. The batch did not give producers that record: its
+selection, `select_stratified` of `tools/overnight_candidate_batch.py`, replaces
+each idea's occupation and task statement with the next entry of the pinned
+occupation rotation. Claude found the mismatch in the first calibration batch:
+three of seven real candidates quoted a task statement their cited source did
+not contain. `overnight-attribution-v2/` repeats the batch's own selection (1,000
+ideas from the first matrix, 10,000 from the second, after checking both pinned
+sources still have their declared digests); for 140 of the 141 candidates that
+the first attribution also covered, the rotated brief shares more words with the
+candidate than the raw record did, and it shares fewer for none. The first
+attributions stay as history; the adapter now refuses their record version.
+
 The `kimi-k3` lane's model is refused on every route by the repository's model
 policy. Its three candidates are reviewed as bytes like any other; admitting
 them to a release waits for the model policy's owner, because the policy is

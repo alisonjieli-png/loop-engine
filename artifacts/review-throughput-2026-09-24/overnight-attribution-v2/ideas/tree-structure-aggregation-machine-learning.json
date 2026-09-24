@@ -1,0 +1,27 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "27-3042.00",
+  "occupation_title": "Technical Writers",
+  "task_reference": "Review manufacturer's and trade catalogs, drawings and other data relative to operation, maintenance, and service of equipment."
+ },
+ "brief": "Propose one original harness method for a Logisticians whose task is: Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.. The method's input is a tree_structure; the method performs aggregation; the use case is machine_learning. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "tree_structure",
+ "id": "tree-structure-aggregation-machine-learning",
+ "known_wrong": "A plausible but wrong aggregation of a tree_structure is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "tree_structure|aggregation|machine_learning",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "machine_learning"
+}

@@ -112,6 +112,18 @@ class NativeReaderTest(unittest.TestCase):
         self.assertTrue(declaration.evidence_path.startswith("/"),
                         "a dated record's reader refuses this absolute path, so no committed record names it")
 
+    def test_the_source_inventory_is_bounded_by_the_item_bound(self):
+        self.assertEqual(native.MAX_SOURCES, native.MAX_ITEMS + 1)
+        with tempfile.TemporaryDirectory(dir=ROOT / "artifacts") as directory:
+            fixture(directory)
+            record = json.loads((Path(directory) / "items.json").read_text())
+            record["source_digests"] = {**record["source_digests"],
+                                        **{f"extra/{number}.json": "0" * 64 for number in range(native.MAX_SOURCES)}}
+            (Path(directory) / "items.json").write_text(json.dumps(record))
+            with self.assertRaises(CandidateReviewError) as caught:
+                native.NativeCatalogue.load(Path(directory), ROOT)
+        self.assertEqual(caught.exception.code, "native_sources_invalid")
+
     def test_same_size_changed_payload_digest_is_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             row = fixture(directory)

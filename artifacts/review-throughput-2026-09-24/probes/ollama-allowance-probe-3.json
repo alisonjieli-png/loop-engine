@@ -1,0 +1,39 @@
+{
+ "allowance": "spent",
+ "availability_reason": "",
+ "available": true,
+ "call": {
+  "answer": "",
+  "elapsed_seconds": 0.448,
+  "error_detail": "usage_limit_reached",
+  "outcome": "usage_limit_reached",
+  "physical_model_calls": 1,
+  "reported_model": "",
+  "retry_after_seconds": null,
+  "usage": {
+   "cached_input_tokens": null,
+   "input_tokens": null,
+   "output_tokens": null,
+   "reasoning_output_tokens": null,
+   "source": "unknown"
+  }
+ },
+ "family": "openai",
+ "installation_id": "ollama.gpt-oss-120b",
+ "installation_sha256": "54aa8d2026b15f90821349719ca37ddaf7225cb32823bfb531965919402c3636",
+ "listing": {
+  "error": "",
+  "http_status": 200,
+  "model_version": {
+   "digest": "d98fe6ba01e6",
+   "modified_at": "2025-08-05T00:00:00Z"
+  },
+  "models_listed": 19,
+  "ok": true
+ },
+ "model": "gpt-oss:120b",
+ "prompt_sha256": "5add72bf26b5a2c8e43d60461613b68f0f13bda1974786bb35b4d505823c5201",
+ "quota_group": "ollama_cloud",
+ "record_type": "review_allowance_probe/v1",
+ "started_at": "2026-09-24T22:32:16.022233Z"
+}

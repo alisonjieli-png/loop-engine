@@ -1,0 +1,27 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "15-1252.00",
+  "occupation_title": "Software Developers",
+  "task_reference": "Design, develop and modify software systems, using scientific analysis and mathematical models to predict and measure outcomes and consequences of design."
+ },
+ "brief": "Propose one original harness method for a Logisticians whose task is: Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.. The method's input is a url; the method performs aggregation; the use case is agentic_benchmark. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "url",
+ "id": "url-aggregation-agentic-benchmark",
+ "known_wrong": "A plausible but wrong aggregation of a url is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "url|aggregation|agentic_benchmark",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "agentic_benchmark"
+}

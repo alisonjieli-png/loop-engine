@@ -4,7 +4,9 @@
 Overnight candidate adapter
 ├── attribute
 │   ├── the lane is the one the journal records as having written the file
-│   ├── the idea record comes from the matrix in effect at the recorded write
+│   ├── the idea record comes from the matrix in effect at the recorded write,
+│   │   with the grounding the batch's own selection gave the producer
+│   ├── a matrix whose pinned source changed is refused
 │   └── a file no journal write names is excluded with its reason
 └── proposals
     ├── only a committed attribution record is read
@@ -26,6 +28,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE.parent / "src"))
 
+from unittest import mock  # noqa: E402
+
 from tools import native_proposals_from_overnight_candidates as adapter  # noqa: E402
 from tools import prepare_harness_candidates as factory  # noqa: E402
 from tools.test_prepare_harness_candidates import _git  # noqa: E402
@@ -40,6 +44,12 @@ def idea(identity, kind):
             "applicability": {"occupation_code": "15-2051.00", "occupation_title": "Data Scientists",
                               "task_reference": "Clean and aggregate survey data."},
             "brief": "Propose one original method.", "known_wrong": "A sentinel value is averaged as data."}
+
+
+def rotated(record, count):
+    """A stand-in for the batch's selection: each picked idea gets the next task of a rotation."""
+    return [{**entry, "applicability": {**entry["applicability"], "task_reference": f"Rotated task {number}"}}
+            for number, entry in enumerate(record["ideas"][:count])]
 
 
 def skill(identity, extra=""):
@@ -73,7 +83,8 @@ class AdapterTest(unittest.TestCase):
                           idea("secret-idea", "skill")]}
         (root / "early.json").write_text(json.dumps(early))
         (root / "late.json").write_text(json.dumps(late))
-        self.matrices = [f"{root / 'early.json'}@2026-09-24T04:00:00Z", f"{root / 'late.json'}@{SWITCH}"]
+        self.matrices = [f"{root / 'early.json'}@2026-09-24T04:00:00Z@5", f"{root / 'late.json'}@{SWITCH}@5"]
+        self.root = root
         writes = {("first-idea", LANE): "2026-09-24T05:00:00Z",  # before the switch: asked for a skill
                   ("second-idea", LANE): "2026-09-24T08:00:00Z",  # after: a harness routing file
                   ("third-idea", LANE): "2026-09-24T08:10:00Z",  # after: a subagent, not placed
@@ -96,7 +107,8 @@ class AdapterTest(unittest.TestCase):
         self.folder = self.repo / "artifacts" / "attribution"
 
     def attribute(self):
-        return adapter.attribute(self.batch, self.matrices, {LANE: "zhipu", OTHER_LANE: "nvidia"}, self.folder)
+        with mock.patch.object(adapter, "batch_selection", rotated):
+            return adapter.attribute(self.batch, self.matrices, {LANE: "zhipu", OTHER_LANE: "nvidia"}, self.folder)
 
     def commit(self):
         _git(self.repo, "add", ".")
@@ -118,6 +130,23 @@ class AdapterTest(unittest.TestCase):
                                                "reason": "the journal records no write by this lane"}])
         self.assertEqual(record["lanes"][OTHER_LANE], {"family": "nvidia", "provider": "fixture-cloud",
                                                        "model": "other-model"})
+        brief = json.loads((self.folder / "ideas" / "first-idea.json").read_text())
+        self.assertEqual(brief["applicability"]["task_reference"], "Rotated task 0",
+                         "the source is the brief the batch's selection gave the producer, not the raw record")
+        self.assertEqual([matrix["selected"] for matrix in record["matrices"]], [5, 5])
+
+    def test_a_matrix_whose_pinned_source_changed_is_refused(self):
+        changed = {"record_type": "harness_idea_batch/v1", "ideas": [idea("first-idea", "skill")],
+                   "sources": [{"kind": "onet_pinned", "path": "LICENSE", "sha256": "0" * 64}]}
+        (self.root / "changed.json").write_text(json.dumps(changed))
+        with self.assertRaisesRegex(adapter.ConversionError, "pinned_source_changed"):
+            adapter.attribute(self.batch, [f"{self.root / 'changed.json'}@2026-09-24T04:00:00Z@1"], {LANE: "zhipu"},
+                              self.folder)
+
+    def test_a_matrix_without_its_selection_count_is_refused(self):
+        with self.assertRaisesRegex(adapter.ConversionError, "matrix_declaration_invalid"):
+            adapter.attribute(self.batch, [f"{self.root / 'early.json'}@2026-09-24T04:00:00Z"], {LANE: "zhipu"},
+                              self.folder)
 
     def test_an_uncommitted_attribution_is_refused(self):
         self.attribute()

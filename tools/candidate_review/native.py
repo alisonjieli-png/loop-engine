@@ -38,6 +38,10 @@ MAX_PAYLOAD_BYTES = 2 * 1024 * 1024
 MAX_FILE_BYTES = 256 * 1024
 MAX_SOURCE_BYTES = 512 * 1024
 MAX_ITEMS = 10000
+#: The most cited source files one catalogue may pin, the licence included. Each item cites at most 20 of its
+#: own, and a batch of original candidates often cites one small idea record per item, so the bound follows
+#: the item bound instead of a fixed 64.
+MAX_SOURCES = MAX_ITEMS + 1
 TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-python", "application/x-python",
                         "application/json", "application/schema+json", "application/yaml", "text/yaml", "application/toml"})
 ITEM_FIELDS = ("reference", "body_path", "package", "package_root", "producer", "dependencies")
@@ -151,8 +155,8 @@ class NativeCatalogue:
         if type(revision) is not str or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
             refuse("native_source_revision_invalid", "sources require an exact committed revision")
         sources = record["source_digests"]
-        if type(sources) is not dict or "LICENSE" not in sources or len(sources) > 64:
-            refuse("native_sources_invalid", "source digests include the original licence")
+        if type(sources) is not dict or "LICENSE" not in sources or len(sources) > MAX_SOURCES:
+            refuse("native_sources_invalid", "source digests include the original licence and stay within the bound")
         instance = cls()
         instance.folder, instance.repository = root, repository
         instance.source_revision, instance.source_digests = revision, dict(sources)
