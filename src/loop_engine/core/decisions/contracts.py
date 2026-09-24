@@ -184,9 +184,59 @@ def admit_answers(request, answers):
     return admitted
 
 
+GUIDANCE_VERSION = "decision_guidance/v1"
+#: Advisory guidance kinds: bias toward, bias away from, or note for attention.
+GUIDANCE_KINDS = ("prefer", "avoid", "consider")
+MAXIMUM_GUIDANCE_ITEMS = 32
+
+
+@dataclass(frozen=True)
+class DecisionGuidance:
+    """Advisory guidance returned beside the typed answers, never instead of them.
+
+    Guidance may bias what the owning Loop considers next. It never binds: it
+    cannot change an admitted answer, satisfy or bypass a station guard, grant
+    an effect or accept an outcome. A guidance engine can therefore sit behind
+    the same typed edge as a deciding engine without gaining authority."""
+    guidance_id: str
+    kind: str
+    target: str
+    weight: float
+    reason: str = ""
+
+    def __post_init__(self):
+        if (not _text(self.guidance_id) or len(self.guidance_id) > 128 or self.kind not in GUIDANCE_KINDS
+                or not _text(self.target) or len(self.target) > 512
+                or not isinstance(self.reason, str) or len(self.reason) > 512):
+            raise DecisionProtocolError("invalid_guidance")
+        object.__setattr__(self, "weight", _probability(self.weight))
+
+    def to_dict(self):
+        return {"record_type": GUIDANCE_VERSION, "guidance_id": self.guidance_id, "kind": self.kind,
+                "target": self.target, "weight": self.weight, "reason": self.reason, "binding": False}
+
+
+def admit_guidance(items):
+    """Admit advisory guidance on its own path, separate from the typed answers."""
+    if type(items) not in (tuple, list) or len(items) > MAXIMUM_GUIDANCE_ITEMS:
+        raise DecisionProtocolError("invalid_guidance")
+    admitted = tuple(items)
+    if any(not isinstance(item, DecisionGuidance) for item in admitted):
+        raise DecisionProtocolError("typed_guidance_required")
+    if len({item.guidance_id for item in admitted}) != len(admitted):
+        raise DecisionProtocolError("duplicate_guidance_identity")
+    return admitted
+
+
 @dataclass(frozen=True)
 class DecisionProviderResult:
-    """Transient provider response; only digests and counts belong in history."""
+    """Transient provider response; only digests and counts belong in history.
+
+    ``in_process`` marks an answer computed inside this process (rules, a
+    local classifier or reranker). Such an answer sent no provider request, so
+    it counts no physical request and no model call, and the model gateway
+    refuses it as a provider result. ``guidance`` is advisory and travels
+    apart from ``answers``, which alone carry the binding typed decision."""
     ok: bool
     model: str
     answers: dict = field(default_factory=dict, repr=False)
@@ -195,13 +245,19 @@ class DecisionProviderResult:
     error_code: str = ""
     physical_requests: int = 0
     response_received: bool = False
+    in_process: bool = False
+    guidance: tuple = ()
 
     def __post_init__(self):
         if (type(self.ok) is not bool or type(self.response_received) is not bool
+                or type(self.in_process) is not bool
                 or not _text(self.model) or not isinstance(self.answers, dict)
                 or type(self.physical_requests) is not int or self.physical_requests not in (0, 1)
-                or self.ok and (not self.response_received or self.physical_requests != 1)):
+                or self.in_process and self.physical_requests != 0
+                or self.ok and not self.response_received
+                or self.ok and not self.in_process and self.physical_requests != 1):
             raise DecisionProtocolError("invalid_provider_result")
+        object.__setattr__(self, "guidance", admit_guidance(self.guidance))
         for value in (self.prompt_tokens, self.eval_tokens):
             if value is not None and (type(value) is not int or value < 0):
                 raise DecisionProtocolError("invalid_provider_usage")

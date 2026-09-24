@@ -47,7 +47,9 @@ class DecisionBoundaryChecks(unittest.TestCase):
     def test_configuration_and_adapters_do_not_own_network_or_process_clients(self):
         root = Path(__file__).resolve().parents[1] / "src/loop_engine/core/decisions"
         blocked = {"httpx", "requests", "socket", "subprocess", "torch", "transformers"}
-        for name in ("configuration.py", "system_one.py", "jev.py", "credentials.py", "wire.py"):
+        for name in ("configuration.py", "system_one.py", "jev.py", "credentials.py", "wire.py",
+                     "command_risk_policy.py", "command_risk_programs.py", "stations.py", "rules_engine.py",
+                     "station_engines.py"):
             for item in ast.walk(ast.parse((root / name).read_text())):
                 if isinstance(item, ast.Import):
                     self.assertFalse({alias.name.split('.')[0] for alias in item.names} & blocked, name)
@@ -55,6 +57,18 @@ class DecisionBoundaryChecks(unittest.TestCase):
                     self.assertNotIn((item.module or '').split('.')[0], blocked, name)
                     if (item.module or '').startswith('urllib'):
                         self.assertEqual(item.module, 'urllib.parse', name)
+
+
+    def test_the_command_risk_policy_never_runs_what_it_reads(self):
+        root = Path(__file__).resolve().parents[1] / "src/loop_engine/core/decisions"
+        for name in ("command_risk_policy.py", "command_risk_programs.py"):
+            tree = ast.parse((root / name).read_text())
+            calls = {node.func.attr for node in ast.walk(tree)
+                     if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)}
+            self.assertFalse(calls & {"system", "popen", "run", "Popen", "check_output", "check_call", "exec"}, name)
+            imported = {alias.name.split(".")[0] for node in ast.walk(tree) if isinstance(node, ast.Import)
+                        for alias in node.names}
+            self.assertLessEqual(imported, {"hashlib", "os", "re", "shlex"}, name)
 
 
 if __name__ == "__main__":

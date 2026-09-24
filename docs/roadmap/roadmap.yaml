@@ -840,7 +840,7 @@ continuation:
     - id: D-19
       title: Engines behind fixed edges for every functional component
       stage: continued_improvement
-      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60]
+      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60, S-6.100]
       depends_on: [D-12]
       actions: ['Index every engine slot in the boundary registry with its edge, protocol, engines and check.', 'Declare engines with lifecycle, capabilities, effects, licence and cost model.', 'Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.', Select engines without effects and record every decision with its reasons., Measure every engine inside the envelope and read qualified evidence for ranking., Build the harness executor slot with the Agent Client Protocol adapter first., Make hosted search a slot with the measured policy and a relevance floor., Search for existing projects and papers before each engine is built and record the decision.]
       acceptance: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
@@ -1389,6 +1389,7 @@ continuation:
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.100]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1495,7 +1496,7 @@ continuation:
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87]
@@ -3618,3 +3619,20 @@ steps:
     acceptance: "Baltor's first social posts are produced by its own steps and tools, each approved and posted by a person, and the case study shows how each one was made."
     evidence: "September 24, 2026: the owner is opening social media profiles and asked whether the media work could power Baltor's own organic content. S-6.59 already requires a person to approve and post every reply. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
     next_local_work: "Draft three posts from saved release and case study records once OWNER-19 names the accounts and the approving person."
+  - id: S-6.100
+    phase: 6
+    title: "Decision stations around the build step: typed judgments with swappable engines, measured"
+    status: building
+    depends_on: [S-6.30, S-6.31]
+    boundary: [src/loop_engine/core/decisions, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "five stations of the step loop, each a typed question on decision_batch_request/v1 at its loop point: which files to read (a score over candidate chunks, before the step), which model gets the step (a choice among tiers, before the step), whether a command may run without a person (before each command), whether the task is done (read from fresh test output, not the agent's own summary, after the step) and whether a tool output is kept or dropped (a score, at compaction, so survivors stay verbatim)"
+      - "swappable engines of the typed_decision slot behind each station, cheapest first: deterministic rules, local classifiers and rerankers, small models through the model gateway, constrained decoding, typed decision libraries, decision endpoints such as Jev, hosted services with enforced schemas, and a frontier fallback; a model-backed engine is unqualified until measured, and an engine that needs a key waits for one"
+      - "an answer is admitted only as a typed answer, a confidence is never acceptance, an engine can only make a station stricter, and an irreversible command always waits for a person whatever an engine says"
+      - "the typed decision edge returns the binding decision and, separately, advisory guidance that never binds, so a guidance engine can sit behind the same edge later"
+      - "every station decision is recorded with its later outcome in the existing semantic decision and outcome records, so engines can be ranked by recorded evidence"
+      - "each engine is measured per station on labeled sets built from repository evidence and synthetic cases labeled by rule, reporting accuracy, cost and latency with unknowns kept unknown"
+    adversarial: "An irreversible command that an engine calls safe, an effect the step does not hold, a model-backed engine selected without a measured proof level, a confidence counted as an accepted outcome, advisory guidance that changes a binding decision, a harness hook that answers allow, a completion read from the agent's own summary instead of fresh test output, and a compaction that summarizes a kept output must each fail a named check, and each check must fail again when its guard is removed."
+    acceptance: "At each station a step asks a typed question and binds the answer of the engine its policy declares, or the station's safe default when no engine answers; advisory guidance stays apart, no answer grants authority, every decision is joined to its outcome, and a per-station measurement names the cheapest engine that meets the station's declared accuracy floor."
+    evidence: "September 24, 2026, the owner: \"What about research and further seperation and containerization, and swapable engines for reasonining and decision steps vs build step\". The owner later reported that Jev is full and TypeSafe has paused sign-ups, so the Jev adapter stays as it is, unqualified, and other engines behind the same contract come first. First slice, built and checked locally: the command safety station with the command risk policy (a parser that never runs what it reads), the in-process rules engine, the separate advisory guidance channel on the typed edge, the boundary decision station judgment, the command-safety command with a harness hook that only narrows, and 29 station checks in which every guard is also run with that guard removed. The slot's two planned checks are now existing checks. The run-time engine selector has not reached main, so stations use their declared order and record that dependency."
+    next_local_work: "Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1."

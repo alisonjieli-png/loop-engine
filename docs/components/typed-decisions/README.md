@@ -7,12 +7,14 @@ from a closed set are different operations. This component owns the second one.
 It sends typed judgment requests to a configured decision endpoint and admits
 the answers against the question identities that were asked.
 
-The registered operational boundary is `typed decision provider invocation`,
-whose envelope is `core.decisions.gateway.invoke_decisions`. The provider
-adapter and the passive request are not graph vertices. The model gateway's
-model attempt Loop owns each physical invocation, and the application facing
-tool in `code_nodes/decision_tools.py` owns its request through a Practitioner
-Loop.
+The registered operational boundaries are `typed decision provider invocation`,
+whose envelope is `core.decisions.gateway.invoke_decisions`, and
+`decision station judgment`, whose envelope is
+`core.decisions.stations.decide_station`. The provider adapter and the passive
+request are not graph vertices. The model gateway's model attempt Loop owns
+each physical invocation, a station decision is owned by the step's
+Practitioner Loop, and the application facing tool in
+`code_nodes/decision_tools.py` owns its request through a Practitioner Loop.
 
 ## Runtime classification
 
@@ -61,6 +63,20 @@ Typed decision execution
     └── the shared question wire serialization
 ```
 
+Decision stations sit on top of the same contracts. In a coding step one
+station builds: the harness that writes code. The others are typed judgments
+with a small answer space, asked at fixed loop points and answered by
+swappable engines of the `typed_decision` slot.
+
+```text
+Step loop and its stations
+├── before_step: which files to read, which model gets the step (planned)
+├── build: the step executor writes code (the step_executor slot)
+├── before_command: may this command run without a person? (built)
+├── after_step: is the task done, read from fresh test output (planned)
+└── at_compaction: keep or drop each tool output (planned)
+```
+
 The package must not import the application tools, the command dispatcher or
 `code_nodes`. It contains no provider discovery registry, no permission store,
 no task scheduler and no Run History of its own.
@@ -86,6 +102,43 @@ Endpoint settings name the exact address, the reported model identity, a
 separate credential reference, request and response byte allowances, and an
 optional operator supplied deployment digest. Secure transport is required
 except for an explicitly allowed numeric loopback address.
+
+## The command safety station
+
+`decide_command_safety` asks two typed questions about one command: may it run
+without a person, and could it cause an effect that cannot be undone. The
+answering engine is taken from a `StationPolicy` in declared order. The
+built-in engine is `RulesDecisionEngine`, which reads the command risk policy
+in process and counts no model call.
+
+The station then applies its own guards from `assess_command`, whatever the
+engine answered:
+
+| Guard | When it holds the command for a person |
+|---|---|
+| `irreversible_waits_for_a_person` | The policy sees an effect that cannot be undone, such as a delete without a declared snapshot, a forced push or publishing. |
+| `effect_not_granted` | The command has an effect the step does not hold, such as network access under a workspace grant. |
+| `command_not_fully_readable` | The program is computed at run time or the command does not parse. |
+| `engine_judged_not_safe` | The engine's probability that it may run is below the station threshold. |
+| `engine_judged_irreversible` | The engine's probability of an irreversible effect reaches the station floor. |
+| `no_engine_answer` | No engine returned an admitted answer, so the safe default binds. |
+
+An engine can therefore only make the station stricter. A result carries
+`authority_granted` and `task_accepted` as false, and any advisory guidance an
+engine returns stays in `advisory`, apart from the binding decision.
+
+Judge one command from a shell, or from a harness hook:
+
+```bash
+loop-engine decisions command-safety --command "git push --force origin main"
+loop-engine decisions command-safety --hook claude_code < pre-tool-event.json
+```
+
+The first form prints `decision_station_result/v1` and exits 0 for a command
+that may run and 2 for one that must wait. The hook form reads a pre-tool
+event and only ever narrows: it answers "ask" for a command that must wait and
+nothing for one that may run, so the harness's own permission rules still
+apply.
 
 ## Refusals
 
@@ -114,8 +167,14 @@ PYTHONPATH=src python -c \
   'from loop_engine.core.decisions.jev import self_test; print(self_test()["all_passed"])'
 PYTHONPATH=src python -c \
   'from loop_engine.core.decisions.system_one import self_test; print(self_test()["all_passed"])'
+PYTHONPATH=src python -c \
+  'from loop_engine.core.decisions.stations import self_test; print(self_test()["all_passed"])'
 PYTHONPATH=src:tools python -m unittest tools.test_decision_engine_boundary -v
+PYTHONPATH=src:tools python -m unittest tools.test_decision_station_cli -v
 ```
+
+The station checks run every guard twice: against the real code, where the
+check must pass, and with that guard removed, where the same check must fail.
 
 The three self tests exercise the local contracts, the real serializer, real
 protocol messages and the canonical gateway with injected provider fixtures.

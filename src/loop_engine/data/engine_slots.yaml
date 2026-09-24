@@ -382,13 +382,16 @@ slots:
     slot_version: 1.0.0
     title: Typed decision
     function: >-
-      A closed-set judgment from a decision endpoint, admitted as a typed
-      answer. A reported confidence is never an accepted outcome.
+      A closed-set judgment at a decision station of the step loop, answered
+      by a declared engine and admitted as a typed answer, with any advisory
+      guidance kept apart from the binding decision. A reported confidence is
+      never an accepted outcome.
     design_table: engine_side_run_time
     inventory_records: [E16]
-    roadmap_steps: []
+    roadmap_steps: [S-6.100]
     implementation_state: candidate
-    work_boundaries: [typed decision provider invocation, harness typed decision tool]
+    work_boundaries: [typed decision provider invocation, harness typed decision tool,
+                      decision station judgment]
     planned_work_boundaries: []
     release_reason: ""
     release_edge: ""
@@ -403,13 +406,13 @@ slots:
     joined_with: []
     engine_protocol: core.decisions.contracts.DecisionProvider
     engine_protocol_version: typed_decisions/v1
-    engine_kinds: [decision_endpoint]
+    engine_kinds: [decision_endpoint, deterministic_rules]
     engine_kind_groups: {}
     native_registry: core.decisions.configuration.configured_engines
     native_declaration: core.decisions.configuration.ConfiguredDecisionEngine
     requirement_comparison: ""
     descriptor_projection: core.decisions.configuration.describe_decision_engine
-    factory_table: core.decisions.configuration.ADAPTER_FACTORIES
+    factory_table: core.decisions.station_engines.STATION_ENGINE_FACTORIES
     planned_symbols: [core.decisions.configuration.describe_decision_engine]
     selection_mode: one_of
     dispatch_key: ""
@@ -424,12 +427,23 @@ slots:
     bindings:
       - {context: engine_side, selection_phase: per_attempt,
          binding_site: model_gateway_route_plan, host_must_bind: false}
-    declaration_source: Projected from decision_host_configuration/v2; failover only when declared.
+    declaration_source: >-
+      A station's declared engine order (StationPolicy), with endpoint engines
+      projected from decision_host_configuration/v2; fallback only after a
+      declared failure kind.
     retired_engines: []
     known_direct_construction_sites: []
-    existing_checks: []
-    planned_checks: [an_unqualified_decision_endpoint_is_not_selected_by_default,
-                     decision_confidence_is_not_an_accepted_outcome]
+    existing_checks:
+      - core.decisions.station_checks:an_unqualified_decision_endpoint_is_not_selected_by_default
+      - core.decisions.station_checks:decision_confidence_is_not_an_accepted_outcome
+      - core.decisions.station_checks:irreversible_command_waits_whatever_an_engine_says
+      - core.decisions.station_checks:ungranted_effect_waits_whatever_an_engine_says
+      - core.decisions.station_checks:advisory_guidance_never_changes_the_binding_decision
+      - core.decisions.station_checks:a_local_engine_counts_no_model_call
+      - core.decisions.station_checks:every_station_decision_is_recorded_with_its_later_outcome
+    planned_checks: [completion_reads_fresh_test_output_not_the_agent_summary,
+                     compaction_survivors_stay_verbatim,
+                     a_model_tier_answer_never_widens_the_permitted_routes]
   - record_type: engine_slot/v1
     slot_id: response_evaluator
     slot_version: 1.0.0

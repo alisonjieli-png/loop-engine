@@ -48,6 +48,11 @@ Existing model execution
 ├── core/decisions/jev.py: explicitly authorized TypeSafe wire adapter
 ├── core/decisions/system_one.py: Circuit and compatible external endpoints
 ├── core/decisions/gateway.py: ModelGateway's typed dispatch implementation
+├── core/decisions/command_risk_policy.py: the written command risk policy, read without running
+├── core/decisions/command_risk_programs.py: the policy's per-program readers
+├── core/decisions/stations.py: decision stations, declared engine order, guards and records
+├── core/decisions/rules_engine.py: in-process engine for the stations' written policies
+├── core/decisions/station_engines.py: the station engine factory table
 └── code_nodes/decision_tools.py: application tool over ModelExecutionSession
 ```
 
@@ -95,6 +100,44 @@ TypeSafe origin are contract constants. Exact model, credential reference,
 network/model permission, transport allowances, call allowance and timeout
 are settings. Retry and provider fallback must be explicit. A prompt, confidence
 value or preferred engine never grants an effect or accepts a task outcome.
+
+## Decision stations
+
+A step has one build station, where a harness writes code, and judgment
+stations around it. A station asks typed questions on
+`decision_batch_request/v1` at a fixed loop point and binds the admitted answer
+with its own guards. The command safety station is asked before a command
+runs. Its guards come from the command risk policy and hold whatever an
+engine answers: an irreversible command, an effect the step does not hold,
+or a command the policy cannot fully read waits for a person.
+
+```text
+Decision station
+├── StationDefinition: loop point, typed questions, binding rule, safe default
+├── StationPolicy: declared engine order, fallback failure kinds, trial permission
+├── StationEngine: one installed engine of a typed_decision slot kind
+│   ├── in process (rules): answers directly and counts no model call
+│   └── provider (decision endpoint): answers through ModelGateway
+└── DecisionStationResult
+    ├── decision and binding: what the owning Loop acts on
+    └── advisory: guidance that never binds
+```
+
+Engines are tried in the declared order after an eligibility screen: the
+protocol, availability, the station and question kinds, and qualification. A
+model-backed engine needs a measured proof level before it is served by
+default; deterministic code is served on its contract checks. After a typed
+failure the next engine answers only when the policy declares that failure
+kind. When no engine answers, the station's safe default binds. Until the
+run-time engine selector reaches main, the declared order is the whole
+selection, and no evidence reorders it.
+
+Each decision is written to the owning Loop's ledger with digests only, and,
+when the run keeps them, as a semantic decision record joined forward through
+the run's outcome ledger. A station never grants authority and never accepts a
+task. The harness hook form only narrows: it answers "ask" for a command that
+must wait and nothing for one that may run, so a harness's own permission
+rules still apply.
 
 ## Verification and limits
 

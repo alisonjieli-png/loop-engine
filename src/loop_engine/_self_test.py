@@ -74,7 +74,7 @@ def self_test() -> dict:
         "core.external_harness_contract",
         "core.harness_process_checks", "core.harness_confinement", "core.harness_semantic", "core.instance_instructions", "core.harness_intelligence", "core.provisioning_server", "core.provisioning_mcp_checks", "core.service_runtime.runtime",
         "core.service_runtime.billing", "core.service_runtime.promotions", "core.service_runtime.stripe_provider", "core.service_runtime.http_checks", "core.service_runtime.refusals", "core.service_runtime.stripe_sessions", "core.decisions.contracts", "core.decisions.jev",
-        "core.decisions.system_one", "core.retrieval_backends", "core.node_provisioning", "core.intelligence_tagging", "core.credential_leases", "core.capability_needs", "core.guardrail_intelligence", "core.spawned_provisioning",
+        "core.decisions.system_one", "core.decisions.stations", "core.retrieval_backends", "core.node_provisioning", "core.intelligence_tagging", "core.credential_leases", "core.capability_needs", "core.guardrail_intelligence", "core.spawned_provisioning",
         "core.model_call_collection", "core.harness_output_limit_binding", "core.harness_fallback", "core.harness_layering", "core.harness_layering_space", "core.harness_layering_availability", "core.harness_layering_configuration", "core.harness_selection",
         "core.harness_response_evaluation", "core.harness_additional_recipe_checks", "core.harness_cline_kilo_recipe_checks", "core.harness_goose_recipe_checks", "core.harness_lightweight_recipe_checks", "core.harness_mini_swe_recipe_checks", "core.harness_opencode_recipe_checks", "core.harness_python_recipe_checks",
         "core.harness_responses_recipe_checks", "core.harness_remaining_recipe_checks",

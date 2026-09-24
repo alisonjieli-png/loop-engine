@@ -18,6 +18,23 @@ from ..typed_decision import validate_typed_decision_route
 from ..response_contracts import TYPED_DECISION_BATCH
 
 
+#: The result codes this gateway writes, named once so callers import them.
+NO_ELIGIBLE_ROUTE = "no_eligible_route"
+PREFLIGHT_REFUSED = "decision_provider_preflight_refused"
+RESPONSE_REFUSED = "decision_response_refused"
+PROVIDER_FAILED = "decision_provider_failed"
+#: Provider codes the gateway passes through: the provider could not be used.
+PROVIDER_ACCESS_FAILURES = ("authentication_failed", "rate_limited", "payment_required", "provider_unavailable")
+
+
+def _refused_as_provider_result(observed, model):
+    """A provider attempt counts only a provider answer for the exact model.
+
+    An in-process answer is not a provider call; admitting it here would count
+    a rule evaluation as a physical model call."""
+    return observed.in_process or not observed.ok or observed.model != model
+
+
 def invoke_decisions(gateway, request, *, config, parent=None, ledger=None):
     from ...loop.encapsulate import as_model_loop
     from ..model_call_contract import ModelCallRequest, ModelInput, ModelCallObservation, record_model_call
@@ -41,7 +58,7 @@ def invoke_decisions(gateway, request, *, config, parent=None, ledger=None):
         return result
     routes = gateway._routes(config)
     if not routes:
-        result.error_code = "no_eligible_route"
+        result.error_code = NO_ELIGIBLE_ROUTE
         return result
     capture = (OperationCostCapture(gateway.cost_ledger, "model_call.typed_decisions", "model_gateway",
                                    gateway.run_id or "unknown-run") if gateway.cost_ledger is not None else None)
@@ -62,7 +79,7 @@ def invoke_decisions(gateway, request, *, config, parent=None, ledger=None):
                     raise DecisionProtocolError("decision_provider_incompatible")
                 spec.adapter.prepare_decisions(request, model=route.model)
             except Exception:
-                code = "decision_provider_preflight_refused"
+                code = PREFLIGHT_REFUSED
             if code:
                 result.attempts.append(GatewayAttempt(route.provider, route.model, route.name, "", False, error_code=code))
                 continue
@@ -88,13 +105,12 @@ def invoke_decisions(gateway, request, *, config, parent=None, ledger=None):
             result.gateway_loop_id = result.gateway_loop_id or call["loop_id"]
             admitted = None
             try:
-                if not observed.ok or observed.model != route.model:
+                if _refused_as_provider_result(observed, route.model):
                     raise DecisionProtocolError("decision_provider_failed")
                 admitted = admit_answers(request, observed.answers)
             except DecisionProtocolError:
-                code = (observed.error_code if observed.error_code in (
-                    "authentication_failed", "rate_limited", "payment_required", "provider_unavailable")
-                    else "decision_provider_failed" if not observed.ok else "decision_response_refused")
+                code = (observed.error_code if observed.error_code in PROVIDER_ACCESS_FAILURES
+                        else PROVIDER_FAILED if not observed.ok else RESPONSE_REFUSED)
             elapsed = time.monotonic() - started
             if time.monotonic() > deadline:
                 code = "decision_deadline_exhausted"
@@ -134,7 +150,7 @@ def invoke_decisions(gateway, request, *, config, parent=None, ledger=None):
             result.output_tokens = (sum(item.output_tokens for item in physical)
                                     if all(item.output_tokens is not None for item in physical) else None)
         if not result.ok and not result.error_code:
-            result.error_code = result.attempts[-1].error_code if result.attempts else "no_eligible_route"
+            result.error_code = result.attempts[-1].error_code if result.attempts else NO_ELIGIBLE_ROUTE
         if capture is not None:
             capture.end("unknown" if result.ok else "failed", model_calls=result.physical_model_calls,
                         input_tokens=result.input_tokens, output_tokens=result.output_tokens)

@@ -51,7 +51,64 @@ def configured_tool(value, *, installed_gateway=None):
     return DecisionToolBinding(execution.start_session())
 
 
+def command_safety_command(arguments, *, stdin=None, stdout=None):
+    """Judge one command at the command safety station with the built-in rules engine.
+
+    With ``--hook claude_code`` the command comes from a PreToolUse event on
+    standard input and the answer is the harness's own hook output. The hook
+    only narrows: "ask" for a command that must wait, nothing otherwise."""
+    import sys
+    from .core.decisions.command_risk_policy import EFFECTS, DYNAMIC, WORKSPACE_EFFECTS
+    from .core.decisions.station_engines import built_in_installations
+    from .core.decisions.stations import (RUN, CommandSafetyInput, StationPolicy, decide_command_safety,
+                                          harness_hook_response, HOOK_HARNESSES)
+    from .loop.recursive_loop import Loop, LoopConfig, StepOutcome
+    from .loop.loop_role import LoopRole, LoopRoleIdentity
+    stdin, stdout = stdin or sys.stdin, stdout or sys.stdout
+    parser = argparse.ArgumentParser(prog="loop-engine decisions command-safety",
+        description="Judge one shell command before it runs. The answer never grants an effect.")
+    parser.add_argument("--command", help="The command to judge. With --hook it is read from the harness event.")
+    parser.add_argument("--grant", action="append", choices=[item for item in EFFECTS if item != DYNAMIC],
+                        help="An effect the step already holds. Repeat for each; the default is read, write and execute.")
+    parser.add_argument("--reversible-deletes", action="store_true",
+                        help="Declare that the workspace can undo a delete, such as a snapshot before each command.")
+    parser.add_argument("--hook", choices=HOOK_HARNESSES, help="Read a pre-tool event and answer in that harness's hook format.")
+    values = parser.parse_args(arguments)
+    command = values.command
+    if values.hook:
+        event = json.loads(stdin.read() or "{}")
+        if not isinstance(event, dict) or event.get("tool_name") != "Bash":
+            return 0
+        command = (event.get("tool_input") or {}).get("command", "")
+    if not isinstance(command, str) or not command.strip():
+        parser.error("a command is required")
+    holder = {}
+    owner = Loop("Judge one command before it runs", LoopConfig(
+        framework="custom", custom_steps=("judge",), allowable_modes=("deterministic",),
+        preferred_modes=("deterministic",), delegated_modes=("deterministic",)),
+        identity=LoopRoleIdentity(LoopRole.PRACTITIONER, "practitioner.solver"))
+
+    def handler(loop, _step, _context):
+        holder["result"] = decide_command_safety(
+            CommandSafetyInput(command, granted_effects=tuple(values.grant or WORKSPACE_EFFECTS),
+                               reversible_deletes=values.reversible_deletes),
+            built_in_installations(), StationPolicy("command_safety", ("rules",)), loop)
+        return StepOutcome(output="station decision recorded; no effect was run", mode="deterministic",
+                           model_calls=0)
+    owner.run(handler=handler, max_steps=2)
+    result = holder["result"]
+    if values.hook:
+        response = harness_hook_response(result, values.hook)
+        if response is not None:
+            print(json.dumps(response, sort_keys=True), file=stdout)
+        return 0
+    print(json.dumps(result.to_dict(), sort_keys=True), file=stdout)
+    return 0 if result.decision == RUN else 2
+
+
 def decision_command(arguments):
+    if arguments[:1] == ["command-safety"]:
+        return command_safety_command(arguments[1:])
     parser = argparse.ArgumentParser(prog="loop-engine decisions", description="Inspect or explicitly use a host-configured typed decision engine.")
     parser.add_argument("command", choices=("inspect", "evaluate", "serve"))
     parser.add_argument("--config", required=True, help="Absolute non-secret host configuration file.")

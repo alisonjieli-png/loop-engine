@@ -49,7 +49,9 @@ ONTOLOGY_NAMESPACE_MODULES = ("node.__init__", "node.loop_node.__init__")
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
     "core.decisions": ("__init__", "contracts", "contract_checks", "credentials", "configuration", "gateway",
-                       "http_transport", "wire", "jev", "jev_checks", "system_one", "system_one_checks"),
+                       "http_transport", "wire", "jev", "jev_checks", "system_one", "system_one_checks",
+                       "command_risk_policy", "command_risk_programs", "stations", "station_checks", "rules_engine",
+                       "station_engines"),
     "core.service_runtime": (
         "__init__", "records", "storage", "runtime", "runtime_checks", "provisioning",
         "billing", "billing_records", "billing_checks", "stripe_provider",
