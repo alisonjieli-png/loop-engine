@@ -1,0 +1,17 @@
+{
+ "record_type": "interrupted_step_resume_record/v1",
+ "step_id": "t-104-reproduction",
+ "verdict": "drift",
+ "evidence_path": ".baltor/resume-output/evidence/drift-check-20260923T024455120034Z.json",
+ "differences": [
+  {
+   "kind": "file_changed",
+   "path": "tests/test_cart_badge.py",
+   "expected": "4d1c9a0e7b3f52c8d6e1a9b0c7f3e2d4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
+   "found": "a7e05b2c9d1f3e4a6b8c0d2e4f6a8b0c1d3e5f7a9b1c3d5e7f9a1b3c5d7e9f1a"
+  }
+ ],
+ "continued_from": null,
+ "outputs_written": [],
+ "reason": "tests/test_cart_badge.py changed after the host wrote the handoff, so the handoff no longer describes the workspace. Nothing was continued."
+}

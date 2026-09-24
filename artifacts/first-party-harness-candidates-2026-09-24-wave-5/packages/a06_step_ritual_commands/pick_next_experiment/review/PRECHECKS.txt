@@ -1,0 +1,195 @@
+PRECHECKS for packages/a06_step_ritual_commands/pick_next_experiment
+Written 2026-09-24T05:56:21Z by the a06 repairer (Claude Code, family anthropic) after critic round 2.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: b13cbf5c223f6244a082a172d348ba124f190f3705f66e8d55268a6b9a102fdd
+Digest before this repair round: 577a9b45 (snapshot repairer-a06_step_ritual_commands/a06-predecessor-snapshot-*.tar.gz)
+
+1. Checker reports kept in this folder, oldest first (generator rounds, then this repair round)
+   precheck-20260923T202047977600Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=577a9b4529cc8a42
+   precheck-20260923T202950093069Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=577a9b4529cc8a42
+   precheck-20260923T202957007907Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=577a9b4529cc8a42
+   precheck-20260923T203147610698Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=577a9b4529cc8a42
+   precheck-20260924T053937445238Z.json: refused=false passed_for_wave_gate=false runs_skipped=true package_digest=b13cbf5c223f6244
+   precheck-20260924T055358649438Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=b13cbf5c223f6244
+   precheck-20260924T055502702262Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=b13cbf5c223f6244
+   precheck-20260924T055645793853Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=b13cbf5c223f6244
+   precheck-20260924T055847009896Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=b13cbf5c223f6244
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/pick_next_experiment
+{"fill": "done", "files": 13, "package_digest": "b13cbf5c223f6244a082a172d348ba124f190f3705f66e8d55268a6b9a102fdd"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/pick_next_experiment
+{
+ "identity": "pick_next_experiment",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055847009896Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260924T055847009896Z.json
+   passed_for_wave_gate=true package_digest matches=True
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 13} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 13}
+
+4. Payload tests run directly in a temporary copy: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 13 tests in 2.108s  OK
+   python3.10: exit 0; Ran 13 tests in 1.351s  OK
+
+5. The critic's placed probes, reproduced before the repair at the old digest
+   (repairer-a06_step_ritual_commands/baseline/baseline-probe-placed-results.json)
+   bash blocks in placed Claude Code command: ["python3 -I -B .baltor/pick-next-experiment/scripts/experiment_ledger.py summary --root .", "python3 -I -B .baltor/pick-next-experiment/scripts/experiment_ledger.py propose --root ."]
+   first action from placed command: {"exit": 0, "best": "E-003", "notes_file": null}
+   E-003 config plus a dummy key 'attempt': {"exit": 0, "appended": true, "changed_keys": ["attempt"], "warnings": []}
+
+6. The same probes and the wave consumers after the repair, on the Claude Code placement
+   (repairer-a06_step_ritual_commands/after-probe-results.json; as_intended true for every row)
+   [ok] first action from the placed command
+   [ok] E-003 config plus a dummy key 'attempt'
+
+7. Mutation checks: one guard removed in a temporary copy; the full suite must pass on the unchanged
+   copy (control) and fail on the changed copy (mutant). repairer-a06_step_ritual_commands/after-mutants-results.json
+   control: exit 0; Ran 13 tests in 2.834s | OK
+   KILLED: a key no earlier run used is accepted; mutant Ran 13 tests in 2.781s | FAILED (failures=1) | test_known_wrong_a_dummy_key_does_not_make_a_new_experiment
+   KILLED: the change need not name the changed keys; mutant Ran 13 tests in 2.906s | FAILED (failures=1) | test_change_must_name_every_changed_key
+   KILLED: a retry needs no environment change; mutant Ran 13 tests in 2.807s | FAILED (errors=1) | test_a_failed_configuration_can_be_retried_after_an_outside_fix
+   KILLED: the repeat comparison is removed; mutant Ran 13 tests in 2.484s | FAILED (failures=1, errors=2) | test_a_failed_configuration_can_be_retried_after_an_outside_fix, test_failed_configurations_and_ignored_keys_count_as_repeats, test_known_wrong
+   KILLED: the budget is ignored; mutant Ran 13 tests in 2.928s | FAILED (failures=1) | test_budget_and_wide_changes
+   KILLED: a done run needs no score; mutant Ran 13 tests in 3.087s | FAILED (errors=1) | test_record_moves_an_experiment_and_feeds_the_summary
+   KILLED: update lines are ignored; mutant Ran 13 tests in 3.055s | FAILED (failures=7) | test_a_failed_configuration_can_be_retried_after_an_outside_fix, test_example_proposal_is_appended_as_planned, test_failed_configurations_and_ignored_key
+
+8. Schema validator embedded in the tests, compared with the jsonschema library (4.26.0) on valid and
+   mutated instances (repairer-a06_step_ritual_commands/crosscheck-embedded-results.json)
+   contracts/experiment-proposal.schema.json: 205 of 205 cases agree
+   contracts/experiment-ledger-line.schema.json: 654 of 654 cases agree
+
+9. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055700886283Z.json
+(exit 0)
+
+10. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+Earlier summary written by the generator on 2026-09-23 (kept unchanged below)
+PRECHECKS for packages/a06_step_ritual_commands/pick_next_experiment
+Written 2026-09-23T20:30:57Z by Claude Code wave 5 generator a06_step_ritual_commands.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: 577a9b4529cc8a42e480e1208a75947927e42661ea5f0aa8505cae0075e8201b
+
+1. Checker reports kept in this folder, oldest first
+   precheck-20260923T202047977600Z.json: refused=false passed_for_wave_gate=true package_digest=577a9b4529cc8a42
+   precheck-20260923T202950093069Z.json: refused=false passed_for_wave_gate=true package_digest=577a9b4529cc8a42
+   precheck-20260923T202957007907Z.json: refused=false passed_for_wave_gate=true package_digest=577a9b4529cc8a42
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/pick_next_experiment
+{"fill": "done", "files": 11, "package_digest": "577a9b4529cc8a42e480e1208a75947927e42661ea5f0aa8505cae0075e8201b"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/pick_next_experiment
+{
+ "identity": "pick_next_experiment",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202950093069Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260923T202957007907Z.json (every check with findings)
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 8} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 8}
+
+4. Payload tests run directly: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 8 tests in 0.728s  OK
+   python3.10: exit 0; Ran 8 tests in 0.501s  OK
+
+5. Mutation checks: one guard removed in a temporary copy of the payload; the named test
+   must pass on the unchanged copy (control) and fail on the changed copy (mutant)
+   whole floats count as integers in the fingerprint: scripts/experiment_ledger.py; test test_known_wrong_repeat_with_reordered_keys_and_float_counts_is_refused; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   a configuration that already ran is refused: scripts/experiment_ledger.py; test test_known_wrong_repeat_with_reordered_keys_and_float_counts_is_refused; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   Earlier attempt, discarded: the first mutation run used 'python3 -I -m unittest module.Class.test'.
+   Isolated mode keeps the tests folder off the import path, so every run, controls included,
+   failed with an import error. Those results proved nothing and were replaced by the runs above.
+
+6. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203002252913Z.json
+(exit 0)
+
+7. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+8. Confirming run after this file was written (the layout, secrets and every other check see this file)
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203153908527Z.json
+(exit 0)
+   newest report precheck-20260923T203147610698Z.json: passed_for_wave_gate and digest match = True True

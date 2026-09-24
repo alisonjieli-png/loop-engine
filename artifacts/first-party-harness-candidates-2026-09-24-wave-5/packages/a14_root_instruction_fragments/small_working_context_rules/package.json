@@ -1,0 +1,354 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "small_working_context_rules",
+    "title": "Small working context rules",
+    "purpose": "A composable instruction section that tells a small model to open only the files the step needs, search before reading, read large files in slices and write long results to files.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/context_budget.py",
+      "src/loop_engine/core/llm_work_packet.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/assemble_the_context_for_one_step.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/decide_what_to_leave_out_of_a_prompt.md"
+    ],
+    "layer": "context",
+    "family": "native_instruction_fragment",
+    "search_tags": [
+      "small model context rules",
+      "keep agent context small",
+      "read large files in slices",
+      "search before reading files",
+      "write long command output to a file",
+      "reduce tokens for a local model",
+      "context window limits for coding agents",
+      "agents md rules for small models",
+      "save long test output and read only the errors",
+      "run a command and summarize its output"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "agent operator",
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only",
+      "a POSIX system for the helper script, which uses select on pipes and process groups",
+      "a shell with grep, sed, head, tail and wc that accept grep -r, grep -m and head -c, as the GNU and BSD tools do; these options are not POSIX"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a14_root_instruction_fragments",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "444321415d2b5bf41b159a57c6b98272ef9d5431f5a5bae846a0f6d273b8a927",
+        "size_bytes": 1953,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "444321415d2b5bf41b159a57c6b98272ef9d5431f5a5bae846a0f6d273b8a927",
+        "size_bytes": 1953,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/run_and_summarize.py",
+        "digest": "067b02543c2f3e74b1917d4929a1b2431f1d172a5ffd8cc57e986584490d9ff2",
+        "size_bytes": 10185,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_run_and_summarize.py",
+        "digest": "2bd091a9b807666024fb0ff10cdf572e6e7b8f80f3325da0443b3cef2fb69e39",
+        "size_bytes": 6183,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a14_root_instruction_fragments",
+    "file_class": "root_instruction_fragment",
+    "use_cases": [
+      "any_focused_step",
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "gemini_cli",
+      "goose",
+      "opencode",
+      "pi",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents or observed Kimi CLI reading a project AGENTS.md; the section is composed there by the common convention and needs a native discovery probe."
+    },
+    "not_placed": {},
+    "native_name": "small-working-context-rules",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/small-working-context-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_and_summarize.py": {
+          "destination": ".baltor/small-working-context-rules/scripts/run_and_summarize.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_and_summarize.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_run_and_summarize.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_run_and_summarize.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_run_and_summarize.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "scripts/run_and_summarize.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_run_and_summarize.py"
+        ]
+      },
+      "tests/test_run_and_summarize.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read the step's effects, then search for what the step needs with your search tool, or with grep -rn -m 20 when commands are allowed, and check the size of each file before you open it.",
+    "done_when": [
+      "No whole folder tree, lock file, generated file, data file, log or large file was printed.",
+      "When commands and writes were allowed, every command that could print more than 40 lines ran through scripts/run_and_summarize.py, and every result longer than 40 lines except the final answer was written to a file and reported by path with a summary of at most three lines."
+    ],
+    "stop_and_report_when": [
+      "Understanding the step needs more than 10 files or more than 2,000 lines; report the files and a way to split the step."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/context_budget.py": "2561c73bf94f0553f9bb90ac9da9d2a6452c8cf3cc90e4a00c3ab6e510a86c8c",
+      "src/loop_engine/core/llm_work_packet.py": "6ecc95e717beae0c9a44f188a5cce255fcca1f4ce4e9f6ad1c6de061c5245bfc",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "examples/29_intelligence_service/starter-catalogue/bodies/assemble_the_context_for_one_step.md": "3ec1f52bf13f7b7040e062a9d107ec9355ec148892897b5f267767fac329fac2",
+      "examples/29_intelligence_service/starter-catalogue/bodies/decide_what_to_leave_out_of_a_prompt.md": "6fdf81390c9e9a0ee47ab009142b41264230be2312d46697a574c6200059cba7"
+    },
+    "package_digest": "15075e57936638fd506e812148eebc3a7f128196d411b5be293ae746bd51eee7",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

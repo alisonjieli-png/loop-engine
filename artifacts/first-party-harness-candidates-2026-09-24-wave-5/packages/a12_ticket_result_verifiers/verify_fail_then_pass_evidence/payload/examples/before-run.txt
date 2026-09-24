@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+collected 4 items
+
+tests/test_dates.py::test_parses_day_first PASSED                        [ 25%]
+tests/test_dates.py::test_parses_last_day_of_year PASSED                 [ 50%]
+tests/test_dates.py::test_rejects_day_32 FAILED                          [ 75%]
+tests/test_totals.py::test_sums_rows PASSED                              [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_rejects_day_32 ______________________________
+
+    def test_rejects_day_32():
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_dates.py:17: Failed
+=========================== short test summary info ============================
+FAILED tests/test_dates.py::test_rejects_day_32 - Failed: DID NOT RAISE <class 'ValueError'>
+========================= 1 failed, 3 passed in 0.05s ==========================

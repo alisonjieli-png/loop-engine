@@ -1,0 +1,13 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "reason",
+ "objective": "Read the supplied competition pages and write a structured brief of task, target, metric, submission format, data files and rules, with an exact quote for every fact.",
+ "output_contract_refs": ["competition_brief/v2"],
+ "dependency_ids": [],
+ "required_capabilities": ["python3"],
+ "effects": ["reads_fs", "writes_fs", "{{PROCESS_EFFECT}}"],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "non_deterministic"
+}

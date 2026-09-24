@@ -1,0 +1,96 @@
+PRECHECKS for ticket_fix_verification_packet (wave 5, assignment a09_ticket_step_packets)
+Written by the generator on 2026-09-23T20:46:00Z. Candidate only. Not approved, staged, served or published.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d)
+Location note: kept in review/ because the specification's layout check refuses any extra top-level entry in a package folder.
+
+== python3 check_package.py fill ticket_fix_verification_packet
+{"fill": "done", "files": 13, "package_digest": "b6762560a3e10db56dba4ab91d268d836cd5f03c480cc3ab019509358b36cb7c"}
+
+== python3 check_package.py check ticket_fix_verification_packet
+{
+ "identity": "ticket_fix_verification_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204608152987Z.json"
+}
+exit status: 0
+
+== python3 check_package.py check-all --assignment a09_ticket_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204701100723Z.json
+
+== Every precheck report kept in review/ (oldest first)
+precheck-20260923T203923666998Z.json: passed_for_wave_gate=False package_digest=2691466257e358518af43e436cdc33998258ee152dbebe2b1aa2a88eadaedd35 refused_checks=['vocabulary']
+precheck-20260923T204217517827Z.json: passed_for_wave_gate=True package_digest=b6762560a3e10db56dba4ab91d268d836cd5f03c480cc3ab019509358b36cb7c refused_checks=[]
+precheck-20260923T204608152987Z.json: passed_for_wave_gate=True package_digest=b6762560a3e10db56dba4ab91d268d836cd5f03c480cc3ab019509358b36cb7c refused_checks=[]
+precheck-20260923T204655188810Z.json: passed_for_wave_gate=True package_digest=b6762560a3e10db56dba4ab91d268d836cd5f03c480cc3ab019509358b36cb7c refused_checks=[]
+
+== Local unit test runs from the payload root: python -I -B -m unittest discover -s tests -p 'test_*.py'
+-- /usr/bin/python3 exit 0
+test_commit_after_base_and_file_limit_are_not_ready (test_run_fix_checks.RunFixChecks.test_commit_after_base_and_file_limit_are_not_ready) ... ok
+test_commit_message_check (test_run_fix_checks.RunFixChecks.test_commit_message_check) ... ok
+test_commits_since_base_pass_only_when_allowed_and_history_is_kept (test_run_fix_checks.RunFixChecks.test_commits_since_base_pass_only_when_allowed_and_history_is_kept) ... ok
+test_correct_fix_is_ready_for_review (test_run_fix_checks.RunFixChecks.test_correct_fix_is_ready_for_review) ... ok
+test_example_output_matches_the_output_rules (test_run_fix_checks.RunFixChecks.test_example_output_matches_the_output_rules) ... ok
+test_failing_relevant_tests_are_not_ready (test_run_fix_checks.RunFixChecks.test_failing_relevant_tests_are_not_ready) ... ok
+test_known_wrong_weakened_reproduction_test_is_not_ready (test_run_fix_checks.RunFixChecks.test_known_wrong_weakened_reproduction_test_is_not_ready) ... ok
+test_path_outside_allowed_prefixes_is_not_ready_and_full_run_is_skipped (test_run_fix_checks.RunFixChecks.test_path_outside_allowed_prefixes_is_not_ready_and_full_run_is_skipped) ... ok
+test_unknown_base_and_markers_are_refused (test_run_fix_checks.RunFixChecks.test_unknown_base_and_markers_are_refused) ... ok
+----------------------------------------------------------------------
+Ran 9 tests in 1.566s
+OK
+-- /home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu/bin/python3.10 exit 0
+test_commit_after_base_and_file_limit_are_not_ready (test_run_fix_checks.RunFixChecks) ... ok
+test_commit_message_check (test_run_fix_checks.RunFixChecks) ... ok
+test_commits_since_base_pass_only_when_allowed_and_history_is_kept (test_run_fix_checks.RunFixChecks) ... ok
+test_correct_fix_is_ready_for_review (test_run_fix_checks.RunFixChecks) ... ok
+test_example_output_matches_the_output_rules (test_run_fix_checks.RunFixChecks) ... ok
+test_failing_relevant_tests_are_not_ready (test_run_fix_checks.RunFixChecks) ... ok
+test_known_wrong_weakened_reproduction_test_is_not_ready (test_run_fix_checks.RunFixChecks) ... ok
+test_path_outside_allowed_prefixes_is_not_ready_and_full_run_is_skipped (test_run_fix_checks.RunFixChecks) ... ok
+test_unknown_base_and_markers_are_refused (test_run_fix_checks.RunFixChecks) ... ok
+----------------------------------------------------------------------
+Ran 9 tests in 1.399s
+OK
+
+== Contract checks with the jsonschema Draft 2020-12 validator
+contracts/input.schema.json: valid Draft 2020-12 schema
+contracts/output.schema.json: valid Draft 2020-12 schema
+examples/input.json against contracts/input.schema.json: valid
+examples/output.json against contracts/output.schema.json: valid
+known-wrong output 'ready with a failed check': refused
+known-wrong output 'ready with a concern': refused
+known-wrong output 'committed': refused
+known-wrong output 'not_ready with no failed check and no concern': refused
+
+== Removed-guard controls (scratch copy, Python 3.14): each guard removed, the named test must fail
+scripts/run_fix_checks.py: detected by test_known_wrong_weakened_reproduction_test_is_not_ready; failing tests ['test_known_wrong_weakened_reproduction_test_is_not_ready']
+scripts/run_fix_checks.py: detected by test_path_outside_allowed_prefixes_is_not_ready_and_full_run_is_skipped; failing tests ['test_path_outside_allowed_prefixes_is_not_ready_and_full_run_is_skipped']
+
+Result: every pre-check of the specification ran here and passed for the current package digest. This is not an approval, a native loading result or a usefulness claim.

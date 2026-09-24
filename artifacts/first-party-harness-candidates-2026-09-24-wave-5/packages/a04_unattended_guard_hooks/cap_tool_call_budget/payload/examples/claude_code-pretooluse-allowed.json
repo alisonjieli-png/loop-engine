@@ -1,0 +1,9 @@
+{
+  "session_id": "sample-session-0005",
+  "transcript_path": "/work/.baltor/sample-transcript.jsonl",
+  "cwd": "/work/examples/budget-spent",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Write",
+  "tool_input": {"file_path": "/work/examples/budget-spent/.baltor/step/handoff.md", "content": "Done: parser fix. Not done: docs. Next: run python3 -m pytest.\n"}
+}

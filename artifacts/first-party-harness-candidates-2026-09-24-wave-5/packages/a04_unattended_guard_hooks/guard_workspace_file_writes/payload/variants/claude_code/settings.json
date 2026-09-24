@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"$CLAUDE_PROJECT_DIR/.baltor/guard-workspace-file-writes/hooks/guard_file_writes.py\" --harness claude_code",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

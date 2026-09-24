@@ -1,0 +1,10 @@
+{
+  "context": {
+    "fileFiltering": {
+      "respectGeminiIgnore": true,
+      "customIgnoreFilePaths": [
+        ".baltor/deny-env-file-reads-settings/ignore-patterns.txt"
+      ]
+    }
+  }
+}

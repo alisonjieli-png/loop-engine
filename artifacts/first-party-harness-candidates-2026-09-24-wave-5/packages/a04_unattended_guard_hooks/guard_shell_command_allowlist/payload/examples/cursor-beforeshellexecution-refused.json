@@ -1,0 +1,9 @@
+{
+  "conversation_id": "sample-conversation-0001",
+  "generation_id": "sample-generation-0002",
+  "hook_event_name": "beforeShellExecution",
+  "workspace_roots": ["/work"],
+  "command": "rg TODO src > todo-list.txt",
+  "cwd": "/work",
+  "sandbox": false
+}

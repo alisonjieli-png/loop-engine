@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:38:14.550313+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "check_csv_column_contract",
+  "recompute_claimed_cv_score",
+  "validate_submission_file",
+  "verify_cleaned_copy_change_log",
+  "verify_fold_group_separation"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a15_data_and_competition_verifiers/check_csv_column_contract/review/precheck-20260924T053707221449Z.json",
+  "packages/a15_data_and_competition_verifiers/recompute_claimed_cv_score/review/precheck-20260924T053726540151Z.json",
+  "packages/a15_data_and_competition_verifiers/validate_submission_file/review/precheck-20260924T053747620540Z.json",
+  "packages/a15_data_and_competition_verifiers/verify_cleaned_copy_change_log/review/precheck-20260924T053801247239Z.json",
+  "packages/a15_data_and_competition_verifiers/verify_fold_group_separation/review/precheck-20260924T053814548268Z.json"
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "record_type": "ticket_triage_input/v1",
+ "ticket_id": "T-104",
+ "ticket_path": "tickets/T-104.md",
+ "allowed_path_prefixes": [
+  "shop/",
+  "tests/"
+ ],
+ "max_files_changed": 4,
+ "unavailable_tonight": [
+  "network access",
+  "new dependencies",
+  "production data",
+  "database migrations",
+  "a product decision by a person",
+  "sign-in details for any outside service"
+ ],
+ "test_command_example": [
+  "python3",
+  "-m",
+  "unittest",
+  "tests.test_cart_badge.BadgeTextTests.test_badge_counts_three"
+ ]
+}

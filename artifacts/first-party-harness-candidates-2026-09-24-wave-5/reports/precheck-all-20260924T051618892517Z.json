@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:16:18.892496+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "flag_outliers_by_median_deviation",
+  "map_categories_by_reviewed_table",
+  "parse_dates_by_declared_formats",
+  "parse_numbers_by_declared_separators",
+  "standardize_missing_value_tokens"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a01_data_cleanup_executors/flag_outliers_by_median_deviation/review/precheck-20260924T051604889268Z.json",
+  "packages/a01_data_cleanup_executors/map_categories_by_reviewed_table/review/precheck-20260924T051608558864Z.json",
+  "packages/a01_data_cleanup_executors/parse_dates_by_declared_formats/review/precheck-20260924T051612240857Z.json",
+  "packages/a01_data_cleanup_executors/parse_numbers_by_declared_separators/review/precheck-20260924T051615631957Z.json",
+  "packages/a01_data_cleanup_executors/standardize_missing_value_tokens/review/precheck-20260924T051618891394Z.json"
+ ]
+}

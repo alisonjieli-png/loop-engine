@@ -1,0 +1,123 @@
+=== run 1: 2026-09-23T20:34:02Z python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a04_unattended_guard_hooks/log_tool_activity
+{
+ "identity": "log_tool_activity",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "refused",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203409995794Z.json"
+}
+
+[refused] effects
+  - undeclared reads_fs: ['hooks/log_tool_activity.py:240 open', 'tests/test_log_tool_activity.py:50 read_text', 'tests/test_log_tool_activity.py:162 glob']
+exit: 1
+
+=== run 2: 2026-09-23T20:34:38Z after declaring reads_fs; python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a04_unattended_guard_hooks/log_tool_activity
+{
+ "identity": "log_tool_activity",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203445613122Z.json"
+}
+exit: 0
+
+=== run 3: 2026-09-23T20:45:58Z final fill and check after the last payload and note edits
+{"fill": "done", "files": 13, "package_digest": "e9355c7e847227d36ae5caf78e46069a13fd0dd8fb637bddd5a052cad843b7c1"}
+{
+ "identity": "log_tool_activity",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204612337840Z.json"
+}
+exit: 0
+
+=== independent equivalent commands of the SPEC section 12 table, 2026-09-23T20:47:37Z
+--- layout: find PKG -type l -o -empty -> no output (no link, no empty file or folder)
+--- layout: top-level entries ['package.json', 'payload', 'review']
+--- identity: grep -Fx log_tool_activity existing-identities.txt -> exit 1 (1 means the identity is new)
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum -> 05203ed9b332c909 ... matches package.json
+--- manifest_schema: git show a1fc7432:case-studies/overnight-cheap-model-with-and-without-baltor/DESIGN.md | sha256sum -> ea1d2f243fc25591 ... matches package.json
+--- manifest_schema: git show a1fc7432:tools/overnight_queue.py | sha256sum -> 4f00c5bc6797c45d ... matches package.json
+--- inventory: sha256sum and stat -c %a of 13 payload files -> all digests, sizes and modes 0644 match
+--- inventory: sha256sum payload/LICENSE -> 663e093e...a46ea
+--- parse: json.load of every .json file -> all parse
+--- network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' payload -> exit 1 (no match)
+--- tests_run: bwrap --bind python3.14 -m unittest discover (package writable) -> exit 0 Ran 13 tests in 4.335s OK
+--- tests_run: bwrap --bind python3.10 -m unittest discover (package writable) -> exit 0 Ran 13 tests in 3.225s OK
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness claude_code < examples/claude_code-posttooluse-recorded.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness claude_code < examples/claude_code-posttooluse-not-recorded.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness cursor < examples/cursor-posttooluse-recorded.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness cursor < examples/cursor-posttooluse-not-recorded.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness copilot < examples/copilot-posttooluse-recorded.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/log_tool_activity.py --harness copilot < examples/copilot-posttooluse-not-recorded.json -> exit 0, as expected, stdout {}
+
+=== check-all: 2026-09-23T20:49:09Z python3 check_package.py check-all --assignment a04_unattended_guard_hooks
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204909086053Z.json
+exit: 0

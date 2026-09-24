@@ -1,0 +1,56 @@
+{
+ "record_type": "submission_record/v1",
+ "status": "assembled",
+ "run_id": "baseline-ridge-01",
+ "ledger": {
+  "path": "work/experiments/ledger.jsonl",
+  "line": 2,
+  "line_sha256": "03169322ccd7fcd4959a1b0c8cb843a8a7e11ceed4e33217c03499022685a1ec"
+ },
+ "cross_validation": {
+  "metric": {
+   "name": "auc",
+   "direction": "maximize"
+  },
+  "fold_scores": [
+   1.0,
+   0.96,
+   0.9166666667,
+   0.8333333333
+  ],
+  "mean_score": 0.9275
+ },
+ "run_flags": [],
+ "predictions": {
+  "path": "work/experiments/baseline-ridge-01.test.csv",
+  "sha256": "ec1c38754a5438c6f38bf35707a66a160946d59043d796d17c7e91dc78d4f3d0",
+  "rows": 4
+ },
+ "test_data": {
+  "path": "competition/data/test.csv",
+  "sha256": "d0c38257d66c29326f1c40833c2390639d1ae1875a53c38de0ea63d88413134b"
+ },
+ "sample": {
+  "path": "competition/data/sample_submission.csv",
+  "sha256": "38f63b09037e65d24ae99177c1050d35f90b4d575d802968bd75aadb7f76af09",
+  "rows": 4,
+  "header": [
+   "customer_id",
+   "renewed"
+  ]
+ },
+ "submission": {
+  "path": "work/submissions/baseline-ridge-01.submission.csv",
+  "sha256": "b015c86e9ec8259575a013c60ca7c9b499c140f0cedebcd6f9a0faf00b9d2c72",
+  "rows": 4,
+  "prediction_column": "renewed",
+  "value_type": "probability"
+ },
+ "checks": {
+  "header_matches_sample": true,
+  "ids_match_sample_order": true,
+  "row_count_matches": true,
+  "values_valid": true
+ },
+ "upload": "not_uploaded"
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"$CLAUDE_PROJECT_DIR/.baltor/cap-tool-call-budget/hooks/cap_tool_calls.py\" --harness claude_code",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

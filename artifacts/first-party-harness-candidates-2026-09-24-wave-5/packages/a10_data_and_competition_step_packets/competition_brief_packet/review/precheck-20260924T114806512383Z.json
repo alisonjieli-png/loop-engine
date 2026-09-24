@@ -1,0 +1,150 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a10_data_and_competition_step_packets/competition_brief_packet",
+ "identity": "competition_brief_packet",
+ "package_digest": "aeef81c3f0721aed88d4475adc5dccad72d8c2cb9ceb537a5664a8ddf9939b51",
+ "checked_at": "2026-09-24T11:48:02.385325+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "refused",
+   "findings": [
+    "generated, cache or secret-like name payload/scripts/__pycache__",
+    "generated, cache or secret-like name payload/scripts/__pycache__/brief_tool.cpython-314.pyc",
+    "generated, cache or secret-like name payload/tests/__pycache__",
+    "generated, cache or secret-like name payload/tests/__pycache__/test_brief_tool.cpython-314.pyc"
+   ]
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "refused",
+   "findings": [
+    "declared files differ from payload: undeclared ['scripts/__pycache__/brief_tool.cpython-314.pyc', 'tests/__pycache__/test_brief_tool.cpython-314.pyc'], missing []",
+    "AGENTS.md: digest or size differs from the bytes; run the fill command",
+    "GEMINI.md: digest or size differs from the bytes; run the fill command",
+    "contracts/output.schema.json: digest or size differs from the bytes; run the fill command",
+    "contracts/task.json: digest or size differs from the bytes; run the fill command",
+    "examples/output.json: digest or size differs from the bytes; run the fill command",
+    "references/checklist.md: digest or size differs from the bytes; run the fill command",
+    "references/node_context.md: digest or size differs from the bytes; run the fill command",
+    "scripts/brief_tool.py: digest or size differs from the bytes; run the fill command",
+    "tests/test_brief_tool.py: digest or size differs from the bytes; run the fill command",
+    "wave5.file_extensions has one entry for every payload file"
+   ]
+  },
+  {
+   "check": "text_hygiene",
+   "status": "refused",
+   "findings": [
+    "scripts/__pycache__/brief_tool.cpython-314.pyc: not UTF-8",
+    "tests/__pycache__/test_brief_tool.cpython-314.pyc: not UTF-8"
+   ]
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "refused",
+   "findings": [
+    "render_placeholders ['BRIEF_PATH', 'DATA_DIR', 'HARNESS_STYLE', 'PAGES_DIR', 'STEP_ID'] differ from markers used ['BRIEF_PATH', 'DATA_DIR', 'HARNESS_STYLE', 'PAGES_DIR', 'PROCESS_EFFECT', 'STEP_ID']"
+   ]
+  },
+  {
+   "check": "placements",
+   "status": "refused",
+   "findings": [
+    "codex: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "codex: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement",
+    "claude_code: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "claude_code: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement",
+    "opencode: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "opencode: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement",
+    "pi: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "pi: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement",
+    "gemini_cli: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "gemini_cli: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement",
+    "kimi_cli: payload file scripts/__pycache__/brief_tool.cpython-314.pyc has no placement",
+    "kimi_cli: payload file tests/__pycache__/test_brief_tool.cpython-314.pyc has no placement"
+   ]
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "skipped",
+   "findings": [
+    "no SKILL.md in the payload"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "passed",
+   "findings": [
+    "{\"python\": \"python3.14\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 19}",
+    "{\"python\": \"python3.10\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 19}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

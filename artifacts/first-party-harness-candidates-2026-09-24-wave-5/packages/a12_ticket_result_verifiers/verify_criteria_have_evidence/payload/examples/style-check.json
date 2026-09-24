@@ -1,0 +1,6 @@
+{
+  "record_type": "command_run/v1",
+  "command": "python3 tools/check_style.py src",
+  "exit_code": 0,
+  "finished_at": "2026-09-23T03:12:40Z"
+}

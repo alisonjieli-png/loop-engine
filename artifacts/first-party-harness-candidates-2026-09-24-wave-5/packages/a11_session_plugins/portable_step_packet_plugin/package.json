@@ -1,0 +1,640 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "portable_step_packet_plugin",
+    "title": "Portable step packet plugin",
+    "purpose": "An Agent Plugins 1.0 package with two portable skills for reading a step assignment and writing its result, and a local standard-input server that exposes the packet to Copilot and Cursor.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py"
+    ],
+    "layer": "code",
+    "family": "native_plugin",
+    "search_tags": [
+      "read the step assignment with a tool",
+      "write the step result without overwriting",
+      "step packet protocol server",
+      "agent plugins package for focused steps",
+      "copilot plugin for step packets",
+      "cursor protocol server for step packets",
+      "portable skills for a fresh session",
+      "check result fields before handoff",
+      "numbered result files for a step",
+      "local standard input server",
+      "publish a better result later",
+      "step packet tools for small models"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness operations"
+      ],
+      "role": [
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "read_assignment",
+      "read_step_file",
+      "write_result",
+      "check_result",
+      "Server",
+      "serve",
+      "argument_problem",
+      "encode",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "copilot",
+      "cursor"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a11_session_plugins",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/read_step_assignment.input.schema.json",
+        "digest": "30d3f44446979c14298b8921e1ee0b8eaf34933cacea59623cf56a0785d9fb54",
+        "size_bytes": 224,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/read_step_file.input.schema.json",
+        "digest": "dd54a49c39b1a0e26a882f3a65ed4440da813539f33fb972647966292d53cb97",
+        "size_bytes": 421,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/write_step_result.input.schema.json",
+        "digest": "3e55e17d11d8b24bb104b8a16bdf6109ac4feb6308e4b95374b572f7ff15913d",
+        "size_bytes": 346,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/read_step_assignment-arguments.json",
+        "digest": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "size_bytes": 3,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/read_step_file-arguments.json",
+        "digest": "070faa097deb84b59e85af1df3fd384bca8a243594598a98f822162a82dc17f5",
+        "size_bytes": 28,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace/.baltor/step/checklist.md",
+        "digest": "0ae3035e9c6c98b262c50d120e10dc2dda3714000ff2d69a1711843df12d1907",
+        "size_bytes": 278,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace/.baltor/step/contracts/output.schema.json",
+        "digest": "fae2eb309ca4a5c9cf644b17f7b710b74859abe9c4d0ac58eae2464c61f95811",
+        "size_bytes": 412,
+        "media_type": "application/schema+json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace/.baltor/step/node_context.md",
+        "digest": "2a938fe33093ac03098748d7cb6134e664340e6bb3c1d1b1804579bef7a08874",
+        "size_bytes": 704,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace/.baltor/step/task.json",
+        "digest": "c8829d4455b89bdf48fd464f5bff9ced85ebdc2e72283555d3669e97d6cd813d",
+        "size_bytes": 452,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace/CHANGELOG.md",
+        "digest": "71cd7b418cbeb56e18c3ac8c15c49e65a0b7a6dd588808268657d431b99785d4",
+        "size_bytes": 225,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/write_step_result-arguments.json",
+        "digest": "700438c7aad14cc775ae65015c57ea99c63f47d429f76c4c5963210d9588c7be",
+        "size_bytes": 82,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "mcp.json",
+        "digest": "d913a8d6ad32dfd252acde39ae81bec24575f83b1696d22e5b4d293ebb2dbd60",
+        "size_bytes": 171,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "plugin.json",
+        "digest": "57fda2ac1122ac329598c182a3587ba45b93d9894ad1cf7421369da1e02757c9",
+        "size_bytes": 433,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "server/step_packet_server.py",
+        "digest": "91f98b6efa6d2f909b1cc6edd2aedb82e38306a8d0766f5e89124ac00c7e2856",
+        "size_bytes": 12994,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "skills/read-step-assignment/SKILL.md",
+        "digest": "4176e604bae185b69d5b5decd312a26c3e8a34062773f579897484f868aab6b1",
+        "size_bytes": 2767,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "skills/read-step-assignment/scripts/read_assignment.py",
+        "digest": "19622c6072a4315f77986b86ba137a5ad440406e60653e97ca65c847db7df917",
+        "size_bytes": 10792,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "skills/write-step-result/SKILL.md",
+        "digest": "77f60098eb6b12563e14362dcb15b8c8c8d384e2ad3b089d6c81a2e344e83355",
+        "size_bytes": 2618,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "skills/write-step-result/scripts/write_result.py",
+        "digest": "11e7b6e2347bbf1c2acfffb13435d1678b5cb3ae7880110daa9b09ae64fa09dc",
+        "size_bytes": 13260,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_plugin_layout.py",
+        "digest": "a929d738b12a42a0f226a49fd37040f063299edda38e2e36e67109af76e9a6a5",
+        "size_bytes": 5345,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_read_assignment.py",
+        "digest": "72149800f360a07afc92688e5f500d535ad8029da66a3a7da06e766ecb37eb30",
+        "size_bytes": 6888,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_step_packet_server.py",
+        "digest": "c598600fcb0a4f645ed77eaefa68fd1b0cf7760e988978aaca77cfab81947b23",
+        "size_bytes": 9328,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_write_result.py",
+        "digest": "5228615dca745260c8191032ab68d19d3e87181a647723cbdd75819b584fc2b0",
+        "size_bytes": 7689,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/cursor/mcp.json",
+        "digest": "7e6026fa6c6c67d687301210c56cfad9792dc9738605819f94dbc6675f2b925a",
+        "size_bytes": 200,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a11_session_plugins",
+    "file_class": "plugin_bundle",
+    "use_cases": [
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "copilot",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "copilot": "The repository research file documents Agent Plugins 1.0 for Copilot: a root plugin.json with the canonical $schema, skills/<name>/SKILL.md and a root mcp.json. The mcpServers key, whether Copilot fills in ${PLUGIN_ROOT}, the server's working folder, local plugin activation and how Copilot shows the three tools are not in a repository file and were not observed.",
+      "cursor": "The repository research file says Cursor reads a root Agent Plugins plugin.json for skills and protocol servers and does not fill in ${PLUGIN_ROOT} in mcp.json, so this variant names the placed path. That path assumes the server starts in the workspace root; the mcpServers key, local activation and skill discovery inside a plugin folder were not observed."
+    },
+    "not_placed": {},
+    "native_name": "portable-step-packet-plugin",
+    "version": "0.1.0",
+    "entrypoints": {
+      "copilot": "plugin.json",
+      "cursor": "plugin.json"
+    },
+    "placements": {
+      "copilot": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/read_step_assignment.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/read_step_assignment.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/read_step_file.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/read_step_file.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/write_step_result.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/write_step_result.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/read_step_assignment-arguments.json": null,
+        "examples/read_step_file-arguments.json": null,
+        "examples/workspace/.baltor/step/checklist.md": null,
+        "examples/workspace/.baltor/step/contracts/output.schema.json": null,
+        "examples/workspace/.baltor/step/node_context.md": null,
+        "examples/workspace/.baltor/step/task.json": null,
+        "examples/workspace/CHANGELOG.md": null,
+        "examples/write_step_result-arguments.json": null,
+        "mcp.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/mcp.json",
+          "operation": "plugin_directory_binding"
+        },
+        "plugin.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "server/step_packet_server.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/server/step_packet_server.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/read-step-assignment/SKILL.md": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/read-step-assignment/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/read-step-assignment/scripts/read_assignment.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/read-step-assignment/scripts/read_assignment.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/write-step-result/SKILL.md": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/write-step-result/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/write-step-result/scripts/write_result.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/write-step-result/scripts/write_result.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_plugin_layout.py": null,
+        "tests/test_read_assignment.py": null,
+        "tests/test_step_packet_server.py": null,
+        "tests/test_write_result.py": null
+      },
+      "cursor": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/read_step_assignment.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/read_step_assignment.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/read_step_file.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/read_step_file.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/write_step_result.input.schema.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/contracts/write_step_result.input.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/read_step_assignment-arguments.json": null,
+        "examples/read_step_file-arguments.json": null,
+        "examples/workspace/.baltor/step/checklist.md": null,
+        "examples/workspace/.baltor/step/contracts/output.schema.json": null,
+        "examples/workspace/.baltor/step/node_context.md": null,
+        "examples/workspace/.baltor/step/task.json": null,
+        "examples/workspace/CHANGELOG.md": null,
+        "examples/write_step_result-arguments.json": null,
+        "mcp.json": null,
+        "plugin.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "server/step_packet_server.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/server/step_packet_server.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/read-step-assignment/SKILL.md": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/read-step-assignment/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/read-step-assignment/scripts/read_assignment.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/read-step-assignment/scripts/read_assignment.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/write-step-result/SKILL.md": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/write-step-result/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/write-step-result/scripts/write_result.py": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/skills/write-step-result/scripts/write_result.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_plugin_layout.py": null,
+        "tests/test_read_assignment.py": null,
+        "tests/test_step_packet_server.py": null,
+        "tests/test_write_result.py": null,
+        "variants/cursor/mcp.json": {
+          "destination": ".baltor/plugins/portable-step-packet-plugin/mcp.json",
+          "operation": "plugin_directory_binding"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/read_step_assignment.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py",
+          "tests/test_step_packet_server.py"
+        ]
+      },
+      "contracts/read_step_file.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py",
+          "tests/test_step_packet_server.py"
+        ]
+      },
+      "contracts/write_step_result.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py",
+          "tests/test_step_packet_server.py"
+        ]
+      },
+      "examples/read_step_assignment-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/read_step_file-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/workspace/.baltor/step/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "examples/workspace/.baltor/step/contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "examples/workspace/.baltor/step/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "examples/workspace/.baltor/step/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "examples/workspace/CHANGELOG.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "examples/write_step_result-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "server/step_packet_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py",
+          "tests/test_step_packet_server.py"
+        ]
+      },
+      "skills/read-step-assignment/SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "skills/read-step-assignment/scripts/read_assignment.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_read_assignment.py",
+          "tests/test_step_packet_server.py"
+        ]
+      },
+      "skills/write-step-result/SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "skills/write-step-result/scripts/write_result.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_packet_server.py",
+          "tests/test_write_result.py"
+        ]
+      },
+      "tests/test_plugin_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_read_assignment.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_step_packet_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_write_result.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/cursor/mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [
+      {
+        "name": "portable_step_packet_plugin",
+        "script": "server/step_packet_server.py",
+        "arguments": [
+          "--root",
+          "examples/workspace"
+        ],
+        "tools": [
+          "read_step_assignment",
+          "read_step_file",
+          "write_step_result"
+        ],
+        "protocol_versions": [
+          "2025-11-25",
+          "2025-06-18",
+          "2025-03-26"
+        ],
+        "sample_call": {
+          "tool": "read_step_assignment",
+          "arguments": {},
+          "expect_is_error": false
+        }
+      }
+    ],
+    "first_action": "Call the read_step_assignment tool with no arguments, or run the read-step-assignment script from the workspace root, and read the objective, the effects and the required result fields.",
+    "done_when": [
+      "write_step_result answered written true, and the final message names the result path and its SHA-256."
+    ],
+    "stop_and_report_when": [
+      "A tool or script answers with an error such as step_folder_missing or task_missing.",
+      "The objective needs an effect that the task does not list.",
+      "The same result problem comes back after two fixes."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace"
+    },
+    "package_digest": "94bcaa376e7fb45090b16b6124792149d7dcb974b79b16799ec2936e22413b36",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "overnight-ticket-plugin",
+  "version": "0.1.0",
+  "description": "Candidate plugin for overnight ticket work: a session start message with the queue position and last handoff, a night status command, and a ticket closer agent that writes each ticket's result record.",
+  "license": "MIT",
+  "keywords": ["overnight", "tickets", "handoff", "queue", "result record"]
+}

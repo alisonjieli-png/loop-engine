@@ -1,0 +1,121 @@
+=== run 1: 2026-09-23T20:11:58Z python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a04_unattended_guard_hooks/guard_shell_command_allowlist
+{
+ "identity": "guard_shell_command_allowlist",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T201207143259Z.json"
+}
+exit: 0
+
+=== run 2: 2026-09-23T20:45:24Z final fill and check after the last payload and note edits
+{"fill": "done", "files": 15, "package_digest": "4aa473445801b574b2f4a5f46d730acd2c3c3a6c5d1898d44cb67fb3773d5326"}
+{
+ "identity": "guard_shell_command_allowlist",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204535685287Z.json"
+}
+exit: 0
+
+=== independent equivalent commands of the SPEC section 12 table, 2026-09-23T20:47:24Z
+--- layout: find PKG -type l -o -empty -> no output (no link, no empty file or folder)
+--- layout: top-level entries ['package.json', 'payload', 'review']
+--- identity: grep -Fx guard_shell_command_allowlist existing-identities.txt -> exit 1 (1 means the identity is new)
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum -> 05203ed9b332c909 ... matches package.json
+--- manifest_schema: git show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md | sha256sum -> 5fb2ebee75a1282a ... matches package.json
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/harness_confinement.py | sha256sum -> e9fb6b8e374294bd ... matches package.json
+--- inventory: sha256sum and stat -c %a of 15 payload files -> all digests, sizes and modes 0644 match
+--- inventory: sha256sum payload/LICENSE -> 663e093e...a46ea
+--- parse: json.load of every .json file -> all parse
+--- network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' payload -> exit 1 (no match)
+--- tests_run: bwrap --ro-bind python3.14 -m unittest discover (package read-only) -> exit 0 Ran 25 tests in 4.469s OK
+--- tests_run: bwrap --ro-bind python3.10 -m unittest discover (package read-only) -> exit 0 Ran 25 tests in 2.643s OK
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness claude_code --policy examples/step-policy.json < examples/claude_code-pretooluse-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness claude_code --policy examples/step-policy.json < examples/claude_code-pretooluse-refused.json -> exit 0, as expected, stdout {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Refuse
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness cursor --policy examples/step-policy.json < examples/cursor-beforeshellexecution-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness cursor --policy examples/step-policy.json < examples/cursor-beforeshellexecution-refused.json -> exit 0, as expected, stdout {"permission": "deny", "user_message": "Refused by the shell command guard: redirection to or from a file is not allowed
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness copilot --policy examples/step-policy.json < examples/copilot-pretooluse-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/guard_shell_commands.py --harness copilot --policy examples/step-policy.json < examples/copilot-pretooluse-refused.json -> exit 0, as expected, stdout {"permissionDecision": "deny", "permissionDecisionReason": "Refused by the shell command guard: the argument \"-delete\"
+
+=== check-all: 2026-09-23T20:49:09Z python3 check_package.py check-all --assignment a04_unattended_guard_hooks
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204909086053Z.json
+exit: 0
+
+=== run 3: 2026-09-24T05:45:04Z repair after the critic's findings (repairer a04, successor of an interrupted repairer): fill, then check
+{"fill": "done", "files": 17, "package_digest": "1ee935c14fdac5b4e0376b11a830fd8bc2cd09e20ecaa0327118b8495d17eadf"}
+{
+ "identity": "guard_shell_command_allowlist",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T054504570113Z.json"
+}
+exit: 0

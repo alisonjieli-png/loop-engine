@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:46:29.445421+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "detect_text_written_tool_calls",
+  "extract_test_failures",
+  "extract_ticket_acceptance_criteria",
+  "map_repository_layout",
+  "select_tests_for_changed_files"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a03_ticket_work_tools/detect_text_written_tool_calls/review/precheck-20260924T054543374929Z.json",
+  "packages/a03_ticket_work_tools/extract_test_failures/review/precheck-20260924T054555786061Z.json",
+  "packages/a03_ticket_work_tools/extract_ticket_acceptance_criteria/review/precheck-20260924T054606881603Z.json",
+  "packages/a03_ticket_work_tools/map_repository_layout/review/precheck-20260924T054620041098Z.json",
+  "packages/a03_ticket_work_tools/select_tests_for_changed_files/review/precheck-20260924T054629443577Z.json"
+ ]
+}

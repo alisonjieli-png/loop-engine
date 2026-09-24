@@ -1,0 +1,9 @@
+{
+  "session_id": "sample-session-0001",
+  "transcript_path": "/work/.baltor/sample-transcript.jsonl",
+  "cwd": "/work",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {"command": "git status && rm -rf build", "description": "Clean the build folder"}
+}

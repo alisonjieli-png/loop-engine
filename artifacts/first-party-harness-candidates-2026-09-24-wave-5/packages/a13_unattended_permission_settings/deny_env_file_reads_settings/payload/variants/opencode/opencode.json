@@ -1,0 +1,51 @@
+{
+  "permission": {
+    "read": {
+      ".env*": "deny",
+      "*/.env*": "deny",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny"
+    },
+    "edit": {
+      ".env*": "deny",
+      "*/.env*": "deny",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny"
+    },
+    "grep": "deny",
+    "bash": {
+      "* .env*": "deny",
+      "*/.env*": "deny",
+      "*\".env*": "deny",
+      "*'.env*": "deny",
+      "*=.env*": "deny",
+      "*.pem": "deny",
+      "*.pem *": "deny",
+      "*.pem\"*": "deny",
+      "*.pem'*": "deny",
+      "*.key": "deny",
+      "*.key *": "deny",
+      "*.key\"*": "deny",
+      "*.key'*": "deny",
+      "*.p12": "deny",
+      "*.p12 *": "deny",
+      "*.p12\"*": "deny",
+      "*.p12'*": "deny",
+      "*.pfx": "deny",
+      "*.pfx *": "deny",
+      "*.pfx\"*": "deny",
+      "*.pfx'*": "deny",
+      "grep *": "deny",
+      "egrep *": "deny",
+      "fgrep *": "deny",
+      "rg *": "deny",
+      "git grep *": "deny",
+      "ag *": "deny",
+      "ack *": "deny"
+    }
+  }
+}

@@ -1,0 +1,477 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "log_tool_activity",
+    "title": "Log tool activity for the morning report",
+    "purpose": "After each tool call, append one bounded JSON line with time, tool, target and outcome to the step's activity log, without copying file contents or command output.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/overnight-cheap-model-with-and-without-baltor/DESIGN.md",
+      "tools/overnight_queue.py"
+    ],
+    "layer": "code",
+    "family": "native_hook",
+    "search_tags": [
+      "log every tool call of the agent",
+      "activity log for an overnight agent",
+      "morning report of agent actions",
+      "claude code posttooluse logging hook",
+      "cursor posttooluse hook log",
+      "copilot posttooluse hook log",
+      "audit agent tool calls without file contents",
+      "count test runs and failed commands"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "platform engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a04_unattended_guard_hooks",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "4a003e18d46edb386a42fbd610b981d42c48473e0bc65aec75651a2a58d5ac86",
+        "size_bytes": 759,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-posttooluse-not-recorded.json",
+        "digest": "c93c015599127502ed1696c87b84ce03e8c0e4f5094f280cc9c9506686ea04cb",
+        "size_bytes": 131,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-posttooluse-recorded.json",
+        "digest": "9b81f29a361030f1f7993a4f6c5aaaf6cb1c9f15e529eb4706052c49cd3046e4",
+        "size_bytes": 414,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-posttooluse-not-recorded.json",
+        "digest": "261b82592f5fe34b8cc25920a467a3aba136ef62a0692ae3d43d5d8ea598dbea",
+        "size_bytes": 98,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-posttooluse-recorded.json",
+        "digest": "c83fa80d59ac3fd3ecef1aa18aa545f31a137303d2f649020f655ed2b4cb6d66",
+        "size_bytes": 219,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-posttooluse-not-recorded.json",
+        "digest": "15a83ecfa6adc82245027f37d88e47937fe690b01aa6ebacd963f44306ef6a98",
+        "size_bytes": 166,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-posttooluse-recorded.json",
+        "digest": "fcfa15a9c2194032fc47f28b40c47f77ddc812004612a70ae5638a14bad3f77d",
+        "size_bytes": 378,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "hooks/log_tool_activity.py",
+        "digest": "ac9d93dfa9c2f89d82818a759d105fb1912aabdb1d7d1184f97eeacce6e6bc2a",
+        "size_bytes": 12552,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_log_tool_activity.py",
+        "digest": "d2f9bd8593db91aab7644b61fbca79b98243b68fe5b602821349c07528394970",
+        "size_bytes": 10477,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "d7b6e289231297b6fa4e41c64e2789aa2f70dfbce162f4802e95b6edc310237a",
+        "size_bytes": 661,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/copilot/log-tool-activity.json",
+        "digest": "c1f71613647e3859160f00d2b01f66ea64b0f8b11978fa528f4081a9cb3a54a9",
+        "size_bytes": 256,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/hooks.json",
+        "digest": "c6895fe7c02c89924930a2f1ccff99520246892140389e2deffb19836198bb5f",
+        "size_bytes": 339,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a04_unattended_guard_hooks",
+    "file_class": "hook_with_script",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "cursor": "Events postToolUse and postToolUseFailure and the failure_type values come from a snapshot of Cursor's hook page in a local outside project; no cited research file names them and no Cursor run was observed.",
+      "copilot": "Event postToolUse and the toolName, toolArgs and toolResult.resultType fields are the producer's reading of GitHub's hook reference; the cited research confirms only the .github/hooks location, and no Copilot run was observed."
+    },
+    "not_placed": {},
+    "native_name": "log-tool-activity",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "cursor": "variants/cursor/hooks.json",
+      "copilot": "variants/copilot/log-tool-activity.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/log-tool-activity/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-posttooluse-not-recorded.json": null,
+        "examples/claude_code-posttooluse-recorded.json": null,
+        "examples/copilot-posttooluse-not-recorded.json": null,
+        "examples/copilot-posttooluse-recorded.json": null,
+        "examples/cursor-posttooluse-not-recorded.json": null,
+        "examples/cursor-posttooluse-recorded.json": null,
+        "hooks/log_tool_activity.py": {
+          "destination": ".baltor/log-tool-activity/hooks/log_tool_activity.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_log_tool_activity.py": null,
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/log-tool-activity/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-posttooluse-not-recorded.json": null,
+        "examples/claude_code-posttooluse-recorded.json": null,
+        "examples/copilot-posttooluse-not-recorded.json": null,
+        "examples/copilot-posttooluse-recorded.json": null,
+        "examples/cursor-posttooluse-not-recorded.json": null,
+        "examples/cursor-posttooluse-recorded.json": null,
+        "hooks/log_tool_activity.py": {
+          "destination": ".baltor/log-tool-activity/hooks/log_tool_activity.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_log_tool_activity.py": null,
+        "variants/cursor/hooks.json": {
+          "destination": ".cursor/hooks.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "copilot": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/log-tool-activity/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-posttooluse-not-recorded.json": null,
+        "examples/claude_code-posttooluse-recorded.json": null,
+        "examples/copilot-posttooluse-not-recorded.json": null,
+        "examples/copilot-posttooluse-recorded.json": null,
+        "examples/cursor-posttooluse-not-recorded.json": null,
+        "examples/cursor-posttooluse-recorded.json": null,
+        "hooks/log_tool_activity.py": {
+          "destination": ".baltor/log-tool-activity/hooks/log_tool_activity.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_log_tool_activity.py": null,
+        "variants/copilot/log-tool-activity.json": {
+          "destination": ".github/hooks/log-tool-activity.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "examples/claude_code-posttooluse-not-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "examples/claude_code-posttooluse-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "examples/copilot-posttooluse-not-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "examples/copilot-posttooluse-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "examples/cursor-posttooluse-not-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "examples/cursor-posttooluse-recorded.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "hooks/log_tool_activity.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "tests/test_log_tool_activity.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "variants/copilot/log-tool-activity.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      },
+      "variants/cursor/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_log_tool_activity.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "PostToolUse",
+        "script": "hooks/log_tool_activity.py",
+        "arguments": [
+          "--harness",
+          "claude_code"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-posttooluse-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/claude_code-posttooluse-not-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "postToolUse",
+        "script": "hooks/log_tool_activity.py",
+        "arguments": [
+          "--harness",
+          "cursor"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-posttooluse-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/cursor-posttooluse-not-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "postToolUse",
+        "script": "hooks/log_tool_activity.py",
+        "arguments": [
+          "--harness",
+          "copilot"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-posttooluse-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/copilot-posttooluse-not-recorded.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Continue the step normally; the hook appends one line to .baltor/state/log-tool-activity/activity.jsonl after each tool call.",
+    "done_when": [
+      "Every tool call of the step has one line in the activity log, or the log ends with one log_full line."
+    ],
+    "stop_and_report_when": [
+      "A diagnostic from the logger repeats on every call; name it in the handoff."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/overnight-cheap-model-with-and-without-baltor/DESIGN.md": "ea1d2f243fc25591f9c24a636680776615a90af1fe5a3187f39d8f25153a3ca7",
+      "tools/overnight_queue.py": "4f00c5bc6797c45dec13a27a1905c4cb1c5d48989d01d7165f5f38b2e78590ce"
+    },
+    "package_digest": "e9355c7e847227d36ae5caf78e46069a13fd0dd8fb637bddd5a052cad843b7c1",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

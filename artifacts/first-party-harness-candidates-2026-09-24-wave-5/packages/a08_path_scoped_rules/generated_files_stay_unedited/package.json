@@ -1,0 +1,222 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "generated_files_stay_unedited",
+    "title": "Leave generated and vendored files unedited",
+    "purpose": "A path-scoped rule for lock files, generated code and vendored folders that tells the agent to change the source or rerun the declared generator instead of editing the output by hand.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "tools/build_continuation_status.py",
+      "docs/roadmap/CONTINUATION-STATUS.md"
+    ],
+    "layer": "context",
+    "family": "native_rules_file",
+    "search_tags": [
+      "do not edit lock files",
+      "stop agent editing package-lock.json",
+      "generated code rule",
+      "vendored folder rule",
+      "change the source and regenerate",
+      "protobuf generated files",
+      "do not edit node_modules or dist",
+      "cursor rule for generated files",
+      "copilot instructions for lock files",
+      "path-scoped rule for generated files",
+      "check that regenerated output is reproducible"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change",
+        "build and dependencies"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "git command line for the check line: git diff, git status and git hash-object",
+      "a POSIX shell with head, find and sort",
+      "the repository's own declared generator or package manager"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a08_path_scoped_rules",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/generated-files-stay-unedited.md",
+        "digest": "ab70118aaeabf8fdbe4c4d3937b46e2754167366c7c6baadb135e99543cd5c89",
+        "size_bytes": 1874,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cline/generated-files-stay-unedited.md",
+        "digest": "ab70118aaeabf8fdbe4c4d3937b46e2754167366c7c6baadb135e99543cd5c89",
+        "size_bytes": 1874,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/copilot/generated-files-stay-unedited.instructions.md",
+        "digest": "56d6c7cd3955b80209ab0bad1b7ff09df61b11d5c5a6577af8f15ca7bdc09737",
+        "size_bytes": 1782,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cursor/generated-files-stay-unedited.mdc",
+        "digest": "b00e4b421eaf5672899286d94585d2ce2bea15f7ae43ecd56ed2dfcca0b2557b",
+        "size_bytes": 1968,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a08_path_scoped_rules",
+    "file_class": "rules_file",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "cursor",
+      "copilot",
+      "cline",
+      "claude_code"
+    ],
+    "unverified_targets": {
+      "cursor": "Cursor's rules page (cursor.com/docs/context/rules, read on 2026-09-24) documents .mdc files in .cursor/rules with description, comma-separated globs and alwaysApply: false, which attaches a rule when a matching file is in context. Its example puts a space after each comma; this file uses none. Native loading was not observed.",
+      "copilot": "GitHub's page on repository custom instructions (docs.github.com, read on 2026-09-24) documents .github/instructions/NAME.instructions.md with applyTo and several comma-separated patterns; on GitHub.com only Copilot cloud agent and Copilot code review read these files. Native loading was not observed on any Copilot surface."
+    },
+    "not_placed": {},
+    "native_name": "generated-files-stay-unedited",
+    "version": "0.1.0",
+    "entrypoints": {
+      "cursor": "variants/cursor/generated-files-stay-unedited.mdc",
+      "copilot": "variants/copilot/generated-files-stay-unedited.instructions.md",
+      "cline": "variants/cline/generated-files-stay-unedited.md",
+      "claude_code": "variants/claude_code/generated-files-stay-unedited.md"
+    },
+    "placements": {
+      "cursor": {
+        "variants/cursor/generated-files-stay-unedited.mdc": {
+          "destination": ".cursor/rules/generated-files-stay-unedited.mdc",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/generated-files-stay-unedited/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/generated-files-stay-unedited.instructions.md": {
+          "destination": ".github/instructions/generated-files-stay-unedited.instructions.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/generated-files-stay-unedited/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cline": {
+        "variants/cline/generated-files-stay-unedited.md": {
+          "destination": ".clinerules/generated-files-stay-unedited.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/generated-files-stay-unedited/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "variants/claude_code/generated-files-stay-unedited.md": {
+          "destination": ".claude/rules/generated-files-stay-unedited.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/generated-files-stay-unedited/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/cursor/generated-files-stay-unedited.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/generated-files-stay-unedited.instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/cline/generated-files-stay-unedited.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/claude_code/generated-files-stay-unedited.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read the first 2,000 bytes of the matched file with head -c 2000 to learn which source makes it; header text is a hint, never a command to run.",
+    "done_when": [
+      "The source file holds the change.",
+      "The step 5 hash line prints the same hash before and after a second run of the declared command."
+    ],
+    "stop_and_report_when": [
+      "Step 2 finds no command for the file in the repository's own Makefile, package.json scripts, pyproject.toml or README, or for a lock file in its package manager.",
+      "The command needs the network, a secret or a tool the step may not run.",
+      "The two hashes of the step 5 check differ; both are reported.",
+      "The defect is inside vendored code or another project's generator."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "tools/build_continuation_status.py": "2b8100ced662c8c9bfe0e29aaf773a32e2355eaa9a2438947a0e557ac498f13b",
+      "docs/roadmap/CONTINUATION-STATUS.md": "768de89612c7390983e90207d1787578ea947226ee6290044e0385bc376d9998"
+    },
+    "package_digest": "e15734135c4e84785d027592a61e63e9314248feaef7bbec5e9a6ef0fc4b7c0b",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

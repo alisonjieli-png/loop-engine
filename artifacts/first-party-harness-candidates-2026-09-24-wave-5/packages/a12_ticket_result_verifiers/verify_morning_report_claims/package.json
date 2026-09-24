@@ -1,0 +1,725 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "verify_morning_report_claims",
+    "title": "Verify morning report claims",
+    "purpose": "Check each item a morning report marks complete against its cited evidence files, digests and exit codes, and list every claim the evidence does not support.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/overnight_outcome.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/reproduce_the_evidence_a_report_claims.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "verify morning report claims",
+      "check an overnight report against its evidence",
+      "report says done but tests failed",
+      "evidence digest mismatch in a report",
+      "claims without evidence after a night run",
+      "check night report exit codes",
+      "audit what an agent reported as complete",
+      "night_morning_report check"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "coding agent operator",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a12_ticket_result_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "83bacdc4b62ff779b0c2efee92c2023fb773472b15d7eb3f2a2fe432fdafb677",
+        "size_bytes": 2973,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/evidence/t104-reproduction.json",
+        "digest": "d8eb75a63f7385e3457893943a586e80e43f3ce66722ccf58afbcc496f933c16",
+        "size_bytes": 1061,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence/t104-verification.json",
+        "digest": "6ed501af562390bc0f2286bcaf7aee6926f26d081d55a4396620e18a33439388",
+        "size_bytes": 1781,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence/t201-after-run.txt",
+        "digest": "c4cbe579796991d3319dccad7e8cb89e86b348b58ebb56cd047510235551607d",
+        "size_bytes": 343,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence/t202-gate.json",
+        "digest": "f4b3028e299d7ea78d258d52f05a65cd25a9905aae69e74c880da2653b0316c5",
+        "size_bytes": 137,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence/t205-after-run.txt",
+        "digest": "56fe939ed493e8dab1eb5629eaaff6776ac2d26178df12a0078359df0a99eb94",
+        "size_bytes": 428,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence/t208-gate.json",
+        "digest": "0acd0cea293648dbb7993b815e9f11f0d6c14c34946335df464eb322f95d10e2",
+        "size_bytes": 141,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/handoffs/t-104-verification.json",
+        "digest": "3e21b069151ae8e7c7886b3259eac90abe7cd2784190e799909d019a59c42a2d",
+        "size_bytes": 785,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/night-morning-report.json",
+        "digest": "464d0c0fed02910f3b0e1608e04cfda27550ad54a63c6b5f40fccef6967dbe60",
+        "size_bytes": 1700,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/night-report-overclaimed.json",
+        "digest": "f078012c2806f9371041ccc23bdf6a9b3fee5cab9712ecbe8d1ea34718a209c1",
+        "size_bytes": 1474,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/night-report.json",
+        "digest": "e51286026ac9df2c6a4f687ba4c6014fc7d295408f63265f5487b68f480fb022",
+        "size_bytes": 985,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/night-report.md",
+        "digest": "f161b1c871e1d3460947befcca9e5139f8cc7f4049a6d22278f473eeb79795ed",
+        "size_bytes": 390,
+        "media_type": "text/markdown",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "b8605f0880adcf4ffc0bb83067ffef8cf8bd0d7cf0419451d8c7a0ce8d154138",
+        "size_bytes": 859,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/claim-rules.md",
+        "digest": "729df664a82dfdcced16e14e62e817083706cc880e0eb82c340aef6257a6de9b",
+        "size_bytes": 3352,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/verify_report_claims.py",
+        "digest": "b15b10a882446c23e3da51b85db81bc2944ad71a87cdbbb71ce72d8efc3424c2",
+        "size_bytes": 40702,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_verify_report_claims.py",
+        "digest": "66f814d40e7d65e023622474da1dd8b96235304919cee53e04e7f266cb0b6c08",
+        "size_bytes": 21754,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a12_ticket_result_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "verify-morning-report-claims",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/verify-morning-report-claims/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/verify-morning-report-claims/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-reproduction.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t104-reproduction.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-verification.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t201-after-run.txt": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t201-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t202-gate.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t202-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t205-after-run.txt": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t205-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t208-gate.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/evidence/t208-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoffs/t-104-verification.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/handoffs/t-104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-morning-report.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/night-morning-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report-overclaimed.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/night-report-overclaimed.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.json": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/night-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.md": {
+          "destination": ".claude/skills/verify-morning-report-claims/examples/night-report.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/verify-morning-report-claims/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/claim-rules.md": {
+          "destination": ".claude/skills/verify-morning-report-claims/references/claim-rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_report_claims.py": {
+          "destination": ".claude/skills/verify-morning-report-claims/scripts/verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_report_claims.py": {
+          "destination": ".claude/skills/verify-morning-report-claims/tests/test_verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/verify-morning-report-claims/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/verify-morning-report-claims/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-reproduction.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t104-reproduction.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-verification.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t201-after-run.txt": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t201-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t202-gate.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t202-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t205-after-run.txt": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t205-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t208-gate.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/evidence/t208-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoffs/t-104-verification.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/handoffs/t-104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-morning-report.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/night-morning-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report-overclaimed.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/night-report-overclaimed.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.json": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/night-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.md": {
+          "destination": ".agents/skills/verify-morning-report-claims/examples/night-report.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/verify-morning-report-claims/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/claim-rules.md": {
+          "destination": ".agents/skills/verify-morning-report-claims/references/claim-rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_report_claims.py": {
+          "destination": ".agents/skills/verify-morning-report-claims/scripts/verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_report_claims.py": {
+          "destination": ".agents/skills/verify-morning-report-claims/tests/test_verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/verify-morning-report-claims/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/verify-morning-report-claims/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-reproduction.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t104-reproduction.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-verification.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t201-after-run.txt": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t201-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t202-gate.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t202-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t205-after-run.txt": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t205-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t208-gate.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/evidence/t208-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoffs/t-104-verification.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/handoffs/t-104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-morning-report.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/night-morning-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report-overclaimed.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/night-report-overclaimed.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.json": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/night-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.md": {
+          "destination": ".opencode/skills/verify-morning-report-claims/examples/night-report.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/verify-morning-report-claims/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/claim-rules.md": {
+          "destination": ".opencode/skills/verify-morning-report-claims/references/claim-rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_report_claims.py": {
+          "destination": ".opencode/skills/verify-morning-report-claims/scripts/verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_report_claims.py": {
+          "destination": ".opencode/skills/verify-morning-report-claims/tests/test_verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/verify-morning-report-claims/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/verify-morning-report-claims/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-reproduction.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t104-reproduction.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-verification.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t201-after-run.txt": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t201-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t202-gate.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t202-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t205-after-run.txt": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t205-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t208-gate.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/evidence/t208-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoffs/t-104-verification.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/handoffs/t-104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-morning-report.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/night-morning-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report-overclaimed.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/night-report-overclaimed.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.json": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/night-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.md": {
+          "destination": ".pi/skills/verify-morning-report-claims/examples/night-report.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/verify-morning-report-claims/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/claim-rules.md": {
+          "destination": ".pi/skills/verify-morning-report-claims/references/claim-rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_report_claims.py": {
+          "destination": ".pi/skills/verify-morning-report-claims/scripts/verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_report_claims.py": {
+          "destination": ".pi/skills/verify-morning-report-claims/tests/test_verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/verify-morning-report-claims/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/verify-morning-report-claims/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-reproduction.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t104-reproduction.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t104-verification.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t201-after-run.txt": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t201-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t202-gate.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t202-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t205-after-run.txt": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t205-after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence/t208-gate.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/evidence/t208-gate.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoffs/t-104-verification.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/handoffs/t-104-verification.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-morning-report.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/night-morning-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report-overclaimed.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/night-report-overclaimed.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.json": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/night-report.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/night-report.md": {
+          "destination": ".gemini/skills/verify-morning-report-claims/examples/night-report.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/verify-morning-report-claims/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/claim-rules.md": {
+          "destination": ".gemini/skills/verify-morning-report-claims/references/claim-rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_report_claims.py": {
+          "destination": ".gemini/skills/verify-morning-report-claims/scripts/verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_report_claims.py": {
+          "destination": ".gemini/skills/verify-morning-report-claims/tests/test_verify_report_claims.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "examples/evidence/t104-reproduction.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/evidence/t104-verification.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/evidence/t201-after-run.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/evidence/t202-gate.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/evidence/t205-after-run.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/evidence/t208-gate.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/handoffs/t-104-verification.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/night-morning-report.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/night-report-overclaimed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/night-report.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "examples/night-report.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/claim-rules.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/verify_report_claims.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_verify_report_claims.py"
+        ]
+      },
+      "tests/test_verify_report_claims.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/verify_report_claims.py with --report for the morning report and read its JSON verdict.",
+    "done_when": [
+      "The answer holds the verdict and every unsupported item with its problems.",
+      "Each needs_reading item has one sentence and every checklist item has an answer."
+    ],
+    "stop_and_report_when": [
+      "The verdict is fail or refused.",
+      "A status word in the report is unknown and the task does not say what it means."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/overnight_outcome.py": "9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314",
+      "examples/29_intelligence_service/starter-catalogue/bodies/reproduce_the_evidence_a_report_claims.md": "0e753b006297daddd1afd4283a9b6ec92bf2fe4ba011ef5b593da086d2d0f267"
+    },
+    "package_digest": "8323168c1c539239a7b83e6c655ef5381de8f23e33ee0e6ba15d5bd849beada6",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

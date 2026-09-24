@@ -1,0 +1,24 @@
+{
+  "evidence": [
+    {
+      "criteria": ["AC-1", "AC-2"],
+      "kind": "test",
+      "test": "tests/test_slugs.py::test_lowercases_and_collapses_spaces",
+      "output": "examples/test-run.txt"
+    },
+    {
+      "criterion": "AC-3",
+      "kind": "command",
+      "command": "python3 -m pytest -rA",
+      "exit_code": 0,
+      "output": "examples/test-run.txt",
+      "sha256": "162982e7c3909913f60c922342df6b3ebe7c11ca3cc6fc931d9f796d4f378700"
+    },
+    {
+      "criterion": "AC-4",
+      "kind": "file",
+      "path": "examples/changelog.txt",
+      "contains": "slugify"
+    }
+  ]
+}

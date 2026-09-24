@@ -1,0 +1,1 @@
+{"session_id": "example-session-1", "transcript_path": "/tmp/example-transcript.jsonl", "cwd": "/work/examples/cleanup", "hook_event_name": "PostToolUse", "tool_name": "Write", "tool_input": {"file_path": "data/clean/orders-dropped.csv", "content": "file text omitted in this example"}, "tool_response": {"type": "text", "text": "File written"}}

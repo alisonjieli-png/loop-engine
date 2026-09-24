@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-23T20:49:09.086038+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "cap_tool_call_budget",
+  "guard_shell_command_allowlist",
+  "guard_workspace_file_writes",
+  "log_tool_activity",
+  "require_tests_before_stop"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a04_unattended_guard_hooks/cap_tool_call_budget/review/precheck-20260923T204839907154Z.json",
+  "packages/a04_unattended_guard_hooks/guard_shell_command_allowlist/review/precheck-20260923T204847812114Z.json",
+  "packages/a04_unattended_guard_hooks/guard_workspace_file_writes/review/precheck-20260923T204853918935Z.json",
+  "packages/a04_unattended_guard_hooks/log_tool_activity/review/precheck-20260923T204900678268Z.json",
+  "packages/a04_unattended_guard_hooks/require_tests_before_stop/review/precheck-20260923T204909084990Z.json"
+ ]
+}

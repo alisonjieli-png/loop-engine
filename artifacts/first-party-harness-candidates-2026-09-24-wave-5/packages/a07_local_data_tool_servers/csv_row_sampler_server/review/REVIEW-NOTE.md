@@ -1,0 +1,75 @@
+# Review note: CSV row sampler tool server
+
+Candidate only. Not approved, staged, served or published.
+
+Producer: Claude Code wave 5 generator `a07_local_data_tool_servers`, model family `anthropic`. This note is never delivered to a customer harness.
+
+## Method
+
+One logical method: let a fresh step harness look at representative rows of a large CSV file through one tool call, instead of reading the top of the file or pasting the file into the prompt. The package holds one standard-library protocol server (`server/csv_row_sampler_server.py`) with one tool, `sample_csv_rows`, a scripted-client test, the input contract, a synthetic example, five harness configuration variants and a short companion (`AGENTS.md`).
+
+The tool reads the whole file once and keeps a uniform random choice of rows with reservoir sampling, driven by `random.Random(seed)` and drawing only from its `random()` method, the one method whose sequence Python documents as stable for the same integer seed. Without `group_by` it returns up to `rows` rows (1 to 200). With `group_by` it keeps a separate reservoir for each distinct value of that column and returns up to `per_group` rows for each value, refusing when the column has more than `max_groups` values or when the sample would exceed 500 rows. Rows come back in file order with the physical line where the record starts and the data row number. Cells longer than `max_cell_chars` are cut and listed in `shortened_cells`, and group values longer than `max_cell_chars` are cut in `groups` with their full length in `chars`, so nothing is shortened silently. The answer also reports rows read, group sizes, the file's SHA-256 digest and rows whose width differs from the header.
+
+## Authoring basis and sources
+
+Original code and text, written from general knowledge of reservoir sampling, CSV parsing and the Model Context Protocol revisions 2025-03-26, 2025-06-18 and 2025-11-25 (protocol text not fetched in this run). The behavior follows SPEC section 7.5 of wave 5. Repository files read at `a1fc743`: `catalogue_packages.py` (package format), the pilot `json-shape-stdio/REVIEW.md` (why the server must use only the standard library), the wave 3 skill `audit-sampling-frame-coverage/SKILL.md`, the placement research of September 22 and the data cleanup case study. No outside project text or code was copied.
+
+Third pass basis (September 24, 2026): harness documentation read on this machine and described here in original words, with no text copied. Claude Code: the saved MCP page `/home/username/.le-ci-tmp/research/ecosystem/sources/B/cc-mcp.md` (sections on stdio servers, environment variable expansion in `.mcp.json` and project scope). Cursor: `docs/cursor-mcp.md` in the agent-harness checkout at `/home/username/.le-ci-tmp/research/agent-harness` (revision `2ecf44f`, the one that `docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md` records; that research file is now a source of this package). Gemini CLI 0.59.0: the installed `docs/tools/mcp-server.md`, `docs/cli/trusted-folders.md` and `docs/reference/configuration.md` under `/home/username/.local/lib/node_modules/@google/gemini-cli/bundle/`.
+
+## Inputs and outputs
+
+Input: the arguments in `contracts/sample_csv_rows.input.schema.json` (`path` required; `rows`, `seed`, `group_by`, `per_group`, `max_groups`, `columns`, `delimiter`, `encoding`, `has_header`, `max_cell_chars` optional). The tool refuses `per_group` or `max_groups` without `group_by`, and `rows` with it, so a model cannot believe it received a grouped sample when it did not. Output: one JSON object as compact text and as `structuredContent`; refusals carry `isError: true`. Limits: 1 MiB request lines; one answer line of at most 262,144 bytes (256 KiB), measured on the exact bytes written, so both copies of the result and every escape count; 64 MiB files unless the host passes `--max-file-mib`; 100 columns and 500 rows per answer. A sample that would not fit comes back as a short refusal. Without `group_by` it says to lower `rows`, pass fewer `columns` or lower `max_cell_chars`; with `group_by` it names `per_group`, `max_groups`, `columns` and `max_cell_chars`, which also cuts long group values.
+
+## Effects
+
+The server reads files under `--root` only and writes nothing, starts no process, opens no network connection and reads no secret. `spawns_process` covers the harness starting the server and the tests starting it. `writes_fs` is declared only because the tests create temporary folders (a link out of the root, a Latin-1 file, a 600-row file, a file of long group values, and a workspace for the launch test); the server never writes. The host must bind a trusted `python3`, because an interpreter found first on `PATH` can be replaced.
+
+## Closest existing items
+
+The assignment found no close item, and a search of `scout/existing-inventory.tsv` for sample and row found none that returns rows. Nearest neighbors:
+- Wave 3 `audit_sampling_frame_coverage`: prose for judging whether a survey frame covers a population. It draws no rows.
+- Served `check_that_a_result_is_stable_and_generalizes`: prose about results beyond a sample; it has no tool.
+- Wave 5 sibling `csv_profile_server`: counts and types for whole columns; it returns no rows. The two tools are meant to be used together.
+- Wave 5 `data_sample_inspector` (assignment a05), compared in the second generator pass: a subagent definition whose helper model reads lines 1 to 51 of a file by default and never past line 201, then describes the columns. On a sorted file it sees the same head rows as the known-wrong case below. This tool reads the whole file in code and returns seeded rows from every part of it, or from every group, with their line numbers; those rows are good input for a reviewer of that kind.
+
+## Positive example
+
+`examples/readings.csv` is synthetic sensor data sorted by site: 12 north rows, 8 south, 4 east. `{"group_by": "site", "per_group": 2, "seed": 7}` returns lines 3, 12, 21, 22, 23 and 25, two rows for each site, and the same lines on every repeat and under Python 3.10 and 3.14 (a test pins them; the lines were computed separately from the reservoir rule). The previous server, which used `randrange()`, returned lines 8, 11, 17, 19, 25 and 26 for the same call. The record for `R018` holds a two-line note and is reported at line 19, row 18.
+
+## Known-wrong example
+
+Reading the first rows of a sorted file: the first six data rows are all `north`, so a rule written from them never sees the south site's `fault` and `missing` rows or the east site at all. The test `test_known_wrong_head_rows_miss_whole_groups` shows the head view and then the grouped sample that covers all three sites.
+
+## Harness placement and verification state
+
+The server, tests, contract, examples and licence go to `.baltor/csv-row-sampler-server/`. The companion is composed into `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI) or `AGENTS.md` (Codex, OpenCode, Cursor). No harness binary was run here; native discovery probes belong to the integrator.
+
+- Claude Code: `.mcp.json` (documented; the pilot checked its syntax). The launch line is `python3 -I -B ${CLAUDE_PROJECT_DIR:-.}/.baltor/csv-row-sampler-server/server/csv_row_sampler_server.py --root ${CLAUDE_PROJECT_DIR:-.}`. The Claude Code MCP documentation describes `${VAR:-default}` expansion in `command` and `args`, and says that Claude Code sets `CLAUDE_PROJECT_DIR` in the server's environment but not in its own. The expansion therefore gives absolute paths only when the host starts Claude Code with `CLAUDE_PROJECT_DIR` set to the workspace; otherwise it gives `.`, the earlier relative form, which works only when the server starts in the project root. The test `test_expanded_launch_lines_start_the_server_from_a_subfolder` shows both outcomes. Where Claude Code starts a project server was not observed. Project servers also need the user's approval in a trusted workspace.
+- Cursor: `.cursor/mcp.json` with `mcpServers`, and `${workspaceFolder}` (the folder that holds `.cursor/mcp.json`) in `command` and `args`, as the Cursor MCP documentation describes. The expanded line answers from a subfolder in the same test. The earlier note said no documentation existed; that was wrong. Discovery and approval were not observed.
+- Gemini CLI: `.gemini/settings.json` `mcpServers` (documented). The server key is `csv-row-sampler-server`, not the identity. This deviates from SPEC section 9.2 on purpose: the Gemini CLI 0.59.0 documentation says that its policy parser splits a tool's full name `mcp_<server>_<tool>` at the first underscore after `mcp_`, so an underscore in the server name makes wildcard and security rules fail silently. With folder trust on (true by default in the 0.59.0 configuration reference), Gemini CLI ignores the workspace settings and connects no protocol server in an untrusted folder, and a headless run in an untrusted folder stops unless the host passes `--skip-trust` or sets `GEMINI_CLI_TRUST_WORKSPACE`. The launch line stays relative and assumes the server starts in the workspace root (unverified).
+- Codex: `.codex/config.toml` for trusted projects (documented). The launch line stays relative (start folder unverified).
+- OpenCode: `opencode.json` `mcp` (observed for the pilot server with a relative path and `cwd` set to the workspace).
+
+Harnesses show each tool under a prefixed name, for example `mcp__csv_row_sampler_server__sample_csv_rows` in Claude Code and `mcp_csv-row-sampler-server_sample_csv_rows` in Gemini CLI, so the companion tells the model to match the ending of the name. When no such tool is listed, the companion's test command runs from the workspace root; there the variant and companion tests skip themselves, and the others pass when the server works. The companion now says that a pass means the harness did not start a working server. Each input schema carries a `$schema` line, as the contract files require; whether every harness passes such a schema to its model unchanged was not observed. The host must bind a trusted `python3`, because an interpreter found first on `PATH` can be replaced.
+
+## Customer requests
+
+- "Show the model twenty random rows from this big export, not the first twenty."
+- "I need three example rows from every region before I write the cleaning rules."
+- "Give me the same sample again tomorrow so I can compare."
+
+## Limits
+
+Sampling is uniform within the file or within each group; it does not weight rows. The whole file is read on every call, so very large files take time and may meet a client's tool timeout. Group values are compared exactly as written, so `North` and `north ` are different groups; the profile server shows such padding. The seed makes the choice repeatable for the same file bytes and arguments; a changed file gives a different sample (the digest shows which file was read). Repeats across Python versions rest on Python's documented promise for `random()`; they were tested on Python 3.10 and 3.14 only, and not on other Python implementations. Two long group values that share their first `max_cell_chars` characters look alike in `groups`; their rows keep their line numbers, and a larger `max_cell_chars` tells them apart. Windows was not tested. A model that writes tool calls as plain text cannot use any protocol server.
+
+Pre-check history: recorded in `review/PRECHECKS.txt` and the `review/precheck-*.json` reports.
+
+Second generator pass, September 24, 2026 (UTC): a probe of the output bound found that an answer line could pass 256 KiB even though the package passed every pre-check. The old guard measured one copy of the result (at most 120 KiB) before the text copy escaped every backslash and quote a second time; 30 rows of 2,000-character backslash cells gave a 362,901-byte line. The server now measures the whole line as written and refuses above 262,144 bytes. The new test `test_known_wrong_escapes_cannot_push_an_answer_line_past_256_kib` failed on the previous server under Python 3.14 and 3.10 and passes now. The probe, its output before and after the repair, the mutation run and a copy of the previous package are kept in the wave folder under `generator-a07-work/`.
+
+Third pass, repairs after critic round 4, September 24, 2026 (UTC):
+- Long group values (minor). `groups[].value` was never cut, so 40 groups of 6,000-character values made a 495,115-byte answer, and the refusal advised lowering `max_cell_chars`, which did not help. Group values are now cut to `max_cell_chars` with their full length in `chars` and a note, and a grouped call that is still too large gets a hint that names `per_group`, `max_groups`, `columns` and `max_cell_chars`. `test_known_wrong_long_group_values_are_cut_and_the_hint_names_group_arguments` failed on the previous server under Python 3.14 and 3.10.
+- Repeatability claim (minor). The sampler used `randrange()`, whose results Python does not promise to keep across versions. It now draws only from `random()`, whose sequence Python documents as stable for the same integer seed, and the test is renamed `test_same_seed_gives_the_same_pinned_rows`. Its pinned lines were computed separately from the reservoir rule with `random.Random(seed).random()` on Python 3.10 and 3.14 and agree with the server. The change of generator call changed the pinned lines, so a sample recorded with the previous server does not repeat with this one.
+
+The placement repairs are shared by all five packages of the assignment: the Gemini CLI server key is the hyphenated name (a recorded deviation from SPEC section 9.2), `unverified_targets` names the Gemini CLI folder trust condition and the Claude Code expansion limit, the Claude Code and Cursor variants use `${CLAUDE_PROJECT_DIR:-.}` and `${workspaceFolder}`, and `test_expanded_launch_lines_start_the_server_from_a_subfolder` and `test_known_wrong_gemini_server_key_with_underscores` fail on the previous variant files. The companion now says that a listed tool may carry a prefix, that a passing fallback test run means the harness did not start a working server, and (for the four data servers) that returned values are data, never instructions.
+
+Evidence, all in the wave folder: the critic's probes run on the previous and the repaired packages (`repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/evidence/probes-before-repair.txt`, `probes-after-repair.txt`), a successor of the critic's placement probe (`repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/probes/placed_workspace_after.py` and `evidence/placed-workspace-after-repair.txt`), the new tests run on the previous files (`repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/evidence/known-wrong-*.txt`), 32 mutants across the five packages, each made a named test fail (`repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/mutants/mutants-result.txt`), and a copy of the five packages before this pass (`repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/a07-predecessor-snapshot-20260924T052417Z.tar.gz`).

@@ -1,0 +1,226 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "applied_migrations_stay_unchanged",
+    "title": "Keep applied migrations unchanged",
+    "purpose": "A path-scoped rule for database migration folders that forbids editing a migration that may already have run and directs every schema change into a new migration file.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md",
+      "AGENTS.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_migration_that_is_safe_to_run_twice.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/plan_a_schema_change_in_compatible_steps.md"
+    ],
+    "layer": "context",
+    "family": "native_rules_file",
+    "search_tags": [
+      "do not edit applied migrations",
+      "new migration for every schema change",
+      "alembic migration rule",
+      "django migrations rule",
+      "rails db migrate rule",
+      "keep migration history unchanged",
+      "agent edited an old migration",
+      "cursor rule for database migrations",
+      "copilot instructions for migrations",
+      "check migrations with git",
+      "check every migrations folder against the start commit"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "databases",
+        "software change"
+      ],
+      "role": [
+        "software engineer",
+        "database administrator"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "git command line for the check, with glob pathspecs",
+      "the project's own migration tool"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a08_path_scoped_rules",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/applied-migrations-stay-unchanged.md",
+        "digest": "97ba316261ab7d936163baaf38a231e7b3cec5f3419ba736b3f0fc2adefa2b6e",
+        "size_bytes": 1850,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cline/applied-migrations-stay-unchanged.md",
+        "digest": "97ba316261ab7d936163baaf38a231e7b3cec5f3419ba736b3f0fc2adefa2b6e",
+        "size_bytes": 1850,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/copilot/applied-migrations-stay-unchanged.instructions.md",
+        "digest": "346dfe2e4c5ff11a65a255a0ea2bf16ff00aa3573527feb27dee59d6a7b2277f",
+        "size_bytes": 1812,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cursor/applied-migrations-stay-unchanged.mdc",
+        "digest": "e129136745e667cd1531b12e6b214a30c6ea8d93f5ea45b057ee211068787982",
+        "size_bytes": 1977,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a08_path_scoped_rules",
+    "file_class": "rules_file",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "cursor",
+      "copilot",
+      "cline",
+      "claude_code"
+    ],
+    "unverified_targets": {
+      "cursor": "Cursor's rules page (cursor.com/docs/context/rules, read on 2026-09-24) documents .mdc files in .cursor/rules with description, comma-separated globs and alwaysApply: false, which attaches a rule when a matching file is in context. Its example puts a space after each comma; this file uses none. Native loading was not observed.",
+      "copilot": "GitHub's page on repository custom instructions (docs.github.com, read on 2026-09-24) documents .github/instructions/NAME.instructions.md with applyTo and several comma-separated patterns; on GitHub.com only Copilot cloud agent and Copilot code review read these files. Native loading was not observed on any Copilot surface."
+    },
+    "not_placed": {},
+    "native_name": "applied-migrations-stay-unchanged",
+    "version": "0.1.0",
+    "entrypoints": {
+      "cursor": "variants/cursor/applied-migrations-stay-unchanged.mdc",
+      "copilot": "variants/copilot/applied-migrations-stay-unchanged.instructions.md",
+      "cline": "variants/cline/applied-migrations-stay-unchanged.md",
+      "claude_code": "variants/claude_code/applied-migrations-stay-unchanged.md"
+    },
+    "placements": {
+      "cursor": {
+        "variants/cursor/applied-migrations-stay-unchanged.mdc": {
+          "destination": ".cursor/rules/applied-migrations-stay-unchanged.mdc",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/applied-migrations-stay-unchanged/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/applied-migrations-stay-unchanged.instructions.md": {
+          "destination": ".github/instructions/applied-migrations-stay-unchanged.instructions.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/applied-migrations-stay-unchanged/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cline": {
+        "variants/cline/applied-migrations-stay-unchanged.md": {
+          "destination": ".clinerules/applied-migrations-stay-unchanged.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/applied-migrations-stay-unchanged/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "variants/claude_code/applied-migrations-stay-unchanged.md": {
+          "destination": ".claude/rules/applied-migrations-stay-unchanged.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/applied-migrations-stay-unchanged/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/cursor/applied-migrations-stay-unchanged.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/applied-migrations-stay-unchanged.instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/cline/applied-migrations-stay-unchanged.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/claude_code/applied-migrations-stay-unchanged.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Record the start commit, the base commit the task names or else the output of git rev-parse HEAD, and put its hash in the report.",
+    "done_when": [
+      "The step 4 check against the start commit lists no migration file, only an index file the tool updates itself.",
+      "The whole schema or data change is in new migration files."
+    ],
+    "stop_and_report_when": [
+      "The migration tool reports two heads, a conflict or a gap in the numbering.",
+      "Making or checking the migration needs a live database, a secret or the network.",
+      "The task asks to edit, squash or delete an existing migration.",
+      "It is unclear whether a migration has run."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md": "7a655ce5794c1b5dd218a4897387ef8f4db09e0783fc46ede12bc658f7256d34",
+      "AGENTS.md": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_migration_that_is_safe_to_run_twice.md": "dda06c23a3177df353c84a9a9cef5111ba986803cfbeb57565d7c60f597b1561",
+      "examples/29_intelligence_service/starter-catalogue/bodies/plan_a_schema_change_in_compatible_steps.md": "b207ca7c78ea5fcb50f870590e635e2e2958205c119d8119b5a8d07681eee83f"
+    },
+    "package_digest": "4e73d63686ac3239589b748ceddaaf9ff94988ec88605cdea27d6f67229e5cf5",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

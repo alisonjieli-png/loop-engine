@@ -1,0 +1,44 @@
+{
+ "record_type": "text_tool_call_scan/v1",
+ "status": "text_calls_detected",
+ "format": "generic",
+ "assistant_turns": 2,
+ "turns_with_structured_calls": 1,
+ "text_call_turns": 1,
+ "rate": 0.5,
+ "max_rate": 0.0,
+ "kinds": {
+  "json_text": 1,
+  "broken_json_text": 0,
+  "tagged_text": 0,
+  "name_then_json": 0,
+  "unknown_name_then_json": 0,
+  "named_in_prose": 0,
+  "json_text_in_fence": 1
+ },
+ "low_confidence_turns": 0,
+ "last_turn_flagged": true,
+ "known_tools": [
+  "bash",
+  "read",
+  "write"
+ ],
+ "flagged": [
+  {
+   "kind": "json_text",
+   "confidence": "high",
+   "in_fence": true,
+   "tool": "write",
+   "argument_keys": [
+    "content",
+    "path"
+   ],
+   "known_tool": true,
+   "turn": 2,
+   "line": null,
+   "counted": true
+  }
+ ],
+ "omitted_flagged": 0,
+ "notes": []
+}

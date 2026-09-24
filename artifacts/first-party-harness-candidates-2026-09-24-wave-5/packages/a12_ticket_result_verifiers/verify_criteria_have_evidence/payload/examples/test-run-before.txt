@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+collected 3 items
+
+tests/test_slugs.py::test_joins_words PASSED                             [ 33%]
+tests/test_slugs.py::test_lowercases_and_collapses_spaces FAILED         [ 66%]
+tests/test_slugs.py::test_keeps_digits PASSED                            [100%]
+
+=========================== short test summary info ============================
+FAILED tests/test_slugs.py::test_lowercases_and_collapses_spaces - AssertionError: assert 'Hello--World' == 'hello-world'
+========================= 1 failed, 2 passed in 0.03s ==========================

@@ -1,0 +1,38 @@
+{
+ "record_type": "ticket_triage_decision/v1",
+ "ticket_id": "T-104",
+ "decision": "go",
+ "reasons": [
+  "Both lines under Expected result can be proved by a test: the badge text for one item and for 3 items.",
+  "shop/cart_badge.py builds the text in badge_text() and lies under the allowed prefix shop/.",
+  "The change needs one product file and one test file, within the limit of 4, and nothing from unavailable_tonight."
+ ],
+ "acceptance": [
+  "A cart with exactly one item shows the badge text \"1 item\".",
+  "A cart with 3 items still shows \"3 items\"."
+ ],
+ "files_to_read": [
+  {
+   "path": "shop/cart_badge.py",
+   "why": "badge_text() formats the count and always adds the plural ending."
+  },
+  {
+   "path": "tests/test_cart_badge.py",
+   "why": "The BadgeTextTests class shows the test style to follow."
+  }
+ ],
+ "first_test": {
+  "path": "tests/test_cart_badge.py",
+  "name": "test_badge_uses_singular_for_one_item",
+  "asserts": "badge_text(1) returns \"1 item\".",
+  "command": [
+   "python3",
+   "-m",
+   "unittest",
+   "tests.test_cart_badge.BadgeTextTests.test_badge_uses_singular_for_one_item"
+  ]
+ },
+ "open_questions": [],
+ "parts": [],
+ "needs": []
+}

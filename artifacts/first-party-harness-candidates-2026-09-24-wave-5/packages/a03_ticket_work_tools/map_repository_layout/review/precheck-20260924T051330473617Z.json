@@ -1,0 +1,121 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a03_ticket_work_tools/map_repository_layout",
+ "identity": "map_repository_layout",
+ "package_digest": "e2fd1d17e6d6e6e0b37c220a11d8b2da727375d6d4b6d83c8ca12363568a8aa2",
+ "checked_at": "2026-09-24T05:13:26.616445+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "refused",
+   "findings": [
+    "SKILL.md: digest or size differs from the bytes; run the fill command",
+    "examples/layout-output.json: digest or size differs from the bytes; run the fill command",
+    "scripts/map_layout.py: digest or size differs from the bytes; run the fill command",
+    "tests/test_map_layout.py: digest or size differs from the bytes; run the fill command"
+   ]
+  },
+  {
+   "check": "text_hygiene",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "placements",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "passed",
+   "findings": [
+    "agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/map-repository-layout",
+    "skills_ref_official_git .: exit 0 Valid skill: TMP/map-repository-layout"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "passed",
+   "findings": [
+    "{\"python\": \"python3.14\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 13}",
+    "{\"python\": \"python3.10\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 13}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

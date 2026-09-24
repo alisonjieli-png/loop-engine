@@ -1,0 +1,6 @@
+{
+  "timestamp": 1790000000001,
+  "cwd": "/work",
+  "toolName": "bash",
+  "toolArgs": "{\"command\": \"find . -name '*.tmp' -delete\", \"description\": \"Remove temporary files\"}"
+}

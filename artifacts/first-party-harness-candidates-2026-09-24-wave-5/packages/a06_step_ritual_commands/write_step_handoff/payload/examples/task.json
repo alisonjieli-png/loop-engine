@@ -1,0 +1,13 @@
+{
+  "record_type": "node_assignment/v3",
+  "node_id": "fix-month-end-filter",
+  "kind": "build",
+  "objective": "Make the monthly report include rows dated on the last day of the month.",
+  "output_contract_refs": [],
+  "dependency_ids": [],
+  "required_capabilities": [],
+  "effects": ["reads_fs", "writes_fs"],
+  "harness_style": "claude_code",
+  "model_calls_authorized": true,
+  "mode": "non_deterministic"
+}

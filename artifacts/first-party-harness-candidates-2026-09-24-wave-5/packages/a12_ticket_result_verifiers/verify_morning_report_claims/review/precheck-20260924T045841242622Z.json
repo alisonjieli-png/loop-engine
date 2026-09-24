@@ -1,0 +1,30 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a12_ticket_result_verifiers/verify_morning_report_claims",
+ "identity": "verify_morning_report_claims",
+ "package_digest": null,
+ "checked_at": "2026-09-24T04:58:41.240044+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "refused",
+   "findings": [
+    "missing package.json",
+    "missing review/REVIEW-NOTE.md"
+   ]
+  },
+  {
+   "check": "manifest_schema",
+   "status": "refused",
+   "findings": [
+    "package.json unreadable: [Errno 2] No such file or directory: '/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a12_ticket_result_verifiers/verify_morning_report_claims/package.json'"
+   ]
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

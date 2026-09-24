@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"${CLAUDE_PLUGIN_ROOT}/scripts/check_cleaned_counts.py\" --harness claude_code",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

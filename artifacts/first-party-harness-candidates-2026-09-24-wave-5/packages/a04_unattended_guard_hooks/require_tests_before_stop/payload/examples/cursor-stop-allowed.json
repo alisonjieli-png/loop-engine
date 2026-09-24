@@ -1,0 +1,7 @@
+{
+  "conversation_id": "sample-conversation-allowed",
+  "generation_id": "sample-generation-allowed",
+  "hook_event_name": "stop",
+  "workspace_roots": ["/work"],
+  "status": "completed"
+}

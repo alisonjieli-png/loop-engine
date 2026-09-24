@@ -1,0 +1,20 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Values the host renders into the competition brief step",
+ "description": "Every value is placed inside a shell command, so paths use only safe characters.",
+ "type": "object",
+ "required": ["pages_dir", "data_dir", "brief_path"],
+ "additionalProperties": false,
+ "properties": {
+  "pages_dir": {"$ref": "#/$defs/relative_path"},
+  "data_dir": {"$ref": "#/$defs/relative_path"},
+  "brief_path": {"$ref": "#/$defs/relative_path"}
+ },
+ "$defs": {
+  "relative_path": {
+   "type": "string",
+   "maxLength": 200,
+   "pattern": "^[A-Za-z0-9_][A-Za-z0-9._-]*(/[A-Za-z0-9_][A-Za-z0-9._-]*)*$"
+  }
+ }
+}

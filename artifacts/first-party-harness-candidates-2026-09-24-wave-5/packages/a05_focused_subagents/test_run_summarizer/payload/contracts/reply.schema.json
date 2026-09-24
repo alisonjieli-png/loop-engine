@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Test run summarizer reply",
+  "description": "Either the summary printed by scripts/summarize_test_run.py, returned unchanged, or the short refusal the helper writes when it runs nothing.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/summary"
+    },
+    {
+      "$ref": "#/$defs/refusal"
+    }
+  ],
+  "$defs": {
+    "count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "command",
+        "cwd",
+        "exit_status",
+        "timed_out",
+        "seconds",
+        "runner",
+        "counts",
+        "first_failure",
+        "tail",
+        "output_lines",
+        "output_bytes",
+        "result",
+        "reason"
+      ],
+      "properties": {
+        "record_type": {
+          "const": "test_run_summary/v1"
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The declared command exactly as it was run, one word per item."
+        },
+        "cwd": {
+          "type": "string",
+          "description": "The folder the command ran in, relative to the repository root."
+        },
+        "exit_status": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Null when the command did not start, was refused, or could not be stopped and waited for."
+        },
+        "timed_out": {
+          "type": "boolean"
+        },
+        "seconds": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "runner": {
+          "enum": [
+            "pytest",
+            "unittest",
+            "go",
+            "cargo",
+            "jest",
+            "vitest",
+            "unknown",
+            null
+          ]
+        },
+        "counts": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "passed",
+                "failed",
+                "errors",
+                "skipped"
+              ],
+              "properties": {
+                "passed": {
+                  "$ref": "#/$defs/count"
+                },
+                "failed": {
+                  "$ref": "#/$defs/count"
+                },
+                "errors": {
+                  "$ref": "#/$defs/count"
+                },
+                "skipped": {
+                  "$ref": "#/$defs/count"
+                }
+              }
+            }
+          ]
+        },
+        "first_failure": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "test",
+                "excerpt"
+              ],
+              "properties": {
+                "test": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 300
+                },
+                "excerpt": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 240
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "tail": {
+          "type": "array",
+          "maxItems": 15,
+          "items": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "description": "The last output lines, only when the run did not pass and no first failure was found."
+        },
+        "output_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "no_tests",
+            "unconfirmed",
+            "timeout",
+            "interrupted",
+            "not_started",
+            "refused"
+          ],
+          "description": "passed needs exit status 0, a known runner summary, no failed test or error and at least one test that was not skipped. unconfirmed: exit status 0 but no known runner summary, so it is not a pass. interrupted: a stop signal ended the run before --timeout."
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        }
+      }
+    },
+    "refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_type",
+        "result",
+        "reason"
+      ],
+      "properties": {
+        "record_type": {
+          "const": "test_run_summary/v1"
+        },
+        "result": {
+          "const": "refused"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    }
+  }
+}

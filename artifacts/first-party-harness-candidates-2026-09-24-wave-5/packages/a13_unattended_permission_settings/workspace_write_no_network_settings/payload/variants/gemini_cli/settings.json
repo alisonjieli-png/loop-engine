@@ -1,0 +1,27 @@
+{
+  "general": {
+    "defaultApprovalMode": "default"
+  },
+  "security": {
+    "disableYoloMode": true,
+    "toolSandboxing": true
+  },
+  "tools": {
+    "sandboxNetworkAccess": false,
+    "core": [
+      "read_file",
+      "read_many_files",
+      "list_directory",
+      "glob",
+      "grep_search",
+      "activate_skill",
+      "write_file",
+      "replace",
+      "run_shell_command(python3 -m pytest)",
+      "run_shell_command(python3 -m unittest)",
+      "run_shell_command(git status)",
+      "run_shell_command(git diff)",
+      "run_shell_command(python3 -I -B .baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py)"
+    ]
+  }
+}

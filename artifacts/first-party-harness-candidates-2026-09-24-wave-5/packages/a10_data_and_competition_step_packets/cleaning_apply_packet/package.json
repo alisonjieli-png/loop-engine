@@ -1,0 +1,683 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "cleaning_apply_packet",
+    "title": "Cleaning application step packet",
+    "purpose": "A one-step packet that applies only the approved rules of a cleaning plan to a copy of the table, writes a cell-level change log and a hold list, and never edits the source file.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "src/loop_engine/code_nodes/database_copy.py"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "apply approved cleaning rules",
+      "clean a copy of a csv table",
+      "cell level change log",
+      "hold list for values a rule cannot read",
+      "never edit the source data file",
+      "apply a reviewed cleaning plan",
+      "data cleanup audit trail",
+      "cleaned copy with a change log"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "run",
+      "select_rules",
+      "apply_rules",
+      "self_check"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a10_data_and_competition_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "c3afcf37cd86f0abf961068dc210c48b962ccfcbace5a8e79017c524cbe2e9cb",
+        "size_bytes": 2636,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "c3afcf37cd86f0abf961068dc210c48b962ccfcbace5a8e79017c524cbe2e9cb",
+        "size_bytes": 2636,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "17f538bb611382a79ec82c9e78a53a0a474c8371a4fa4f0b1e57a550a449f298",
+        "size_bytes": 674,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "e3cb08cc3f655efe0d81d2d6391473cb3402f0bb16b245a1d94d3d0702dcfc71",
+        "size_bytes": 3002,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/plan.schema.json",
+        "digest": "84db648c8cd56f5a2aed6eb3657dfd6eba831e20d55bcba3bf1c62d07f166535",
+        "size_bytes": 2300,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "6def4ead9b3860d9cbcab4695a93a5bc88417e4000c9615a664158d90377a59f",
+        "size_bytes": 505,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/approved_plan.json",
+        "digest": "f951dec001fce0dd67df8f154cbd5f143b22f4035f3f52e110f9ae80c67d0609",
+        "size_bytes": 5265,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "9407cfd9a8ed4bd38e8917b566f04fa8fdf342e2ef5d4d55625ebf420e535789",
+        "size_bytes": 130,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "8cb1cc469e658c0b1d7dca4bf5a9dde53e5fb093a4846bef9a82f95f8a103aee",
+        "size_bytes": 1612,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "c55ebd4b1a353ed0e8092c4232f561fdd78d83665c219318c3f56d21c10486a3",
+        "size_bytes": 558,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "f9cda7b032c595ce282a3aa3655322b3204e8ae1d73805ed7509b9ab3bc30ea5",
+        "size_bytes": 1777,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/apply_plan.py",
+        "digest": "5785291122d8fa276fbda564523210366fc9d59fa84805e53363099c1353d903",
+        "size_bytes": 29484,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_apply_plan.py",
+        "digest": "25525ca36dfe02ed11ab4431438cc735ba46647ca2cddf4d0261bb75a4658a68",
+        "size_bytes": 10327,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a10_data_and_competition_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents that Kimi CLI reads a root AGENTS.md; the placement follows the common convention and is unverified until a native discovery probe runs."
+    },
+    "not_placed": {},
+    "native_name": "cleaning-apply-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "copy_exact_bytes"
+        },
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/plan.schema.json": {
+          "destination": ".baltor/step/contracts/plan.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/approved_plan.json": {
+          "destination": ".baltor/step/examples/approved_plan.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/apply_plan.py": {
+          "destination": ".baltor/step/scripts/apply_plan.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_apply_plan.py": null,
+        "LICENSE": {
+          "destination": ".baltor/cleaning-apply-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "contracts/plan.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "examples/approved_plan.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "scripts/apply_plan.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_apply_plan.py"
+        ]
+      },
+      "tests/test_apply_plan.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "TABLE_PATH": "Workspace-relative path of the source table named in the plan, using only letters, digits, dot, dash, underscore and slash.",
+      "PLAN_PATH": "Workspace-relative path of the reviewed cleaning plan, in which every rule is approved, rejected or dropped.",
+      "OUTPUT_DIR": "Workspace-relative folder for the copy, changes.jsonl, holds.jsonl and apply_summary.json; none of them may exist yet.",
+      "STEP_ID": "The node identifier the host assigns to this step, one plain path component such as clean-plan-01.",
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, for example codex or claude_code."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/step/scripts/apply_plan.py with the rendered table, plan and output folder plus --check-only, and continue only when it prints status ready.",
+    "done_when": [
+      "apply_summary.json exists in the output folder with status applied.",
+      "Every value under checks in the summary is true."
+    ],
+    "stop_and_report_when": [
+      "A command exits 2 with a refusal.",
+      "A command exits 1 because the self-check found a difference.",
+      "The only way forward seems to be editing the plan or the table."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "src/loop_engine/code_nodes/database_copy.py": "a3b2a781702cb8dd09f97f1d27a315ba9184ea52cbbc12b52d1b003b3df3e18b"
+    },
+    "package_digest": "f9303f056ba705b65285121027eb97a4ee8943d812bf554564dbd0863b1ab041",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

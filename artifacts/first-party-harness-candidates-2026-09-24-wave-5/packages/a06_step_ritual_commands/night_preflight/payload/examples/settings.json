@@ -1,0 +1,13 @@
+{
+  "record_type": "night_settings/v1",
+  "time_minutes": 420,
+  "model_calls": 300,
+  "reserve_percent": 15,
+  "hold_high_risk": true,
+  "order": "risk_first",
+  "one_ticket_per_harness": true,
+  "test_command": ["python3", "-m", "unittest", "discover", "-s", "tests"],
+  "test_timeout_seconds": 900,
+  "expected_test_exit": 0,
+  "guard_files": [".claude/settings.json"]
+}

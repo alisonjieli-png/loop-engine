@@ -1,0 +1,354 @@
+PRECHECKS for wave 5 package test_run_summarizer
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+Package folder: $WAVE/packages/a05_focused_subagents/test_run_summarizer
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Newest session first. The a05 generator's log of 2026-09-23 is kept unchanged at the end of this file. Every check run saved its own report as review/precheck-<UTC>.json inside the package folder, and none was deleted.
+
+==============================================================================
+Session of 2026-09-24: repair by the a05 repairer after the a05 critic (verdict: repair)
+==============================================================================
+Critic folder: $WAVE/critic-a05_focused_subagents. Work folder: $WAVE/repairer-a05_focused_subagents/r2-20260924T0511Z.
+Before any change, the five a05 packages and their PRECHECKS.txt files were saved in that work folder as a05-predecessor-snapshot.tar.gz (sha256 d9292cc53a0278f0092994976ae8ccb8f10aae9b9a43c25c7c2211ebdc35678b). The saved package digest 3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 equals the digest the critic rechecked, so the repair started from the reviewed bytes. Earlier repair attempts for a05 (folders repair-a05_focused_subagents/ and repairer-a05_focused_subagents/probes/) left probe files only and changed no package file.
+
+== 1. critic findings and what changed ==
+- pytest pairing bug: the first failure is now the first report block of the ERRORS or FAILURES sections, and its name and excerpt come from that block; the name is completed from the matching short summary line (class tests and parametrized ids included). New known-wrong test with the critic's log.
+- Partial denylist and overclaim: the guard now also refuses wrapper programs (env, timeout, nice, nohup, xargs and others), privilege tools, more file and deletion tools (unlink, find, truncate and others), network clients, package installers and fetch-and-run tools (pip, pipx, npx, uvx and others), python -m pip, bare yarn and bundle, and the install, remove, publish and fetch words of npm, pnpm, yarn, bun, uv, poetry, pdm, cargo, go, bundle, composer, conda, dotnet, deno and make. The docstring, body and note now say it is not a sandbox and that a run subcommand or a test runner can still start anything.
+- Harness timeouts: default --timeout is now 540 seconds; the body tells the helper to set the shell tool's own limit 60 seconds above --timeout (600000 ms for 540); on SIGTERM, SIGINT or SIGHUP the script stops the test process group, waits for it and prints one JSON object with result interrupted. The critic's orphan probe now reports that no test process survives.
+- False pass: exit status 0 with output no parser knows is now result unconfirmed; a pytest collection-only summary and a run where every test was skipped are no_tests.
+- Non-ASCII --timeout digit: only the digits 0 to 9 are accepted, so the superscript 2 gives a JSON refusal.
+- Closest items and effects: Copilot CLI's built-in Task agent named with the behavior difference; the Effects section now names Copilot's execute alias as unrestricted too.
+- Also: omitClaudeMd: true added to the Claude Code variant; the reply schema gained unconfirmed and interrupted; package.json first_action, done_when and unverified_targets updated.
+
+== 2. checks that failed or changed before the final pass ==
+- Known-wrong tests were written first and run against the unchanged script: 34 tests, 10 failed and 1 errored (the error was a slicing mistake in one new test, rebuilt from parts before the repair). Log: known-wrong-tests-against-old-script.txt in the work folder.
+- While editing, the leading-assignment test briefly checked an environment variable after unittest.main, where it never ran; found by reading before the repaired script was tested, and rewritten so the check is a unittest case and a run without the variable fails.
+- First run against the repaired script: 33 of 34 passed; the schema contract test failed because the schema lacked unconfirmed and interrupted. The schema was updated; 34 of 34 passed.
+- Mutation check run 1: 21 of 22 mutants killed; the survivor removed the check that a resolved --cwd stays inside the root, which the earlier .. and absolute-path check shadowed in the tests. A new test starts the script in its own /proc entry and passes --cwd root, a link to /. Run 2: 22 of 22 killed; 35 of 35 tests pass. Log kept as review/mutation-check-20260924.txt; the first draft's review/mutation-check-20260923.txt is kept.
+- The first fill of this session refused an undeclared file scripts/__pycache__/summarize_test_run.cpython-314.pyc that this repairer's run of the critic's probe (which imports the script without -B) had written; the cache folder was removed and fill passed.
+- No check_package.py check run refused this package in this session.
+
+== 3. final fill (run again while writing this log; package.json bytes unchanged: True) ==
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a05_focused_subagents/test_run_summarizer
+{"fill": "done", "files": 7, "package_digest": "220d229c70a9709f6032624a7ee0bca22b24ef817c2527b48b775cd2f138b5e3"}
+exit 0
+
+== 4. check, as run for this package inside the final check-all (report review/precheck-20260924T055553220043Z.json) ==
+{
+ "identity": "test_run_summarizer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055553220043Z.json"
+}
+
+== 5. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+    {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 35}
+    {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 35}
+[passed] hooks_run
+[passed] servers_run
+
+== 6. report history in review/ (every report kept; current means the digest equals the current package digest) ==
+precheck-20260923T202905685156Z.json: passed_for_wave_gate=True refused=False package_digest=1f45d87e48667aadeacf59d48068871f410f11d27c5305cae25cfd117252eb3f current=False
+precheck-20260923T203745843372Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=False
+precheck-20260923T203906300562Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=False
+precheck-20260923T204034897452Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=False
+precheck-20260923T204606195506Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=False
+precheck-20260924T053831159002Z.json: passed_for_wave_gate=True refused=False package_digest=220d229c70a9709f6032624a7ee0bca22b24ef817c2527b48b775cd2f138b5e3 current=True
+precheck-20260924T055304278613Z.json: passed_for_wave_gate=True refused=False package_digest=220d229c70a9709f6032624a7ee0bca22b24ef817c2527b48b775cd2f138b5e3 current=True
+precheck-20260924T055553220043Z.json: passed_for_wave_gate=True refused=False package_digest=220d229c70a9709f6032624a7ee0bca22b24ef817c2527b48b775cd2f138b5e3 current=True
+
+== 7. check-all --assignment a05_focused_subagents (final run) ==
+started 2026-09-24T05:55:37Z
+$ python3 $WAVE/check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055553222159Z.json
+exit 0
+passed_for_wave_gate: ['changelog_writer', 'data_sample_inspector', 'leakage_reviewer', 'repository_scout', 'test_run_summarizer']
+packages/a05_focused_subagents/changelog_writer/review/precheck-20260924T055537982562Z.json
+packages/a05_focused_subagents/data_sample_inspector/review/precheck-20260924T055538322487Z.json
+packages/a05_focused_subagents/leakage_reviewer/review/precheck-20260924T055538644697Z.json
+packages/a05_focused_subagents/repository_scout/review/precheck-20260924T055538930388Z.json
+packages/a05_focused_subagents/test_run_summarizer/review/precheck-20260924T055553220043Z.json
+
+== 8. section 12 equivalent commands (after the final check-all) ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+$ grep -Fx test_run_summarizer $WAVE/existing-identities.txt
+exit 1 (1 means the identity is new)
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+7 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:docs/guides/native-client-material-loading.md | sha256sum
+6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md | sha256sum
+ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558  matches package.json
+$ python3 -c json.load on every JSON file; yaml.safe_load on every Markdown front matter
+13 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+exit 1 (1 means no match)
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 35 tests in 7.287s
+
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 35 tests in 7.670s
+
+OK
+exit 0
+
+== 9. extra verification by the repairer (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): [348] (range 80 to 350)
+front matter variants/claude_code/test-run-summarizer.md: {"name": "test-run-summarizer", "description": "<purpose>", "tools": "Bash, Read", "model": "inherit", "maxTurns": 6, "omitClaudeMd": true}
+front matter variants/copilot/test-run-summarizer.agent.md: {"name": "test-run-summarizer", "description": "<purpose>", "tools": ["execute", "read"]}
+front matter variants/opencode/test-run-summarizer.md: {"description": "<purpose>", "mode": "subagent", "steps": 6, "permission": {"edit": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "bash": {"*": "deny", "python3 -I -B .baltor/test-run-summarizer/scripts/summarize_test_run.py *": "allow"}, "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+description equals the proposal purpose in all variants: True
+-- after-repair-critic-probes.txt (work folder) --
+1 mixed error+failure: {"record_type": "test_run_summary/v1", "command": ["/usr/bin/python3", "-c", "import sys\nsys.stdout.write(\"============================= test session starts ==============================\\ncollected 3 items\\n\\ntests/test_orders.py E.F                                                 [100%]\\n\\n==================================== ERRORS ====================================\\n_________________________ ERROR at setup of test_refund _________________________\\n\\n    def ledger():\\n>       return load_ledger('fixtures/ledger.json')\\nE       FileNotFoundError: fixture
+2 collect-only style output, exit 0: {"record_type": "test_run_summary/v1", "cwd": ".", "exit_status": 0, "timed_out": false, "seconds": 0.032, "runner": "pytest", "counts": {"passed": 0, "failed": 0, "errors": 0, "skipped": 0}, "first_failure": null, "tail": ["collected 4 items", "<Module tests/test_a.py>", "4 tests collected in 0.01s"], "output_lines": 4, "output_bytes": 71, "result": "no_tests", "reason": "the runner reported that no test ran"}
+3 --timeout with superscript digit: (2, '{"record_type": "test_run_summary/v1", "cwd": ".", "exit_status": null, "timed_out": false, "seconds": null, "runner": null, "counts": null, "first_failure": null, "tail": [], "output_lines": 0, "output_bytes": 0, "result": "refused", "reason": "--timeout takes whole seconds from 1 to 7200, written with the digits 0 to 9"}', '')
+   check_command ['env', 'rm', '--help'] -> refused: env is a wrapper that starts another program; declare the test command itself and use NAME=value words or --timeout instead
+   check_command ['unlink', '--help'] -> refused: unlink changes or deletes files and is not a test runner
+   check_command ['timeout', '5', 'rm', '--help'] -> refused: timeout is a wrapper that starts another program; declare the test command itself and use NAME=value words or --timeout instead
+   check_command ['nice', 'rm', '--help'] -> refused: nice is a wrapper that starts another program; declare the test command itself and use NAME=value words or --timeout instead
+   check_command ['npm', 'ci'] -> refused: npm ci installs, removes, publishes or fetches packages
+   check_command ['npm', 'i', 'left-pad'] -> refused: npm i installs, removes, publishes or fetches packages
+   check_command ['pnpm', 'i'] -> refused: pnpm i installs, removes, publishes or fetches packages
+   check_command ['yarn'] -> refused: yarn without a command installs packages; declare its test command
+   check_command ['pipx', 'install', 'x'] -> refused: pipx installs packages or fetches and runs them, and is not a test runner
+   check_command ['python3', '-m', 'pip', 'download', 'x'] -> refused: python -m pip installs or fetches packages; declare the test command itself
+   check_command ['find', '.', '-delete'] -> refused: find changes or deletes files and is not a test runner
+   check_command ['xargs', 'rm'] -> refused: xargs is a wrapper that starts another program; declare the test command itself and use NAME=value words or --timeout instead
+   check_command ['npx', 'rimraf', 'dist'] -> refused: npx installs packages or fetches and runs them, and is not a test runner
+   check_command ['python3', '-c', 'import shutil'] -> ALLOWED
+   check_command ['node', '-e', '1'] -> ALLOWED
+   check_command ['uv', 'pip', 'install', 'x'] -> refused: uv pip installs, removes, publishes or fetches packages
+   check_command ['uv', 'sync'] -> refused: uv sync installs, removes, publishes or fetches packages
+   check_command ['poetry', 'run', 'pytest'] -> ALLOWED
+   check_command ['cargo', 'test'] -> ALLOWED
+   check_command ['go', 'test', './...'] -> ALLOWED
+   check_command ['git', 'status'] -> refused: git uses the network or changes the repository and is not a test runner
+   check_command ['GIT_DIR=x', 'pytest'] -> ALLOWED
+   check_command ['LD_PRELOAD=/x.so', 'pytest'] -> ALLOWED
+   check_command ['pytest', '-k', 'a;b'] -> ALLOWED
+   check_command ['pytest', 'a|b'] -> ALLOWED
+pytest collection error: {'runner': 'pytest', 'counts': {'passed': 0, 'failed': 0, 'errors': 1, 'skipped': 0}, 'first_failure': {'test': 'tests/test_orders.py', 'excerpt': ["E   ModuleNotFoundError: No module named 'orders'"]}, 'result': 'failed', 'reason': None, 'tail': []}
+go non-verbose: {'runner': 'go', 'counts': {'passed': None, 'failed': 1, 'errors': 0, 'skipped': None}, 'first_failure': {'test': 'TestAdd', 'excerpt': ['    add_test.go:9: Add(1, 2) = 4, want 3']}, 'result': 'failed', 'reason': None, 'tail': []}
+vitest: {'runner': 'vitest', 'counts': {'passed': 3, 'failed': 1, 'errors': 0, 'skipped': 0}, 'first_failure': {'test': 'src/prices.test.ts > prices > rounds half up', 'excerpt': ['AssertionError: expected 10 to be 10.01 // Object.is equality', '❯ src/prices.test.ts:8:22']}, 'result': 'failed', 'reason': None, 'tail': []}
+jest todo: {'runner': 'jest', 'counts': {'passed': 3, 'failed': 1, 'errors': 0, 'skipped': 2}, 'first_failure': None, 'result': 'failed', 'reason': None, 'tail': ['Tests:       1 failed, 1 skipped, 1 todo, 3 passed, 6 total']}
+go build failed: {'runner': 'go', 'counts': {'passed': None, 'failed': 0, 'errors': 1, 'skipped': None}, 'first_failure': None, 'result': 'failed', 'reason': None, 'tail': ['# example.com/calc [example.com/calc.test]', './add_test.go:5:2: undefined: Sub', 'FAIL\texample.com/calc [build failed]', 'FAIL']}
+script exit 1 stdout: b'{"record_type": "test_run_summary/v1", "command": ["/usr/bin/python3", "-c", "im' | child still running: False []
+passed passed valid
+failed-unknown failed valid
+timeout timeout valid
+not_started not_started valid
+refused refused valid
+long-name failed valid
+model refusal: True
+-- mutation-check-summarizer.txt (work folder) --
+mutation check of scripts/summarize_test_run.py, run in Bubblewrap without network, Python 3.14
+killed   name and excerpt taken from different pytest blocks: suite exit 1; failing tests ['test_known_wrong_name_and_excerpt_come_from_one_failure']
+killed   unknown output with exit status 0 reported as passed: suite exit 1; failing tests ['test_known_wrong_unknown_output_with_exit_zero_is_not_a_pass', 'test_script_output_matches_the_schema_keys']
+killed   every test skipped reported as passed: suite exit 1; failing tests ['test_every_test_skipped_is_not_a_pass']
+killed   collection-only summary not recognized: suite exit 1; failing tests ['test_known_wrong_collection_only_output_is_not_a_pass']
+killed   wrapper programs allowed: suite exit 1; failing tests ['test_known_wrong_wrapper_programs_are_refused']
+killed   install words of package tools allowed: suite exit 1; failing tests ['test_known_wrong_short_install_forms_are_refused']
+killed   bare yarn allowed: suite exit 1; failing tests ['test_known_wrong_short_install_forms_are_refused']
+killed   python -m pip allowed: suite exit 1; failing tests ['test_known_wrong_short_install_forms_are_refused', 'test_package_install_is_refused']
+killed   package programs allowed: suite exit 1; failing tests ['test_known_wrong_short_install_forms_are_refused', 'test_package_install_is_refused']
+killed   file tools allowed: suite exit 1; failing tests ['test_deletion_tool_is_refused', 'test_known_wrong_other_file_tools_are_refused']
+killed   run words ignored, so later words decide: suite exit 1; failing tests ['test_ordinary_test_commands_pass_the_guard']
+killed   non-ASCII digits accepted for --timeout: suite exit 1; failing tests ['test_known_wrong_non_ascii_digit_timeout_is_refused_with_json']
+killed   stop signals not watched: suite exit 1; failing tests ['test_known_wrong_stop_signal_leaves_no_test_process_and_still_prints_json']
+killed   stop signal reported as a timeout: suite exit 1; failing tests ['test_known_wrong_stop_signal_leaves_no_test_process_and_still_prints_json']
+killed   process group never stopped: suite exit 1; failing tests ['test_known_wrong_stop_signal_leaves_no_test_process_and_still_prints_json']
+killed   zero exit status hides reported failures: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+killed   errors do not count as failing: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+killed   shell operators allowed: suite exit 1; failing tests ['test_shell_operator_is_refused']
+killed   shell programs allowed: suite exit 1; failing tests ['test_shell_program_is_refused']
+killed   folder outside the root allowed: suite exit 1; failing tests ['test_folder_link_that_leaves_the_root_is_refused']
+killed   timeout does not stop the command: suite exit 1; failing tests ['test_timeout_stops_the_command']
+killed   leading assignments dropped: suite exit 1; failing tests ['test_leading_assignment_reaches_the_command']
+survivors: []
+unmutated suite: exit 0 OK
+- Harness facts behind the repair, each read and not run: in the installed Claude Code 2.1.281 program text the agent file parser accepts omitClaudeMd, which its change list adds in 2.1.271; the built-in Explore agent denies the editing tools but keeps Bash, sets no turn limit, inherits the main model and skips CLAUDE.md; Edit accepts an empty old_string for a missing file and creates it; the Bash tool defaults to 120000 ms, allows at most 600000 ms, and on a timeout sends SIGTERM to the process group and every descendant, then SIGKILL 1500 ms later. In the installed OpenCode 1.18.32 program text the built-in explore agent allows grep, glob, list, read, bash, webfetch and websearch with no step limit; write and apply_patch ask the edit permission; the bash tool defaults to 120000 ms and stops the command's process group with a forced stop 3 seconds later; the wildcard matcher escapes special characters, turns * into any characters including /, is case-sensitive and anchored, and the last matching rule wins.
+- GitHub documentation read on 2026-09-24: docs.github.com/en/copilot/reference/custom-agents-configuration (tool aliases execute, read, edit including Write, search, agent, web, todo; unknown names ignored; empty list disables tools, omitted list enables all), the custom agent guide (.github/agents/NAME.agent.md) and the Copilot CLI guide (built-in Explore and Task agents). Copilot itself is not installed here and was not run.
+
+== 10. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys and harness behavior were read from the installed Claude Code 2.1.281 and OpenCode 1.18.32 program text without running either; Copilot is not installed.
+- No model ran. How a small model follows the repaired body is unmeasured.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).
+
+==============================================================================
+Earlier log: a05 generator, 2026-09-23 (unchanged bytes)
+==============================================================================
+PRECHECKS for wave 5 package test_run_summarizer
+written 2026-09-23T20:46:06.307512+00:00 by the a05_focused_subagents generator
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/test_run_summarizer
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/test_run_summarizer
+{"fill": "done", "files": 7, "package_digest": "3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8"}
+exit 0
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260923T204606195506Z.json) ==
+{
+ "identity": "test_run_summarizer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204606195506Z.json"
+}
+
+== 3. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+    {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 23}
+    {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 23}
+[passed] hooks_run
+[passed] servers_run
+
+== 4. report history in review/ (every report kept) ==
+precheck-20260923T202905685156Z.json: passed_for_wave_gate=True refused=False package_digest=1f45d87e48667aadeacf59d48068871f410f11d27c5305cae25cfd117252eb3f current=False
+precheck-20260923T203745843372Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=True
+precheck-20260923T203906300562Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=True
+precheck-20260923T204034897452Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=True
+precheck-20260923T204606195506Z.json: passed_for_wave_gate=True refused=False package_digest=3eaeff7f6d13d1a5cb9b33612d895f992413205a560279258f2a1d78ef6525e8 current=True
+
+== 5. check-all --assignment a05_focused_subagents (final run) ==
+$ python3 check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204606197104Z.json
+exit 0
+{"passed_for_wave_gate": ["changelog_writer", "data_sample_inspector", "leakage_reviewer", "repository_scout", "test_run_summarizer"]}
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): 331 (range 80 to 350)
+front matter variants/claude_code/test-run-summarizer.md: {"name": "test-run-summarizer", "description": "<purpose>", "tools": "Bash, Read", "model": "inherit", "maxTurns": 6}
+front matter variants/opencode/test-run-summarizer.md: {"description": "<purpose>", "mode": "subagent", "steps": 6, "permission": {"edit": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "bash": {"*": "deny", "python3 -I -B .baltor/test-run-summarizer/scripts/summarize_test_run.py *": "allow"}, "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+front matter variants/copilot/test-run-summarizer.agent.md: {"name": "test-run-summarizer", "description": "<purpose>", "tools": ["execute", "read"]}
+description equals the proposal purpose in all variants: True
+reply schema: valid JSON Schema 2020-12 (jsonschema check_schema)
+  body refusal form validates: True
+  known-wrong reply rejected by the schema: True ({"record_type": "test_run_summary/v1", "result": "passed"})
+mutation check (review/mutation-check-20260923.txt):
+  mutation check of scripts/summarize_test_run.py, run in Bubblewrap without network, Python 3.14
+  killed   zero exit status hides reported failures: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+  killed   errors do not count as failing: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+  killed   pytest error word not mapped to errors: suite exit 1; failing tests ['test_known_wrong_passed_tests_do_not_hide_a_setup_error', 'test_zero_exit_status_does_not_hide_reported_failures']
+  killed   shell operators allowed: suite exit 1; failing tests ['test_shell_operator_is_refused']
+  killed   package installs allowed: suite exit 1; failing tests ['test_package_install_is_refused']
+  killed   deletion and network tools allowed: suite exit 1; failing tests ['test_deletion_tool_is_refused']
+  killed   folder outside the root allowed: suite exit 1; failing tests ['test_folder_outside_the_root_is_refused']
+  killed   timeout does not stop the command: suite exit 1; failing tests ['test_timeout_stops_the_command']
+  killed   unittest excerpt keeps only the first line: suite exit 1; failing tests ['test_failing_unittest_suite_is_summarized']
+  killed   unknown runner reports zero counts: suite exit 1; failing tests ['test_unknown_output_keeps_counts_null']
+  killed   tail left empty when no failure is found: suite exit 1; failing tests ['test_unknown_output_keeps_counts_null']
+  killed   end of a long log is dropped: suite exit 1; failing tests ['test_long_output_is_bounded']
+  survivors: []
+  unmutated suite: exit 0 OK
+
+== 7. checks that failed or changed before the final pass ==
+- Direct test run 1 (before the first package check): 1 of 23 tests failed (test_cargo_output) because the script refused any argument containing a backquote. Fixed in the script: only shell operators written as separate words are refused. Rerun: 23 of 23 passed under Python 3.14 and 3.10.
+- After the first passing package check: refusal tests changed to commands that stay harmless if a refusal breaks (pip install --help, rm --help, bash -c "exit 0"); a test for an error with exit status 0 was added; wording of the null count rule made exact. Refilled and rechecked; passed.
+- Mutation check: 12 of 12 script mutants made the test suite fail (log: review/mutation-check-20260923.txt).
+- After the passing checks, the attribution of the inspected OpenCode program text was corrected from 1.18.31 to 1.18.32 in package.json and the review note: the installed binary embeds version 1.18.32, while the repository guide's observation was made with 1.18.31. package.json changed and the payload digest did not; checked again in the final check-all run; passed.
+
+== 8. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys were checked by reading the installed Claude Code 2.1.281 program text and the installed OpenCode program text (it embeds version 1.18.32) without running either.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).

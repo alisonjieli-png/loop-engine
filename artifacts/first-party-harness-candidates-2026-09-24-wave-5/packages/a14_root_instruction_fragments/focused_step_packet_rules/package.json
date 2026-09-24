@@ -1,0 +1,350 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "focused_step_packet_rules",
+    "title": "Focused step packet rules",
+    "purpose": "A composable instruction section that tells a harness started fresh for one step to treat task.json and node_context.md as its assignment, do the listed first action first and finish when the listed checks pass.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "src/loop_engine/core/instance_instructions.py",
+      "src/loop_engine/loop/loop_control.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_instruction_fragment",
+    "search_tags": [
+      "step packet instructions",
+      "task.json and node_context.md",
+      "fresh harness for each step",
+      "first action for a coding agent",
+      "agent assignment from a task file",
+      "unrendered step input check",
+      "focused step rules for agents md",
+      "when is the step done"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a14_root_instruction_fragments",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "2809eedebd4528f6af54ccd7977e3ca8c57192b2cb31b3b485767c62fe85585c",
+        "size_bytes": 2072,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "2809eedebd4528f6af54ccd7977e3ca8c57192b2cb31b3b485767c62fe85585c",
+        "size_bytes": 2072,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/step_packet_check.py",
+        "digest": "7381cc3590096aa3f6efba3f600be6625d1d34e16baca1e7c5521acf768acae1",
+        "size_bytes": 15005,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_step_packet_check.py",
+        "digest": "c72ca44020b983f9f5e80ad447f2aa0fd0b40c36d09f1ed72c83747cae923a2a",
+        "size_bytes": 10643,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a14_root_instruction_fragments",
+    "file_class": "root_instruction_fragment",
+    "use_cases": [
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "gemini_cli",
+      "goose",
+      "opencode",
+      "pi",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents or observed Kimi CLI reading a project AGENTS.md; the section is composed there by the common convention and needs a native discovery probe."
+    },
+    "not_placed": {},
+    "native_name": "focused-step-packet-rules",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/focused-step-packet-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_packet_check.py": {
+          "destination": ".baltor/focused-step-packet-rules/scripts/step_packet_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_packet_check.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_step_packet_check.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_step_packet_check.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_step_packet_check.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "scripts/step_packet_check.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_packet_check.py"
+        ]
+      },
+      "tests/test_step_packet_check.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read .baltor/step/task.json, then .baltor/step/node_context.md and .baltor/step/checklist.md; run python3 -I -B .baltor/focused-step-packet-rules/scripts/step_packet_check.py only when an entry in effects ends in _process.",
+    "done_when": [
+      "Every before_work item held before the work started.",
+      "Every acceptance item and every before_handoff item holds and is reported with its check and result; a check that needs a command is reported as not run when the effects do not allow commands.",
+      "No file under .baltor/step/ was edited and no effect outside the task.json effects was used."
+    ],
+    "stop_and_report_when": [
+      "The check answers refused, or a packet file still shows an unfilled double-brace marker (unrendered_step_input).",
+      "A before_work item cannot hold.",
+      "Two packet files disagree.",
+      "The work needs an effect that task.json does not list."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f",
+      "src/loop_engine/loop/loop_control.py": "1c54cbd30b915402ea6d7eef49f4d74cb3a588418f58694f5d03d0ae8b5ef464",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7"
+    },
+    "package_digest": "85e86a15b24802e15c4f691b3dc07d054448b6d6d43305f2a6734b035b02cd53",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

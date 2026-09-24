@@ -1,0 +1,24 @@
+{
+ "record_type": "ticket_reproduction_input/v1",
+ "ticket_id": "T-104",
+ "ticket_path": "tickets/T-104.md",
+ "test_file": "tests/test_cart_badge.py",
+ "test_name": "test_badge_uses_singular_for_one_item",
+ "behavior": "badge_text(1) should return \"1 item\". Today it returns \"1 items\".",
+ "test_path_prefixes": [
+  "tests/"
+ ],
+ "test_command": [
+  "python3",
+  "-m",
+  "unittest",
+  "tests.test_cart_badge.BadgeTextTests.test_badge_uses_singular_for_one_item"
+ ],
+ "timeout_seconds": 300,
+ "host_placed_paths": [
+  "AGENTS.md",
+  "CLAUDE.md",
+  "GEMINI.md"
+ ],
+ "evidence_dir": ".baltor/step-output/evidence"
+}

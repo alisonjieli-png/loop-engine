@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "json_schema_check_server": {
+      "command": "python3",
+      "args": [
+        "-I",
+        "-B",
+        "${CLAUDE_PROJECT_DIR:-.}/.baltor/json-schema-check-server/server/json_schema_check_server.py",
+        "--root",
+        "${CLAUDE_PROJECT_DIR:-.}"
+      ]
+    }
+  }
+}

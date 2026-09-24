@@ -1,0 +1,520 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "csv_profile_server",
+    "title": "CSV profile tool server",
+    "purpose": "A local standard-input protocol server with a tool that profiles columns of a CSV under a declared root: inferred types, empty counts, distinct counts and the most common values, bounded in size.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/tools/audit-csv-structure/SKILL.md",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/profile_text_column_before_cleaning.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md"
+    ],
+    "layer": "code",
+    "family": "native_protocol_server",
+    "search_tags": [
+      "profile csv columns",
+      "csv column types",
+      "count empty values in a csv",
+      "distinct values per column",
+      "most common values in a column",
+      "find bad values in a numeric column",
+      "csv data quality profile",
+      "mcp server for csv files",
+      "local csv tool server",
+      "inspect a csv before cleaning"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "profile_csv",
+      "handle",
+      "ColumnProfile",
+      "ShapeTable"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a07_local_data_tool_servers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "3500da06a1dc0e0e2090b9e8c354bc4819a05ecbc18f094aa778dbf961d3c7a0",
+        "size_bytes": 1207,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/profile_csv.input.schema.json",
+        "digest": "dc3abe5dc8cc6c68512e810a5b302a6dba9ebc9ca9c5895719dea828da1350b0",
+        "size_bytes": 2219,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/orders.csv",
+        "digest": "ec5094501786d1c7fce614e05f121a71276f6238786a52a33595f51b82083ffe",
+        "size_bytes": 488,
+        "media_type": "text/csv",
+        "role": "other"
+      },
+      {
+        "path": "examples/profile_csv-arguments.json",
+        "digest": "813387acebb0472417f55a07c8c6a9c5fcf67b6dfcc0266e4e2ae58e5335e427",
+        "size_bytes": 46,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "server/csv_profile_server.py",
+        "digest": "b03caac2809e5fce8d648e6be4477a333ce9e4b7c12f0edc5b9d8ae848553492",
+        "size_bytes": 35702,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_csv_profile_server.py",
+        "digest": "ad5c532ce2e4e04c312f48df947db6294725b4f98308f47efb8ebadd7d7bfe2a",
+        "size_bytes": 24842,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.mcp.json",
+        "digest": "ed69c6d4f42ea4d38a7d79a4708caba513158ee8b318813fa0734464cddc9c41",
+        "size_bytes": 285,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "9697779094673b6740342402705982713fe0f4ae06a918b3df49a0e7144e166f",
+        "size_bytes": 147,
+        "media_type": "application/toml",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/cursor/mcp.json",
+        "digest": "7d83ff6a5c717bef17d2dd942e40b8e5dc31b6e7564b55d353c0a30f60614004",
+        "size_bytes": 273,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "a7b7e040c372ac8d1819fa97a447833d218a8c47a935a31760c76ecedf76dcd3",
+        "size_bytes": 237,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "fb27db2e253c1008a678a84b4a2d7e5ddf6c885cc74eae1fae0de3c87e621327",
+        "size_bytes": 288,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a07_local_data_tool_servers",
+    "file_class": "protocol_server_config_local",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "claude_code": "Project .mcp.json is documented. The launch line starts the server through ${CLAUDE_PROJECT_DIR:-.}. The Claude Code MCP documentation says Claude Code sets CLAUDE_PROJECT_DIR in the server's environment, not in its own, so the args expand to the absolute project root only when the host starts Claude Code with CLAUDE_PROJECT_DIR set; otherwise they expand to '.', which assumes the server starts in the project root. Neither start folder was observed. Project servers need the user's approval in a trusted workspace before first use.",
+      "codex": "Project .codex/config.toml is documented for trusted projects only, and the relative server path in the launch line assumes the harness starts the server in the workspace root; that working directory was not observed for this harness.",
+      "gemini_cli": "Project .gemini/settings.json mcpServers is documented. The server key is the hyphenated name csv-profile-server, not the identity (a recorded deviation from SPEC 9.2), because the Gemini CLI 0.59.0 documentation says underscores in server names make policy and wildcard rules fail silently. With folder trust on (true by default in the 0.59.0 configuration reference), Gemini CLI ignores .gemini/settings.json and connects no protocol server in an untrusted folder, so the host must trust the workspace. The relative launch line assumes the server starts in the workspace root; that was not observed.",
+      "cursor": "Project .cursor/mcp.json with mcpServers is documented, and so is ${workspaceFolder} in command and args (the folder that holds .cursor/mcp.json), in the Cursor MCP documentation copy docs/cursor-mcp.md of madebywild/agent-harness at 2ecf44f, the revision that docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md records. Discovery, approval and the server start were not observed on this machine."
+    },
+    "not_placed": {},
+    "native_name": "csv-profile-server",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "AGENTS.md",
+      "codex": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "gemini_cli": "AGENTS.md",
+      "cursor": "AGENTS.md"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/csv-profile-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/profile_csv.input.schema.json": {
+          "destination": ".baltor/csv-profile-server/contracts/profile_csv.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/orders.csv": {
+          "destination": ".baltor/csv-profile-server/examples/orders.csv",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/profile_csv-arguments.json": {
+          "destination": ".baltor/csv-profile-server/examples/profile_csv-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/server/csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/tests/test_csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/claude_code/.mcp.json": {
+          "destination": ".mcp.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/csv-profile-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/profile_csv.input.schema.json": {
+          "destination": ".baltor/csv-profile-server/contracts/profile_csv.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/orders.csv": {
+          "destination": ".baltor/csv-profile-server/examples/orders.csv",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/profile_csv-arguments.json": {
+          "destination": ".baltor/csv-profile-server/examples/profile_csv-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/server/csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/tests/test_csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/csv-profile-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/profile_csv.input.schema.json": {
+          "destination": ".baltor/csv-profile-server/contracts/profile_csv.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/orders.csv": {
+          "destination": ".baltor/csv-profile-server/examples/orders.csv",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/profile_csv-arguments.json": {
+          "destination": ".baltor/csv-profile-server/examples/profile_csv-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/server/csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/tests/test_csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/csv-profile-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/profile_csv.input.schema.json": {
+          "destination": ".baltor/csv-profile-server/contracts/profile_csv.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/orders.csv": {
+          "destination": ".baltor/csv-profile-server/examples/orders.csv",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/profile_csv-arguments.json": {
+          "destination": ".baltor/csv-profile-server/examples/profile_csv-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/server/csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/tests/test_csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/csv-profile-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/profile_csv.input.schema.json": {
+          "destination": ".baltor/csv-profile-server/contracts/profile_csv.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/orders.csv": {
+          "destination": ".baltor/csv-profile-server/examples/orders.csv",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/profile_csv-arguments.json": {
+          "destination": ".baltor/csv-profile-server/examples/profile_csv-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/server/csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_csv_profile_server.py": {
+          "destination": ".baltor/csv-profile-server/tests/test_csv_profile_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/cursor/mcp.json": {
+          "destination": ".cursor/mcp.json",
+          "operation": "merge_json_object"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/profile_csv.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "examples/orders.csv": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "examples/profile_csv-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "server/csv_profile_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "tests/test_csv_profile_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/.mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "variants/cursor/mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_csv_profile_server.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [
+      {
+        "name": "csv_profile_server",
+        "script": "server/csv_profile_server.py",
+        "arguments": [
+          "--root",
+          "examples"
+        ],
+        "tools": [
+          "profile_csv"
+        ],
+        "protocol_versions": [
+          "2025-11-25",
+          "2025-06-18",
+          "2025-03-26"
+        ],
+        "sample_call": {
+          "tool": "profile_csv",
+          "arguments": {
+            "path": "orders.csv",
+            "top_values": 3
+          },
+          "expect_is_error": false
+        }
+      }
+    ],
+    "first_action": "Call the profile_csv tool with the path of the CSV file the step names, relative to the workspace root, and read the per-column JSON.",
+    "done_when": [
+      "A profile with complete true is held for every CSV file the step names.",
+      "Every column whose inferred_type is mixed has its nonconforming examples and their line numbers recorded for the next step."
+    ],
+    "stop_and_report_when": [
+      "profile_csv answers isError true because the file is missing, outside the workspace root, above the size limit or not in the stated encoding.",
+      "No listed tool name ends in profile_csv; run the package tests. If they pass, the harness did not start a working server: report that. Otherwise report their last line."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/tools/audit-csv-structure/SKILL.md": "a42bdb00d3cb17f49d16335d941dde5cf256b7015406a8d33af80a3a20c8b7a7",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md": "2614fa7bb1ef2619ca4afdf637f1c1e3c477ad6b1efeb1dcf030fc7d749b84df",
+      "examples/29_intelligence_service/starter-catalogue/bodies/profile_text_column_before_cleaning.md": "d74623478ce158b5c305f860ec582561cd3876284512f08bf850c0c1656c7c5b",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md": "5cc46b06fb4edab54b948d24d61793fa850ac775286eac564e806680e5b71bd7"
+    },
+    "package_digest": "56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

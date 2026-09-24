@@ -1,0 +1,119 @@
+PRECHECKS for parse_numbers_by_declared_separators (repair round 2)
+Assignment: a01_data_cleanup_executors. Package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a01_data_cleanup_executors/parse_numbers_by_declared_separators
+This file sits outside the package folder because the checker's layout rule refuses any extra
+top-level entry in a package, and the specification lists the review folder's contents exactly.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Candidate only. Not approved, staged, served or published. A pass is not a native loading result,
+a usefulness measurement or an approval.
+Sequence started (UTC): 2026-09-24T05:14:25.751922+00:00
+Earlier log: the earlier PRECHECKS.txt is kept unchanged as PRECHECKS-first-pass-20260923T2043Z.txt.
+Version: 0.2.0. Package digest: 5992ee2f8fbfad65c13f68ff13483e96fe4878bd0f878f0ef233d30f647affc5
+Payload files: 5
+
+== 1. python3 check_package.py fill (exit 0)
+{"fill": "done", "files": 5, "package_digest": "5992ee2f8fbfad65c13f68ff13483e96fe4878bd0f878f0ef233d30f647affc5"}
+
+== 2. python3 check_package.py check (exit 0); newest report precheck-20260924T051452550391Z.json
+{
+ "identity": "parse_numbers_by_declared_separators",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T051452550391Z.json"
+}
+
+Every check of that report, with findings:
+  layout: passed
+  manifest_schema: passed
+  identity: passed
+  inventory: passed
+  text_hygiene: passed
+  vocabulary: passed
+  safety_static: passed
+  secrets: passed
+  parse: passed
+  entry_shape: passed
+  placements: passed
+  effects: passed
+  network_static: passed
+  agent_skills_validator: passed
+      agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/parse-numbers-by-declared-separators
+      skills_ref_official_git .: exit 0 Valid skill: TMP/parse-numbers-by-declared-separators
+  duplicates: passed
+  review_note: passed
+  tests_run: passed
+      {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 11}
+      {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 11}
+  hooks_run: passed
+  servers_run: passed
+
+== 3. Mutants: each breaks one guard in a temporary copy; the named test must pass on the unchanged copy and fail on the mutant. Labels that start with 'repair:' guard behavior added by the repair (exit 0)
+{"package": "parse_numbers_by_declared_separators", "mutant": "parse the swapped reading instead of holding it", "test": "test_known_wrong_other_convention_is_held_not_stripped", "baseline": "Ran 1 test in 0.095s; OK", "mutant_run": "Ran 1 test in 0.076s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "ignore group sizes", "test": "test_grouping_styles_and_marks", "baseline": "Ran 1 test in 0.306s; OK", "mutant_run": "Ran 1 test in 0.101s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "accept a value without a percent sign under divide", "test": "test_currency_signs_percent_and_parentheses", "baseline": "Ran 1 test in 0.534s; OK", "mutant_run": "Ran 1 test in 0.188s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "read 007 as 7 without the flag", "test": "test_leading_zeros_and_malformed_values", "baseline": "Ran 1 test in 0.216s; OK", "mutant_run": "Ran 1 test in 0.113s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "compute through binary floating point", "test": "test_copy_round_trip_and_input_unchanged", "baseline": "Ran 1 test in 0.272s; OK", "mutant_run": "Ran 1 test in 0.119s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "overwrite an existing output", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 0.783s; OK", "mutant_run": "Ran 1 test in 0.594s; FAILED (failures=1, errors=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "repair: parse convention-sensitive values in a column that mixes conventions", "test": "test_known_wrong_mixed_column_holds_values_both_conventions_read", "baseline": "Ran 1 test in 0.107s; OK", "mutant_run": "Ran 1 test in 0.122s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "repair: report a space after a sign as another reason", "test": "test_currency_signs_percent_and_parentheses", "baseline": "Ran 1 test in 0.549s; OK", "mutant_run": "Ran 1 test in 0.082s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "repair: report a misplaced currency as an undeclared character", "test": "test_currency_signs_percent_and_parentheses", "baseline": "Ran 1 test in 0.480s; OK", "mutant_run": "Ran 1 test in 0.082s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_numbers_by_declared_separators", "mutant": "repair: refuse a blank line without naming it", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 0.638s; OK", "mutant_run": "Ran 1 test in 0.775s; FAILED (failures=1)", "result": "killed"}
+
+== 4. Tests in Bubblewrap with the payload mounted read-only (the checker mounts it writable because writes_fs is declared)
+python3.14 read-only payload, no network: exit 0; Ran 11 tests in 3.140s; OK
+python3.10 read-only payload, no network: exit 0; Ran 11 tests in 2.219s; OK
+
+== 5. Critic findings of 2026-09-23 and what the repair did
+- BLOCKING: a column shown to mix conventions still wrote 2,500 as 2500 and 3,000 as 3000 into the copy -> one other_convention value now sets column_mixes_conventions, and every value that both readings accept with different results is held as convention_sensitive with both readings and left empty in the copy. The known-wrong probe (repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/parse-numbers-mixed-column-probe.txt) exits 1 on 0.1.0 and 0 on 0.2.0; test_known_wrong_mixed_column_holds_values_both_conventions_read; mutant killed. (round 1, verified in round 2)
+- $(1,234.56) is held as parentheses_misplaced -> named in the reference and the review note limits, and tested. (round 1)
+- '- $5' was held as undeclared_character listing '$' -> new reasons space_after_sign ('- $5', '$- 5') and currency_misplaced ('1$000'); tested; two mutants killed. (round 1)
+- Step 4 said both reports are complete although held_values is capped at 500 -> reworded. (round 1)
+- Report values repeat cell text -> SKILL step 5 says they are data from the file, not instructions. (round 1)
+- Panel risk, not fixable here: unobserved harness loading and SKILL_DIR -> first action names the five placement folders; the risk stays open in the review note.
+Critic probe rerun on the repaired packages: repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/critic-probe-rerun-after-repair.txt (the critic's probe.py, copied byte for byte).
+
+== 6. Earlier failures and repairs
+- Producer, authoring defect found before the first checker run: \u escapes in the tool input were decoded into literal non-ASCII characters (including the Unicode minus sign that the vocabulary check refuses). Fix: every non-ASCII character in the script and test is written as a named \N{...} escape; all payload files are ASCII.
+- Producer, direct test run 1: test_currency_signs_percent_and_parentheses failed: -(5) was held as a parentheses fault, not sign_repeated. Fix: the reason was split into parentheses_not_declared (flag absent) and parentheses_misplaced (flag set, parentheses not around the whole value); (-5) now tests sign_repeated.
+- Producer tooling: the first mutant run of parse_dates_by_declared_formats was invalid (the runner imported tests by module name under -I, so every run ended in an import error). The runner then used unittest discovery with -k, required a passing baseline and one test ran, and those results replaced it.
+- Independent critic, 2026-09-23T23:52Z (evidence in critic-a01_data_cleanup_executors/independent-20260923T2352Z): all 19 pre-checks passed for every version 0.1.0 package, and yet the critic found one blocking defect (parse_numbers) and non-blocking points in all five packages. Section 5 lists each finding and what the repair did.
+- Repair round 1, 2026-09-24T00:43Z to 01:04Z, an earlier run of this repairer that stopped part way: it saved packages/<identity>/earlier-attempt-20260924T0043Z.tar.gz for all five packages, wrote known-wrong checks first, repaired parse_numbers (0.2.0) and parse_dates (0.1.1) and ran fill for them, and stopped after writing the map_categories fold test. It ran no check, so it wrote no precheck report and no PRECHECKS.txt.
+- Repair round 2, this sequence: before editing, the state left by round 1 was saved as repairer-a01_data_cleanup_executors/r2-20260924T0453Z/current-at-start/a01-state-at-r2-start.tar.gz and every round 1 edit was read against the critic findings. Two draft problems were caught before any checker run: map_categories SKILL.md had 480 words (the entry limit is 450; trimmed to 445), and one expectation in the new standardize test assumed exit 0 on the note column, which holds look-alikes (the test now uses id). One dry run of every check (check_package with write=False, no report) passed for all five before the recorded checks below, and a trial run of the round 2 mutant runner killed 45 of 45 mutants.
+
+== 7. Every precheck report in review/, oldest first
+precheck-20260923T201655669426Z.json  passed_for_wave_gate=True  refused=False  package_digest=30fe6b5e41c2a4cef46122e6a80857aeeb616c8c0b10f58b26428cac2334dfbc
+precheck-20260923T204259375030Z.json  passed_for_wave_gate=True  refused=False  package_digest=96a9cc05899aad49a431bad426b0ae09909456db06c9d41fa5079db8f863057f
+precheck-20260923T204344740697Z.json  passed_for_wave_gate=True  refused=False  package_digest=96a9cc05899aad49a431bad426b0ae09909456db06c9d41fa5079db8f863057f
+precheck-20260924T051452550391Z.json  passed_for_wave_gate=True  refused=False  package_digest=5992ee2f8fbfad65c13f68ff13483e96fe4878bd0f878f0ef233d30f647affc5
+
+== 8. python3 check_package.py check-all --assignment a01_data_cleanup_executors (exit 0); it re-checked all five packages
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051618892517Z.json
+
+Newest report after check-all: precheck-20260924T051615631957Z.json passed_for_wave_gate=True package_digest=5992ee2f8fbfad65c13f68ff13483e96fe4878bd0f878f0ef233d30f647affc5
+Sequence finished (UTC): 2026-09-24T05:16:18.927779+00:00

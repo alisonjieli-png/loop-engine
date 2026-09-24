@@ -1,0 +1,8 @@
+{
+  "record_type": "shell_command_allowlist/v1",
+  "allowed_commands": [
+    {"start": ["python3", "-m", "pytest"]},
+    {"start": ["bash"]}
+  ],
+  "environment_names": ["LD_PRELOAD"]
+}

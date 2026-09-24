@@ -1,0 +1,171 @@
+{
+ "record_type": "competition_brief/v2",
+ "pages": [
+  {
+   "file": "data.md",
+   "sha256": "6f9da40a199eabcc62d5a0a22d9f22fbd2695fc8fcb4bd8fc504b9b33d83a66e",
+   "words": 73
+  },
+  {
+   "file": "evaluation.md",
+   "sha256": "ff14c421800d1aa218ac5419a01b7f4c72ca3e850b0185cdc58671b56da3f431",
+   "words": 73
+  },
+  {
+   "file": "overview.md",
+   "sha256": "be90a02bd6ea95a2d562f926412f7442c1cf17f82150bc928eba2a0e6d5d38f2",
+   "words": 60
+  }
+ ],
+ "data_files": [
+  {
+   "file": "sample_submission.csv",
+   "sha256": "39c0963d5cd08c14ac51084040229cdebd043b57c903d726c59b1556f1db6507",
+   "size_bytes": 38,
+   "header": [
+    "customer_id",
+    "renewed"
+   ],
+   "rows": 2
+  },
+  {
+   "file": "test.csv",
+   "sha256": "1fdab087744af40cf4a0039ac219beb33a8987e2a0bc297f11d7d67e66c1f417",
+   "size_bytes": 82,
+   "header": [
+    "customer_id",
+    "tenure_months",
+    "monthly_spend",
+    "region"
+   ],
+   "rows": 2
+  },
+  {
+   "file": "train.csv",
+   "sha256": "5af121c2a1f7c5fdb465fe2a5a1be60f1a4711223d61a72914c07718b53182d3",
+   "size_bytes": 116,
+   "header": [
+    "customer_id",
+    "tenure_months",
+    "monthly_spend",
+    "renewed",
+    "region"
+   ],
+   "rows": 3
+  }
+ ],
+ "facts": {
+  "task": {
+   "value": "Estimate how likely each customer is to renew a yearly plan.",
+   "source": {
+    "file": "overview.md",
+    "quote": "The goal is to estimate how likely each customer is to renew a yearly plan."
+   }
+  },
+  "target_columns": {
+   "value": [
+    "renewed"
+   ],
+   "source": {
+    "file": "data.md",
+    "quote": "Its column renewed is 1 when the customer renewed and 0 when the customer left."
+   }
+  },
+  "target_type": {
+   "value": "binary",
+   "source": {
+    "file": "data.md",
+    "quote": "Its column renewed is 1 when the customer renewed and 0 when the customer left."
+   }
+  },
+  "metric": {
+   "value": "auc",
+   "source": {
+    "file": "evaluation.md",
+    "quote": "Entries are ranked by the area under the ROC curve (AUC) between the predicted values and the true renewed labels."
+   }
+  },
+  "metric_direction": {
+   "value": "maximize",
+   "source": {
+    "file": "evaluation.md",
+    "quote": "A higher AUC is better."
+   }
+  },
+  "id_column": {
+   "value": "customer_id",
+   "source": {
+    "file": "data.md",
+    "quote": "Every row is one customer, and the column customer_id names that customer."
+   }
+  },
+  "prediction_columns": {
+   "value": [
+    "renewed"
+   ],
+   "source": {
+    "file": "evaluation.md",
+    "quote": "An entry holds one row per customer_id in test.csv and two columns: customer_id, then renewed."
+   }
+  },
+  "prediction_value_type": {
+   "value": "probability",
+   "source": {
+    "file": "evaluation.md",
+    "quote": "The renewed column holds a probability from 0 to 1 that the customer renews."
+   }
+  },
+  "train_file": {
+   "value": "train.csv",
+   "source": {
+    "file": "data.md",
+    "quote": "train.csv holds the labelled customers."
+   }
+  },
+  "test_file": {
+   "value": "test.csv",
+   "source": {
+    "file": "data.md",
+    "quote": "test.csv holds the customers to score and has no renewed column."
+   }
+  },
+  "sample_submission_file": {
+   "value": "sample_submission.csv",
+   "source": {
+    "file": "data.md",
+    "quote": "sample_submission.csv shows the layout that every entry must follow."
+   }
+  },
+  "external_data_allowed": {
+   "value": "no",
+   "source": {
+    "file": "overview.md",
+    "quote": "Using data from outside this competition is prohibited."
+   }
+  },
+  "daily_submission_limit": {
+   "value": 5,
+   "source": {
+    "file": "overview.md",
+    "quote": "A team can send at most 5 entries in one calendar day."
+   }
+  },
+  "team_size_limit": {
+   "value": null,
+   "source": null
+  },
+  "deadline": {
+   "value": "2026-11-30 23:59 UTC",
+   "source": {
+    "file": "overview.md",
+    "quote": "Entries close on 2026-11-30 at 23:59 UTC."
+   }
+  }
+ },
+ "unknowns": [
+  {
+   "fact": "team_size_limit",
+   "question": "How many people may one team have?"
+  }
+ ]
+}

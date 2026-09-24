@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Read(/**)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(ls *)",
+      "Bash(pwd)",
+      "Bash(wc *)",
+      "Bash(python3 -I -B .baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py)"
+    ],
+    "deny": [
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Bash(git * --output*)",
+      "Bash(git ls-remote *)"
+    ]
+  }
+}

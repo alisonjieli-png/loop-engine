@@ -1,0 +1,22 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Write one new failing test for ticket {{TICKET_ID}}, record its failing run with the recorder script and change no product code.",
+ "output_contract_refs": [
+  "ticket_reproduction_record/v1",
+  "ticket_reproduction_run/v1"
+ ],
+ "dependency_ids": [
+  "{{TRIAGE_STEP_ID}}"
+ ],
+ "required_capabilities": [],
+ "effects": [
+  "reads_fs",
+  "writes_fs",
+  "{{PROCESS_EFFECT}}"
+ ],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

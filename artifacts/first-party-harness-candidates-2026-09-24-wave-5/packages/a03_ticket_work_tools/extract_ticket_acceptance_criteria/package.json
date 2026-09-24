@@ -1,0 +1,351 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "extract_ticket_acceptance_criteria",
+    "title": "Extract acceptance criteria from a ticket",
+    "purpose": "Turn a ticket exported as Markdown, plain text or JSON into a numbered checklist of acceptance criteria, reproduction steps and named files, and flag a ticket that states no checkable outcome.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/independent_judgment.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "extract acceptance criteria",
+      "ticket to checklist",
+      "parse a bug report",
+      "steps to reproduce from a ticket",
+      "files named in a ticket",
+      "is this ticket testable",
+      "vague ticket detection",
+      "issue json to checklist",
+      "given when then criteria"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "product manager"
+      ]
+    },
+    "symbols": [
+      "main",
+      "json_chunks",
+      "parse_chunk",
+      "build_criteria",
+      "judge"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a03_ticket_work_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "f4404b913632a86207f979a0c72bcef8fe8a8b0d8fa533dcfefcdeee9cc4375e",
+        "size_bytes": 2675,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/ticket-output.json",
+        "digest": "65c08afae32d0a0b5ffc86763006cea2d8ef50bff80ed8813c75f55c43aad7e3",
+        "size_bytes": 3269,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/ticket.json",
+        "digest": "287dbe61731795213239bbf81783ca5bdbc08d69bf9db114c2abc693fe2efb87",
+        "size_bytes": 701,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "scripts/extract_ticket_criteria.py",
+        "digest": "f7ed40c2a7ad51167505a3de83da3c3e6a6ae1a41714d43707d7da2661c553a9",
+        "size_bytes": 36234,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_extract_ticket_criteria.py",
+        "digest": "09dc3afd07fd5664d5366967803677eb7a7901b74d6a97552aa83f9ed47f7d0a",
+        "size_bytes": 13437,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a03_ticket_work_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills root is documented in the placement research file but was not observed on this machine, and native discovery of this package was not probed in Gemini CLI."
+    },
+    "not_placed": {},
+    "native_name": "extract-ticket-acceptance-criteria",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket-output.json": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/examples/ticket-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.json": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/examples/ticket.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_ticket_criteria.py": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/scripts/extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_ticket_criteria.py": {
+          "destination": ".claude/skills/extract-ticket-acceptance-criteria/tests/test_extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket-output.json": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/examples/ticket-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.json": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/examples/ticket.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_ticket_criteria.py": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/scripts/extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_ticket_criteria.py": {
+          "destination": ".agents/skills/extract-ticket-acceptance-criteria/tests/test_extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket-output.json": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/examples/ticket-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.json": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/examples/ticket.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_ticket_criteria.py": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/scripts/extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_ticket_criteria.py": {
+          "destination": ".opencode/skills/extract-ticket-acceptance-criteria/tests/test_extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket-output.json": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/examples/ticket-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.json": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/examples/ticket.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_ticket_criteria.py": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/scripts/extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_ticket_criteria.py": {
+          "destination": ".pi/skills/extract-ticket-acceptance-criteria/tests/test_extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket-output.json": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/examples/ticket-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.json": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/examples/ticket.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_ticket_criteria.py": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/scripts/extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_ticket_criteria.py": {
+          "destination": ".gemini/skills/extract-ticket-acceptance-criteria/tests/test_extract_ticket_criteria.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_extract_ticket_criteria.py"
+        ]
+      },
+      "examples/ticket-output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_extract_ticket_criteria.py"
+        ]
+      },
+      "examples/ticket.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_extract_ticket_criteria.py"
+        ]
+      },
+      "scripts/extract_ticket_criteria.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_extract_ticket_criteria.py"
+        ]
+      },
+      "tests/test_extract_ticket_criteria.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/extract_ticket_criteria.py on the ticket file with --root set to the workspace, then read status, flags and checklist_markdown.",
+    "done_when": [
+      "The step notes hold the numbered checklist with criterion ids.",
+      "Each criterion marked not checkable has one written question."
+    ],
+    "stop_and_report_when": [
+      "The status is no_checkable_outcome.",
+      "The script exits with status 2 because the ticket was refused.",
+      "A file the ticket says must change does not exist and has no same-name match."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/independent_judgment.py": "693161003b2cce2841d3038378a98294f58aa5bd35418edacf480e6c038bfd02"
+    },
+    "package_digest": "4819d8c5e577f561944580d5021037d48ccb36442d6964b90f2284bb384e1b0c",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

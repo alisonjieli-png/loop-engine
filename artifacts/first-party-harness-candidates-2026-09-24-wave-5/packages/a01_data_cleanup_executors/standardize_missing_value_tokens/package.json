@@ -1,0 +1,337 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "standardize_missing_value_tokens",
+    "title": "Standardize declared missing-value tokens",
+    "purpose": "Turn only the declared missing-value tokens, such as n/a, null or a lone dash, into empty cells, report counts per column, and leave zero, false and every other real value untouched.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/handle_missing_values_without_inventing_them.md",
+      "src/loop_engine/code_nodes/text_conformance_operations.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "replace n/a with empty",
+      "standardize missing values",
+      "null tokens in csv",
+      "blank out placeholder values",
+      "missing value markers per column",
+      "do not treat zero as missing",
+      "sentinel value -999 as missing",
+      "clean n/a null and dashes",
+      "count missing values per column",
+      "empty cell cleanup"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "Refusal",
+      "Arguments",
+      "looks_like_a_value",
+      "Tokens",
+      "delimiter_of",
+      "root_of",
+      "confined",
+      "read_input",
+      "parse_table",
+      "column_index",
+      "prepare_output",
+      "write_copy",
+      "shown",
+      "arguments",
+      "run",
+      "render",
+      "emit",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a01_data_cleanup_executors",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "d07ac5a6d8072b6db41b5f996211675f2a81c896d520fc2b2757c8ac9dd71e25",
+        "size_bytes": 3191,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "references/tokens-and-counts.md",
+        "digest": "aa51971d13ff05ae957c18610cf2042f406ec279bac3ca9317e7891906f49c77",
+        "size_bytes": 3669,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/standardize_missing.py",
+        "digest": "5b320efef7ce5c5c80bc7244d3f5c769091adf63668fc873121e137cc159218f",
+        "size_bytes": 18567,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_standardize_missing.py",
+        "digest": "18ef28c18b11e7c9997daaa8ca0827b0c4d5daa8181960f9db530695d70212ad",
+        "size_bytes": 10611,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a01_data_cleanup_executors",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "standardize-missing-value-tokens",
+    "version": "0.1.1",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/standardize-missing-value-tokens/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/standardize-missing-value-tokens/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/tokens-and-counts.md": {
+          "destination": ".claude/skills/standardize-missing-value-tokens/references/tokens-and-counts.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/standardize_missing.py": {
+          "destination": ".claude/skills/standardize-missing-value-tokens/scripts/standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_standardize_missing.py": {
+          "destination": ".claude/skills/standardize-missing-value-tokens/tests/test_standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/standardize-missing-value-tokens/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/standardize-missing-value-tokens/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/tokens-and-counts.md": {
+          "destination": ".agents/skills/standardize-missing-value-tokens/references/tokens-and-counts.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/standardize_missing.py": {
+          "destination": ".agents/skills/standardize-missing-value-tokens/scripts/standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_standardize_missing.py": {
+          "destination": ".agents/skills/standardize-missing-value-tokens/tests/test_standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/standardize-missing-value-tokens/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/standardize-missing-value-tokens/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/tokens-and-counts.md": {
+          "destination": ".opencode/skills/standardize-missing-value-tokens/references/tokens-and-counts.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/standardize_missing.py": {
+          "destination": ".opencode/skills/standardize-missing-value-tokens/scripts/standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_standardize_missing.py": {
+          "destination": ".opencode/skills/standardize-missing-value-tokens/tests/test_standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/standardize-missing-value-tokens/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/standardize-missing-value-tokens/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/tokens-and-counts.md": {
+          "destination": ".pi/skills/standardize-missing-value-tokens/references/tokens-and-counts.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/standardize_missing.py": {
+          "destination": ".pi/skills/standardize-missing-value-tokens/scripts/standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_standardize_missing.py": {
+          "destination": ".pi/skills/standardize-missing-value-tokens/tests/test_standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/standardize-missing-value-tokens/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/standardize-missing-value-tokens/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/tokens-and-counts.md": {
+          "destination": ".gemini/skills/standardize-missing-value-tokens/references/tokens-and-counts.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/standardize_missing.py": {
+          "destination": ".gemini/skills/standardize-missing-value-tokens/scripts/standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_standardize_missing.py": {
+          "destination": ".gemini/skills/standardize-missing-value-tokens/tests/test_standardize_missing.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_standardize_missing.py"
+        ]
+      },
+      "references/tokens-and-counts.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_standardize_missing.py"
+        ]
+      },
+      "scripts/standardize_missing.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_standardize_missing.py"
+        ]
+      },
+      "tests/test_standardize_missing.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B SKILL_DIR/scripts/standardize_missing.py with --input, each declared --column and each declared --token as a dry run, and read its JSON report.",
+    "done_when": [
+      "The report gives the counts for every declared column.",
+      "Every undeclared look-alike is listed with its count.",
+      "The report names the copy written with --output, or says that none was written."
+    ],
+    "stop_and_report_when": [
+      "The task names no token or no column.",
+      "The script exits 2 and refuses the input, a token or the arguments.",
+      "undeclared_lookalikes_complete is false.",
+      "Clearing a look-alike would need a token that the task did not declare."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/handle_missing_values_without_inventing_them.md": "26e6959c0279ed23251683546ff70168b3c7d380cf61791ab516f659e979e175",
+      "src/loop_engine/code_nodes/text_conformance_operations.py": "fca6c5d3026ed67660f96a263d9a848f4239acee0eb499e974f8124e87d961f8"
+    },
+    "package_digest": "b7454c9a695c3850cf80afbb0c3475df9aeb85858b4929d82f441f5adafed61b",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

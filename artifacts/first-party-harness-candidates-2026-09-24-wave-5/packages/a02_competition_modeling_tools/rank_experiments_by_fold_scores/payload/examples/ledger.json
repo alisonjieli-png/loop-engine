@@ -1,0 +1,22 @@
+[
+ {"run": "baseline_lr", "fold": 0, "score": 0.8},
+ {"run": "baseline_lr", "fold": 1, "score": 0.83},
+ {"run": "baseline_lr", "fold": 2, "score": 0.78},
+ {"run": "baseline_lr", "fold": 3, "score": 0.81},
+ {"run": "baseline_lr", "fold": 4, "score": 0.79},
+ {"run": "gbm_v1", "fold": 0, "score": 0.841},
+ {"run": "gbm_v1", "fold": 1, "score": 0.869},
+ {"run": "gbm_v1", "fold": 2, "score": 0.82},
+ {"run": "gbm_v1", "fold": 3, "score": 0.852},
+ {"run": "gbm_v1", "fold": 4, "score": 0.828},
+ {"run": "gbm_v2", "fold": 0, "score": 0.853},
+ {"run": "gbm_v2", "fold": 1, "score": 0.863},
+ {"run": "gbm_v2", "fold": 2, "score": 0.829},
+ {"run": "gbm_v2", "fold": 3, "score": 0.848},
+ {"run": "gbm_v2", "fold": 4, "score": 0.837},
+ {"run": "gbm_v1_more_trees", "fold": 0, "score": 0.838},
+ {"run": "gbm_v1_more_trees", "fold": 1, "score": 0.873},
+ {"run": "gbm_v1_more_trees", "fold": 2, "score": 0.815},
+ {"run": "gbm_v1_more_trees", "fold": 3, "score": 0.854},
+ {"run": "gbm_v1_more_trees", "fold": 4, "score": 0.828}
+]

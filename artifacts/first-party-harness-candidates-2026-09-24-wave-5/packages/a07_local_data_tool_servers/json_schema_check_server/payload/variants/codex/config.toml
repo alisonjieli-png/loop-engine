@@ -1,0 +1,3 @@
+[mcp_servers.json_schema_check_server]
+command = "python3"
+args = ["-I", "-B", ".baltor/json-schema-check-server/server/json_schema_check_server.py", "--root", "."]

@@ -1,0 +1,298 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "test_commands_only_settings",
+    "title": "Test commands only settings",
+    "purpose": "Harness settings that allow shell use only for the declared test, lint and format commands and refuse every other command, for steps that verify rather than build.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/opencode_step_composition.py",
+      "src/loop_engine/core/harness_additional_recipes.py",
+      "src/loop_engine/core/harness_responses_recipes.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_settings_fragment",
+    "search_tags": [
+      "allow only test commands",
+      "verification step agent settings",
+      "pytest and unittest only permissions",
+      "claude code allow only pytest",
+      "opencode bash allowlist tests",
+      "gemini cli run_shell_command pytest only",
+      "format check without rewriting files",
+      "lint check only settings",
+      "agent may run tests but not edit",
+      "refuse every other shell command"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness permissions",
+        "software testing"
+      ],
+      "role": [
+        "software engineer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "run"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a13_unattended_permission_settings",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "dd7eb905c4b4d7d3ca715e6f5680ecfd4bffc804f0273fc36282f4974e35d2da",
+        "size_bytes": 968,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_test_commands_only_settings.py",
+        "digest": "d0dff67b84644a92f9e1e99e8df21a7440f55a9b4e628adf3b1075ef29e82ff4",
+        "size_bytes": 40755,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_test_commands_only_settings.py",
+        "digest": "906dace452dd463dd4f2812bc5041579d0a3518ff8b69d629536ac2f2a8991a8",
+        "size_bytes": 8493,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "029743f377732e9c5fbba08010e0e1c286296dc7c3d1e7b8f6ebc6eac8f396b7",
+        "size_bytes": 616,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "e84f030c9438eb67926ae11dd1c5c09b62cccaf6398db1a39354108731189b8f",
+        "size_bytes": 639,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "b9f4f7c6fa81985bf0ca1df581ec77f02bbccd67b3b0bab45653ff158c17088d",
+        "size_bytes": 617,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a13_unattended_permission_settings",
+    "file_class": "settings_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "claude_code": "The permissions block is documented; defaultMode dontAsk was read from the installed Claude Code 2.1.281 schema, and whether it also refuses commands Claude Code treats as read-only by itself is not observed.",
+      "gemini_cli": "Key names were read from the installed Gemini CLI 0.59.0 settings schema and bundled docs; they vary by version, and workspace settings apply only in a trusted folder or with --skip-trust.",
+      "opencode": "The permission block is documented; the default rules and last-match order were read from the installed OpenCode binary and repository source, not observed with this file."
+    },
+    "not_placed": {
+      "codex": "Codex project settings cannot refuse a command by name; its sandbox limits what a command may do, not which command runs, so this policy cannot be expressed in .codex/config.toml."
+    },
+    "native_name": "test-commands-only-settings",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "opencode": "variants/opencode/opencode.json",
+      "gemini_cli": "variants/gemini_cli/settings.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_test_commands_only_settings.py": {
+          "destination": ".baltor/test-commands-only-settings/scripts/check_test_commands_only_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_test_commands_only_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/test-commands-only-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_test_commands_only_settings.py": {
+          "destination": ".baltor/test-commands-only-settings/scripts/check_test_commands_only_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_test_commands_only_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/test-commands-only-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_test_commands_only_settings.py": {
+          "destination": ".baltor/test-commands-only-settings/scripts/check_test_commands_only_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_test_commands_only_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/test-commands-only-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_test_commands_only_settings.py"
+        ]
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_test_commands_only_settings.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_test_commands_only_settings.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_test_commands_only_settings.py"
+        ]
+      },
+      "scripts/check_test_commands_only_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_test_commands_only_settings.py"
+        ]
+      },
+      "tests/test_test_commands_only_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run the test command named in the task, or python3 -m pytest -q when none is named, and read its exit status.",
+    "done_when": [
+      "Each declared command that the task needs has run and its exit status is reported.",
+      "Failing test names or files are listed and no file was changed."
+    ],
+    "stop_and_report_when": [
+      "The project needs a command that is not in the declared list.",
+      "An action is refused; report it instead of trying another command."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/opencode_step_composition.py": "8c7dec6114ef18ccf281b62b1d3047d38a6add56032c4c7873ca2c1cd9d25209",
+      "src/loop_engine/core/harness_additional_recipes.py": "0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9",
+      "src/loop_engine/core/harness_responses_recipes.py": "13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7"
+    },
+    "package_digest": "46bc85b869574ea0f6e5bd7cf3e3386c3056b33a989e742f9808515a5b7fdf29",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

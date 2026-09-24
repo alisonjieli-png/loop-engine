@@ -1,0 +1,124 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a04_unattended_guard_hooks/log_tool_activity",
+ "identity": "log_tool_activity",
+ "package_digest": "3318896cba085a3fbc0ef7ceb15fbe5506fa97aec7bce2c1c82015fe7f100d6a",
+ "checked_at": "2026-09-23T20:34:03.072245+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "text_hygiene",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "placements",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "effects",
+   "status": "refused",
+   "findings": [
+    "undeclared reads_fs: ['hooks/log_tool_activity.py:240 open', 'tests/test_log_tool_activity.py:50 read_text', 'tests/test_log_tool_activity.py:162 glob']"
+   ]
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "skipped",
+   "findings": [
+    "no SKILL.md in the payload"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "passed",
+   "findings": [
+    "{\"python\": \"python3.14\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 13}",
+    "{\"python\": \"python3.10\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 13}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": [
+    "claude_code PostToolUse examples/claude_code-posttooluse-recorded.json: exit 0",
+    "claude_code PostToolUse examples/claude_code-posttooluse-not-recorded.json: exit 0",
+    "cursor postToolUse examples/cursor-posttooluse-recorded.json: exit 0",
+    "cursor postToolUse examples/cursor-posttooluse-not-recorded.json: exit 0",
+    "copilot postToolUse examples/copilot-posttooluse-recorded.json: exit 0",
+    "copilot postToolUse examples/copilot-posttooluse-not-recorded.json: exit 0"
+   ]
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

@@ -1,0 +1,13 @@
+{
+  "record_type": "shell_command_allowlist/v1",
+  "allowed_commands": [
+    {"start": ["python3", "-m", "pytest"]},
+    {"start": ["git", "status"]},
+    {"start": ["git", "diff"], "refused_arguments": ["--output", "--ext-diff", "--textconv"]},
+    {"start": ["git", "log"], "refused_arguments": ["--output", "--ext-diff", "--textconv"]},
+    {"start": ["ls"]},
+    {"start": ["rg"], "refused_arguments": ["--pre", "--search-zip", "-z", "--hostname-bin"]},
+    {"start": ["find"], "refused_arguments": ["-exec", "-execdir", "-ok", "-okdir", "-delete", "-fprint", "-fprint0", "-fprintf", "-fls"]}
+  ],
+  "environment_names": ["PYTHONPATH"]
+}

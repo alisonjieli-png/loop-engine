@@ -1,0 +1,8 @@
+{
+ "title": "CSV export drops leading zeros from product codes",
+ "body": "When a product code starts with zero, the CSV export removes the zero.\n\n## Steps to reproduce\n\n1. Create a product with code `007`.\n2. Run `python3 -m shop.export --format csv`.\n3. Open `exports/products.csv`.\n\n## Expected behavior\n\nThe CSV cell holds \"007\".\n\n## Actual behavior\n\nThe CSV cell holds \"7\".\n\n## Acceptance criteria\n\n- [ ] Exporting code `007` writes `007` to the CSV file.\n- [ ] Codes without a leading zero are unchanged.\n- [ ] `pytest tests/test_export.py` passes.\n- [ ] The export feels faster.\n\nRelevant code: `src/shop/export.py` line 88.\n",
+ "labels": [
+  "bug",
+  "export"
+ ]
+}

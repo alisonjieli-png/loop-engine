@@ -1,0 +1,122 @@
+=== run 1: 2026-09-23T20:41:42Z python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a04_unattended_guard_hooks/cap_tool_call_budget
+{
+ "identity": "cap_tool_call_budget",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204149071903Z.json"
+}
+exit: 0
+
+=== run 2: 2026-09-23T20:46:12Z final fill and check after the last payload and note edits
+{"fill": "done", "files": 16, "package_digest": "6649d7864ad395ebfb09d88cf32aabe5f97a53ffadae6050aba16d9a2bca1e76"}
+{
+ "identity": "cap_tool_call_budget",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204620805565Z.json"
+}
+exit: 0
+
+=== independent equivalent commands of the SPEC section 12 table, 2026-09-23T20:47:17Z
+--- layout: find PKG -type l -o -empty -> no output (no link, no empty file or folder)
+--- layout: top-level entries ['package.json', 'payload', 'review']
+--- identity: grep -Fx cap_tool_call_budget existing-identities.txt -> exit 1 (1 means the identity is new)
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum -> 05203ed9b332c909 ... matches package.json
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/night_budget.py | sha256sum -> 8e0cea316cc2ce9d ... matches package.json
+--- manifest_schema: git show a1fc7432:tools/overnight_queue.py | sha256sum -> 4f00c5bc6797c45d ... matches package.json
+--- manifest_schema: git show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md | sha256sum -> 5fb2ebee75a1282a ... matches package.json
+--- inventory: sha256sum and stat -c %a of 16 payload files -> all digests, sizes and modes 0644 match
+--- inventory: sha256sum payload/LICENSE -> 663e093e...a46ea
+--- parse: json.load of every .json file -> all parse
+--- network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' payload -> exit 1 (no match)
+--- tests_run: bwrap --bind python3.14 -m unittest discover (package writable) -> exit 0 Ran 16 tests in 3.428s OK
+--- tests_run: bwrap --bind python3.10 -m unittest discover (package writable) -> exit 0 Ran 16 tests in 2.184s OK
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness claude_code --root examples/budget-spent < examples/claude_code-pretooluse-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness claude_code --root examples/budget-spent < examples/claude_code-pretooluse-refused.json -> exit 0, as expected, stdout {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Refuse
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness cursor --root examples/budget-spent < examples/cursor-pretooluse-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness cursor --root examples/budget-spent < examples/cursor-pretooluse-refused.json -> exit 0, as expected, stdout {"permission": "deny", "user_message": "Refused by the tool call budget: this step has used all 40 of its tool calls. Do
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness copilot --root examples/budget-spent < examples/copilot-pretooluse-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/cap_tool_calls.py --harness copilot --root examples/budget-spent < examples/copilot-pretooluse-refused.json -> exit 0, as expected, stdout {"permissionDecision": "deny", "permissionDecisionReason": "Refused by the tool call budget: this step has used all 40 o
+
+=== check-all: 2026-09-23T20:49:09Z python3 check_package.py check-all --assignment a04_unattended_guard_hooks
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204909086053Z.json
+exit: 0
+
+=== run 3: 2026-09-24T05:57:52Z repair after the critic's findings (repairer a04, successor of an interrupted repairer): fill, then check
+{"fill": "done", "files": 17, "package_digest": "0ff12e29299a7072b7bcd23bb8d557619ea5fa3e5b7c80bde67a0a284883c748"}
+{
+ "identity": "cap_tool_call_budget",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055752106705Z.json"
+}
+exit: 0

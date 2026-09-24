@@ -1,0 +1,190 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "repository_scout",
+    "title": "Repository scout",
+    "purpose": "A read-only helper that answers one question about where something lives in the code with file and line citations in at most twenty lines, so the main step keeps its context small.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/native-client-material-loading.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/supply_the_files_and_facts_an_assignment_needs.md"
+    ],
+    "layer": "context",
+    "family": "native_subagent",
+    "search_tags": [
+      "where is this defined",
+      "find where a function is used",
+      "which file sets this value",
+      "locate a setting in the repository",
+      "answer with file and line numbers",
+      "read only search helper agent",
+      "keep the main agent context small",
+      "repository scout subagent"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change",
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "opencode"
+    ],
+    "dependencies": [],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a05_focused_subagents",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/repository-scout.md",
+        "digest": "965c87bdea1e53076f6d9a7f9b674901b95f2a2cd15a2dadf0b68179ea57c6d0",
+        "size_bytes": 2372,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/copilot/repository-scout.agent.md",
+        "digest": "cc25e4a9c6aca5c4fd08167a002a263a9b4fd7c7629b5db0b3f8bd887f83c0fb",
+        "size_bytes": 2327,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/opencode/repository-scout.md",
+        "digest": "878fcfe62160fc09231042489d4abd059973eb949dccbd6e9bef761ad905738c",
+        "size_bytes": 2498,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a05_focused_subagents",
+    "file_class": "subagent_definition",
+    "use_cases": [
+      "any_focused_step",
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "opencode",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "opencode": "The folder .opencode/agents/ is documented and was observed with OpenCode 1.18.31 in docs/guides/native-client-material-loading.md, but discovery of this file and the effect of its mode, steps and permission keys were not probed. The keys were read from the installed OpenCode program text (it embeds version 1.18.32), which was not run.",
+      "copilot": "GitHub's custom agents configuration reference and custom agent guide, read on 2026-09-24, document the path .github/agents/NAME.agent.md, the read and search tool aliases and that unknown tool names are ignored. Discovery of this file was not observed; no Copilot surface was run."
+    },
+    "not_placed": {},
+    "native_name": "repository-scout",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/repository-scout.md",
+      "opencode": "variants/opencode/repository-scout.md",
+      "copilot": "variants/copilot/repository-scout.agent.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/repository-scout.md": {
+          "destination": ".claude/agents/repository-scout.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/repository-scout/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/repository-scout.md": {
+          "destination": ".opencode/agents/repository-scout.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/repository-scout/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/repository-scout.agent.md": {
+          "destination": ".github/agents/repository-scout.agent.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/repository-scout/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "variants/claude_code/repository-scout.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/repository-scout.agent.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/opencode/repository-scout.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Search file contents with line numbers for the most specific term in the question, skipping dependency, build and cache folders.",
+    "done_when": [
+      "The reply is exactly one of the found form (an ANSWER line and one to eight path:line citations, each quoting the cited line), the not-found form (an ANSWER line and a NOT FOUND line) or the refused form."
+    ],
+    "stop_and_report_when": [
+      "The request asks for a change, a command or a new file.",
+      "The answer needs an environment file, a key file or a path outside the repository.",
+      "15 searches and reads are used up; answer with what was confirmed."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "examples/29_intelligence_service/starter-catalogue/bodies/supply_the_files_and_facts_an_assignment_needs.md": "a6c658ca426b619f645f47d29f6df2aecd2991af20ba1926a25a20b995697424"
+    },
+    "package_digest": "ee0e9c8406cdd786a24c54eebdcd84356e5f1ac5c21daf7f32f139499116a0b0",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

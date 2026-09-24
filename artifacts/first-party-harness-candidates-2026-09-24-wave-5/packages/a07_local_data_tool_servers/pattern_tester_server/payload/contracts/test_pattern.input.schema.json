@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "pattern": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000,
+      "description": "One regular expression in Python re syntax, for example ^[0-9]{4}-[0-9]{2}$."
+    },
+    "should_match": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 10000
+      },
+      "description": "Texts the pattern must match."
+    },
+    "should_not_match": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 10000
+      },
+      "description": "Texts the pattern must not match."
+    },
+    "examples": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "maxLength": 10000
+      },
+      "description": "Texts to test without an expectation, for groups or replacements."
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "fullmatch",
+        "search",
+        "findall"
+      ],
+      "default": "fullmatch",
+      "description": "fullmatch: the whole text must match. search: a match anywhere. findall: every match."
+    },
+    "flags": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "IGNORECASE",
+          "MULTILINE",
+          "DOTALL",
+          "ASCII",
+          "VERBOSE"
+        ]
+      },
+      "description": "Regular expression flags."
+    },
+    "replacement": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Optional replacement such as \\g<day>.\\g<month>.\\g<year>. fullmatch expands the one match; search and findall replace every match."
+    },
+    "time_limit_ms": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 10000,
+      "default": 2000,
+      "description": "Stop the test after this many milliseconds."
+    }
+  },
+  "required": [
+    "pattern"
+  ],
+  "additionalProperties": false
+}

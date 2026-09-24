@@ -1,0 +1,6 @@
+# Files this step must never read: environment files and key files.
+.env*
+*.pem
+*.key
+*.p12
+*.pfx

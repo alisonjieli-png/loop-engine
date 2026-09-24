@@ -1,0 +1,343 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "parse_numbers_by_declared_separators",
+    "title": "Parse numbers by declared separators",
+    "purpose": "Turn numeric text into exact decimal values using the declared decimal mark, grouping mark, currency symbols and percent rule, and hold values that mix conventions instead of guessing.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/trace-numeric-rounding/SKILL.md",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/audit-measurement-units/SKILL.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "parse numbers",
+      "decimal comma or decimal point",
+      "thousands separators",
+      "european number format",
+      "strip currency symbols",
+      "convert percentages to fractions",
+      "negative numbers in parentheses",
+      "numeric text to exact decimals",
+      "mixed number formats in one column",
+      "amount column cleanup"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "Refusal",
+      "Arguments",
+      "Marks",
+      "Rules",
+      "held",
+      "judge",
+      "hold_convention_sensitive",
+      "canonical",
+      "delimiter_of",
+      "root_of",
+      "confined",
+      "read_input",
+      "parse_table",
+      "column_index",
+      "prepare_output",
+      "write_copy",
+      "shown",
+      "arguments",
+      "run",
+      "render",
+      "emit",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a01_data_cleanup_executors",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "1c2ec607d6a47177c5256e41745717326e0a045d96574d2f676fd59c76c2901f",
+        "size_bytes": 3427,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "references/marks-and-reasons.md",
+        "digest": "9ee414720e881d761ff1435797d8ed6e3867d05e928f979bca06696ebdbcb35f",
+        "size_bytes": 5732,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/parse_numbers.py",
+        "digest": "ce23b4d2a7a92bd78871159c93848c42d602c6368ee0f0f3d9f0425f6a067993",
+        "size_bytes": 26619,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_parse_numbers.py",
+        "digest": "20ecd0da4aa6de670a3ac315f96897b948e8a502b8ab12357ecc096a432ff45f",
+        "size_bytes": 13271,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a01_data_cleanup_executors",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "parse-numbers-by-declared-separators",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/parse-numbers-by-declared-separators/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/parse-numbers-by-declared-separators/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/marks-and-reasons.md": {
+          "destination": ".claude/skills/parse-numbers-by-declared-separators/references/marks-and-reasons.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_numbers.py": {
+          "destination": ".claude/skills/parse-numbers-by-declared-separators/scripts/parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_numbers.py": {
+          "destination": ".claude/skills/parse-numbers-by-declared-separators/tests/test_parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/parse-numbers-by-declared-separators/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/parse-numbers-by-declared-separators/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/marks-and-reasons.md": {
+          "destination": ".agents/skills/parse-numbers-by-declared-separators/references/marks-and-reasons.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_numbers.py": {
+          "destination": ".agents/skills/parse-numbers-by-declared-separators/scripts/parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_numbers.py": {
+          "destination": ".agents/skills/parse-numbers-by-declared-separators/tests/test_parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/parse-numbers-by-declared-separators/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/parse-numbers-by-declared-separators/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/marks-and-reasons.md": {
+          "destination": ".opencode/skills/parse-numbers-by-declared-separators/references/marks-and-reasons.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_numbers.py": {
+          "destination": ".opencode/skills/parse-numbers-by-declared-separators/scripts/parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_numbers.py": {
+          "destination": ".opencode/skills/parse-numbers-by-declared-separators/tests/test_parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/parse-numbers-by-declared-separators/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/parse-numbers-by-declared-separators/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/marks-and-reasons.md": {
+          "destination": ".pi/skills/parse-numbers-by-declared-separators/references/marks-and-reasons.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_numbers.py": {
+          "destination": ".pi/skills/parse-numbers-by-declared-separators/scripts/parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_numbers.py": {
+          "destination": ".pi/skills/parse-numbers-by-declared-separators/tests/test_parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/parse-numbers-by-declared-separators/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/parse-numbers-by-declared-separators/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/marks-and-reasons.md": {
+          "destination": ".gemini/skills/parse-numbers-by-declared-separators/references/marks-and-reasons.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_numbers.py": {
+          "destination": ".gemini/skills/parse-numbers-by-declared-separators/scripts/parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_numbers.py": {
+          "destination": ".gemini/skills/parse-numbers-by-declared-separators/tests/test_parse_numbers.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_parse_numbers.py"
+        ]
+      },
+      "references/marks-and-reasons.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_parse_numbers.py"
+        ]
+      },
+      "scripts/parse_numbers.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_parse_numbers.py"
+        ]
+      },
+      "tests/test_parse_numbers.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B SKILL_DIR/scripts/parse_numbers.py with --input, --column, --decimal-mark and --grouping-mark as a dry run, and read its JSON report.",
+    "done_when": [
+      "Every value is parsed, empty or listed in held_values with its reason.",
+      "counts.parsed + counts.held + counts.empty equals counts.data_rows.",
+      "The report names the copy written with --output, or says that none was written."
+    ],
+    "stop_and_report_when": [
+      "The task does not declare the decimal mark and the grouping mark.",
+      "The script exits 2 and refuses the input or the arguments.",
+      "held_values_complete is false.",
+      "Fewer holds would need marks or rules that the task did not declare."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/trace-numeric-rounding/SKILL.md": "9e23d3e54a760f3591dc61006b820552e57457e4c6839302c5fa9e9b598d9c07",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/audit-measurement-units/SKILL.md": "4f3b7e8c4ebb49e55a8ed27084731c2ec853aa6b8c66f8cdfea558921b8e8c29",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md": "383c3c5e48792c05b736855213c3d97fe3c3a2d17fc060075eaf17b691d508bc"
+    },
+    "package_digest": "5992ee2f8fbfad65c13f68ff13483e96fe4878bd0f878f0ef233d30f647affc5",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

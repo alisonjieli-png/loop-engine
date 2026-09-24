@@ -1,0 +1,7 @@
+{
+  "timestamp": 1790000000300,
+  "cwd": "/work",
+  "toolName": "bash",
+  "toolArgs": "{\"command\": \"git status --short\"}",
+  "toolResult": {"resultType": "success", "textResultForLlm": "SAMPLE-OUTPUT-NOT-LOGGED"}
+}

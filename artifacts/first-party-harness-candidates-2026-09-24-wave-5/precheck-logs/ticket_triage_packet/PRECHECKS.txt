@@ -1,0 +1,67 @@
+PRECHECKS for ticket_triage_packet (wave 5, assignment a09_ticket_step_packets)
+Written by the generator on 2026-09-23T20:45:52Z. Candidate only. Not approved, staged, served or published.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d)
+Location note: kept in review/ because the specification's layout check refuses any extra top-level entry in a package folder.
+
+== python3 check_package.py fill ticket_triage_packet
+{"fill": "done", "files": 11, "package_digest": "4255b4f637634f033309cde9c3d207aa5fa1d972001d2c820a1456c6602c2a6c"}
+
+== python3 check_package.py check ticket_triage_packet
+{
+ "identity": "ticket_triage_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204553792887Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+exit status: 0
+
+== python3 check_package.py check-all --assignment a09_ticket_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204701100723Z.json
+
+== Every precheck report kept in review/ (oldest first)
+precheck-20260923T203915413483Z.json: passed_for_wave_gate=True package_digest=4255b4f637634f033309cde9c3d207aa5fa1d972001d2c820a1456c6602c2a6c refused_checks=[]
+precheck-20260923T204204342795Z.json: passed_for_wave_gate=True package_digest=4255b4f637634f033309cde9c3d207aa5fa1d972001d2c820a1456c6602c2a6c refused_checks=[]
+precheck-20260923T204553792887Z.json: passed_for_wave_gate=True package_digest=4255b4f637634f033309cde9c3d207aa5fa1d972001d2c820a1456c6602c2a6c refused_checks=[]
+precheck-20260923T204701098426Z.json: passed_for_wave_gate=True package_digest=4255b4f637634f033309cde9c3d207aa5fa1d972001d2c820a1456c6602c2a6c refused_checks=[]
+
+== Contract checks with the jsonschema Draft 2020-12 validator
+contracts/input.schema.json: valid Draft 2020-12 schema
+contracts/output.schema.json: valid Draft 2020-12 schema
+examples/input.json against contracts/input.schema.json: valid
+examples/output.json against contracts/output.schema.json: valid
+known-wrong output 'go without a first test': refused
+known-wrong output 'go with items in needs': refused
+known-wrong output 'hold with no question and no need': refused
+known-wrong output 'split with one part': refused
+
+Result: every pre-check of the specification ran here and passed for the current package digest. This is not an approval, a native loading result or a usefulness claim.

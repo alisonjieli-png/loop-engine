@@ -1,0 +1,17 @@
+{
+ "record_type": "night_queue_status/v1",
+ "queue_sha256": "b4cba8c7ddccce45601e87ff8661986d816e0f72d44caf74e6aab36f5010491e",
+ "tickets": {
+  "T-101": {
+   "status": "in_progress",
+   "changes": [
+    {
+     "from": "queued",
+     "to": "in_progress",
+     "at": "2026-09-24T05:27:34Z",
+     "by": "plan-night-queue mark"
+    }
+   ]
+  }
+ }
+}

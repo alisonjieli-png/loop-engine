@@ -1,0 +1,312 @@
+=== 2026-09-23T20:23:51Z fill and check for sqlite_readonly_server ===
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "847e349f59b202205a364ceacf194db9e081f9dc99146b4e1a60636cdc9e9ddf"}
+exit 0
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "sqlite_readonly_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202358088397Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:52:23Z fill and check for sqlite_readonly_server ===
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "cdb366e5d481e581f2eade74e0900873c2836a16c294caffe4679cb1c3387170"}
+exit 0
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "sqlite_readonly_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T205231151019Z.json"
+}
+exit 0
+
+
+=== 2026-09-24T00:30:57.194803+00:00 pre-checks for sqlite_readonly_server, second generator pass ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/sqlite_readonly_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "b2f9cd6453683a9cccde14179cc03b68d7bad3ebff032e9715e618f0b4dfc59b"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "sqlite_readonly_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T003102018925Z.json"
+}
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T003102018925Z.json: passed_for_wave_gate True, package_digest b2f9cd6453683a9cccde14179cc03b68d7bad3ebff032e9715e618f0b4dfc59b (current b2f9cd6453683a9cccde14179cc03b68d7bad3ebff032e9715e618f0b4dfc59b)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 27}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 27}
+[passed] hooks_run
+[passed] servers_run
+  - sqlite_readonly_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx sqlite_readonly_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 14 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+9 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/sqlite_readonly_server/payload/server/sqlite_readonly_server.py:480:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message or comment text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 27 tests in 2.169s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 27 tests in 1.833s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. check-all for the assignment, 2026-09-24T00:33:41Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T003341322787Z.json
+exit 0
+
+Newest report for sqlite_readonly_server, written by that check-all: review/precheck-20260924T003341321304Z.json; passed_for_wave_gate true for package_digest b2f9cd6453683a9cccde14179cc03b68d7bad3ebff032e9715e618f0b4dfc59b (package.json holds b2f9cd6453683a9cccde14179cc03b68d7bad3ebff032e9715e618f0b4dfc59b).
+
+
+=== 2026-09-24T06:00:30.948197+00:00 pre-checks for sqlite_readonly_server, repairer pass after critic round 4 ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/sqlite_readonly_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "sqlite_readonly_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T060037869380Z.json"
+}
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T060037869380Z.json: passed_for_wave_gate True, package_digest d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f (current d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 31}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 31}
+[passed] hooks_run
+[passed] servers_run
+  - sqlite_readonly_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx sqlite_readonly_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 14 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+9 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/sqlite_readonly_server/payload/server/sqlite_readonly_server.py:538:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message, comment or test text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 31 tests in 3.343s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 31 tests in 2.269s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. repair evidence of this pass ==
+Repair evidence for sqlite_readonly_server in $WAVE/repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/ (producer-side runs, not pre-check outputs):
+- evidence/known-wrong-sqlite_readonly_server-new-tests-on-previous-server.txt: the new tests run on the previous server file:
+    == sqlite_readonly_server with previous server/sqlite_readonly_server.py under python3: exit 1
+    Ran 3 tests in 0.665s
+    FAILED (failures=2)
+    == sqlite_readonly_server with previous server/sqlite_readonly_server.py under python3.10: exit 1
+    Ran 3 tests in 0.382s
+    FAILED (failures=2)
+- mutants/mutants-result.txt: 6 mutants of this package, 6 made a named test fail:
+    killed: sqlite_readonly_server: one stale view fails the description: Ran 1 test in 0.246s FAILED (failures=1)
+    killed: sqlite_readonly_server: query hint for describe: Ran 1 test in 0.237s FAILED (failures=1)
+    killed: sqlite_readonly_server: names_only ignored: Ran 1 test in 0.243s FAILED (errors=1)
+    killed: sqlite_readonly_server: previous variants/claude_code/.mcp.json: Ran 4 tests in 0.008s FAILED (failures=2)
+    killed: sqlite_readonly_server: previous variants/cursor/mcp.json: Ran 4 tests in 0.172s FAILED (failures=2)
+    killed: sqlite_readonly_server: previous variants/gemini_cli/settings.json: Ran 4 tests in 0.420s FAILED (failures=2)
+- evidence/placed-workspace-after-repair.txt (launch lines started from the workspace root and a subfolder):
+    sqlite_readonly_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in .: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in sub: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in .: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in sub: exit 2, no answer: ite-readonly-server/server/sqlite_readonly_server.py': [Errno 2] No such file or directory
+    sqlite_readonly_server cursor [${workspaceFolder} resolved] start in .: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server cursor [${workspaceFolder} resolved] start in sub: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server codex relative line start in .: tools ['describe_sqlite', 'query_sqlite']
+    sqlite_readonly_server codex relative line start in sub: exit 2, no answer: ite-readonly-server/server/sqlite_readonly_server.py': [Errno 2] No such file or directory
+    sqlite_readonly_server gemini_cli server keys: ['sqlite-readonly-server']
+    sqlite_readonly_server fallback tests from the workspace root: exit 0, ['Ran 31 tests in 4.790s'], last line: OK (skipped=5)
+
+== 7. check-all for the assignment, 2026-09-24T06:01:09Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T060133043340Z.json
+exit 0
+
+Newest report for sqlite_readonly_server, written by that check-all: review/precheck-20260924T060133042175Z.json; passed_for_wave_gate true for package_digest d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f (package.json holds d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f).
+

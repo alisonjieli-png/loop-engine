@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:45:46.657801+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "competition_plugin",
+  "data_cleanup_plugin",
+  "overnight_ticket_plugin",
+  "portable_step_packet_plugin",
+  "step_status_plugin"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a11_session_plugins/competition_plugin/review/precheck-20260924T054447013070Z.json",
+  "packages/a11_session_plugins/data_cleanup_plugin/review/precheck-20260924T054457773253Z.json",
+  "packages/a11_session_plugins/overnight_ticket_plugin/review/precheck-20260924T054519946508Z.json",
+  "packages/a11_session_plugins/portable_step_packet_plugin/review/precheck-20260924T054541361238Z.json",
+  "packages/a11_session_plugins/step_status_plugin/review/precheck-20260924T054546655077Z.json"
+ ]
+}

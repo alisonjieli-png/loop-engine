@@ -1,0 +1,14 @@
+{
+  "record_type": "competition_brief/v1",
+  "competition_id": "store-demand-demo",
+  "task_type": "regression",
+  "metric": {"name": "rmse", "direction": "minimize"},
+  "target_column": "units_sold",
+  "id_column": "row_id",
+  "submission_columns": ["row_id", "units_sold"],
+  "validation": {"scheme": "group_kfold", "folds": 5, "group_column": "store_id"},
+  "daily_submission_limit": 3,
+  "deadline_utc": "2026-10-31T23:59:00Z",
+  "data_version": "v2",
+  "rules": ["Use only the supplied data files.", "Keep the row order of the sample submission."]
+}

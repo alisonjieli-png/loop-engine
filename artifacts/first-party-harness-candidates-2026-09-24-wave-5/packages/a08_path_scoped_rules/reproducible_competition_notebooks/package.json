@@ -1,0 +1,226 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "reproducible_competition_notebooks",
+    "title": "Keep competition notebooks reproducible",
+    "purpose": "A path-scoped rule for notebooks and scripts that train or score a model: one fixed seed, folds only from an existing saved fold file, no fitting on test rows, and one ledger line per run with its commit and checksums.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/code_nodes/kaggle_executor.py",
+      "benchmarks/kaggle_competitions/contract.py",
+      "tools/candidate_review/ledger.py"
+    ],
+    "layer": "context",
+    "family": "native_rules_file",
+    "search_tags": [
+      "reproducible kaggle notebook",
+      "fixed random seed rule",
+      "use a saved fold file",
+      "no fitting on test data",
+      "experiment ledger for competitions",
+      "prevent leakage in notebooks",
+      "log every experiment with cv scores",
+      "cursor rule for jupyter notebooks",
+      "competition training script rules",
+      "same seed same folds every run",
+      "record commit and code checksum for each run"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "a saved fold file made before the run, for example by the build-group-stratified-folds skill; without one the rule stops",
+      "an experiment ledger in the experiment_ledger/v1 format of the pick-next-experiment command; without one the facts go into the report",
+      "git command line for the commit, staging new code files by name and the diff checksum",
+      "tail and sha256sum commands"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a08_path_scoped_rules",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/reproducible-competition-notebooks.md",
+        "digest": "e40764f67b44fbc29184a8cfd6cd7a7a88f0440b82b53a13481823fddd24fe92",
+        "size_bytes": 1674,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cline/reproducible-competition-notebooks.md",
+        "digest": "e40764f67b44fbc29184a8cfd6cd7a7a88f0440b82b53a13481823fddd24fe92",
+        "size_bytes": 1674,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/copilot/reproducible-competition-notebooks.instructions.md",
+        "digest": "02ea0ba6de030d913436784d066be0b05f979fc38aeb94725d37dea5cdae6b14",
+        "size_bytes": 1654,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cursor/reproducible-competition-notebooks.mdc",
+        "digest": "8c7e860466929f46d24ebf5f293852595d7f313dcd4d727987028c43e114b5ab",
+        "size_bytes": 1838,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a08_path_scoped_rules",
+    "file_class": "rules_file",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "cursor",
+      "copilot",
+      "cline",
+      "claude_code"
+    ],
+    "unverified_targets": {
+      "cursor": "Cursor's rules page (cursor.com/docs/context/rules, read on 2026-09-24) documents .mdc files in .cursor/rules with description, comma-separated globs and alwaysApply: false, which attaches a rule when a matching file is in context. Its example puts a space after each comma; this file uses none. Native loading was not observed.",
+      "copilot": "GitHub's page on repository custom instructions (docs.github.com, read on 2026-09-24) documents .github/instructions/NAME.instructions.md with applyTo and several comma-separated patterns; on GitHub.com only Copilot cloud agent and Copilot code review read these files. Native loading was not observed on any Copilot surface."
+    },
+    "not_placed": {},
+    "native_name": "reproducible-competition-notebooks",
+    "version": "0.1.0",
+    "entrypoints": {
+      "cursor": "variants/cursor/reproducible-competition-notebooks.mdc",
+      "copilot": "variants/copilot/reproducible-competition-notebooks.instructions.md",
+      "cline": "variants/cline/reproducible-competition-notebooks.md",
+      "claude_code": "variants/claude_code/reproducible-competition-notebooks.md"
+    },
+    "placements": {
+      "cursor": {
+        "variants/cursor/reproducible-competition-notebooks.mdc": {
+          "destination": ".cursor/rules/reproducible-competition-notebooks.mdc",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/reproducible-competition-notebooks/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/reproducible-competition-notebooks.instructions.md": {
+          "destination": ".github/instructions/reproducible-competition-notebooks.instructions.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/reproducible-competition-notebooks/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cline": {
+        "variants/cline/reproducible-competition-notebooks.md": {
+          "destination": ".clinerules/reproducible-competition-notebooks.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/reproducible-competition-notebooks/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "variants/claude_code/reproducible-competition-notebooks.md": {
+          "destination": ".claude/rules/reproducible-competition-notebooks.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/reproducible-competition-notebooks/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/cursor/reproducible-competition-notebooks.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/reproducible-competition-notebooks.instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/cline/reproducible-competition-notebooks.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/claude_code/reproducible-competition-notebooks.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read the last five lines of the task's experiment ledger, by default .baltor/experiments/ledger.jsonl, and note its line format, the fold file, folds_sha256 and the seed.",
+    "done_when": [
+      "The fold file's sha256sum equals folds_sha256 and no added fit call sees test rows.",
+      "The run used the ledger's seed.",
+      "The run's line in the ledger's format holds commit, diff_sha256, folds_sha256, fold_scores and score beside config, or the report holds these facts when there is no ledger."
+    ],
+    "stop_and_report_when": [
+      "There is no fold file, or its checksum differs from the ledger.",
+      "The task or competition rules ask to fit on test rows.",
+      "Two runs with the same seed, data and code score differently.",
+      "The ledger cannot be written."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/code_nodes/kaggle_executor.py": "715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9",
+      "benchmarks/kaggle_competitions/contract.py": "5759990a0ca299e4b4f69c03548f6c79de97b44aa9c2afafa7e254dfdd6d8cc3",
+      "tools/candidate_review/ledger.py": "1d0ffaf9e88dbd05a625530f8e4d504f60dce9fec854f27d4b814c0f2d0c42f1"
+    },
+    "package_digest": "302de4a1d43013db3da9991ccb38c1655872c1ae305785203a94e0388cfd4c73",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

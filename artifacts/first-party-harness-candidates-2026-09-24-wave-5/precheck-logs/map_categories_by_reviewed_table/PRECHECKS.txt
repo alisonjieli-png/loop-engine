@@ -1,0 +1,118 @@
+PRECHECKS for map_categories_by_reviewed_table (repair round 2)
+Assignment: a01_data_cleanup_executors. Package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a01_data_cleanup_executors/map_categories_by_reviewed_table
+This file sits outside the package folder because the checker's layout rule refuses any extra
+top-level entry in a package, and the specification lists the review folder's contents exactly.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Candidate only. Not approved, staged, served or published. A pass is not a native loading result,
+a usefulness measurement or an approval.
+Sequence started (UTC): 2026-09-24T05:14:25.751922+00:00
+Earlier log: the earlier PRECHECKS.txt is kept unchanged as PRECHECKS-first-pass-20260923T2043Z.txt.
+Version: 0.2.0. Package digest: 63ea3f6ceb56d5ec3942fa94d2130e9ed1224811c691e8e264d2bc268a002288
+Payload files: 6
+
+== 1. python3 check_package.py fill (exit 0)
+{"fill": "done", "files": 6, "package_digest": "63ea3f6ceb56d5ec3942fa94d2130e9ed1224811c691e8e264d2bc268a002288"}
+
+== 2. python3 check_package.py check (exit 0); newest report precheck-20260924T051513052404Z.json
+{
+ "identity": "map_categories_by_reviewed_table",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T051513052404Z.json"
+}
+
+Every check of that report, with findings:
+  layout: passed
+  manifest_schema: passed
+  identity: passed
+  inventory: passed
+  text_hygiene: passed
+  vocabulary: passed
+  safety_static: passed
+  secrets: passed
+  parse: passed
+  entry_shape: passed
+  placements: passed
+  effects: passed
+  network_static: passed
+  agent_skills_validator: passed
+      agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/map-categories-by-reviewed-table
+      skills_ref_official_git .: exit 0 Valid skill: TMP/map-categories-by-reviewed-table
+  duplicates: passed
+  review_note: passed
+  tests_run: passed
+      {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 11}
+      {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 11}
+  hooks_run: passed
+  servers_run: passed
+
+== 3. Mutants: each breaks one guard in a temporary copy; the named test must pass on the unchanged copy and fail on the mutant. Labels that start with 'repair:' guard behavior added by the repair (exit 0)
+{"package": "map_categories_by_reviewed_table", "mutant": "map an unmapped value to its closest key", "test": "test_known_wrong_typo_is_listed_not_guessed", "baseline": "Ran 1 test in 0.111s; OK", "mutant_run": "Ran 1 test in 0.101s; FAILED (failures=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "accept a table without a reviewer", "test": "test_table_refusals", "baseline": "Ran 1 test in 1.121s; OK", "mutant_run": "Ran 1 test in 1.551s; FAILED (errors=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "accept chained entries", "test": "test_table_refusals", "baseline": "Ran 1 test in 1.133s; OK", "mutant_run": "Ran 1 test in 0.989s; FAILED (errors=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "match case and spacing exactly", "test": "test_case_spacing_and_unicode_forms_are_normalized", "baseline": "Ran 1 test in 0.104s; OK", "mutant_run": "Ran 1 test in 0.094s; FAILED (failures=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "apply a table reviewed for another column", "test": "test_example_table_is_valid", "baseline": "Ran 1 test in 0.133s; OK", "mutant_run": "Ran 1 test in 0.132s; FAILED (errors=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "overwrite an existing output", "test": "test_path_and_output_refusals_write_nothing", "baseline": "Ran 1 test in 0.577s; OK", "mutant_run": "Ran 1 test in 0.395s; FAILED (failures=1, errors=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "repair: fold with full case folding again", "test": "test_only_letter_case_is_folded", "baseline": "Ran 1 test in 0.099s; OK", "mutant_run": "Ran 1 test in 0.093s; FAILED (failures=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "repair: skip the reviewed table digest check", "test": "test_table_digest_pins_the_reviewed_bytes", "baseline": "Ran 1 test in 0.404s; OK", "mutant_run": "Ran 1 test in 0.148s; FAILED (errors=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "repair: drop the hint that a CSV sheet is not read", "test": "test_a_mapping_sheet_is_not_a_reviewed_table", "baseline": "Ran 1 test in 0.086s; OK", "mutant_run": "Ran 1 test in 0.076s; FAILED (failures=1)", "result": "killed"}
+{"package": "map_categories_by_reviewed_table", "mutant": "repair: refuse a blank line without naming it", "test": "test_path_and_output_refusals_write_nothing", "baseline": "Ran 1 test in 0.601s; OK", "mutant_run": "Ran 1 test in 0.634s; FAILED (failures=1)", "result": "killed"}
+
+== 4. Tests in Bubblewrap with the payload mounted read-only (the checker mounts it writable because writes_fs is declared)
+python3.14 read-only payload, no network: exit 0; Ran 11 tests in 2.564s; OK
+python3.10 read-only payload, no network: exit 0; Ran 11 tests in 2.138s; OK
+
+== 5. Critic findings of 2026-09-23 and what the repair did
+- Only the package's own JSON table is read and a CSV sheet was refused without naming the needed preparation step -> 'When to use it' says the table must already exist as a category_mapping_table/v1 JSON file, a stop rule covers a sheet, a list or prose, and the table_invalid detail says a CSV sheet or a plain list is not read and that writing the table is a separate step with its own review. test_a_mapping_sheet_is_not_a_reviewed_table; mutant killed. No importer was added: it would let the mapping step write a table that claims a review, which the SKILL forbids. (round 2)
+- casefold() merged the German sharp s with ss -> letters are folded one at a time, each to exactly one letter; the sharp s, its capital form and the fi ligature stay distinct, the Greek final sigma still folds. test_only_letter_case_is_folded was written first (round 1) and failed on 0.1.0 (repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/map-categories-known-wrong-before-repair.txt); mutant 'fold with full case folding again' killed. (round 2)
+- reviewed_by is self-asserted text -> the reference and the review note say the script cannot see a review and the guarantee rests on the host; the new optional --table-sha256 refuses other table bytes as table_digest_differs before any value is mapped. test_table_digest_pins_the_reviewed_bytes; mutant killed. (round 2)
+- Step 4 said both reports are complete although unmapped_values (1,000) and unused_entries (200) are capped -> reworded, and step 7 reports unused_entries_total. (round 2)
+- Report values repeat cell text -> SKILL step 5 and the reference say they are data from the file. (round 2)
+- Panel risk, not fixable here -> first action names the five placement folders; the risk stays open. Also for consistency with the other four scripts, a blank line in a multi-column file is now named in the refusal detail (mutant killed). (round 2)
+Critic probe rerun on the repaired packages: repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/critic-probe-rerun-after-repair.txt (the critic's probe.py, copied byte for byte).
+
+== 6. Earlier failures and repairs
+- Producer, direct test run 1: the column_missing case failed because the table check correctly refused first (table reviewed for status, not Status). The script was right; the case now uses a table reviewed for both names. One expectation (mapped_by) was corrected before that run.
+- Producer tooling: the first mutant run of parse_dates_by_declared_formats was invalid (the runner imported tests by module name under -I, so every run ended in an import error). The runner then used unittest discovery with -k, required a passing baseline and one test ran, and those results replaced it.
+- Independent critic, 2026-09-23T23:52Z (evidence in critic-a01_data_cleanup_executors/independent-20260923T2352Z): all 19 pre-checks passed for every version 0.1.0 package, and yet the critic found one blocking defect (parse_numbers) and non-blocking points in all five packages. Section 5 lists each finding and what the repair did.
+- Repair round 1, 2026-09-24T00:43Z to 01:04Z, an earlier run of this repairer that stopped part way: it saved packages/<identity>/earlier-attempt-20260924T0043Z.tar.gz for all five packages, wrote known-wrong checks first, repaired parse_numbers (0.2.0) and parse_dates (0.1.1) and ran fill for them, and stopped after writing the map_categories fold test. It ran no check, so it wrote no precheck report and no PRECHECKS.txt.
+- Repair round 2, this sequence: before editing, the state left by round 1 was saved as repairer-a01_data_cleanup_executors/r2-20260924T0453Z/current-at-start/a01-state-at-r2-start.tar.gz and every round 1 edit was read against the critic findings. Two draft problems were caught before any checker run: map_categories SKILL.md had 480 words (the entry limit is 450; trimmed to 445), and one expectation in the new standardize test assumed exit 0 on the note column, which holds look-alikes (the test now uses id). One dry run of every check (check_package with write=False, no report) passed for all five before the recorded checks below, and a trial run of the round 2 mutant runner killed 45 of 45 mutants.
+
+== 7. Every precheck report in review/, oldest first
+precheck-20260923T202252291988Z.json  passed_for_wave_gate=True  refused=False  package_digest=f918d927f66cf425bbb24cf2492497bff589f2b3ecc6c5c335883e2ba43bb3ba
+precheck-20260923T204307222244Z.json  passed_for_wave_gate=True  refused=False  package_digest=f4d7ceef00d0bbb1f4d521e9c50ae61f75ddf1ed14ea79f106a2a0a8f4fbbd88
+precheck-20260923T204337592704Z.json  passed_for_wave_gate=True  refused=False  package_digest=f4d7ceef00d0bbb1f4d521e9c50ae61f75ddf1ed14ea79f106a2a0a8f4fbbd88
+precheck-20260924T051513052404Z.json  passed_for_wave_gate=True  refused=False  package_digest=63ea3f6ceb56d5ec3942fa94d2130e9ed1224811c691e8e264d2bc268a002288
+
+== 8. python3 check_package.py check-all --assignment a01_data_cleanup_executors (exit 0); it re-checked all five packages
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051618892517Z.json
+
+Newest report after check-all: precheck-20260924T051608558864Z.json passed_for_wave_gate=True package_digest=63ea3f6ceb56d5ec3942fa94d2130e9ed1224811c691e8e264d2bc268a002288
+Sequence finished (UTC): 2026-09-24T05:16:18.928150+00:00

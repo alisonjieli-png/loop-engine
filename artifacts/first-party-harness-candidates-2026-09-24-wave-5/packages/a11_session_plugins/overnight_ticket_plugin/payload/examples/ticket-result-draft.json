@@ -1,0 +1,14 @@
+{
+  "ticket_id": "T-102",
+  "outcome": "blocked",
+  "summary": "Refund rows arrive from two exports and the ticket does not say which one is the record of truth.",
+  "evidence": [
+    {
+      "command": "python3 -m unittest tests.test_totals",
+      "exit_code": 1,
+      "observed": "1 failure: expected 3 refunds, found 6"
+    }
+  ],
+  "changed_files": [],
+  "handoff": "Blocked on a decision: keep refunds from the ledger export or from the payment export. The failing test in tests/test_totals.py shows the double count."
+}

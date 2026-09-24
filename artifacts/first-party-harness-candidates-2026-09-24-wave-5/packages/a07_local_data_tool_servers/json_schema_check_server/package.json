@@ -1,0 +1,594 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "json_schema_check_server",
+    "title": "JSON schema check tool server",
+    "purpose": "A local standard-input protocol server that checks a JSON document against a supported subset of JSON Schema and returns every violation with its path, so outputs are checked before handoff.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/validate_input_at_the_boundary_and_refuse_early.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md"
+    ],
+    "layer": "code",
+    "family": "native_protocol_server",
+    "search_tags": [
+      "validate json against a schema",
+      "json schema check",
+      "check an output file before handoff",
+      "validate json lines records",
+      "list every schema violation with its path",
+      "mcp server for json schema",
+      "local json validator tool",
+      "find a mistyped keyword in a json schema",
+      "check a step output against its contract",
+      "draft 2020-12 validator without installing anything"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning",
+        "data quality"
+      ],
+      "role": [
+        "data engineer",
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "check_json_schema",
+      "Validator",
+      "SchemaScan",
+      "translate_pattern",
+      "exact_number"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a07_local_data_tool_servers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "434be21ffdbac629bad622d4d8e8320932e147241f09b0c1f3542863e5c8133c",
+        "size_bytes": 1182,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/check_json_schema.input.schema.json",
+        "digest": "86064ae2bd388b417748d6cb252a279ff0b8aaed3c769d4949fd6a7e4974a2d7",
+        "size_bytes": 1624,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/check_json_schema-arguments.json",
+        "digest": "866eadf67509d3b490016c4913159384b8e45d732d122c698dcbe7bead72b390",
+        "size_bytes": 96,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleaning-summary-wrong.json",
+        "digest": "1ba00833b4ac0bfa9e7d5fc48ae635f5ed693255362965d8ce9a8a73fd100f7f",
+        "size_bytes": 292,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleaning-summary.json",
+        "digest": "0a0c3004b3fe22d04f5ff52145d0bdf1788e7b88e7b3e9b71e1b3e6189584390",
+        "size_bytes": 352,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleaning-summary.schema.json",
+        "digest": "ad7b0a9c2ba001b9fe661c134df2220e7ac175735d595044455dfbd1621fa7a0",
+        "size_bytes": 1270,
+        "media_type": "application/schema+json",
+        "role": "other"
+      },
+      {
+        "path": "server/json_schema_check_server.py",
+        "digest": "a0f2de59d1ce882b31fd9785e5f6d44063707eb6352eb2e0e0130f8354b84c3b",
+        "size_bytes": 63054,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_json_schema_check_server.py",
+        "digest": "f02d9da56cdb15eb283121d3b79821f0fcde4ffbb58afb3c25c7e3aac3cc5cf4",
+        "size_bytes": 29635,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.mcp.json",
+        "digest": "744cc502cd9851291b0690fac1db2584edac45bf86aca3acdbb2be8c5d15a9d0",
+        "size_bytes": 303,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "553eeb021bfc72115ece6d35a5d0fae57d49cd7daf41608585652e59a0d68ee5",
+        "size_bytes": 165,
+        "media_type": "application/toml",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/cursor/mcp.json",
+        "digest": "f62e13dbfcb1789611fe759abf5323c92a8d712c61748ac945fb97305994bb49",
+        "size_bytes": 291,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "f52dfb1ad357db7f5fef0dd4e6b9605227663ac1af5c3733b1dd025957007580",
+        "size_bytes": 255,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "65d75cffe2b811274e5b5218efdabe9f571ca9d5e538dca6d86777f12d3e99e0",
+        "size_bytes": 306,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a07_local_data_tool_servers",
+    "file_class": "protocol_server_config_local",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "competition_solve_task_to_submission",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "claude_code": "Project .mcp.json is documented. The launch line starts the server through ${CLAUDE_PROJECT_DIR:-.}. The Claude Code MCP documentation says Claude Code sets CLAUDE_PROJECT_DIR in the server's environment, not in its own, so the args expand to the absolute project root only when the host starts Claude Code with CLAUDE_PROJECT_DIR set; otherwise they expand to '.', which assumes the server starts in the project root. Neither start folder was observed. Project servers need the user's approval in a trusted workspace before first use.",
+      "codex": "Project .codex/config.toml is documented for trusted projects only, and the relative server path in the launch line assumes the harness starts the server in the workspace root; that working directory was not observed for this harness.",
+      "gemini_cli": "Project .gemini/settings.json mcpServers is documented. The server key is the hyphenated name json-schema-check-server, not the identity (a recorded deviation from SPEC 9.2), because the Gemini CLI 0.59.0 documentation says underscores in server names make policy and wildcard rules fail silently. With folder trust on (true by default in the 0.59.0 configuration reference), Gemini CLI ignores .gemini/settings.json and connects no protocol server in an untrusted folder, so the host must trust the workspace. The relative launch line assumes the server starts in the workspace root; that was not observed.",
+      "cursor": "Project .cursor/mcp.json with mcpServers is documented, and so is ${workspaceFolder} in command and args (the folder that holds .cursor/mcp.json), in the Cursor MCP documentation copy docs/cursor-mcp.md of madebywild/agent-harness at 2ecf44f, the revision that docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md records. Discovery, approval and the server start were not observed on this machine."
+    },
+    "not_placed": {},
+    "native_name": "json-schema-check-server",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "AGENTS.md",
+      "codex": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "gemini_cli": "AGENTS.md",
+      "cursor": "AGENTS.md"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/json-schema-check-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/check_json_schema.input.schema.json": {
+          "destination": ".baltor/json-schema-check-server/contracts/check_json_schema.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/check_json_schema-arguments.json": {
+          "destination": ".baltor/json-schema-check-server/examples/check_json_schema-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary-wrong.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary-wrong.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.schema.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/tests/test_json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/claude_code/.mcp.json": {
+          "destination": ".mcp.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/json-schema-check-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/check_json_schema.input.schema.json": {
+          "destination": ".baltor/json-schema-check-server/contracts/check_json_schema.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/check_json_schema-arguments.json": {
+          "destination": ".baltor/json-schema-check-server/examples/check_json_schema-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary-wrong.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary-wrong.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.schema.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/tests/test_json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/json-schema-check-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/check_json_schema.input.schema.json": {
+          "destination": ".baltor/json-schema-check-server/contracts/check_json_schema.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/check_json_schema-arguments.json": {
+          "destination": ".baltor/json-schema-check-server/examples/check_json_schema-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary-wrong.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary-wrong.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.schema.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/tests/test_json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/json-schema-check-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/check_json_schema.input.schema.json": {
+          "destination": ".baltor/json-schema-check-server/contracts/check_json_schema.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/check_json_schema-arguments.json": {
+          "destination": ".baltor/json-schema-check-server/examples/check_json_schema-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary-wrong.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary-wrong.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.schema.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/tests/test_json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/json-schema-check-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/check_json_schema.input.schema.json": {
+          "destination": ".baltor/json-schema-check-server/contracts/check_json_schema.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/check_json_schema-arguments.json": {
+          "destination": ".baltor/json-schema-check-server/examples/check_json_schema-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary-wrong.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary-wrong.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-summary.schema.json": {
+          "destination": ".baltor/json-schema-check-server/examples/cleaning-summary.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_json_schema_check_server.py": {
+          "destination": ".baltor/json-schema-check-server/tests/test_json_schema_check_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/cursor/mcp.json": {
+          "destination": ".cursor/mcp.json",
+          "operation": "merge_json_object"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/check_json_schema.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "examples/check_json_schema-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "examples/cleaning-summary-wrong.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "examples/cleaning-summary.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "examples/cleaning-summary.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "server/json_schema_check_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "tests/test_json_schema_check_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/.mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "variants/cursor/mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_json_schema_check_server.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [
+      {
+        "name": "json_schema_check_server",
+        "script": "server/json_schema_check_server.py",
+        "arguments": [
+          "--root",
+          "examples"
+        ],
+        "tools": [
+          "check_json_schema"
+        ],
+        "protocol_versions": [
+          "2025-11-25",
+          "2025-06-18",
+          "2025-03-26"
+        ],
+        "sample_call": {
+          "tool": "check_json_schema",
+          "arguments": {
+            "document_path": "cleaning-summary.json",
+            "schema_path": "cleaning-summary.schema.json"
+          },
+          "expect_is_error": false
+        }
+      }
+    ],
+    "first_action": "Before handing a JSON output on, call the check_json_schema tool with document_path set to the output file and schema_path set to its contract schema, then read valid and violations.",
+    "done_when": [
+      "check_json_schema answers valid true with an empty unchecked list for every JSON output the step hands on.",
+      "No schema file was edited to make a document pass."
+    ],
+    "stop_and_report_when": [
+      "The schema itself is refused, for example for an unknown keyword or an unsupported $schema value.",
+      "The same violation remains after two fixes, or the check stops at the time limit.",
+      "No listed tool name ends in check_json_schema; run the package tests. If they pass, the harness did not start a working server: report that. Otherwise report their last line."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md": "2614fa7bb1ef2619ca4afdf637f1c1e3c477ad6b1efeb1dcf030fc7d749b84df",
+      "examples/29_intelligence_service/starter-catalogue/bodies/validate_input_at_the_boundary_and_refuse_early.md": "0168c9d59eb1d1632ffd75957f2ef972b2071d2c3bdea318a0bd46eebe8990fc",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md": "0665234b5d1110a0c49b6f0873eae2d36f8e6f24dd1f7f660526ec3ea30169fb",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md": "5cc46b06fb4edab54b948d24d61793fa850ac775286eac564e806680e5b71bd7"
+    },
+    "package_digest": "9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

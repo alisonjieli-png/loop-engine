@@ -1,0 +1,580 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "guard_shell_command_allowlist",
+    "title": "Guard shell commands with an allowlist",
+    "purpose": "Before each shell command, refuse any command whose program and first arguments are not on the step's declared allowlist, and return a reason the model can act on.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md",
+      "src/loop_engine/core/harness_confinement.py"
+    ],
+    "layer": "code",
+    "family": "native_hook",
+    "search_tags": [
+      "shell command allowlist",
+      "block shell commands that are not approved",
+      "claude code pretooluse bash hook",
+      "cursor beforeShellExecution hook",
+      "copilot pretooluse hook",
+      "restrict what an overnight agent can run",
+      "refuse chained shell commands",
+      "guard for an unattended coding agent",
+      "only allow pytest and git read commands",
+      "guard claude code bash monitor and powershell commands"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "platform engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a04_unattended_guard_hooks",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "4f153fc43c0ef6e5c1f9013a8939c3fe867467ac6a0c039e6337d64523378ffa",
+        "size_bytes": 1156,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "defaults/guard-shell-command-allowlist.json",
+        "digest": "0044459a379caa66e72b423195cdc3db597694b39b1751ae8fb01083e6ed9295",
+        "size_bytes": 610,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-allowed.json",
+        "digest": "5585201a9122647430993b0ddab7247f24e5ac677cdba9d22ba3fe0cdcd823db",
+        "size_bytes": 313,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-monitor-refused.json",
+        "digest": "1c39e391a25878ebe4b55529250346754be611881ecaee5429ff20196be1d729",
+        "size_bytes": 336,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-refused.json",
+        "digest": "94cab4d7930334ae28ad1763a5ec36253c75581a80f7eef1cdc211a2a3ac941d",
+        "size_bytes": 312,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-allowed.json",
+        "digest": "f50dcbc3c822afbe7b7085787eeee9e7b42872b0b2f1c13471245eed372511f0",
+        "size_bytes": 161,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-refused.json",
+        "digest": "1e83e7e857336b1c1681de6293e347c58a0a2c1104393b44169534b4dd703655",
+        "size_bytes": 183,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-beforeshellexecution-allowed.json",
+        "digest": "e1bb8ec36030c325c16e69e2edbd8f54ac696e84bbb1eb64bc15d28acebe3707",
+        "size_bytes": 244,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-beforeshellexecution-refused.json",
+        "digest": "4d1f573323fc1a8d59e557405c77750077879f00f70df81e98c63a8cc8088407",
+        "size_bytes": 256,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/invalid-policy.json",
+        "digest": "a2b4e56044c2f327d75103fd0c2a929e3e047c665624ba1f984095cb87c218d9",
+        "size_bytes": 186,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/step-policy.json",
+        "digest": "ecbca7c75d84d106ed53d8aca982d1beb480a10168e52800f237e86950aac9cf",
+        "size_bytes": 642,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "hooks/guard_shell_commands.py",
+        "digest": "9101d1423014af79c459077dd71bbda3574ad6dd9b1c01d9b9fccee9f1230981",
+        "size_bytes": 28062,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_guard_shell_commands.py",
+        "digest": "8647c3c9d6c8043d7574a7dc3c4857f85492e67d6c53611af1c7781a42ad9ad1",
+        "size_bytes": 21520,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "0d611e82bbd671abea91cfbb8af132431c07c582b105b79f03df143aad88f135",
+        "size_bytes": 373,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/copilot/guard-shell-command-allowlist.json",
+        "digest": "2f85cd009cfadb27700007b8fc6dc2fe5c3d1dc5619d05d692c40ce7cedabbd3",
+        "size_bytes": 270,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/hooks.json",
+        "digest": "9621c57c2a6bb376683cf8ac73ea271ca5623e8cacb16e32999e1f5f160f8ed4",
+        "size_bytes": 260,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a04_unattended_guard_hooks",
+    "file_class": "hook_with_script",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "cursor": "Event beforeShellExecution, input field command, answer fields permission, user_message and agent_message, and the failClosed option come from a snapshot of Cursor's hook page in a local outside project and match Cursor's hook page as read on September 24, 2026, which requires permission in every answer and blocks the action on an answer that does not match the schema. So an allowed command is answered with permission allow. No Cursor run was observed. Whether Cursor then still asks the user under its own approval settings is unverified; if it does not, this allowlist is the only approval for shell commands in Cursor.",
+      "copilot": "Event preToolUse, input fields toolName and toolArgs, the permissionDecision and permissionDecisionReason answer, the empty answer that keeps the default behavior, and the version, bash, cwd and timeoutSec keys match GitHub's hooks configuration reference as read on September 24, 2026; no Copilot run was observed."
+    },
+    "not_placed": {},
+    "native_name": "guard-shell-command-allowlist",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "cursor": "variants/cursor/hooks.json",
+      "copilot": "variants/copilot/guard-shell-command-allowlist.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-shell-command-allowlist/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-shell-command-allowlist.json": {
+          "destination": ".baltor/step/guard-shell-command-allowlist.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-monitor-refused.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-beforeshellexecution-allowed.json": null,
+        "examples/cursor-beforeshellexecution-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_shell_commands.py": {
+          "destination": ".baltor/guard-shell-command-allowlist/hooks/guard_shell_commands.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_shell_commands.py": null,
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-shell-command-allowlist/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-shell-command-allowlist.json": {
+          "destination": ".baltor/step/guard-shell-command-allowlist.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-monitor-refused.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-beforeshellexecution-allowed.json": null,
+        "examples/cursor-beforeshellexecution-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_shell_commands.py": {
+          "destination": ".baltor/guard-shell-command-allowlist/hooks/guard_shell_commands.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_shell_commands.py": null,
+        "variants/cursor/hooks.json": {
+          "destination": ".cursor/hooks.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "copilot": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-shell-command-allowlist/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-shell-command-allowlist.json": {
+          "destination": ".baltor/step/guard-shell-command-allowlist.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-monitor-refused.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-beforeshellexecution-allowed.json": null,
+        "examples/cursor-beforeshellexecution-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_shell_commands.py": {
+          "destination": ".baltor/guard-shell-command-allowlist/hooks/guard_shell_commands.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_shell_commands.py": null,
+        "variants/copilot/guard-shell-command-allowlist.json": {
+          "destination": ".github/hooks/guard-shell-command-allowlist.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "defaults/guard-shell-command-allowlist.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-monitor-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/copilot-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/copilot-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/cursor-beforeshellexecution-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/cursor-beforeshellexecution-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/invalid-policy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "examples/step-policy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "hooks/guard_shell_commands.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "tests/test_guard_shell_commands.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "variants/copilot/guard-shell-command-allowlist.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      },
+      "variants/cursor/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_shell_commands.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "PreToolUse",
+        "script": "hooks/guard_shell_commands.py",
+        "arguments": [
+          "--harness",
+          "claude_code",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/claude_code-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "does not start with an allowed command"
+            ]
+          },
+          {
+            "input": "examples/claude_code-pretooluse-monitor-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "unquoted braces"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "beforeShellExecution",
+        "script": "hooks/guard_shell_commands.py",
+        "arguments": [
+          "--harness",
+          "cursor",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-beforeshellexecution-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"allow\""
+            ]
+          },
+          {
+            "input": "examples/cursor-beforeshellexecution-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"deny\"",
+              "redirection to or from a file"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "preToolUse",
+        "script": "hooks/guard_shell_commands.py",
+        "arguments": [
+          "--harness",
+          "copilot",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/copilot-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "is not allowed with"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read .baltor/step/guard-shell-command-allowlist.json to learn the allowed command starts before running any shell command.",
+    "done_when": [
+      "Every shell command the step ran started with an allowed entry.",
+      "Every refused command was rewritten in an allowed form or reported."
+    ],
+    "stop_and_report_when": [
+      "The step needs a program or argument that the allowlist does not list.",
+      "The hook says the allowlist is missing, invalid or unreadable.",
+      "The hook says it could not read the tool call."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md": "5fb2ebee75a1282a95fcd1fd7c944cef8ac2c146a412f57be2f7c3831a46f5e1",
+      "src/loop_engine/core/harness_confinement.py": "e9fb6b8e374294bdc74341d3168253492ff3eab2df405b80315fa3da79730272"
+    },
+    "package_digest": "1ee935c14fdac5b4e0376b11a830fd8bc2cd09e20ecaa0327118b8495d17eadf",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

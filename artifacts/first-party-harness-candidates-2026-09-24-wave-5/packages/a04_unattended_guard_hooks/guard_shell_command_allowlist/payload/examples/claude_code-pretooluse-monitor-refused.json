@@ -1,0 +1,9 @@
+{
+  "session_id": "sample-session-0001",
+  "transcript_path": "/work/.baltor/sample-transcript.jsonl",
+  "cwd": "/work",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Monitor",
+  "tool_input": {"command": "find . -name '*.tmp' {-delete,}", "description": "Watch the cleanup", "timeout_ms": 60000}
+}

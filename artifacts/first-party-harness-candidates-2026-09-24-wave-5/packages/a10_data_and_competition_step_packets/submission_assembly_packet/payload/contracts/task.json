@@ -1,0 +1,13 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Build the submission file from the chosen run's recorded predictions, check it against the sample submission, and record which run and data produced it, without uploading.",
+ "output_contract_refs": ["submission_record/v1"],
+ "dependency_ids": [],
+ "required_capabilities": ["python3"],
+ "effects": ["reads_fs", "writes_fs"],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

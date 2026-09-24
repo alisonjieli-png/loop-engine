@@ -1,0 +1,13 @@
+{
+  "dependency_ids": [],
+  "effects": ["reads_fs"],
+  "harness_style": "gemini",
+  "kind": "reason",
+  "mode": "deterministic",
+  "model_calls_authorized": false,
+  "node_id": "list-failing-tests",
+  "objective": "List the names of the failing tests in the saved unittest log, in log order.",
+  "output_contract_refs": ["failing_tests/v1"],
+  "record_type": "node_assignment/v3",
+  "required_capabilities": []
+}

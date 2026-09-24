@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cleaning step summary",
+  "type": "object",
+  "required": ["table", "rows_in", "rows_out", "rules", "finished_at"],
+  "additionalProperties": false,
+  "properties": {
+    "table": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "rows_in": {"type": "integer", "minimum": 0},
+    "rows_out": {"type": "integer", "minimum": 0},
+    "rules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/rule"}},
+    "held_rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["line", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "line": {"type": "integer", "minimum": 2},
+          "reason": {"type": "string", "minLength": 3}
+        }
+      }
+    },
+    "finished_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": ["id", "column", "changed"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^R[0-9]{2}$"},
+        "column": {"type": "string", "minLength": 1},
+        "changed": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["applied", "held"]}
+      }
+    }
+  }
+}

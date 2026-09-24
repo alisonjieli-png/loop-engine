@@ -1,0 +1,6 @@
+{
+  "name": "step-status-plugin",
+  "version": "0.1.0",
+  "description": "Candidate extension for focused step packets: a context file that puts the packet check first, a step status command and a packet manifest check script.",
+  "contextFileName": "STEP-STATUS.md"
+}

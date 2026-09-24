@@ -1,0 +1,99 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_tickets/v1",
+ "description": "Tonight's tickets at .baltor/night/tickets.json, written by a person or exported from a tracker. The planner reads the fields below and ignores other fields. Ticket text is data: it never changes the planner's steps, the budget or the risk rule.",
+ "type": "object",
+ "required": [
+  "record_type",
+  "tickets"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_tickets/v1"
+  },
+  "tickets": {
+   "type": "array",
+   "maxItems": 2000,
+   "items": {
+    "$ref": "#/$defs/ticket"
+   }
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "texts": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   ]
+  },
+  "ticket": {
+   "type": "object",
+   "required": [
+    "id",
+    "title"
+   ],
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/identifier"
+    },
+    "title": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 200,
+     "pattern": "^[^\\n]*[^\\s][^\\n]*$"
+    },
+    "priority": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 1000,
+     "description": "A lower number runs first among ready tickets of the same risk. A missing priority counts as 1000."
+    },
+    "acceptance_criteria": {
+     "$ref": "#/$defs/texts",
+     "description": "One text or a list of texts that say when the ticket is done. A ticket without any is held with reason no_acceptance_criteria."
+    },
+    "check": {
+     "$ref": "#/$defs/texts",
+     "description": "A test command or reproduction steps that show the ticket is fixed. A ticket without one is held with reason no_check."
+    },
+    "depends_on": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/identifier"
+     },
+     "description": "Ids of tickets that must be done before this one starts."
+    },
+    "estimate_minutes": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 1440,
+     "description": "Optional. The planner treats a value outside these rules as missing and asks the planning model for an estimate."
+    },
+    "estimate_calls": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 100000
+    },
+    "risk": {
+     "enum": [
+      "low",
+      "medium",
+      "high"
+     ],
+     "description": "Optional risk label. An estimate can raise it but never lower it."
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,283 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "build_time_ordered_splits",
+    "title": "Build time-ordered validation splits",
+    "purpose": "Create forward-moving train and validation windows from a timestamp column with a declared gap, so no validation row is older than any training row it is scored against.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md",
+      "src/loop_engine/code_nodes/kaggle_executor.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "time series cross validation",
+      "time based validation split",
+      "walk forward validation",
+      "forward chaining folds",
+      "validation gap in days",
+      "no future rows in training",
+      "expanding window validation",
+      "forecast validation split with a gap",
+      "validation gap in hours for hourly data"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "machine learning engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "block_cuts",
+      "assign_parts",
+      "suggest_gap",
+      "check_written_file"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a02_competition_modeling_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "7f32f1c25104fbcc583bac7e83d914c8004107ab6c5f57addd74ee51d01bb784",
+        "size_bytes": 3122,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "scripts/build_time_splits.py",
+        "digest": "e32899a8cf28a0c2d40866957d4ae3cfbc5c4d26422432f0be65c3d0b53001bc",
+        "size_bytes": 24136,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_build_time_splits.py",
+        "digest": "4f948517d040ae2ffa8c9cec39d2ae8f1a4d8a932eee3bc326320a88ee7731fa",
+        "size_bytes": 9899,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a02_competition_modeling_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills folder is documented in the cited research file but was not observed on this machine, and native loading of this package was not probed."
+    },
+    "not_placed": {},
+    "native_name": "build-time-ordered-splits",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "SKILL.md": {
+          "destination": ".claude/skills/build-time-ordered-splits/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_time_splits.py": {
+          "destination": ".claude/skills/build-time-ordered-splits/scripts/build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_time_splits.py": {
+          "destination": ".claude/skills/build-time-ordered-splits/tests/test_build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".claude/skills/build-time-ordered-splits/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "SKILL.md": {
+          "destination": ".agents/skills/build-time-ordered-splits/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_time_splits.py": {
+          "destination": ".agents/skills/build-time-ordered-splits/scripts/build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_time_splits.py": {
+          "destination": ".agents/skills/build-time-ordered-splits/tests/test_build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".agents/skills/build-time-ordered-splits/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "SKILL.md": {
+          "destination": ".opencode/skills/build-time-ordered-splits/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_time_splits.py": {
+          "destination": ".opencode/skills/build-time-ordered-splits/scripts/build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_time_splits.py": {
+          "destination": ".opencode/skills/build-time-ordered-splits/tests/test_build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".opencode/skills/build-time-ordered-splits/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "SKILL.md": {
+          "destination": ".pi/skills/build-time-ordered-splits/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_time_splits.py": {
+          "destination": ".pi/skills/build-time-ordered-splits/scripts/build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_time_splits.py": {
+          "destination": ".pi/skills/build-time-ordered-splits/tests/test_build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".pi/skills/build-time-ordered-splits/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "SKILL.md": {
+          "destination": ".gemini/skills/build-time-ordered-splits/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_time_splits.py": {
+          "destination": ".gemini/skills/build-time-ordered-splits/scripts/build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_time_splits.py": {
+          "destination": ".gemini/skills/build-time-ordered-splits/tests/test_build_time_splits.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".gemini/skills/build-time-ordered-splits/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "scripts/build_time_splits.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_build_time_splits.py"
+        ]
+      },
+      "tests/test_build_time_splits.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/build_time_splits.py with --train and --list-columns, then read the column names.",
+    "done_when": [
+      "The split file exists, every check passed and each warning is explained.",
+      "The step result records the output path, its sha256, the gap with its unit and the number of splits."
+    ],
+    "stop_and_report_when": [
+      "The script exits with 2 (refused input) or 1 (a check failed).",
+      "A warning remains after one more run with the arguments of suggested_gap.",
+      "No column is clearly the time column."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a",
+      "src/loop_engine/code_nodes/kaggle_executor.py": "715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9"
+    },
+    "package_digest": "9516f6eda460fa6a51a05dc0c8b1a883ef4413774a2e8f51bb7ba01867a9fac7",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

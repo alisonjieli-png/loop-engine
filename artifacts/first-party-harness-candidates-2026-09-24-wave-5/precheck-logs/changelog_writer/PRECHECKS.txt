@@ -1,0 +1,316 @@
+PRECHECKS for wave 5 package changelog_writer
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+Package folder: $WAVE/packages/a05_focused_subagents/changelog_writer
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Newest session first. The a05 generator's log of 2026-09-23 is kept unchanged at the end of this file. Every check run saved its own report as review/precheck-<UTC>.json inside the package folder, and none was deleted.
+
+==============================================================================
+Session of 2026-09-24: repair by the a05 repairer after the a05 critic (verdict: repair)
+==============================================================================
+Critic folder: $WAVE/critic-a05_focused_subagents. Work folder: $WAVE/repairer-a05_focused_subagents/r2-20260924T0511Z.
+Before any change, the five a05 packages and their PRECHECKS.txt files were saved in that work folder as a05-predecessor-snapshot.tar.gz (sha256 d9292cc53a0278f0092994976ae8ccb8f10aae9b9a43c25c7c2211ebdc35678b). The saved package digest ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 equals the digest the critic rechecked, so the repair started from the reviewed bytes. Earlier repair attempts for a05 (folders repair-a05_focused_subagents/ and repairer-a05_focused_subagents/probes/) left probe files only and changed no package file.
+
+== 1. critic findings and what changed ==
+- False harness claim: the note no longer says Claude Code's Edit cannot create files; it records that Edit creates a missing file from an empty old_string, that OpenCode's write and apply_patch share the edit permission (and a move is checked against its old path only), that Copilot's edit alias includes Write, and that real enforcement needs a settings rule, a write guard hook and a diff check.
+- Fragment workflows: the first action looks for towncrier, changesets and reno setups and refuses if one exists; a changelog that says it is generated is refused too.
+- OpenCode deny list: edits are now denied for any path that starts with a dot or passes through a folder whose name starts with a dot, and for AGENTS.md, CLAUDE.md, CLAUDE.local.md, GEMINI.md and SKILL.md anywhere; the changelog allow rules no longer match code files such as src/CHANGELOG_parser.py.
+- Unjudgeable rule and schema gaps: the disagree rule was replaced by 'the evidence does not name a command with exit status 0'; files_changed was removed, a section field must name an unreleased heading, an updated passage must carry the replaced text, and paths in dot folders, harness instruction files and non-document files are rejected.
+- First 40 lines only: the helper now searches for Unreleased and version headings and reads around the Unreleased heading or the newest version heading, which may be last.
+- Purpose (not blocking): 'limited to documentation paths' removed from the purpose and the three descriptions.
+- Kept without omitClaudeMd on purpose: a writer should see project rules in CLAUDE.md; recorded in the note.
+
+== 2. checks that failed or changed before the final pass ==
+- Body drafts of the repair had 399 and 364 words, measured with the checker's counter before any file was written; the written body has 349 words.
+- No check_package.py run refused this package in this session.
+
+== 3. final fill (run again while writing this log; package.json bytes unchanged: True) ==
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a05_focused_subagents/changelog_writer
+{"fill": "done", "files": 5, "package_digest": "1637a8d4dd02aca9c1bf353d6ad0b435e58bb6d3e909701d69b062d83f35921f"}
+exit 0
+
+== 4. check, as run for this package inside the final check-all (report review/precheck-20260924T055537982562Z.json) ==
+{
+ "identity": "changelog_writer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055537982562Z.json"
+}
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+== 5. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+    reads_fs is declared but no step or code was detected using it; the reviewer judges
+    writes_fs is declared but no step or code was detected using it; the reviewer judges
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+[passed] hooks_run
+[passed] servers_run
+
+== 6. report history in review/ (every report kept; current means the digest equals the current package digest) ==
+precheck-20260923T202906671007Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=False
+precheck-20260923T203900642505Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=False
+precheck-20260923T204036428502Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=False
+precheck-20260923T204557319445Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=False
+precheck-20260924T055210985753Z.json: passed_for_wave_gate=True refused=False package_digest=1637a8d4dd02aca9c1bf353d6ad0b435e58bb6d3e909701d69b062d83f35921f current=True
+precheck-20260924T055239897556Z.json: passed_for_wave_gate=True refused=False package_digest=1637a8d4dd02aca9c1bf353d6ad0b435e58bb6d3e909701d69b062d83f35921f current=True
+precheck-20260924T055537982562Z.json: passed_for_wave_gate=True refused=False package_digest=1637a8d4dd02aca9c1bf353d6ad0b435e58bb6d3e909701d69b062d83f35921f current=True
+
+== 7. check-all --assignment a05_focused_subagents (final run) ==
+started 2026-09-24T05:55:37Z
+$ python3 $WAVE/check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055553222159Z.json
+exit 0
+passed_for_wave_gate: ['changelog_writer', 'data_sample_inspector', 'leakage_reviewer', 'repository_scout', 'test_run_summarizer']
+packages/a05_focused_subagents/changelog_writer/review/precheck-20260924T055537982562Z.json
+packages/a05_focused_subagents/data_sample_inspector/review/precheck-20260924T055538322487Z.json
+packages/a05_focused_subagents/leakage_reviewer/review/precheck-20260924T055538644697Z.json
+packages/a05_focused_subagents/repository_scout/review/precheck-20260924T055538930388Z.json
+packages/a05_focused_subagents/test_run_summarizer/review/precheck-20260924T055553220043Z.json
+
+== 8. section 12 equivalent commands (after the final check-all) ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+$ grep -Fx changelog_writer $WAVE/existing-identities.txt
+exit 1 (1 means the identity is new)
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+5 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:docs/guides/native-client-material-loading.md | sha256sum
+6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf  matches package.json
+$ python3 -c json.load on every JSON file; yaml.safe_load on every Markdown front matter
+12 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+exit 1 (1 means no match)
+
+== 9. extra verification by the repairer (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): [349] (range 80 to 350)
+front matter variants/claude_code/changelog-writer.md: {"name": "changelog-writer", "description": "<purpose>", "tools": "Read, Grep, Glob, Edit", "model": "inherit", "maxTurns": 20}
+front matter variants/copilot/changelog-writer.agent.md: {"name": "changelog-writer", "description": "<purpose>", "tools": ["read", "search", "edit"]}
+front matter variants/opencode/changelog-writer.md: {"description": "<purpose>", "mode": "subagent", "steps": 20, "permission": {"bash": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "edit": {"*": "deny", "*.md": "allow", "*.rst": "allow", "*CHANGELOG": "allow", "*CHANGELOG.*": "allow", "*CHANGES": "allow", "*CHANGES.*": "allow", "*changelog.*": "allow", ".*": "deny", "*/.*": "deny", "*AGENTS.md": "deny", "*CLAUDE.md": "deny", "*CLAUDE.local.md": "deny", "*GEMINI.md": "deny", "*SKILL.md": "deny"}, "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+description equals the proposal purpose in all variants: True
+-- changelog-schema-validation.txt (work folder) --
+valid    body example
+valid    body no-passage form
+valid    refusal
+valid    bracketed unreleased heading
+valid    restructured text page
+rejected old files_changed field
+rejected entry under a released version
+rejected updated passage without the replaced text
+rejected no passage but a page named
+rejected changelog inside a dot folder
+rejected harness instruction file edited
+rejected nested harness instruction file edited
+rejected code file edited
+rejected page inside a nested dot folder
+rejected section missing
+failures: 0
+-- changelog-schema-mutation.txt (work folder) --
+killed   files_changed allowed again: ACCEPTED old files_changed field
+killed   section pattern removed: ACCEPTED entry under a released version
+killed   before not required: ACCEPTED updated passage without the replaced text
+killed   dot folder rule removed: ACCEPTED changelog inside a dot folder; ACCEPTED page inside a nested dot folder
+killed   harness file rule removed: ACCEPTED harness instruction file edited; ACCEPTED nested harness instruction file edited
+killed   page extension rule removed: ACCEPTED code file edited
+killed   no-passage path may be a page: ACCEPTED no passage but a page named
+-- opencode-edit-rule-simulation.txt (work folder) --
+ok  CHANGELOG.md: allow
+ok  docs/uploads.md: allow
+ok  docs/uploads.rst: allow
+ok  README.md: allow
+ok  packages/api/CHANGELOG.md: allow
+ok  CHANGES.rst: allow
+ok  changelog.txt: allow
+ok  CHANGELOG: allow
+ok  src/CHANGELOG_parser.py: deny
+ok  src/app.py: deny
+ok  AGENTS.md: deny
+ok  docs/CLAUDE.md: deny
+ok  CLAUDE.local.md: deny
+ok  skills/report/SKILL.md: deny
+ok  .github/copilot-instructions.md: deny
+ok  .agents/skills/a/references/b.md: deny
+ok  .clinerules/rules.md: deny
+ok  .clinerules: deny
+ok  .gemini/styleguide.md: deny
+ok  .pi/notes.md: deny
+ok  .claude/agents/x.md: deny
+ok  docs/.drafts/uploads.md: deny
+ok  packages/api/.github/CHANGELOG.md: deny
+ok  docs/api/index.md: allow
+mismatches: 0
+-- opencode-edit-rule-simulation-old-rules.txt (work folder) --
+old rules: .agents/skills/a/references/b.md: allow
+old rules: .clinerules/rules.md: allow
+old rules: .gemini/styleguide.md: allow
+old rules: .pi/notes.md: allow
+old rules: CLAUDE.local.md: allow
+old rules: src/CHANGELOG_parser.py: allow
+old rules: docs/.drafts/uploads.md: allow
+- Harness facts behind the repair, each read and not run: in the installed Claude Code 2.1.281 program text the agent file parser accepts omitClaudeMd, which its change list adds in 2.1.271; the built-in Explore agent denies the editing tools but keeps Bash, sets no turn limit, inherits the main model and skips CLAUDE.md; Edit accepts an empty old_string for a missing file and creates it; the Bash tool defaults to 120000 ms, allows at most 600000 ms, and on a timeout sends SIGTERM to the process group and every descendant, then SIGKILL 1500 ms later. In the installed OpenCode 1.18.32 program text the built-in explore agent allows grep, glob, list, read, bash, webfetch and websearch with no step limit; write and apply_patch ask the edit permission; the bash tool defaults to 120000 ms and stops the command's process group with a forced stop 3 seconds later; the wildcard matcher escapes special characters, turns * into any characters including /, is case-sensitive and anchored, and the last matching rule wins.
+- GitHub documentation read on 2026-09-24: docs.github.com/en/copilot/reference/custom-agents-configuration (tool aliases execute, read, edit including Write, search, agent, web, todo; unknown names ignored; empty list disables tools, omitted list enables all), the custom agent guide (.github/agents/NAME.agent.md) and the Copilot CLI guide (built-in Explore and Task agents). Copilot itself is not installed here and was not run.
+
+== 10. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys and harness behavior were read from the installed Claude Code 2.1.281 and OpenCode 1.18.32 program text without running either; Copilot is not installed.
+- No model ran. How a small model follows the repaired body is unmeasured.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).
+
+==============================================================================
+Earlier log: a05 generator, 2026-09-23 (unchanged bytes)
+==============================================================================
+PRECHECKS for wave 5 package changelog_writer
+written 2026-09-23T20:46:06.393267+00:00 by the a05_focused_subagents generator
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/changelog_writer
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/changelog_writer
+{"fill": "done", "files": 5, "package_digest": "ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935"}
+exit 0
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260923T204557319445Z.json) ==
+{
+ "identity": "changelog_writer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204557319445Z.json"
+}
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+== 3. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+    reads_fs is declared but no step or code was detected using it; the reviewer judges
+    writes_fs is declared but no step or code was detected using it; the reviewer judges
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+[passed] hooks_run
+[passed] servers_run
+
+== 4. report history in review/ (every report kept) ==
+precheck-20260923T202906671007Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=True
+precheck-20260923T203900642505Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=True
+precheck-20260923T204036428502Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=True
+precheck-20260923T204557319445Z.json: passed_for_wave_gate=True refused=False package_digest=ecdbd10c72f29f803313d54b27aef9a761b671e575eb2c01de7b598d7af89935 current=True
+
+== 5. check-all --assignment a05_focused_subagents (final run) ==
+$ python3 check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204606197104Z.json
+exit 0
+{"passed_for_wave_gate": ["changelog_writer", "data_sample_inspector", "leakage_reviewer", "repository_scout", "test_run_summarizer"]}
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): 345 (range 80 to 350)
+front matter variants/claude_code/changelog-writer.md: {"name": "changelog-writer", "description": "<purpose>", "tools": "Read, Grep, Glob, Edit", "model": "inherit", "maxTurns": 20}
+front matter variants/opencode/changelog-writer.md: {"description": "<purpose>", "mode": "subagent", "steps": 20, "permission": {"bash": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "edit": {"*": "deny", "*.md": "allow", "*.rst": "allow", "*CHANGELOG*": "allow", "*CHANGES*": "allow", "*AGENTS.md": "deny", "*CLAUDE.md": "deny", "*GEMINI.md": "deny", "*SKILL.md": "deny", "*.github/*": "deny", "*.claude/*": "deny", "*.opencode/*": "deny", "*.cursor/*": "deny", "*.baltor/*": "deny"}, "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+front matter variants/copilot/changelog-writer.agent.md: {"name": "changelog-writer", "description": "<purpose>", "tools": ["read", "search", "edit"]}
+description equals the proposal purpose in all variants: True
+reply schema: valid JSON Schema 2020-12 (jsonschema check_schema)
+  body example validates: True
+  body refusal form validates: True
+  known-wrong reply rejected by the schema: True ({"changelog": {"path": "CHANGELOG.md", "line": 9, "entry": "- x"}, "doc": {"path": "docs/a.md", "line": null, "status": "updated"}, "files_changed": ["CHANGELOG)
+
+== 7. checks that failed or changed before the final pass ==
+- Body draft 1 had 379 words, and a later draft 355, above the 350 word limit; shortened to 345 before the first package check.
+- After the passing checks, the attribution of the inspected OpenCode program text was corrected from 1.18.31 to 1.18.32 in package.json and the review note: the installed binary embeds version 1.18.32, while the repository guide's observation was made with 1.18.31. package.json changed and the payload digest did not; checked again in the final check-all run; passed.
+
+== 8. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys were checked by reading the installed Claude Code 2.1.281 program text and the installed OpenCode program text (it embeds version 1.18.32) without running either.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).

@@ -1,0 +1,30 @@
+{
+ "record_type": "night_step_handoff/v1",
+ "step_id": "t-104-verification",
+ "ticket_id": "T-104",
+ "status": "complete",
+ "written_at": "2026-09-23T03:11:02Z",
+ "revision": null,
+ "files": [
+  {
+   "path": "examples/evidence/t104-verification.json",
+   "sha256": "6ed501af562390bc0f2286bcaf7aee6926f26d081d55a4396620e18a33439388"
+  }
+ ],
+ "claims": [
+  {
+   "text": "The new test test_badge_uses_singular_for_one_item failed before the fix.",
+   "evidence": "examples/evidence/t104-reproduction.json"
+  },
+  {
+   "text": "The relevant and full test runs passed after the fix.",
+   "evidence": "examples/evidence/t104-verification.json"
+  }
+ ],
+ "blocker": null,
+ "first_action": null,
+ "remaining_actions": [],
+ "done_when": [
+  "The verification record says ready_for_review."
+ ]
+}

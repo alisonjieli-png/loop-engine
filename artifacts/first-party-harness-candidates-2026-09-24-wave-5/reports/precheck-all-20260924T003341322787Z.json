@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T00:33:41.322763+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "csv_profile_server",
+  "csv_row_sampler_server",
+  "json_schema_check_server",
+  "pattern_tester_server",
+  "sqlite_readonly_server"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a07_local_data_tool_servers/csv_profile_server/review/precheck-20260924T003321917733Z.json",
+  "packages/a07_local_data_tool_servers/csv_row_sampler_server/review/precheck-20260924T003325198209Z.json",
+  "packages/a07_local_data_tool_servers/json_schema_check_server/review/precheck-20260924T003332464901Z.json",
+  "packages/a07_local_data_tool_servers/pattern_tester_server/review/precheck-20260924T003336043547Z.json",
+  "packages/a07_local_data_tool_servers/sqlite_readonly_server/review/precheck-20260924T003341321304Z.json"
+ ]
+}

@@ -1,0 +1,150 @@
+=== 2026-09-23T20:20:05Z round 1: python3 $WAVE/check_package.py fill $PKG (small_working_context_rules)
+{"fill": "done", "files": 4, "package_digest": "d9b86a073480b88149a7c1167efd7d97b6bc0756ac06a402d3fb18ca72a88710"}
+exit 0
+=== 2026-09-23T20:20:05Z round 1: python3 $WAVE/check_package.py check $PKG (small_working_context_rules)
+{
+ "identity": "small_working_context_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202006220201Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:26:22Z round 2 after wording and test edits: python3 $WAVE/check_package.py fill $PKG (small_working_context_rules)
+{"fill": "done", "files": 4, "package_digest": "0db2b12299d8da96bb102ae8fb500308051ec11af0f47fcaef6181faaf92a1bf"}
+exit 0
+=== 2026-09-23T20:26:22Z round 2: python3 $WAVE/check_package.py check $PKG (small_working_context_rules)
+{
+ "identity": "small_working_context_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202623009395Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:29:54Z final round: python3 $WAVE/check_package.py fill $PKG (small_working_context_rules)
+{"fill": "done", "files": 4, "package_digest": "0db2b12299d8da96bb102ae8fb500308051ec11af0f47fcaef6181faaf92a1bf"}
+exit 0
+=== 2026-09-23T20:29:54Z final round: python3 $WAVE/check_package.py check $PKG (small_working_context_rules)
+{
+ "identity": "small_working_context_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202954539121Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:33:00Z check after the review note history was completed: python3 $WAVE/check_package.py check $PKG (small_working_context_rules)
+{
+ "identity": "small_working_context_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203300420170Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:33:09Z python3 $WAVE/check_package.py check-all --assignment a14_root_instruction_fragments
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203320797081Z.json
+exit 0

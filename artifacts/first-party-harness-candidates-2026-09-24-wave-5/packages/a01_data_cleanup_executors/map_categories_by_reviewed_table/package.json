@@ -1,0 +1,374 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "map_categories_by_reviewed_table",
+    "title": "Map category labels through a reviewed table",
+    "purpose": "Replace category values only through an explicit reviewed mapping table after case and spacing normalization, and list every unmapped value with its count instead of inventing a mapping.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/layer_exception_catalogs_with_precedence.md",
+      "src/loop_engine/code_nodes/text_conformance.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "map category values",
+      "standardize status labels",
+      "apply a mapping table",
+      "category synonyms to canonical labels",
+      "list unmapped categories",
+      "normalize country names with a lookup table",
+      "case insensitive label mapping",
+      "reviewed value mapping",
+      "category cleanup without guessing",
+      "recode categorical column"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "Refusal",
+      "Arguments",
+      "fold_letter_case",
+      "key_of",
+      "Table",
+      "delimiter_of",
+      "root_of",
+      "confined",
+      "read_file",
+      "strict_json",
+      "parse_table",
+      "column_index",
+      "prepare_output",
+      "write_copy",
+      "shown",
+      "arguments",
+      "run",
+      "render",
+      "emit",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a01_data_cleanup_executors",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "e5bedf502cf64c6f65ea7fe2a35a76db84ad2501bddb7f5526aee9e300c5e17c",
+        "size_bytes": 3261,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/mapping-table.json",
+        "digest": "82063131896660e753721ee81313bad7e4399e7e2be894c7f63c24f218ef26b3",
+        "size_bytes": 517,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/mapping-table.md",
+        "digest": "2b70aed7bf3422d7633b352993b6ef6acd14e365308e741cdbeebc5c309a535e",
+        "size_bytes": 5081,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/map_categories.py",
+        "digest": "c4ce2a90b66654d8c384cb5c784eb3cf2cc589da4d7af8a839b7580a010240e6",
+        "size_bytes": 23271,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_map_categories.py",
+        "digest": "3aba418064d61e533bfc5b3189e5b8c2af21a2638733f4e6d73024b0562b4abb",
+        "size_bytes": 14702,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a01_data_cleanup_executors",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "map-categories-by-reviewed-table",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/mapping-table.json": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/examples/mapping-table.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/mapping-table.md": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/references/mapping-table.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_categories.py": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/scripts/map_categories.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_categories.py": {
+          "destination": ".claude/skills/map-categories-by-reviewed-table/tests/test_map_categories.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/mapping-table.json": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/examples/mapping-table.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/mapping-table.md": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/references/mapping-table.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_categories.py": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/scripts/map_categories.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_categories.py": {
+          "destination": ".agents/skills/map-categories-by-reviewed-table/tests/test_map_categories.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/mapping-table.json": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/examples/mapping-table.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/mapping-table.md": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/references/mapping-table.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_categories.py": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/scripts/map_categories.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_categories.py": {
+          "destination": ".opencode/skills/map-categories-by-reviewed-table/tests/test_map_categories.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/mapping-table.json": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/examples/mapping-table.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/mapping-table.md": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/references/mapping-table.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_categories.py": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/scripts/map_categories.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_categories.py": {
+          "destination": ".pi/skills/map-categories-by-reviewed-table/tests/test_map_categories.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/mapping-table.json": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/examples/mapping-table.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/mapping-table.md": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/references/mapping-table.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_categories.py": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/scripts/map_categories.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_categories.py": {
+          "destination": ".gemini/skills/map-categories-by-reviewed-table/tests/test_map_categories.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_map_categories.py"
+        ]
+      },
+      "examples/mapping-table.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_map_categories.py"
+        ]
+      },
+      "references/mapping-table.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_map_categories.py"
+        ]
+      },
+      "scripts/map_categories.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_map_categories.py"
+        ]
+      },
+      "tests/test_map_categories.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B SKILL_DIR/scripts/map_categories.py with --input, --column and the reviewed --mapping table as a dry run, and read its JSON report.",
+    "done_when": [
+      "Every value is mapped, empty or listed in unmapped_values with its count.",
+      "counts.mapped + counts.unmapped + counts.empty equals counts.data_rows.",
+      "The report names the copy written with --output, or says that none was written."
+    ],
+    "stop_and_report_when": [
+      "The task names no reviewed mapping table, or gives the mapping only as a CSV sheet, a list or prose.",
+      "The script exits 2 and refuses the table, the input or the arguments.",
+      "unmapped_values_complete is false.",
+      "A value seems to need a new table entry; adding one is a review decision."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/layer_exception_catalogs_with_precedence.md": "5c1f5f9bd19b4f08b940bb20c0166bfacb6df486b636a5417ed604030a8c0311",
+      "src/loop_engine/code_nodes/text_conformance.py": "52339c27f806056ff2afca54abbcbfb1dc301a1527d31f681659f3f554b06b62"
+    },
+    "package_digest": "63ea3f6ceb56d5ec3942fa94d2130e9ed1224811c691e8e264d2bc268a002288",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

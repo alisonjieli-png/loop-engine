@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:51:43.281677+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "check_diff_allowed_paths",
+  "detect_weakened_test_assertions",
+  "verify_criteria_have_evidence",
+  "verify_fail_then_pass_evidence",
+  "verify_morning_report_claims"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a12_ticket_result_verifiers/check_diff_allowed_paths/review/precheck-20260924T055043592761Z.json",
+  "packages/a12_ticket_result_verifiers/detect_weakened_test_assertions/review/precheck-20260924T055105466269Z.json",
+  "packages/a12_ticket_result_verifiers/verify_criteria_have_evidence/review/precheck-20260924T055118354378Z.json",
+  "packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence/review/precheck-20260924T055128474282Z.json",
+  "packages/a12_ticket_result_verifiers/verify_morning_report_claims/review/precheck-20260924T055143278994Z.json"
+ ]
+}

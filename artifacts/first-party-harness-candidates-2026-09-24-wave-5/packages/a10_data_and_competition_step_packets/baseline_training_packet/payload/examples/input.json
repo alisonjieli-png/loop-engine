@@ -1,0 +1,14 @@
+{
+ "train_path": "competition/data/train.csv",
+ "test_path": "competition/data/test.csv",
+ "folds_path": "work/folds/folds.csv",
+ "id_column": "customer_id",
+ "target_column": "renewed",
+ "task_type": "binary",
+ "metric": "auc",
+ "baseline": "ridge",
+ "features": "tenure_months,monthly_spend",
+ "run_id": "baseline-ridge-01",
+ "output_dir": "work/experiments",
+ "ledger_path": "work/experiments/ledger.jsonl"
+}

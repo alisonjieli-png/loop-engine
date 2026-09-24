@@ -1,0 +1,35 @@
+---
+description: Use when a task reads raw input data. Keep raw files unchanged and write every derived table to a separate path with a change log.
+globs: **/raw/**,**/raw_data/**,**/data/external/**,input/**
+alwaysApply: false
+---
+# Treat raw data files as read-only
+
+## Rule
+
+Never edit, overwrite, sort, rename or delete raw data files, the original input. Write every cleaned or derived table to a new path, with a change log beside it.
+
+## Applies to
+
+Data files in `raw/`, `raw_data/`, `data/external/` or a top-level `input/` folder, and files the task names as source data; not source code there.
+
+## Instead
+
+1. First action: record one checksum of the raw folder and its subfolders. Put the task's raw folder, such as `input`, in place of `data/raw`. On macOS, use `shasum -a 256` for both `sha256sum`.
+
+```bash
+find data/raw -type f -exec sha256sum {} + | sort -k 2 | sha256sum
+```
+
+2. Write each result to a new file in the output folder the task names, else in `data/processed/`. Never overwrite a file this step did not create.
+3. Beside each output, write a change log such as `changes.jsonl`, one line per change with its `rule`: a changed cell has `row`, `column`, `before` and `after`; a dropped row has `"change": "row_removed"` and `row`. Rows count from 1 after the header.
+4. Check: run the checksum command again; it must print the first result. Report both.
+
+Done when the raw checksum is unchanged, outputs are at new paths and every change is logged.
+
+## Stop and report when
+
+- The task asks you to change a raw file itself.
+- A raw file is missing or unreadable, or the checksum changed.
+- No output folder is allowed for writing.
+- A tool you need can only change files in place.

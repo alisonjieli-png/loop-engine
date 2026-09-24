@@ -1,0 +1,228 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "honest_test_changes",
+    "title": "Keep test changes honest",
+    "purpose": "A path-scoped rule for test files that forbids deleting, skipping or loosening an assertion to make a check pass and requires a new test to fail before the fix.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/independent_failure_review.py",
+      "AGENTS.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_a_failed_check_before_repairing_the_work.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/test_driven_change_red_green_refactor.md"
+    ],
+    "layer": "context",
+    "family": "native_rules_file",
+    "search_tags": [
+      "do not skip failing tests",
+      "agent deleted my tests",
+      "never weaken assertions",
+      "write a failing test first",
+      "test honesty rule",
+      "stop editing tests to make them pass",
+      "do not update snapshots to pass",
+      "copilot instructions for test files",
+      "cursor rule for tests",
+      "fix the code not the test",
+      "tests deselected in pyproject.toml",
+      "compare test counts before and after a fix"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change",
+        "testing"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "git command line for the diff check",
+      "the project's own test runner, whose summary line counts passed, failed, skipped, deselected and expected-failure tests"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a08_path_scoped_rules",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/honest-test-changes.md",
+        "digest": "88c89dbc6be937a484591682a3faa7cdfd46174fe75da901b97d444a2dcb90ca",
+        "size_bytes": 1743,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cline/honest-test-changes.md",
+        "digest": "88c89dbc6be937a484591682a3faa7cdfd46174fe75da901b97d444a2dcb90ca",
+        "size_bytes": 1743,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/copilot/honest-test-changes.instructions.md",
+        "digest": "e4a5ddf866c83d13b4f7de44373ef4b54b38533e335cbda1976dc28a24d1b125",
+        "size_bytes": 1663,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cursor/honest-test-changes.mdc",
+        "digest": "fe47e2cacf4bc1a661c91bbecea9dfcb16846f18f4d8df6b38fcfd1be208cee8",
+        "size_bytes": 1837,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a08_path_scoped_rules",
+    "file_class": "rules_file",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "cursor",
+      "copilot",
+      "cline",
+      "claude_code"
+    ],
+    "unverified_targets": {
+      "cursor": "Cursor's rules page (cursor.com/docs/context/rules, read on 2026-09-24) documents .mdc files in .cursor/rules with description, comma-separated globs and alwaysApply: false, which attaches a rule when a matching file is in context. Its example puts a space after each comma; this file uses none. Native loading was not observed.",
+      "copilot": "GitHub's page on repository custom instructions (docs.github.com, read on 2026-09-24) documents .github/instructions/NAME.instructions.md with applyTo and several comma-separated patterns; on GitHub.com only Copilot cloud agent and Copilot code review read these files. Native loading was not observed on any Copilot surface."
+    },
+    "not_placed": {},
+    "native_name": "honest-test-changes",
+    "version": "0.1.0",
+    "entrypoints": {
+      "cursor": "variants/cursor/honest-test-changes.mdc",
+      "copilot": "variants/copilot/honest-test-changes.instructions.md",
+      "cline": "variants/cline/honest-test-changes.md",
+      "claude_code": "variants/claude_code/honest-test-changes.md"
+    },
+    "placements": {
+      "cursor": {
+        "variants/cursor/honest-test-changes.mdc": {
+          "destination": ".cursor/rules/honest-test-changes.mdc",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/honest-test-changes/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/honest-test-changes.instructions.md": {
+          "destination": ".github/instructions/honest-test-changes.instructions.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/honest-test-changes/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cline": {
+        "variants/cline/honest-test-changes.md": {
+          "destination": ".clinerules/honest-test-changes.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/honest-test-changes/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "variants/claude_code/honest-test-changes.md": {
+          "destination": ".claude/rules/honest-test-changes.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/honest-test-changes/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/cursor/honest-test-changes.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/honest-test-changes.instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/cline/honest-test-changes.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/claude_code/honest-test-changes.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run the test file you will change with the project's test command and keep its summary line; if nothing fails, go to step 3.",
+    "done_when": [
+      "The new test failed before the fix and passes now.",
+      "Unless step 2 quoted a behavior change, passed plus failed did not fall and the skipped, deselected and expected-failure counts did not rise from step 1 to step 5.",
+      "Unless step 2 quoted a behavior change, the git diff of every changed test file and test setting shows no dropped or loosened assertion, skip or expected-failure marker, exclusion, try around a checked call or snapshot change."
+    ],
+    "stop_and_report_when": [
+      "The test contradicts the task or the documentation.",
+      "The failure comes from the environment, network or timing.",
+      "The new test cannot be made to fail before the fix."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/independent_failure_review.py": "4b85b2b10863103bc5e416f69449229d7742644592b155bcf46d79d4e6e48361",
+      "AGENTS.md": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_a_failed_check_before_repairing_the_work.md": "0f0c771e61f20ce89aabc445d97067f22d9905f44395011f76c836f30120290c",
+      "examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md": "5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904",
+      "examples/29_intelligence_service/starter-catalogue/bodies/test_driven_change_red_green_refactor.md": "0d0e3bc4be1a0daefa6261383ed58dcf6076cabf134591d60fe1f454729e5328"
+    },
+    "package_digest": "63a11c53cdd9415cae42a4c027bff55335c8d0c31acb0af789d7c9e59feff64a",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

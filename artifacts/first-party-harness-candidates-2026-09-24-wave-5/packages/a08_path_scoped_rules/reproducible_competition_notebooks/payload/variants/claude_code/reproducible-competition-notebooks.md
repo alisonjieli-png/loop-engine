@@ -1,0 +1,40 @@
+---
+paths:
+  - "**/*.ipynb"
+  - "**/notebooks/**"
+  - "**/experiments/**"
+  - "**/train*.py"
+---
+# Keep competition notebooks reproducible
+
+## Rule
+
+Make every training or scoring run repeatable: a fixed seed, saved folds, no fitting on test rows and a ledger line.
+
+## Applies to
+
+Notebooks and scripts that train or score a model, not data exploration or web experiments.
+
+## Instead
+
+1. First action: read the end of the task's experiment ledger, by default `.baltor/experiments/ledger.jsonl`. Note its line format, fold file, `folds_sha256` and seed.
+
+```bash
+tail -n 5 .baltor/experiments/ledger.jsonl
+```
+
+2. Set one `SEED`, the ledger's seed, for `random`, NumPy, the model and samplers.
+3. Load folds only from the saved fold file; never make new folds.
+4. Fit scalers, encoders, imputers and selectors on each fold's training rows only.
+5. Before the run, stage new code files by name, then note `git rev-parse HEAD` and `git diff HEAD -- '*.py' '*.ipynb' | sha256sum`.
+6. After the run, complete its planned line or add one in the ledger's format. The seed stays in `config`; `commit`, `diff_sha256`, `folds_sha256`, `fold_scores` and their mean as `score` go beside `config`, never inside it. With no ledger, report these facts instead.
+7. Check: the fold file's `sha256sum` equals `folds_sha256`, and no `fit` you added sees test rows.
+
+Done when the check passes, the run used the ledger's seed and is recorded.
+
+## Stop and report when
+
+- There is no fold file, or its checksum differs from the ledger.
+- The task or competition rules ask you to fit on test rows.
+- Two runs with the same seed, data and code score differently.
+- The ledger cannot be written.

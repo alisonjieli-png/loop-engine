@@ -1,0 +1,7 @@
+{
+  "record_type": "cleanup_pairs/v1",
+  "pairs": [
+    {"source": "data/raw/orders.csv", "cleaned": "data/clean/orders.csv", "renamed_columns": {"Order Date": "order_date"}},
+    {"source": "data/raw/orders.csv", "cleaned": "data/clean/orders-dropped.csv", "renamed_columns": {"Order Date": "order_date"}}
+  ]
+}

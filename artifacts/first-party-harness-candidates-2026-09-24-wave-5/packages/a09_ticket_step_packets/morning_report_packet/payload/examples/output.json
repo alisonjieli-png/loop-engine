@@ -1,0 +1,202 @@
+{
+ "record_type": "night_morning_report/v1",
+ "night_id": "2026-09-23",
+ "compiled_at": "2026-09-23T10:02:11Z",
+ "sources": {
+  "handoff_dir": ".baltor/night/handoffs",
+  "handoff_files": 5,
+  "activity_log_dir": ".baltor/state/log-tool-activity",
+  "activity_files": 1,
+  "queue_path": ".baltor/night/queue.json",
+  "notes_path": ".baltor/night/report-notes.json"
+ },
+ "counts": {
+  "tickets_complete": 1,
+  "tickets_blocked": 1,
+  "tickets_unfinished": 3,
+  "complete": 1,
+  "blocked": 1,
+  "unfinished": 4,
+  "unsupported_claims": 1,
+  "problems": 0
+ },
+ "tickets": [
+  {
+   "ticket_id": "T-104",
+   "status": "complete",
+   "reason": null,
+   "final_step_id": "t-104-verification",
+   "steps": [
+    {
+     "step_id": "t-104-verification",
+     "section": "complete"
+    }
+   ]
+  },
+  {
+   "ticket_id": "T-105",
+   "status": "blocked",
+   "reason": "step_blocked",
+   "final_step_id": "t-105-verification",
+   "steps": [
+    {
+     "step_id": "t-105-triage",
+     "section": "blocked"
+    }
+   ]
+  },
+  {
+   "ticket_id": "T-106",
+   "status": "unfinished",
+   "reason": "final_step_not_complete",
+   "final_step_id": "t-106-verification",
+   "steps": [
+    {
+     "step_id": "t-106-fix",
+     "section": "unfinished"
+    }
+   ]
+  },
+  {
+   "ticket_id": "T-107",
+   "status": "unfinished",
+   "reason": "no_handoff_found",
+   "final_step_id": "t-107-verification",
+   "steps": []
+  },
+  {
+   "ticket_id": "T-108",
+   "status": "unfinished",
+   "reason": "final_step_not_complete",
+   "final_step_id": "t-108-verification",
+   "steps": [
+    {
+     "step_id": "t-108-fix",
+     "section": "unfinished"
+    }
+   ]
+  }
+ ],
+ "complete": [
+  {
+   "step_id": "t-104-verification",
+   "ticket_id": "T-104",
+   "handoff": ".baltor/night/handoffs/t-104-verification.json",
+   "claims": [
+    {
+     "text": "The new test test_badge_uses_singular_for_one_item failed before the fix.",
+     "evidence": ".baltor/night/evidence/t-104/reproduction-run.json"
+    },
+    {
+     "text": "The relevant and full test runs passed after the fix, and every changed path is allowed.",
+     "evidence": ".baltor/night/evidence/t-104/verification.json"
+    }
+   ]
+  }
+ ],
+ "blocked": [
+  {
+   "step_id": "t-105-triage",
+   "ticket_id": "T-105",
+   "handoff": ".baltor/night/handoffs/t-105-triage.json",
+   "reason": "The ticket does not say which currency the export should use.",
+   "question": "Should the export use the account currency or the order currency?",
+   "evidence": "tickets/T-105.md",
+   "evidence_found": true,
+   "claims": []
+  }
+ ],
+ "unfinished": [
+  {
+   "step_id": "t-106-fix",
+   "ticket_id": "T-106",
+   "handoff": ".baltor/night/handoffs/t-106-fix-0241.json",
+   "source": "handoff",
+   "reason": "handoff_status_unfinished",
+   "first_action": "Run the verification checks again; the last run was stopped by the step time limit.",
+   "evidence": ".baltor/night/handoffs/t-106-fix-0241.json",
+   "claims": [
+    {
+     "text": "The rounding fix in shop/totals.py is written but not yet tested.",
+     "evidence": "shop/totals.py"
+    }
+   ]
+  },
+  {
+   "step_id": null,
+   "ticket_id": "T-107",
+   "handoff": null,
+   "source": "queue_only",
+   "reason": "no_handoff_found",
+   "first_action": null,
+   "evidence": ".baltor/night/queue.json",
+   "claims": []
+  },
+  {
+   "step_id": "t-108-fix",
+   "ticket_id": "T-108",
+   "handoff": ".baltor/night/handoffs/t-108-fix.json",
+   "source": "handoff",
+   "reason": "complete_without_evidence",
+   "first_action": null,
+   "evidence": ".baltor/night/handoffs/t-108-fix.json",
+   "claims": []
+  },
+  {
+   "step_id": "t-109-scout",
+   "ticket_id": null,
+   "handoff": null,
+   "source": "activity_only",
+   "reason": "activity_without_handoff",
+   "first_action": null,
+   "evidence": ".baltor/state/log-tool-activity/night.jsonl",
+   "claims": []
+  }
+ ],
+ "unsupported_claims": [
+  {
+   "source": "handoff",
+   "step_id": "t-108-fix",
+   "ticket_id": "T-108",
+   "text": "All tests pass after the change.",
+   "evidence": ".baltor/night/evidence/t-108/full-run.json",
+   "problem": "evidence_missing",
+   "handoff": ".baltor/night/handoffs/t-108-fix.json"
+  }
+ ],
+ "notes": [],
+ "superseded": [
+  {
+   "step_id": "t-106-fix",
+   "handoff": ".baltor/night/handoffs/t-106-fix-0215.json",
+   "written_at": "2026-09-23T02:15:00Z"
+  }
+ ],
+ "activity": [
+  {
+   "step_id": "t-104-verification",
+   "events": 2,
+   "first_time": "2026-09-23T01:02:03Z",
+   "last_time": "2026-09-23T03:09:44Z",
+   "times_not_read": 0,
+   "log": ".baltor/state/log-tool-activity/night.jsonl"
+  },
+  {
+   "step_id": "t-106-fix",
+   "events": 1,
+   "first_time": "2026-09-23T02:40:59Z",
+   "last_time": "2026-09-23T02:40:59Z",
+   "times_not_read": 0,
+   "log": ".baltor/state/log-tool-activity/night.jsonl"
+  },
+  {
+   "step_id": "t-109-scout",
+   "events": 1,
+   "first_time": "2026-09-23T04:30:12Z",
+   "last_time": "2026-09-23T04:30:12Z",
+   "times_not_read": 0,
+   "log": ".baltor/state/log-tool-activity/night.jsonl"
+  }
+ ],
+ "problems": []
+}

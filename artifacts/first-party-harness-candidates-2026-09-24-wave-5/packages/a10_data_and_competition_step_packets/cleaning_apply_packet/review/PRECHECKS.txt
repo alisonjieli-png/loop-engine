@@ -1,0 +1,32 @@
+===== 2026-09-23T20:50:00Z python3 check_package.py fill cleaning_apply_packet
+{"fill": "done", "files": 15, "package_digest": "0920ec10f2aabaa1958e9dc355960b9c7f4af2fa36dd4830e80989e911c48102"}
+exit 0
+===== 2026-09-23T20:50:01Z python3 check_package.py check cleaning_apply_packet
+{
+ "identity": "cleaning_apply_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T205003251026Z.json"
+}
+exit 0

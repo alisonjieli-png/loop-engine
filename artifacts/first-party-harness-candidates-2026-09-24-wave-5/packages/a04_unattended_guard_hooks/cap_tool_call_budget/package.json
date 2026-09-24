@@ -1,0 +1,570 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "cap_tool_call_budget",
+    "title": "Cap tool calls at a declared budget",
+    "purpose": "Count tool calls in a step and refuse further calls once the declared ceiling is reached, telling the agent to write its handoff instead of continuing.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/night_budget.py",
+      "tools/overnight_queue.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md"
+    ],
+    "layer": "code",
+    "family": "native_hook",
+    "search_tags": [
+      "limit the number of tool calls per step",
+      "tool call budget hook",
+      "end a claude code session that keeps calling tools after its budget",
+      "make the agent write a handoff when out of budget",
+      "claude code pretooluse budget hook",
+      "cursor pretooluse call limit",
+      "copilot pretooluse call limit",
+      "cap agent actions overnight"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "platform engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a04_unattended_guard_hooks",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "7b02cf3bc633dda2c86994142a40bf869d5b0fbb3ddd0c76d061a3c19c148757",
+        "size_bytes": 852,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "defaults/cap-tool-call-budget.json",
+        "digest": "2ee0bcaf897b6d6e3ecbe37d0346da73849f95135b632228396950b19ad68ce5",
+        "size_bytes": 201,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/budget-spent/.baltor/state/cap-tool-call-budget/state.json",
+        "digest": "3b9a864c223c7ab47bf87d9d7953965d035b29bb5d1263f1d1c6bf7856c6738c",
+        "size_bytes": 155,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/budget-spent/.baltor/step/cap-tool-call-budget.json",
+        "digest": "500ff5b2032089dcf803260224b80e351f021459a1ded94388a73d361bee6355",
+        "size_bytes": 187,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-allowed.json",
+        "digest": "9b2fe6574c397608c0ccd49ec1e4fe93374bbb9fd5738079ddd4117fb4889dcd",
+        "size_bytes": 400,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-refused.json",
+        "digest": "e6cf513f3c1e130c8444bc8b678a7d216bdf06cbf381bdcac3fb0231a832bb43",
+        "size_bytes": 325,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-allowed.json",
+        "digest": "23a74db34c68a9db4c9db7694b3eb79472c3c53ff35f81915b94f5679f2e804b",
+        "size_bytes": 195,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-refused.json",
+        "digest": "f13972861bc9245c8503cbc644cf49760e0a1410a8a4795bfe0ff98f125222df",
+        "size_bytes": 147,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-pretooluse-allowed.json",
+        "digest": "59d82b446db565c193e1c9d635aeef782f1ae1ee9c510a83f7dfbd4b0f9e3e93",
+        "size_bytes": 377,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-pretooluse-refused.json",
+        "digest": "ec0f90c71b422a2548b02feede014e2bbd6bdc9a96a600187901c209778916da",
+        "size_bytes": 376,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/invalid-policy.json",
+        "digest": "f2f1a237ce20136f12dae968fbbaeaff657326ad8354edf45c43f58db6f1ed65",
+        "size_bytes": 151,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "hooks/cap_tool_calls.py",
+        "digest": "1ef13acdabdcd9785ed6e2c66d5a5fdfecf3fb08fa9050016da66fc8fe09db3c",
+        "size_bytes": 17870,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_cap_tool_calls.py",
+        "digest": "1bb334a34653bcccaad722de884622771062cc537332fa3dca1c4816626044dc",
+        "size_bytes": 16201,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "4ce471daeefba0f3d0c10488c049c5d333fb6f7d5a597aba323d43f6da7d8c88",
+        "size_bytes": 336,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/copilot/cap-tool-call-budget.json",
+        "digest": "2536b2495331b67b2ea1b6006b0f8a7a3d782e6f3c86c6611e300419ab13f0fb",
+        "size_bytes": 255,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/hooks.json",
+        "digest": "354d14ae3d8fb1061b9e971cdd518a67ecb49b6b63c6bc2a132f1f53fe555b99",
+        "size_bytes": 235,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a04_unattended_guard_hooks",
+    "file_class": "hook_with_script",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "cursor": "Event preToolUse for every tool, the tool_name values Read and Write, the failClosed option and the permission answer come from a snapshot of Cursor's hook page in a local outside project and match Cursor's hook page as read on September 24, 2026, which requires permission in every answer and blocks the action on an answer that does not match the schema; so an allowed call is answered with permission allow. The Write path field is not documented there, Cursor documents no answer that ends the session from a tool call, and no Cursor run was observed.",
+      "copilot": "Event preToolUse, the tool names view, create and edit, the toolArgs field and the permissionDecision answer match GitHub's hooks configuration reference as read on September 24, 2026; the path field inside toolArgs is the producer's reading, no answer that ends the session from a tool call is documented, and no Copilot run was observed."
+    },
+    "not_placed": {},
+    "native_name": "cap-tool-call-budget",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "cursor": "variants/cursor/hooks.json",
+      "copilot": "variants/copilot/cap-tool-call-budget.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/cap-tool-call-budget/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/cap-tool-call-budget.json": {
+          "destination": ".baltor/step/cap-tool-call-budget.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/budget-spent/.baltor/state/cap-tool-call-budget/state.json": null,
+        "examples/budget-spent/.baltor/step/cap-tool-call-budget.json": null,
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "hooks/cap_tool_calls.py": {
+          "destination": ".baltor/cap-tool-call-budget/hooks/cap_tool_calls.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_cap_tool_calls.py": null,
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/cap-tool-call-budget/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/cap-tool-call-budget.json": {
+          "destination": ".baltor/step/cap-tool-call-budget.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/budget-spent/.baltor/state/cap-tool-call-budget/state.json": null,
+        "examples/budget-spent/.baltor/step/cap-tool-call-budget.json": null,
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "hooks/cap_tool_calls.py": {
+          "destination": ".baltor/cap-tool-call-budget/hooks/cap_tool_calls.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_cap_tool_calls.py": null,
+        "variants/cursor/hooks.json": {
+          "destination": ".cursor/hooks.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "copilot": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/cap-tool-call-budget/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/cap-tool-call-budget.json": {
+          "destination": ".baltor/step/cap-tool-call-budget.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/budget-spent/.baltor/state/cap-tool-call-budget/state.json": null,
+        "examples/budget-spent/.baltor/step/cap-tool-call-budget.json": null,
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "hooks/cap_tool_calls.py": {
+          "destination": ".baltor/cap-tool-call-budget/hooks/cap_tool_calls.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_cap_tool_calls.py": null,
+        "variants/copilot/cap-tool-call-budget.json": {
+          "destination": ".github/hooks/cap-tool-call-budget.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "defaults/cap-tool-call-budget.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/budget-spent/.baltor/state/cap-tool-call-budget/state.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/budget-spent/.baltor/step/cap-tool-call-budget.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/copilot-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/copilot-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/cursor-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/cursor-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "examples/invalid-policy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "hooks/cap_tool_calls.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "tests/test_cap_tool_calls.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "variants/copilot/cap-tool-call-budget.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      },
+      "variants/cursor/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_cap_tool_calls.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "PreToolUse",
+        "script": "hooks/cap_tool_calls.py",
+        "arguments": [
+          "--harness",
+          "claude_code",
+          "--root",
+          "examples/budget-spent"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/claude_code-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "used all 40 of its tool calls"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "preToolUse",
+        "script": "hooks/cap_tool_calls.py",
+        "arguments": [
+          "--harness",
+          "cursor",
+          "--root",
+          "examples/budget-spent"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"allow\""
+            ]
+          },
+          {
+            "input": "examples/cursor-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"deny\"",
+              "Write your handoff now"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "preToolUse",
+        "script": "hooks/cap_tool_calls.py",
+        "arguments": [
+          "--harness",
+          "copilot",
+          "--root",
+          "examples/budget-spent"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/copilot-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "Handoff calls left: 5"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read .baltor/step/cap-tool-call-budget.json to learn max_tool_calls and handoff_path, and plan the step within that number of calls.",
+    "done_when": [
+      "The step finished within the call budget, or the handoff file holds what is done, what is not done and the next action."
+    ],
+    "stop_and_report_when": [
+      "The hook refuses a call because the budget is used.",
+      "The hook says the budget policy or its state cannot be used."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/night_budget.py": "8e0cea316cc2ce9d73d0ad6d33c0d16cf36ae37ba48d457171bfeb66c3bc870d",
+      "tools/overnight_queue.py": "4f00c5bc6797c45dec13a27a1905c4cb1c5d48989d01d7165f5f38b2e78590ce",
+      "examples/29_intelligence_service/starter-catalogue/bodies/state_the_permissions_and_limits_of_an_assignment.md": "5fb2ebee75a1282a95fcd1fd7c944cef8ac2c146a412f57be2f7c3831a46f5e1"
+    },
+    "package_digest": "0ff12e29299a7072b7bcd23bb8d557619ea5fa3e5b7c80bde67a0a284883c748",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

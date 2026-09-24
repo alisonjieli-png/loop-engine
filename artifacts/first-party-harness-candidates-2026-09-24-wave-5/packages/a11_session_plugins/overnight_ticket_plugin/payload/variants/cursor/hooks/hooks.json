@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "python3 -I -B \"${CURSOR_PLUGIN_ROOT}/scripts/session_start.py\" --harness cursor",
+        "timeout": 10
+      }
+    ]
+  }
+}

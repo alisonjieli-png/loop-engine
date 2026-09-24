@@ -1,0 +1,6 @@
+{
+  "command": "python3 -m pytest -q tests/test_slugs.py",
+  "exit_code": 0,
+  "passed": true,
+  "finished_at": "2026-09-22T03:12:40Z"
+}

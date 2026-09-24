@@ -1,0 +1,321 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "deny_env_file_reads_settings",
+    "title": "Deny environment file reads settings",
+    "purpose": "Harness settings that refuse reading or editing environment files and key files in the workspace, for steps that must never see credentials, even by accident.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/opencode_step_composition.py",
+      "src/loop_engine/core/harness_additional_recipes.py",
+      "src/loop_engine/core/harness_confinement.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_settings_fragment",
+    "search_tags": [
+      "block agent from reading .env",
+      "deny env file reads",
+      "hide credential files from a coding agent",
+      "claude code deny Read .env",
+      "opencode deny read env files",
+      "gemini cli ignore env files",
+      "stop the agent seeing secrets by accident",
+      "refuse pem and key files",
+      "keep api keys away from the model",
+      "credential file deny list"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness permissions",
+        "secrets"
+      ],
+      "role": [
+        "software engineer",
+        "agent operator"
+      ],
+      "data_sensitivity": [
+        "credentials"
+      ]
+    },
+    "symbols": [
+      "run"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a13_unattended_permission_settings",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "fbb7d717336de181af45cba9b2d956b19c6595224b109c2af119d26ac71c8f72",
+        "size_bytes": 867,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_deny_env_file_reads_settings.py",
+        "digest": "c5fdbfa7edeb4ea92be46c0f73c031f7cfd5d366447f4f94c1751ebb3df70fa2",
+        "size_bytes": 41150,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_deny_env_file_reads_settings.py",
+        "digest": "b08e0adf2ac8599f03165e629933626803a4689024d5a7a8bd90ee07b6bedc88",
+        "size_bytes": 10974,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "9ba1865820961dcee99e778927f72c5f0c4e0e106c5544543dabe8deab8b52ed",
+        "size_bytes": 396,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/ignore-patterns.txt",
+        "digest": "914480cedffbc29e3460f3657efb0763620ff9dd74a7460dcc0b4526aba90cfc",
+        "size_bytes": 98,
+        "media_type": "text/plain",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "400191e5d15520006a299d1e328f1de4e1e4c81138c1a5653380b983e4cbc5b0",
+        "size_bytes": 195,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "26df2f0c4b1783970346da9f369688ffc01a34bed35aa837b2d7487be148d177",
+        "size_bytes": 485,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a13_unattended_permission_settings",
+    "file_class": "settings_fragment",
+    "use_cases": [
+      "any_focused_step",
+      "overnight_tickets_on_a_local_model",
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "claude_code": "Read and Edit deny rules are documented; whether Read deny rules also cover the Grep and Glob tools, and how Bash(*.env*) matches a parsed command, were read from the installed 2.1.281 reference, not observed.",
+      "gemini_cli": "customIgnoreFilePaths and the read_file ignore check were read from the installed Gemini CLI 0.59.0 source and docs; workspace settings apply only in a trusted folder or with --skip-trust.",
+      "opencode": "Read, edit and bash patterns and the last-match order were read from the installed OpenCode binary; whether the grep tool searches inside hidden env files was not checked."
+    },
+    "not_placed": {
+      "codex": "Codex project settings have no key that refuses reading a named file; deny_read exists only in managed requirements files, which .codex/config.toml cannot set."
+    },
+    "native_name": "deny-env-file-reads-settings",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "opencode": "variants/opencode/opencode.json",
+      "gemini_cli": "variants/gemini_cli/settings.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_deny_env_file_reads_settings.py": {
+          "destination": ".baltor/deny-env-file-reads-settings/scripts/check_deny_env_file_reads_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_deny_env_file_reads_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/deny-env-file-reads-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_deny_env_file_reads_settings.py": {
+          "destination": ".baltor/deny-env-file-reads-settings/scripts/check_deny_env_file_reads_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_deny_env_file_reads_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/deny-env-file-reads-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        },
+        "variants/gemini_cli/ignore-patterns.txt": {
+          "destination": ".baltor/deny-env-file-reads-settings/ignore-patterns.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_deny_env_file_reads_settings.py": {
+          "destination": ".baltor/deny-env-file-reads-settings/scripts/check_deny_env_file_reads_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_deny_env_file_reads_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/deny-env-file-reads-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "variants/gemini_cli/ignore-patterns.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "scripts/check_deny_env_file_reads_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_deny_env_file_reads_settings.py"
+        ]
+      },
+      "tests/test_deny_env_file_reads_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Continue with the step's own first action without opening any .env file or key file.",
+    "done_when": [
+      "The step finished without reading, printing or editing an environment file or key file.",
+      "Any configuration value the step needed is reported by its variable name only."
+    ],
+    "stop_and_report_when": [
+      "The task cannot continue without a value from an environment file or key file.",
+      "A read of such a file is refused; report the variable name instead of trying another way."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/opencode_step_composition.py": "8c7dec6114ef18ccf281b62b1d3047d38a6add56032c4c7873ca2c1cd9d25209",
+      "src/loop_engine/core/harness_additional_recipes.py": "0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9",
+      "src/loop_engine/core/harness_confinement.py": "e9fb6b8e374294bdc74341d3168253492ff3eab2df405b80315fa3da79730272",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7"
+    },
+    "package_digest": "9e576caf0e4721f03e5db0fde0df9be0c6c992eff5cee9dd7087642f8d7f2fbe",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

@@ -1,0 +1,14 @@
+{
+ "record_type": "morning_report_input/v1",
+ "night_id": "2026-09-23",
+ "handoff_dir": ".baltor/night/handoffs",
+ "activity_log_dir": ".baltor/state/log-tool-activity",
+ "activity_fields": {
+  "time": "time",
+  "step_id": "step_id"
+ },
+ "queue_path": ".baltor/night/queue.json",
+ "report_json_path": ".baltor/night/morning-report.json",
+ "report_markdown_path": ".baltor/night/morning-report.md",
+ "notes_path": ".baltor/night/report-notes.json"
+}

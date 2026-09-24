@@ -1,0 +1,5 @@
+{
+  "name": "data-cleanup-plugin",
+  "version": "0.1.0",
+  "description": "Candidate extension for data cleanup steps: an after-tool hook that compares each cleaned CSV copy with its source by header and row count, a cleanup status command, and a read-only cleaning rule critic agent."
+}

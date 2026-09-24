@@ -1,0 +1,113 @@
+PRECHECKS for standardize_missing_value_tokens (repair round 2)
+Assignment: a01_data_cleanup_executors. Package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a01_data_cleanup_executors/standardize_missing_value_tokens
+This file sits outside the package folder because the checker's layout rule refuses any extra
+top-level entry in a package, and the specification lists the review folder's contents exactly.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Candidate only. Not approved, staged, served or published. A pass is not a native loading result,
+a usefulness measurement or an approval.
+Sequence started (UTC): 2026-09-24T05:14:25.751922+00:00
+Earlier log: the earlier PRECHECKS.txt is kept unchanged as PRECHECKS-first-pass-20260923T2043Z.txt.
+Version: 0.1.1. Package digest: b7454c9a695c3850cf80afbb0c3475df9aeb85858b4929d82f441f5adafed61b
+Payload files: 5
+
+== 1. python3 check_package.py fill (exit 0)
+{"fill": "done", "files": 5, "package_digest": "b7454c9a695c3850cf80afbb0c3475df9aeb85858b4929d82f441f5adafed61b"}
+
+== 2. python3 check_package.py check (exit 0); newest report precheck-20260924T051534383490Z.json
+{
+ "identity": "standardize_missing_value_tokens",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T051534383490Z.json"
+}
+
+Every check of that report, with findings:
+  layout: passed
+  manifest_schema: passed
+  identity: passed
+  inventory: passed
+  text_hygiene: passed
+  vocabulary: passed
+  safety_static: passed
+  secrets: passed
+  parse: passed
+  entry_shape: passed
+  placements: passed
+  effects: passed
+  network_static: passed
+  agent_skills_validator: passed
+      agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/standardize-missing-value-tokens
+      skills_ref_official_git .: exit 0 Valid skill: TMP/standardize-missing-value-tokens
+  duplicates: passed
+  review_note: passed
+  tests_run: passed
+      {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 8}
+      {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 8}
+  hooks_run: passed
+  servers_run: passed
+
+== 3. Mutants: each breaks one guard in a temporary copy; the named test must pass on the unchanged copy and fail on the mutant. Labels that start with 'repair:' guard behavior added by the repair (exit 0)
+{"package": "standardize_missing_value_tokens", "mutant": "blank value-like tokens without the second declaration", "test": "test_known_wrong_real_values_survive", "baseline": "Ran 1 test in 0.497s; OK", "mutant_run": "Ran 1 test in 0.479s; FAILED (errors=5)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "fold letter case without --ignore-case", "test": "test_known_wrong_real_values_survive", "baseline": "Ran 1 test in 0.466s; OK", "mutant_run": "Ran 1 test in 0.075s; FAILED (failures=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "clean undeclared columns", "test": "test_known_wrong_real_values_survive", "baseline": "Ran 1 test in 0.488s; OK", "mutant_run": "Ran 1 test in 0.080s; FAILED (failures=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "match a token inside a longer cell", "test": "test_token_must_match_the_whole_cell", "baseline": "Ran 1 test in 0.072s; OK", "mutant_run": "Ran 1 test in 0.102s; FAILED (failures=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "blank cells of only spaces without the flag", "test": "test_ignore_case_and_whitespace_cells", "baseline": "Ran 1 test in 0.143s; OK", "mutant_run": "Ran 1 test in 0.075s; FAILED (failures=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "overwrite an existing output", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 0.831s; OK", "mutant_run": "Ran 1 test in 0.623s; FAILED (failures=1, errors=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "repair: clean only the first column under --all-columns", "test": "test_a_declared_token_applies_to_every_cleaned_column", "baseline": "Ran 1 test in 0.178s; OK", "mutant_run": "Ran 1 test in 0.162s; FAILED (failures=1)", "result": "killed"}
+{"package": "standardize_missing_value_tokens", "mutant": "repair: refuse a blank line without naming it", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 0.714s; OK", "mutant_run": "Ran 1 test in 0.643s; FAILED (failures=1)", "result": "killed"}
+
+== 4. Tests in Bubblewrap with the payload mounted read-only (the checker mounts it writable because writes_fs is declared)
+python3.14 read-only payload, no network: exit 0; Ran 8 tests in 1.824s; OK
+python3.10 read-only payload, no network: exit 0; Ran 8 tests in 1.246s; OK
+
+== 5. Critic findings of 2026-09-23 and what the repair did
+- With --all-columns, a declared NA token also blanks the country code NA -> the SKILL known-wrong example and the reference say NA stays safe only while it is not declared for that column and that every declared token applies to every column the run cleans. test_a_declared_token_applies_to_every_cleaned_column pins the documented behavior (it passes on 0.1.0 too, because this repair changes documentation, not behavior); mutant killed. (round 2)
+- Report values repeat cell text -> SKILL step 5 and the reference say they are data from the file. (round 2)
+- Panel risk, not fixable here: unobserved loading, SKILL_DIR and --token=- passed unchanged -> first action names the five placement folders; the risks stay open in the review note. Also, a blank line in a multi-column file is now named in the refusal detail (mutant killed). (round 2)
+Critic probe rerun on the repaired packages: repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/critic-probe-rerun-after-repair.txt (the critic's probe.py, copied byte for byte).
+
+== 6. Earlier failures and repairs
+- Producer, before the first direct run: the all-columns expectations were corrected: the two NA country codes are listed as undeclared look-alikes, so exit 1 is the intended result. After the first green run, test_token_must_match_the_whole_cell was added because no test guarded against substring matching.
+- Producer tooling: the first mutant run of parse_dates_by_declared_formats was invalid (the runner imported tests by module name under -I, so every run ended in an import error). The runner then used unittest discovery with -k, required a passing baseline and one test ran, and those results replaced it.
+- Independent critic, 2026-09-23T23:52Z (evidence in critic-a01_data_cleanup_executors/independent-20260923T2352Z): all 19 pre-checks passed for every version 0.1.0 package, and yet the critic found one blocking defect (parse_numbers) and non-blocking points in all five packages. Section 5 lists each finding and what the repair did.
+- Repair round 1, 2026-09-24T00:43Z to 01:04Z, an earlier run of this repairer that stopped part way: it saved packages/<identity>/earlier-attempt-20260924T0043Z.tar.gz for all five packages, wrote known-wrong checks first, repaired parse_numbers (0.2.0) and parse_dates (0.1.1) and ran fill for them, and stopped after writing the map_categories fold test. It ran no check, so it wrote no precheck report and no PRECHECKS.txt.
+- Repair round 2, this sequence: before editing, the state left by round 1 was saved as repairer-a01_data_cleanup_executors/r2-20260924T0453Z/current-at-start/a01-state-at-r2-start.tar.gz and every round 1 edit was read against the critic findings. Two draft problems were caught before any checker run: map_categories SKILL.md had 480 words (the entry limit is 450; trimmed to 445), and one expectation in the new standardize test assumed exit 0 on the note column, which holds look-alikes (the test now uses id). One dry run of every check (check_package with write=False, no report) passed for all five before the recorded checks below, and a trial run of the round 2 mutant runner killed 45 of 45 mutants.
+
+== 7. Every precheck report in review/, oldest first
+precheck-20260923T202933304195Z.json  passed_for_wave_gate=True  refused=False  package_digest=b686f9769ab99a3230c17c41d25ffb794f4e7a2b5ae68f91669527ae9c011a8e
+precheck-20260923T204316326601Z.json  passed_for_wave_gate=True  refused=False  package_digest=cb81243b44e85f8807b4f045aeec99412a05310b52b8c72f2a71c1f6c9aa0f68
+precheck-20260923T204347595398Z.json  passed_for_wave_gate=True  refused=False  package_digest=cb81243b44e85f8807b4f045aeec99412a05310b52b8c72f2a71c1f6c9aa0f68
+precheck-20260924T051534383490Z.json  passed_for_wave_gate=True  refused=False  package_digest=b7454c9a695c3850cf80afbb0c3475df9aeb85858b4929d82f441f5adafed61b
+
+== 8. python3 check_package.py check-all --assignment a01_data_cleanup_executors (exit 0); it re-checked all five packages
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051618892517Z.json
+
+Newest report after check-all: precheck-20260924T051618891394Z.json passed_for_wave_gate=True package_digest=b7454c9a695c3850cf80afbb0c3475df9aeb85858b4929d82f441f5adafed61b
+Sequence finished (UTC): 2026-09-24T05:16:18.928420+00:00

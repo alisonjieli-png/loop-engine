@@ -1,0 +1,352 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "audit_train_test_drift",
+    "title": "Audit train and test column drift",
+    "purpose": "Compare each column of train and test files for missing rates, unseen categories and numeric range shifts, and list columns present in only one file, before any feature work starts.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/tools/audit-csv-structure/SKILL.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "train test drift",
+      "compare train and test columns",
+      "unseen categories in test",
+      "covariate shift check",
+      "missing rate difference between files",
+      "population stability index per column",
+      "columns missing from the test file",
+      "feature drift audit before modeling",
+      "drift in a mostly zero column"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "machine learning engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "audit",
+      "numeric_psi",
+      "bucket_bounds",
+      "looks_like_identifier"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a02_competition_modeling_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "a963814bec5fb4665fa5487b4d6c39edb8827807470348246dc922a9b08f7bfd",
+        "size_bytes": 2958,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/drift-pair.json",
+        "digest": "d833bac988460467100a93c54ef2bb521076c90a538294dbcbbdd611106614f6",
+        "size_bytes": 1781,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/finding-kinds.md",
+        "digest": "0db39b2160c51c5f33cd50ab9b1bf7b694c0e15c1c7ed807670c20b9d1305d1a",
+        "size_bytes": 2915,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/audit_drift.py",
+        "digest": "dd0d13b87b39c3177f7f1b01a7dd27360e13720ab3bec19261f0a1fc25bffdf2",
+        "size_bytes": 24073,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_audit_drift.py",
+        "digest": "f3b8c1be6994fe5963e16987d812e3d623a0cc70001d6a1ff981619c90ab72c2",
+        "size_bytes": 8649,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a02_competition_modeling_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills folder is documented in the cited research file but was not observed on this machine, and native loading of this package was not probed."
+    },
+    "not_placed": {},
+    "native_name": "audit-train-test-drift",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "SKILL.md": {
+          "destination": ".claude/skills/audit-train-test-drift/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/audit_drift.py": {
+          "destination": ".claude/skills/audit-train-test-drift/scripts/audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_audit_drift.py": {
+          "destination": ".claude/skills/audit-train-test-drift/tests/test_audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "references/finding-kinds.md": {
+          "destination": ".claude/skills/audit-train-test-drift/references/finding-kinds.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/drift-pair.json": {
+          "destination": ".claude/skills/audit-train-test-drift/examples/drift-pair.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".claude/skills/audit-train-test-drift/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "SKILL.md": {
+          "destination": ".agents/skills/audit-train-test-drift/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/audit_drift.py": {
+          "destination": ".agents/skills/audit-train-test-drift/scripts/audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_audit_drift.py": {
+          "destination": ".agents/skills/audit-train-test-drift/tests/test_audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "references/finding-kinds.md": {
+          "destination": ".agents/skills/audit-train-test-drift/references/finding-kinds.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/drift-pair.json": {
+          "destination": ".agents/skills/audit-train-test-drift/examples/drift-pair.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".agents/skills/audit-train-test-drift/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "SKILL.md": {
+          "destination": ".opencode/skills/audit-train-test-drift/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/audit_drift.py": {
+          "destination": ".opencode/skills/audit-train-test-drift/scripts/audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_audit_drift.py": {
+          "destination": ".opencode/skills/audit-train-test-drift/tests/test_audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "references/finding-kinds.md": {
+          "destination": ".opencode/skills/audit-train-test-drift/references/finding-kinds.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/drift-pair.json": {
+          "destination": ".opencode/skills/audit-train-test-drift/examples/drift-pair.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".opencode/skills/audit-train-test-drift/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "SKILL.md": {
+          "destination": ".pi/skills/audit-train-test-drift/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/audit_drift.py": {
+          "destination": ".pi/skills/audit-train-test-drift/scripts/audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_audit_drift.py": {
+          "destination": ".pi/skills/audit-train-test-drift/tests/test_audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "references/finding-kinds.md": {
+          "destination": ".pi/skills/audit-train-test-drift/references/finding-kinds.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/drift-pair.json": {
+          "destination": ".pi/skills/audit-train-test-drift/examples/drift-pair.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".pi/skills/audit-train-test-drift/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "SKILL.md": {
+          "destination": ".gemini/skills/audit-train-test-drift/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/audit_drift.py": {
+          "destination": ".gemini/skills/audit-train-test-drift/scripts/audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_audit_drift.py": {
+          "destination": ".gemini/skills/audit-train-test-drift/tests/test_audit_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "references/finding-kinds.md": {
+          "destination": ".gemini/skills/audit-train-test-drift/references/finding-kinds.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/drift-pair.json": {
+          "destination": ".gemini/skills/audit-train-test-drift/examples/drift-pair.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".gemini/skills/audit-train-test-drift/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "scripts/audit_drift.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_audit_drift.py"
+        ]
+      },
+      "tests/test_audit_drift.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "references/finding-kinds.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/drift-pair.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_audit_drift.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/audit_drift.py with --train, --test, --target and --id, then read target_in_test and flagged_columns.",
+    "done_when": [
+      "Every flagged column and every column in only one file has a planned response in the step result.",
+      "Neither input file was changed."
+    ],
+    "stop_and_report_when": [
+      "The script exits with 2 (refused input).",
+      "target_in_test is true.",
+      "More than half of the shared columns are flagged."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md": "f877a5071e30754ea5d82b2ad6bb746439196f3c4949ac50ad7dcc572d2607f7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/tools/audit-csv-structure/SKILL.md": "a42bdb00d3cb17f49d16335d941dde5cf256b7015406a8d33af80a3a20c8b7a7"
+    },
+    "package_digest": "d2e893b78a3512c9c1d9680a4be77cb32d8e1a4bdf2445db077281faebb1fabe",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

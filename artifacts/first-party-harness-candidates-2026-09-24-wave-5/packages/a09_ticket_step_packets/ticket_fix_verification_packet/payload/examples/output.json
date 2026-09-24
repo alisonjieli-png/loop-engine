@@ -1,0 +1,16 @@
+{
+ "record_type": "ticket_fix_verification_record/v1",
+ "ticket_id": "T-104",
+ "verdict": "ready_for_review",
+ "evidence_path": ".baltor/step-output/evidence/verification-20260923T031044516020Z.json",
+ "failed_checks": [],
+ "changed_paths": [
+  "shop/cart_badge.py",
+  "tests/test_cart_badge.py"
+ ],
+ "summary_path": ".baltor/step-output/change-summary.md",
+ "commit_message_path": ".baltor/step-output/commit-message.txt",
+ "committed": false,
+ "concerns": [],
+ "blocker": null
+}

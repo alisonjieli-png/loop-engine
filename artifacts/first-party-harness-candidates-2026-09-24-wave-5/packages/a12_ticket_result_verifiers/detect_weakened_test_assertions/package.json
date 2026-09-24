@@ -1,0 +1,412 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "detect_weakened_test_assertions",
+    "title": "Detect weakened test assertions",
+    "purpose": "Scan a diff of test files for removed assertions, added skip or expected-failure marks, widened tolerances and deleted test functions, and report each with its location.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/overnight_outcome.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "detect weakened test assertions",
+      "find removed assertions in a diff",
+      "tests skipped to make the suite pass",
+      "expected value changed in a test",
+      "tolerance widened in a test",
+      "deleted test functions",
+      "parametrize case removed",
+      "check an agent did not weaken the tests",
+      "xfail or skip marks added"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "coding agent operator",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a12_ticket_result_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "4138ce2109616dc1155ed7ef3ba760a24767a576edacf99f38b4dbcd0f45eab6",
+        "size_bytes": 3083,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/honest-test-change.diff",
+        "digest": "b6509cfaf9ef0eafe072fc85a75da2f4ab9ef86458507d959e38e415fb8b5b96",
+        "size_bytes": 712,
+        "media_type": "text/x-diff",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/weakened-tests.diff",
+        "digest": "5da5460b0d4df221b0b4f6a983d3952c690309a8d38e58ac778df1412bd01436",
+        "size_bytes": 860,
+        "media_type": "text/x-diff",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "2599d4a8b7efaf5b83f29684b382d917388187570db4db60de584ef99ec6f040",
+        "size_bytes": 1063,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/signals.md",
+        "digest": "8871c10fac0f669261bdd6814022afe07910da714fa3e82fc2434e1ae4e6a888",
+        "size_bytes": 3841,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/detect_weakened_tests.py",
+        "digest": "1151ae067c838a9268de2a3c897d99fbba4618f0163cbebc33e702c6f932f398",
+        "size_bytes": 48654,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_detect_weakened_tests.py",
+        "digest": "5fca785b03343ca29e442541fdf764d5c4e61bdf1f79cee34c1b04225dd3c6dd",
+        "size_bytes": 19609,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a12_ticket_result_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "detect-weakened-test-assertions",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/honest-test-change.diff": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/examples/honest-test-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/weakened-tests.diff": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/examples/weakened-tests.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/signals.md": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/references/signals.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/detect_weakened_tests.py": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_detect_weakened_tests.py": {
+          "destination": ".claude/skills/detect-weakened-test-assertions/tests/test_detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/honest-test-change.diff": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/examples/honest-test-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/weakened-tests.diff": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/examples/weakened-tests.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/signals.md": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/references/signals.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/detect_weakened_tests.py": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_detect_weakened_tests.py": {
+          "destination": ".agents/skills/detect-weakened-test-assertions/tests/test_detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/honest-test-change.diff": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/examples/honest-test-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/weakened-tests.diff": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/examples/weakened-tests.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/signals.md": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/references/signals.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/detect_weakened_tests.py": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_detect_weakened_tests.py": {
+          "destination": ".opencode/skills/detect-weakened-test-assertions/tests/test_detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/honest-test-change.diff": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/examples/honest-test-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/weakened-tests.diff": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/examples/weakened-tests.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/signals.md": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/references/signals.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/detect_weakened_tests.py": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_detect_weakened_tests.py": {
+          "destination": ".pi/skills/detect-weakened-test-assertions/tests/test_detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/honest-test-change.diff": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/examples/honest-test-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/weakened-tests.diff": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/examples/weakened-tests.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/signals.md": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/references/signals.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/detect_weakened_tests.py": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_detect_weakened_tests.py": {
+          "destination": ".gemini/skills/detect-weakened-test-assertions/tests/test_detect_weakened_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "examples/honest-test-change.diff": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_detect_weakened_tests.py"
+        ]
+      },
+      "examples/weakened-tests.diff": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_detect_weakened_tests.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/signals.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/detect_weakened_tests.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_detect_weakened_tests.py"
+        ]
+      },
+      "tests/test_detect_weakened_tests.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Pipe git diff -U10 of the change into scripts/detect_weakened_tests.py and read its JSON verdict with every finding and its location.",
+    "done_when": [
+      "The answer holds the verdict and every weakening and review item with its file and line.",
+      "Each review item has a quoted ticket sentence or the words no reason found."
+    ],
+    "stop_and_report_when": [
+      "The verdict is fail.",
+      "A review item has no reason in the ticket.",
+      "The script exits 2 because the diff cannot be read."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/overnight_outcome.py": "9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314",
+      "examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md": "5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904"
+    },
+    "package_digest": "fa23cfa122f13444a4ba7d00400ec9b7a0551c520e7502009af2a8342e158d28",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

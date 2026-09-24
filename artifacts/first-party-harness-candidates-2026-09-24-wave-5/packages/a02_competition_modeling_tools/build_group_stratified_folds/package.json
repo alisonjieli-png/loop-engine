@@ -1,0 +1,282 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "build_group_stratified_folds",
+    "title": "Build group-aware stratified folds",
+    "purpose": "Assign every training row to one of K folds so that no group spans two folds and label shares stay close to the whole set, using a fixed seed and printing a self-check.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md",
+      "src/loop_engine/code_nodes/kaggle_executor.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "group k fold",
+      "stratified group k fold",
+      "cross validation folds by customer",
+      "patient level cross validation split",
+      "keep each group in one fold",
+      "fold assignment file",
+      "competition validation folds",
+      "grouped cross validation without leakage",
+      "stratified folds for a zero heavy target"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "machine learning engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "numeric_bins",
+      "assign_folds",
+      "fold_summary",
+      "check_written_file"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a02_competition_modeling_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "e7e91881143c75af305279ace59a906a80e548cb8ea49f5ec8b3695e65e5dcaa",
+        "size_bytes": 3209,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "scripts/build_group_folds.py",
+        "digest": "ddb9224e4e38031313fbc7357e94935f7e654699c442da620961ac6609e93962",
+        "size_bytes": 25370,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_build_group_folds.py",
+        "digest": "2311ad9f25f752f503a8d1983c2ff31eef34dd5776e9fff38acae2702e21e7cf",
+        "size_bytes": 13217,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a02_competition_modeling_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills folder is documented in the cited research file but was not observed on this machine, and native loading of this package was not probed."
+    },
+    "not_placed": {},
+    "native_name": "build-group-stratified-folds",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "SKILL.md": {
+          "destination": ".claude/skills/build-group-stratified-folds/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_group_folds.py": {
+          "destination": ".claude/skills/build-group-stratified-folds/scripts/build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_group_folds.py": {
+          "destination": ".claude/skills/build-group-stratified-folds/tests/test_build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".claude/skills/build-group-stratified-folds/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "SKILL.md": {
+          "destination": ".agents/skills/build-group-stratified-folds/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_group_folds.py": {
+          "destination": ".agents/skills/build-group-stratified-folds/scripts/build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_group_folds.py": {
+          "destination": ".agents/skills/build-group-stratified-folds/tests/test_build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".agents/skills/build-group-stratified-folds/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "SKILL.md": {
+          "destination": ".opencode/skills/build-group-stratified-folds/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_group_folds.py": {
+          "destination": ".opencode/skills/build-group-stratified-folds/scripts/build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_group_folds.py": {
+          "destination": ".opencode/skills/build-group-stratified-folds/tests/test_build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".opencode/skills/build-group-stratified-folds/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "SKILL.md": {
+          "destination": ".pi/skills/build-group-stratified-folds/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_group_folds.py": {
+          "destination": ".pi/skills/build-group-stratified-folds/scripts/build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_group_folds.py": {
+          "destination": ".pi/skills/build-group-stratified-folds/tests/test_build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".pi/skills/build-group-stratified-folds/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "SKILL.md": {
+          "destination": ".gemini/skills/build-group-stratified-folds/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/build_group_folds.py": {
+          "destination": ".gemini/skills/build-group-stratified-folds/scripts/build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_build_group_folds.py": {
+          "destination": ".gemini/skills/build-group-stratified-folds/tests/test_build_group_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".gemini/skills/build-group-stratified-folds/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "scripts/build_group_folds.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_build_group_folds.py"
+        ]
+      },
+      "tests/test_build_group_folds.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/build_group_folds.py with --train and --list-columns, then read the column names, distinct counts and empty counts.",
+    "done_when": [
+      "The fold file exists and the JSON status is pass with every check passed.",
+      "The step result records the output path, its sha256, K, the seed and each warning."
+    ],
+    "stop_and_report_when": [
+      "The script exits with 2 (refused input) or 1 (a check failed); each failed check carries a hint.",
+      "No column clearly names the entity that must stay in one fold."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a",
+      "src/loop_engine/code_nodes/kaggle_executor.py": "715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9"
+    },
+    "package_digest": "ef1f62decd001f05de3a0e8d24f4f7546766dc6c5dd6d25f0f2af488bf79fbf6",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

@@ -1,0 +1,63 @@
+{
+ "record_type": "selected_tests/v1",
+ "status": "selected",
+ "changed": [
+  {
+   "path": "src/shop/prices.py",
+   "change": "modified",
+   "kind": "python",
+   "tests": 2
+  }
+ ],
+ "selected_tests": [
+  {
+   "path": "tests/test_checkout.py",
+   "reasons": [
+    {
+     "changed": "src/shop/prices.py",
+     "via": [
+      "tests/test_checkout.py",
+      "src/shop/checkout.py",
+      "src/shop/prices.py"
+     ],
+     "basis": "imports"
+    }
+   ]
+  },
+  {
+   "path": "tests/test_prices.py",
+   "reasons": [
+    {
+     "changed": "src/shop/prices.py",
+     "via": [
+      "tests/test_prices.py",
+      "src/shop/prices.py"
+     ],
+     "basis": "imports"
+    }
+   ]
+  }
+ ],
+ "test_paths": [
+  "tests/test_checkout.py",
+  "tests/test_prices.py"
+ ],
+ "untraced_changes": [],
+ "untested_changes": [],
+ "unreadable_files": [],
+ "dynamic_import_files": [
+  "src/shop/plugins.py"
+ ],
+ "warnings": [
+  "1 file loads modules by a name computed at run time; tests reached that way are not found"
+ ],
+ "import_roots": [
+  "",
+  "src"
+ ],
+ "counts": {
+  "python_files": 17,
+  "test_files": 7,
+  "selected": 2
+ }
+}

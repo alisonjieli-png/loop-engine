@@ -1,0 +1,22 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Check the workspace against the handoff of step {{INTERRUPTED_STEP_ID}}, then continue that step from its recorded first action, or report the drift and change nothing.",
+ "output_contract_refs": [
+  "interrupted_step_resume_record/v1",
+  "interrupted_step_drift_check/v1"
+ ],
+ "dependency_ids": [
+  "{{INTERRUPTED_STEP_ID}}"
+ ],
+ "required_capabilities": [],
+ "effects": [
+  "reads_fs",
+  "writes_fs",
+  "{{PROCESS_EFFECT}}"
+ ],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

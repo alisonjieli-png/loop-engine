@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "description": "No arguments. The server reads the step folder it was started for.",
+  "properties": {},
+  "additionalProperties": false
+}

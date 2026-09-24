@@ -1,0 +1,595 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "ticket_fix_verification_packet",
+    "title": "Ticket fix verification step packet",
+    "purpose": "A one-step packet that runs the relevant and full tests after a fix, checks the diff against the allowed paths and writes a change summary and proposed commit message without committing.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "src/loop_engine/core/independent_evidence.py",
+      "examples/29_intelligence_service/starter-catalogue/items.json"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "verify an agent fix with tests",
+      "run relevant and full tests after a fix",
+      "check changed files against allowed paths",
+      "write a commit message without committing",
+      "check the reproduction test was not weakened",
+      "is the overnight fix ready for review",
+      "change summary for a ticket fix",
+      "task packet for a fresh harness step"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software developer",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only",
+      "git>=2.15 command line on PATH"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a09_ticket_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "0526c1045a7f99f153bf7395e201f5a630659d0897f7bbdfd10d50072070f6fc",
+        "size_bytes": 3028,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "0526c1045a7f99f153bf7395e201f5a630659d0897f7bbdfd10d50072070f6fc",
+        "size_bytes": 3028,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "d50930f0e71b4c9dd2cf88c1b49eb6a2c291fa05d31456a7a137aff2ae0ff518",
+        "size_bytes": 3853,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "57494981e00d2f377b4f6cbca88484b69d714b552b68f83c18713abd138f68dd",
+        "size_bytes": 4290,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "c53f36397ba5dbc18744ae1aaaa05c755d12e45a4d451e4ecd110e8a5d8db5ea",
+        "size_bytes": 648,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "38f6fe4d5ed74367899e2900f4ce976b47a733f6e0a727b783aaea181c2e47eb",
+        "size_bytes": 1050,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "ea54c624bfa8c42a911eb84521588aa5fad21e54559f8c2e6f58fc76751afa9a",
+        "size_bytes": 481,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "5bd94732d8acb8a4fbb685ef1910cdb9db3e569310c44be9140cd795df63e0fa",
+        "size_bytes": 792,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "97e9bdefb94ba8705d58aa5e25d1edf7c0e8974b6df7eea572ca9306aed7d9b0",
+        "size_bytes": 2223,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/run_fix_checks.py",
+        "digest": "0721ee55fa103b0e35163548b6bb5c10b9fc3e404a56262c9aa039df7f51abb7",
+        "size_bytes": 26924,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_run_fix_checks.py",
+        "digest": "b850ea1ba914e3ba645d9ac82c3bb911e8b4ca4cc140278b3d6284a62d7f3b15",
+        "size_bytes": 14210,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a09_ticket_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "goose"
+    ],
+    "unverified_targets": {
+      "goose": "Goose 1.50.0 reads AGENTS.md from the git root down to the working folder according to the harness file standards research of September 23, 2026 (not on main at the pinned revision). No probe on this machine observed it, and a fresh scripted Goose session per step was not tested."
+    },
+    "not_placed": {},
+    "native_name": "ticket-fix-verification-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-fix-verification-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/run_fix_checks.py": {
+          "destination": ".baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_run_fix_checks.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_run_fix_checks.py"
+        ]
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_run_fix_checks.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/run_fix_checks.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_run_fix_checks.py"
+        ]
+      },
+      "tests/test_run_fix_checks.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "BASE_REVISION": "The full commit id the night started from for this ticket; the same value as base_revision in input.json.",
+      "FIX_STEP_ID": "The step identifier of the step that made the fix under verification.",
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, such as codex, claude_code, opencode, pi or gemini_cli.",
+      "PROCESS_EFFECT": "Rendered to spawns_process, the repository effect for starting local processes, which this step needs to run its script and test commands. The host renders it only when it grants that effect for this step; otherwise it does not launch the step.",
+      "REPRODUCTION_STEP_ID": "The step identifier of the step that wrote and recorded the failing reproduction test.",
+      "STEP_ID": "The step identifier the host assigns, one plain path component such as t-104-triage.",
+      "TICKET_ID": "The ticket identifier from the host's night queue, such as T-104; the same value as ticket_id in input.json."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/ticket-fix-verification-packet/scripts/run_fix_checks.py --input .baltor/step/input.json and read the JSON it prints.",
+    "done_when": [
+      "The newest evidence and diff files exist and .baltor/step-output/output.json matches its schema with committed false.",
+      "The change summary names every changed path, failed check and concern.",
+      "For ready_for_review, the commit message check printed passed true."
+    ],
+    "stop_and_report_when": [
+      "The checks script exits with code 2: write verdict blocked and put its reason in blocker.",
+      "A check failed or a concern was found: write verdict not_ready and change no code or test.",
+      "The diff shows a secret value: name the file and line, never the value."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "src/loop_engine/core/independent_evidence.py": "e15bd338c160c0033272c52f4000209e84a7efb73529bccd522f5347602c34f3",
+      "examples/29_intelligence_service/starter-catalogue/items.json": "c9782c6929778c4133ce00d3cc9267fc27b3ed9e73702a79ffe5b2f4c267cccf"
+    },
+    "package_digest": "9e590f1057ba851cd3d5b572292c5999651ba85e2505261f8e83e920b3bb2723",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

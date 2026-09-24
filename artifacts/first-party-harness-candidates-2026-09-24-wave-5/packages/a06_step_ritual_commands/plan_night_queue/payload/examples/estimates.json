@@ -1,0 +1,14 @@
+{
+  "record_type": "night_estimates/v1",
+  "estimates": {
+    "T-102": {
+      "minutes": 60,
+      "calls": 80,
+      "risk": "medium",
+      "reason": "Two modules change: the CSV writer and its test helper."
+    },
+    "T-104": {
+      "hold": "The ticket does not say which page is slow or what load time counts as fixed."
+    }
+  }
+}

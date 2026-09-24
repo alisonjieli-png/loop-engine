@@ -1,0 +1,255 @@
+PRECHECKS for wave 5 package csv_profile_server
+newest run first in this file; the full history is in packages/a07_local_data_tool_servers/csv_profile_server/review/PRECHECKS.txt
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+=== 2026-09-24T05:59:58.053356+00:00 pre-checks for csv_profile_server, repairer pass after critic round 4 ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/csv_profile_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 12, "package_digest": "56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "csv_profile_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "warning",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T060008532146Z.json"
+}
+
+[warning] inventory
+  - examples/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T060008532146Z.json: passed_for_wave_gate True, package_digest 56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054 (current 56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[warning] inventory
+  - examples/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 29}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 29}
+[passed] hooks_run
+[passed] servers_run
+  - csv_profile_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx csv_profile_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 12 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+7 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/csv_profile_server/payload/server/csv_profile_server.py:696:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message, comment or test text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 29 tests in 4.877s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 29 tests in 3.621s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. repair evidence of this pass ==
+Repair evidence for csv_profile_server in $WAVE/repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/ (producer-side runs, not pre-check outputs):
+- evidence/known-wrong-csv_profile_server-new-tests-on-previous-server.txt: the new tests run on the previous server file:
+    == csv_profile_server with previous server/csv_profile_server.py under python3: exit 1
+    Ran 2 tests in 29.852s
+    FAILED (failures=2)
+    == csv_profile_server with previous server/csv_profile_server.py under python3.10: exit 1
+    Ran 2 tests in 34.609s
+    FAILED (failures=1, errors=1)
+- mutants/mutants-result.txt: 5 mutants of this package, 5 made a named test fail:
+    killed: csv_profile_server: ASCII-only shape table: Ran 1 test in 0.134s FAILED (failures=1)
+    killed: csv_profile_server: quadratic duplicate scan: Ran 1 test in 33.208s FAILED (errors=1)
+    killed: csv_profile_server: previous variants/claude_code/.mcp.json: Ran 4 tests in 0.005s FAILED (failures=2)
+    killed: csv_profile_server: previous variants/cursor/mcp.json: Ran 4 tests in 0.142s FAILED (failures=2)
+    killed: csv_profile_server: previous variants/gemini_cli/settings.json: Ran 4 tests in 0.503s FAILED (failures=2)
+- evidence/placed-workspace-after-repair.txt (launch lines started from the workspace root and a subfolder):
+    csv_profile_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in .: tools ['profile_csv']
+    csv_profile_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in sub: tools ['profile_csv']
+    csv_profile_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in .: tools ['profile_csv']
+    csv_profile_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in sub: exit 2, no answer: ltor/csv-profile-server/server/csv_profile_server.py': [Errno 2] No such file or directory
+    csv_profile_server cursor [${workspaceFolder} resolved] start in .: tools ['profile_csv']
+    csv_profile_server cursor [${workspaceFolder} resolved] start in sub: tools ['profile_csv']
+    csv_profile_server codex relative line start in .: tools ['profile_csv']
+    csv_profile_server codex relative line start in sub: exit 2, no answer: ltor/csv-profile-server/server/csv_profile_server.py': [Errno 2] No such file or directory
+    csv_profile_server gemini_cli server keys: ['csv-profile-server']
+    csv_profile_server fallback tests from the workspace root: exit 0, ['Ran 29 tests in 3.989s'], last line: OK (skipped=5)
+
+== 7. check-all for the assignment, 2026-09-24T06:01:09Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T060133043340Z.json
+exit 0
+
+Newest report for csv_profile_server, written by that check-all: review/precheck-20260924T060114332685Z.json; passed_for_wave_gate true for package_digest 56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054 (package.json holds 56dd3eec877a1c125c9d5043dc117a7b55b0d7ee71d631b19f37d0fff07ae054).
+
+
+=== 2026-09-24T00:30:43.797839+00:00 pre-checks for csv_profile_server, second generator pass ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/csv_profile_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 12, "package_digest": "bc3dda0e934e6d7df5f5371f39537ce4709408aeb60c07bb17e04ee0ec307917"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "csv_profile_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "warning",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T003047875303Z.json"
+}
+
+[warning] inventory
+  - examples/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T003047875303Z.json: passed_for_wave_gate True, package_digest bc3dda0e934e6d7df5f5371f39537ce4709408aeb60c07bb17e04ee0ec307917 (current bc3dda0e934e6d7df5f5371f39537ce4709408aeb60c07bb17e04ee0ec307917)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[warning] inventory
+  - examples/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 25}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 25}
+[passed] hooks_run
+[passed] servers_run
+  - csv_profile_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx csv_profile_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 12 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+7 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/csv_profile_server/payload/server/csv_profile_server.py:655:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message or comment text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 25 tests in 1.677s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 25 tests in 1.174s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. check-all for the assignment, 2026-09-24T00:33:41Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T003341322787Z.json
+exit 0
+
+Newest report for csv_profile_server, written by that check-all: review/precheck-20260924T003321917733Z.json; passed_for_wave_gate true for package_digest bc3dda0e934e6d7df5f5371f39537ce4709408aeb60c07bb17e04ee0ec307917 (package.json holds bc3dda0e934e6d7df5f5371f39537ce4709408aeb60c07bb17e04ee0ec307917).
+

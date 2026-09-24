@@ -1,0 +1,7 @@
+{
+ "calls_used": 40,
+ "handoff_calls_used": 0,
+ "record_type": "tool_call_budget_state/v1",
+ "refused_calls": 0,
+ "step_id": "sample-ticket-0042-step-3"
+}

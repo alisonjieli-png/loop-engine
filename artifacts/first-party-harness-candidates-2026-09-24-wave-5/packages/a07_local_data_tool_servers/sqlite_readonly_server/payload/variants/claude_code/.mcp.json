@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sqlite_readonly_server": {
+      "command": "python3",
+      "args": [
+        "-I",
+        "-B",
+        "${CLAUDE_PROJECT_DIR:-.}/.baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+        "--root",
+        "${CLAUDE_PROJECT_DIR:-.}"
+      ]
+    }
+  }
+}

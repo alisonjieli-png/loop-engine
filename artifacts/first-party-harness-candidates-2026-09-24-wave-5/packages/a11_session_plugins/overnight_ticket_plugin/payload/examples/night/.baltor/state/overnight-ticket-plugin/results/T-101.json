@@ -1,0 +1,21 @@
+{
+  "changed_files": [
+    "src/export.py",
+    "tests/test_export.py"
+  ],
+  "closed_at": "2026-09-23T22:14:05Z",
+  "evidence": [
+    {
+      "command": "python3 -m unittest tests.test_export",
+      "exit_code": 0,
+      "observed": "Ran 6 tests, OK"
+    }
+  ],
+  "handoff": "Date output lives in src/export.py format_row. The new test covers 03/04/2025. No other queued ticket touches this file.",
+  "outcome": "fixed",
+  "position": 1,
+  "queue_sha256": "de79e379771fb48a23a32fb52ea4a2e7475863b7c72c165d713f060c42b9c8d4",
+  "record_type": "overnight_ticket_result/v1",
+  "summary": "The export now writes ISO 8601 dates, and a test pins the day and month order.",
+  "ticket_id": "T-101"
+}

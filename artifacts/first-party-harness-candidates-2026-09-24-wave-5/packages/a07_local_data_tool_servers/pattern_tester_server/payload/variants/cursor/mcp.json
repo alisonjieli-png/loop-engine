@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "pattern_tester_server": {
+      "command": "python3",
+      "args": [
+        "-I",
+        "-B",
+        "${workspaceFolder}/.baltor/pattern-tester-server/server/pattern_tester_server.py",
+        "--root",
+        "${workspaceFolder}"
+      ]
+    }
+  }
+}

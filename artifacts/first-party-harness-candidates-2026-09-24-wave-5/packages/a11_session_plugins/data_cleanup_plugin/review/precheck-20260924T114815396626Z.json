@@ -1,0 +1,126 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a11_session_plugins/data_cleanup_plugin",
+ "identity": "data_cleanup_plugin",
+ "package_digest": "7d181e5a58081964b46ea1fdf7849211347af7b42861714a2c1507b62b056780",
+ "checked_at": "2026-09-24T11:48:12.775621+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "results": [
+  {
+   "check": "layout",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "warning",
+   "findings": [
+    "examples/cleanup/data/clean/orders-dropped.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data",
+    "examples/cleanup/data/clean/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data",
+    "examples/cleanup/data/raw/orders.csv: the first native review profile holds CSV or TSV bytes; prefer JSON or inline data"
+   ]
+  },
+  {
+   "check": "text_hygiene",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "placements",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "skipped",
+   "findings": [
+    "no SKILL.md in the payload"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "passed",
+   "findings": [
+    "{\"python\": \"python3.14\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 24}",
+    "{\"python\": \"python3.10\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 24}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": [
+    "claude_code PostToolUse examples/claude_code-posttooluse-clean-copy.json: exit 0",
+    "claude_code PostToolUse examples/claude_code-posttooluse-dropped-row.json: exit 0",
+    "claude_code PostToolUse examples/claude_code-posttooluse-malformed.json: exit 0",
+    "gemini_cli AfterTool examples/gemini_cli-aftertool-clean-copy.json: exit 0",
+    "gemini_cli AfterTool examples/gemini_cli-aftertool-dropped-row.json: exit 0",
+    "gemini_cli AfterTool examples/gemini_cli-aftertool-malformed.json: exit 0"
+   ]
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

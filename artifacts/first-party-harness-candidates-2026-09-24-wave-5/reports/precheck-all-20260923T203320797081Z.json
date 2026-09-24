@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-23T20:33:20.797066+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "focused_step_packet_rules",
+  "project_commands_fragment",
+  "small_working_context_rules",
+  "unattended_git_rules",
+  "unattended_run_rules"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a14_root_instruction_fragments/focused_step_packet_rules/review/precheck-20260923T203311574656Z.json",
+  "packages/a14_root_instruction_fragments/project_commands_fragment/review/precheck-20260923T203311788387Z.json",
+  "packages/a14_root_instruction_fragments/small_working_context_rules/review/precheck-20260923T203311886269Z.json",
+  "packages/a14_root_instruction_fragments/unattended_git_rules/review/precheck-20260923T203317857346Z.json",
+  "packages/a14_root_instruction_fragments/unattended_run_rules/review/precheck-20260923T203320796163Z.json"
+ ]
+}

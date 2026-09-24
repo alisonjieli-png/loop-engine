@@ -1,0 +1,121 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a10_data_and_competition_step_packets/submission_assembly_packet",
+ "identity": "submission_assembly_packet",
+ "package_digest": "84f967bc5f6b7b8cc32e970f46d69fa8ac9f538ec64f3fa8b2b2baa65a4df483",
+ "checked_at": "2026-09-24T11:48:06.512631+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "refused",
+   "findings": [
+    "tests/test_assemble_submission.py: digest or size differs from the bytes; run the fill command"
+   ]
+  },
+  {
+   "check": "text_hygiene",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "refused",
+   "findings": [
+    "render_placeholders ['HARNESS_STYLE', 'ID_COLUMN', 'LEDGER_PATH', 'OUTPUT_DIR', 'RUN_ID', 'SAMPLE_SUBMISSION_PATH', 'STEP_ID', 'VALUE_TYPE'] differ from markers used ['BRIEF_STEP_ID', 'HARNESS_STYLE', 'ID_COLUMN', 'LEDGER_PATH', 'OUTPUT_DIR', 'PROCESS_EFFECT', 'RUN_ID', 'RUN_STEP_ID', 'SAMPLE_SUBMISSION_PATH', 'STEP_ID', 'VALUE_TYPE']"
+   ]
+  },
+  {
+   "check": "placements",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "skipped",
+   "findings": [
+    "no SKILL.md in the payload"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "refused",
+   "findings": [
+    "python3.14: tests failed:  {'path': 'competition/data/test.csv', 'sha256': 'd0c38257d66c29326f1c40833c2390639d1ae1875a53c38de0ea63d88413134b'}, 'sample': {'path': 'competition/data/sample_submission.csv', 'sha256': '38f63b09037e65d24ae99177c1050d35f90b4d575d802968bd75aadb7f76af09', 'rows': 4, 'header': ['customer_id', 'renewed']}, 'submission': {'path': 'work/submissions/baseline-ridge-01.submission.csv', 'sha256': 'b015c86e9ec8259575a013c60ca7c9b499c140f0cedebcd6f9a0faf00b9d2c72', 'rows': 4, 'prediction_column': 'renewed', 'value_type': 'probability'}, 'checks': {'header_matches_sample': True",
+    "python3.10: tests failed:  {'path': 'competition/data/test.csv', 'sha256': 'd0c38257d66c29326f1c40833c2390639d1ae1875a53c38de0ea63d88413134b'}, 'sample': {'path': 'competition/data/sample_submission.csv', 'sha256': '38f63b09037e65d24ae99177c1050d35f90b4d575d802968bd75aadb7f76af09', 'rows': 4, 'header': ['customer_id', 'renewed']}, 'submission': {'path': 'work/submissions/baseline-ridge-01.submission.csv', 'sha256': 'b015c86e9ec8259575a013c60ca7c9b499c140f0cedebcd6f9a0faf00b9d2c72', 'rows': 4, 'prediction_column': 'renewed', 'value_type': 'probability'}, 'checks': {'header_matches_sample': True",
+    "{\"python\": \"python3.14\", \"exit\": 1, \"summary\": \"FAILED (failures=2)\", \"tests_ran\": 16}",
+    "{\"python\": \"python3.10\", \"exit\": 1, \"summary\": \"FAILED (failures=2)\", \"tests_ran\": 16}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fields of the night queue that the overnight ticket plugin reads",
+  "description": "The queue planning step writes .baltor/night/queue.json once before the night. The plugin reads record_type, the ordered items and the held list, ignores other fields and never writes the queue. A result record stores the SHA-256 of these exact bytes.",
+  "type": "object",
+  "required": ["record_type", "items"],
+  "properties": {
+    "record_type": {"const": "night_queue/v1"},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {"$ref": "#/$defs/item"}
+    },
+    "held": {"type": "array"}
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"},
+        "title": {"type": "string", "maxLength": 2000, "description": "Display text only. The planning step may write an empty title; the plugin shows the first 200 characters."},
+        "position": {"type": "integer", "minimum": 1, "description": "When present it equals the item's place in the list, counting from 1."}
+      }
+    }
+  }
+}

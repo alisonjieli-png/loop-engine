@@ -1,0 +1,495 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "step_status_plugin",
+    "title": "Focused step status plugin",
+    "purpose": "A Gemini CLI extension, with a Cursor plugin variant, that bundles a context file for focused step packets, a step status command and a packet manifest check script to run before work starts.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py"
+    ],
+    "layer": "code",
+    "family": "native_plugin",
+    "search_tags": [
+      "check the step packet before work",
+      "packet manifest digest check",
+      "focused step status command",
+      "is my step packet unchanged",
+      "bind a step packet to the host digest",
+      "leftover files in the step folder",
+      "what must my step result contain",
+      "gemini cli extension for step packets",
+      "cursor plugin for step packets",
+      "fresh harness step check",
+      "handoff checklist for one step",
+      "step packet integrity"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness operations"
+      ],
+      "role": [
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main",
+      "verify",
+      "check_manifest_shape",
+      "content_digest",
+      "unlisted_files",
+      "status",
+      "handoff_items",
+      "output_summary"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "gemini"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a11_session_plugins",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/packet-manifest.schema.json",
+        "digest": "7723d9f1f11d0af6cd53693a5eba75e97bd9075718119e8f784cebca8e296550",
+        "size_bytes": 2070,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/packet/.baltor/step/checklist.md",
+        "digest": "a82857007558fe058b3e8ac3e0fe4b188df18ed65d51de05ae4757d9e9c39638",
+        "size_bytes": 236,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/packet/.baltor/step/contracts/output.schema.json",
+        "digest": "c6d6540c171b498b823cec000ed7a379111ea46a7ed38eec216b98a34486181a",
+        "size_bytes": 257,
+        "media_type": "application/schema+json",
+        "role": "other"
+      },
+      {
+        "path": "examples/packet/.baltor/step/node_context.md",
+        "digest": "a26aecd4ff97dfa005f1d4000694f335bd1403fd09e846616e569c80a14f6017",
+        "size_bytes": 556,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/packet/.baltor/step/packet-manifest.json",
+        "digest": "f85304798596b9de43e08b3b9c63920f6cd00c7498b3ac3d3972d2132f391e24",
+        "size_bytes": 1204,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/packet/.baltor/step/task.json",
+        "digest": "e532e420e8f6ac012e310f077ed0832eb355f35039088c97a88d3995a106be6b",
+        "size_bytes": 413,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/packet/AGENTS.md",
+        "digest": "538cf17c27d58625f11561de4a9ff044cdacafca0f952f45e796c981e1aed79d",
+        "size_bytes": 968,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_step_packet.py",
+        "digest": "0515c6ffedee27a8ebf6a5ca52d2da989eeb662d2dd79dcaf72e064c522b4a41",
+        "size_bytes": 13100,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "scripts/step_status.py",
+        "digest": "d8df562dafc3a0f2f62ff62d03671bd514095bd2fa8ccd6f6171416747cf2f71",
+        "size_bytes": 7435,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_check_step_packet.py",
+        "digest": "2b431f41c22b21dfa61764023c9f13e04fa0dcbf542f98443f66f2e664990a01",
+        "size_bytes": 7707,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_plugin_layout.py",
+        "digest": "814eebb28d67ed4fb8450966e2636578539ab08d8856996e702b7247b7038b3f",
+        "size_bytes": 4917,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_step_status.py",
+        "digest": "8ee49da372872ed2ba2e18499a43209a6374311fc78e79110df1e3853e3a1aac",
+        "size_bytes": 5160,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/cursor/.cursor-plugin/plugin.json",
+        "digest": "220e48148684f938bbc9e401599c58f1e82f87787c10da04021e8b89f84edc98",
+        "size_bytes": 335,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/cursor/commands/step-status.md",
+        "digest": "95e25e041b2c5ed3d6d1b476611ae522e5076585c27e272fd592fbe844a9c95c",
+        "size_bytes": 1724,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/rules/step-status.mdc",
+        "digest": "2570d0ff6a12c6eee21de978f5703705d49c53e625e0f86039ad47269cec6122",
+        "size_bytes": 911,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/gemini_cli/STEP-STATUS.md",
+        "digest": "17ecb23271e226b418d16c258af7f9daaf43f1482d393c1797319d7187fe74f4",
+        "size_bytes": 800,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/gemini_cli/commands/step-status.toml",
+        "digest": "3f02b1e3a1230248bc3b63d70abfb275a77e733b80f00b943bb530cdf2b623d2",
+        "size_bytes": 1715,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/gemini-extension.json",
+        "digest": "4f9dc75a04cdac43b039a4c4da0e5a19ca61e3af0b8339cc3cd21202c5cec47c",
+        "size_bytes": 269,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a11_session_plugins",
+    "file_class": "plugin_bundle",
+    "use_cases": [
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "gemini_cli",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The extension layout is documented in the repository research file. The contextFileName field, extension commands loaded from commands/*.toml under their file name, and the rule that commands and project hooks need a trusted folder when folder trust is on match the source of the installed Gemini CLI 0.59.0, read without running it. Activation with gemini extensions link and the command run were not observed.",
+      "cursor": "The repository research file documents .cursor-plugin/plugin.json for rules and commands and says rules need the .mdc form. Discovery of rules/ and commands/ inside a plugin folder, the command name a plugin command gets, the command front matter and local plugin activation are not documented in a repository file and were not observed."
+    },
+    "not_placed": {},
+    "native_name": "step-status-plugin",
+    "version": "0.1.0",
+    "entrypoints": {
+      "gemini_cli": "variants/gemini_cli/gemini-extension.json",
+      "cursor": "variants/cursor/.cursor-plugin/plugin.json"
+    },
+    "placements": {
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/step-status-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/packet-manifest.schema.json": {
+          "destination": ".baltor/plugins/step-status-plugin/contracts/packet-manifest.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/packet/.baltor/step/checklist.md": null,
+        "examples/packet/.baltor/step/contracts/output.schema.json": null,
+        "examples/packet/.baltor/step/node_context.md": null,
+        "examples/packet/.baltor/step/packet-manifest.json": null,
+        "examples/packet/.baltor/step/task.json": null,
+        "examples/packet/AGENTS.md": null,
+        "scripts/check_step_packet.py": {
+          "destination": ".baltor/plugins/step-status-plugin/scripts/check_step_packet.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/step_status.py": {
+          "destination": ".baltor/plugins/step-status-plugin/scripts/step_status.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_check_step_packet.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_step_status.py": null,
+        "variants/gemini_cli/STEP-STATUS.md": {
+          "destination": ".baltor/plugins/step-status-plugin/STEP-STATUS.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/commands/step-status.toml": {
+          "destination": ".baltor/plugins/step-status-plugin/commands/step-status.toml",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/gemini-extension.json": {
+          "destination": ".baltor/plugins/step-status-plugin/gemini-extension.json",
+          "operation": "plugin_directory_binding"
+        }
+      },
+      "cursor": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/step-status-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/packet-manifest.schema.json": {
+          "destination": ".baltor/plugins/step-status-plugin/contracts/packet-manifest.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/packet/.baltor/step/checklist.md": null,
+        "examples/packet/.baltor/step/contracts/output.schema.json": null,
+        "examples/packet/.baltor/step/node_context.md": null,
+        "examples/packet/.baltor/step/packet-manifest.json": null,
+        "examples/packet/.baltor/step/task.json": null,
+        "examples/packet/AGENTS.md": null,
+        "scripts/check_step_packet.py": {
+          "destination": ".baltor/plugins/step-status-plugin/scripts/check_step_packet.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/step_status.py": {
+          "destination": ".baltor/plugins/step-status-plugin/scripts/step_status.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_check_step_packet.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_step_status.py": null,
+        "variants/cursor/.cursor-plugin/plugin.json": {
+          "destination": ".baltor/plugins/step-status-plugin/.cursor-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/cursor/commands/step-status.md": {
+          "destination": ".baltor/plugins/step-status-plugin/commands/step-status.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/cursor/rules/step-status.mdc": {
+          "destination": ".baltor/plugins/step-status-plugin/rules/step-status.mdc",
+          "operation": "plugin_directory_binding"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/packet-manifest.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/packet/.baltor/step/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "examples/packet/.baltor/step/contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "examples/packet/.baltor/step/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "examples/packet/.baltor/step/packet-manifest.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "examples/packet/.baltor/step/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "examples/packet/AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "scripts/check_step_packet.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_check_step_packet.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_step_status.py"
+        ]
+      },
+      "scripts/step_status.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_status.py"
+        ]
+      },
+      "tests/test_check_step_packet.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_plugin_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_step_status.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/cursor/.cursor-plugin/plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/commands/step-status.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/rules/step-status.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/STEP-STATUS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/commands/step-status.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/gemini-extension.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "From the workspace root run python3 -I -B .baltor/plugins/step-status-plugin/scripts/check_step_packet.py, adding --expect-content-sha256 when the first message gives a packet digest, and read its JSON.",
+    "done_when": [
+      "The packet check exited 0 before any step work started.",
+      "At handoff the step status command still exits 0 and every handoff item it lists is true."
+    ],
+    "stop_and_report_when": [
+      "The packet check or the step status command exits 1 or 2.",
+      "The objective needs an effect that the task does not list.",
+      "A file under .baltor/step/ appears as changed."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace"
+    },
+    "package_digest": "38440737d1323a8b2dc1194253d002e27dfea4b25848902d8b1f4b82ce429461",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

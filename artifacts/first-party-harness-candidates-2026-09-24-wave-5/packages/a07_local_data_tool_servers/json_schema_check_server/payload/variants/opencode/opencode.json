@@ -1,0 +1,17 @@
+{
+  "mcp": {
+    "json_schema_check_server": {
+      "type": "local",
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        ".baltor/json-schema-check-server/server/json_schema_check_server.py",
+        "--root",
+        "."
+      ],
+      "cwd": ".",
+      "enabled": true
+    }
+  }
+}

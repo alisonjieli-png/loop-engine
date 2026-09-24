@@ -1,0 +1,17 @@
+{
+ "record_type": "ticket_reproduction_record/v1",
+ "ticket_id": "T-104",
+ "status": "reproduced",
+ "test_file": "tests/test_cart_badge.py",
+ "test_name": "test_badge_uses_singular_for_one_item",
+ "evidence_path": ".baltor/step-output/evidence/reproduction-run-20260923T021512004211Z.json",
+ "failure_line": "AssertionError: '1 items' != '1 item'",
+ "fails_for_reported_reason": true,
+ "explanation": "The first run failed with a NameError because the new test misspelled badge_text, so the test itself was broken. After the spelling was corrected, the second run fails on the assertion that the ticket describes: badge_text(1) returns '1 items'.",
+ "evidence_files": [
+  ".baltor/step-output/evidence/reproduction-run-20260923T021455871020Z.json",
+  ".baltor/step-output/evidence/reproduction-run-20260923T021512004211Z.json"
+ ],
+ "product_code_changed": false,
+ "blocker": null
+}

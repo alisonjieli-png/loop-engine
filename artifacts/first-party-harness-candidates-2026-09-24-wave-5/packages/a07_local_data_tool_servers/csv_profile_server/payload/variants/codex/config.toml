@@ -1,0 +1,3 @@
+[mcp_servers.csv_profile_server]
+command = "python3"
+args = ["-I", "-B", ".baltor/csv-profile-server/server/csv_profile_server.py", "--root", "."]

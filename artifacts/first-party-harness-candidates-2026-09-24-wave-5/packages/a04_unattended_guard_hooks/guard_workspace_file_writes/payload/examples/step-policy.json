@@ -1,0 +1,6 @@
+{
+  "record_type": "workspace_write_guard/v1",
+  "protected_globs": ["data/raw/**", "migrations/applied/**", "**/*.lock", ".github/workflows/**",
+                      "**/AGENTS.md", "**/CLAUDE.md", ".mcp.json", ".vscode/**", ".github/copilot-instructions.md"],
+  "writable_globs": [".baltor/step/handoff.md"]
+}

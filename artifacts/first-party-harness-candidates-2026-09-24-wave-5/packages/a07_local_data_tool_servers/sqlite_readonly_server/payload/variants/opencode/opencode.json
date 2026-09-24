@@ -1,0 +1,17 @@
+{
+  "mcp": {
+    "sqlite_readonly_server": {
+      "type": "local",
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+        "--root",
+        "."
+      ],
+      "cwd": ".",
+      "enabled": true
+    }
+  }
+}

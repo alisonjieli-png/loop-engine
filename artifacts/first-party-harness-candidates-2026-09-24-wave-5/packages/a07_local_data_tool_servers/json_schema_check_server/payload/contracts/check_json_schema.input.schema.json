@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "document_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "JSON or JSON Lines file relative to the workspace root, for example out/result.json."
+    },
+    "document": {
+      "description": "The JSON value to check, given inline. Give document or document_path, not both."
+    },
+    "schema_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "JSON Schema file relative to the workspace root, for example contracts/output.schema.json."
+    },
+    "schema": {
+      "type": [
+        "object",
+        "boolean"
+      ],
+      "description": "The JSON Schema, given inline. Give schema or schema_path, not both."
+    },
+    "jsonl": {
+      "type": "boolean",
+      "default": false,
+      "description": "true checks every nonempty line of document_path as its own JSON document."
+    },
+    "check_formats": {
+      "type": "boolean",
+      "default": true,
+      "description": "true checks format for date, date-time, time, email, uuid, ipv4 and uri."
+    },
+    "allow_unchecked": {
+      "type": "boolean",
+      "default": false,
+      "description": "true checks the supported keywords and lists the others in unchecked instead of refusing."
+    },
+    "max_violations": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 100,
+      "description": "List at most this many violations; violation_count still counts all of them."
+    }
+  },
+  "additionalProperties": false
+}

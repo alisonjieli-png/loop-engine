@@ -1,0 +1,308 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ticket_triage_decision/v1",
+ "description": "The final answer of the triage step. Every answer holds every key. A decision that matches this schema is not yet accepted; the host or a person checks it before any code changes.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "ticket_id",
+  "decision",
+  "reasons",
+  "acceptance",
+  "files_to_read",
+  "first_test",
+  "open_questions",
+  "parts",
+  "needs"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "ticket_triage_decision/v1"
+  },
+  "ticket_id": {
+   "$ref": "#/$defs/identifier"
+  },
+  "decision": {
+   "enum": [
+    "go",
+    "hold",
+    "split"
+   ]
+  },
+  "reasons": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 8,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 400,
+    "pattern": "\\S"
+   }
+  },
+  "acceptance": {
+   "type": "array",
+   "maxItems": 12,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 400,
+    "pattern": "\\S"
+   },
+   "description": "Sentences of the ticket that state a wanted result a test or a command can prove, copied word for word."
+  },
+  "files_to_read": {
+   "type": "array",
+   "maxItems": 8,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "path",
+     "why"
+    ],
+    "properties": {
+     "path": {
+      "$ref": "#/$defs/path"
+     },
+     "why": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "pattern": "\\S"
+     }
+    }
+   }
+  },
+  "first_test": {
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/first_test"
+    }
+   ]
+  },
+  "open_questions": {
+   "type": "array",
+   "maxItems": 8,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 400,
+    "pattern": "\\S"
+   },
+   "description": "One question for each wanted result that no test or command can prove, and for anything else that blocks a go. Any open question makes the decision hold."
+  },
+  "parts": {
+   "type": "array",
+   "maxItems": 6,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "title",
+     "acceptance",
+     "files_to_read"
+    ],
+    "properties": {
+     "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "\\S"
+     },
+     "acceptance": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400,
+      "pattern": "\\S"
+     },
+     "files_to_read": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+       "$ref": "#/$defs/path"
+      }
+     }
+    }
+   }
+  },
+  "needs": {
+   "type": "array",
+   "maxItems": 12,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 120,
+    "pattern": "\\S"
+   }
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "required": [
+     "decision"
+    ],
+    "properties": {
+     "decision": {
+      "const": "go"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "first_test": {
+      "$ref": "#/$defs/first_test"
+     },
+     "acceptance": {
+      "minItems": 1
+     },
+     "files_to_read": {
+      "minItems": 1
+     },
+     "needs": {
+      "maxItems": 0
+     },
+     "parts": {
+      "maxItems": 0
+     },
+     "open_questions": {
+      "maxItems": 0
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "decision"
+    ],
+    "properties": {
+     "decision": {
+      "const": "hold"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "first_test": {
+      "type": "null"
+     },
+     "parts": {
+      "maxItems": 0
+     }
+    },
+    "anyOf": [
+     {
+      "properties": {
+       "open_questions": {
+        "minItems": 1
+       }
+      }
+     },
+     {
+      "properties": {
+       "needs": {
+        "minItems": 1
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "decision"
+    ],
+    "properties": {
+     "decision": {
+      "const": "split"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "first_test": {
+      "type": "null"
+     },
+     "parts": {
+      "minItems": 2
+     },
+     "open_questions": {
+      "maxItems": 0
+     },
+     "needs": {
+      "maxItems": 0
+     }
+    }
+   }
+  }
+ ],
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "first_test": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "path",
+    "name",
+    "asserts",
+    "command"
+   ],
+   "properties": {
+    "path": {
+     "$ref": "#/$defs/path"
+    },
+    "name": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 200,
+     "pattern": "\\S"
+    },
+    "asserts": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 400,
+     "pattern": "\\S"
+    },
+    "command": {
+     "$ref": "#/$defs/command"
+    }
+   }
+  },
+  "command": {
+   "description": "The program and its arguments, the program first, as the next step runs them without a shell from the workspace root.",
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 64,
+   "prefixItems": [
+    {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "\\S"
+    }
+   ],
+   "items": {
+    "type": "string",
+    "maxLength": 1000
+   }
+  }
+ }
+}

@@ -1,0 +1,35 @@
+{
+  "permission": {
+    "*": "deny",
+    "read": {
+      "*": "allow",
+      ".env*": "deny",
+      "*/.env*": "deny"
+    },
+    "list": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "bash": {
+      "*": "deny",
+      "python3 -m unittest *": "allow",
+      "python3 -m pytest *": "allow",
+      "python3 -m pyflakes *": "allow",
+      "ruff format --check *": "allow",
+      "python3 -m black --check *": "allow",
+      "python3 -I -B .baltor/test-commands-only-settings/scripts/check_test_commands_only_settings.py": "allow",
+      "*--basetemp*": "deny",
+      "*--junit*": "deny",
+      "*--log-file*": "deny",
+      "*--debug*": "deny",
+      "*--pastebin*": "deny",
+      "*-o cache_dir*": "deny",
+      "*-ocache_dir*": "deny",
+      "*--override-ini*": "deny",
+      "*--cache-dir*": "deny",
+      "*--output-file*": "deny",
+      "*>*": "deny"
+    }
+  }
+}

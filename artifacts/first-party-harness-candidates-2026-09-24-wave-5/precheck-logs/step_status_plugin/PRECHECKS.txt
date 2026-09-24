@@ -1,0 +1,106 @@
+PRECHECKS for wave 5 package step_status_plugin
+written 2026-09-24T05:49:10.186291+00:00 by the a11_session_plugins generator (third run)
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/step_status_plugin
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/step_status_plugin
+{"fill": "done", "files": 19, "package_digest": "38440737d1323a8b2dc1194253d002e27dfea4b25848902d8b1f4b82ce429461"}
+exit 0
+package_digest now 38440737d1323a8b2dc1194253d002e27dfea4b25848902d8b1f4b82ce429461; report digest 38440737d1323a8b2dc1194253d002e27dfea4b25848902d8b1f4b82ce429461; same: True
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260924T054546655077Z.json) ==
+{
+ "identity": "step_status_plugin",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ }
+}
+
+== 3. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 26}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 26}
+[passed] hooks_run
+[passed] servers_run
+
+== 4. check-all --assignment a11_session_plugins (report reports/precheck-all-20260924T054546657835Z.json) ==
+{
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "competition_plugin",
+  "data_cleanup_plugin",
+  "overnight_ticket_plugin",
+  "portable_step_packet_plugin",
+  "step_status_plugin"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+
+== 5. guard mutants run by the generator (each removes one guard in a scratch copy) ==
+-- mutants-step-status-20260924T052745Z.txt
+digest comparison removed: caught by ['test_packet_file_edited_after_the_manifest_is_caught']
+unlisted scan removed: caught by ['test_leftover_file_in_the_packet_folder_is_caught', 'test_manifest_without_a_task_is_a_failure']
+host digest ignored: caught by ['test_host_digest_binds_the_packet', 'test_packet_that_is_not_the_expected_one_turns_the_card_into_a_stop']
+step id not compared: caught by ['test_step_id_must_equal_the_task_node_id']
+unknown manifest fields accepted: caught by ['test_manifest_shape_is_refused_before_files_are_read']
+status ignores the packet result: caught by ['test_packet_that_is_not_the_expected_one_turns_the_card_into_a_stop']
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+- Cross-check with the Codex packet renderer: check_step_packet.py was run read-only on both Codex example packets (inventory-reconciliation, 8 files; incident-timeline, 9 files) with --manifest packet-manifest.json. Both passed, and the incident packet passed with --expect-content-sha256 set to the digest recorded in Codex fixture-bindings.json (saved as codex-packet-crosscheck-*.json in the generator work folder).
+- The Gemini CLI extension facts (contextFileName, commands/**/*.toml named by file name, commands skipped in an untrusted folder when folder trust is on, extension name pattern) were read in the installed Gemini CLI 0.59.0 source without running it.
+- Local test runs of the payload: 26 tests pass under Python 3.14 and 3.10.
+
+== 7. every pre-check report of this package, oldest first ==
+precheck-20260924T053031209207Z.json: passed_for_wave_gate=True digest=38440737d132 refused=[]
+precheck-20260924T054546655077Z.json: passed_for_wave_gate=True digest=38440737d132 refused=[]
+
+== 8. checks that failed or changed before the final pass ==
+- The first run left a partial payload with no package.json and no review note, so no report exists for it.
+- The third run cut the manifest check down to identity (the readiness checks belong to focused_step_packet_rules), made unlisted files a failure, required every manifest field, added the manifest contract and removed an invented results/ folder from the status card. The first check of this version, precheck-20260924T053031209207Z, passed.
+
+== 9. what could not run here ==
+- Native loading in Gemini CLI and Cursor was not probed: the specification says not to run harness binaries for placement.
+- Link handling is checked by code review only: the tests are read-only, and a test that makes a link would need writes_fs.
+- agent_skills_validator is skipped by the checker because the payload holds no SKILL.md.

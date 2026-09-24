@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-23T20:46:06.197068+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "changelog_writer",
+  "data_sample_inspector",
+  "leakage_reviewer",
+  "repository_scout",
+  "test_run_summarizer"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a05_focused_subagents/changelog_writer/review/precheck-20260923T204557319445Z.json",
+  "packages/a05_focused_subagents/data_sample_inspector/review/precheck-20260923T204557494233Z.json",
+  "packages/a05_focused_subagents/leakage_reviewer/review/precheck-20260923T204557658834Z.json",
+  "packages/a05_focused_subagents/repository_scout/review/precheck-20260923T204557814485Z.json",
+  "packages/a05_focused_subagents/test_run_summarizer/review/precheck-20260923T204606195506Z.json"
+ ]
+}

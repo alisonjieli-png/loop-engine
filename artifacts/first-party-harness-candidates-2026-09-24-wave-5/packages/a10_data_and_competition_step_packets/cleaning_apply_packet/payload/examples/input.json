@@ -1,0 +1,5 @@
+{
+ "table_path": "data/raw/customers.csv",
+ "plan_path": "work/cleaning-plan/cleaning_plan.json",
+ "output_dir": "work/cleaned"
+}

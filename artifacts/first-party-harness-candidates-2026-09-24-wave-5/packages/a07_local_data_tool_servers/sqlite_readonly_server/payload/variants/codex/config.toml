@@ -1,0 +1,3 @@
+[mcp_servers.sqlite_readonly_server]
+command = "python3"
+args = ["-I", "-B", ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py", "--root", "."]

@@ -1,0 +1,32 @@
+PRECHECKS for extract_ticket_acceptance_criteria (a03_ticket_work_tools)
+Each block summarizes one 'check_package.py check' report, oldest first. The JSON report named in
+the block is kept in review/ and holds the same findings. Failed runs are kept beside their successors.
+
+### run 1: precheck-20260923T202256992090Z.json
+package_digest=b1dbc5b1872e87fc5115cb1d38dfd920b048649701f8f1a7bd5ae2816b8a6dde refused=False passed_for_wave_gate=True runs_skipped=False
+layout: passed
+manifest_schema: passed
+identity: passed
+inventory: passed
+text_hygiene: passed
+vocabulary: passed
+safety_static: passed
+secrets: passed
+parse: passed
+entry_shape: passed
+placements: passed
+effects: warning
+  - tests/test_extract_ticket_criteria.py:31: URL 'https://example.com/docs/export.json' in code
+  - tests/test_extract_ticket_criteria.py:201: URL 'https://example.com/a.py' in code
+network_static: passed
+agent_skills_validator: passed
+  - agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/extract-ticket-acceptance-criteria
+  - skills_ref_official_git .: exit 0 Valid skill: TMP/extract-ticket-acceptance-criteria
+duplicates: passed
+review_note: passed
+tests_run: passed
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 14}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 14}
+hooks_run: passed
+servers_run: passed
+

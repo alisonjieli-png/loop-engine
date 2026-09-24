@@ -1,0 +1,638 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "data_cleanup_plugin",
+    "title": "Data cleanup session plugin",
+    "purpose": "A Claude Code plugin, with a Gemini CLI extension variant, that bundles a post-write hook checking header and row counts of cleaned files against their source, a cleanup status command and a cleaning rule critic agent.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/DESIGN.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md"
+    ],
+    "layer": "code",
+    "family": "native_plugin",
+    "search_tags": [
+      "check cleaned csv row count",
+      "rows lost after cleaning",
+      "header changed after cleaning",
+      "compare cleaned file with source",
+      "post write hook for csv files",
+      "cleanup status command",
+      "review cleaning rules before applying",
+      "data cleanup plugin",
+      "gemini cli extension for data cleaning",
+      "claude code plugin for data cleaning",
+      "quoted line break row count",
+      "cheap model data cleanup guard"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst"
+      ]
+    },
+    "symbols": [
+      "load_pairs",
+      "csv_shape",
+      "compare",
+      "hook_message",
+      "run_hook",
+      "run_all",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "gemini"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a11_session_plugins",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/cleanup-pairs.schema.json",
+        "digest": "8e46a92c9496afbaa49fcfb0bf3f4a7ca2d213b3293e84f06bfe2af35dc11879",
+        "size_bytes": 1184,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/claude_code-posttooluse-clean-copy.json",
+        "digest": "d8f8fe6e37ff93b3db9f980a3a5d4ff4fabe44f505713465c907975bafdf48ff",
+        "size_bytes": 338,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-posttooluse-dropped-row.json",
+        "digest": "4aa1e226b2e3acdc80c2a1d457d02c8701d929154e47635ac0e6038ca46131ca",
+        "size_bytes": 346,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-posttooluse-malformed.json",
+        "digest": "5c32c2baf107f550ae69263036e0676ea1cd63a238a8a3d36226674edce363f5",
+        "size_bytes": 123,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleanup/.baltor/step/cleanup-pairs.json",
+        "digest": "9ba2ebe14a76d7a38297a8f21f2b54045595aecd550acb8cc2c7693cec11ae2d",
+        "size_bytes": 313,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleanup/data/clean/orders-dropped.csv",
+        "digest": "b96ace2a9814cc9d0cf0a00439a6760bb9963e2028d27320fc148239c0e13d70",
+        "size_bytes": 179,
+        "media_type": "text/csv",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleanup/data/clean/orders.csv",
+        "digest": "f2bbf5efdcabe147ebccd21b08f4fed86d37a4496a3b42843e22719037e3b799",
+        "size_bytes": 191,
+        "media_type": "text/csv",
+        "role": "other"
+      },
+      {
+        "path": "examples/cleanup/data/raw/orders.csv",
+        "digest": "0c85ab356d61434e7a39cdcad91f26014e8a7c863d0c0f3aeca761a9e0f39b98",
+        "size_bytes": 185,
+        "media_type": "text/csv",
+        "role": "other"
+      },
+      {
+        "path": "examples/gemini_cli-aftertool-clean-copy.json",
+        "digest": "1659536104395ce04b0742e8e1a9cfaa5d080e86e710eda8a42e01efba43a8fb",
+        "size_bytes": 400,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/gemini_cli-aftertool-dropped-row.json",
+        "digest": "75ac5a953923f97a4534348939f5057abdbb599a83bd0a698e3bf2779621e0f1",
+        "size_bytes": 424,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/gemini_cli-aftertool-malformed.json",
+        "digest": "0f181188e475f9e15c5263fc2489c061e65833743990f7a1eb20e1d10f5a2fb8",
+        "size_bytes": 150,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_cleaned_counts.py",
+        "digest": "7e77150f69ff96de56670822b9b63999c00a32f1041a80d1bc0d2c6ee3f6e429",
+        "size_bytes": 14196,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_check_cleaned_counts.py",
+        "digest": "b26f0de115517ceb4a8ddd916a92a4d5fd75c2b69dfcbc44d1c594e79d05b9bd",
+        "size_bytes": 12138,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_plugin_layout.py",
+        "digest": "a7d190dc680481062f8bd95c611a4855b7e5fa75541fa0e9f87f42bd9e4de980",
+        "size_bytes": 5234,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.claude-plugin/plugin.json",
+        "digest": "37e1df811c81cf607919834adf097c487337002996fa810619e9c0be264f950e",
+        "size_bytes": 391,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/claude_code/agents/cleaning-rule-critic.md",
+        "digest": "8602dcac3ccd3c5c12424050c5a78464c0c2e4dd7b2bb8357fa7bd8dd6f23249",
+        "size_bytes": 2509,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/claude_code/commands/cleanup-status.md",
+        "digest": "61db7c7225e7031d6ea02305a4b936ac79f722d009cbdb113aaedd319fde2f71",
+        "size_bytes": 1454,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/claude_code/hooks/hooks.json",
+        "digest": "191bbb7ad27a762ec7d3b339b644e4ee9c1ca3fdfe6db7c24a18fe0a5cc90dfe",
+        "size_bytes": 327,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/agents/cleaning-rule-critic.md",
+        "digest": "e41c5201d23276dffbc037ddb1df43e886ce90afc09e38dca39f471cfe6d58e4",
+        "size_bytes": 2555,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/gemini_cli/commands/cleanup-status.toml",
+        "digest": "e96f211d691f1abdc3b783247e43873758a879c1246482ee87409c00fe7ab9a9",
+        "size_bytes": 1463,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/gemini-extension.json",
+        "digest": "15344dcbb68a805d35b683b5398f4fb1fd6a6c909c8d726bcd4a3f0b2632041e",
+        "size_bytes": 288,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/gemini_cli/hooks/hooks.json",
+        "digest": "40517176427d68d090d0e4e07c950d9ac8a7fe858b1bb0f8bdc6115b601ec636",
+        "size_bytes": 373,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a11_session_plugins",
+    "file_class": "plugin_bundle",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The extension layout is documented in the repository research file. The AfterTool input fields, the regular-expression tool matcher, write_file and replace, GEMINI_PROJECT_DIR, timeouts in milliseconds, ${extensionPath}, the additionalContext answer and the local agent front matter match the source of the installed Gemini CLI 0.59.0, read without running it. Activation with gemini extensions link, the hook run and the agent, which the research file calls a preview feature, were not observed."
+    },
+    "not_placed": {},
+    "native_name": "data-cleanup-plugin",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/.claude-plugin/plugin.json",
+      "gemini_cli": "variants/gemini_cli/gemini-extension.json"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/cleanup-pairs.schema.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/contracts/cleanup-pairs.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-posttooluse-clean-copy.json": null,
+        "examples/claude_code-posttooluse-dropped-row.json": null,
+        "examples/claude_code-posttooluse-malformed.json": null,
+        "examples/cleanup/.baltor/step/cleanup-pairs.json": null,
+        "examples/cleanup/data/clean/orders-dropped.csv": null,
+        "examples/cleanup/data/clean/orders.csv": null,
+        "examples/cleanup/data/raw/orders.csv": null,
+        "examples/gemini_cli-aftertool-clean-copy.json": null,
+        "examples/gemini_cli-aftertool-dropped-row.json": null,
+        "examples/gemini_cli-aftertool-malformed.json": null,
+        "scripts/check_cleaned_counts.py": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/scripts/check_cleaned_counts.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_check_cleaned_counts.py": null,
+        "tests/test_plugin_layout.py": null,
+        "variants/claude_code/.claude-plugin/plugin.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/.claude-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/agents/cleaning-rule-critic.md": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/agents/cleaning-rule-critic.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/commands/cleanup-status.md": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/commands/cleanup-status.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/hooks/hooks.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/cleanup-pairs.schema.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/contracts/cleanup-pairs.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-posttooluse-clean-copy.json": null,
+        "examples/claude_code-posttooluse-dropped-row.json": null,
+        "examples/claude_code-posttooluse-malformed.json": null,
+        "examples/cleanup/.baltor/step/cleanup-pairs.json": null,
+        "examples/cleanup/data/clean/orders-dropped.csv": null,
+        "examples/cleanup/data/clean/orders.csv": null,
+        "examples/cleanup/data/raw/orders.csv": null,
+        "examples/gemini_cli-aftertool-clean-copy.json": null,
+        "examples/gemini_cli-aftertool-dropped-row.json": null,
+        "examples/gemini_cli-aftertool-malformed.json": null,
+        "scripts/check_cleaned_counts.py": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/scripts/check_cleaned_counts.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_check_cleaned_counts.py": null,
+        "tests/test_plugin_layout.py": null,
+        "variants/gemini_cli/agents/cleaning-rule-critic.md": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/agents/cleaning-rule-critic.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/commands/cleanup-status.toml": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/commands/cleanup-status.toml",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/gemini-extension.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/gemini-extension.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/hooks/hooks.json": {
+          "destination": ".baltor/plugins/data-cleanup-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/cleanup-pairs.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/claude_code-posttooluse-clean-copy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/claude_code-posttooluse-dropped-row.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/claude_code-posttooluse-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/cleanup/.baltor/step/cleanup-pairs.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/cleanup/data/clean/orders-dropped.csv": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/cleanup/data/clean/orders.csv": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/cleanup/data/raw/orders.csv": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/gemini_cli-aftertool-clean-copy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/gemini_cli-aftertool-dropped-row.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "examples/gemini_cli-aftertool-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py"
+        ]
+      },
+      "scripts/check_cleaned_counts.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_check_cleaned_counts.py",
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "tests/test_check_cleaned_counts.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_plugin_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/.claude-plugin/plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/agents/cleaning-rule-critic.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/commands/cleanup-status.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/agents/cleaning-rule-critic.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/commands/cleanup-status.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/gemini-extension.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "PostToolUse",
+        "script": "scripts/check_cleaned_counts.py",
+        "arguments": [
+          "--harness",
+          "claude_code"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}/examples/cleanup"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-posttooluse-clean-copy.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"hookEventName\": \"PostToolUse\"",
+              "Cleanup count check passed"
+            ]
+          },
+          {
+            "input": "examples/claude_code-posttooluse-dropped-row.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"decision\": \"block\"",
+              "rows lost: 4 rows, source has 5"
+            ]
+          },
+          {
+            "input": "examples/claude_code-posttooluse-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "gemini_cli",
+        "event": "AfterTool",
+        "script": "scripts/check_cleaned_counts.py",
+        "arguments": [
+          "--harness",
+          "gemini_cli"
+        ],
+        "environment": {
+          "GEMINI_PROJECT_DIR": "{WORKSPACE}/examples/cleanup"
+        },
+        "samples": [
+          {
+            "input": "examples/gemini_cli-aftertool-clean-copy.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"additionalContext\"",
+              "Cleanup count check passed"
+            ]
+          },
+          {
+            "input": "examples/gemini_cli-aftertool-dropped-row.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"additionalContext\"",
+              "rows lost: 4 rows, source has 5"
+            ]
+          },
+          {
+            "input": "examples/gemini_cli-aftertool-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Run the cleanup status command once before cleaning, to confirm the pairs file is readable and every source exists.",
+    "done_when": [
+      "The cleanup status command reports status match for every declared pair.",
+      "No count check message reported a problem after the last write."
+    ],
+    "stop_and_report_when": [
+      "The pairs file is missing or unreadable.",
+      "A source file was written or is missing.",
+      "A mismatch could pass only by editing the pairs file."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/DESIGN.md": "eafbcb27cc25dd23f2f48059ef815fa8c3f474a7bab5a3295186ff0f7014d1d8",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558"
+    },
+    "package_digest": "7d181e5a58081964b46ea1fdf7849211347af7b42861714a2c1507b62b056780",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

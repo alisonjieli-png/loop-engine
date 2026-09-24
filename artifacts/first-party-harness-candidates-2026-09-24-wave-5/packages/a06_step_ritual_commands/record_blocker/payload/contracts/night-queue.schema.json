@@ -1,0 +1,254 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_queue/v1",
+ "description": "The plan that plan-night-queue writes once to .baltor/night/queue.json. It is never rewritten, so readers may bind records to the SHA-256 of its bytes. Live statuses are in .baltor/night/queue-status.json (night_queue_status/v1). A reader that only needs the order reads record_type, items (position, id, title) and held, and ignores the rest.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "created_at",
+  "order",
+  "budget",
+  "planned",
+  "inputs",
+  "items",
+  "held",
+  "warnings"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_queue/v1"
+  },
+  "created_at": {
+   "$ref": "#/$defs/time"
+  },
+  "order": {
+   "enum": [
+    "risk_first",
+    "priority_first"
+   ]
+  },
+  "budget": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "time_minutes",
+    "model_calls",
+    "reserve_percent",
+    "usable_minutes",
+    "usable_calls"
+   ],
+   "properties": {
+    "time_minutes": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 1440
+    },
+    "model_calls": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 100000
+    },
+    "reserve_percent": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 90
+    },
+    "usable_minutes": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "usable_calls": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "planned": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "minutes",
+    "calls"
+   ],
+   "properties": {
+    "minutes": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "calls": {
+     "type": "integer",
+     "minimum": 0
+    }
+   },
+   "description": "The sum of the queued tickets' estimates; it stays within the usable budget."
+  },
+  "inputs": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    ".baltor/night/settings.json",
+    ".baltor/night/tickets.json",
+    ".baltor/night/estimates.json"
+   ],
+   "properties": {
+    ".baltor/night/settings.json": {
+     "$ref": "#/$defs/digest"
+    },
+    ".baltor/night/tickets.json": {
+     "$ref": "#/$defs/digest"
+    },
+    ".baltor/night/estimates.json": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/digest"
+      }
+     ]
+    }
+   },
+   "description": "SHA-256 of each input file as it was read; null when there was no estimates file."
+  },
+  "items": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 500,
+   "items": {
+    "$ref": "#/$defs/item"
+   }
+  },
+  "held": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/held"
+   }
+  },
+  "warnings": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "time": {
+   "type": "string",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+  },
+  "digest": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "reason_code": {
+   "enum": [
+    "duplicate_id",
+    "no_acceptance_criteria",
+    "no_check",
+    "judged_not_ready",
+    "no_estimate",
+    "high_risk",
+    "unknown_dependency",
+    "waits_for",
+    "dependency_cycle",
+    "over_budget"
+   ]
+  },
+  "item": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "position",
+    "id",
+    "title",
+    "risk",
+    "minutes",
+    "calls",
+    "priority",
+    "depends_on",
+    "status"
+   ],
+   "properties": {
+    "position": {
+     "type": "integer",
+     "minimum": 1,
+     "description": "The item's place in the list, counting from 1."
+    },
+    "id": {
+     "$ref": "#/$defs/identifier"
+    },
+    "title": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 200
+    },
+    "risk": {
+     "enum": [
+      "low",
+      "medium",
+      "high"
+     ]
+    },
+    "minutes": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 1440
+    },
+    "calls": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 100000
+    },
+    "priority": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 1000
+    },
+    "depends_on": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/identifier"
+     }
+    },
+    "status": {
+     "const": "queued",
+     "description": "The planned status. Live statuses are in the status file."
+    }
+   }
+  },
+  "held": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "reason_code",
+    "reason",
+    "reasons"
+   ],
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/identifier"
+    },
+    "reason_code": {
+     "$ref": "#/$defs/reason_code"
+    },
+    "reason": {
+     "type": "string",
+     "minLength": 1
+    },
+    "reasons": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "$ref": "#/$defs/reason_code"
+     }
+    }
+   }
+  }
+ }
+}

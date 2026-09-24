@@ -1,0 +1,642 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "competition_plugin",
+    "title": "Competition session plugin",
+    "purpose": "A Claude Code plugin, with a Gemini CLI extension variant, that bundles a session-start hook loading the competition brief summary, an experiment note command and a pre-submission gate skill that never uploads.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "benchmarks/kaggle_competitions/README.md"
+    ],
+    "layer": "code",
+    "family": "native_plugin",
+    "search_tags": [
+      "competition brief at session start",
+      "kaggle style competition session",
+      "record an experiment with fold scores",
+      "experiment log for cross validation",
+      "compute cv mean from folds",
+      "check submission before upload",
+      "submission gate that never uploads",
+      "daily submission limit check",
+      "competition deadline check",
+      "gemini cli extension for competitions",
+      "claude code plugin for competitions",
+      "link submission file to experiment"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science"
+      ],
+      "role": [
+        "data scientist"
+      ]
+    },
+    "symbols": [
+      "check_brief",
+      "load_brief",
+      "load_notes",
+      "context_text",
+      "shape_problems",
+      "decide",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "gemini"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a11_session_plugins",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/competition-brief.schema.json",
+        "digest": "690aa80d732c4ca79ec2c21548d027f9d92d8c78db574674f089a16edde8c82a",
+        "size_bytes": 2239,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/experiment-note-draft.schema.json",
+        "digest": "af15615d28d70259e4f11a7e0e68e27aac063d2fa0508c4e1f868fb24b2dc03a",
+        "size_bytes": 1208,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/claude_code-sessionstart-malformed.json",
+        "digest": "2376d507e3f72637e7ff96dd1dd9d408f8ccee3c1f9304314f85f90cfcde4269",
+        "size_bytes": 93,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-sessionstart-startup.json",
+        "digest": "c97cc8f142d5d21a8ac5271ebe9049c6eb1b5b6027783e1322d363dc742c8a57",
+        "size_bytes": 181,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/competition/.baltor/competition/brief.json",
+        "digest": "c0a98069efb731afafac346adacb102dcaa0b0df0ea0b79acfea92a11faf782d",
+        "size_bytes": 555,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/experiment-note-draft.json",
+        "digest": "1545ddeb72ac786749f708b2e8d32b43c83abddbb5184c171ff8f0266b269f14",
+        "size_bytes": 387,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/gemini_cli-sessionstart-malformed.json",
+        "digest": "be1d48fa4c77df1db19cc2d5d3372925c758c7316c2dae575563b8ae5ca4b0d2",
+        "size_bytes": 92,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/gemini_cli-sessionstart-startup.json",
+        "digest": "3dfc48748d021e3593e246c3d81819aba6091e9190a36dc4bebd437b4c948864",
+        "size_bytes": 217,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/brief_summary.py",
+        "digest": "d7fa8125f7871691f256a8f97a922c65113028f16b5cf9cd3b897c3d203c1ab7",
+        "size_bytes": 11985,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "scripts/experiment_note.py",
+        "digest": "7c33ffd59a50a44fa048d44e448fa1d679d4f03950835a989aabbb59b2ff9a6a",
+        "size_bytes": 7588,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "skills/pre-submission-gate/SKILL.md",
+        "digest": "95c8f3867030edd43903ca3cecf919e6a0f1ad8e1311be9d152b97c71c24bd9f",
+        "size_bytes": 2740,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "skills/pre-submission-gate/scripts/submission_gate.py",
+        "digest": "47ff31ffbfe467195c17ca7b89594f37eee0be4762640db8d2029d498e3e9f05",
+        "size_bytes": 12260,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_brief_summary.py",
+        "digest": "00c32cee4c6424c5cc47d532fef88374c997dfded508a1b9d18c576d05519e79",
+        "size_bytes": 6105,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_experiment_note.py",
+        "digest": "3ca049134feac038a62e9d7e1b7b3d8d23e407ad2d95536c1c5a845092270abc",
+        "size_bytes": 5382,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_plugin_layout.py",
+        "digest": "bf27daa405acf15fbaca32d0a464b5e0d5ab584c6b3523460a2df714bde84229",
+        "size_bytes": 5258,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_submission_gate.py",
+        "digest": "69b9cedcc4b0ebd2fc6e73b57241e7b96da0e57119543b51f9f181e188edd54e",
+        "size_bytes": 7774,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.claude-plugin/plugin.json",
+        "digest": "0604e3a7f0859de36f768389e236cabfa5c645d9a2613e13f599b663eb2a90a1",
+        "size_bytes": 407,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/claude_code/commands/experiment-note.md",
+        "digest": "d1f404323ed06972f50affb4cbce884edb36ef5dcee5361c45e15ec3673a9077",
+        "size_bytes": 2050,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/claude_code/hooks/hooks.json",
+        "digest": "f02756a3eba3e8a96979f5c6dfe3e0bbd99bbb6ea79966d22ac2aa18ebd04072",
+        "size_bytes": 339,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/commands/experiment-note.toml",
+        "digest": "f86a1d60ad527a0c09df772df7ded7679300c1e8f2902ce92a7a909c4c2125e7",
+        "size_bytes": 2059,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/gemini-extension.json",
+        "digest": "26abb9866dd69404b118b532c79444b6867e3f9ba633595c83c8539abe14c52d",
+        "size_bytes": 301,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/gemini_cli/hooks/hooks.json",
+        "digest": "82327c5ffc805299893c5c8b4ad3431dc78f0a1cc7a2ea42add053627149a849",
+        "size_bytes": 334,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a11_session_plugins",
+    "file_class": "plugin_bundle",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The extension layout is documented in the repository research file. The SessionStart event, its sources, the exact-string lifecycle matcher, timeouts in milliseconds, ${extensionPath} and the use of hookSpecificOutput.additionalContext match the source of the installed Gemini CLI 0.59.0, read without running it. Local activation with gemini extensions link, extension skills and the hook run itself were not observed."
+    },
+    "not_placed": {},
+    "native_name": "competition-plugin",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/.claude-plugin/plugin.json",
+      "gemini_cli": "variants/gemini_cli/gemini-extension.json"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/competition-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/competition-brief.schema.json": {
+          "destination": ".baltor/plugins/competition-plugin/contracts/competition-brief.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/experiment-note-draft.schema.json": {
+          "destination": ".baltor/plugins/competition-plugin/contracts/experiment-note-draft.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-sessionstart-malformed.json": null,
+        "examples/claude_code-sessionstart-startup.json": null,
+        "examples/competition/.baltor/competition/brief.json": null,
+        "examples/experiment-note-draft.json": null,
+        "examples/gemini_cli-sessionstart-malformed.json": null,
+        "examples/gemini_cli-sessionstart-startup.json": null,
+        "scripts/brief_summary.py": {
+          "destination": ".baltor/plugins/competition-plugin/scripts/brief_summary.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/experiment_note.py": {
+          "destination": ".baltor/plugins/competition-plugin/scripts/experiment_note.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/pre-submission-gate/SKILL.md": {
+          "destination": ".baltor/plugins/competition-plugin/skills/pre-submission-gate/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/pre-submission-gate/scripts/submission_gate.py": {
+          "destination": ".baltor/plugins/competition-plugin/skills/pre-submission-gate/scripts/submission_gate.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_brief_summary.py": null,
+        "tests/test_experiment_note.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_submission_gate.py": null,
+        "variants/claude_code/.claude-plugin/plugin.json": {
+          "destination": ".baltor/plugins/competition-plugin/.claude-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/commands/experiment-note.md": {
+          "destination": ".baltor/plugins/competition-plugin/commands/experiment-note.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/hooks/hooks.json": {
+          "destination": ".baltor/plugins/competition-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/competition-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/competition-brief.schema.json": {
+          "destination": ".baltor/plugins/competition-plugin/contracts/competition-brief.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/experiment-note-draft.schema.json": {
+          "destination": ".baltor/plugins/competition-plugin/contracts/experiment-note-draft.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-sessionstart-malformed.json": null,
+        "examples/claude_code-sessionstart-startup.json": null,
+        "examples/competition/.baltor/competition/brief.json": null,
+        "examples/experiment-note-draft.json": null,
+        "examples/gemini_cli-sessionstart-malformed.json": null,
+        "examples/gemini_cli-sessionstart-startup.json": null,
+        "scripts/brief_summary.py": {
+          "destination": ".baltor/plugins/competition-plugin/scripts/brief_summary.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/experiment_note.py": {
+          "destination": ".baltor/plugins/competition-plugin/scripts/experiment_note.py",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/pre-submission-gate/SKILL.md": {
+          "destination": ".baltor/plugins/competition-plugin/skills/pre-submission-gate/SKILL.md",
+          "operation": "plugin_directory_binding"
+        },
+        "skills/pre-submission-gate/scripts/submission_gate.py": {
+          "destination": ".baltor/plugins/competition-plugin/skills/pre-submission-gate/scripts/submission_gate.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_brief_summary.py": null,
+        "tests/test_experiment_note.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_submission_gate.py": null,
+        "variants/gemini_cli/commands/experiment-note.toml": {
+          "destination": ".baltor/plugins/competition-plugin/commands/experiment-note.toml",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/gemini-extension.json": {
+          "destination": ".baltor/plugins/competition-plugin/gemini-extension.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/gemini_cli/hooks/hooks.json": {
+          "destination": ".baltor/plugins/competition-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/competition-brief.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "contracts/experiment-note-draft.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/claude_code-sessionstart-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_brief_summary.py"
+        ]
+      },
+      "examples/claude_code-sessionstart-startup.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_brief_summary.py"
+        ]
+      },
+      "examples/competition/.baltor/competition/brief.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_brief_summary.py",
+          "tests/test_experiment_note.py",
+          "tests/test_submission_gate.py"
+        ]
+      },
+      "examples/experiment-note-draft.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_note.py",
+          "tests/test_submission_gate.py"
+        ]
+      },
+      "examples/gemini_cli-sessionstart-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_brief_summary.py"
+        ]
+      },
+      "examples/gemini_cli-sessionstart-startup.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_brief_summary.py"
+        ]
+      },
+      "scripts/brief_summary.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_brief_summary.py",
+          "tests/test_submission_gate.py",
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "scripts/experiment_note.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_note.py",
+          "tests/test_submission_gate.py",
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "skills/pre-submission-gate/SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "skills/pre-submission-gate/scripts/submission_gate.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_submission_gate.py",
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "tests/test_brief_summary.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_experiment_note.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_plugin_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_submission_gate.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/.claude-plugin/plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/commands/experiment-note.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/commands/experiment-note.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/gemini-extension.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/gemini_cli/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "SessionStart",
+        "script": "scripts/brief_summary.py",
+        "arguments": [
+          "--harness",
+          "claude_code"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}/examples/competition"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-sessionstart-startup.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"hookEventName\": \"SessionStart\"",
+              "Metric: rmse, lower is better",
+              "never upload yourself"
+            ]
+          },
+          {
+            "input": "examples/claude_code-sessionstart-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "gemini_cli",
+        "event": "SessionStart",
+        "script": "scripts/brief_summary.py",
+        "arguments": [
+          "--harness",
+          "gemini_cli"
+        ],
+        "environment": {
+          "GEMINI_PROJECT_DIR": "{WORKSPACE}/examples/competition"
+        },
+        "samples": [
+          {
+            "input": "examples/gemini_cli-sessionstart-startup.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"additionalContext\"",
+              "Validation: group_kfold, 5 folds, groups by store_id"
+            ]
+          },
+          {
+            "input": "examples/gemini_cli-sessionstart-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read the competition summary that the session start hook added; it names the metric, folds, data version, deadline and daily submission limit.",
+    "done_when": [
+      "Every finished experiment has a note recorded by experiment_note.py.",
+      "Any submission handed to the host has a ready_for_host_upload decision from the gate."
+    ],
+    "stop_and_report_when": [
+      "The brief is missing or cannot be read.",
+      "A note is refused because its metric, fold count or data version differs from the brief.",
+      "The gate decides hold."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "benchmarks/kaggle_competitions/README.md": "168e32fa6cd78d925db1979342f42772f0b0656e3fefa5efbca7a2ab1a875b34"
+    },
+    "package_digest": "4e0ea48e768d3fb009ce9b96d6f19bf4c28a0a295ede867f16a7db1a1ac3a821",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

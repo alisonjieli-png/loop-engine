@@ -1,0 +1,8 @@
+{
+  "session_id": "sample-session-allowed",
+  "transcript_path": "/work/.baltor/sample-transcript.jsonl",
+  "cwd": "/work",
+  "permission_mode": "default",
+  "hook_event_name": "Stop",
+  "stop_hook_active": false
+}

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"$CLAUDE_PROJECT_DIR/.baltor/log-tool-activity/hooks/log_tool_activity.py\" --harness claude_code",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"$CLAUDE_PROJECT_DIR/.baltor/log-tool-activity/hooks/log_tool_activity.py\" --harness claude_code",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

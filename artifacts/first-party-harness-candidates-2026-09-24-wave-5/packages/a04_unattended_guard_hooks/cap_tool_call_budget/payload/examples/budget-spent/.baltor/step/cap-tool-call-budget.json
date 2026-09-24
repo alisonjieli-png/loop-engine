@@ -1,0 +1,7 @@
+{
+  "record_type": "tool_call_budget_policy/v1",
+  "step_id": "sample-ticket-0042-step-3",
+  "max_tool_calls": 40,
+  "handoff_path": ".baltor/step/handoff.md",
+  "max_handoff_calls": 5
+}

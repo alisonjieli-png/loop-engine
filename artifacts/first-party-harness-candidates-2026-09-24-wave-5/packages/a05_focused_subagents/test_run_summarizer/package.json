@@ -1,0 +1,288 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "test_run_summarizer",
+    "title": "Test run summarizer",
+    "purpose": "A helper that runs one declared test command and returns the exact command, exit status, counts and the first failure in a fixed short format instead of the raw log.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/native-client-material-loading.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_subagent",
+    "search_tags": [
+      "summarize test output",
+      "run the tests and report the first failure",
+      "short test result for an agent",
+      "keep long test logs out of the context",
+      "pytest summary as json",
+      "unittest go cargo jest test summary",
+      "test run subagent",
+      "exit status and failure counts"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software testing",
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a05_focused_subagents",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/reply.schema.json",
+        "digest": "dba2052c8336b58416f3bf068b7442487b1b731be1ff2d6577038d4ae2a427ef",
+        "size_bytes": 5166,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "scripts/summarize_test_run.py",
+        "digest": "a643750e34d10d092c4a32f4de4937541a15a438d90490d907f96995f3257399",
+        "size_bytes": 32541,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_summarize_test_run.py",
+        "digest": "398ee1f1f66a8c1053d94c7d575d941b8a03a9608de324ca81f0609eec9c576b",
+        "size_bytes": 24665,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/test-run-summarizer.md",
+        "digest": "56d2062dc1e4ef6fd224574e795412a2e08289b7bb56d4c378efd8fd6c80e44e",
+        "size_bytes": 2570,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/copilot/test-run-summarizer.agent.md",
+        "digest": "e1d5ef24fec430caa3c8092e4df5d93ec111aecddc0abea5fc40434b880684e9",
+        "size_bytes": 2533,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/opencode/test-run-summarizer.md",
+        "digest": "dd40cf3100d97911a77bdf518b033e952f93cf994df1940edcf6226b0eccc382",
+        "size_bytes": 2795,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a05_focused_subagents",
+    "file_class": "subagent_definition",
+    "use_cases": [
+      "any_focused_step",
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "opencode",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "opencode": "The folder .opencode/agents/ is documented and was observed with OpenCode 1.18.31 in docs/guides/native-client-material-loading.md, but discovery of this file and the effect of its mode, steps and permission keys were not probed. The keys, the bash tool's default time limit of 120000 ms and its stop of the command's process group were read from the installed OpenCode program text (it embeds version 1.18.32), which was not run.",
+      "copilot": "GitHub's custom agents configuration reference, read on 2026-09-24, documents the path .github/agents/NAME.agent.md, the execute and read tool aliases and that unknown tool names are ignored. Discovery of this file and any time limit of the Copilot shell tool were not observed; no Copilot surface was run."
+    },
+    "not_placed": {},
+    "native_name": "test-run-summarizer",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/test-run-summarizer.md",
+      "opencode": "variants/opencode/test-run-summarizer.md",
+      "copilot": "variants/copilot/test-run-summarizer.agent.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/test-run-summarizer.md": {
+          "destination": ".claude/agents/test-run-summarizer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/test-run-summarizer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/test-run-summarizer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/scripts/summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/tests/test_summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/test-run-summarizer.md": {
+          "destination": ".opencode/agents/test-run-summarizer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/test-run-summarizer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/test-run-summarizer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/scripts/summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/tests/test_summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/test-run-summarizer.agent.md": {
+          "destination": ".github/agents/test-run-summarizer.agent.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/test-run-summarizer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/test-run-summarizer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/scripts/summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_summarize_test_run.py": {
+          "destination": ".baltor/test-run-summarizer/tests/test_summarize_test_run.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/reply.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_summarize_test_run.py"
+        ]
+      },
+      "scripts/summarize_test_run.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_summarize_test_run.py"
+        ]
+      },
+      "tests/test_summarize_test_run.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/test-run-summarizer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/test-run-summarizer.agent.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/opencode/test-run-summarizer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/test-run-summarizer/scripts/summarize_test_run.py --timeout 540 -- followed by the declared test command, with the shell tool's own time limit set 60 seconds above --timeout, and read the one JSON object it prints.",
+    "done_when": [
+      "The reply is the JSON object the script printed, unchanged, and its command words match the declared command.",
+      "Only the result passed is reported as a pass; unconfirmed, no_tests, timeout and interrupted are not."
+    ],
+    "stop_and_report_when": [
+      "No test command was declared.",
+      "The command needs a shell, installs or removes packages, deletes files, pushes changes or uses the network.",
+      "The caller asks for a fix or a changed command."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558"
+    },
+    "package_digest": "220d229c70a9709f6032624a7ee0bca22b24ef817c2527b48b775cd2f138b5e3",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

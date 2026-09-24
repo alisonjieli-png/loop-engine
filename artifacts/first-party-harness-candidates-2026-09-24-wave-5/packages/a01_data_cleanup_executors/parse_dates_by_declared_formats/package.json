@@ -1,0 +1,341 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "parse_dates_by_declared_formats",
+    "title": "Parse dates by declared formats",
+    "purpose": "Convert a date column to ISO 8601 using only an ordered list of declared formats, and hold every value that no format parses or that two formats read differently, such as 03/04/2025.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/define-time-zone-reporting-window/SKILL.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "parse dates",
+      "convert dates to iso 8601",
+      "ambiguous day and month",
+      "dd/mm/yyyy or mm/dd/yyyy",
+      "date column cleanup",
+      "normalize date formats in a csv",
+      "mixed date formats in one column",
+      "two digit years",
+      "invalid calendar dates",
+      "hold ambiguous dates for review"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "Refusal",
+      "Arguments",
+      "DateFormat",
+      "split_format",
+      "touches_digit",
+      "delimiter_of",
+      "root_of",
+      "confined",
+      "read_input",
+      "parse_table",
+      "column_index",
+      "prepare_output",
+      "write_copy",
+      "shown",
+      "iso_date",
+      "judge",
+      "mixed_conventions",
+      "arguments",
+      "run",
+      "render",
+      "emit",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a01_data_cleanup_executors",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "9b6a7f6f3163c274fe22350daed94b37015c29c3cd4dbe9f048ac7625002b4ff",
+        "size_bytes": 2830,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "references/format-tokens.md",
+        "digest": "9c4209abb20285ad94248d03cd0201b3be7231e6339a66f8ceaa763a06094363",
+        "size_bytes": 4116,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/parse_dates.py",
+        "digest": "5ab8dd2f96fd775d606752a4cd4955c316ed858c8cd89548b8caaf844b0d1efa",
+        "size_bytes": 24195,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_parse_dates.py",
+        "digest": "7b8ff6b32ffea486bc326411a3839d5405caa36d14eeed04f5ba92ad8538918f",
+        "size_bytes": 12911,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a01_data_cleanup_executors",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "parse-dates-by-declared-formats",
+    "version": "0.1.1",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/parse-dates-by-declared-formats/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/parse-dates-by-declared-formats/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/format-tokens.md": {
+          "destination": ".claude/skills/parse-dates-by-declared-formats/references/format-tokens.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_dates.py": {
+          "destination": ".claude/skills/parse-dates-by-declared-formats/scripts/parse_dates.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_dates.py": {
+          "destination": ".claude/skills/parse-dates-by-declared-formats/tests/test_parse_dates.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/parse-dates-by-declared-formats/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/parse-dates-by-declared-formats/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/format-tokens.md": {
+          "destination": ".agents/skills/parse-dates-by-declared-formats/references/format-tokens.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_dates.py": {
+          "destination": ".agents/skills/parse-dates-by-declared-formats/scripts/parse_dates.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_dates.py": {
+          "destination": ".agents/skills/parse-dates-by-declared-formats/tests/test_parse_dates.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/parse-dates-by-declared-formats/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/parse-dates-by-declared-formats/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/format-tokens.md": {
+          "destination": ".opencode/skills/parse-dates-by-declared-formats/references/format-tokens.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_dates.py": {
+          "destination": ".opencode/skills/parse-dates-by-declared-formats/scripts/parse_dates.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_dates.py": {
+          "destination": ".opencode/skills/parse-dates-by-declared-formats/tests/test_parse_dates.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/parse-dates-by-declared-formats/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/parse-dates-by-declared-formats/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/format-tokens.md": {
+          "destination": ".pi/skills/parse-dates-by-declared-formats/references/format-tokens.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_dates.py": {
+          "destination": ".pi/skills/parse-dates-by-declared-formats/scripts/parse_dates.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_dates.py": {
+          "destination": ".pi/skills/parse-dates-by-declared-formats/tests/test_parse_dates.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/parse-dates-by-declared-formats/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/parse-dates-by-declared-formats/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/format-tokens.md": {
+          "destination": ".gemini/skills/parse-dates-by-declared-formats/references/format-tokens.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/parse_dates.py": {
+          "destination": ".gemini/skills/parse-dates-by-declared-formats/scripts/parse_dates.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_parse_dates.py": {
+          "destination": ".gemini/skills/parse-dates-by-declared-formats/tests/test_parse_dates.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_parse_dates.py"
+        ]
+      },
+      "references/format-tokens.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_parse_dates.py"
+        ]
+      },
+      "scripts/parse_dates.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_parse_dates.py"
+        ]
+      },
+      "tests/test_parse_dates.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B SKILL_DIR/scripts/parse_dates.py with --input, --column and each declared --format as a dry run, and read its JSON report.",
+    "done_when": [
+      "Every value is parsed, empty or listed in held_values with its reason.",
+      "counts.parsed + counts.held + counts.empty equals counts.data_rows.",
+      "The report names the copy written with --output, or says that none was written."
+    ],
+    "stop_and_report_when": [
+      "The task declares no date format.",
+      "The script exits 2 and refuses the input or the arguments.",
+      "held_values_complete is false.",
+      "Fewer holds would need a new, removed or reordered format."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md": "383c3c5e48792c05b736855213c3d97fe3c3a2d17fc060075eaf17b691d508bc",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/data/define-time-zone-reporting-window/SKILL.md": "d4a3f93679a6e33df61ae0b03b104da919efc4902ba1a6a845ace4f7dcd5b1d4"
+    },
+    "package_digest": "3b506571932f4c6e258eea154839539cd84dc6791aa3fb596b2692626ed3deb0",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

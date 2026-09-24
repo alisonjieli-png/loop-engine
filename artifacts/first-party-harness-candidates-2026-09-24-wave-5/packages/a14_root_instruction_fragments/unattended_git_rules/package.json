@@ -1,0 +1,344 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "unattended_git_rules",
+    "title": "Unattended git safety rules",
+    "purpose": "A composable instruction section that forbids pushing, force operations and history rewriting in unattended runs and keeps one local commit per ticket that names the ticket key.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "AGENTS.md",
+      "tools/overnight_queue.py"
+    ],
+    "layer": "context",
+    "family": "native_instruction_fragment",
+    "search_tags": [
+      "git safety rules for agents",
+      "no force push rule for agents",
+      "agent must not rewrite git history",
+      "one commit per ticket",
+      "commit message with the ticket key",
+      "check an agent's git commit",
+      "stop agents running git reset or rebase",
+      "overnight agent git rules"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only",
+      "git command line (tested with 2.53.0)"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a14_root_instruction_fragments",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "1faa43d3a3dbcc4df5422dcca2a528d801c11acc37bbc77e4937e13480f25694",
+        "size_bytes": 2038,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "1faa43d3a3dbcc4df5422dcca2a528d801c11acc37bbc77e4937e13480f25694",
+        "size_bytes": 2038,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/git_ticket_check.py",
+        "digest": "a80b9e4df17bbbda0a07e3f260dcac15f069a1753e4c25dc5de43ce2f42ca5c6",
+        "size_bytes": 29391,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_git_ticket_check.py",
+        "digest": "72b6bc8f5409fb010af6e5fc7d3c8d3a5b6f6965962533ecb9095dad311cbe6f",
+        "size_bytes": 18287,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a14_root_instruction_fragments",
+    "file_class": "root_instruction_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "gemini_cli",
+      "goose",
+      "opencode",
+      "pi",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents or observed Kimi CLI reading a project AGENTS.md; the section is composed there by the common convention and needs a native discovery probe."
+    },
+    "not_placed": {},
+    "native_name": "unattended-git-rules",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-git-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/git_ticket_check.py": {
+          "destination": ".baltor/unattended-git-rules/scripts/git_ticket_check.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_git_ticket_check.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_git_ticket_check.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_git_ticket_check.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_git_ticket_check.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "scripts/git_ticket_check.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_git_ticket_check.py"
+        ]
+      },
+      "tests/test_git_ticket_check.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/unattended-git-rules/scripts/git_ticket_check.py begin --ticket KEY with the real ticket key before changing anything, and read its JSON answer.",
+    "done_when": [
+      "verify --ticket KEY --require-commit answers \"result\": \"pass\" after exactly one local commit that names the ticket key.",
+      "For a ticket that needs no change, verify --ticket KEY --no-change answers \"result\": \"pass\" with no commit and no tracked change."
+    ],
+    "stop_and_report_when": [
+      "The check answers fail or refused; the whole answer is saved in .baltor/state/unattended-run-rules/KEY-git.json and the ticket is recorded as blocked with that file.",
+      "The ticket needs a forbidden git operation or a conflict appears."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "AGENTS.md": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9",
+      "tools/overnight_queue.py": "4f00c5bc6797c45dec13a27a1905c4cb1c5d48989d01d7165f5f38b2e78590ce"
+    },
+    "package_digest": "fae8fa8486eb9e17c2fe68056154ef3b4c39962befa83acb3591efd49b1f7b14",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Read(/**)",
+      "Edit(/**)",
+      "Bash(python3 -m pytest *)",
+      "Bash(python3 -m unittest *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(python3 -I -B .baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py)"
+    ],
+    "deny": [
+      "Edit(/.git/**)",
+      "Edit(/.claude/**)",
+      "Edit(/.codex/**)",
+      "Edit(/.gemini/**)",
+      "Edit(/.opencode/**)",
+      "Edit(/opencode.json)",
+      "Edit(/.baltor/**)",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Bash(git * --output*)",
+      "Bash(git ls-remote *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": false,
+    "network": {
+      "allowedDomains": []
+    }
+  }
+}

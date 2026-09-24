@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:25:46.985979+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "applied_migrations_stay_unchanged",
+  "generated_files_stay_unedited",
+  "honest_test_changes",
+  "raw_data_stays_read_only",
+  "reproducible_competition_notebooks"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052546052430Z.json",
+  "packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052546309881Z.json",
+  "packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052546546543Z.json",
+  "packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052546743652Z.json",
+  "packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052546984753Z.json"
+ ]
+}

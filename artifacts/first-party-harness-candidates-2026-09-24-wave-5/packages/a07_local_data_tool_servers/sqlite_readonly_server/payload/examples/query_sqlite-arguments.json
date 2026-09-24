@@ -1,0 +1,6 @@
+{
+  "path": "shop.sqlite3",
+  "sql": "SELECT status, count(*) AS orders, round(sum(amount), 2) AS total FROM orders WHERE day >= ? GROUP BY status ORDER BY status",
+  "parameters": ["2025-02-01"],
+  "max_rows": 20
+}

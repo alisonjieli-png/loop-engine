@@ -1,0 +1,146 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ticket_fix_verification_input/v1",
+ "description": "The step input that the host writes to .baltor/step/input.json before launch. Every path is relative to the workspace root, which is the top folder of the git worktree. The step reads this file and never edits it; every evidence file records its sha256.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "ticket_id",
+  "base_revision",
+  "reproduction_test_file",
+  "reproduction_test_sha256",
+  "relevant_test_command",
+  "full_test_command",
+  "timeout_seconds",
+  "allowed_path_prefixes",
+  "max_files_changed",
+  "host_placed_paths",
+  "evidence_dir",
+  "summary_path",
+  "commit_message_path",
+  "commit_message_style",
+  "allow_commits_since_base"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "ticket_fix_verification_input/v1"
+  },
+  "ticket_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "base_revision": {
+   "description": "The commit the night started from for this ticket. HEAD must still be this commit.",
+   "type": "string",
+   "pattern": "^[0-9a-f]{40}([0-9a-f]{24})?$"
+  },
+  "reproduction_test_file": {
+   "$ref": "#/$defs/path"
+  },
+  "reproduction_test_sha256": {
+   "description": "The digest the reproduction step recorded for the test file.",
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "relevant_test_command": {
+   "$ref": "#/$defs/command"
+  },
+  "full_test_command": {
+   "$ref": "#/$defs/command"
+  },
+  "timeout_seconds": {
+   "description": "The limit for each of the two test commands.",
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 7200
+  },
+  "allowed_path_prefixes": {
+   "description": "A prefix that ends with a slash covers a folder; any other prefix names one file.",
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 50,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "#/$defs/path"
+   }
+  },
+  "max_files_changed": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 500
+  },
+  "host_placed_paths": {
+   "description": "Files or folders the host wrote into the workspace for this step. The path checks ignore them.",
+   "type": "array",
+   "maxItems": 50,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "#/$defs/path"
+   }
+  },
+  "evidence_dir": {
+   "description": "Where the checks script writes one evidence file and one diff file per run, for example .baltor/step-output/evidence.",
+   "$ref": "#/$defs/output_path"
+  },
+  "summary_path": {
+   "$ref": "#/$defs/output_path"
+  },
+  "commit_message_path": {
+   "$ref": "#/$defs/output_path"
+  },
+  "commit_message_style": {
+   "description": "The project's commit message convention in plain words, with one example subject.",
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 1000
+  },
+  "allow_commits_since_base": {
+   "description": "false: HEAD must still be the base revision. true: commits since the base are allowed, but the base must remain an ancestor of HEAD.",
+   "type": "boolean"
+  }
+ },
+ "$defs": {
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "command": {
+   "description": "The program and its arguments, run without a shell from the workspace root.",
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 64,
+   "prefixItems": [
+    {
+     "type": "string",
+     "minLength": 1
+    }
+   ],
+   "items": {
+    "type": "string",
+    "maxLength": 1000
+   }
+  },
+  "output_path": {
+   "description": "A path inside .baltor/ and outside .baltor/step/, the packet folder that the step only reads.",
+   "allOf": [
+    {
+     "$ref": "#/$defs/path"
+    },
+    {
+     "pattern": "^\\.baltor/"
+    },
+    {
+     "not": {
+      "pattern": "^\\.baltor/step(/|$)"
+     }
+    }
+   ]
+  }
+ }
+}

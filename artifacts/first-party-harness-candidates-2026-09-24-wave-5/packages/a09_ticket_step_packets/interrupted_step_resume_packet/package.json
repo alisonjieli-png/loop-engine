@@ -1,0 +1,708 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "interrupted_step_resume_packet",
+    "title": "Interrupted step resume packet",
+    "purpose": "A one-step packet that restarts interrupted work from the last handoff, checks that the workspace still matches it and either continues from the recorded first action or reports the drift.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "src/loop_engine/core/run_checkpoint.py",
+      "examples/29_intelligence_service/starter-catalogue/items.json"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "resume an interrupted agent step",
+      "continue work after a timeout",
+      "check the workspace against a handoff",
+      "restart a step from the last handoff",
+      "detect files changed since the handoff",
+      "safe resume after a crash overnight",
+      "do not redo finished work after a restart",
+      "task packet for a fresh harness step"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software developer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only",
+      "git>=2.15 command line on PATH for write, and for check when the handoff records a commit"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a09_ticket_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "4dd847fc40221efda9dec6678539e99053dc32f4c0708e6e8d2dfee6cc18cff4",
+        "size_bytes": 3078,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "4dd847fc40221efda9dec6678539e99053dc32f4c0708e6e8d2dfee6cc18cff4",
+        "size_bytes": 3078,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/handoff.schema.json",
+        "digest": "38c2b2a50f9013bdf1b0d24ed07d3cff1ba4847cb508a6a8d009d2edd9bca1c4",
+        "size_bytes": 5073,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "9e59dab4f47a52c84a503cec7927233d631b1452c9530bfac814edd70db4b043",
+        "size_bytes": 3122,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "b8064cc10cfb46176e31a4a3b65b16347e51e32dd89a96101ec4e76be347fe9b",
+        "size_bytes": 5147,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "4f81bb4c1204aa602fe6fb8f0cb38697466af0eede537bc1d22622c95a4a18ce",
+        "size_bytes": 622,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/handoff.json",
+        "digest": "f9fcec82093b26d1de8a6493686175c31e7364b12c05e3c1ff5ebeb3ef1adcf9",
+        "size_bytes": 633,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "536f045c9de27e3714000333f831d54fe73aa7d9ae0383763acb48dff2165f27",
+        "size_bytes": 678,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/interrupted-instructions.md",
+        "digest": "e17a00481c28ede7fa683cd51d3850fc27b28e2158c132d7f1cc1449b48bef28",
+        "size_bytes": 710,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "4d23358ee4216a1f22c8fd9e3377f36584b0556a829cfec5da8ea08640ae724e",
+        "size_bytes": 664,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "d0351cddaa38fec93f246a8146c435dfd461cd222dd4ff523bea552d28f16e0a",
+        "size_bytes": 757,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "1dce7409d2ea5d99852c4823dd9d3ce54a714d6503406bf929621e794a53bad1",
+        "size_bytes": 2593,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/handoff_drift.py",
+        "digest": "0bc1863857d6354f5740fcb937b0254d634e71304a159cf0beac0f6db42d477e",
+        "size_bytes": 31716,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_handoff_drift.py",
+        "digest": "31193745bc930b85eda238c1044dee4fd30166ab4ecc1abaf33e8cf6061e2a33",
+        "size_bytes": 19074,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a09_ticket_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "goose"
+    ],
+    "unverified_targets": {
+      "goose": "Goose 1.50.0 reads AGENTS.md from the git root down to the working folder according to the harness file standards research of September 23, 2026 (not on main at the pinned revision). No probe on this machine observed it, and a fresh scripted Goose session per step was not tested."
+    },
+    "not_placed": {},
+    "native_name": "interrupted-step-resume-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/interrupted-step-resume-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/handoff.schema.json": {
+          "destination": ".baltor/resume/contracts/handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/resume/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/resume/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/resume/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/handoff.json": {
+          "destination": ".baltor/resume/examples/handoff.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/resume/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/resume/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/resume/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/resume/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/handoff_drift.py": {
+          "destination": ".baltor/interrupted-step-resume-packet/scripts/handoff_drift.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_handoff_drift.py": null,
+        "examples/interrupted-instructions.md": {
+          "destination": ".baltor/resume/examples/interrupted-instructions.md",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/handoff.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/handoff.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_handoff_drift.py"
+        ]
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_handoff_drift.py"
+        ]
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_handoff_drift.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/handoff_drift.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_handoff_drift.py"
+        ]
+      },
+      "tests/test_handoff_drift.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "examples/interrupted-instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_handoff_drift.py"
+        ]
+      }
+    },
+    "render_placeholders": {
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, such as codex, claude_code, opencode, pi or gemini_cli.",
+      "INTERRUPTED_STEP_ID": "The step identifier of the interrupted step; the same value as step_id in input.json and in the handoff.",
+      "INTERRUPTION_NOTE": "One plain sentence from the host about how the step stopped, such as a time limit at 02:41 UTC, or the word unknown.",
+      "PROCESS_EFFECT": "Rendered to spawns_process, the repository effect for starting local processes, which this step needs to run its script and test commands. The host renders it only when it grants that effect for this step; otherwise it does not launch the step.",
+      "STEP_ID": "The step identifier the host assigns, one plain path component such as t-104-triage."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/interrupted-step-resume-packet/scripts/handoff_drift.py check --input .baltor/resume/input.json and read its verdict.",
+    "done_when": [
+      "The drift check ran first and its evidence file exists.",
+      "After drift or not_resumable, nothing outside .baltor/resume-output/ changed; after a match, the interrupted step's own done conditions hold.",
+      ".baltor/resume-output/record.json matches its schema and names every file the continued work wrote."
+    ],
+    "stop_and_report_when": [
+      "The drift check exits with code 2: write verdict refused.",
+      "An action needs authority that the interrupted step does not have: write verdict stopped and quote it.",
+      "The continued work reaches a stop rule of the interrupted step: write verdict stopped."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "src/loop_engine/core/run_checkpoint.py": "923283caf7dc0728fbc6ead6a2cf579adc5e7736cc69a089aaad0708268f6d6d",
+      "examples/29_intelligence_service/starter-catalogue/items.json": "c9782c6929778c4133ce00d3cc9267fc27b3ed9e73702a79ffe5b2f4c267cccf"
+    },
+    "package_digest": "0ef99afb965a80ad97d99d3d4bed9c7360e685ab1684103a2a9fe705e5d0f320",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

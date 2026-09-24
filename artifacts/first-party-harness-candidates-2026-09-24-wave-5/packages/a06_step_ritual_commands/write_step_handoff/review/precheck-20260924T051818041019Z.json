@@ -1,0 +1,107 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a06_step_ritual_commands/write_step_handoff",
+ "identity": "write_step_handoff",
+ "package_digest": "a90abcb16c55d23bb2817ed81a40dcab8750a12663e9126fdd95c064b5015929",
+ "checked_at": "2026-09-24T05:18:17.735433+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": true,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "text_hygiene",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "refused",
+   "findings": [
+    "scripts/step_handoff.py:187: hidden_comment",
+    "tests/test_step_handoff.py:220: hidden_comment"
+   ]
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "placements",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "skipped",
+   "findings": [
+    "no SKILL.md in the payload"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "skipped",
+   "findings": [
+    "--skip-runs was given; this report cannot pass the wave gate"
+   ]
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

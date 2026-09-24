@@ -1,0 +1,213 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "data_sample_inspector",
+    "title": "Data sample inspector",
+    "purpose": "A read-only helper that reads a bounded sample of a data file and returns per-column observations about types, formats and suspicious values as JSON, without loading the whole file into the main step.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/native-client-material-loading.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/profile_text_column_before_cleaning.md"
+    ],
+    "layer": "context",
+    "family": "native_subagent",
+    "search_tags": [
+      "inspect a csv sample",
+      "what types are these columns",
+      "find suspicious values in a data file",
+      "look at the first rows of a table",
+      "mixed date formats in a column",
+      "placeholder values like N/A or -999",
+      "data sample subagent",
+      "column observations as json"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning",
+        "agent harness operations"
+      ],
+      "role": [
+        "data analyst"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "opencode"
+    ],
+    "dependencies": [],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a05_focused_subagents",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/reply.schema.json",
+        "digest": "f6e88539ec1329cd6a041008e11ed97d6461f2b47697ebfbaea9573206160753",
+        "size_bytes": 3716,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/claude_code/data-sample-inspector.md",
+        "digest": "2fff6d003eb2f89554547ce5884676364e7b00602fcfe1c63dd332480d22b318",
+        "size_bytes": 2594,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/copilot/data-sample-inspector.agent.md",
+        "digest": "d503f9cd08fa7aca2237ed893f327b308f497798da9f7fe5e33f1e64128d8a6e",
+        "size_bytes": 2549,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/opencode/data-sample-inspector.md",
+        "digest": "103a469aac9f131dd1cb1746ac48417313f73f9181cdafe9ee3c82b375ec4b37",
+        "size_bytes": 2715,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a05_focused_subagents",
+    "file_class": "subagent_definition",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "opencode",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "opencode": "The folder .opencode/agents/ is documented and was observed with OpenCode 1.18.31 in docs/guides/native-client-material-loading.md, but discovery of this file and the effect of its mode, steps and permission keys were not probed. The keys were read from the installed OpenCode program text (it embeds version 1.18.32), which was not run.",
+      "copilot": "GitHub's custom agents configuration reference and custom agent guide, read on 2026-09-24, document the path .github/agents/NAME.agent.md, the read and search tool aliases and that unknown tool names are ignored. Discovery of this file was not observed; no Copilot surface was run."
+    },
+    "not_placed": {},
+    "native_name": "data-sample-inspector",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/data-sample-inspector.md",
+      "opencode": "variants/opencode/data-sample-inspector.md",
+      "copilot": "variants/copilot/data-sample-inspector.agent.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/data-sample-inspector.md": {
+          "destination": ".claude/agents/data-sample-inspector.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/data-sample-inspector/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/data-sample-inspector/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/data-sample-inspector.md": {
+          "destination": ".opencode/agents/data-sample-inspector.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/data-sample-inspector/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/data-sample-inspector/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/data-sample-inspector.agent.md": {
+          "destination": ".github/agents/data-sample-inspector.agent.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/data-sample-inspector/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/data-sample-inspector/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/reply.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/data-sample-inspector.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/data-sample-inspector.agent.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/opencode/data-sample-inspector.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read lines 1 to N+1 of a delimited file (the header and N rows, N is 50 by default and at most 200) or lines 1 to N of a JSON Lines file, and never past line 201.",
+    "done_when": [
+      "Every column (each header name, or each key seen in JSON Lines) has one entry with a likely type, formats with examples and confirmed suspicious values with line numbers, and the reply names the values mode, shown or masked."
+    ],
+    "stop_and_report_when": [
+      "The file is not text, is an environment or key file, or lies outside the repository.",
+      "A delimited file has no header line.",
+      "The caller asks to fix, convert, count or summarize the whole file."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf",
+      "examples/29_intelligence_service/starter-catalogue/bodies/profile_text_column_before_cleaning.md": "d74623478ce158b5c305f860ec582561cd3876284512f08bf850c0c1656c7c5b"
+    },
+    "package_digest": "4aa12c1f4f3ba9311298a9687c2c2a4736c27f2f0f2d6cec7579708a002509e1",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

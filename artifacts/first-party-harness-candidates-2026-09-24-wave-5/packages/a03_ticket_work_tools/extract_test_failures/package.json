@@ -1,0 +1,315 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "extract_test_failures",
+    "title": "Extract failures from test output",
+    "purpose": "Parse pytest, unittest or JUnit XML output into a short list of failing tests with the assertion message and the first project frame, leaving out passing noise and long logs.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/independent_evidence.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "extract failing tests",
+      "parse pytest output",
+      "summarize test failures",
+      "junit xml failures",
+      "unittest failure summary",
+      "first project frame",
+      "which test failed and where",
+      "shorten a long test log",
+      "failing test messages as json"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "test engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "parse_pytest",
+      "parse_unittest",
+      "parse_junit"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a03_ticket_work_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "674eaf0970872fe1e01c3b73c68967dcdb7d66614139cd3366b7dd1bac69b4f6",
+        "size_bytes": 2939,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/pytest-short-output.json",
+        "digest": "496ff114c6c9c86ce6a4d6496e89ad40b4e441a1d0d8479a9c940530713c9bed",
+        "size_bytes": 1311,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "scripts/extract_failures.py",
+        "digest": "05add9e71f0c461f1da57ccdcc7ba2efa2ad9d64e212a0d4a143b8e895cde704",
+        "size_bytes": 36516,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_extract_failures.py",
+        "digest": "1ddefc2f2501401ff52f4f6e89b15f6b13ebc2031fa2922bab3c42245e621a08",
+        "size_bytes": 29735,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a03_ticket_work_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills root is documented in the placement research file but was not observed on this machine, and native discovery of this package was not probed in Gemini CLI."
+    },
+    "not_placed": {},
+    "native_name": "extract-test-failures",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/extract-test-failures/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/extract-test-failures/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/pytest-short-output.json": {
+          "destination": ".claude/skills/extract-test-failures/examples/pytest-short-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_failures.py": {
+          "destination": ".claude/skills/extract-test-failures/scripts/extract_failures.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_failures.py": {
+          "destination": ".claude/skills/extract-test-failures/tests/test_extract_failures.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/extract-test-failures/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/extract-test-failures/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/pytest-short-output.json": {
+          "destination": ".agents/skills/extract-test-failures/examples/pytest-short-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_failures.py": {
+          "destination": ".agents/skills/extract-test-failures/scripts/extract_failures.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_failures.py": {
+          "destination": ".agents/skills/extract-test-failures/tests/test_extract_failures.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/extract-test-failures/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/extract-test-failures/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/pytest-short-output.json": {
+          "destination": ".opencode/skills/extract-test-failures/examples/pytest-short-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_failures.py": {
+          "destination": ".opencode/skills/extract-test-failures/scripts/extract_failures.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_failures.py": {
+          "destination": ".opencode/skills/extract-test-failures/tests/test_extract_failures.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/extract-test-failures/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/extract-test-failures/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/pytest-short-output.json": {
+          "destination": ".pi/skills/extract-test-failures/examples/pytest-short-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_failures.py": {
+          "destination": ".pi/skills/extract-test-failures/scripts/extract_failures.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_failures.py": {
+          "destination": ".pi/skills/extract-test-failures/tests/test_extract_failures.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/extract-test-failures/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/extract-test-failures/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/pytest-short-output.json": {
+          "destination": ".gemini/skills/extract-test-failures/examples/pytest-short-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/extract_failures.py": {
+          "destination": ".gemini/skills/extract-test-failures/scripts/extract_failures.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_extract_failures.py": {
+          "destination": ".gemini/skills/extract-test-failures/tests/test_extract_failures.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_extract_failures.py"
+        ]
+      },
+      "examples/pytest-short-output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_extract_failures.py"
+        ]
+      },
+      "scripts/extract_failures.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_extract_failures.py"
+        ]
+      },
+      "tests/test_extract_failures.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run the tests and pipe their output into scripts/extract_failures.py, then read status and the failures list in its JSON.",
+    "done_when": [
+      "Every failure to fix is listed with its message and first project frame.",
+      "consistency.matches is true, so the list agrees with the runner's summary counts."
+    ],
+    "stop_and_report_when": [
+      "The status is no_result_found or no_tests_ran, so the tests did not run.",
+      "consistency.matches is false.",
+      "The script exits with status 2 because the input was refused."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/independent_evidence.py": "e15bd338c160c0033272c52f4000209e84a7efb73529bccd522f5347602c34f3"
+    },
+    "package_digest": "7bc63ee97d6d170421a2f29ef9507cacc8202cbe539bf387c49bf326cf9ead85",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

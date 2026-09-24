@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "AfterTool": [
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "cleaned-count-check",
+            "type": "command",
+            "command": "python3 -I -B \"${extensionPath}/scripts/check_cleaned_counts.py\" --harness gemini_cli",
+            "timeout": 30000
+          }
+        ]
+      }
+    ]
+  }
+}

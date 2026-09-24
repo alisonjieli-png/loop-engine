@@ -1,0 +1,115 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "morning_report_input/v1",
+ "description": "The step input that the host writes to .baltor/step/input.json before launch. Every path is relative to the workspace root. The report and notes paths lie inside .baltor/, outside .baltor/step/ and outside the handoff folder.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "night_id",
+  "handoff_dir",
+  "activity_log_dir",
+  "activity_fields",
+  "queue_path",
+  "report_json_path",
+  "report_markdown_path",
+  "notes_path"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "morning_report_input/v1"
+  },
+  "night_id": {
+   "description": "A name for the night, such as its date.",
+   "$ref": "#/$defs/identifier"
+  },
+  "handoff_dir": {
+   "description": "The folder that holds the night's night_step_handoff/v1 files, read with every folder below it.",
+   "$ref": "#/$defs/path"
+  },
+  "activity_log_dir": {
+   "description": "A folder of JSON Lines activity logs, or null when the night kept none.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/path"
+    }
+   ]
+  },
+  "activity_fields": {
+   "description": "The names of the time field and the step field in one activity line.",
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "time",
+    "step_id"
+   ],
+   "properties": {
+    "time": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 64
+    },
+    "step_id": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 64
+    }
+   }
+  },
+  "queue_path": {
+   "description": "The night's queue, or null. Either an object whose tickets list holds {ticket_id, final_step_id}, or a night_queue/v1 record whose items hold {id, final_step_id}. final_step_id is optional and names the step whose complete handoff finishes the ticket; without it the ticket stays unfinished in the report.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/path"
+    }
+   ]
+  },
+  "report_json_path": {
+   "$ref": "#/$defs/output_path"
+  },
+  "report_markdown_path": {
+   "$ref": "#/$defs/output_path"
+  },
+  "notes_path": {
+   "description": "Where the report step may write its notes. The file may not exist.",
+   "$ref": "#/$defs/output_path"
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "output_path": {
+   "description": "A path inside .baltor/ and outside .baltor/step/, the packet folder that the step only reads.",
+   "allOf": [
+    {
+     "$ref": "#/$defs/path"
+    },
+    {
+     "pattern": "^\\.baltor/"
+    },
+    {
+     "not": {
+      "pattern": "^\\.baltor/step(/|$)"
+     }
+    }
+   ]
+  }
+ }
+}

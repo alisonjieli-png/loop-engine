@@ -1,0 +1,9 @@
+============================= test session starts ==============================
+collected 4 items
+
+tests/test_dates.py::test_parses_day_first PASSED                        [ 25%]
+tests/test_dates.py::test_parses_last_day_of_year PASSED                 [ 50%]
+tests/test_dates.py::test_rejects_day_32 PASSED                          [ 75%]
+tests/test_totals.py::test_sums_rows PASSED                              [100%]
+
+============================== 4 passed in 0.04s ===============================

@@ -1,0 +1,238 @@
+{
+ "record_type": "cleaning_plan/v1",
+ "table": {
+  "path": "data/raw/customers.csv",
+  "sha256": "a873b2e0891ebe9cc31e5e7cefbc5edfbe7a8669df94b0bdf755ddbcbef1c330",
+  "delimiter": "comma",
+  "columns": [
+   "customer_id",
+   "signup_date",
+   "country",
+   "plan",
+   "monthly_spend",
+   "notes"
+  ],
+  "rows_profiled": 8,
+  "row_cap": 50000,
+  "row_cap_reached": false
+ },
+ "profile": {
+  "path": "work/cleaning-plan/table_profile.json",
+  "sha256": "c6d3571bd88dcc4e642adb5d90b2409d1e626aead2a6e811d6ab4adb1bd75c59"
+ },
+ "rules": [
+  {
+   "rule_id": "r1",
+   "column": "signup_date",
+   "operation": "missing_tokens_to_empty",
+   "parameters": {
+    "tokens": [
+     "N/A"
+    ]
+   },
+   "status": "proposed",
+   "reason": "In a date column, N/A marks a signup date that was never recorded.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 1,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "N/A",
+      ""
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r2",
+   "column": "signup_date",
+   "operation": "parse_date",
+   "parameters": {
+    "formats": [
+     "%d/%m/%Y",
+     "%Y-%m-%d"
+    ]
+   },
+   "status": "proposed",
+   "reason": "Three dates have a day above 12 in first place and no value needs month-first order, so the column is day-first.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 6,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "03/04/2025",
+      "2025-04-03"
+     ],
+     [
+      "13/04/2025",
+      "2025-04-13"
+     ],
+     [
+      "21/04/2025",
+      "2025-04-21"
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r3",
+   "column": "country",
+   "operation": "missing_tokens_to_empty",
+   "parameters": {
+    "tokens": [
+     "NA"
+    ]
+   },
+   "status": "dropped",
+   "reason": "NA is the country code of Namibia in this column of two-letter codes, so it is a real value.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 1,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "NA",
+      ""
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r4",
+   "column": "plan",
+   "operation": "trim_whitespace",
+   "parameters": {},
+   "status": "proposed",
+   "reason": "Plan names are labels, so outer spaces carry no meaning.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 2,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "basic ",
+      "basic"
+     ],
+     [
+      " Basic",
+      "Basic"
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r5",
+   "column": "plan",
+   "operation": "map_values",
+   "parameters": {
+    "mapping": {
+     "basic": "Basic",
+     "PREMIUM": "Premium"
+    },
+    "unmapped": "keep"
+   },
+   "status": "proposed",
+   "reason": "Basic and Premium are the two plan names; the other spellings differ only in letter case.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 3,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "basic",
+      "Basic"
+     ],
+     [
+      "PREMIUM",
+      "Premium"
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r6",
+   "column": "monthly_spend",
+   "operation": "parse_number",
+   "parameters": {
+    "decimal_separator": ",",
+    "thousands_separator": "."
+   },
+   "status": "proposed",
+   "reason": "Every spend value uses a comma for decimals and a dot for thousands.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 7,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "1.234,50",
+      "1234.50"
+     ],
+     [
+      "99,00",
+      "99.00"
+     ],
+     [
+      "1.050,00",
+      "1050.00"
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r7",
+   "column": "notes",
+   "operation": "trim_whitespace",
+   "parameters": {},
+   "status": "proposed",
+   "reason": "Notes are free text, so outer and repeated spaces carry no meaning.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 1,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "  vip  ",
+      "vip"
+     ]
+    ],
+    "hold_examples": []
+   }
+  },
+  {
+   "rule_id": "r8",
+   "column": "notes",
+   "operation": "missing_tokens_to_empty",
+   "parameters": {
+    "tokens": [
+     "n/a"
+    ]
+   },
+   "status": "proposed",
+   "reason": "In free-text notes, n/a means that nobody wrote a note.",
+   "evidence": {
+    "cells_considered": 8,
+    "would_change": 1,
+    "would_hold": 0,
+    "change_examples": [
+     [
+      "n/a",
+      ""
+     ]
+    ],
+    "hold_examples": []
+   }
+  }
+ ],
+ "questions": [
+  "Does an empty monthly_spend mean that the customer spent nothing, or that the spend is unknown?"
+ ]
+}

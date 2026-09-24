@@ -1,0 +1,5 @@
+{
+  "name": "competition-plugin",
+  "version": "0.1.0",
+  "description": "Candidate extension for data science competition sessions: a session start summary of the competition brief, an experiment note command that computes the fold mean itself, and a pre-submission gate skill that never uploads."
+}

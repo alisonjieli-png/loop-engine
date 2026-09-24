@@ -1,0 +1,6 @@
+{
+  "session_id": "sample-session-0004",
+  "cwd": "/work",
+  "hook_event_name": "PostToolUse",
+  "tool_input": {"command": "ls"}
+}

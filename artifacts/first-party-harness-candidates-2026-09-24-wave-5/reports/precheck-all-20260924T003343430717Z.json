@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T00:33:43.430702+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "data_step_scoped_write_settings",
+  "deny_env_file_reads_settings",
+  "read_only_investigation_settings",
+  "test_commands_only_settings",
+  "workspace_write_no_network_settings"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a13_unattended_permission_settings/data_step_scoped_write_settings/review/precheck-20260924T003325806957Z.json",
+  "packages/a13_unattended_permission_settings/deny_env_file_reads_settings/review/precheck-20260924T003329061778Z.json",
+  "packages/a13_unattended_permission_settings/read_only_investigation_settings/review/precheck-20260924T003334702186Z.json",
+  "packages/a13_unattended_permission_settings/test_commands_only_settings/review/precheck-20260924T003338478004Z.json",
+  "packages/a13_unattended_permission_settings/workspace_write_no_network_settings/review/precheck-20260924T003343429865Z.json"
+ ]
+}

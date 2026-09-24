@@ -1,0 +1,94 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_estimates/v1",
+ "description": "Estimates the planning model writes to .baltor/night/estimates.json so that the tickets file stays unchanged. Each entry holds either a hold reason or estimate fields. When a ticket and its entry both give a value, the larger minutes, the larger calls and the higher risk count, so an estimate never lowers what the ticket states. Numbers are whole numbers without quotes or a decimal point.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "estimates"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_estimates/v1"
+  },
+  "estimates": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+   },
+   "additionalProperties": {
+    "oneOf": [
+     {
+      "$ref": "#/$defs/hold"
+     },
+     {
+      "$ref": "#/$defs/estimate"
+     }
+    ]
+   }
+  }
+ },
+ "$defs": {
+  "hold": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "hold"
+   ],
+   "properties": {
+    "hold": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 500,
+     "pattern": "\\S",
+     "description": "Why the ticket is too unclear to run tonight."
+    }
+   }
+  },
+  "estimate": {
+   "type": "object",
+   "additionalProperties": false,
+   "anyOf": [
+    {
+     "required": [
+      "minutes"
+     ]
+    },
+    {
+     "required": [
+      "calls"
+     ]
+    },
+    {
+     "required": [
+      "risk"
+     ]
+    }
+   ],
+   "properties": {
+    "minutes": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 1440
+    },
+    "calls": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 100000
+    },
+    "risk": {
+     "enum": [
+      "low",
+      "medium",
+      "high"
+     ]
+    },
+    "reason": {
+     "type": "string",
+     "maxLength": 500
+    }
+   }
+  }
+ }
+}

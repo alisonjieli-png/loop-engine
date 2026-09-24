@@ -1,0 +1,236 @@
+PRECHECKS for detect_text_written_tool_calls (wave 5, assignment a03_ticket_work_tools, generator a03_ticket_work_tools)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a03_ticket_work_tools/detect_text_written_tool_calls/
+This log sits outside the package folder because the layout check refuses any extra top-level
+entry there. Every run of this session is appended below, failures included. Each check run
+also saved its own report as review/precheck-<UTC>.json inside the package folder; none of
+those reports was deleted.
+Checker: $WAVE/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+
+
+===== 2026-09-24T05:13:34Z run 1: baseline: check on the unchanged bytes left by the earlier a03 sessions (snapshot generator-a03-work/session-20260924T051005Z/a03-third-session-start-20260924T051005Z.tar.gz), before any change in this session
+$ python3 $WAVE/check_package.py check $WAVE/packages/a03_ticket_work_tools/detect_text_written_tool_calls
+{
+ "identity": "detect_text_written_tool_calls",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "refused",
+  "manifest_schema": "refused"
+ },
+ "report": "review/precheck-20260924T051334764736Z.json"
+}
+
+[refused] layout
+  - missing package.json
+  - missing review/REVIEW-NOTE.md
+
+[refused] manifest_schema
+  - package.json unreadable: [Errno 2] No such file or directory: '$WAVE/packages/a03_ticket_work_tools/detect_text_written_tool_calls/package.json'
+exit status: 1
+
+
+===== 2026-09-24T05:36:25Z run 2: fill after this session's changes
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a03_ticket_work_tools/detect_text_written_tool_calls
+{"fill": "done", "files": 7, "package_digest": "32e20a115dfb2b922814e4cea7f31ad29bd141f7695a92b4fb37d5d4dbd3d529"}
+exit status: 0
+
+
+===== 2026-09-24T05:36:26Z run 3: check after fill
+$ python3 $WAVE/check_package.py check $WAVE/packages/a03_ticket_work_tools/detect_text_written_tool_calls
+{
+ "identity": "detect_text_written_tool_calls",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T053633083951Z.json"
+}
+exit status: 0
+
+
+===== 2026-09-24T05:43:05Z run 4: the checker's own known-wrong controls (scout/test_check_package.py, section 12); they check the checker, not this package
+$ python3 $WAVE/scout/test_check_package.py
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 5, "package_digest": "814aa369325e0af2ae5120269eb87cf25915caf2af2d90587739e8016b3cda90"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "4506e6c6f652143ec87df185641177d1ccc91b519caf6ff90c771989e634940d"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "e2ec1548dff527b69d80795d1e5e4d6efd6e5a5958ba37050ae5ac2937c3f453"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "4d1e0243c4f3feb3fac4e1cd494bd191af3712fcfa28a2535756cd1f4d676790"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "7bc8be087ff0e9cbdc6ddf676634e689f937c963a4c399a918f757eb2c9b7d94"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "5733e98a9444f005b5d19e97e0985f9e0258e8fe0bdecfe90c5dbfed2caa82fc"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "fc8836ca058894f7b1d3e6343d719b13e3de1a300848ea1e532e976060528074"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "710711d40efdb9db9e87d9b9816b2f5ebd27ac6752cdf9be857981ea510aa5d3"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "98af19f28aaafc66cd7452611e2b919f56f26dde5f02950a9d7386c12d4e8cb2"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "f835494e3402b00f438f5181d96f9211af1a49abab56a93513b5741adc72b0ff"}
+{"fill": "done", "files": 4, "package_digest": "268206cccbf8ee7fb93a72727311e1faead35285ccb3e16b865b573ddef92630"}
+test_duplicate_json_key_is_refused (__main__.CheckerControls.test_duplicate_json_key_is_refused) ... ok
+test_edited_bytes_are_refused (__main__.CheckerControls.test_edited_bytes_are_refused) ... ok
+test_em_dash_is_refused (__main__.CheckerControls.test_em_dash_is_refused) ... ok
+test_existing_identity_is_refused (__main__.CheckerControls.test_existing_identity_is_refused) ... ok
+test_failing_test_is_refused (__main__.CheckerControls.test_failing_test_is_refused) ... ok
+test_hidden_comment_is_refused (__main__.CheckerControls.test_hidden_comment_is_refused) ... ok
+test_missing_first_action_is_refused (__main__.CheckerControls.test_missing_first_action_is_refused) ... ok
+test_missing_placement_is_refused (__main__.CheckerControls.test_missing_placement_is_refused) ... ok
+test_network_import_is_refused (__main__.CheckerControls.test_network_import_is_refused) ... ok
+test_secret_shaped_value_is_refused (__main__.CheckerControls.test_secret_shaped_value_is_refused) ... ok
+test_skipped_runs_never_pass_the_gate (__main__.CheckerControls.test_skipped_runs_never_pass_the_gate) ... ok
+test_string_replace_is_not_a_file_write (__main__.CheckerControls.test_string_replace_is_not_a_file_write) ... ok
+test_undeclared_write_is_refused (__main__.CheckerControls.test_undeclared_write_is_refused) ... ok
+test_valid_fixture_passes_the_gate (__main__.CheckerControls.test_valid_fixture_passes_the_gate) ... ok
+test_wrong_skill_name_is_refused_by_the_validator (__main__.CheckerControls.test_wrong_skill_name_is_refused_by_the_validator) ... ok
+test_hook_expectation_mismatch_is_refused (__main__.RunPaths.test_hook_expectation_mismatch_is_refused) ... ok
+test_hook_samples_pass (__main__.RunPaths.test_hook_samples_pass) ... ok
+test_server_handshake_passes (__main__.RunPaths.test_server_handshake_passes) ... ok
+test_server_tool_list_mismatch_is_refused (__main__.RunPaths.test_server_tool_list_mismatch_is_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 14.328s
+
+OK
+exit status: 0
+
+
+===== 2026-09-24T05:43:19Z run 5: the checker's packet fixture controls (scout/test_packet_fixture.py, section 12)
+$ python3 $WAVE/scout/test_packet_fixture.py
+{"fill": "done", "files": 10, "package_digest": "a0b888b26c1ceccad3cf86829d2a7e636452a99bde17de5245de51070be0f43d"}
+{"fill": "done", "files": 10, "package_digest": "9100949d529ee9baf87b78dbbca5bc1b390ec3d7846cf7899503cae3a96e4b38"}
+test_marker_left_in_an_example_is_refused (__main__.PacketFixture.test_marker_left_in_an_example_is_refused) ... ok
+test_valid_packet_passes (__main__.PacketFixture.test_valid_packet_passes) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.488s
+
+OK
+exit status: 0
+
+
+===== 2026-09-24T05:44:58Z run 6: equivalent commands of SPEC.md section 12, run directly as a cross-check of the checker (work/session-20260924T051005Z/equivalent_checks.sh)
+$ bash $WAVE/generator-a03-work/session-20260924T051005Z/equivalent_checks.sh detect_text_written_tool_calls
+== layout: find $PKG -type l -o -empty (expect nothing)
+== identity: grep -Fx detect_text_written_tool_calls existing-identities.txt (expect no match, exit 1)
+grep exit 1
+== manifest sources: git show a1fc7432:<source> | sha256sum against wave5.source_digests
+match src/loop_engine/core/service_runtime/catalogue_packages.py
+match case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md
+match case-studies/data-cleanup-with-and-without-baltor/trials/request-bodies.tar.gz
+match docs/verification/HARNESS-MODEL-USE-ONE-CALL-2026-09-22.md
+== inventory: sha256sum and stat -c %a of every payload file against proposal.files
+match 644 LICENSE
+match 644 SKILL.md
+match 644 examples/generic-session.json
+match 644 examples/scan-output.json
+match 644 references/log-formats.md
+match 644 scripts/detect_text_tool_calls.py
+match 644 tests/test_detect_text_tool_calls.py
+== LICENSE: sha256sum payload/LICENSE (expect 663e093e...a46ea)
+663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+== network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' payload (text matches are listed and read by hand)
+grep exit 1 (1 means no match)
+== parse: json.load of every .json file, yaml.safe_load of the SKILL.md front matter, ast.parse of every .py file
+json ok examples/generic-session.json
+json ok examples/scan-output.json
+python ok scripts/detect_text_tool_calls.py
+python ok tests/test_detect_text_tool_calls.py
+front matter keys ['compatibility', 'description', 'license', 'metadata', 'name']
+== agent_skills_validator: both validators on a copy named detect-text-written-tool-calls
+Valid skill: TMP/detect-text-written-tool-calls
+agentskills exit 0
+Valid skill: TMP/detect-text-written-tool-calls
+skills-ref exit 0
+== tests_run: bwrap, no network, read-only package copy, Python 3.14 and 3.10
+Ran 20 tests in 5.544s  OK <- python3
+Ran 20 tests in 4.599s  OK <- python3.10
+exit status: 0
+
+
+===== 2026-09-24T05:45:30Z run 7: check-all for this assignment's five packages and its plan (section 12) (one run, appended to the logs of 5 packages)
+$ python3 $WAVE/check_package.py check-all --assignment a03_ticket_work_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T054629445460Z.json
+exit status: 0
+
+
+===== 2026-09-24T05:46:42Z run 8: final state: newest report per package, gate and digest (the emit-proposals rule) (one run, appended to the logs of 5 packages)
+$ python3 $WAVE/generator-a03-work/session-20260924T051005Z/final_state.py
+detect_text_written_tool_calls: newest precheck-20260924T054543374929Z.json, passed_for_wave_gate True, digest matches True, package_digest 32e20a115dfb2b922814e4cea7f31ad29bd141f7695a92b4fb37d5d4dbd3d529, files 7, reports kept 3, warnings []
+extract_test_failures: newest precheck-20260924T054555786061Z.json, passed_for_wave_gate True, digest matches True, package_digest 7bc63ee97d6d170421a2f29ef9507cacc8202cbe539bf387c49bf326cf9ead85, files 5, reports kept 7, warnings []
+extract_ticket_acceptance_criteria: newest precheck-20260924T054606881603Z.json, passed_for_wave_gate True, digest matches True, package_digest 4819d8c5e577f561944580d5021037d48ccb36442d6964b90f2284bb384e1b0c, files 6, reports kept 4, warnings ['effects']
+map_repository_layout: newest precheck-20260924T054620041098Z.json, passed_for_wave_gate True, digest matches True, package_digest 5f69c44c4835d115c3ed148eb032cd2179dd3fa8a6efb5a5db0fc0389fbc70b1, files 5, reports kept 5, warnings []
+select_tests_for_changed_files: newest precheck-20260924T054629443577Z.json, passed_for_wave_gate True, digest matches True, package_digest ec020096b6eddd2e80333614f701c473ce5d4f8357b888467f6dbf991b26299b, files 5, reports kept 4, warnings []
+exit status: 0
+
+
+===== 2026-09-24T05:48:01Z run 9: where the behavior evidence of this session is kept (drivers, real runner outputs, synthetic tickets, mutation results); the two exported repository trees of the mutation checks were removed after their JSON results were written, to relieve the /tmp quota, and can be rebuilt with git archive 1920296c (one run, appended to the logs of 5 packages)
+$ find $WAVE/generator-a03-work/session-20260924T051005Z $WAVE/generator-a03-work/successor-validation -maxdepth 1 -printf %y %8s %P\n
+d      580 
+d      160 moved-from-scratchpad-root
+f     1160 final_state.py
+f     2862 log_run.py
+f     1994 eqc-detect_text_written_tool_calls.txt
+f     1715 eqc-select_tests_for_changed_files.txt
+f     1651 eqc-extract_test_failures.txt
+f     1614 eqc-map_repository_layout.txt
+f     1792 eqc-extract_ticket_acceptance_criteria.txt
+f     4378 equivalent_checks.sh
+f      760 last-check-select_tests_for_changed_files.txt
+f    36847 sel-harness_intelligence.json
+f      760 last-check-detect_text_written_tool_calls.txt
+f      742 last-check-extract_test_failures.txt
+f      742 last-check-map_repository_layout.txt
+f      971 last-check-extract_ticket_acceptance_criteria.txt
+f    30998 mutation-selection-harness_intelligence.json
+f     1735 hop_kinds.py
+f     9426 write_manifest.py
+f     3488 mutation-run-harness_intelligence.out
+f    28085 mutation-selection-catalogue_packages.json
+d      340 val-tickets
+f     2059 mutation-run-catalogue.out
+f     5689 mutation_selection_check.py
+f    12930 sel-catalogue.json
+f      785 show_failures.py
+d      980 val-failures
+f    93748 a03-third-session-start-20260924T051005Z.tar.gz
+d      120 
+f     2047 run_local_logs.py
+f     2114 run_case_study_per_step.py
+f     2387 run_case_study_detector.py
+d      100 case-study
+exit status: 0

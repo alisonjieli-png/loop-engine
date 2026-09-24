@@ -1,0 +1,213 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "leakage_reviewer",
+    "title": "Leakage reviewer",
+    "purpose": "A read-only reviewer that inspects feature and validation code for target leakage, test rows used in fitting and folds split across groups, and returns findings with file and line references.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/native-client-material-loading.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md"
+    ],
+    "layer": "context",
+    "family": "native_subagent",
+    "search_tags": [
+      "check my features for target leakage",
+      "data leakage code review",
+      "scaler fitted on test data",
+      "wrong cross validation for grouped rows",
+      "group k fold leakage",
+      "random split on time series",
+      "validation leak before submission",
+      "leakage reviewer subagent"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "agent harness operations"
+      ],
+      "role": [
+        "data scientist"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "opencode"
+    ],
+    "dependencies": [],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a05_focused_subagents",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/reply.schema.json",
+        "digest": "c4306d271bced22b45577ed4a301b4a2a6d27b4d16dbcdec0ae3cf3f683fe27f",
+        "size_bytes": 4770,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/claude_code/leakage-reviewer.md",
+        "digest": "4873f3c3d747061c8857661dc59b6a7ef56156e867ddb8e8941b48681c9555c5",
+        "size_bytes": 2789,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/copilot/leakage-reviewer.agent.md",
+        "digest": "b0345c66a56e7886ad79e414f51926102a6dc544f3d5d0ed87a24491186e9044",
+        "size_bytes": 2744,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/opencode/leakage-reviewer.md",
+        "digest": "68e17df418d6c405da84c7441e67aa430c2ba7e0295703ea841c0d81c70234d6",
+        "size_bytes": 2915,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a05_focused_subagents",
+    "file_class": "subagent_definition",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "opencode",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "opencode": "The folder .opencode/agents/ is documented and was observed with OpenCode 1.18.31 in docs/guides/native-client-material-loading.md, but discovery of this file and the effect of its mode, steps and permission keys were not probed. The keys were read from the installed OpenCode program text (it embeds version 1.18.32), which was not run.",
+      "copilot": "GitHub's custom agents configuration reference and custom agent guide, read on 2026-09-24, document the path .github/agents/NAME.agent.md, the read and search tool aliases and that unknown tool names are ignored. Discovery of this file was not observed; no Copilot surface was run."
+    },
+    "not_placed": {},
+    "native_name": "leakage-reviewer",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/leakage-reviewer.md",
+      "opencode": "variants/opencode/leakage-reviewer.md",
+      "copilot": "variants/copilot/leakage-reviewer.agent.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/leakage-reviewer.md": {
+          "destination": ".claude/agents/leakage-reviewer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/leakage-reviewer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/leakage-reviewer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/leakage-reviewer.md": {
+          "destination": ".opencode/agents/leakage-reviewer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/leakage-reviewer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/leakage-reviewer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/leakage-reviewer.agent.md": {
+          "destination": ".github/agents/leakage-reviewer.agent.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/leakage-reviewer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/leakage-reviewer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/reply.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/leakage-reviewer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/leakage-reviewer.agent.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/opencode/leakage-reviewer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Search the given files, with line numbers, for the target column name; each use other than setting the label is a candidate.",
+    "done_when": [
+      "Every search match is a finding with a kind, a severity and a confirmed quote, dismissed, or counted as unreviewed, and the verdict follows the schema rule: leak_found with any blocking finding, else incomplete with unreviewed matches, else minor_only or no_leak_found."
+    ],
+    "stop_and_report_when": [
+      "No files or no target column name were given.",
+      "A file is a notebook (.ipynb); ask for an exported script.",
+      "The caller asks to fix or run code or to judge model quality.",
+      "30 reads are used up; report the rest as unreviewed."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a"
+    },
+    "package_digest": "a70ac05b3bee18bf95616808c7d04bce2f25783fa6d53fbadf493bf067366417",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

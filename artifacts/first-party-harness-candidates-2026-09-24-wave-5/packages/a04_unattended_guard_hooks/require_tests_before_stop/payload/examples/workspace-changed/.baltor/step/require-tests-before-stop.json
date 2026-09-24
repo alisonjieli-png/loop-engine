@@ -1,0 +1,7 @@
+{
+  "record_type": "tests_before_stop_policy/v1",
+  "step_id": "sample-ticket-0042-step-3",
+  "test_commands": [["python3", "-m", "pytest"]],
+  "source_globs": ["src/**", "tests/**"],
+  "ignore_globs": [".baltor/**", "**/*.md"]
+}

@@ -1,0 +1,13 @@
+{
+  "dependency_ids": [],
+  "effects": ["reads_fs", "writes_fs"],
+  "harness_style": "copilot",
+  "kind": "reason",
+  "mode": "non_deterministic",
+  "model_calls_authorized": false,
+  "node_id": "newest-release",
+  "objective": "Report the version, the date and the number of listed changes of the newest release in CHANGELOG.md.",
+  "output_contract_refs": ["newest_release/v1"],
+  "record_type": "node_assignment/v3",
+  "required_capabilities": []
+}

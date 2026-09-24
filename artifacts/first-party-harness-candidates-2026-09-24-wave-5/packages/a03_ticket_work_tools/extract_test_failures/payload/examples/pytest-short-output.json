@@ -1,0 +1,60 @@
+{
+ "record_type": "test_failures/v1",
+ "status": "failures_found",
+ "format": "pytest",
+ "totals": {
+  "failed": 2,
+  "errors": 0,
+  "passed": 4,
+  "skipped": 0,
+  "xfailed": 0,
+  "xpassed": 0
+ },
+ "consistency": {
+  "summary_failed_and_errors": 2,
+  "extracted": 2,
+  "matches": true
+ },
+ "failures": [
+  {
+   "id": "tests/test_prices.py::test_comma",
+   "kind": "failed",
+   "exception": "ValueError",
+   "message": "ValueError: invalid literal for int() with base 10: '3,50'",
+   "message_truncated": false,
+   "first_project_frame": {
+    "path": "src/shop/prices.py",
+    "line": 7,
+    "function": "_to_cents"
+   },
+   "test_frame": {
+    "path": "tests/test_prices.py",
+    "line": 9,
+    "function": "test_comma"
+   },
+   "frames_seen": 3,
+   "phase": "call"
+  },
+  {
+   "id": "tests/test_prices.py::test_padding",
+   "kind": "failed",
+   "exception": "AssertionError",
+   "message": "AssertionError: assert 205 == 250\n +  where 205 = parse_price(' 2.05 ')",
+   "message_truncated": false,
+   "first_project_frame": {
+    "path": "tests/test_prices.py",
+    "line": 12,
+    "function": "test_padding"
+   },
+   "test_frame": {
+    "path": "tests/test_prices.py",
+    "line": 12,
+    "function": "test_padding"
+   },
+   "frames_seen": 1,
+   "phase": "call"
+  }
+ ],
+ "omitted_failures": 0,
+ "notes": []
+}

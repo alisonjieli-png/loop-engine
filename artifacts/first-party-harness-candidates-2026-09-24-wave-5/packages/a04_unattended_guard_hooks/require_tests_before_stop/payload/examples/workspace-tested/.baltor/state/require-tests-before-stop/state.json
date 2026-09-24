@@ -1,0 +1,11 @@
+{
+ "blocked_for_edit": 0,
+ "changed_paths": [],
+ "finishes_without_tests": 0,
+ "last_edit": 4,
+ "last_test": 5,
+ "last_test_at": "2026-09-23T01:20:00Z",
+ "record_type": "tests_before_stop_state/v1",
+ "sequence": 5,
+ "step_id": "sample-ticket-0042-step-3"
+}

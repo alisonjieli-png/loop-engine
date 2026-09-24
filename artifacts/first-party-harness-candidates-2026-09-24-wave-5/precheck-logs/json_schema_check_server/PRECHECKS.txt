@@ -1,0 +1,284 @@
+PRECHECKS for wave 5 package json_schema_check_server
+newest run first in this file; the full history is in packages/a07_local_data_tool_servers/json_schema_check_server/review/PRECHECKS.txt
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+=== 2026-09-24T06:00:43.731250+00:00 pre-checks for json_schema_check_server, repairer pass after critic round 4 ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/json_schema_check_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "json_schema_check_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T060053484718Z.json"
+}
+
+[warning] effects
+  - server/json_schema_check_server.py:53: URL 'http://json-schema.org/draft-07/schema' in code
+  - server/json_schema_check_server.py:54: URL 'https://json-schema.org/draft-07/schema' in code
+  - tests/test_json_schema_check_server.py:256: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:296: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:304: URL 'http://json-schema.org/draft-04/schema#' in code
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T060053484718Z.json: passed_for_wave_gate True, package_digest 9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47 (current 9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+  - server/json_schema_check_server.py:53: URL 'http://json-schema.org/draft-07/schema' in code
+  - server/json_schema_check_server.py:54: URL 'https://json-schema.org/draft-07/schema' in code
+  - tests/test_json_schema_check_server.py:256: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:296: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:304: URL 'http://json-schema.org/draft-04/schema#' in code
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 35}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 35}
+[passed] hooks_run
+[passed] servers_run
+  - json_schema_check_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx json_schema_check_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 14 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+10 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/json_schema_check_server/payload/server/json_schema_check_server.py:1276:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message, comment or test text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 35 tests in 5.107s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 35 tests in 3.623s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. repair evidence of this pass ==
+Repair evidence for json_schema_check_server in $WAVE/repairer-a07_local_data_tool_servers/after-critic-r4-20260924T052417Z/ (producer-side runs, not pre-check outputs):
+- evidence/known-wrong-json_schema_check_server-new-tests-on-previous-server.txt: the new tests run on the previous server file:
+    == json_schema_check_server with previous server/json_schema_check_server.py under python3: exit 1
+    Ran 4 tests in 1.511s
+    FAILED (failures=4)
+    == json_schema_check_server with previous server/json_schema_check_server.py under python3.10: exit 1
+    Ran 4 tests in 0.630s
+    FAILED (failures=4)
+- mutants/mutants-result.txt: 12 mutants of this package, 12 made a named test fail:
+    killed: json_schema_check_server: no translation: Ran 2 tests in 0.295s FAILED (failures=2)
+    killed: json_schema_check_server: $ kept as Python $: Ran 1 test in 0.204s FAILED (failures=1)
+    killed: json_schema_check_server: . kept as Python .: Ran 1 test in 0.157s FAILED (failures=1)
+    killed: json_schema_check_server: \S outside a class kept as ASCII \S: Ran 1 test in 0.152s FAILED (failures=1)
+    killed: json_schema_check_server: negated class with \S read as ASCII: Ran 1 test in 0.180s FAILED (failures=1)
+    killed: json_schema_check_server: backreferences accepted: Ran 1 test in 0.150s FAILED (failures=1)
+    killed: json_schema_check_server: skip set emptied (path keyed skip lost): Ran 1 test in 0.159s FAILED (failures=1)
+    killed: json_schema_check_server: reference targets not scanned: Ran 1 test in 0.164s FAILED (errors=1)
+    killed: json_schema_check_server: 28-digit Decimal remainder: Ran 1 test in 0.187s FAILED (failures=1)
+    killed: json_schema_check_server: previous variants/claude_code/.mcp.json: Ran 4 tests in 0.005s FAILED (failures=2)
+    killed: json_schema_check_server: previous variants/cursor/mcp.json: Ran 4 tests in 0.141s FAILED (failures=2)
+    killed: json_schema_check_server: previous variants/gemini_cli/settings.json: Ran 4 tests in 0.560s FAILED (failures=2)
+- evidence/placed-workspace-after-repair.txt (launch lines started from the workspace root and a subfolder):
+    json_schema_check_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in .: tools ['check_json_schema']
+    json_schema_check_server claude_code [CLAUDE_PROJECT_DIR set by the host] start in sub: tools ['check_json_schema']
+    json_schema_check_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in .: tools ['check_json_schema']
+    json_schema_check_server claude_code [CLAUDE_PROJECT_DIR not in Claude Code's own environment] start in sub: exit 2, no answer: hema-check-server/server/json_schema_check_server.py': [Errno 2] No such file or directory
+    json_schema_check_server cursor [${workspaceFolder} resolved] start in .: tools ['check_json_schema']
+    json_schema_check_server cursor [${workspaceFolder} resolved] start in sub: tools ['check_json_schema']
+    json_schema_check_server codex relative line start in .: tools ['check_json_schema']
+    json_schema_check_server codex relative line start in sub: exit 2, no answer: hema-check-server/server/json_schema_check_server.py': [Errno 2] No such file or directory
+    json_schema_check_server gemini_cli server keys: ['json-schema-check-server']
+    json_schema_check_server fallback tests from the workspace root: exit 0, ['Ran 35 tests in 6.612s'], last line: OK (skipped=5)
+- ecma/differential-*.txt: translated patterns against Node.js 22.22.1 RegExp in Unicode mode, seven runs:
+    differential-after-class-fix-seed1.txt: seed 1: 3178 patterns x 148 texts | same results as ECMA-262 (u flag): 3097 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 27
+    differential-current-seed2.txt: seed 2: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6088 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 38
+    differential-current-seed3.txt: seed 3: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6045 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 70
+    differential-current-seed4.txt: seed 4: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6041 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 61
+    differential-current-seed5.txt: seed 5: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6044 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 64
+    differential-current-seed6.txt: seed 6: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6055 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 62
+    differential-current-seed7.txt: seed 7: 6178 patterns x 148 texts | same results as ECMA-262 (u flag): 6055 | WRONG results (valid in ECMA-262, accepted here, a text differs): 0 | refused here although valid in ECMA-262: 5 | accepted here although ECMA-262 (u flag) refuses: 57
+
+== 7. check-all for the assignment, 2026-09-24T06:01:09Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T060133043340Z.json
+exit 0
+
+Newest report for json_schema_check_server, written by that check-all: review/precheck-20260924T060125722407Z.json; passed_for_wave_gate true for package_digest 9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47 (package.json holds 9258a8941110153fe763ae4107e2ef8070aca97709cb767a1bd0914fd6ccff47).
+
+
+=== 2026-09-24T00:31:06.236050+00:00 pre-checks for json_schema_check_server, second generator pass ===
+package folder: $WAVE/packages/a07_local_data_tool_servers/json_schema_check_server
+checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+
+== 1. fill (digests, sizes and the package digest) ==
+$ python3 $WAVE/check_package.py fill $PKG
+{"fill": "done", "files": 14, "package_digest": "7f66928139112806236ca57ada618d9aa7ed96dac5e35b9f584237a67fc080ed"}
+exit 0
+
+== 2. check (every check of SPEC section 12; writes review/precheck-<UTC>.json) ==
+$ python3 $WAVE/check_package.py check $PKG
+{
+ "identity": "json_schema_check_server",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T003113137372Z.json"
+}
+
+[warning] effects
+  - server/json_schema_check_server.py:49: URL 'http://json-schema.org/draft-07/schema' in code
+  - server/json_schema_check_server.py:50: URL 'https://json-schema.org/draft-07/schema' in code
+  - tests/test_json_schema_check_server.py:235: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:243: URL 'http://json-schema.org/draft-04/schema#' in code
+exit 0
+
+== 3. per-check detail of that report ==
+report review/precheck-20260924T003113137372Z.json: passed_for_wave_gate True, package_digest 7f66928139112806236ca57ada618d9aa7ed96dac5e35b9f584237a67fc080ed (current 7f66928139112806236ca57ada618d9aa7ed96dac5e35b9f584237a67fc080ed)
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+  - server/json_schema_check_server.py:49: URL 'http://json-schema.org/draft-07/schema' in code
+  - server/json_schema_check_server.py:50: URL 'https://json-schema.org/draft-07/schema' in code
+  - tests/test_json_schema_check_server.py:235: URL 'http://json-schema.org/draft-07/schema#' in code
+  - tests/test_json_schema_check_server.py:243: URL 'http://json-schema.org/draft-04/schema#' in code
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 29}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 29}
+[passed] hooks_run
+[passed] servers_run
+  - json_schema_check_server: initialize, tools/list, tools/call and error answered
+
+== 4. equivalent commands named in SPEC section 12 ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link and no empty file or folder)
+exit 0
+$ grep -Fx json_schema_check_server $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 14 files match their declared digest and size, mode 644
+$ python3 -c 'import json, tomllib ...' on every .json and .toml payload file
+10 JSON and TOML files parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+$WAVE/packages/a07_local_data_tool_servers/json_schema_check_server/payload/server/json_schema_check_server.py:1000:        return error_answer(None, -32600, "Batch requests are not supported; send one message per line.")
+exit 0
+note: every line above is message or comment text such as 'Batch requests are not supported'; no network module is imported, as the checker's syntax-tree network_static check confirms.
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 29 tests in 3.286s
+OK
+exit 0
+$ bwrap ... --ro-bind $PKG/payload /work ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v (payload read-only, fresh /tmp, no network)
+Ran 29 tests in 2.578s
+OK
+exit 0
+
+== 5. checks that cannot run for this package ==
+agent_skills_validator: skipped by the checker because the payload has no SKILL.md; a protocol server package has no Agent Skills folder to validate.
+hooks_run: passed with nothing to run; the package declares no hook.
+
+== 6. check-all for the assignment, 2026-09-24T00:33:41Z ==
+$ python3 $WAVE/check_package.py check-all --assignment a07_local_data_tool_servers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T003341322787Z.json
+exit 0
+
+Newest report for json_schema_check_server, written by that check-all: review/precheck-20260924T003332464901Z.json; passed_for_wave_gate true for package_digest 7f66928139112806236ca57ada618d9aa7ed96dac5e35b9f584237a67fc080ed (package.json holds 7f66928139112806236ca57ada618d9aa7ed96dac5e35b9f584237a67fc080ed).
+

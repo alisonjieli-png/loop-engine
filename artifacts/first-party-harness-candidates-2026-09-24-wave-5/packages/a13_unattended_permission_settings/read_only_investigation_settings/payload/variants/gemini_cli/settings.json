@@ -1,0 +1,26 @@
+{
+  "general": {
+    "defaultApprovalMode": "default"
+  },
+  "security": {
+    "disableYoloMode": true
+  },
+  "tools": {
+    "core": [
+      "read_file",
+      "read_many_files",
+      "list_directory",
+      "glob",
+      "grep_search",
+      "activate_skill",
+      "run_shell_command(git status)",
+      "run_shell_command(git diff)",
+      "run_shell_command(git log)",
+      "run_shell_command(git show)",
+      "run_shell_command(ls)",
+      "run_shell_command(pwd)",
+      "run_shell_command(wc)",
+      "run_shell_command(python3 -I -B .baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py)"
+    ]
+  }
+}

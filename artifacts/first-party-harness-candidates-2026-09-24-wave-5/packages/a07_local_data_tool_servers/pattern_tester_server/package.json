@@ -1,0 +1,527 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "pattern_tester_server",
+    "title": "Pattern tester tool server",
+    "purpose": "A local standard-input protocol server that tests one regular expression against supplied examples and reports matches, groups and misses, with size limits, before a cleaning rule uses it.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md"
+    ],
+    "layer": "code",
+    "family": "native_protocol_server",
+    "search_tags": [
+      "test a regular expression",
+      "regex tester for cleaning rules",
+      "check a pattern against examples",
+      "which values does my regex miss",
+      "preview a regex replacement",
+      "capture groups of a regular expression",
+      "mcp server for regex testing",
+      "local regex tool server",
+      "fullmatch versus search",
+      "stop a slow regular expression"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "test_pattern",
+      "handle",
+      "pattern_notes"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a07_local_data_tool_servers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "f11cf6815be3e4e1ac9ad805f6d3bd7910437557db0af65a15ce8e248859dd2a",
+        "size_bytes": 1160,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/test_pattern.input.schema.json",
+        "digest": "8fd5efdd2a99a65b7c5c6a41ca15c4c2fb1477dd4ed1b29d0d1e81058ee75e47",
+        "size_bytes": 2048,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/known-wrong-search-arguments.json",
+        "digest": "066cddb1fe5da364fea50ada461dc21f12cd3a312c483eb3d0ddf5ba0f6d5b03",
+        "size_bytes": 204,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/test_pattern-arguments.json",
+        "digest": "7ee2c758f87318423daa055e3018fdac2cba3f76176c203e5bedbbb6f8f82bb6",
+        "size_bytes": 291,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "server/pattern_tester_server.py",
+        "digest": "1ea326f308027f3306ac437c0889f667b6166b51876edf36abd636a72af7656e",
+        "size_bytes": 21635,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_pattern_tester_server.py",
+        "digest": "dd2c5b4a9af09660eb2a5cf4f5efb1d890aa64d8ae094e59e3da3c0723500d33",
+        "size_bytes": 19331,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.mcp.json",
+        "digest": "505e23b5e54eeed51ad690d8e1d1a70f657e426a2c4fb9e55168f5e42f4d2367",
+        "size_bytes": 294,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "5a6194a0bfee2b0c05184d509ac5016bee97187b0f2aaaa2ab13af996b547c2f",
+        "size_bytes": 156,
+        "media_type": "application/toml",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/cursor/mcp.json",
+        "digest": "104d7f7506ee81d50eee99937be3b707ef4e6dee6cbcf1a6863b8b378af8576a",
+        "size_bytes": 282,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "f4f7dd954a82b73c79935e29120238b0947745bec4dac2bebfcf865ff30f1b2a",
+        "size_bytes": 246,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "9cfd0e05834f853c5cff8103fe93f2d6826f7919f20fdc6b482aa5c0b1549fe8",
+        "size_bytes": 297,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a07_local_data_tool_servers",
+    "file_class": "protocol_server_config_local",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "claude_code": "Project .mcp.json is documented. The launch line starts the server through ${CLAUDE_PROJECT_DIR:-.}. The Claude Code MCP documentation says Claude Code sets CLAUDE_PROJECT_DIR in the server's environment, not in its own, so the args expand to the absolute project root only when the host starts Claude Code with CLAUDE_PROJECT_DIR set; otherwise they expand to '.', which assumes the server starts in the project root. Neither start folder was observed. Project servers need the user's approval in a trusted workspace before first use.",
+      "codex": "Project .codex/config.toml is documented for trusted projects only, and the relative server path in the launch line assumes the harness starts the server in the workspace root; that working directory was not observed for this harness.",
+      "gemini_cli": "Project .gemini/settings.json mcpServers is documented. The server key is the hyphenated name pattern-tester-server, not the identity (a recorded deviation from SPEC 9.2), because the Gemini CLI 0.59.0 documentation says underscores in server names make policy and wildcard rules fail silently. With folder trust on (true by default in the 0.59.0 configuration reference), Gemini CLI ignores .gemini/settings.json and connects no protocol server in an untrusted folder, so the host must trust the workspace. The relative launch line assumes the server starts in the workspace root; that was not observed.",
+      "cursor": "Project .cursor/mcp.json with mcpServers is documented, and so is ${workspaceFolder} in command and args (the folder that holds .cursor/mcp.json), in the Cursor MCP documentation copy docs/cursor-mcp.md of madebywild/agent-harness at 2ecf44f, the revision that docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md records. Discovery, approval and the server start were not observed on this machine."
+    },
+    "not_placed": {},
+    "native_name": "pattern-tester-server",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "AGENTS.md",
+      "codex": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "gemini_cli": "AGENTS.md",
+      "cursor": "AGENTS.md"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pattern-tester-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/test_pattern.input.schema.json": {
+          "destination": ".baltor/pattern-tester-server/contracts/test_pattern.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-search-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/known-wrong-search-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test_pattern-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/test_pattern-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/server/pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/tests/test_pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/claude_code/.mcp.json": {
+          "destination": ".mcp.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pattern-tester-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/test_pattern.input.schema.json": {
+          "destination": ".baltor/pattern-tester-server/contracts/test_pattern.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-search-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/known-wrong-search-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test_pattern-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/test_pattern-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/server/pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/tests/test_pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pattern-tester-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/test_pattern.input.schema.json": {
+          "destination": ".baltor/pattern-tester-server/contracts/test_pattern.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-search-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/known-wrong-search-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test_pattern-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/test_pattern-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/server/pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/tests/test_pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pattern-tester-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/test_pattern.input.schema.json": {
+          "destination": ".baltor/pattern-tester-server/contracts/test_pattern.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-search-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/known-wrong-search-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test_pattern-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/test_pattern-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/server/pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/tests/test_pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pattern-tester-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/test_pattern.input.schema.json": {
+          "destination": ".baltor/pattern-tester-server/contracts/test_pattern.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-search-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/known-wrong-search-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test_pattern-arguments.json": {
+          "destination": ".baltor/pattern-tester-server/examples/test_pattern-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "server/pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/server/pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_pattern_tester_server.py": {
+          "destination": ".baltor/pattern-tester-server/tests/test_pattern_tester_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/cursor/mcp.json": {
+          "destination": ".cursor/mcp.json",
+          "operation": "merge_json_object"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/test_pattern.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "examples/known-wrong-search-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "examples/test_pattern-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "server/pattern_tester_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "tests/test_pattern_tester_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/.mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "variants/cursor/mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_pattern_tester_server.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [
+      {
+        "name": "pattern_tester_server",
+        "script": "server/pattern_tester_server.py",
+        "arguments": [
+          "--root",
+          "examples"
+        ],
+        "tools": [
+          "test_pattern"
+        ],
+        "protocol_versions": [
+          "2025-11-25",
+          "2025-06-18",
+          "2025-03-26"
+        ],
+        "sample_call": {
+          "tool": "test_pattern",
+          "arguments": {
+            "pattern": "(?P<year>[0-9]{4})-(?P<month>[0-9]{2})-(?P<day>[0-9]{2})",
+            "should_match": [
+              "2025-03-01",
+              "1999-12-31"
+            ],
+            "should_not_match": [
+              "2025-3-1",
+              "03/04/2025",
+              "2025-03-01 extra",
+              " 2025-03-01"
+            ],
+            "replacement": "\\g<day>.\\g<month>.\\g<year>"
+          },
+          "expect_is_error": false
+        }
+      }
+    ],
+    "first_action": "Before a cleaning rule uses a regular expression, call the test_pattern tool with the pattern, should_match texts and should_not_match texts taken from the real data.",
+    "done_when": [
+      "test_pattern answers passed true for the final pattern.",
+      "Each kind of value the rule must reject appears in should_not_match."
+    ],
+    "stop_and_report_when": [
+      "The same refusal (a compile error, a missing replacement group or the time limit) returns after the pattern was changed.",
+      "No listed tool name ends in test_pattern; run the package tests. If they pass, the harness did not start a working server: report that. Otherwise report their last line."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/detect_malformed_values_by_dominant_pattern.md": "383c3c5e48792c05b736855213c3d97fe3c3a2d17fc060075eaf17b691d508bc",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md": "2614fa7bb1ef2619ca4afdf637f1c1e3c477ad6b1efeb1dcf030fc7d749b84df",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md": "5cc46b06fb4edab54b948d24d61793fa850ac775286eac564e806680e5b71bd7"
+    },
+    "package_digest": "047d2d215a8413437a1fea1702aa1d419eab0353ebf9323310d41833455c3bb2",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

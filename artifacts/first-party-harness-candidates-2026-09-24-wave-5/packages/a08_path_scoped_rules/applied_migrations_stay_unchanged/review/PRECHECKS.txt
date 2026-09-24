@@ -1,0 +1,288 @@
+=== check_package.py check (run 1) at 2026-09-23T20:14:45Z, exit 0
+{
+ "identity": "applied_migrations_stay_unchanged",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T201446194620Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands at 2026-09-23T20:16:31Z
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md: 7a655ce5794c1b5dd218a4897387ef8f4db09e0783fc46ede12bc658f7256d34 equals recorded digest
+manifest_schema source AGENTS.md: ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/write_a_migration_that_is_safe_to_run_twice.md: dda06c23a3177df353c84a9a9cef5111ba986803cfbeb57565d7c60f597b1561 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/plan_a_schema_change_in_compatible_steps.md: b207ca7c78ea5fcb50f870590e635e2e2958205c119d8119b5a8d07681eee83f equals recorded digest
+identity: grep -Fx applied_migrations_stay_unchanged existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/applied-migrations-stay-unchanged.md: sha256 equals package.json, 1770 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/applied-migrations-stay-unchanged.md: sha256 equals package.json, 1770 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/applied-migrations-stay-unchanged.instructions.md: sha256 equals package.json, 1732 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/applied-migrations-stay-unchanged.mdc: sha256 equals package.json, 1897 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/applied-migrations-stay-unchanged.md: YAML front matter keys ['paths']
+parse: variants/cline/applied-migrations-stay-unchanged.md: YAML front matter keys ['paths']
+parse: variants/copilot/applied-migrations-stay-unchanged.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/applied-migrations-stay-unchanged.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Producer command trial at 2026-09-23T20:17:33Z (not a check_package.py pre-check and not a harness loading test)
+Bubblewrap sandbox: no network, private /tmp, synthetic repository, read-only /usr; exit 0
+first action on a committed migration:
+<commit> base
+positive: new migration file, and the tool updates its journal
+first action on the new file prints: []
+diff-filter MDR prints: [migrations/meta/_journal.json]  (a journal the tool updates itself; no migration file)
+status prints: [ M migrations/meta/_journal.json;?? migrations/0003_add_phone.sql;]
+known-wrong 1: edit an applied migration
+diff-filter MDR prints: [migrations/0002_add_email.sql]
+known-wrong 2: rename an applied migration with git mv
+diff-filter MDR prints: [migrations/0004_add_email.sql ]
+known-wrong 3: delete an applied migration
+diff-filter MDR prints: [migrations/0001_create_users.sql]
+
+=== Path pattern sanity table with Python 3.14 PurePath.full_match (7 patterns; not a harness glob engine)
+  intended  migrations/0001_initial.py: matched by **/migrations/**
+  intended  app/migrations/0002_auto.py: matched by **/migrations/**
+  intended  db/migrate/20240101_add_users.rb: matched by **/db/migrate/**
+  intended  src/main/resources/db/migration/V2__add.sql: matched by **/db/migration/**
+  intended  db/changelog/changes.xml: matched by **/db/changelog/**
+  intended  alembic/versions/ab12_add.py: matched by **/alembic/versions/**
+  intended  prisma/migrations/20240101/migration.sql: matched by **/migrations/**
+  intended  supabase/migrations/001.sql: matched by **/migrations/**
+  intended  Data/Migrations/2024_Add.cs: matched by **/Migrations/**
+  intended  drizzle/0000_init.sql: matched by **/drizzle/*.sql
+  unrelated src/models.py: no match
+  unrelated docs/migration-guide.md: no match
+  unrelated scripts/migrate_users.py: no match
+  unrelated drizzle.config.ts: no match
+  summary: 10/10 intended paths matched, 4/4 unrelated paths stayed out
+
+=== check_package.py fill after the alignment edits at 2026-09-23T20:28:04Z
+{"fill": "done", "files": 5, "package_digest": "08258e532d99a454a084ff0518940ebc9781bd34a563f93fe2735b97b4634c88"}
+
+=== check_package.py check (run 2, after the alignment edits and the final review note) at 2026-09-23T20:28:35Z, exit 0
+{
+ "identity": "applied_migrations_stay_unchanged",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202836126046Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (run 3 for every package) at 2026-09-23T20:29:11Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T202912182077Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260923T202911832016Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260923T202911919458Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260923T202912008509Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260923T202912092138Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260923T202912181327Z.json']
+
+=== Checker controls (scout/test_check_package.py and scout/test_packet_fixture.py) at 2026-09-23T20:30:25Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 5.119s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.244s OK 
+
+=== Summary before the final check run
+Package: packages/a08_path_scoped_rules/applied_migrations_stay_unchanged (file class rules_file; targets cursor, copilot, cline, claude_code)
+Current package_digest: 08258e532d99a454a084ff0518940ebc9781bd34a563f93fe2735b97b4634c88
+  precheck-20260923T201446194620Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202836126046Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202911832016Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+agent_skills_validator is skipped because the payload holds no SKILL.md; tests_run, hooks_run and servers_run pass with nothing to run because the payload holds no Python, hook or server.
+This log sits in review/ because the checker's layout check refuses any extra entry at the package top level (only package.json, payload and review are allowed).
+
+=== check_package.py check (final run) at 2026-09-23T20:32:02Z, exit 0: passed_for_wave_gate and report: True review/precheck-20260923T203201993562Z.json
+
+=== Repair round 2 by the a08 repairer, record written at 2026-09-24T05:26:53Z
+Reason: the wave critic's verdict of 2026-09-23 for this package was repair (evidence: critic-a08_path_scoped_rules/critic-2/ in the wave folder).
+Predecessor state: unchanged since the producer's final check of 2026-09-23T20:31:59Z. An interrupted earlier repair attempt only took the snapshot repair-a08_path_scoped_rules/a08-predecessor-snapshot-20260924T005624Z.tar.gz (sha256 c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068). The repairer's own snapshot repair-a08_path_scoped_rules/round-2/a08-before-round-2-20260924T051531Z.tar.gz has the same sha256 (c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068), and an extracted copy equaled the package folder.
+Body word count by the checker's own count: 246 before round 2; first round 2 draft 268; final 249 (limit 40 to 250).
+Critic findings and repairs:
+  - 1. The check diffed against HEAD and passed after the step's commit (critic trial M1)
+    repair: The first action records the start commit (the task's base commit, else HEAD) and the check diffs against it; trial M-kw1.
+  - 2. The literal migrations/ pathspec missed Django app folders (critic trial M2)
+    repair: The check uses seven :(glob) pathspecs, one per rule pattern; trials M-kw2 and M-paths (10 of 15 sample paths listed, all migrations).
+  - 3. The index file allowance was open-ended
+    repair: Step 4 names the allowed files: an Entity Framework *ModelSnapshot.cs, a Drizzle meta/_journal.json, or a Liquibase master changelog that only gains include lines; trial M-idx.
+
+=== Repair trials, round 2 (not check_package.py pre-checks and not harness loading tests)
+script repair-a08_path_scoped_rules/round-2/trials/repair_trials.sh, sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+full output: repair-a08_path_scoped_rules/round-2/trials/repair-trials-output-1.txt
+# repair_trials.sh run at 2026-09-24T05:14:41Z in Bubblewrap (no network, private /tmp, read-only /usr)
+# a06 helper sha256 7d2b3f7b5934a31714eb672ee614adf05cdd448f0a5c70c5ce05d274f919e490
+# a15 verifier sha256 78ff2638115c66a958b0b282ea044082698477deca47672d3a8cca2a3edb0645
+# trial script sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+=== M-pos applied_migrations_stay_unchanged: start commit, new migration, journal, one commit
+first action printed the start commit (b409c93bfa21...)
+RESULT M-pos before the commit: [migrations/meta/_journal.json ] (only the Drizzle journal, which step 4 allows)
+RESULT M-pos after the step's commit: [migrations/meta/_journal.json ]
+=== M-kw1 known-wrong (critic M1): edit of an applied migration, then the step's commit
+old check against HEAD: []
+RESULT M-kw1: repaired check against the start commit: [migrations/0002_add_email.sql ]
+=== M-kw2 known-wrong (critic M2): Django app folders
+old literal pathspec migrations/: []
+RESULT M-kw2: repaired check: [users/migrations/0001_initial.py ]
+=== M-kw3 known-wrong: rename and delete of applied migrations
+rename: [migrations/0004_add_email.sql ]
+RESULT M-kw3 delete: [migrations/0001_create_users.sql ]
+=== M-idx index files named by step 4
+RESULT M-idx allowed: [Data/Migrations/AppDbContextModelSnapshot.cs db/changelog/db.changelog-master.yaml ]; master changelog lines removed: 0, lines added: +  - include: +      file: changes/003.yaml 
+RESULT M-idx known-wrong (inline changeset edited in the master changelog): lines removed: -              - column: {name: email, type: TEXT} , so the file does not only gain include lines
+=== M-paths: the seven glob pathspecs against sample paths
+listed after changing all 15 files: Data/Migrations/2024_Add.cs alembic/versions/ab12_add.py app/migrations/0002_auto.py db/changelog/changes.xml db/migrate/20240101_add_users.rb drizzle/0000_init.sql migrations/0001_initial.sql prisma/migrations/20240101/migration.sql src/main/resources/db/migration/V2__add.sql supabase/migrations/001.sql 
+RESULT M-paths: listed 10 of 15 (10 migration paths are expected)
+# sandbox exit status 0
+
+=== check_package.py fill, round 2
+applied_migrations_stay_unchanged 2026-09-24T05:17:35Z exit 0 {"fill": "done", "files": 5, "package_digest": "4e73d63686ac3239589b748ceddaaf9ff94988ec88605cdea27d6f67229e5cf5"}
+
+=== check_package.py check (round 2, run 1) at 2026-09-24T05:22:32Z, exit 0
+{
+ "identity": "applied_migrations_stay_unchanged",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052232541104Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands, round 2 (script repair-a08_path_scoped_rules/round-2/section12.py)
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+layout: top-level entries ['package.json', 'payload', 'review']
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md: 7a655ce5794c1b5dd218a4897387ef8f4db09e0783fc46ede12bc658f7256d34 equals recorded digest
+manifest_schema source AGENTS.md: ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/write_a_migration_that_is_safe_to_run_twice.md: dda06c23a3177df353c84a9a9cef5111ba986803cfbeb57565d7c60f597b1561 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/plan_a_schema_change_in_compatible_steps.md: b207ca7c78ea5fcb50f870590e635e2e2958205c119d8119b5a8d07681eee83f equals recorded digest
+identity: grep -Fx applied_migrations_stay_unchanged existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/applied-migrations-stay-unchanged.md: sha256 equals package.json, 1850 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/applied-migrations-stay-unchanged.md: sha256 equals package.json, 1850 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/applied-migrations-stay-unchanged.instructions.md: sha256 equals package.json, 1812 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/applied-migrations-stay-unchanged.mdc: sha256 equals package.json, 1977 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/applied-migrations-stay-unchanged.md: YAML front matter keys ['paths']
+parse: variants/cline/applied-migrations-stay-unchanged.md: YAML front matter keys ['paths']
+parse: variants/copilot/applied-migrations-stay-unchanged.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/applied-migrations-stay-unchanged.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+variants: 1 distinct body across the four variants; pattern lists identical: True (7 patterns)
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+vocabulary: em, en and horizontal-bar dashes in payload files: []
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Checker controls at 2026-09-24T05:23:02Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 6.305s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.369s OK
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, run 2 for every package) at 2026-09-24T05:23:15Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052316446598Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052315986719Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052316096787Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052316205964Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052316318144Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052316445735Z.json']
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, final) at 2026-09-24T05:25:45Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052546986002Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052546052430Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052546309881Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052546546543Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052546743652Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052546984753Z.json']
+
+=== Summary after repair round 2
+Current package_digest: 4e73d63686ac3239589b748ceddaaf9ff94988ec88605cdea27d6f67229e5cf5
+  precheck-20260923T201446194620Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202836126046Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202911832016Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T203201993562Z.json: passed_for_wave_gate True, package_digest 08258e532d99a454, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052232541104Z.json: passed_for_wave_gate True, package_digest 4e73d63686ac3239, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052315986719Z.json: passed_for_wave_gate True, package_digest 4e73d63686ac3239, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052546052430Z.json: passed_for_wave_gate True, package_digest 4e73d63686ac3239, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run of either round refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+Candidate only. Not approved, staged, served or published. The package waits for the independent review panel.

@@ -1,0 +1,85 @@
+{
+ "record_type": "cleaning_apply_summary/v1",
+ "status": "applied",
+ "source": {
+  "path": "data/raw/customers.csv",
+  "sha256": "a873b2e0891ebe9cc31e5e7cefbc5edfbe7a8669df94b0bdf755ddbcbef1c330",
+  "rows": 8,
+  "columns": [
+   "customer_id",
+   "signup_date",
+   "country",
+   "plan",
+   "monthly_spend",
+   "notes"
+  ],
+  "blank_lines_skipped": 0,
+  "unchanged_after_run": true
+ },
+ "plan": {
+  "path": "work/cleaning-plan/cleaning_plan.json",
+  "sha256": "f951dec001fce0dd67df8f154cbd5f143b22f4035f3f52e110f9ae80c67d0609",
+  "applied_rules": [
+   "r1",
+   "r2",
+   "r4",
+   "r5",
+   "r6",
+   "r7"
+  ],
+  "not_applied": {
+   "r3": "dropped",
+   "r8": "rejected"
+  }
+ },
+ "outputs": {
+  "table": {
+   "path": "work/cleaned/cleaned.csv",
+   "sha256": "32704a405b063003ac1447bab2a2393251b2f73398cf30a0a673deb581656d8a",
+   "rows": 8
+  },
+  "change_log": {
+   "path": "work/cleaned/changes.jsonl",
+   "sha256": "68b7e670fb66814b1c9a427244889b1e7d7d3aab188a125820462f4d789a351f",
+   "entries": 16
+  },
+  "hold_list": {
+   "path": "work/cleaned/holds.jsonl",
+   "sha256": "c87ba554d64f69cf74fcc2ef28def4bd8c7caebabda9d5739e74315ff2d77930",
+   "entries": 3
+  }
+ },
+ "rule_counts": {
+  "r1": {
+   "changed": 1,
+   "held": 0
+  },
+  "r2": {
+   "changed": 3,
+   "held": 3
+  },
+  "r4": {
+   "changed": 2,
+   "held": 0
+  },
+  "r5": {
+   "changed": 3,
+   "held": 0
+  },
+  "r6": {
+   "changed": 7,
+   "held": 0
+  },
+  "r7": {
+   "changed": 1,
+   "held": 0
+  }
+ },
+ "checks": {
+  "header_equal": true,
+  "row_count_equal": true,
+  "every_difference_logged": true,
+  "log_matches_cells": true,
+  "source_unchanged": true
+ }
+}

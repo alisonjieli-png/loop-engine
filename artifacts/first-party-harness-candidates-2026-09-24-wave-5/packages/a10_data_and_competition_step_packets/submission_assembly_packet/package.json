@@ -1,0 +1,607 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "submission_assembly_packet",
+    "title": "Submission assembly step packet",
+    "purpose": "A one-step packet that builds the final submission file from chosen predictions, checks it against the sample submission and records which run and data produced it, without uploading.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "examples/25_host_runtime/competition_prediction.py"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "build a submission file",
+      "check a submission against the sample submission",
+      "submission ids and row order",
+      "submission provenance record",
+      "assemble a competition submission",
+      "which run produced this submission",
+      "probability submission file",
+      "prepare a submission without uploading"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science competitions"
+      ],
+      "role": [
+        "data scientist"
+      ]
+    },
+    "symbols": [
+      "main",
+      "run",
+      "find_run",
+      "convert",
+      "verify"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a10_data_and_competition_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "ccf25e574343f1e9069b5d0c0922228334defb6c9bebcd2e9b7abad6e7ed26c7",
+        "size_bytes": 2784,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "ccf25e574343f1e9069b5d0c0922228334defb6c9bebcd2e9b7abad6e7ed26c7",
+        "size_bytes": 2784,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "3b41cb808ec3a88bcbd894b5915bd1cfc97b29f932d3021e3d2af6302d8b0a5b",
+        "size_bytes": 1025,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "8482011165aee2d2fa74b2d3c2d0b0121dd230356172e908b47296804c133e07",
+        "size_bytes": 3172,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "92bcbbb1ea87341edc4a40081c28d26bb435bde1df6e360b7ada6890c8e65fd7",
+        "size_bytes": 518,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "ea790a10c3555823f73639329d87b489e3a4d170998a3a41f24e78973028985a",
+        "size_bytes": 247,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "6c85f5f59ddbd1e20fb446be08d7920be977fbec615f9244cb61eb9ada83cfca",
+        "size_bytes": 1386,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "4d1519b82eb2503ccb39522dbef5f6ca42604b9e6cc63212bd9096cc23cff23a",
+        "size_bytes": 489,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "6591a2a33f576cfadd16f0889633d7fc5e43f559aec22ce11c8edec476ebae38",
+        "size_bytes": 1767,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/assemble_submission.py",
+        "digest": "44e69f0a327575ace1244468d91ff5feb05d53e0c669e3c8eb0da93f56aec0cf",
+        "size_bytes": 15296,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_assemble_submission.py",
+        "digest": "9376b138ca664f8d1faa6d4998010ce234450cd056d131ebe9db614b53b99a6b",
+        "size_bytes": 13989,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a10_data_and_competition_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents that Kimi CLI reads a root AGENTS.md; the placement follows the common convention and is unverified until a native discovery probe runs."
+    },
+    "not_placed": {},
+    "native_name": "submission-assembly-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "copy_exact_bytes"
+        },
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/assemble_submission.py": {
+          "destination": ".baltor/step/scripts/assemble_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_assemble_submission.py": null,
+        "LICENSE": {
+          "destination": ".baltor/submission-assembly-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "scripts/assemble_submission.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_assemble_submission.py"
+        ]
+      },
+      "tests/test_assemble_submission.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "SAMPLE_SUBMISSION_PATH": "Workspace-relative path of the sample submission CSV with one id column and one prediction column.",
+      "LEDGER_PATH": "Workspace-relative path of the experiment ledger that holds the chosen run.",
+      "RUN_ID": "The run id chosen before this step, as written in the ledger.",
+      "ID_COLUMN": "Name of the id column in the sample submission and the prediction file.",
+      "VALUE_TYPE": "probability, real_number or binary_label.",
+      "OUTPUT_DIR": "Workspace-relative folder for the submission file and its record; neither may exist yet.",
+      "STEP_ID": "The node identifier the host assigns to this step, one plain path component such as clean-plan-01.",
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, for example codex or claude_code."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/step/scripts/assemble_submission.py with the rendered sample, ledger, run id, id column, value type and output folder plus --check-only, and continue only when it prints status ready.",
+    "done_when": [
+      "The submission file and its record exist in the output folder.",
+      "Every check in the record is true and upload is not_uploaded."
+    ],
+    "stop_and_report_when": [
+      "A command exits 2 with a refusal.",
+      "A command exits 1 because the self-check failed.",
+      "The work seems to need picking another run or uploading."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "examples/25_host_runtime/competition_prediction.py": "cbbc179f632882e8fa970b7fb4586adf3a5286075cf75b9d91cd17153af80a1b"
+    },
+    "package_digest": "84f967bc5f6b7b8cc32e970f46d69fa8ac9f538ec64f3fa8b2b2baa65a4df483",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

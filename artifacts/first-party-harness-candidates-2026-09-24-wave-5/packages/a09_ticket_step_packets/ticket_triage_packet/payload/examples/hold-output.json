@@ -1,0 +1,24 @@
+{
+ "record_type": "ticket_triage_decision/v1",
+ "ticket_id": "T-131",
+ "decision": "hold",
+ "reasons": [
+  "The Expected result line \"The badge should load faster.\" names no time and no way to measure it, so no test can prove it.",
+  "The first Expected result line is checkable, but a go would drop the second line in silence."
+ ],
+ "acceptance": [
+  "A cart with exactly one item shows the badge text \"1 item\"."
+ ],
+ "files_to_read": [
+  {
+   "path": "shop/cart_badge.py",
+   "why": "badge_text() builds the badge text that the first line is about."
+  }
+ ],
+ "first_test": null,
+ "open_questions": [
+  "How fast must the badge load, and how should it be measured, for example the time to render the header in a named test?"
+ ],
+ "parts": [],
+ "needs": []
+}

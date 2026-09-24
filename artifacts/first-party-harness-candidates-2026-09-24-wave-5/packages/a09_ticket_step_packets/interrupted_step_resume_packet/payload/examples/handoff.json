@@ -1,0 +1,21 @@
+{
+ "record_type": "night_step_handoff/v1",
+ "step_id": "t-104-reproduction",
+ "ticket_id": "T-104",
+ "status": "unfinished",
+ "written_at": "2026-09-23T02:41:07Z",
+ "revision": "3f5c2a9e8d7b6a5f4e3d2c1b0a9f8e7d6c5b4a39",
+ "files": [
+  {
+   "path": "tests/test_cart_badge.py",
+   "sha256": "4d1c9a0e7b3f52c8d6e1a9b0c7f3e2d4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0"
+  }
+ ],
+ "claims": [],
+ "blocker": null,
+ "first_action": "Read `.baltor/step/input.json`, then the ticket file at its `ticket_path`.",
+ "remaining_actions": [],
+ "done_when": [
+  "`output.json` matches its schema with status `reproduced`, `not_reproduced` or `blocked`."
+ ]
+}

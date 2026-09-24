@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": "python3 -I -B .baltor/guard-workspace-file-writes/hooks/guard_file_writes.py --harness copilot",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

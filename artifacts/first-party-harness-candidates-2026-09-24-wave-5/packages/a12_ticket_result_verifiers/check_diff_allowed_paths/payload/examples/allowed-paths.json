@@ -1,0 +1,6 @@
+{
+  "allowed_paths": [
+    "src/slugs.py",
+    "tests/test_slugs.py"
+  ]
+}

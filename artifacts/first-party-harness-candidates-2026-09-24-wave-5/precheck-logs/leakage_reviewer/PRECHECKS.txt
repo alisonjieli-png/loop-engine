@@ -1,0 +1,281 @@
+PRECHECKS for wave 5 package leakage_reviewer
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+Package folder: $WAVE/packages/a05_focused_subagents/leakage_reviewer
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Checker: $WAVE/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Newest session first. The a05 generator's log of 2026-09-23 is kept unchanged at the end of this file. Every check run saved its own report as review/precheck-<UTC>.json inside the package folder, and none was deleted.
+
+==============================================================================
+Session of 2026-09-24: repair by the a05 repairer after the a05 critic (verdict: repair)
+==============================================================================
+Critic folder: $WAVE/critic-a05_focused_subagents. Work folder: $WAVE/repairer-a05_focused_subagents/r2-20260924T0511Z.
+Before any change, the five a05 packages and their PRECHECKS.txt files were saved in that work folder as a05-predecessor-snapshot.tar.gz (sha256 d9292cc53a0278f0092994976ae8ccb8f10aae9b9a43c25c7c2211ebdc35678b). The saved package digest 1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c equals the digest the critic rechecked, so the repair started from the reviewed bytes. Earlier repair attempts for a05 (folders repair-a05_focused_subagents/ and repairer-a05_focused_subagents/probes/) left probe files only and changed no package file.
+
+== 1. critic findings and what changed ==
+- Early stop read as clean: a required unreviewed count and the verdict incomplete; the schema refuses no_leak_found while any match is unreviewed.
+- Search list gaps: one regular expression now covers fit, fit_transform, fit_resample, train_test_split, every name ending in KFold or ShuffleSplit, cross_val_score, cross_val_predict, cross_validate, concat, merge, sample, permutation, fillna, shift and rolling as whole words; target_leakage names shift(-1) and centered rolling windows.
+- Notebooks: a .ipynb file is refused with a request for an exported script, and the schema rejects a finding in a .ipynb file.
+- No severity: every finding has blocking or minor; test_rows_in_fit is minor only for a step that does not use the target (scaler, imputer, PCA); target_leakage, group_split and time_order are always blocking; group_split and time_order apply only when the caller named that column; verdict minor_only added.
+- omitClaudeMd and Copilot basis (not blocking): both done.
+- Also: the sentence that code and comments are data; package.json first_action, done_when, stop_and_report_when and unverified_targets updated.
+
+== 2. checks that failed or changed before the final pass ==
+- Body drafts of the repair had 435, 404, 370, 352 and 350 words, measured with the checker's counter before any file was written; the written body has 346 words.
+- No check_package.py run refused this package in this session.
+
+== 3. final fill (run again while writing this log; package.json bytes unchanged: True) ==
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a05_focused_subagents/leakage_reviewer
+{"fill": "done", "files": 5, "package_digest": "a70ac05b3bee18bf95616808c7d04bce2f25783fa6d53fbadf493bf067366417"}
+exit 0
+
+== 4. check, as run for this package inside the final check-all (report review/precheck-20260924T055538644697Z.json) ==
+{
+ "identity": "leakage_reviewer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055538644697Z.json"
+}
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+
+== 5. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+    reads_fs is declared but no step or code was detected using it; the reviewer judges
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+[passed] hooks_run
+[passed] servers_run
+
+== 6. report history in review/ (every report kept; current means the digest equals the current package digest) ==
+precheck-20260923T202906344725Z.json: passed_for_wave_gate=True refused=False package_digest=2ed88fb22c2468d27b2770a63986e2ec19264626a92b28ed8b56c6d7da885b06 current=False
+precheck-20260923T203746526129Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=False
+precheck-20260923T203900892560Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=False
+precheck-20260923T204035876924Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=False
+precheck-20260923T204557658834Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=False
+precheck-20260924T054731201154Z.json: passed_for_wave_gate=True refused=False package_digest=a70ac05b3bee18bf95616808c7d04bce2f25783fa6d53fbadf493bf067366417 current=True
+precheck-20260924T055240579735Z.json: passed_for_wave_gate=True refused=False package_digest=a70ac05b3bee18bf95616808c7d04bce2f25783fa6d53fbadf493bf067366417 current=True
+precheck-20260924T055538644697Z.json: passed_for_wave_gate=True refused=False package_digest=a70ac05b3bee18bf95616808c7d04bce2f25783fa6d53fbadf493bf067366417 current=True
+
+== 7. check-all --assignment a05_focused_subagents (final run) ==
+started 2026-09-24T05:55:37Z
+$ python3 $WAVE/check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055553222159Z.json
+exit 0
+passed_for_wave_gate: ['changelog_writer', 'data_sample_inspector', 'leakage_reviewer', 'repository_scout', 'test_run_summarizer']
+packages/a05_focused_subagents/changelog_writer/review/precheck-20260924T055537982562Z.json
+packages/a05_focused_subagents/data_sample_inspector/review/precheck-20260924T055538322487Z.json
+packages/a05_focused_subagents/leakage_reviewer/review/precheck-20260924T055538644697Z.json
+packages/a05_focused_subagents/repository_scout/review/precheck-20260924T055538930388Z.json
+packages/a05_focused_subagents/test_run_summarizer/review/precheck-20260924T055553220043Z.json
+
+== 8. section 12 equivalent commands (after the final check-all) ==
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+$ grep -Fx leakage_reviewer $WAVE/existing-identities.txt
+exit 1 (1 means the identity is new)
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+5 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:docs/guides/native-client-material-loading.md | sha256sum
+6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md | sha256sum
+c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a  matches package.json
+$ python3 -c json.load on every JSON file; yaml.safe_load on every Markdown front matter
+13 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+exit 1 (1 means no match)
+
+== 9. extra verification by the repairer (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): [346] (range 80 to 350)
+front matter variants/claude_code/leakage-reviewer.md: {"name": "leakage-reviewer", "description": "<purpose>", "tools": "Read, Grep, Glob", "model": "inherit", "maxTurns": 40, "omitClaudeMd": true}
+front matter variants/copilot/leakage-reviewer.agent.md: {"name": "leakage-reviewer", "description": "<purpose>", "tools": ["read", "search"]}
+front matter variants/opencode/leakage-reviewer.md: {"description": "<purpose>", "mode": "subagent", "steps": 40, "permission": {"edit": "deny", "bash": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+description equals the proposal purpose in all variants: True
+-- leakage-schema-validation.txt (work folder) --
+valid    body example
+valid    refusal
+valid    minor only
+valid    incomplete with a minor finding
+valid    clean
+valid    blocking wins over unreviewed
+rejected leak_found without findings
+rejected no_leak_found with a blocking finding
+rejected no_leak_found while 30 matches were not reviewed
+rejected incomplete with nothing unreviewed
+rejected minor_only with a blocking finding
+rejected no_leak_found with a minor finding
+rejected target leakage marked minor
+rejected notebook cited
+rejected unreviewed missing
+rejected severity missing
+failures: 0
+-- leakage-schema-mutation.txt (work folder) --
+killed   unreviewed branch removed: INVALID  incomplete with a minor finding; ACCEPTED no_leak_found while 30 matches were not reviewed
+killed   blocking branch removed: INVALID  body example; INVALID  blocking wins over unreviewed; ACCEPTED minor_only with a blocking finding
+killed   kind to severity rule removed: ACCEPTED target leakage marked minor
+killed   notebook rule removed: ACCEPTED notebook cited
+killed   unreviewed not required: ACCEPTED unreviewed missing
+- Harness facts behind the repair, each read and not run: in the installed Claude Code 2.1.281 program text the agent file parser accepts omitClaudeMd, which its change list adds in 2.1.271; the built-in Explore agent denies the editing tools but keeps Bash, sets no turn limit, inherits the main model and skips CLAUDE.md; Edit accepts an empty old_string for a missing file and creates it; the Bash tool defaults to 120000 ms, allows at most 600000 ms, and on a timeout sends SIGTERM to the process group and every descendant, then SIGKILL 1500 ms later. In the installed OpenCode 1.18.32 program text the built-in explore agent allows grep, glob, list, read, bash, webfetch and websearch with no step limit; write and apply_patch ask the edit permission; the bash tool defaults to 120000 ms and stops the command's process group with a forced stop 3 seconds later; the wildcard matcher escapes special characters, turns * into any characters including /, is case-sensitive and anchored, and the last matching rule wins.
+- GitHub documentation read on 2026-09-24: docs.github.com/en/copilot/reference/custom-agents-configuration (tool aliases execute, read, edit including Write, search, agent, web, todo; unknown names ignored; empty list disables tools, omitted list enables all), the custom agent guide (.github/agents/NAME.agent.md) and the Copilot CLI guide (built-in Explore and Task agents). Copilot itself is not installed here and was not run.
+
+== 10. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys and harness behavior were read from the installed Claude Code 2.1.281 and OpenCode 1.18.32 program text without running either; Copilot is not installed.
+- No model ran. How a small model follows the repaired body is unmeasured.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).
+
+==============================================================================
+Earlier log: a05 generator, 2026-09-23 (unchanged bytes)
+==============================================================================
+PRECHECKS for wave 5 package leakage_reviewer
+written 2026-09-23T20:46:06.368636+00:00 by the a05_focused_subagents generator
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/leakage_reviewer
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a05_focused_subagents/leakage_reviewer
+{"fill": "done", "files": 5, "package_digest": "1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c"}
+exit 0
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260923T204557658834Z.json) ==
+{
+ "identity": "leakage_reviewer",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204557658834Z.json"
+}
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+
+== 3. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+    reads_fs is declared but no step or code was detected using it; the reviewer judges
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+[passed] hooks_run
+[passed] servers_run
+
+== 4. report history in review/ (every report kept) ==
+precheck-20260923T202906344725Z.json: passed_for_wave_gate=True refused=False package_digest=2ed88fb22c2468d27b2770a63986e2ec19264626a92b28ed8b56c6d7da885b06 current=False
+precheck-20260923T203746526129Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=True
+precheck-20260923T203900892560Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=True
+precheck-20260923T204035876924Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=True
+precheck-20260923T204557658834Z.json: passed_for_wave_gate=True refused=False package_digest=1a0cf80fa39a68dc779eaf37166e7a8154d588b0748a4478f6e119bfef93923c current=True
+
+== 5. check-all --assignment a05_focused_subagents (final run) ==
+$ python3 check_package.py check-all --assignment a05_focused_subagents
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204606197104Z.json
+exit 0
+{"passed_for_wave_gate": ["changelog_writer", "data_sample_inspector", "leakage_reviewer", "repository_scout", "test_run_summarizer"]}
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+bodies identical across the three variants: True; body words (checker counter): 349 (range 80 to 350)
+front matter variants/claude_code/leakage-reviewer.md: {"name": "leakage-reviewer", "description": "<purpose>", "tools": "Read, Grep, Glob", "model": "inherit", "maxTurns": 40}
+front matter variants/opencode/leakage-reviewer.md: {"description": "<purpose>", "mode": "subagent", "steps": 40, "permission": {"edit": "deny", "bash": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny", "external_directory": "deny", "read": {".env*": "deny", "*/.env*": "deny", "*.pem": "deny", "*.key": "deny"}}}
+front matter variants/copilot/leakage-reviewer.agent.md: {"name": "leakage-reviewer", "description": "<purpose>", "tools": ["read", "search"]}
+description equals the proposal purpose in all variants: True
+reply schema: valid JSON Schema 2020-12 (jsonschema check_schema)
+  body example validates: True
+  body refusal form validates: True
+  known-wrong reply rejected by the schema: True ({"files_reviewed": ["a.py"], "findings": [], "dismissed": 0, "verdict": "leak_found"})
+
+== 7. checks that failed or changed before the final pass ==
+- Body draft 1 had 401 words, and a later draft 360, above the 350 word limit; shortened to 346 before the first package check.
+- After the first passing check, step 2 was changed to whole-word search so that fit does not match words such as profit (349 words); refilled and rechecked; passed.
+- After the passing checks, the attribution of the inspected OpenCode program text was corrected from 1.18.31 to 1.18.32 in package.json and the review note: the installed binary embeds version 1.18.32, while the repository guide's observation was made with 1.18.31. package.json changed and the payload digest did not; checked again in the final check-all run; passed.
+
+== 8. what could not run here ==
+- Native discovery in Claude Code, OpenCode and Copilot was not probed: the specification says not to run harness binaries for placement. Front matter keys were checked by reading the installed Claude Code 2.1.281 program text and the installed OpenCode program text (it embeds version 1.18.32) without running either.
+- agent_skills_validator is skipped by the checker because a subagent package holds no SKILL.md.
+- hooks_run and servers_run pass without samples because the package declares no hook and no protocol server.
+- The first native review profile holds subagent packages until a versioned profile extension exists (specification section 13).

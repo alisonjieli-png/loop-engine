@@ -1,0 +1,319 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "rank_experiments_by_fold_scores",
+    "title": "Rank experiment runs by fold scores",
+    "purpose": "Read an experiment ledger of per-fold scores and rank runs by mean and spread, marking a gain as not established when it is smaller than the fold-to-fold variation.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/code_nodes/measurement.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/read_the_train_validation_gap.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/compare_a_smaller_model_against_the_larger_one.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "compare cross validation scores",
+      "is my improvement real",
+      "rank experiment runs",
+      "fold score variance",
+      "experiment ledger ranking",
+      "paired fold comparison",
+      "choose the best run to submit",
+      "gain within cross validation noise"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "machine learning engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "compare",
+      "rank",
+      "load_runs"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a02_competition_modeling_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "f922c61c34fd29c2531eaaf04b643c1adb350a55699b5deb2de13886c3d3cb26",
+        "size_bytes": 3142,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/ledger.json",
+        "digest": "765e0d12379370f5edcaf7042946fcb76ef6afa0d223197ef128ff92f730f624",
+        "size_bytes": 1016,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "scripts/rank_runs.py",
+        "digest": "e7db328fb8ae71decce6730f60a8d7f850fb52ee72d35a5e36790f9af6ec3e26",
+        "size_bytes": 14491,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_rank_runs.py",
+        "digest": "0f1884358d088b531b7c3b8ba69a80ef7bfd81a9eb68b48aea1bb4c32fd7ca8f",
+        "size_bytes": 7679,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a02_competition_modeling_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills folder is documented in the cited research file but was not observed on this machine, and native loading of this package was not probed."
+    },
+    "not_placed": {},
+    "native_name": "rank-experiments-by-fold-scores",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "SKILL.md": {
+          "destination": ".claude/skills/rank-experiments-by-fold-scores/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/rank_runs.py": {
+          "destination": ".claude/skills/rank-experiments-by-fold-scores/scripts/rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_rank_runs.py": {
+          "destination": ".claude/skills/rank-experiments-by-fold-scores/tests/test_rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.json": {
+          "destination": ".claude/skills/rank-experiments-by-fold-scores/examples/ledger.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".claude/skills/rank-experiments-by-fold-scores/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "SKILL.md": {
+          "destination": ".agents/skills/rank-experiments-by-fold-scores/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/rank_runs.py": {
+          "destination": ".agents/skills/rank-experiments-by-fold-scores/scripts/rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_rank_runs.py": {
+          "destination": ".agents/skills/rank-experiments-by-fold-scores/tests/test_rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.json": {
+          "destination": ".agents/skills/rank-experiments-by-fold-scores/examples/ledger.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".agents/skills/rank-experiments-by-fold-scores/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "SKILL.md": {
+          "destination": ".opencode/skills/rank-experiments-by-fold-scores/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/rank_runs.py": {
+          "destination": ".opencode/skills/rank-experiments-by-fold-scores/scripts/rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_rank_runs.py": {
+          "destination": ".opencode/skills/rank-experiments-by-fold-scores/tests/test_rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.json": {
+          "destination": ".opencode/skills/rank-experiments-by-fold-scores/examples/ledger.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".opencode/skills/rank-experiments-by-fold-scores/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "SKILL.md": {
+          "destination": ".pi/skills/rank-experiments-by-fold-scores/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/rank_runs.py": {
+          "destination": ".pi/skills/rank-experiments-by-fold-scores/scripts/rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_rank_runs.py": {
+          "destination": ".pi/skills/rank-experiments-by-fold-scores/tests/test_rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.json": {
+          "destination": ".pi/skills/rank-experiments-by-fold-scores/examples/ledger.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".pi/skills/rank-experiments-by-fold-scores/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "SKILL.md": {
+          "destination": ".gemini/skills/rank-experiments-by-fold-scores/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/rank_runs.py": {
+          "destination": ".gemini/skills/rank-experiments-by-fold-scores/scripts/rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_rank_runs.py": {
+          "destination": ".gemini/skills/rank-experiments-by-fold-scores/tests/test_rank_runs.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.json": {
+          "destination": ".gemini/skills/rank-experiments-by-fold-scores/examples/ledger.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".gemini/skills/rank-experiments-by-fold-scores/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "scripts/rank_runs.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_rank_runs.py"
+        ]
+      },
+      "tests/test_rank_runs.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "examples/ledger.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_rank_runs.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Find the metric direction in the task, then run scripts/rank_runs.py with --ledger and --direction and read leader_established.",
+    "done_when": [
+      "The step result names the leader, whether its lead is established, the tied runs and any baseline verdicts."
+    ],
+    "stop_and_report_when": [
+      "The script exits with 2 (refused input).",
+      "The script exits with 1 and the task needs a verdict for a run in fold_set_mismatch.",
+      "The task does not say whether a higher or a lower score is better.",
+      "Fewer than 3 shared folds make every verdict too_few_shared_folds."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/code_nodes/measurement.py": "1befacd563c2c67b53cb18af4ff9a43799d830b05ca66f06cb1a62b1905b2acd",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md": "f877a5071e30754ea5d82b2ad6bb746439196f3c4949ac50ad7dcc572d2607f7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/read_the_train_validation_gap.md": "e6acdaf7299bbe47721c001eccbc1cc33bbfc9e8eae849fe8a4b60db079d89f1",
+      "examples/29_intelligence_service/starter-catalogue/bodies/compare_a_smaller_model_against_the_larger_one.md": "c096adb5621809f2fe319dea65bed2811102ebfa07bc996b093b79456e14701c"
+    },
+    "package_digest": "1d196d1e13e02a5acb7536074e41c292fbf19ec040e99abe650ffd31f53845f5",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

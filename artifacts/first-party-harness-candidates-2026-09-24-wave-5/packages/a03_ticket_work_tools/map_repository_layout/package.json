@@ -1,0 +1,315 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "map_repository_layout",
+    "title": "Map a repository layout compactly",
+    "purpose": "Produce a bounded tree of a repository that marks source, test, configuration and generated folders with file counts, so a small model can choose where to look without opening every file.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/component_inventory.py"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "map a repository",
+      "repository layout",
+      "project folder structure",
+      "where is the source code",
+      "find the test folder",
+      "skip node_modules and build output",
+      "compact file tree",
+      "orient in an unfamiliar codebase",
+      "monorepo overview"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "classify_file",
+      "Mapper",
+      "tree_lines"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a03_ticket_work_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "e5031985fd33199ff9a718e79267591cf3f9fb10b37cd228140ffd71f2d164c4",
+        "size_bytes": 2716,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/layout-output.json",
+        "digest": "b933e0b9e800eb600398e5289fc29ff4c3b1f2c13e19e304b42626fc109380fe",
+        "size_bytes": 1415,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "scripts/map_layout.py",
+        "digest": "b33ebd3cb38a237d88c0e81ff443c875cda73fa9f199574cd6e51b3f6cac9f39",
+        "size_bytes": 27813,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_map_layout.py",
+        "digest": "df094fddf60656f073fd0a9044c6837d841db9c8e34c27b0ba23de0de7086b64",
+        "size_bytes": 11042,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a03_ticket_work_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills root is documented in the placement research file but was not observed on this machine, and native discovery of this package was not probed in Gemini CLI."
+    },
+    "not_placed": {},
+    "native_name": "map-repository-layout",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/map-repository-layout/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/map-repository-layout/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/layout-output.json": {
+          "destination": ".claude/skills/map-repository-layout/examples/layout-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_layout.py": {
+          "destination": ".claude/skills/map-repository-layout/scripts/map_layout.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_layout.py": {
+          "destination": ".claude/skills/map-repository-layout/tests/test_map_layout.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/map-repository-layout/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/map-repository-layout/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/layout-output.json": {
+          "destination": ".agents/skills/map-repository-layout/examples/layout-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_layout.py": {
+          "destination": ".agents/skills/map-repository-layout/scripts/map_layout.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_layout.py": {
+          "destination": ".agents/skills/map-repository-layout/tests/test_map_layout.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/map-repository-layout/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/map-repository-layout/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/layout-output.json": {
+          "destination": ".opencode/skills/map-repository-layout/examples/layout-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_layout.py": {
+          "destination": ".opencode/skills/map-repository-layout/scripts/map_layout.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_layout.py": {
+          "destination": ".opencode/skills/map-repository-layout/tests/test_map_layout.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/map-repository-layout/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/map-repository-layout/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/layout-output.json": {
+          "destination": ".pi/skills/map-repository-layout/examples/layout-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_layout.py": {
+          "destination": ".pi/skills/map-repository-layout/scripts/map_layout.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_layout.py": {
+          "destination": ".pi/skills/map-repository-layout/tests/test_map_layout.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/map-repository-layout/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/map-repository-layout/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/layout-output.json": {
+          "destination": ".gemini/skills/map-repository-layout/examples/layout-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/map_layout.py": {
+          "destination": ".gemini/skills/map-repository-layout/scripts/map_layout.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_map_layout.py": {
+          "destination": ".gemini/skills/map-repository-layout/tests/test_map_layout.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_map_layout.py"
+        ]
+      },
+      "examples/layout-output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_map_layout.py"
+        ]
+      },
+      "scripts/map_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_map_layout.py"
+        ]
+      },
+      "tests/test_map_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/map_layout.py with --root set to the workspace, then read status, tree and largest_source_folders.",
+    "done_when": [
+      "The step notes name at most two folders to open, each with its category and a reason.",
+      "No chosen folder is generated or skipped."
+    ],
+    "stop_and_report_when": [
+      "The status is no_source_found, which usually means a wrong root.",
+      "The map is refused for too many entries even with --focus or a tracked-file list.",
+      "The only place that matches the task is inside a generated folder."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/component_inventory.py": "1bf038623a0758c7ec72e32ac9fd9dff925b3f2324da7b87d3ab4de5aed6175c"
+    },
+    "package_digest": "5f69c44c4835d115c3ed148eb032cd2179dd3fa8a6efb5a5db0fc0389fbc70b1",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

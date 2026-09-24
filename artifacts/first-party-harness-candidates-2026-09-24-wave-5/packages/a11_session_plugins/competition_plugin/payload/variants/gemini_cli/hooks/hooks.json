@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "competition-brief-summary",
+            "type": "command",
+            "command": "python3 -I -B \"${extensionPath}/scripts/brief_summary.py\" --harness gemini_cli",
+            "timeout": 10000
+          }
+        ]
+      }
+    ]
+  }
+}

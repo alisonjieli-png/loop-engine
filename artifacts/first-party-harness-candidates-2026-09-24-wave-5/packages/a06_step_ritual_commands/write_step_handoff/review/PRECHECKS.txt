@@ -1,0 +1,210 @@
+PRECHECKS for packages/a06_step_ritual_commands/write_step_handoff
+Written 2026-09-24T05:56:21Z by the a06 repairer (Claude Code, family anthropic) after critic round 2.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: 43ce4aa94a688da96387dd6e7ceb46b260c30722285745e248bc985438364325
+Digest before this repair round: 477f0c20 (snapshot repairer-a06_step_ritual_commands/a06-predecessor-snapshot-*.tar.gz)
+
+1. Checker reports kept in this folder, oldest first (generator rounds, then this repair round)
+   precheck-20260923T200228463003Z.json: refused=true passed_for_wave_gate=false runs_skipped=false package_digest=ad66a460afad042b refused_checks=['vocabulary'] findings=["examples/task.json:9: internal or banned wording 'spawns'"]
+   precheck-20260923T200243829577Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=1d6d944ee362595e
+   precheck-20260923T202939077533Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=477f0c205b418815
+   precheck-20260923T203002251789Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=477f0c205b418815
+   precheck-20260923T203153906450Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=477f0c205b418815
+   precheck-20260924T051818041019Z.json: refused=true passed_for_wave_gate=false runs_skipped=true package_digest=a90abcb16c55d23b refused_checks=['safety_static'] findings=['scripts/step_handoff.py:187: hidden_comment', 'tests/test_step_handoff.py:220: hidden_comment']
+   precheck-20260924T051837088884Z.json: refused=false passed_for_wave_gate=false runs_skipped=true package_digest=b90378090ba636c4
+   precheck-20260924T055252512033Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=43ce4aa94a688da9
+   precheck-20260924T055533894999Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=43ce4aa94a688da9
+   precheck-20260924T055700884228Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=43ce4aa94a688da9
+   precheck-20260924T055708857032Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=43ce4aa94a688da9
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/write_step_handoff
+{"fill": "done", "files": 11, "package_digest": "43ce4aa94a688da96387dd6e7ceb46b260c30722285745e248bc985438364325"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/write_step_handoff
+{
+ "identity": "write_step_handoff",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055708857032Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260924T055708857032Z.json
+   passed_for_wave_gate=true package_digest matches=True
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 12} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 12}
+
+4. Payload tests run directly in a temporary copy: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 12 tests in 4.416s  OK
+   python3.10: exit 0; Ran 12 tests in 3.548s  OK
+
+5. The critic's placed probes, reproduced before the repair at the old digest
+   (repairer-a06_step_ritual_commands/baseline/baseline-probe-placed-results.json)
+   bash blocks in placed Claude Code command: ["python3 -I -B .baltor/write-step-handoff/scripts/step_handoff.py init --root .", "python3 -I -B .baltor/write-step-handoff/scripts/step_handoff.py check --root ."]
+   first action from placed command: {"exit": 0, "out": {"record_type": "step_handoff_init/v1", "created": true, "path": ".baltor/handoffs/fix-month-end-filter.md", "step_id": "fix-month-end-filter", "message": "Replace every '(fill in' line, keep the headi
+   Done line whose only evidence is the workspace root `.`: {"exit": 0, "passed": true, "findings": []}
+   Done line whose only evidence is the step's own task file: {"exit": 0, "passed": true}
+   second '## Done' heading after the first action holds an unproved claim: {"exit": 0, "passed": true, "findings": []}
+   extra '## Notes' heading holds an unproved claim: {"exit": 0, "passed": true}
+   first action line with four actions: {"exit": 0, "passed": true}
+
+6. The same probes and the wave consumers after the repair, on the Claude Code placement
+   (repairer-a06_step_ritual_commands/after-probe-results.json; as_intended true for every row)
+   [ok] first action from the placed command
+   [ok] Done line whose only evidence is the workspace root `.`
+   [ok] Done line whose only evidence is the step's own task file
+   [ok] Done line whose only evidence is a file the step did not change
+   [ok] second '## Done' heading after the first action holds an unproved claim
+   [ok] extra '## Notes' heading holds an unproved claim
+   [ok] first action line with four actions
+   [ok] a passing partial note writes a night_step_handoff/v1 record
+   [ok] a09 interrupted_step_resume_packet check_handoff_drift.py reads the a06 record
+   [ok] a09 resume check reports drift when an evidence file changed after the a06 record
+   [ok] a09 morning_report_packet compile_morning_report.py reads the complete a06 record
+
+7. Mutation checks: one guard removed in a temporary copy; the full suite must pass on the unchanged
+   copy (control) and fail on the changed copy (mutant). repairer-a06_step_ritual_commands/after-mutants-results.json
+   control: exit 0; Ran 12 tests in 4.080s | OK
+   KILLED: folders and the workspace root count as evidence; mutant Ran 12 tests in 6.009s | FAILED (failures=2) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: step inputs and handoffs count as evidence; mutant Ran 12 tests in 5.671s | FAILED (failures=8) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: files unchanged since the step started count as evidence; mutant Ran 12 tests in 7.278s | FAILED (failures=6) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: a repeated heading is ignored in silence; mutant Ran 12 tests in 5.032s | FAILED (failures=5) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: an unknown heading is ignored in silence; mutant Ran 12 tests in 4.599s | FAILED (failures=4) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: the first action may hold several items; mutant Ran 12 tests in 5.101s | FAILED (failures=3) | test_known_wrong_placed_notes_from_the_review_are_refused
+   KILLED: partial is written as an invalid record status; mutant Ran 12 tests in 5.552s | FAILED (failures=2) | test_init_uses_the_step_files_and_the_filled_example_passes, test_record_contract_is_the_shared_night_handoff_schema
+
+8. Schema validator embedded in the tests, compared with the jsonschema library (4.26.0) on valid and
+   mutated instances (repairer-a06_step_ritual_commands/crosscheck-embedded-results.json)
+   contracts/night-step-handoff.schema.json: 213 of 213 cases agree
+
+9. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055700886283Z.json
+(exit 0)
+
+10. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+Earlier summary written by the generator on 2026-09-23 (kept unchanged below)
+PRECHECKS for packages/a06_step_ritual_commands/write_step_handoff
+Written 2026-09-23T20:30:57Z by Claude Code wave 5 generator a06_step_ritual_commands.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: 477f0c205b418815285350686ae6b1e234c587dd664dda587cc277899e462f0f
+
+1. Checker reports kept in this folder, oldest first
+   precheck-20260923T200228463003Z.json: refused=true passed_for_wave_gate=false package_digest=ad66a460afad042b refused_checks=['vocabulary'] findings=["examples/task.json:9: internal or banned wording 'spawns'"]
+   precheck-20260923T200243829577Z.json: refused=false passed_for_wave_gate=true package_digest=1d6d944ee362595e
+   precheck-20260923T202939077533Z.json: refused=false passed_for_wave_gate=true package_digest=477f0c205b418815
+   precheck-20260923T203002251789Z.json: refused=false passed_for_wave_gate=true package_digest=477f0c205b418815
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/write_step_handoff
+{"fill": "done", "files": 10, "package_digest": "477f0c205b418815285350686ae6b1e234c587dd664dda587cc277899e462f0f"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/write_step_handoff
+{
+ "identity": "write_step_handoff",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202939077533Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260923T203002251789Z.json (every check with findings)
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 8} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 8}
+
+4. Payload tests run directly: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 8 tests in 0.832s  OK
+   python3.10: exit 0; Ran 8 tests in 0.426s  OK
+
+5. Mutation checks: one guard removed in a temporary copy of the payload; the named test
+   must pass on the unchanged copy (control) and fail on the changed copy (mutant)
+   Done lines need an existing evidence path: scripts/step_handoff.py; test test_known_wrong_note_claims_results_without_evidence; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   the first action needs a command or path in backticks: scripts/step_handoff.py; test test_known_wrong_note_claims_results_without_evidence; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   Earlier attempt, discarded: the first mutation run used 'python3 -I -m unittest module.Class.test'.
+   Isolated mode keeps the tests folder off the import path, so every run, controls included,
+   failed with an import error. Those results proved nothing and were replaced by the runs above.
+
+6. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203002252913Z.json
+(exit 0)
+
+7. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+8. Confirming run after this file was written (the layout, secrets and every other check see this file)
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203153908527Z.json
+(exit 0)
+   newest report precheck-20260923T203153906450Z.json: passed_for_wave_gate and digest match = True True

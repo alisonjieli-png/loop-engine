@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Data sample inspector reply",
+  "description": "Per-column observations over a bounded sample of one data file, or a refusal. Counts are left to a profiling tool; values may be shown or replaced by their shapes.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/inspection"
+    },
+    {
+      "$ref": "#/$defs/refusal"
+    }
+  ],
+  "$defs": {
+    "inspection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "separator",
+        "rows_read",
+        "values",
+        "columns",
+        "notes"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "separator": {
+          "enum": [
+            "comma",
+            "tab",
+            "semicolon",
+            "pipe",
+            "json_lines"
+          ]
+        },
+        "rows_read": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "values": {
+          "enum": [
+            "shown",
+            "masked"
+          ],
+          "description": "masked: every value is written as its shape, such as <email> or <4 digits>."
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/column"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "likely_type",
+        "formats",
+        "suspicious"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "likely_type": {
+          "enum": [
+            "integer",
+            "decimal",
+            "date",
+            "datetime",
+            "boolean",
+            "category",
+            "identifier",
+            "free_text",
+            "empty",
+            "mixed",
+            "unknown"
+          ]
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "format",
+              "example"
+            ],
+            "properties": {
+              "format": {
+                "type": "string",
+                "minLength": 1
+              },
+              "example": {
+                "type": "string",
+                "maxLength": 80
+              }
+            }
+          },
+          "maxItems": 8
+        },
+        "suspicious": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "line",
+              "value",
+              "why"
+            ],
+            "properties": {
+              "line": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 201
+              },
+              "value": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "why": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          },
+          "maxItems": 10
+        }
+      }
+    },
+    "refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refused"
+      ],
+      "properties": {
+        "refused": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    }
+  }
+}

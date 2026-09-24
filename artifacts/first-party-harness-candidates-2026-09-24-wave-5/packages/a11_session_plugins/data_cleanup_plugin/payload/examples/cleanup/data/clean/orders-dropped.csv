@@ -1,0 +1,6 @@
+order_id,order_date,amount,note
+1001,2025-03-04,12.50,first order
+1002,2025-04-05,7.00,"gift, wrapped"
+1003,2025-04-05,19.99,"two line
+note"
+1005,2025-04-07,40.00,repeat customer

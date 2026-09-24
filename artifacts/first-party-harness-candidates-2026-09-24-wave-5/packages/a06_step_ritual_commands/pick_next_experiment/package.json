@@ -1,0 +1,480 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "pick_next_experiment",
+    "title": "Pick the next experiment",
+    "purpose": "Read the experiment ledger and notes, choose one next experiment with its expected effect, cost and ending rule, and refuse to repeat a configuration that already ran.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/configuration-grid-search-and-optimization.md",
+      "docs/guides/native-client-material-loading.md"
+    ],
+    "layer": "context",
+    "family": "native_command",
+    "search_tags": [
+      "pick the next experiment",
+      "what to try next in a competition",
+      "experiment ledger",
+      "do not rerun the same configuration",
+      "plan the next training run",
+      "expected effect and cost of an experiment",
+      "stopping rule for an experiment",
+      "hyperparameter change from the best run",
+      "record an experiment result",
+      "retry a run that ran out of memory"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "agent harness operations"
+      ],
+      "role": [
+        "data scientist",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main",
+      "command_summary",
+      "command_propose",
+      "command_record",
+      "check_proposal",
+      "load_ledger",
+      "apply_update",
+      "fingerprint",
+      "known_keys"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a06_step_ritual_commands",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/experiment-ledger-line.schema.json",
+        "digest": "66ba396d87b8832cff20639a2dac8373b7768bb8ab3918702c47abf83c2faa36",
+        "size_bytes": 4230,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/experiment-proposal.schema.json",
+        "digest": "2b0ed1dd9b8e72cf28f8d4e957727f4796976ba10b2c55fa0d99d4796c8b705d",
+        "size_bytes": 2667,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/ledger.jsonl",
+        "digest": "5b427c466d15c062baa7d3c39abcf7ff344823c5ccbc37853af24fc78ddf5389",
+        "size_bytes": 1538,
+        "media_type": "application/jsonl",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/notes.md",
+        "digest": "21eb08e022edfd9e06e6e5876385d74157f1e4786979a352ef04b7a1e6b13230",
+        "size_bytes": 310,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "examples/proposal.json",
+        "digest": "a2b41ed2e2f8ead10d04529139a0a1185fbb24de7d288b5a99c4bfdb1affea38",
+        "size_bytes": 654,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/experiment_ledger.py",
+        "digest": "76ee8778310a2b547aac86445464cf0770012e5ac166ce1f7f2521ddd8a44190",
+        "size_bytes": 25744,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_experiment_ledger.py",
+        "digest": "06dc67b11693e05bb56383d211cac25b7a6567252b1cd9a582df867c62c803f3",
+        "size_bytes": 20302,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/pick-next-experiment.md",
+        "digest": "aac490969182a3f1dd377af58243b05873c4b0934705ea3b34ef0c36ba084bc3",
+        "size_bytes": 2429,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/copilot/pick-next-experiment.prompt.md",
+        "digest": "6fd0b7779f709b80bfbc23d3efdb87db975fb41912708e18a2ce4df81b7b0e14",
+        "size_bytes": 2470,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/pick-next-experiment.md",
+        "digest": "63dfc0c3c54f0d2d1530943ab84b48fa0367d49ec04ccfaff1e8acec33a0dd74",
+        "size_bytes": 2261,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/pick-next-experiment.toml",
+        "digest": "ee3e2311de85f325b378623e1b240dcc1ed0241bf72db121792b13a4ac9d6b12",
+        "size_bytes": 2406,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/opencode/pick-next-experiment.md",
+        "digest": "127168abc9fc7e4430949553fc58c763622625af09ed155e492a4c542d8f47b5",
+        "size_bytes": 2399,
+        "media_type": "text/markdown",
+        "role": "command"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a06_step_ritual_commands",
+    "file_class": "command_file",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli",
+      "opencode",
+      "copilot",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "copilot": "The prompt file folder .github/prompts/ is unverified in the wave placement table. The agent: agent front matter follows the VS Code prompt file documentation read by the repairer on 2026-09-24; native loading was not observed.",
+      "cursor": "The command folder .cursor/commands/ is unverified in the wave placement table. The Cursor documentation page read by the repairer on 2026-09-24 described skills and no project command folder, and native loading was not observed."
+    },
+    "not_placed": {},
+    "native_name": "pick-next-experiment",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/pick-next-experiment.md",
+      "gemini_cli": "variants/gemini_cli/pick-next-experiment.toml",
+      "opencode": "variants/opencode/pick-next-experiment.md",
+      "copilot": "variants/copilot/pick-next-experiment.prompt.md",
+      "cursor": "variants/cursor/pick-next-experiment.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/pick-next-experiment.md": {
+          "destination": ".claude/commands/pick-next-experiment.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/experiment_ledger.py": {
+          "destination": ".baltor/pick-next-experiment/scripts/experiment_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.jsonl": null,
+        "examples/notes.md": null,
+        "examples/proposal.json": {
+          "destination": ".baltor/pick-next-experiment/examples/proposal.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pick-next-experiment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_experiment_ledger.py": null,
+        "contracts/experiment-ledger-line.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-ledger-line.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/experiment-proposal.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-proposal.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "variants/gemini_cli/pick-next-experiment.toml": {
+          "destination": ".gemini/commands/pick-next-experiment.toml",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/experiment_ledger.py": {
+          "destination": ".baltor/pick-next-experiment/scripts/experiment_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.jsonl": null,
+        "examples/notes.md": null,
+        "examples/proposal.json": {
+          "destination": ".baltor/pick-next-experiment/examples/proposal.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pick-next-experiment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_experiment_ledger.py": null,
+        "contracts/experiment-ledger-line.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-ledger-line.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/experiment-proposal.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-proposal.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/pick-next-experiment.md": {
+          "destination": ".opencode/commands/pick-next-experiment.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/experiment_ledger.py": {
+          "destination": ".baltor/pick-next-experiment/scripts/experiment_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.jsonl": null,
+        "examples/notes.md": null,
+        "examples/proposal.json": {
+          "destination": ".baltor/pick-next-experiment/examples/proposal.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pick-next-experiment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_experiment_ledger.py": null,
+        "contracts/experiment-ledger-line.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-ledger-line.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/experiment-proposal.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-proposal.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/pick-next-experiment.prompt.md": {
+          "destination": ".github/prompts/pick-next-experiment.prompt.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/experiment_ledger.py": {
+          "destination": ".baltor/pick-next-experiment/scripts/experiment_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.jsonl": null,
+        "examples/notes.md": null,
+        "examples/proposal.json": {
+          "destination": ".baltor/pick-next-experiment/examples/proposal.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pick-next-experiment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_experiment_ledger.py": null,
+        "contracts/experiment-ledger-line.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-ledger-line.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/experiment-proposal.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-proposal.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cursor": {
+        "variants/cursor/pick-next-experiment.md": {
+          "destination": ".cursor/commands/pick-next-experiment.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/experiment_ledger.py": {
+          "destination": ".baltor/pick-next-experiment/scripts/experiment_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ledger.jsonl": null,
+        "examples/notes.md": null,
+        "examples/proposal.json": {
+          "destination": ".baltor/pick-next-experiment/examples/proposal.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/pick-next-experiment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_experiment_ledger.py": null,
+        "contracts/experiment-ledger-line.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-ledger-line.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/experiment-proposal.schema.json": {
+          "destination": ".baltor/pick-next-experiment/contracts/experiment-proposal.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/claude_code/pick-next-experiment.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "variants/gemini_cli/pick-next-experiment.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "variants/opencode/pick-next-experiment.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "variants/copilot/pick-next-experiment.prompt.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "variants/cursor/pick-next-experiment.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "scripts/experiment_ledger.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "tests/test_experiment_ledger.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/ledger.jsonl": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "examples/notes.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "examples/proposal.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/experiment-ledger-line.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      },
+      "contracts/experiment-proposal.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_experiment_ledger.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/pick-next-experiment/scripts/experiment_ledger.py summary --root . and read best, known_keys, lead_within_fold_spread and failed.",
+    "done_when": [
+      "propose exits 0 and the ledger holds one new line with status planned.",
+      "The reply names the new id, the change, the expected effect, the cost and the ending rule."
+    ],
+    "stop_and_report_when": [
+      "A helper run exits 2, for example when the ledger or its header line is missing.",
+      "A finding says the ledger budget has no minutes left.",
+      "A finding says a needed key is not a setting of the ledger; only a person adds settings.",
+      "A second, different proposal is also refused as a repeat."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/configuration-grid-search-and-optimization.md": "51bb646ab4ba7d99cf4678e84ac3fa7eee787261f8e54e702bd58f0e2912da12",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf"
+    },
+    "package_digest": "b13cbf5c223f6244a082a172d348ba124f190f3705f66e8d55268a6b9a102fdd",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

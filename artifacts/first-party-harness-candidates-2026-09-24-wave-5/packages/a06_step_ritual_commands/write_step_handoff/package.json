@@ -1,0 +1,421 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "write_step_handoff",
+    "title": "Write a step handoff note",
+    "purpose": "End a focused step by writing a handoff file that states what is done with evidence paths, what remains, open questions and the exact first action for the next fresh harness.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "docs/guides/native-client-material-loading.md"
+    ],
+    "layer": "context",
+    "family": "native_command",
+    "search_tags": [
+      "write a handoff note",
+      "end of step handoff",
+      "handoff for the next agent session",
+      "resume work in a fresh harness",
+      "what is done and what remains",
+      "evidence paths for finished work",
+      "first action for the next session",
+      "session handover file",
+      "night step handoff record"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main",
+      "command_init",
+      "command_check",
+      "check_note",
+      "parse_note",
+      "classify",
+      "build_record"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a06_step_ritual_commands",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/night-step-handoff.schema.json",
+        "digest": "8fe6068db4a32ea1e19143e141fa82fa2401f3ac66ac73d8eb47b7de16b284f2",
+        "size_bytes": 4236,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/handoff-example.md",
+        "digest": "29d03ddcb3e24c61e1aefa84892dc84a28b39aad34de0f2c112b6aff627341d2",
+        "size_bytes": 625,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "examples/task.json",
+        "digest": "cf4205e9ed73173c8ee7233967a34f8e0b1d602a1e5c460684a60a70d4d8fe03",
+        "size_bytes": 413,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/step_handoff.py",
+        "digest": "4396b76be98a931318e05848eeb5da04c41168f9322689524c5ca516f2997290",
+        "size_bytes": 22823,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_step_handoff.py",
+        "digest": "b08474851c24dc58c0419f29db907f765e4d436fe894c470dd2810e1d178eb7e",
+        "size_bytes": 20602,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/write-step-handoff.md",
+        "digest": "fb60936d2ae03dae9f1edcc36cf71c442857ee3d732413066ae340af44fe8f18",
+        "size_bytes": 2223,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/copilot/write-step-handoff.prompt.md",
+        "digest": "db5394cafd04d23217b2bc98f07b5317d5f76b4618a9fa3b10ab18f244e496cd",
+        "size_bytes": 2247,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/write-step-handoff.md",
+        "digest": "9a6484a9577fe6018198527de5f7dda39f28a110f428805168894c35a8a135fe",
+        "size_bytes": 2091,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/write-step-handoff.toml",
+        "digest": "5d6c3b2beb18ed80dbea345c267eb8d4d47a01e6daa6a5821ec7250bdbb54b98",
+        "size_bytes": 2203,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/opencode/write-step-handoff.md",
+        "digest": "1e6952ef29264953d6508984c1812d79b0060751da200585c32d62f016ac79a5",
+        "size_bytes": 2196,
+        "media_type": "text/markdown",
+        "role": "command"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a06_step_ritual_commands",
+    "file_class": "command_file",
+    "use_cases": [
+      "any_focused_step",
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli",
+      "opencode",
+      "copilot",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "copilot": "The prompt file folder .github/prompts/ is unverified in the wave placement table. The agent: agent front matter follows the VS Code prompt file documentation read by the repairer on 2026-09-24; native loading was not observed.",
+      "cursor": "The command folder .cursor/commands/ is unverified in the wave placement table. The Cursor documentation page read by the repairer on 2026-09-24 described skills and no project command folder, and native loading was not observed."
+    },
+    "not_placed": {},
+    "native_name": "write-step-handoff",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/write-step-handoff.md",
+      "gemini_cli": "variants/gemini_cli/write-step-handoff.toml",
+      "opencode": "variants/opencode/write-step-handoff.md",
+      "copilot": "variants/copilot/write-step-handoff.prompt.md",
+      "cursor": "variants/cursor/write-step-handoff.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/write-step-handoff.md": {
+          "destination": ".claude/commands/write-step-handoff.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_handoff.py": {
+          "destination": ".baltor/write-step-handoff/scripts/step_handoff.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/task.json": null,
+        "examples/handoff-example.md": {
+          "destination": ".baltor/write-step-handoff/examples/handoff-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/write-step-handoff/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_handoff.py": null,
+        "contracts/night-step-handoff.schema.json": {
+          "destination": ".baltor/write-step-handoff/contracts/night-step-handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "variants/gemini_cli/write-step-handoff.toml": {
+          "destination": ".gemini/commands/write-step-handoff.toml",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_handoff.py": {
+          "destination": ".baltor/write-step-handoff/scripts/step_handoff.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/task.json": null,
+        "examples/handoff-example.md": {
+          "destination": ".baltor/write-step-handoff/examples/handoff-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/write-step-handoff/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_handoff.py": null,
+        "contracts/night-step-handoff.schema.json": {
+          "destination": ".baltor/write-step-handoff/contracts/night-step-handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/write-step-handoff.md": {
+          "destination": ".opencode/commands/write-step-handoff.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_handoff.py": {
+          "destination": ".baltor/write-step-handoff/scripts/step_handoff.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/task.json": null,
+        "examples/handoff-example.md": {
+          "destination": ".baltor/write-step-handoff/examples/handoff-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/write-step-handoff/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_handoff.py": null,
+        "contracts/night-step-handoff.schema.json": {
+          "destination": ".baltor/write-step-handoff/contracts/night-step-handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/write-step-handoff.prompt.md": {
+          "destination": ".github/prompts/write-step-handoff.prompt.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_handoff.py": {
+          "destination": ".baltor/write-step-handoff/scripts/step_handoff.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/task.json": null,
+        "examples/handoff-example.md": {
+          "destination": ".baltor/write-step-handoff/examples/handoff-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/write-step-handoff/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_handoff.py": null,
+        "contracts/night-step-handoff.schema.json": {
+          "destination": ".baltor/write-step-handoff/contracts/night-step-handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cursor": {
+        "variants/cursor/write-step-handoff.md": {
+          "destination": ".cursor/commands/write-step-handoff.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/step_handoff.py": {
+          "destination": ".baltor/write-step-handoff/scripts/step_handoff.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/task.json": null,
+        "examples/handoff-example.md": {
+          "destination": ".baltor/write-step-handoff/examples/handoff-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/write-step-handoff/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_step_handoff.py": null,
+        "contracts/night-step-handoff.schema.json": {
+          "destination": ".baltor/write-step-handoff/contracts/night-step-handoff.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/claude_code/write-step-handoff.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "variants/gemini_cli/write-step-handoff.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "variants/opencode/write-step-handoff.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "variants/copilot/write-step-handoff.prompt.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "variants/cursor/write-step-handoff.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "scripts/step_handoff.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "tests/test_step_handoff.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "examples/handoff-example.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/night-step-handoff.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_step_handoff.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/write-step-handoff/scripts/step_handoff.py init --root . and read the note path it prints.",
+    "done_when": [
+      "The check exits 0, reports passed true and names the record_path of the night_step_handoff/v1 record beside the note.",
+      "Every Done line cites a regular file inside the workspace that this step wrote or changed, and the first action holds exactly one command or path in backticks."
+    ],
+    "stop_and_report_when": [
+      "A helper run exits 2, apart from one repeat with --step-id when a step id was given with the command.",
+      "A result has no file that proves it; it moves to Remaining instead.",
+      "The same finding remains after two changes to the note."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf"
+    },
+    "package_digest": "43ce4aa94a688da96387dd6e7ceb46b260c30722285745e248bc985438364325",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

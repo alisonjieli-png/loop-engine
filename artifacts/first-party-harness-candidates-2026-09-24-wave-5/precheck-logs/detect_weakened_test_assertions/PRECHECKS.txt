@@ -1,0 +1,266 @@
+PRECHECKS for detect_weakened_test_assertions (wave 5, assignment a12_ticket_result_verifiers, generator a12_ticket_result_verifiers)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a12_ticket_result_verifiers/detect_weakened_test_assertions/
+This log sits outside the package folder because the layout check refuses any extra top-level entry there.
+Checker: $WAVE/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Every run of this generator session is appended below, failures included. Each check run also saved its
+own report as review/precheck-<UTC>.json inside the package folder; none of those reports was deleted.
+
+
+===== 2026-09-24T04:58:40Z run 1: baseline: check on the unchanged bytes of the earlier a12 generator pass (snapshot kept in earlier-attempt-20260924T0101Z.tar.gz beside this log), before any change in this session
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions
+{
+ "identity": "detect_weakened_test_assertions",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "refused",
+  "manifest_schema": "refused"
+ },
+ "report": "review/precheck-20260924T045840581918Z.json"
+}
+
+[refused] layout
+  - missing package.json
+
+[refused] manifest_schema
+  - package.json unreadable: [Errno 2] No such file or directory: '$WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions/package.json'
+exit 1
+
+===== 2026-09-24T05:31:43Z run 2: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'statement grouping removed' (scripts/detect_weakened_tests.py), test -k test_expected_value_on_its_own_line_needs_a_reason: killed (Ran 1 test in 0.106s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['assertion_rewritten'])
+    real payload, same test: exit 0 (Ran 1 test in 0.114s; OK)
+mutant 'trivial check detection removed' (scripts/detect_weakened_tests.py), test -k test_check_made_always_true: killed (Ran 1 test in 0.175s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['assertion_rewritten']) != (1, ['assertion_made_trivial'])
+    real payload, same test: exit 0 (Ran 1 test in 0.404s; OK)
+mutant 'early exit finding removed' (scripts/detect_weakened_tests.py), test -k test_bare_return_before_a_check: killed (Ran 1 test in 0.133s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['early_exit_added'])
+    real payload, same test: exit 0 (Ran 1 test in 0.126s; OK)
+mutant 'early exit block guard removed' (scripts/detect_weakened_tests.py), test -k test_return_of_a_nested_function_is_not_an_early_exit: SURVIVED (Ran 1 test in 0.125s; OK) 
+    real payload, same test: exit 0 (Ran 1 test in 0.156s; OK)
+mutant 'parameter case count removed' (scripts/detect_weakened_tests.py), test -k test_parameter_case_removed_or_commented_out: killed (Ran 1 test in 0.106s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['parameter_case_changed']) != (1, ['parameter_case_removed'])
+    real payload, same test: exit 0 (Ran 1 test in 0.346s; OK)
+mutant 'partial statement warning removed' (scripts/detect_weakened_tests.py), test -k test_head_above_the_context_gives_a_warning_and_more_context_finds_it: killed (Ran 1 test in 0.127s; FAILED (failures=1)) AssertionError: False is not true
+    real payload, same test: exit 0 (Ran 1 test in 0.265s; OK)
+mutant 'string text read as a check' (scripts/detect_weakened_tests.py), test -k test_docstring_text_is_not_a_check: killed (Ran 1 test in 0.138s; FAILED (failures=1)) AssertionError: Tuples differ: (1, 'review', []) != (0, 'pass', [])
+    real payload, same test: exit 0 (Ran 1 test in 0.154s; OK)
+mutant 'block braces treated as values' (scripts/detect_weakened_tests.py), test -k test_javascript_expect_removed_inside_a_callback_body: killed (Ran 1 test in 0.125s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['assertion_rewritten']) != (1, ['assertion_removed'])
+    real payload, same test: exit 0 (Ran 1 test in 0.093s; OK)
+mutant 'combined diff refusal removed' (scripts/detect_weakened_tests.py), test -k test_combined_diff_of_a_merge: killed (Ran 1 test in 0.136s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'unreadable_diff') != (2, 'combined_diff')
+    real payload, same test: exit 0 (Ran 1 test in 0.117s; OK)
+
+===== 2026-09-24T05:32:14Z run 3: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'early exit block guard removed' (scripts/detect_weakened_tests.py), test -k test_return_of_a_nested_function_is_not_an_early_exit: killed (Ran 1 test in 0.210s; FAILED (failures=1)) AssertionError: Tuples differ: (1, 'fail') != (0, 'pass')
+    real payload, same test: exit 0 (Ran 1 test in 0.278s; OK)
+
+===== 2026-09-24T05:32:43Z run 4: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'inherited: mark findings removed' (scripts/detect_weakened_tests.py), test -k test_marks_and_places: killed (Ran 1 test in 0.083s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['expected_failure_mark_added']
+    real payload, same test: exit 0 (Ran 1 test in 0.177s; OK)
+mutant 'inherited: tolerance direction inverted' (scripts/detect_weakened_tests.py), test -k test_weakened_example_is_refused_with_locations: killed (Ran 1 test in 0.126s; FAILED (failures=1)) AssertionError: Lists differ: ['ass[36 chars]n', 'assertion_rewritten', 'skip_mark_added', [19 chars]ted'] != ['ass[36 chars]n', 'skip_mark_added', 'test_functi
+    real payload, same test: exit 0 (Ran 1 test in 0.124s; OK)
+
+===== 2026-09-24T05:46:29Z run 5: host-style walkthrough (producer probe, not a checker check). The skill folder was copied to a harness skill path in a fresh workspace, the folder was found with the SKILL.md discovery command, and the first action was run exactly as SKILL.md writes it, with its placeholders filled. No harness binary and no model ran.
+placed at .opencode/skills/detect-weakened-test-assertions; `ls -d .*/skills/detect-weakened-test-assertions` printed '.opencode/skills/detect-weakened-test-assertions' (exit 0)
+    ok: the discovery command in SKILL.md finds the folder
+$ git diff --no-ext-diff --no-textconv -U10 HEAD | python3 -I -B .opencode/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py --diff -
+    exit 0, verdict pass
+    ok: an unchanged tree passes
+$ git diff --no-ext-diff --no-textconv -U10 HEAD | python3 -I -B .opencode/skills/detect-weakened-test-assertions/scripts/detect_weakened_tests.py --diff -
+    exit 1, verdict fail
+    kinds ['assertion_rewritten', 'skip_mark_added']
+    ok: a changed expected value on its own line and a skip are both found
+
+===== 2026-09-24T05:48:31Z run 6: after this session's review and changes: package.json written by generator-a12-work/build_manifests.py with null digests, then fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions
+{"fill": "done", "files": 8, "package_digest": "8317fb43947218401d95ba2575ad6ff5868370246e86e24f41c12728645cf45f"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions
+{
+ "identity": "detect_weakened_test_assertions",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T054843331361Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx detect_weakened_test_assertions $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 8 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md | sha256sum
+5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+1 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named detect-weakened-test-assertions>
+Valid skill: $WAVE/generator-a12-work/a12-validate-wciwp_6m/detect-weakened-test-assertions
+exit 0
+$ skills-ref (official git) validate <copy named detect-weakened-test-assertions>
+Valid skill: $WAVE/generator-a12-work/a12-validate-wciwp_6m/detect-weakened-test-assertions
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 39 tests in 7.144s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 39 tests in 7.297s
+OK
+exit 0
+
+===== 2026-09-24T05:51:43Z run 7: assignment gate (SPEC section 11 step 6); it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each, and the plan in assignments.json
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055143281720Z.json
+exit 0
+
+===== 2026-09-24T05:53:56Z run 8: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'statement grouping removed' (scripts/detect_weakened_tests.py), test -k test_expected_value_on_its_own_line_needs_a_reason: killed (Ran 1 test in 0.139s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['assertion_rewritten'])
+    real payload, same test: exit 0 (Ran 1 test in 0.138s; OK)
+mutant 'trivial check detection removed' (scripts/detect_weakened_tests.py), test -k test_check_made_always_true: killed (Ran 1 test in 0.148s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['assertion_rewritten']) != (1, ['assertion_made_trivial'])
+    real payload, same test: exit 0 (Ran 1 test in 0.416s; OK)
+mutant 'early exit finding removed' (scripts/detect_weakened_tests.py), test -k test_bare_return_before_a_check: killed (Ran 1 test in 0.245s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['early_exit_added'])
+    real payload, same test: exit 0 (Ran 1 test in 0.135s; OK)
+mutant 'early exit block guard removed' (scripts/detect_weakened_tests.py), test -k test_return_of_a_nested_function_is_not_an_early_exit: killed (Ran 1 test in 0.369s; FAILED (failures=1)) AssertionError: Tuples differ: (1, 'fail') != (0, 'pass')
+    real payload, same test: exit 0 (Ran 1 test in 0.272s; OK)
+mutant 'parameter case count removed' (scripts/detect_weakened_tests.py), test -k test_parameter_case_removed_or_commented_out: killed (Ran 1 test in 0.129s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['parameter_case_changed']) != (1, ['parameter_case_removed'])
+    real payload, same test: exit 0 (Ran 1 test in 0.413s; OK)
+mutant 'partial statement warning removed' (scripts/detect_weakened_tests.py), test -k test_head_above_the_context_gives_a_warning_and_more_context_finds_it: killed (Ran 1 test in 0.145s; FAILED (failures=1)) AssertionError: False is not true
+    real payload, same test: exit 0 (Ran 1 test in 0.324s; OK)
+mutant 'string text read as a check' (scripts/detect_weakened_tests.py), test -k test_docstring_text_is_not_a_check: killed (Ran 1 test in 0.236s; FAILED (failures=1)) AssertionError: Tuples differ: (1, 'review', []) != (0, 'pass', [])
+    real payload, same test: exit 0 (Ran 1 test in 0.148s; OK)
+mutant 'block braces treated as values' (scripts/detect_weakened_tests.py), test -k test_javascript_expect_removed_inside_a_callback_body: killed (Ran 1 test in 0.141s; FAILED (failures=1)) AssertionError: Tuples differ: (1, ['assertion_rewritten']) != (1, ['assertion_removed'])
+    real payload, same test: exit 0 (Ran 1 test in 0.201s; OK)
+mutant 'combined diff refusal removed' (scripts/detect_weakened_tests.py), test -k test_combined_diff_of_a_merge: killed (Ran 1 test in 0.179s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'unreadable_diff') != (2, 'combined_diff')
+    real payload, same test: exit 0 (Ran 1 test in 0.157s; OK)
+mutant 'inherited: mark findings removed' (scripts/detect_weakened_tests.py), test -k test_marks_and_places: killed (Ran 1 test in 0.128s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['expected_failure_mark_added']
+    real payload, same test: exit 0 (Ran 1 test in 0.352s; OK)
+mutant 'inherited: tolerance direction inverted' (scripts/detect_weakened_tests.py), test -k test_weakened_example_is_refused_with_locations: killed (Ran 1 test in 0.196s; FAILED (failures=1)) AssertionError: Lists differ: ['ass[36 chars]n', 'assertion_rewritten', 'skip_mark_added', [19 chars]ted'] != ['ass[36 chars]n', 'skip_mark_added', 'test_functi
+    real payload, same test: exit 0 (Ran 1 test in 0.197s; OK)
+
+===== 2026-09-24T05:55:21Z run 9: final: after the answer wording, the diff base checklist item and the example test tracing in package.json; fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions
+{"fill": "done", "files": 8, "package_digest": "fa23cfa122f13444a4ba7d00400ec9b7a0551c520e7502009af2a8342e158d28"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions
+{
+ "identity": "detect_weakened_test_assertions",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055540410201Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx detect_weakened_test_assertions $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 8 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md | sha256sum
+5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+1 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named detect-weakened-test-assertions>
+Valid skill: $WAVE/generator-a12-work/a12-validate-4gtfxehj/detect-weakened-test-assertions
+exit 0
+$ skills-ref (official git) validate <copy named detect-weakened-test-assertions>
+Valid skill: $WAVE/generator-a12-work/a12-validate-4gtfxehj/detect-weakened-test-assertions
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 39 tests in 6.467s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 39 tests in 4.361s
+OK
+exit 0
+
+===== 2026-09-24T05:57:11Z run 10: final assignment gate (SPEC section 11 step 6) on the final bytes; it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055711456548Z.json
+exit 0
+
+===== 2026-09-24T05:58:45Z run 11: producer probes on real runner outputs and real diffs against the final bytes (not a checker check)
+  80 real commits, test files only (git show -U10 of the read-only checkout): verdicts {'pass': 64, 'review': 7, 'fail': 7, 'refused': 2}; crashes or error output none
+  120 real commits, every .py file with --all-files (git show -U10 of the read-only checkout): verdicts {'pass': 95, 'review': 8, 'refused': 13, 'fail': 4}; crashes or error output none
+Hand-made cases the line-based first version passed (difflib diffs, three context lines unless stated):
+  expected value on its own line: exit 1, verdict review, kinds ['assertion_rewritten']
+  shortened expected list: exit 1, verdict review, kinds ['assertion_rewritten']
+  early return: exit 1, verdict fail, kinds ['early_exit_added']
+  assert True: exit 1, verdict fail, kinds ['assertion_made_trivial']
+  git apply --numstat --summary examples/honest-test-change.diff: exit 0, 2 lines 
+  git apply --numstat --summary examples/weakened-tests.diff: exit 0, 1 lines 
+  pyflakes on scripts and tests: exit 0 (no findings)

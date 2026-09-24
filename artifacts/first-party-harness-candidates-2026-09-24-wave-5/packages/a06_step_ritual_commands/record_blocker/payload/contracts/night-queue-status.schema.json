@@ -1,0 +1,175 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_queue_status/v1",
+ "description": "Live statuses of the tickets of one queue at .baltor/night/queue-status.json. It is bound to the queue by queue_sha256, so a status file of another queue is refused. A ticket without an entry is queued. plan-night-queue mark moves a ticket from queued to in_progress, from in_progress to done and back to queued; record-blocker moves a ticket to blocked, the queued tickets that depend on it to waiting and, when one session works through the queue, the next ticket to in_progress. At most one ticket is in progress. Every move is appended to changes.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "queue_sha256",
+  "tickets"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_queue_status/v1"
+  },
+  "queue_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "tickets": {
+   "type": "object",
+   "propertyNames": {
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+   },
+   "additionalProperties": {
+    "$ref": "#/$defs/entry"
+   }
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "time": {
+   "type": "string",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+  },
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "status": {
+   "enum": [
+    "queued",
+    "in_progress",
+    "done",
+    "blocked",
+    "waiting"
+   ]
+  },
+  "change": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "from",
+    "to",
+    "at",
+    "by"
+   ],
+   "properties": {
+    "from": {
+     "$ref": "#/$defs/status"
+    },
+    "to": {
+     "$ref": "#/$defs/status"
+    },
+    "at": {
+     "$ref": "#/$defs/time"
+    },
+    "by": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 80,
+     "description": "The command or host that made the move."
+    },
+    "record": {
+     "$ref": "#/$defs/path"
+    },
+    "evidence": {
+     "$ref": "#/$defs/path"
+    },
+    "waits_for": {
+     "$ref": "#/$defs/identifier"
+    },
+    "reason": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 500
+    }
+   }
+  },
+  "entry": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "status",
+    "changes"
+   ],
+   "properties": {
+    "status": {
+     "$ref": "#/$defs/status"
+    },
+    "changes": {
+     "type": "array",
+     "minItems": 1,
+     "items": {
+      "$ref": "#/$defs/change"
+     }
+    },
+    "blocker": {
+     "$ref": "#/$defs/path"
+    },
+    "blocked_at": {
+     "$ref": "#/$defs/time"
+    },
+    "waits_for": {
+     "$ref": "#/$defs/identifier"
+    },
+    "evidence": {
+     "$ref": "#/$defs/path"
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "blocked"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "blocker"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "waiting"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "waits_for"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "done"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "evidence"
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+  "session_id": "sample-session-0004",
+  "transcript_path": "/work/.baltor/sample-transcript.jsonl",
+  "cwd": "/work",
+  "permission_mode": "default",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Bash",
+  "tool_input": {"command": "python3 -m pytest -q tests", "description": "Run the unit tests"},
+  "tool_response": {"stdout": "SAMPLE-OUTPUT-NOT-LOGGED 12 passed", "stderr": "", "interrupted": false}
+}

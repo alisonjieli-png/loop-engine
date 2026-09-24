@@ -1,0 +1,62 @@
+{
+  "night": "2026-09-21",
+  "items": [
+    {
+      "id": "T-201",
+      "title": "Reject impossible dates",
+      "status": "verified",
+      "evidence": [
+        {
+          "path": "examples/evidence/t201-after-run.txt",
+          "sha256": "c4cbe579796991d3319dccad7e8cb89e86b348b58ebb56cd047510235551607d",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "id": "T-205",
+      "title": "Write the export header once",
+      "status": "verified",
+      "evidence": [
+        {
+          "path": "examples/evidence/t205-after-run.txt",
+          "sha256": "56fe939ed493e8dab1eb5629eaaff6776ac2d26178df12a0078359df0a99eb94",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "id": "T-206",
+      "title": "Trim spaces in customer names",
+      "status": "done",
+      "evidence": []
+    },
+    {
+      "id": "T-207",
+      "title": "Round totals half up",
+      "status": "fixed",
+      "evidence": [
+        {
+          "path": "examples/evidence/t202-gate.json",
+          "sha256": "56fe939ed493e8dab1eb5629eaaff6776ac2d26178df12a0078359df0a99eb94"
+        }
+      ]
+    },
+    {
+      "id": "T-208",
+      "title": "Round totals in the export",
+      "status": "verified",
+      "evidence": [
+        {
+          "path": "examples/evidence/t208-gate.json",
+          "sha256": "0acd0cea293648dbb7993b815e9f11f0d6c14c34946335df464eb322f95d10e2"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "verified": 4,
+    "done": 1,
+    "fixed": 1
+  }
+}

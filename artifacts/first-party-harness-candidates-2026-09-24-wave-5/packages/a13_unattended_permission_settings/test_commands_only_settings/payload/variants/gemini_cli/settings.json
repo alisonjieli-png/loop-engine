@@ -1,0 +1,24 @@
+{
+  "general": {
+    "defaultApprovalMode": "default"
+  },
+  "security": {
+    "disableYoloMode": true
+  },
+  "tools": {
+    "core": [
+      "read_file",
+      "read_many_files",
+      "list_directory",
+      "glob",
+      "grep_search",
+      "activate_skill",
+      "run_shell_command(python3 -m unittest)",
+      "run_shell_command(python3 -m pytest)",
+      "run_shell_command(python3 -m pyflakes)",
+      "run_shell_command(ruff format --check)",
+      "run_shell_command(python3 -m black --check)",
+      "run_shell_command(python3 -I -B .baltor/test-commands-only-settings/scripts/check_test_commands_only_settings.py)"
+    ]
+  }
+}

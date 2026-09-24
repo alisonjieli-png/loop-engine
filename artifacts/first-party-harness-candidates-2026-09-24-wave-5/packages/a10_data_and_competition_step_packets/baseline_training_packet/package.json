@@ -1,0 +1,611 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "baseline_training_packet",
+    "title": "Baseline training step packet",
+    "purpose": "A one-step packet that trains one simple baseline on a fixed fold file, saves out-of-fold and test predictions and records the fold scores in the experiment ledger.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "train a baseline model",
+      "cross validation baseline",
+      "out of fold predictions",
+      "experiment ledger",
+      "baseline score on fixed folds",
+      "ridge regression baseline",
+      "constant baseline as a reference",
+      "baseline auc log loss rmse",
+      "record fold scores for a run"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science competitions"
+      ],
+      "role": [
+        "data scientist"
+      ]
+    },
+    "symbols": [
+      "main",
+      "run",
+      "cross_validate",
+      "score",
+      "fit_logistic"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a10_data_and_competition_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "9853343299ee68d3ff61fcb45e2d905ce84e96dec06ce9f99f213af63c131962",
+        "size_bytes": 2875,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "9853343299ee68d3ff61fcb45e2d905ce84e96dec06ce9f99f213af63c131962",
+        "size_bytes": 2875,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "af3da8efd0f2bc2db4bf394ba4336ffd4afc5cc6c81f70577ace96a194c4ccb3",
+        "size_bytes": 1516,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "21e3ac9e90b915c74b035c512293640cfdb10820545476c3a87e132551762f5e",
+        "size_bytes": 3786,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "2e9e084f82473afe7dce0178fffd584f0aa559465ea1e26a40037476ed4496da",
+        "size_bytes": 486,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "689154cd2d3d831f4ddb8f24fc635d343603587d256f2ce4a02963dbf5fb4957",
+        "size_bytes": 412,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "119a4b2e72f4a847795896d4f7d98d7fe332b60b5f30235729e2b4b1e0d323ef",
+        "size_bytes": 1875,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "3a24b9a8126db749c43684d1f9decbce21db4587c3eea865f7664fa897319d81",
+        "size_bytes": 482,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "b93c6003b8081d81a243feb65f96140068a1bbc3e3dc0b234d153c3f5cfadbfb",
+        "size_bytes": 1748,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/train_baseline.py",
+        "digest": "b54534eb6e4eb9f176d685d9391a55676f03f24e2e480d4a149f04bb83f5de6f",
+        "size_bytes": 32558,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_train_baseline.py",
+        "digest": "5ecef339a33b8e7a80c10ac9032a06f69d27f0289a3fe79cba94e340f7ca56d2",
+        "size_bytes": 16135,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a10_data_and_competition_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents that Kimi CLI reads a root AGENTS.md; the placement follows the common convention and is unverified until a native discovery probe runs."
+    },
+    "not_placed": {},
+    "native_name": "baseline-training-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "copy_exact_bytes"
+        },
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/train_baseline.py": {
+          "destination": ".baltor/step/scripts/train_baseline.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_train_baseline.py": null,
+        "LICENSE": {
+          "destination": ".baltor/baseline-training-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "scripts/train_baseline.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_train_baseline.py"
+        ]
+      },
+      "tests/test_train_baseline.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "TRAIN_PATH": "Workspace-relative path of the training CSV file.",
+      "TEST_PATH": "Workspace-relative path of the test CSV file.",
+      "FOLDS_PATH": "Workspace-relative path of the fold file with exactly the id column and a fold column.",
+      "ID_COLUMN": "Name of the id column, letters, digits, dot, dash and underscore only.",
+      "TARGET_COLUMN": "Name of the target column in the training file, letters, digits, dot, dash and underscore only.",
+      "TASK_TYPE": "regression or binary.",
+      "METRIC": "One of rmse, mae, rmsle for regression, or log_loss, auc, accuracy for binary.",
+      "BASELINE": "constant, group_mean or ridge.",
+      "FEATURES": "none for constant, one column for group_mean, or numeric columns separated by commas for ridge.",
+      "RUN_ID": "A new run id for the ledger, letters, digits, dot, dash and underscore, at most 64 characters.",
+      "OUTPUT_DIR": "Workspace-relative folder for the out-of-fold and test prediction files.",
+      "LEDGER_PATH": "Workspace-relative path of the experiment ledger in JSON Lines; the step appends one line.",
+      "STEP_ID": "The node identifier the host assigns to this step, one plain path component such as clean-plan-01.",
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, for example codex or claude_code."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/step/scripts/train_baseline.py with every rendered value plus --check-only, and continue only when it prints status ready.",
+    "done_when": [
+      "The ledger's last line is the record for the run id.",
+      "Both prediction files named under outputs exist."
+    ],
+    "stop_and_report_when": [
+      "A command exits 2 with a refusal.",
+      "The record carries the flag suspiciously_perfect."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace"
+    },
+    "package_digest": "35016aa37fee20ce1a079805961e121c539e6805299c430112d00ccde104c6b2",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

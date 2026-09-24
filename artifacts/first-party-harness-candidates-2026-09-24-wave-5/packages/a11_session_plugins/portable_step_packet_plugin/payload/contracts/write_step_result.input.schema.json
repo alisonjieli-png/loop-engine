@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "result": {
+      "description": "The whole result of the step, usually one JSON object with every field that the packet's output schema requires. It is saved as given."
+    }
+  },
+  "required": ["result"],
+  "additionalProperties": false
+}

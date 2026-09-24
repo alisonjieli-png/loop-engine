@@ -1,0 +1,11 @@
+{
+  "record_type": "workspace_write_guard/v1",
+  "protected_globs": [
+    "**/AGENTS.md", "**/CLAUDE.md", "**/CLAUDE.local.md", "**/GEMINI.md", ".cursorrules",
+    ".mcp.json", ".vscode/**", ".agents/**", ".codex/**", ".gemini/**", ".opencode/**", "opencode.json",
+    ".github/copilot-instructions.md", ".github/instructions/**", ".github/prompts/**", ".github/agents/**",
+    ".github/skills/**", ".github/workflows/**",
+    ".gitattributes", ".gitmodules", ".pre-commit-config.yaml", ".husky/**"
+  ],
+  "writable_globs": [".baltor/step/handoff.md"]
+}

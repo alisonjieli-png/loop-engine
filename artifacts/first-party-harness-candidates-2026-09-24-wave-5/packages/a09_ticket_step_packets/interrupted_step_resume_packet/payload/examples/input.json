@@ -1,0 +1,20 @@
+{
+ "record_type": "interrupted_step_resume_input/v1",
+ "step_id": "t-104-reproduction",
+ "handoff_path": ".baltor/resume/handoff.json",
+ "handoff_sha256": "f9fcec82093b26d1de8a6493686175c31e7364b12c05e3c1ff5ebeb3ef1adcf9",
+ "interrupted_instructions_path": ".baltor/resume/interrupted-instructions.md",
+ "interrupted_instructions_sha256": "e17a00481c28ede7fa683cd51d3850fc27b28e2158c132d7f1cc1449b48bef28",
+ "host_files": [
+  {
+   "path": ".baltor/step/input.json",
+   "sha256": "9b2e61d0c4a7f3158e0d6b2c9a4f7e1d3c5b8a0f2e4d6c8b1a3f5e7d9c0b2a4e"
+  }
+ ],
+ "host_placed_paths": [
+  "AGENTS.md",
+  "CLAUDE.md",
+  "GEMINI.md"
+ ],
+ "evidence_dir": ".baltor/resume-output/evidence"
+}

@@ -1,0 +1,96 @@
+PRECHECKS for morning_report_packet (wave 5, assignment a09_ticket_step_packets)
+Written by the generator on 2026-09-23T20:46:11Z. Candidate only. Not approved, staged, served or published.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d)
+Location note: kept in review/ because the specification's layout check refuses any extra top-level entry in a package folder.
+
+== python3 check_package.py fill morning_report_packet
+{"fill": "done", "files": 14, "package_digest": "0487de4f26856525da30bd93f191eb71b5eda9c2237148b1897b390fd944dbad"}
+
+== python3 check_package.py check morning_report_packet
+{
+ "identity": "morning_report_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204614435465Z.json"
+}
+exit status: 0
+
+== python3 check_package.py check-all --assignment a09_ticket_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204701100723Z.json
+
+== Every precheck report kept in review/ (oldest first)
+precheck-20260923T203927258695Z.json: passed_for_wave_gate=False package_digest=b2ddaebf7dcf26c59fbe35efe75cfc1ad86420cc45379e5f2278cc52731e2864 refused_checks=['vocabulary']
+precheck-20260923T204221791828Z.json: passed_for_wave_gate=True package_digest=0487de4f26856525da30bd93f191eb71b5eda9c2237148b1897b390fd944dbad refused_checks=[]
+precheck-20260923T204614435465Z.json: passed_for_wave_gate=True package_digest=0487de4f26856525da30bd93f191eb71b5eda9c2237148b1897b390fd944dbad refused_checks=[]
+precheck-20260923T204650640512Z.json: passed_for_wave_gate=True package_digest=0487de4f26856525da30bd93f191eb71b5eda9c2237148b1897b390fd944dbad refused_checks=[]
+
+== Local unit test runs from the payload root: python -I -B -m unittest discover -s tests -p 'test_*.py'
+-- /usr/bin/python3 exit 0
+test_clean_night_exits_zero (test_compile_morning_report.CompileMorningReport.test_clean_night_exits_zero) ... ok
+test_example_output_is_the_output_for_the_example_night (test_compile_morning_report.CompileMorningReport.test_example_output_is_the_output_for_the_example_night) ... ok
+test_known_wrong_complete_claim_without_evidence_is_not_complete (test_compile_morning_report.CompileMorningReport.test_known_wrong_complete_claim_without_evidence_is_not_complete) ... ok
+test_markdown_neutralizes_hidden_text_and_evidence_that_leaves_the_workspace (test_compile_morning_report.CompileMorningReport.test_markdown_neutralizes_hidden_text_and_evidence_that_leaves_the_workspace) ... ok
+test_notes_need_existing_evidence (test_compile_morning_report.CompileMorningReport.test_notes_need_existing_evidence) ... ok
+test_sections_follow_the_handoffs_and_evidence (test_compile_morning_report.CompileMorningReport.test_sections_follow_the_handoffs_and_evidence) ... ok
+test_unreadable_records_are_listed_not_skipped (test_compile_morning_report.CompileMorningReport.test_unreadable_records_are_listed_not_skipped) ... ok
+test_unusable_input_is_refused_without_writing (test_compile_morning_report.CompileMorningReport.test_unusable_input_is_refused_without_writing) ... ok
+----------------------------------------------------------------------
+Ran 8 tests in 0.660s
+OK
+-- /home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu/bin/python3.10 exit 0
+test_clean_night_exits_zero (test_compile_morning_report.CompileMorningReport) ... ok
+test_example_output_is_the_output_for_the_example_night (test_compile_morning_report.CompileMorningReport) ... ok
+test_known_wrong_complete_claim_without_evidence_is_not_complete (test_compile_morning_report.CompileMorningReport) ... ok
+test_markdown_neutralizes_hidden_text_and_evidence_that_leaves_the_workspace (test_compile_morning_report.CompileMorningReport) ... ok
+test_notes_need_existing_evidence (test_compile_morning_report.CompileMorningReport) ... ok
+test_sections_follow_the_handoffs_and_evidence (test_compile_morning_report.CompileMorningReport) ... ok
+test_unreadable_records_are_listed_not_skipped (test_compile_morning_report.CompileMorningReport) ... ok
+test_unusable_input_is_refused_without_writing (test_compile_morning_report.CompileMorningReport) ... ok
+----------------------------------------------------------------------
+Ran 8 tests in 0.387s
+OK
+
+== Contract checks with the jsonschema Draft 2020-12 validator
+contracts/handoff.schema.json: valid Draft 2020-12 schema
+contracts/input.schema.json: valid Draft 2020-12 schema
+contracts/output.schema.json: valid Draft 2020-12 schema
+examples/input.json against contracts/input.schema.json: valid
+examples/output.json against contracts/output.schema.json: valid
+known-wrong output 'complete item without claims': refused
+known-wrong output 'unknown unfinished reason': refused
+
+== Removed-guard controls (scratch copy, Python 3.14): each guard removed, the named test must fail
+scripts/compile_morning_report.py: detected by test_known_wrong_complete_claim_without_evidence_is_not_complete; failing tests ['test_example_output_is_the_output_for_the_example_night', 'test_known_wrong_complete_claim_without_evidence_is_not_complete', 'test_sections_follow_the_handoffs_and_evidence']
+scripts/compile_morning_report.py: detected by test_markdown_neutralizes_hidden_text_and_evidence_that_leaves_the_workspace; failing tests ['test_markdown_neutralizes_hidden_text_and_evidence_that_leaves_the_workspace']
+
+== Shared handoff contract
+contracts/handoff.schema.json is byte-identical in the resume and morning report packets: True
+
+Result: every pre-check of the specification ran here and passed for the current package digest. This is not an approval, a native loading result or a usefulness claim.

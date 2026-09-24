@@ -1,0 +1,138 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "experiment_proposal/v1",
+ "description": "The proposal the model writes to .baltor/experiments/proposal.json before propose checks it and appends it as a planned experiment. change names every key it changes. retry_of and environment_change appear together, only to run the newest failed run of the same configuration again after a fix outside the configuration.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "base",
+  "config",
+  "change",
+  "reason",
+  "expected_effect",
+  "cost",
+  "ending_rule"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "experiment_proposal/v1"
+  },
+  "base": {
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    }
+   ],
+   "description": "The experiment this change starts from; null only in an empty ledger."
+  },
+  "config": {
+   "type": "object",
+   "minProperties": 1,
+   "description": "The full configuration of the new experiment."
+  },
+  "change": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 500,
+   "pattern": "\\S"
+  },
+  "reason": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 1000,
+   "pattern": "\\S"
+  },
+  "expected_effect": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "metric",
+    "direction",
+    "size"
+   ],
+   "properties": {
+    "metric": {
+     "type": "string",
+     "minLength": 1
+    },
+    "direction": {
+     "enum": [
+      "higher",
+      "lower",
+      "same"
+     ]
+    },
+    "size": {
+     "type": "number",
+     "minimum": 0
+    }
+   }
+  },
+  "cost": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "minutes",
+    "model_calls"
+   ],
+   "properties": {
+    "minutes": {
+     "type": "number",
+     "exclusiveMinimum": 0,
+     "maximum": 1440
+    },
+    "model_calls": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "ending_rule": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 500,
+   "pattern": "[0-9]",
+   "description": "When to stop the run, with at least one number such as a time limit or a threshold."
+  },
+  "retry_of": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "environment_change": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 500,
+   "pattern": "\\S"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "required": [
+     "retry_of"
+    ]
+   },
+   "then": {
+    "required": [
+     "environment_change"
+    ]
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "environment_change"
+    ]
+   },
+   "then": {
+    "required": [
+     "retry_of"
+    ]
+   }
+  }
+ ]
+}

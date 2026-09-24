@@ -1,0 +1,280 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "target_encode_out_of_fold",
+    "title": "Target-encode categories out of fold",
+    "purpose": "Compute smoothed target means for categorical columns using only the other folds for each training row and the full training set for test rows, so no row's encoding sees its own label.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/code_nodes/kaggle_executor.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "target encoding",
+      "out of fold target encoding",
+      "mean encoding without leakage",
+      "smoothed target mean encoding",
+      "high cardinality categorical encoding",
+      "encode categories with the target",
+      "leak free category encoding for cross validation"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "machine learning engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "read_fold_file",
+      "encode_out_of_fold",
+      "recount_out_of_fold",
+      "encode_test"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a02_competition_modeling_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "727b9eff81d5ffa3dd1c3dc2f58a6904e2e5af337b46742d014316f4446efa20",
+        "size_bytes": 3221,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "scripts/target_encode_oof.py",
+        "digest": "669a3b48967e82f6868a15c2a79f6b5d6e9c2b53221f5069a424c6c822336d3c",
+        "size_bytes": 22863,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_target_encode_oof.py",
+        "digest": "a346dca9e92847022f4870f580396a1e0de0eda6902497e85c6378dfbf7f1997",
+        "size_bytes": 10266,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a02_competition_modeling_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills folder is documented in the cited research file but was not observed on this machine, and native loading of this package was not probed."
+    },
+    "not_placed": {},
+    "native_name": "target-encode-out-of-fold",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "SKILL.md": {
+          "destination": ".claude/skills/target-encode-out-of-fold/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/target_encode_oof.py": {
+          "destination": ".claude/skills/target-encode-out-of-fold/scripts/target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_target_encode_oof.py": {
+          "destination": ".claude/skills/target-encode-out-of-fold/tests/test_target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".claude/skills/target-encode-out-of-fold/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "SKILL.md": {
+          "destination": ".agents/skills/target-encode-out-of-fold/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/target_encode_oof.py": {
+          "destination": ".agents/skills/target-encode-out-of-fold/scripts/target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_target_encode_oof.py": {
+          "destination": ".agents/skills/target-encode-out-of-fold/tests/test_target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".agents/skills/target-encode-out-of-fold/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "SKILL.md": {
+          "destination": ".opencode/skills/target-encode-out-of-fold/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/target_encode_oof.py": {
+          "destination": ".opencode/skills/target-encode-out-of-fold/scripts/target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_target_encode_oof.py": {
+          "destination": ".opencode/skills/target-encode-out-of-fold/tests/test_target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".opencode/skills/target-encode-out-of-fold/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "SKILL.md": {
+          "destination": ".pi/skills/target-encode-out-of-fold/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/target_encode_oof.py": {
+          "destination": ".pi/skills/target-encode-out-of-fold/scripts/target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_target_encode_oof.py": {
+          "destination": ".pi/skills/target-encode-out-of-fold/tests/test_target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".pi/skills/target-encode-out-of-fold/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "SKILL.md": {
+          "destination": ".gemini/skills/target-encode-out-of-fold/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/target_encode_oof.py": {
+          "destination": ".gemini/skills/target-encode-out-of-fold/scripts/target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_target_encode_oof.py": {
+          "destination": ".gemini/skills/target-encode-out-of-fold/tests/test_target_encode_oof.py",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".gemini/skills/target-encode-out-of-fold/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "scripts/target_encode_oof.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_target_encode_oof.py"
+        ]
+      },
+      "tests/test_target_encode_oof.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/target_encode_oof.py with --train and --list-columns, then read the column names.",
+    "done_when": [
+      "Both output files exist and every check passed, including encoding_uses_only_other_folds.",
+      "The step result records the fold source, the smoothing and each output sha256."
+    ],
+    "stop_and_report_when": [
+      "The script exits with 2 (refused input) or 1 (a check failed).",
+      "The folds used for encoding differ from the folds the model is validated on."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/code_nodes/kaggle_executor.py": "715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a"
+    },
+    "package_digest": "a38930c3f10053aace43063b79adab92d3fa83cbcdc08114c1ee085312678648",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

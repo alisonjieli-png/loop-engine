@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Read(/**)",
+      "Edit(/data/output/**)",
+      "Edit(/reports/**)",
+      "Bash(python3 -I -B .baltor/*)",
+      "Bash(python3 -I -B .claude/skills/*)",
+      "Bash(ls *)",
+      "Bash(wc *)",
+      "Bash(head *)"
+    ],
+    "deny": [
+      "Edit(/data/raw/**)",
+      "Edit(**/*.py)",
+      "Edit(/.claude/**)",
+      "Edit(/.baltor/**)",
+      "WebFetch",
+      "WebSearch",
+      "Agent",
+      "Bash(*..*)",
+      "Bash(git ls-remote *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "autoAllowBashIfSandboxed": false,
+    "network": {
+      "allowedDomains": []
+    }
+  }
+}

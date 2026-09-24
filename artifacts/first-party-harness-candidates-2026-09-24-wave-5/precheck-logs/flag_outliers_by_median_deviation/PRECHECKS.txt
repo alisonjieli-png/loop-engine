@@ -1,0 +1,118 @@
+PRECHECKS for flag_outliers_by_median_deviation (repair round 2)
+Assignment: a01_data_cleanup_executors. Package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a01_data_cleanup_executors/flag_outliers_by_median_deviation
+This file sits outside the package folder because the checker's layout rule refuses any extra
+top-level entry in a package, and the specification lists the review folder's contents exactly.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Candidate only. Not approved, staged, served or published. A pass is not a native loading result,
+a usefulness measurement or an approval.
+Sequence started (UTC): 2026-09-24T05:14:25.751922+00:00
+Earlier log: the earlier PRECHECKS.txt is kept unchanged as PRECHECKS-first-pass-20260923T2043Z.txt.
+Version: 0.2.0. Package digest: bcc13ab2ca9fbac0ecac0c2716b7401f3ade3e1c8f8f259a432c5f03b790ae5c
+Payload files: 5
+
+== 1. python3 check_package.py fill (exit 0)
+{"fill": "done", "files": 5, "package_digest": "bcc13ab2ca9fbac0ecac0c2716b7401f3ade3e1c8f8f259a432c5f03b790ae5c"}
+
+== 2. python3 check_package.py check (exit 0); newest report precheck-20260924T051549407200Z.json
+{
+ "identity": "flag_outliers_by_median_deviation",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T051549407200Z.json"
+}
+
+Every check of that report, with findings:
+  layout: passed
+  manifest_schema: passed
+  identity: passed
+  inventory: passed
+  text_hygiene: passed
+  vocabulary: passed
+  safety_static: passed
+  secrets: passed
+  parse: passed
+  entry_shape: passed
+  placements: passed
+  effects: passed
+  network_static: passed
+  agent_skills_validator: passed
+      agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/flag-outliers-by-median-deviation
+      skills_ref_official_git .: exit 0 Valid skill: TMP/flag-outliers-by-median-deviation
+  duplicates: passed
+  review_note: passed
+  tests_run: passed
+      {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 9}
+      {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 9}
+  hooks_run: passed
+  servers_run: passed
+
+== 3. Mutants: each breaks one guard in a temporary copy; the named test must pass on the unchanged copy and fail on the mutant. Labels that start with 'repair:' guard behavior added by the repair (exit 0)
+{"package": "flag_outliers_by_median_deviation", "mutant": "centre on the mean instead of the median", "test": "test_known_wrong_mean_and_standard_deviation_miss_the_outlier", "baseline": "Ran 1 test in 0.069s; OK", "mutant_run": "Ran 1 test in 0.077s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "drop flagged rows from the copy", "test": "test_copy_adds_flags_and_keeps_every_value", "baseline": "Ran 1 test in 0.068s; OK", "mutant_run": "Ran 1 test in 0.083s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "flag inside a group whose MAD is zero", "test": "test_zero_mad_and_small_groups_are_reported_not_flagged", "baseline": "Ran 1 test in 0.145s; OK", "mutant_run": "Ran 1 test in 0.101s; FAILED (errors=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "check groups below the minimum size", "test": "test_zero_mad_and_small_groups_are_reported_not_flagged", "baseline": "Ran 1 test in 0.155s; OK", "mutant_run": "Ran 1 test in 0.105s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "pool every group together", "test": "test_groups_keep_different_scales_apart", "baseline": "Ran 1 test in 0.160s; OK", "mutant_run": "Ran 1 test in 0.076s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "overwrite an existing output", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 1.207s; OK", "mutant_run": "Ran 1 test in 1.021s; FAILED (failures=1, errors=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "repair: compare group labels exactly as written", "test": "test_group_labels_are_trimmed_but_case_still_counts", "baseline": "Ran 1 test in 0.083s; OK", "mutant_run": "Ran 1 test in 0.075s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "repair: always report the groups not evaluated as complete", "test": "test_capped_lists_say_when_they_are_cut", "baseline": "Ran 1 test in 0.078s; OK", "mutant_run": "Ran 1 test in 0.091s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "repair: always report the values that are not plain numbers as complete", "test": "test_capped_lists_say_when_they_are_cut", "baseline": "Ran 1 test in 0.081s; OK", "mutant_run": "Ran 1 test in 0.084s; FAILED (failures=1)", "result": "killed"}
+{"package": "flag_outliers_by_median_deviation", "mutant": "repair: refuse a blank line without naming it", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 1.212s; OK", "mutant_run": "Ran 1 test in 0.948s; FAILED (failures=1)", "result": "killed"}
+
+== 4. Tests in Bubblewrap with the payload mounted read-only (the checker mounts it writable because writes_fs is declared)
+python3.14 read-only payload, no network: exit 0; Ran 9 tests in 2.188s; OK
+python3.10 read-only payload, no network: exit 0; Ran 9 tests in 1.250s; OK
+
+== 5. Critic findings of 2026-09-23 and what the repair did
+- A group where more than half the values equal the median is never evaluated -> the reference now names the next choices for a planner (check only the values that differ from the median in a separate copy, or a fixed limit the task names; for small groups a lower --min-group-size if the task allows). The script still never invents a spread. (round 2)
+- 'B' and 'B ' formed separate groups -> group labels are compared with outer spaces trimmed, letter case still counts, and group_labels_trimmed counts the rows affected. test_group_labels_are_trimmed_but_case_still_counts; mutant 'compare group labels exactly' killed. (round 2)
+- Step 4 said both reports are complete, and only flagged_complete had a stop rule -> reworded; new fields groups_not_evaluated_complete, group_statistics_complete and not_numeric_values_complete, with a stop rule. test_capped_lists_say_when_they_are_cut; two mutants killed. (round 2)
+- No conventional multiple was documented where a planner can read it -> the reference section 'Choosing the multiple' states the Iglewicz and Hoaglin (1993) modified z-score cut-off of 3.5, about 5.19 unscaled MADs, and that this step never picks a multiple. (round 2)
+- Report values repeat cell text -> SKILL step 5 and the reference say they are data from the file. (round 2)
+- Panel risk, not fixable here -> first action names the five placement folders; the risk stays open. Also, a blank line in a multi-column file is now named in the refusal detail (mutant killed). (round 2)
+Critic probe rerun on the repaired packages: repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/critic-probe-rerun-after-repair.txt (the critic's probe.py, copied byte for byte).
+
+== 6. Earlier failures and repairs
+- Producer: every direct test run passed on the first attempt. The closest-item claim in the review note was checked against scout/existing-inventory.tsv and corrected to name the two related rows it found.
+- Producer tooling: the first mutant run of parse_dates_by_declared_formats was invalid (the runner imported tests by module name under -I, so every run ended in an import error). The runner then used unittest discovery with -k, required a passing baseline and one test ran, and those results replaced it.
+- Independent critic, 2026-09-23T23:52Z (evidence in critic-a01_data_cleanup_executors/independent-20260923T2352Z): all 19 pre-checks passed for every version 0.1.0 package, and yet the critic found one blocking defect (parse_numbers) and non-blocking points in all five packages. Section 5 lists each finding and what the repair did.
+- Repair round 1, 2026-09-24T00:43Z to 01:04Z, an earlier run of this repairer that stopped part way: it saved packages/<identity>/earlier-attempt-20260924T0043Z.tar.gz for all five packages, wrote known-wrong checks first, repaired parse_numbers (0.2.0) and parse_dates (0.1.1) and ran fill for them, and stopped after writing the map_categories fold test. It ran no check, so it wrote no precheck report and no PRECHECKS.txt.
+- Repair round 2, this sequence: before editing, the state left by round 1 was saved as repairer-a01_data_cleanup_executors/r2-20260924T0453Z/current-at-start/a01-state-at-r2-start.tar.gz and every round 1 edit was read against the critic findings. Two draft problems were caught before any checker run: map_categories SKILL.md had 480 words (the entry limit is 450; trimmed to 445), and one expectation in the new standardize test assumed exit 0 on the note column, which holds look-alikes (the test now uses id). One dry run of every check (check_package with write=False, no report) passed for all five before the recorded checks below, and a trial run of the round 2 mutant runner killed 45 of 45 mutants.
+
+== 7. Every precheck report in review/, oldest first
+precheck-20260923T203708178747Z.json  passed_for_wave_gate=True  refused=False  package_digest=65c24b3c2f55c55b069c3a2fbe90330dba2d12998780a90cdab2bfc855bfc846
+precheck-20260923T204325536728Z.json  passed_for_wave_gate=True  refused=False  package_digest=946cde9bd75f94923d8e72ae8d0c79dea39cac1393dcebb5fc12fda1ea3631f5
+precheck-20260923T204334427500Z.json  passed_for_wave_gate=True  refused=False  package_digest=946cde9bd75f94923d8e72ae8d0c79dea39cac1393dcebb5fc12fda1ea3631f5
+precheck-20260924T051549407200Z.json  passed_for_wave_gate=True  refused=False  package_digest=bcc13ab2ca9fbac0ecac0c2716b7401f3ade3e1c8f8f259a432c5f03b790ae5c
+
+== 8. python3 check_package.py check-all --assignment a01_data_cleanup_executors (exit 0); it re-checked all five packages
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051618892517Z.json
+
+Newest report after check-all: precheck-20260924T051604889268Z.json passed_for_wave_gate=True package_digest=bcc13ab2ca9fbac0ecac0c2716b7401f3ade3e1c8f8f259a432c5f03b790ae5c
+Sequence finished (UTC): 2026-09-24T05:16:18.928628+00:00

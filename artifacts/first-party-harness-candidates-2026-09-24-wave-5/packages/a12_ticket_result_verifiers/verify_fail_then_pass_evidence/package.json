@@ -1,0 +1,447 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "verify_fail_then_pass_evidence",
+    "title": "Verify fail-then-pass test evidence",
+    "purpose": "Check two saved test outputs and a diff to confirm that the named new test failed before the fix, passes after it, and that no previously passing test now fails.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/overnight_outcome.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_regression_test_that_pins_a_defect.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "fail then pass test evidence",
+      "did the new test fail before the fix",
+      "prove a regression test catches the bug",
+      "compare test runs before and after a fix",
+      "no previously passing test now fails",
+      "red then green test check",
+      "verify bug fix test evidence",
+      "pytest before and after comparison",
+      "check a regression test was seen failing"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "coding agent operator",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a12_ticket_result_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "be94d0e10c48f3d29dba2a1e0add8e9b49123ed485dde4f82bde414da208c0e1",
+        "size_bytes": 2934,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/after-run.txt",
+        "digest": "c5ff61e2405486df5296735431a224439c98ab578c3ad4024a3c887547833798",
+        "size_bytes": 502,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/before-run.txt",
+        "digest": "ca8090a5715372d934621a84c0cbac898d637c89fe5eb3cb1d31362587c1dbcf",
+        "size_bytes": 993,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/change.diff",
+        "digest": "1cf8b35448a977e8ce25bccd0530ee099ba636842b0cf30a960aeb1ded0ab362",
+        "size_bytes": 798,
+        "media_type": "text/x-diff",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "7223a0a42cf3438bf40bb3c372615c7b584fa1ef9a1155fafb0807b5f0622e3e",
+        "size_bytes": 826,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/runner-formats.md",
+        "digest": "81ac99b348c53694d5c55508e6cc8232819da2f69fb68e3f9b5b5041b4c20168",
+        "size_bytes": 2171,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/verify_fail_then_pass.py",
+        "digest": "b8384c1ac6406e304b19c98a5a7e259ac2b950ccfa300258fb40d85aa6e25526",
+        "size_bytes": 36315,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_verify_fail_then_pass.py",
+        "digest": "8ee5fbbc562c6e70e6b42bd602fc8665d3854edbbe2cf62d66e7db1b182dc916",
+        "size_bytes": 18557,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a12_ticket_result_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "verify-fail-then-pass-evidence",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/after-run.txt": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/examples/after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/before-run.txt": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/examples/before-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/change.diff": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/examples/change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/runner-formats.md": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/references/runner-formats.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_fail_then_pass.py": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_fail_then_pass.py": {
+          "destination": ".claude/skills/verify-fail-then-pass-evidence/tests/test_verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/after-run.txt": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/examples/after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/before-run.txt": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/examples/before-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/change.diff": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/examples/change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/runner-formats.md": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/references/runner-formats.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_fail_then_pass.py": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_fail_then_pass.py": {
+          "destination": ".agents/skills/verify-fail-then-pass-evidence/tests/test_verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/after-run.txt": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/examples/after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/before-run.txt": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/examples/before-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/change.diff": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/examples/change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/runner-formats.md": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/references/runner-formats.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_fail_then_pass.py": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_fail_then_pass.py": {
+          "destination": ".opencode/skills/verify-fail-then-pass-evidence/tests/test_verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/after-run.txt": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/examples/after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/before-run.txt": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/examples/before-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/change.diff": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/examples/change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/runner-formats.md": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/references/runner-formats.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_fail_then_pass.py": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_fail_then_pass.py": {
+          "destination": ".pi/skills/verify-fail-then-pass-evidence/tests/test_verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/after-run.txt": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/examples/after-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/before-run.txt": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/examples/before-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/change.diff": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/examples/change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/runner-formats.md": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/references/runner-formats.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_fail_then_pass.py": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_fail_then_pass.py": {
+          "destination": ".gemini/skills/verify-fail-then-pass-evidence/tests/test_verify_fail_then_pass.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "examples/after-run.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_fail_then_pass.py"
+        ]
+      },
+      "examples/before-run.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_fail_then_pass.py"
+        ]
+      },
+      "examples/change.diff": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_fail_then_pass.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/runner-formats.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/verify_fail_then_pass.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_verify_fail_then_pass.py"
+        ]
+      },
+      "tests/test_verify_fail_then_pass.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/verify_fail_then_pass.py from the workspace root with --before, --after, --diff and one --test per new test, and read its JSON verdict.",
+    "done_when": [
+      "The answer holds the verdict, failures and warnings copied from the JSON output.",
+      "Every item of references/checklist.md has a yes, no or unknown reply in the answer."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2 because an input is missing, unreadable, too large or outside the root.",
+      "The verdict is fail.",
+      "The two outputs come from different runners or the test runner is not one the script reads."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/overnight_outcome.py": "9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_regression_test_that_pins_a_defect.md": "e01f0ce543f0a9528242ceb5a42df4b70941ca6c743e4b7d5425232a0ee71103"
+    },
+    "package_digest": "93d413959f8abf39130f382494b46bcb4368092f2821b08d296d8714702fad1b",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

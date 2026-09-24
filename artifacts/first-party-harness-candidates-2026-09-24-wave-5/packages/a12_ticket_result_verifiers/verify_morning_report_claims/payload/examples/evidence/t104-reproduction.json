@@ -1,0 +1,34 @@
+{
+ "record_type": "ticket_reproduction_run/v1",
+ "ticket_id": "T-104",
+ "verdict": "failing_test_recorded",
+ "problems": [],
+ "test_file": "tests/test_cart_badge.py",
+ "test_name": "test_badge_uses_singular_for_one_item",
+ "test_file_status": "modified",
+ "test_file_sha256": "5b0e7c2d4a91f3e8b6c7d2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a39281",
+ "changed_paths": [
+  "tests/test_cart_badge.py"
+ ],
+ "product_paths_changed": [],
+ "ignored_paths": [],
+ "command": [
+  "python3",
+  "-m",
+  "pytest",
+  "-rA",
+  "tests/test_cart_badge.py"
+ ],
+ "ran": true,
+ "start_error": null,
+ "exit_code": 1,
+ "timed_out": false,
+ "started_at": "2026-09-23T02:15:10Z",
+ "finished_at": "2026-09-23T02:15:12Z",
+ "duration_seconds": 1.8,
+ "output_bytes": 812,
+ "output_sha256": "a4c1e9f07b3d25e8c6f1a0b9d8e7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2918273",
+ "output_truncated": false,
+ "output_tail": "FAILED tests/test_cart_badge.py::test_badge_uses_singular_for_one_item - AssertionError: assert '1 items' == '1 item'\n1 failed, 3 passed in 0.04s\n",
+ "written_at": "2026-09-23T02:15:12Z"
+}

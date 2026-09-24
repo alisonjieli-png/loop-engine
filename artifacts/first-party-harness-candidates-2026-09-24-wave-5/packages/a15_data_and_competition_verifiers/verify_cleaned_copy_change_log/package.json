@@ -1,0 +1,421 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "verify_cleaned_copy_change_log",
+    "title": "Verify a cleaned copy against its change log",
+    "purpose": "Compare a source table, its cleaned copy and the change log by row key, and fail when a row appears or disappears or a cell changed without a matching log entry.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/copy_a_table_with_corrections_never_in_place.md",
+      "src/loop_engine/code_nodes/database_copy.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "verify cleaned data against its change log",
+      "audit data cleaning changes",
+      "find unlogged changes in a cleaned table",
+      "compare raw and cleaned csv",
+      "rows dropped during cleaning",
+      "cell level difference of two tables",
+      "is the cleaning log complete",
+      "data cleaning audit trail",
+      "check that a change log matches the data",
+      "source and cleaned copy comparison"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning",
+        "data quality"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer",
+        "reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a15_data_and_competition_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "d6cdc96f0b2c03f0af0b1496c4015679dd987137983cf1b1541b0614e55c52bc",
+        "size_bytes": 2872,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/cleaning-bundle.json",
+        "digest": "ffae383c1799da26245aea5f689033fac5b8e8df3b625fd4a47a9f5cacd09a1e",
+        "size_bytes": 991,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/known-wrong-bundle.json",
+        "digest": "112fa9e9b1735881a3d71b3788c553160f29f34f831a328f3d0ea3cccd67f62b",
+        "size_bytes": 892,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "ef03f54e4b17f5e3d254aab1066c4710b400c94a2a33f074ce8ebe01d63f8d89",
+        "size_bytes": 823,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/log-format.md",
+        "digest": "f36f6151c5429bef08dee1860e96f5d0bdc78ea96ee69951b60d85c480b51998",
+        "size_bytes": 3426,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/verify_change_log.py",
+        "digest": "78ff2638115c66a958b0b282ea044082698477deca47672d3a8cca2a3edb0645",
+        "size_bytes": 31147,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_verify_change_log.py",
+        "digest": "1db4799e2c7134b7791b75b17a9c59366ccdbb735c9f400812591f4ff874e366",
+        "size_bytes": 15001,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a15_data_and_competition_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "verify-cleaned-copy-change-log",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-bundle.json": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/examples/cleaning-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/log-format.md": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/references/log-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_change_log.py": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/scripts/verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_change_log.py": {
+          "destination": ".claude/skills/verify-cleaned-copy-change-log/tests/test_verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-bundle.json": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/examples/cleaning-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/log-format.md": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/references/log-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_change_log.py": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/scripts/verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_change_log.py": {
+          "destination": ".agents/skills/verify-cleaned-copy-change-log/tests/test_verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-bundle.json": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/examples/cleaning-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/log-format.md": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/references/log-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_change_log.py": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/scripts/verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_change_log.py": {
+          "destination": ".opencode/skills/verify-cleaned-copy-change-log/tests/test_verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-bundle.json": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/examples/cleaning-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/log-format.md": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/references/log-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_change_log.py": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/scripts/verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_change_log.py": {
+          "destination": ".pi/skills/verify-cleaned-copy-change-log/tests/test_verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/cleaning-bundle.json": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/examples/cleaning-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/log-format.md": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/references/log-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_change_log.py": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/scripts/verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_change_log.py": {
+          "destination": ".gemini/skills/verify-cleaned-copy-change-log/tests/test_verify_change_log.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "examples/cleaning-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "examples/known-wrong-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "references/log-format.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "scripts/verify_change_log.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_verify_change_log.py"
+        ]
+      },
+      "tests/test_verify_change_log.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/verify_change_log.py from the workspace root with --source, --cleaned, --log and one --key per key column, and read status, failed_checks and summary.",
+    "done_when": [
+      "The report gives the status, the three sha256 values, the summary, each failed check with its count, and one answer for each item of references/checklist.md."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2, for example because a source key is empty or repeats.",
+      "The task names no key column or no change log.",
+      "The check fails; the tables and the log stay as they are in this step."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/copy_a_table_with_corrections_never_in_place.md": "9c1c6cd654f5cafe00042c481a35ad698c0cac026249729f1e2078bf27245971",
+      "src/loop_engine/code_nodes/database_copy.py": "a3b2a781702cb8dd09f97f1d27a315ba9184ea52cbbc12b52d1b003b3df3e18b",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558"
+    },
+    "package_digest": "c7e88410f16afb6edaca937d289012f347bda8c2447db29ddf3640c193219944",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

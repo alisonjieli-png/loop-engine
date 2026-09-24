@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Leakage reviewer reply",
+  "description": "Leakage findings with file and line references, or a refusal. The verdict must agree with the findings, their severities and the count of matches that were not reviewed.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/review"
+    },
+    {
+      "$ref": "#/$defs/refusal"
+    }
+  ],
+  "$defs": {
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files_reviewed",
+        "findings",
+        "dismissed",
+        "unreviewed",
+        "verdict"
+      ],
+      "properties": {
+        "files_reviewed": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        },
+        "dismissed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unreviewed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Search matches that were neither a finding nor dismissed when the read budget ran out."
+        },
+        "verdict": {
+          "enum": [
+            "leak_found",
+            "incomplete",
+            "minor_only",
+            "no_leak_found"
+          ]
+        }
+      },
+      "if": {
+        "required": [
+          "findings"
+        ],
+        "properties": {
+          "findings": {
+            "contains": {
+              "$ref": "#/$defs/blocking"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "const": "leak_found"
+          }
+        }
+      },
+      "else": {
+        "if": {
+          "required": [
+            "unreviewed"
+          ],
+          "properties": {
+            "unreviewed": {
+              "minimum": 1
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "verdict": {
+              "const": "incomplete"
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "required": [
+              "findings"
+            ],
+            "properties": {
+              "findings": {
+                "minItems": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verdict": {
+                "const": "minor_only"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "verdict": {
+                "const": "no_leak_found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "blocking": {
+      "type": "object",
+      "required": [
+        "severity"
+      ],
+      "properties": {
+        "severity": {
+          "const": "blocking"
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "severity",
+        "file",
+        "line",
+        "quote",
+        "why"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "target_leakage",
+            "test_rows_in_fit",
+            "group_split",
+            "time_order"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "blocking",
+            "minor"
+          ],
+          "description": "minor only for test_rows_in_fit by a step that does not use the target, such as a scaler, imputer or PCA."
+        },
+        "file": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "pattern": "\\.ipynb$"
+          },
+          "description": "A notebook is refused; its line numbers point into the notebook's JSON."
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      },
+      "if": {
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "target_leakage",
+              "group_split",
+              "time_order"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "severity": {
+            "const": "blocking"
+          }
+        }
+      }
+    },
+    "refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refused"
+      ],
+      "properties": {
+        "refused": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    }
+  }
+}

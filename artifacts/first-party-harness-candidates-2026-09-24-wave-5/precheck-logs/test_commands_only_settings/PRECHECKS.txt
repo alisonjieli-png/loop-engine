@@ -1,0 +1,96 @@
+PRECHECKS for wave 5 package test_commands_only_settings
+written 2026-09-24T00:31:29.296008+00:00 by the a13_unattended_permission_settings generator (second pass)
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/test_commands_only_settings
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/test_commands_only_settings
+{"fill": "done", "files": 7, "package_digest": "46bc85b869574ea0f6e5bd7cf3e3386c3056b33a989e742f9808515a5b7fdf29"}
+
+exit 0
+
+== 2. check ==
+$ python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/test_commands_only_settings
+{
+ "identity": "test_commands_only_settings",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T003132775230Z.json"
+}
+
+exit 0
+
+== 3. per-check detail of review/precheck-20260924T003132775230Z.json (package digest 46bc85b869574ea0f6e5bd7cf3e3386c3056b33a989e742f9808515a5b7fdf29) ==
+passed_for_wave_gate: True
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+    {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 8}
+    {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 8}
+[passed] hooks_run
+[passed] servers_run
+
+== 4. earlier reports kept in review/ (first pass) ==
+precheck-20260923T204043971437Z.json package digest 3a5588048ad9022c68bbe53159eae2f1519aa59eafe51d0f56ddc54a835ec095 passed_for_wave_gate True refused []
+precheck-20260923T205345228116Z.json package digest 64135f1f1c9bbb196264c747e2607b1ccc99b4b76b56acecc55a479e3a4f8d25 passed_for_wave_gate True refused []
+
+== 5. mutant check of the second-pass rule ==
+Document: the shipped OpenCode variant with "*": "deny" replaced by one deny per tool (edit, bash, webfetch, websearch, task, external_directory, question).
+revised checker: exit 1, problems ['permission does not start with the catch-all rule "*": "deny", so OpenCode defaults that ask, such as its prompt before a repeated identical tool call, can stall an unattended run']
+first-pass checker from earlier-attempt-20260923T2053Z.tar.gz: exit 0, problems []
+The revised checker refuses the document and the first-pass checker passed it, so the new rule is the check that catches it.
+
+== 6. first-pass package bytes ==
+earlier-attempt-20260923T2053Z.tar.gz sha256 e69724a38cfd2a2dabebcd3251b73109f13501739f3b46bb36ed3d64e06e567e, 20 entries: the package folder as the first pass left it, saved before any second-pass edit.
+
+== 7. check-all for the assignment, run after all five packages passed ==
+run at 2026-09-24T00:33:43.458530+00:00
+$ python3 check_package.py check-all --assignment a13_unattended_permission_settings
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T003343430717Z.json
+
+exit 0
+this package in that run: packages/a13_unattended_permission_settings/test_commands_only_settings/review/precheck-20260924T003338478004Z.json, package digest 46bc85b869574ea0f6e5bd7cf3e3386c3056b33a989e742f9808515a5b7fdf29, passed_for_wave_gate True, refused or warning checks []

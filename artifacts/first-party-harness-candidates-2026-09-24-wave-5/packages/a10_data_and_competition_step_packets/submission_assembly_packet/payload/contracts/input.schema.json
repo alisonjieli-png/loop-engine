@@ -1,0 +1,23 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Values the host renders into the submission assembly step",
+ "description": "Every value is placed inside a shell command, so paths and names use only safe characters. The run id is chosen before this step.",
+ "type": "object",
+ "required": ["sample_submission_path", "ledger_path", "run_id", "id_column", "value_type", "output_dir"],
+ "additionalProperties": false,
+ "properties": {
+  "sample_submission_path": {"$ref": "#/$defs/relative_path"},
+  "ledger_path": {"$ref": "#/$defs/relative_path"},
+  "run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+  "id_column": {"type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$"},
+  "value_type": {"enum": ["probability", "real_number", "binary_label"]},
+  "output_dir": {"$ref": "#/$defs/relative_path"}
+ },
+ "$defs": {
+  "relative_path": {
+   "type": "string",
+   "maxLength": 200,
+   "pattern": "^[A-Za-z0-9_][A-Za-z0-9._-]*(/[A-Za-z0-9_][A-Za-z0-9._-]*)*$"
+  }
+ }
+}

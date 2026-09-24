@@ -1,0 +1,130 @@
+{
+ "record_type": "wave5_precheck_report/v1",
+ "package": "packages/a02_competition_modeling_tools/build_group_stratified_folds",
+ "identity": "build_group_stratified_folds",
+ "package_digest": "ef1f62decd001f05de3a0e8d24f4f7546766dc6c5dd6d25f0f2af488bf79fbf6",
+ "checked_at": "2026-09-24T05:27:16.145147+00:00",
+ "checker_sha256": "0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d",
+ "contracts": "imported from /home/username/loop-engine-main/src",
+ "runs_skipped": false,
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "results": [
+  {
+   "check": "layout",
+   "status": "refused",
+   "findings": [
+    "generated, cache or secret-like name payload/tests/__pycache__",
+    "generated, cache or secret-like name payload/tests/__pycache__/test_build_group_folds.cpython-314.pyc"
+   ]
+  },
+  {
+   "check": "manifest_schema",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "identity",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "inventory",
+   "status": "refused",
+   "findings": [
+    "declared files differ from payload: undeclared ['tests/__pycache__/test_build_group_folds.cpython-314.pyc'], missing []",
+    "wave5.file_extensions has one entry for every payload file"
+   ]
+  },
+  {
+   "check": "text_hygiene",
+   "status": "refused",
+   "findings": [
+    "tests/__pycache__/test_build_group_folds.cpython-314.pyc: not UTF-8"
+   ]
+  },
+  {
+   "check": "vocabulary",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "safety_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "secrets",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "parse",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "entry_shape",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "placements",
+   "status": "refused",
+   "findings": [
+    "claude_code: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement",
+    "codex: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement",
+    "opencode: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement",
+    "pi: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement",
+    "gemini_cli: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement"
+   ]
+  },
+  {
+   "check": "effects",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "network_static",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "agent_skills_validator",
+   "status": "passed",
+   "findings": [
+    "agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/build-group-stratified-folds",
+    "skills_ref_official_git .: exit 0 Valid skill: TMP/build-group-stratified-folds"
+   ]
+  },
+  {
+   "check": "duplicates",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "review_note",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "tests_run",
+   "status": "passed",
+   "findings": [
+    "{\"python\": \"python3.14\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 17}",
+    "{\"python\": \"python3.10\", \"exit\": 0, \"summary\": \"OK\", \"tests_ran\": 17}"
+   ]
+  },
+  {
+   "check": "hooks_run",
+   "status": "passed",
+   "findings": []
+  },
+  {
+   "check": "servers_run",
+   "status": "passed",
+   "findings": []
+  }
+ ],
+ "limits": "Deterministic pre-checks only. Not an approval, rights decision, native loading result or usefulness claim."
+}

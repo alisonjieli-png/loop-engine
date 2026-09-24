@@ -1,0 +1,175 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "competition_brief/v2 as the competition brief step hands it over",
+ "description": "Each fact has a value and an exact quote from a page, or a null value, a null source and a question in unknowns. Version 2 lists the target columns, so a task with several target columns is recorded faithfully.",
+ "type": "object",
+ "required": ["record_type", "pages", "data_files", "facts", "unknowns"],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {"const": "competition_brief/v2"},
+  "pages": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/page"}},
+  "data_files": {"type": "array", "items": {"$ref": "#/$defs/data_file"}},
+  "facts": {
+   "type": "object",
+   "required": ["task", "target_columns", "target_type", "metric", "metric_direction", "id_column",
+                "prediction_columns", "prediction_value_type", "train_file", "test_file", "sample_submission_file",
+                "external_data_allowed", "daily_submission_limit", "team_size_limit", "deadline"],
+   "additionalProperties": false,
+   "properties": {
+    "task": {"$ref": "#/$defs/text_fact"},
+    "target_columns": {"$ref": "#/$defs/columns_fact"},
+    "target_type": {"$ref": "#/$defs/target_type_fact"},
+    "metric": {"$ref": "#/$defs/metric_fact"},
+    "metric_direction": {"$ref": "#/$defs/direction_fact"},
+    "id_column": {"$ref": "#/$defs/column_fact"},
+    "prediction_columns": {"$ref": "#/$defs/columns_fact"},
+    "prediction_value_type": {"$ref": "#/$defs/value_type_fact"},
+    "train_file": {"$ref": "#/$defs/file_fact"},
+    "test_file": {"$ref": "#/$defs/file_fact"},
+    "sample_submission_file": {"$ref": "#/$defs/file_fact"},
+    "external_data_allowed": {"$ref": "#/$defs/external_data_fact"},
+    "daily_submission_limit": {"$ref": "#/$defs/count_fact"},
+    "team_size_limit": {"$ref": "#/$defs/count_fact"},
+    "deadline": {"$ref": "#/$defs/text_fact"}
+   }
+  },
+  "unknowns": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": ["fact", "question"],
+    "additionalProperties": false,
+    "properties": {
+     "fact": {"type": "string", "minLength": 1},
+     "question": {"type": "string", "minLength": 5, "maxLength": 300}
+    }
+   }
+  }
+ },
+ "$defs": {
+  "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "page": {
+   "type": "object",
+   "required": ["file", "sha256", "words"],
+   "additionalProperties": false,
+   "properties": {
+    "file": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "words": {"type": "integer", "minimum": 0}
+   }
+  },
+  "data_file": {
+   "type": "object",
+   "required": ["file", "sha256", "size_bytes", "header", "rows"],
+   "additionalProperties": false,
+   "properties": {
+    "file": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "size_bytes": {"type": "integer", "minimum": 0},
+    "header": {"type": ["array", "null"], "items": {"type": "string"}},
+    "rows": {"type": ["integer", "null"], "minimum": 0}
+   }
+  },
+  "source": {
+   "type": ["object", "null"],
+   "required": ["file", "quote"],
+   "additionalProperties": false,
+   "properties": {
+    "file": {"type": "string", "minLength": 1},
+    "quote": {"type": "string", "minLength": 8, "maxLength": 400}
+   }
+  },
+  "text_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"type": ["string", "null"], "minLength": 1, "maxLength": 300},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "column_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"type": ["string", "null"], "minLength": 1, "maxLength": 100},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "columns_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"type": ["array", "null"], "minItems": 1, "maxItems": 50, "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1, "maxLength": 100}},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "file_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"type": ["string", "null"], "minLength": 1, "maxLength": 200},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "count_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"type": ["integer", "null"], "minimum": 1},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "target_type_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"enum": ["binary", "multiclass", "regression", "multilabel", "ranking", "other", null]},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "metric_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"enum": ["rmse", "mse", "mae", "rmsle", "log_loss", "mape", "smape", "auc", "accuracy", "f1",
+                       "macro_f1", "map_at_k", "quadratic_weighted_kappa", "r2", "other", null]},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "direction_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"enum": ["maximize", "minimize", null]},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "value_type_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"enum": ["probability", "class_label", "real_number", "integer", "text", "other", null]},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  },
+  "external_data_fact": {
+   "type": "object",
+   "required": ["value", "source"],
+   "additionalProperties": false,
+   "properties": {
+    "value": {"enum": ["yes", "no", "with_conditions", null]},
+    "source": {"$ref": "#/$defs/source"}
+   }
+  }
+ }
+}

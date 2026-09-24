@@ -1,0 +1,356 @@
+=== check_package.py check (run 1) at 2026-09-23T20:14:45Z, exit 0
+{
+ "identity": "honest_test_changes",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T201445910724Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands at 2026-09-23T20:16:31Z
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source src/loop_engine/core/independent_failure_review.py: 4b85b2b10863103bc5e416f69449229d7742644592b155bcf46d79d4e6e48361 equals recorded digest
+manifest_schema source AGENTS.md: ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/review_a_failed_check_before_repairing_the_work.md: 0f0c771e61f20ce89aabc445d97067f22d9905f44395011f76c836f30120290c equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md: 5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904 equals recorded digest
+identity: grep -Fx honest_test_changes existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/honest-test-changes.md: sha256 equals package.json, 1737 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/honest-test-changes.md: sha256 equals package.json, 1737 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/honest-test-changes.instructions.md: sha256 equals package.json, 1657 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/honest-test-changes.mdc: sha256 equals package.json, 1831 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/cline/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/copilot/honest-test-changes.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/honest-test-changes.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Producer command trial at 2026-09-23T20:17:32Z (not a check_package.py pre-check and not a harness loading test)
+Bubblewrap sandbox: no network, private /tmp, synthetic repository, read-only /usr, pytest bound read-only; exit 0
+first action: python3 -m pytest tests/test_calc.py::test_add -q
+E       assert 0 == 4
+FAILED tests/test_calc.py::test_add - assert 0 == 4
+1 failed in 0.01s
+known-wrong 1: the failing test is skipped
+1 skipped in 0.00s
+step 5 reading of git diff:
++import pytest
++@pytest.mark.skip
+known-wrong 2: the assertion is loosened
+1 passed in 0.00s
+step 5 reading of git diff:
+-    assert add(2, 2) == 4
++    assert add(2, 2) is not None
+positive: new test first, it fails; then the code is repaired
+1 failed in 0.01s
+2 passed in 0.00s
+removed lines in the test diff: [0]
+
+=== Path pattern sanity table with Python 3.14 PurePath.full_match (14 patterns; not a harness glob engine)
+  intended  tests/test_calc.py: matched by **/tests/**
+  intended  test/util_test.go: matched by **/test/**
+  intended  src/__tests__/app.js: matched by **/__tests__/**
+  intended  spec/models/user_spec.rb: matched by **/spec/**
+  intended  pkg/test_helpers.py: matched by **/test_*.py
+  intended  src/util_test.go: matched by **/*_test.*
+  intended  src/app.test.ts: matched by **/*.test.*
+  intended  src/app.spec.tsx: matched by **/*.spec.*
+  intended  conftest.py: matched by **/conftest.py
+  intended  pytest.ini: matched by **/pytest.ini
+  intended  jest.config.js: matched by **/jest.config.*
+  intended  vitest.config.mts: matched by **/vitest.config.*
+  intended  src/__snapshots__/app.test.ts.snap: matched by **/*.test.*
+  intended  ui/button.snap: matched by **/*.snap
+  unrelated src/app.ts: no match
+  unrelated src/testing_guide.md: no match
+  unrelated src/contest.py: no match
+  unrelated docs/latest.md: no match
+  unrelated src/attest.py: no match
+  summary: 14/14 intended paths matched, 5/5 unrelated paths stayed out
+
+=== check_package.py fill after the alignment edits at 2026-09-23T20:28:03Z
+{"fill": "done", "files": 5, "package_digest": "d950ae3d08167ea2334046d9aec97678a8c5527a5b7713c9c856d9274386a614"}
+
+=== check_package.py check (run 2, after the alignment edits and the final review note) at 2026-09-23T20:28:35Z, exit 0
+{
+ "identity": "honest_test_changes",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202835794552Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (run 3 for every package) at 2026-09-23T20:29:11Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T202912182077Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260923T202911832016Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260923T202911919458Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260923T202912008509Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260923T202912092138Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260923T202912181327Z.json']
+
+=== Checker controls (scout/test_check_package.py and scout/test_packet_fixture.py) at 2026-09-23T20:30:25Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 5.119s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.244s OK 
+
+=== Summary before the final check run
+Package: packages/a08_path_scoped_rules/honest_test_changes (file class rules_file; targets cursor, copilot, cline, claude_code)
+Current package_digest: d950ae3d08167ea2334046d9aec97678a8c5527a5b7713c9c856d9274386a614
+  precheck-20260923T201445910724Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202835794552Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202912008509Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+agent_skills_validator is skipped because the payload holds no SKILL.md; tests_run, hooks_run and servers_run pass with nothing to run because the payload holds no Python, hook or server.
+This log sits in review/ because the checker's layout check refuses any extra entry at the package top level (only package.json, payload and review are allowed).
+
+=== check_package.py check (final run) at 2026-09-23T20:32:01Z, exit 0: passed_for_wave_gate and report: True review/precheck-20260923T203201355760Z.json
+
+=== Repair round 2 by the a08 repairer, record written at 2026-09-24T05:26:53Z
+Reason: the wave critic's verdict of 2026-09-23 for this package was repair (evidence: critic-a08_path_scoped_rules/critic-2/ in the wave folder).
+Predecessor state: unchanged since the producer's final check of 2026-09-23T20:31:59Z. An interrupted earlier repair attempt only took the snapshot repair-a08_path_scoped_rules/a08-predecessor-snapshot-20260924T005624Z.tar.gz (sha256 c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068). The repairer's own snapshot repair-a08_path_scoped_rules/round-2/a08-before-round-2-20260924T051531Z.tar.gz has the same sha256 (c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068), and an extracted copy equaled the package folder.
+Body word count by the checker's own count: 249 before round 2; first round 2 draft 303; final 250 (limit 40 to 250).
+Critic findings and repairs:
+  - 1. An exclusion written in pyproject.toml escaped the check (critic trial H1)
+    repair: Step 5 compares the runner's counts before and after and reads the diff of every changed test file and test setting; trial H-kw1.
+  - 2. The written check covered only removed assertions
+    repair: Step 5 names skip and expected-failure markers, exclusions, a try around a checked call and snapshot changes; trials H-kw2 to H-kw6.
+  - 3. The served test_driven_change_red_green_refactor was not named
+    repair: The review note names it and review_a_failed_check_before_repairing_the_work with the behavioral difference; its body path is a new source.
+  - 4. The first action assumed a failing test
+    repair: Step 1 always records the baseline summary line; if nothing fails, the step goes to step 3; trial H-new.
+  - Repairer correction after the first round 2 check
+    repair: The step 2 quote now exempts both the count comparison and the diff reading, so a task that removes a feature and its tests can finish; filled and checked again.
+
+=== Repair trials, round 2 (not check_package.py pre-checks and not harness loading tests)
+script repair-a08_path_scoped_rules/round-2/trials/repair_trials.sh, sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+full output: repair-a08_path_scoped_rules/round-2/trials/repair-trials-output-1.txt
+# repair_trials.sh run at 2026-09-24T05:14:41Z in Bubblewrap (no network, private /tmp, read-only /usr)
+# a06 helper sha256 7d2b3f7b5934a31714eb672ee614adf05cdd448f0a5c70c5ce05d274f919e490
+# a15 verifier sha256 78ff2638115c66a958b0b282ea044082698477deca47672d3a8cca2a3edb0645
+# trial script sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+=== H honest_test_changes: counts from step 1 and step 5 (pytest 9.1.1)
+step 1 summary line: 1 failed, 1 passed in 0.03s (passed+failed=2 skipped=0 deselected=0 xfailed=0)
+step 3 new test first: 2 failed, 1 passed in 0.03s
+RESULT H-pos: step 5 summary line: 3 passed in 0.01s (passed+failed=3 skipped=0 deselected=0 xfailed=0); count check passes; removed lines in the test diff: 0
+RESULT H-kw1 (critic H1, deselected in pyproject.toml): 1 passed, 1 deselected in 0.00s; count check fails: passed plus failed fell, deselected rose; settings diff: +addopts = "--deselect tests/test_calc.py::test_add"
+RESULT H-kw2 (skip marker): 1 passed, 1 skipped in 0.01s; count check fails: passed plus failed fell, skipped rose
+RESULT H-kw3 (expected-failure marker): 1 passed, 1 xfailed in 0.02s; count check fails: passed plus failed fell, expected-failure rose
+RESULT H-kw4 (loosened assertion): 2 passed in 0.01s; count check passes; the diff reading shows: -    assert add(2, 2) == 4 +    assert add(2, 2) is not None 
+RESULT H-kw5 (try around the checked call): 2 passed in 0.01s; count check passes; the diff reading shows: +    try: +        assert add(2, 2) == 4 +    except AssertionError: +        pass 
+RESULT H-kw6 (file ignored in settings): the step 1 command with the file named: 1 failed, 1 passed in 0.02s; count check passes; the whole suite: no tests ran in 0.00s; settings diff: +addopts = "--ignore=tests/test_calc.py"
+H-new (no failing test): step 1 summary line: 2 passed in 0.01s, so the step goes to step 3
+
+=== check_package.py fill, round 2
+honest_test_changes 2026-09-24T05:17:35Z exit 0 {"fill": "done", "files": 5, "package_digest": "2c7b3ebdc33d2f8b4ba54cbf62781022fff5d0ad49c4061b89709e516ff26eec"}
+honest_test_changes 2026-09-24T05:25:09Z exit 0 {"fill": "done", "files": 5, "package_digest": "63a11c53cdd9415cae42a4c027bff55335c8d0c31acb0af789d7c9e59feff64a"} (after the step 5 quote correction)
+
+=== check_package.py check (round 2, run 1) at 2026-09-24T05:22:31Z, exit 0
+{
+ "identity": "honest_test_changes",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052232124262Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== check_package.py check (round 2, after the step 5 quote correction) at 2026-09-24T05:25:09Z, exit 0
+{
+ "identity": "honest_test_changes",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052510223880Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands, round 2 (script repair-a08_path_scoped_rules/round-2/section12.py)
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+layout: top-level entries ['package.json', 'payload', 'review']
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source src/loop_engine/core/independent_failure_review.py: 4b85b2b10863103bc5e416f69449229d7742644592b155bcf46d79d4e6e48361 equals recorded digest
+manifest_schema source AGENTS.md: ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/review_a_failed_check_before_repairing_the_work.md: 0f0c771e61f20ce89aabc445d97067f22d9905f44395011f76c836f30120290c equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md: 5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/test_driven_change_red_green_refactor.md: 0d0e3bc4be1a0daefa6261383ed58dcf6076cabf134591d60fe1f454729e5328 equals recorded digest
+identity: grep -Fx honest_test_changes existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/honest-test-changes.md: sha256 equals package.json, 1751 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/honest-test-changes.md: sha256 equals package.json, 1751 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/honest-test-changes.instructions.md: sha256 equals package.json, 1671 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/honest-test-changes.mdc: sha256 equals package.json, 1845 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/cline/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/copilot/honest-test-changes.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/honest-test-changes.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+variants: 1 distinct body across the four variants; pattern lists identical: True (14 patterns)
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+vocabulary: em, en and horizontal-bar dashes in payload files: []
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Checker controls at 2026-09-24T05:23:02Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 6.305s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.369s OK
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, run 2 for every package) at 2026-09-24T05:23:15Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052316446598Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052315986719Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052316096787Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052316205964Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052316318144Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052316445735Z.json']
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, final) at 2026-09-24T05:25:45Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052546986002Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052546052430Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052546309881Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052546546543Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052546743652Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052546984753Z.json']
+
+=== Summary after repair round 2
+Current package_digest: 63a11c53cdd9415cae42a4c027bff55335c8d0c31acb0af789d7c9e59feff64a
+  precheck-20260923T201445910724Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202835794552Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202912008509Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T203201355760Z.json: passed_for_wave_gate True, package_digest d950ae3d08167ea2, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052232124262Z.json: passed_for_wave_gate True, package_digest 2c7b3ebdc33d2f8b, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052316205964Z.json: passed_for_wave_gate True, package_digest 2c7b3ebdc33d2f8b, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052510223880Z.json: passed_for_wave_gate True, package_digest 63a11c53cdd9415c, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052546546543Z.json: passed_for_wave_gate True, package_digest 63a11c53cdd9415c, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run of either round refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+Candidate only. Not approved, staged, served or published. The package waits for the independent review panel.
+
+=== Section 12 equivalent commands rerun at 2026-09-24T05:27:20Z on the final bytes (package_digest 63a11c53cdd9415cae42a4c027bff55335c8d0c31acb0af789d7c9e59feff64a), after the step 5 quote correction; the block above describes the earlier digest 2c7b3ebd
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+layout: top-level entries ['package.json', 'payload', 'review']
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source src/loop_engine/core/independent_failure_review.py: 4b85b2b10863103bc5e416f69449229d7742644592b155bcf46d79d4e6e48361 equals recorded digest
+manifest_schema source AGENTS.md: ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/review_a_failed_check_before_repairing_the_work.md: 0f0c771e61f20ce89aabc445d97067f22d9905f44395011f76c836f30120290c equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md: 5bac3a6c7331c1e24e6e7a8978ae282d963d35aef7e665e4bf1821a7c42ca904 equals recorded digest
+manifest_schema source examples/29_intelligence_service/starter-catalogue/bodies/test_driven_change_red_green_refactor.md: 0d0e3bc4be1a0daefa6261383ed58dcf6076cabf134591d60fe1f454729e5328 equals recorded digest
+identity: grep -Fx honest_test_changes existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/honest-test-changes.md: sha256 equals package.json, 1743 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/honest-test-changes.md: sha256 equals package.json, 1743 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/honest-test-changes.instructions.md: sha256 equals package.json, 1663 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/honest-test-changes.mdc: sha256 equals package.json, 1837 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/cline/honest-test-changes.md: YAML front matter keys ['paths']
+parse: variants/copilot/honest-test-changes.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/honest-test-changes.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+variants: 1 distinct body across the four variants; pattern lists identical: True (14 patterns)
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+vocabulary: em, en and horizontal-bar dashes in payload files: []
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.

@@ -1,0 +1,17 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "reason",
+ "objective": "Decide go, hold or split for ticket {{TICKET_ID}} and return one ticket_triage_decision/v1 object with the files to read, the first test to write and the open questions.",
+ "output_contract_refs": [
+  "ticket_triage_decision/v1"
+ ],
+ "dependency_ids": [],
+ "required_capabilities": [],
+ "effects": [
+  "reads_fs"
+ ],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "non_deterministic"
+}

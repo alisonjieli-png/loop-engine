@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Draft sent to close_ticket.py on standard input",
+  "description": "The script adds record_type, queue_sha256, position and closed_at, applies the outcome rules and writes the record once.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ticket_id",
+    "outcome",
+    "summary",
+    "evidence",
+    "changed_files",
+    "handoff"
+  ],
+  "properties": {
+    "ticket_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+    },
+    "outcome": {
+      "enum": [
+        "fixed",
+        "blocked",
+        "skipped",
+        "needs_review"
+      ]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "exit_code",
+          "observed"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "exit_code": {
+            "type": "integer",
+            "minimum": -255,
+            "maximum": 255
+          },
+          "observed": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "changed_files": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      }
+    },
+    "handoff": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+    }
+  }
+}

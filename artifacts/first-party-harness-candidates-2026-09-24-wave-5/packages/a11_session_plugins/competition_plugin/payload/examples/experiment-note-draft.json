@@ -1,0 +1,11 @@
+{
+  "experiment_id": "exp-004",
+  "hypothesis": "Store level lag features lower the error for new weeks.",
+  "change": "Added 7 and 28 day lags of units_sold per store.",
+  "metric": "rmse",
+  "fold_scores": [12.41, 12.95, 12.18, 13.02, 12.66],
+  "seed": 17,
+  "data_version": "v2",
+  "code_revision": "4f2a9c1",
+  "outcome_note": "Lower mean than exp-003; fold 4 is still the worst."
+}

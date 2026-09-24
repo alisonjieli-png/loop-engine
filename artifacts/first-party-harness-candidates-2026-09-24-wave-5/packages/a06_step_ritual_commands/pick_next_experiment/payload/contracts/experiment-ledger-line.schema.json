@@ -1,0 +1,229 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "experiment_ledger/v1 line",
+ "description": "One line of .baltor/experiments/ledger.jsonl. The first line is the header, written by a person; every later line is an experiment or an update. The ledger is only appended to: propose adds planned experiments and record adds updates that move an experiment from planned to running, done or failed.",
+ "oneOf": [
+  {
+   "$ref": "#/$defs/header"
+  },
+  {
+   "$ref": "#/$defs/experiment"
+  },
+  {
+   "$ref": "#/$defs/update"
+  }
+ ],
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "keys": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "minLength": 1
+   }
+  },
+  "header": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "record_type",
+    "metric",
+    "direction"
+   ],
+   "properties": {
+    "record_type": {
+     "const": "experiment_ledger/v1"
+    },
+    "metric": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "\\S"
+    },
+    "direction": {
+     "enum": [
+      "higher",
+      "lower"
+     ],
+     "description": "Whether a higher or a lower score is better."
+    },
+    "ignore_keys": {
+     "$ref": "#/$defs/keys",
+     "description": "Config keys that never make a run different, such as a run label."
+    },
+    "config_keys": {
+     "$ref": "#/$defs/keys",
+     "description": "The settings a proposal may use. Without it, the keys that earlier runs used. Only a person adds a setting."
+    },
+    "budget_minutes": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    }
+   }
+  },
+  "experiment": {
+   "type": "object",
+   "required": [
+    "id",
+    "status",
+    "config"
+   ],
+   "not": {
+    "required": [
+     "record_type"
+    ]
+   },
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/identifier"
+    },
+    "status": {
+     "enum": [
+      "planned",
+      "running",
+      "done",
+      "failed"
+     ]
+    },
+    "config": {
+     "type": "object",
+     "minProperties": 1
+    },
+    "score": {
+     "type": "number"
+    },
+    "fold_scores": {
+     "type": "array",
+     "minItems": 2,
+     "maxItems": 100,
+     "items": {
+      "type": "number"
+     },
+     "description": "One score per fold; the summary reports their spread."
+    },
+    "cost_minutes": {
+     "type": "number",
+     "minimum": 0
+    },
+    "notes": {
+     "type": "string"
+    },
+    "fingerprint": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "base": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/identifier"
+      }
+     ]
+    },
+    "retry_of": {
+     "$ref": "#/$defs/identifier"
+    },
+    "environment_change": {
+     "type": "string",
+     "minLength": 1
+    }
+   },
+   "if": {
+    "properties": {
+     "status": {
+      "const": "done"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "score"
+    ]
+   }
+  },
+  "update": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "record_type",
+    "id",
+    "status",
+    "at"
+   ],
+   "properties": {
+    "record_type": {
+     "const": "experiment_update/v1"
+    },
+    "id": {
+     "$ref": "#/$defs/identifier"
+    },
+    "status": {
+     "enum": [
+      "running",
+      "done",
+      "failed"
+     ]
+    },
+    "at": {
+     "type": "string",
+     "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "score": {
+     "type": "number"
+    },
+    "fold_scores": {
+     "type": "array",
+     "minItems": 2,
+     "maxItems": 100,
+     "items": {
+      "type": "number"
+     },
+     "description": "One score per fold; the summary reports their spread."
+    },
+    "cost_minutes": {
+     "type": "number",
+     "minimum": 0
+    },
+    "notes": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 1000
+    }
+   },
+   "allOf": [
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "done"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "score"
+      ]
+     }
+    },
+    {
+     "if": {
+      "properties": {
+       "status": {
+        "const": "failed"
+       }
+      }
+     },
+     "then": {
+      "required": [
+       "notes"
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

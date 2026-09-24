@@ -1,0 +1,10 @@
+{
+  "conversation_id": "sample-conversation-0005",
+  "generation_id": "sample-generation-0007",
+  "hook_event_name": "preToolUse",
+  "workspace_roots": ["/work/examples/budget-spent"],
+  "tool_name": "Write",
+  "tool_input": {"file_path": "/work/examples/budget-spent/.baltor/step/handoff.md"},
+  "tool_use_id": "sample-tool-use-0005",
+  "cwd": "/work/examples/budget-spent"
+}

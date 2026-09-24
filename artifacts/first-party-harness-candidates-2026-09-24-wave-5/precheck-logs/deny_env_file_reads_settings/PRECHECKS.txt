@@ -1,0 +1,89 @@
+PRECHECKS for wave 5 package deny_env_file_reads_settings
+written 2026-09-24T00:31:36.291827+00:00 by the a13_unattended_permission_settings generator (second pass)
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/deny_env_file_reads_settings
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/deny_env_file_reads_settings
+{"fill": "done", "files": 8, "package_digest": "9e576caf0e4721f03e5db0fde0df9be0c6c992eff5cee9dd7087642f8d7f2fbe"}
+
+exit 0
+
+== 2. check ==
+$ python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a13_unattended_permission_settings/deny_env_file_reads_settings
+{
+ "identity": "deny_env_file_reads_settings",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T003139483285Z.json"
+}
+
+exit 0
+
+== 3. per-check detail of review/precheck-20260924T003139483285Z.json (package digest 9e576caf0e4721f03e5db0fde0df9be0c6c992eff5cee9dd7087642f8d7f2fbe) ==
+passed_for_wave_gate: True
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+    no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+    {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 13}
+    {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 13}
+[passed] hooks_run
+[passed] servers_run
+
+== 4. earlier reports kept in review/ (first pass) ==
+precheck-20260923T205235094880Z.json package digest 6604b3efc66a172c3f12c2e96787ee6fdd1f03409a059767a57ec229384aa756 passed_for_wave_gate True refused []
+
+== 6. first-pass package bytes ==
+earlier-attempt-20260923T2053Z.tar.gz sha256 7322aaaf6e9d8185d8ba3721e37db57adaabea798e69da935dd5d276bb9c8834, 20 entries: the package folder as the first pass left it, saved before any second-pass edit.
+
+== 7. check-all for the assignment, run after all five packages passed ==
+run at 2026-09-24T00:33:43.458530+00:00
+$ python3 check_package.py check-all --assignment a13_unattended_permission_settings
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T003343430717Z.json
+
+exit 0
+this package in that run: packages/a13_unattended_permission_settings/deny_env_file_reads_settings/review/precheck-20260924T003329061778Z.json, package digest 9e576caf0e4721f03e5db0fde0df9be0c6c992eff5cee9dd7087642f8d7f2fbe, passed_for_wave_gate True, refused or warning checks []

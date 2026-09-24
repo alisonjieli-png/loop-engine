@@ -1,0 +1,44 @@
+---
+paths:
+  - "**/migrations/**"
+  - "**/Migrations/**"
+  - "**/db/migrate/**"
+  - "**/db/migration/**"
+  - "**/db/changelog/**"
+  - "**/alembic/versions/**"
+  - "**/drizzle/*.sql"
+---
+# Keep applied migrations unchanged
+
+## Rule
+
+Never edit, rename, reorder or delete a migration that may have run on any database. Put every schema or data change in a new migration made with the project's migration tool. Every migration in the start commit counts as applied; only one this step created may still change.
+
+## Applies to
+
+Database migration folders and the SQL files in `drizzle/`.
+
+## Instead
+
+1. First action: record the start commit: the base commit the task names, else the current one. Report its hash.
+
+```bash
+git rev-parse HEAD
+```
+
+2. Create a new migration with the project's own command, such as its make or revision command, so it gets the next number and parent.
+3. Put the change there, with a reverse step when the tool supports one.
+4. Check: run the line below with the start commit in place of `START`. It must print nothing except an index file the tool updates itself: an Entity Framework `*ModelSnapshot.cs`, a Drizzle `meta/_journal.json` or a Liquibase master changelog that only gains `include` lines.
+
+```bash
+git diff --name-only --diff-filter=MDR START -- ':(glob)**/migrations/**' ':(glob)**/Migrations/**' ':(glob)**/db/migrate/**' ':(glob)**/db/migration/**' ':(glob)**/db/changelog/**' ':(glob)**/alembic/versions/**' ':(glob)**/drizzle/*.sql'
+```
+
+Done when the check passes and the whole change is in new migration files.
+
+## Stop and report when
+
+- The tool reports two heads, a conflict or a gap in the numbering.
+- Making or checking the migration needs a live database, a secret or the network.
+- The task asks you to edit, squash or delete an existing migration.
+- You cannot tell whether a migration has run.

@@ -1,0 +1,32 @@
+{
+  "permission": {
+    "*": "deny",
+    "read": {
+      "*": "allow",
+      ".env*": "deny",
+      "*/.env*": "deny"
+    },
+    "list": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "edit": {
+      "*": "deny",
+      "data/output/*": "allow",
+      "reports/*": "allow",
+      "*.py": "deny",
+      "data/raw/*": "deny"
+    },
+    "bash": {
+      "*": "deny",
+      "python3 -I -B .baltor/*": "allow",
+      "python3 -I -B .opencode/skills/*": "allow",
+      "ls *": "allow",
+      "wc *": "allow",
+      "head *": "allow",
+      "*..*": "deny",
+      "*>*": "deny"
+    }
+  }
+}

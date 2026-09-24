@@ -1,0 +1,13 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Apply only the approved rules of a reviewed cleaning plan to a copy of one table, with a cell-level change log and a hold list, never editing the source.",
+ "output_contract_refs": ["cleaning_apply_summary/v1"],
+ "dependency_ids": ["{{PLAN_STEP_ID}}"],
+ "required_capabilities": ["python3"],
+ "effects": ["reads_fs", "writes_fs", "{{PROCESS_EFFECT}}"],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

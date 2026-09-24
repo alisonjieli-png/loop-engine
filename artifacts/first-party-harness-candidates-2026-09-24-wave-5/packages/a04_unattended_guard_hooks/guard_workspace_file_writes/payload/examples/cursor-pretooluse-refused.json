@@ -1,0 +1,10 @@
+{
+  "conversation_id": "sample-conversation-0002",
+  "generation_id": "sample-generation-0004",
+  "hook_event_name": "preToolUse",
+  "workspace_roots": ["/work"],
+  "tool_name": "Write",
+  "tool_input": {"file_path": "/tmp/outside-notes.md", "contents": "Sample notes.\n"},
+  "tool_use_id": "sample-tool-use-0002",
+  "cwd": "/work"
+}

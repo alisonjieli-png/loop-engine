@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I -B \"${CLAUDE_PLUGIN_ROOT}/scripts/brief_summary.py\" --harness claude_code",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

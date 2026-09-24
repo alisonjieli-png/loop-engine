@@ -1,0 +1,336 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "read_only_investigation_settings",
+    "title": "Read-only investigation settings",
+    "purpose": "Harness settings for a step that may read files and run declared read-only commands but may not edit files, use the network or run anything else, rendered for each supported harness.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/opencode_step_composition.py",
+      "src/loop_engine/core/harness_responses_recipes.py",
+      "src/loop_engine/core/harness_additional_recipes.py",
+      "src/loop_engine/core/harness_opencode_recipe.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "docs/research/HARNESS-FORKS-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_settings_fragment",
+    "search_tags": [
+      "read-only agent settings",
+      "read only investigation step",
+      "claude code dontAsk permissions",
+      "codex read-only sandbox config",
+      "opencode permission deny edits",
+      "gemini cli tools core allowlist",
+      "no approval prompt unattended run",
+      "allow only git status and git diff",
+      "block file edits for an agent",
+      "block network for a coding agent"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness permissions",
+        "security"
+      ],
+      "role": [
+        "software engineer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "run"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a13_unattended_permission_settings",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "13aa58ae6c2144ed688ed12bd7f0d41e162867d808515ce7b654d22d8c258d37",
+        "size_bytes": 911,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_read_only_investigation_settings.py",
+        "digest": "24c1446ebf94f038b0adef7e317ee5a90e1a77ec454f131f1e4d6a23276eb4f3",
+        "size_bytes": 40635,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_read_only_investigation_settings.py",
+        "digest": "edce9fa4d356e4b2d262fe7c187eb030f67ff469be1c1ab22bfc463775bd3548",
+        "size_bytes": 11499,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "1449e80278a63f34427e6ba25d92bbbe2e186914a67fe328affb8f29903437b1",
+        "size_bytes": 633,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "89d3f7381cf66d78239ae4810cf6b9e34cbbb82f08cc1a5f7b4890e823b9cbb0",
+        "size_bytes": 77,
+        "media_type": "application/toml",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "6fc334ae1c9def126fb7038b74f0ef9c8e6db7ac64908803be47fc34041a40fd",
+        "size_bytes": 649,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "56b31f3903b72380db55eb2a3997452da7986e52d8e518f1e743c13a37813301",
+        "size_bytes": 641,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a13_unattended_permission_settings",
+    "file_class": "settings_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "claude_code": "The permissions block is documented; defaultMode dontAsk and disableBypassPermissionsMode were read from the installed Claude Code 2.1.281 settings schema and are not observed in a run.",
+      "codex": "Project .codex/config.toml keys are unverified for project scope and load only in a trusted project; the keys were read from Codex 0.155.1 and repository recipes, not observed from a project file.",
+      "gemini_cli": "Key names were read from the installed Gemini CLI 0.59.0 settings schema and bundled docs; they vary by version, and workspace settings apply only in a trusted folder or with --skip-trust.",
+      "opencode": "The permission block is documented; the default rules and last-match order were read from the installed OpenCode binary and repository source, not observed with this file."
+    },
+    "not_placed": {},
+    "native_name": "read-only-investigation-settings",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "codex": "variants/codex/config.toml",
+      "opencode": "variants/opencode/opencode.json",
+      "gemini_cli": "variants/gemini_cli/settings.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_read_only_investigation_settings.py": {
+          "destination": ".baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_read_only_investigation_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/read-only-investigation-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        },
+        "scripts/check_read_only_investigation_settings.py": {
+          "destination": ".baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_read_only_investigation_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/read-only-investigation-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_read_only_investigation_settings.py": {
+          "destination": ".baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_read_only_investigation_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/read-only-investigation-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_read_only_investigation_settings.py": {
+          "destination": ".baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_read_only_investigation_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/read-only-investigation-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "scripts/check_read_only_investigation_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_read_only_investigation_settings.py"
+        ]
+      },
+      "tests/test_read_only_investigation_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run git status, one of the declared read-only commands, and read the workspace state.",
+    "done_when": [
+      "The findings are in the final answer and no file in the workspace changed.",
+      "Every command used was one of git status, git diff, git log, git show, ls, pwd or wc."
+    ],
+    "stop_and_report_when": [
+      "An action is refused; report the action and why it was needed instead of trying another way.",
+      "The checker script reports that the settings do not hold the policy."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/opencode_step_composition.py": "8c7dec6114ef18ccf281b62b1d3047d38a6add56032c4c7873ca2c1cd9d25209",
+      "src/loop_engine/core/harness_responses_recipes.py": "13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7",
+      "src/loop_engine/core/harness_additional_recipes.py": "0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9",
+      "src/loop_engine/core/harness_opencode_recipe.py": "4a32610e560e43639198bd3e5e36596f207d98ad934f66733b98e1dc61d1edfc",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "docs/research/HARNESS-FORKS-2026-09-22.md": "cd9abe680762117ea5a6e2657dea0563fbc0db0fe7d3e1b7b40058c3514e1e6e"
+    },
+    "package_digest": "a90fc145e941572d603c0c2124218d752229873a14bc7f98c544f511f02f81f0",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

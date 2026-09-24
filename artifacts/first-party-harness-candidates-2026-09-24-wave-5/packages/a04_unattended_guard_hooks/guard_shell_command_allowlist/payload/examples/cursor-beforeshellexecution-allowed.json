@@ -1,0 +1,9 @@
+{
+  "conversation_id": "sample-conversation-0001",
+  "generation_id": "sample-generation-0001",
+  "hook_event_name": "beforeShellExecution",
+  "workspace_roots": ["/work"],
+  "command": "git diff --stat",
+  "cwd": "/work",
+  "sandbox": false
+}

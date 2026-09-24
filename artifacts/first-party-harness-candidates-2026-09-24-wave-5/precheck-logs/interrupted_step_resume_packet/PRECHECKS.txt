@@ -1,0 +1,98 @@
+PRECHECKS for interrupted_step_resume_packet (wave 5, assignment a09_ticket_step_packets)
+Written by the generator on 2026-09-23T20:46:08Z. Candidate only. Not approved, staged, served or published.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d)
+Location note: kept in review/ because the specification's layout check refuses any extra top-level entry in a package folder.
+
+== python3 check_package.py fill interrupted_step_resume_packet
+{"fill": "done", "files": 15, "package_digest": "35980b4546092e3964af2cb7f75242c1910c5b2c9db21733f322462dd831c493"}
+
+== python3 check_package.py check interrupted_step_resume_packet
+{
+ "identity": "interrupted_step_resume_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204611861131Z.json"
+}
+exit status: 0
+
+== python3 check_package.py check-all --assignment a09_ticket_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204701100723Z.json
+
+== Every precheck report kept in review/ (oldest first)
+precheck-20260923T203925743745Z.json: passed_for_wave_gate=False package_digest=540a8bc2a5e6f723ea7d3f0e55f4ae2944e711b004584eb4cd0bd049d234b631 refused_checks=['vocabulary']
+precheck-20260923T204219934462Z.json: passed_for_wave_gate=True package_digest=35980b4546092e3964af2cb7f75242c1910c5b2c9db21733f322462dd831c493 refused_checks=[]
+precheck-20260923T204611861131Z.json: passed_for_wave_gate=True package_digest=35980b4546092e3964af2cb7f75242c1910c5b2c9db21733f322462dd831c493 refused_checks=[]
+precheck-20260923T204648624269Z.json: passed_for_wave_gate=True package_digest=35980b4546092e3964af2cb7f75242c1910c5b2c9db21733f322462dd831c493 refused_checks=[]
+
+== Local unit test runs from the payload root: python -I -B -m unittest discover -s tests -p 'test_*.py'
+-- /usr/bin/python3 exit 0
+test_deleted_and_reappeared_files_are_drift (test_check_handoff_drift.CheckHandoffDrift.test_deleted_and_reappeared_files_are_drift) ... ok
+test_example_output_follows_the_output_rules (test_check_handoff_drift.CheckHandoffDrift.test_example_output_follows_the_output_rules) ... ok
+test_finished_or_foreign_handoff_is_not_resumable (test_check_handoff_drift.CheckHandoffDrift.test_finished_or_foreign_handoff_is_not_resumable) ... ok
+test_known_wrong_file_changed_after_the_handoff_is_drift (test_check_handoff_drift.CheckHandoffDrift.test_known_wrong_file_changed_after_the_handoff_is_drift) ... ok
+test_plain_folder_without_revision_compares_digests_only (test_check_handoff_drift.CheckHandoffDrift.test_plain_folder_without_revision_compares_digests_only) ... ok
+test_unchanged_workspace_matches_and_prints_the_first_action (test_check_handoff_drift.CheckHandoffDrift.test_unchanged_workspace_matches_and_prints_the_first_action) ... ok
+test_unrecorded_change_and_moved_head_are_drift (test_check_handoff_drift.CheckHandoffDrift.test_unrecorded_change_and_moved_head_are_drift) ... ok
+test_unusable_input_is_refused_without_writing (test_check_handoff_drift.CheckHandoffDrift.test_unusable_input_is_refused_without_writing) ... ok
+----------------------------------------------------------------------
+Ran 8 tests in 0.803s
+OK
+-- /home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu/bin/python3.10 exit 0
+test_deleted_and_reappeared_files_are_drift (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_example_output_follows_the_output_rules (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_finished_or_foreign_handoff_is_not_resumable (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_known_wrong_file_changed_after_the_handoff_is_drift (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_plain_folder_without_revision_compares_digests_only (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_unchanged_workspace_matches_and_prints_the_first_action (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_unrecorded_change_and_moved_head_are_drift (test_check_handoff_drift.CheckHandoffDrift) ... ok
+test_unusable_input_is_refused_without_writing (test_check_handoff_drift.CheckHandoffDrift) ... ok
+----------------------------------------------------------------------
+Ran 8 tests in 0.720s
+OK
+
+== Contract checks with the jsonschema Draft 2020-12 validator
+contracts/handoff.schema.json: valid Draft 2020-12 schema
+contracts/input.schema.json: valid Draft 2020-12 schema
+contracts/output.schema.json: valid Draft 2020-12 schema
+examples/input.json against contracts/input.schema.json: valid
+examples/output.json against contracts/output.schema.json: valid
+examples/handoff.json against contracts/handoff.schema.json: valid
+known-wrong output 'drift that continued': refused
+known-wrong output 'drift without differences': refused
+known-wrong output 'resumed while differences exist': refused
+
+== Removed-guard controls (scratch copy, Python 3.14): each guard removed, the named test must fail
+scripts/check_handoff_drift.py: detected by test_known_wrong_file_changed_after_the_handoff_is_drift; failing tests ['test_known_wrong_file_changed_after_the_handoff_is_drift']
+scripts/check_handoff_drift.py: detected by test_unrecorded_change_and_moved_head_are_drift; failing tests ['test_unrecorded_change_and_moved_head_are_drift']
+
+== Shared handoff contract
+contracts/handoff.schema.json is byte-identical in the resume and morning report packets: True
+
+Result: every pre-check of the specification ran here and passed for the current package digest. This is not an approval, a native loading result or a usefulness claim.

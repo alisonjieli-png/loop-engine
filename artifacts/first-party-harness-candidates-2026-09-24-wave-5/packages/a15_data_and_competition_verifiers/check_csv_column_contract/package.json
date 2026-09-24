@@ -1,0 +1,422 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "check_csv_column_contract",
+    "title": "Check a CSV against a column contract",
+    "purpose": "Validate a CSV file against a JSON column contract of required columns, types, allowed values, ranges, uniqueness and empty-cell rules, and report violations by row and column.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md",
+      "src/loop_engine/core/observation_expectations.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "check a csv against a schema",
+      "validate csv columns and types",
+      "csv column contract",
+      "data contract check for a table",
+      "required columns check",
+      "allowed values check",
+      "value range check for a column",
+      "unique id column check",
+      "empty cell rules",
+      "validate a cleaned table",
+      "csv data quality check",
+      "report violations by row and column"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning",
+        "data quality"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a15_data_and_competition_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "9d1d3d70eb13147d1e6947dd62584b3479c1ae23b5cfe79d0ffffce362aee665",
+        "size_bytes": 2809,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/column-contract.json",
+        "digest": "24537073bf7011c080696eb489739dbbc1e020dd0a5e7e542571cae3bb7d3f53",
+        "size_bytes": 1047,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/known-wrong-bundle.json",
+        "digest": "574046d6fdb7a4a369f572705b3c4c0d072bc7475a03d1d56cfcbb6e52c31dd9",
+        "size_bytes": 1663,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "4871ca7ace9c3059cec5a26aab6a77bb1417d70080f0ae127d1cee17cabab5a8",
+        "size_bytes": 815,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/contract-format.md",
+        "digest": "5cf9560445607cadf6c4889afc1f30e00d3d104f34d0d4e1ed5cb12e7345ccd1",
+        "size_bytes": 2863,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/check_column_contract.py",
+        "digest": "9058cecada7e59d49e26498c3c11d240858fb73c86379fd77f0e5b6e4961aec5",
+        "size_bytes": 33137,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_check_column_contract.py",
+        "digest": "172429cd5de3ad5e9514ac3abb3773c93a673f825535a1e842ce481fe1950c7d",
+        "size_bytes": 16528,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a15_data_and_competition_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "check-csv-column-contract",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/check-csv-column-contract/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/check-csv-column-contract/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/column-contract.json": {
+          "destination": ".claude/skills/check-csv-column-contract/examples/column-contract.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".claude/skills/check-csv-column-contract/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/check-csv-column-contract/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/contract-format.md": {
+          "destination": ".claude/skills/check-csv-column-contract/references/contract-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_column_contract.py": {
+          "destination": ".claude/skills/check-csv-column-contract/scripts/check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_column_contract.py": {
+          "destination": ".claude/skills/check-csv-column-contract/tests/test_check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/check-csv-column-contract/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/check-csv-column-contract/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/column-contract.json": {
+          "destination": ".agents/skills/check-csv-column-contract/examples/column-contract.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".agents/skills/check-csv-column-contract/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/check-csv-column-contract/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/contract-format.md": {
+          "destination": ".agents/skills/check-csv-column-contract/references/contract-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_column_contract.py": {
+          "destination": ".agents/skills/check-csv-column-contract/scripts/check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_column_contract.py": {
+          "destination": ".agents/skills/check-csv-column-contract/tests/test_check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/check-csv-column-contract/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/check-csv-column-contract/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/column-contract.json": {
+          "destination": ".opencode/skills/check-csv-column-contract/examples/column-contract.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".opencode/skills/check-csv-column-contract/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/check-csv-column-contract/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/contract-format.md": {
+          "destination": ".opencode/skills/check-csv-column-contract/references/contract-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_column_contract.py": {
+          "destination": ".opencode/skills/check-csv-column-contract/scripts/check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_column_contract.py": {
+          "destination": ".opencode/skills/check-csv-column-contract/tests/test_check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/check-csv-column-contract/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/check-csv-column-contract/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/column-contract.json": {
+          "destination": ".pi/skills/check-csv-column-contract/examples/column-contract.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".pi/skills/check-csv-column-contract/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/check-csv-column-contract/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/contract-format.md": {
+          "destination": ".pi/skills/check-csv-column-contract/references/contract-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_column_contract.py": {
+          "destination": ".pi/skills/check-csv-column-contract/scripts/check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_column_contract.py": {
+          "destination": ".pi/skills/check-csv-column-contract/tests/test_check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/check-csv-column-contract/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/check-csv-column-contract/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/column-contract.json": {
+          "destination": ".gemini/skills/check-csv-column-contract/examples/column-contract.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".gemini/skills/check-csv-column-contract/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/check-csv-column-contract/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/contract-format.md": {
+          "destination": ".gemini/skills/check-csv-column-contract/references/contract-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_column_contract.py": {
+          "destination": ".gemini/skills/check-csv-column-contract/scripts/check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_column_contract.py": {
+          "destination": ".gemini/skills/check-csv-column-contract/tests/test_check_column_contract.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "examples/column-contract.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "examples/known-wrong-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "references/contract-format.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "scripts/check_column_contract.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_check_column_contract.py"
+        ]
+      },
+      "tests/test_check_column_contract.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/check_column_contract.py from the workspace root with --csv and --contract, and read status, failed_checks and violations_by_column in its JSON output.",
+    "done_when": [
+      "The report gives the status, the CSV path and its sha256, each failed check with its counts per column, and one answer for each item of references/checklist.md."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2 because the table or the contract is missing, unreadable, too large, outside the root or not valid.",
+      "The task names no contract file.",
+      "The contract and the task disagree about a column."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md": "0665234b5d1110a0c49b6f0873eae2d36f8e6f24dd1f7f660526ec3ea30169fb",
+      "src/loop_engine/core/observation_expectations.py": "4928b72a2611f50074b2c8be7fde7cdfcc08056948a61b18f76088e02ad4d9d3",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558"
+    },
+    "package_digest": "666ae2ddd4484a6b6ba3f200aa13bc75d8c5a0d89f8279aa55fae232c35f0ce5",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

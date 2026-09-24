@@ -1,0 +1,6 @@
+{
+  "timestamp": 1790000000400,
+  "cwd": "/work/examples/budget-spent",
+  "toolName": "create",
+  "toolArgs": "{\"path\": \".baltor/step/handoff.md\", \"file_text\": \"Done: parser fix.\\n\"}"
+}

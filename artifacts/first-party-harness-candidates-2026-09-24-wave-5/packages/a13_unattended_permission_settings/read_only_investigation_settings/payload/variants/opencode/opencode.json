@@ -1,0 +1,28 @@
+{
+  "permission": {
+    "*": "deny",
+    "read": {
+      "*": "allow",
+      ".env*": "deny",
+      "*/.env*": "deny"
+    },
+    "list": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "bash": {
+      "*": "deny",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git show *": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "wc *": "allow",
+      "python3 -I -B .baltor/read-only-investigation-settings/scripts/check_read_only_investigation_settings.py": "allow",
+      "git *--output*": "deny",
+      "*>*": "deny"
+    }
+  }
+}

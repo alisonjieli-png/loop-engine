@@ -1,0 +1,354 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "unattended_run_rules",
+    "title": "Unattended run operating rules",
+    "purpose": "A composable instruction section for overnight work that sets one ticket at a time, no irreversible actions, a checkpoint after each ticket and a blocker record instead of a question to an absent person.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "tools/overnight_queue.py",
+      "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/resolve_missing_information.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_instruction_fragment",
+    "search_tags": [
+      "overnight agent rules",
+      "unattended coding agent instructions",
+      "run tickets overnight with a local model",
+      "agent working with nobody watching",
+      "one ticket at a time",
+      "checkpoint after each ticket",
+      "blocker record instead of a question",
+      "agents md section for overnight runs",
+      "no irreversible actions rule for agents",
+      "ticket ledger for an agent run",
+      "evidence file for each finished ticket",
+      "stop an agent after the last ticket"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software engineer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a14_root_instruction_fragments",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "f79aadb3ec704e11946696fb52b2e9af689a88a11a2e7582f21181cb35f4fa98",
+        "size_bytes": 2130,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "f79aadb3ec704e11946696fb52b2e9af689a88a11a2e7582f21181cb35f4fa98",
+        "size_bytes": 2130,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/ticket_ledger.py",
+        "digest": "a7e360c660d11a915225e3787f3b4a6002bc07f643a1ca30e8a0976dc50efd9b",
+        "size_bytes": 21480,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_ticket_ledger.py",
+        "digest": "309d8444942690215a40349407c2c646fb44ea5c348b65d3501532349bd3607a",
+        "size_bytes": 14107,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a14_root_instruction_fragments",
+    "file_class": "root_instruction_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "gemini_cli",
+      "goose",
+      "opencode",
+      "pi",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents or observed Kimi CLI reading a project AGENTS.md; the section is composed there by the common convention and needs a native discovery probe."
+    },
+    "not_placed": {},
+    "native_name": "unattended-run-rules",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/unattended-run-rules/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/ticket_ledger.py": {
+          "destination": ".baltor/unattended-run-rules/scripts/ticket_ledger.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_ticket_ledger.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_ticket_ledger.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_ticket_ledger.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_ticket_ledger.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "scripts/ticket_ledger.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_ticket_ledger.py"
+        ]
+      },
+      "tests/test_ticket_ledger.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Take the first ticket from the assignment's ticket list, or this step's ticket when there is no list, and run python3 -I -B .baltor/unattended-run-rules/scripts/ticket_ledger.py start --ticket KEY with its real key before touching it; read the JSON answer.",
+    "done_when": [
+      "Every ticket on the assignment's list, or this step's ticket, has exactly one finish line in .baltor/state/unattended-run-rules/ledger.jsonl, and the final status answer was reported.",
+      "Every ticket finished as done names an evidence file inside .baltor/state/unattended-run-rules/ that was written during that ticket and is used by no other ticket.",
+      "No action outside the workspace was taken and no question was left waiting for a person."
+    ],
+    "stop_and_report_when": [
+      "A ledger answer holds \"stop_run\": true; the whole run stops and reports it.",
+      "A ticket needs an action that cannot be undone inside the workspace; that ticket is finished as blocked and the run goes on with the next listed ticket.",
+      "No listed ticket is left; the run reports the ledger status and stops."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "tools/overnight_queue.py": "4f00c5bc6797c45dec13a27a1905c4cb1c5d48989d01d7165f5f38b2e78590ce",
+      "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md": "d6f1eb1aba11810ccc3b30c1fdd01931715ed101f090c5e9d0682b05e0eab509",
+      "examples/29_intelligence_service/starter-catalogue/bodies/resolve_missing_information.md": "a80070301a47af7ef83b445c60937104932d14ed512c4a65ecded7d3cbf67028",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558"
+    },
+    "package_digest": "c14a0baa28ec54a7a1dcb83015f12e72c861ab82250fe91bc04cbe9f82c5e7d0",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

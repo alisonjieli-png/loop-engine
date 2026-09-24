@@ -1,0 +1,71 @@
+{
+  "record_type": "night_tickets/v1",
+  "tickets": [
+    {
+      "id": "T-101",
+      "title": "Monthly report drops rows dated on the last day of the month",
+      "priority": 2,
+      "acceptance_criteria": ["A March report includes rows dated March 31."],
+      "check": "python3 -m unittest tests.test_month_filter",
+      "estimate_minutes": 25,
+      "estimate_calls": 30,
+      "risk": "low"
+    },
+    {
+      "id": "T-102",
+      "title": "CSV export writes an empty header row",
+      "priority": 1,
+      "acceptance_criteria": ["The exported file starts with the column names.", "No empty first row."],
+      "check": "python3 -m unittest tests.test_csv_export"
+    },
+    {
+      "id": "T-103",
+      "title": "Quarter filter needs the same month-end rule",
+      "priority": 3,
+      "depends_on": ["T-101"],
+      "acceptance_criteria": ["A first-quarter report includes rows dated March 31."],
+      "check": "python3 -m unittest tests.test_quarter_filter",
+      "estimate_minutes": 20,
+      "estimate_calls": 20,
+      "risk": "low"
+    },
+    {
+      "id": "T-104",
+      "title": "Dashboard feels slow",
+      "priority": 1,
+      "acceptance_criteria": ["The dashboard loads faster."],
+      "check": ""
+    },
+    {
+      "id": "T-105",
+      "title": "Shorten the sign-in session timeout",
+      "priority": 1,
+      "acceptance_criteria": ["Sessions end after 30 idle minutes."],
+      "check": "python3 -m unittest tests.test_session_timeout",
+      "estimate_minutes": 40,
+      "estimate_calls": 45,
+      "risk": "high"
+    },
+    {
+      "id": "T-106",
+      "title": "Rewrite the import pipeline",
+      "priority": 4,
+      "acceptance_criteria": ["All import tests pass with the new reader."],
+      "check": "python3 -m unittest tests.test_import",
+      "estimate_minutes": 400,
+      "estimate_calls": 250,
+      "risk": "low"
+    },
+    {
+      "id": "T-107",
+      "title": "Update the import notes after the rewrite",
+      "priority": 5,
+      "depends_on": ["T-106"],
+      "acceptance_criteria": ["The notes name the new reader."],
+      "check": "Read docs/import.md and confirm it names the new reader.",
+      "estimate_minutes": 10,
+      "estimate_calls": 10,
+      "risk": "low"
+    }
+  ]
+}

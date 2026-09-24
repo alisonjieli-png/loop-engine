@@ -1,0 +1,87 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_settings/v1",
+ "description": "Settings of one unattended night at .baltor/night/settings.json, written by a person. plan-night-queue reads the budget keys, night-preflight reads the budget, test and guard keys, and record-blocker reads one_ticket_per_harness. plan-night-queue and night-preflight refuse unknown keys.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "time_minutes",
+  "model_calls"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_settings/v1"
+  },
+  "time_minutes": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 1440,
+   "description": "Minutes the night may run."
+  },
+  "model_calls": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 100000,
+   "description": "Model calls the night may make."
+  },
+  "reserve_percent": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 90,
+   "default": 10,
+   "description": "Share of both budgets kept back. The rest is the usable budget."
+  },
+  "hold_high_risk": {
+   "type": "boolean",
+   "default": true,
+   "description": "When true, high-risk tickets are held out of the night."
+  },
+  "order": {
+   "enum": [
+    "risk_first",
+    "priority_first"
+   ],
+   "default": "risk_first"
+  },
+  "one_ticket_per_harness": {
+   "type": "boolean",
+   "default": true,
+   "description": "When true, each ticket runs in its own freshly started harness: record-blocker never starts the next ticket, the host does. When false, one session works through the queue and record-blocker starts the next ticket."
+  },
+  "test_command": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 64,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 4096
+   },
+   "description": "The test command as a list of arguments. night-preflight runs it from the workspace root without a shell."
+  },
+  "test_timeout_seconds": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 7200,
+   "default": 900
+  },
+  "expected_test_exit": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 255,
+   "default": 0
+  },
+  "guard_files": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 20,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 400
+   },
+   "description": "Workspace paths of hook or permission files that night-preflight checks for guard rules."
+  }
+ }
+}

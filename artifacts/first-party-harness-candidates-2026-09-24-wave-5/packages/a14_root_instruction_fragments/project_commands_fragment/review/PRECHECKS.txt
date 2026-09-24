@@ -1,0 +1,118 @@
+=== 2026-09-23T20:20:05Z round 1: python3 $WAVE/check_package.py fill $PKG (project_commands_fragment)
+{"fill": "done", "files": 6, "package_digest": "83b28ddea0fc2753ca016cea2d192701f6d8ea83de71e105eccdd713b51a9f22"}
+exit 0
+=== 2026-09-23T20:20:05Z round 1: python3 $WAVE/check_package.py check $PKG (project_commands_fragment)
+{
+ "identity": "project_commands_fragment",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202005737151Z.json"
+}
+
+[warning] effects
+  - spawns_process is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:29:53Z final round: python3 $WAVE/check_package.py fill $PKG (project_commands_fragment)
+{"fill": "done", "files": 6, "package_digest": "26312c51b8e14149108a906316cab1cdbfd9dbab7d984a430349a017e153d351"}
+exit 0
+=== 2026-09-23T20:29:53Z final round: python3 $WAVE/check_package.py check $PKG (project_commands_fragment)
+{
+ "identity": "project_commands_fragment",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202954065166Z.json"
+}
+
+[warning] effects
+  - spawns_process is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:32:25Z mutation check on the final payload bytes (not a checker command; each guard removed in a temporary copy, then the package tests run)
+CAUGHT AGENTS.md: guard removed in a temporary copy -> test_example_fills_every_marker_exactly failed
+CAUGHT tests/test_filled_values.py: guard removed in a temporary copy -> test_known_wrong_values_are_refused failed
+2 of 2 caught
+=== 2026-09-23T20:32:59Z check after the review note history was completed: python3 $WAVE/check_package.py check $PKG (project_commands_fragment)
+{
+ "identity": "project_commands_fragment",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203300132635Z.json"
+}
+
+[warning] effects
+  - spawns_process is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+exit 0
+=== 2026-09-23T20:33:09Z python3 $WAVE/check_package.py check-all --assignment a14_root_instruction_fragments
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203320797081Z.json
+exit 0

@@ -1,0 +1,550 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "verify_criteria_have_evidence",
+    "title": "Verify acceptance criteria have evidence",
+    "purpose": "Match every acceptance criterion in a ticket checklist to at least one evidence entry, such as a test name, command result or file, and fail when any criterion has none.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/software/map-independent-acceptance-evidence/SKILL.md",
+      "src/loop_engine/core/overnight_outcome.py"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "map acceptance criteria to evidence",
+      "does every criterion have evidence",
+      "ticket checklist evidence check",
+      "acceptance criteria without proof",
+      "ticked box without evidence",
+      "check test names cited as evidence",
+      "definition of done evidence",
+      "criteria coverage before closing a ticket"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "coding agent operator",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a12_ticket_result_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "ff02ae6e5cd8468d618c0e3965eb6e725e735e57cfdf5e3f6cb10ee7e8a6f2c7",
+        "size_bytes": 2916,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/changelog.txt",
+        "digest": "69e7671ac3ed7238bb1727eb592940d2f5e361fd4088556d760ffff0f1398fb9",
+        "size_bytes": 100,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/criteria.md",
+        "digest": "6e4e1083c08824d411ac4f91814bdd9891b54b7d35e3575caf5c1a15fc91c754",
+        "size_bytes": 381,
+        "media_type": "text/markdown",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/evidence.json",
+        "digest": "c3af7c92538970d808bef8122284341f97cd19bca55cfb80eb79e0febcfc6557",
+        "size_bytes": 592,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/style-check.json",
+        "digest": "2393af72bb2f5f6f6e2ed092c930e7ddf90815b518e6367a4efcbb48621b5e16",
+        "size_bytes": 146,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/test-run-before.txt",
+        "digest": "094f81124a043250c779e095a761bd458f953e4aab5bf7019ea1c87123b70259",
+        "size_bytes": 625,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/test-run.txt",
+        "digest": "162982e7c3909913f60c922342df6b3ebe7c11ca3cc6fc931d9f796d4f378700",
+        "size_bytes": 422,
+        "media_type": "text/plain",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "1a6c0646775212755e4f1a80d2f9487e161b15ef9328ba5f678975989e0a2d2a",
+        "size_bytes": 731,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/evidence-format.md",
+        "digest": "af96117a307b18380f82d4b1d30a136d48820826620fc5c60c74ff2268b113ed",
+        "size_bytes": 2866,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/verify_criteria_evidence.py",
+        "digest": "be22d56ad0b0b18037a92969707b19f432123917e1bbb672a4c74804adab91aa",
+        "size_bytes": 29737,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_verify_criteria_evidence.py",
+        "digest": "5ce69cbaa05182a896fda991897ecc4ce282e8062b34908593c3d5785cacc6dc",
+        "size_bytes": 13179,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a12_ticket_result_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "verify-criteria-have-evidence",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/changelog.txt": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/changelog.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/criteria.md": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/criteria.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence.json": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/evidence.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/style-check.json": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/style-check.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run-before.txt": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/test-run-before.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run.txt": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/examples/test-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/evidence-format.md": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/references/evidence-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_criteria_evidence.py": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_criteria_evidence.py": {
+          "destination": ".claude/skills/verify-criteria-have-evidence/tests/test_verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/changelog.txt": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/changelog.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/criteria.md": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/criteria.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence.json": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/evidence.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/style-check.json": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/style-check.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run-before.txt": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/test-run-before.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run.txt": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/examples/test-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/evidence-format.md": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/references/evidence-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_criteria_evidence.py": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_criteria_evidence.py": {
+          "destination": ".agents/skills/verify-criteria-have-evidence/tests/test_verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/changelog.txt": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/changelog.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/criteria.md": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/criteria.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence.json": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/evidence.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/style-check.json": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/style-check.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run-before.txt": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/test-run-before.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run.txt": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/examples/test-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/evidence-format.md": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/references/evidence-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_criteria_evidence.py": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_criteria_evidence.py": {
+          "destination": ".opencode/skills/verify-criteria-have-evidence/tests/test_verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/changelog.txt": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/changelog.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/criteria.md": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/criteria.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence.json": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/evidence.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/style-check.json": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/style-check.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run-before.txt": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/test-run-before.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run.txt": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/examples/test-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/evidence-format.md": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/references/evidence-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_criteria_evidence.py": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_criteria_evidence.py": {
+          "destination": ".pi/skills/verify-criteria-have-evidence/tests/test_verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/changelog.txt": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/changelog.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/criteria.md": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/criteria.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/evidence.json": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/evidence.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/style-check.json": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/style-check.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run-before.txt": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/test-run-before.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/test-run.txt": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/examples/test-run.txt",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/evidence-format.md": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/references/evidence-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_criteria_evidence.py": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_criteria_evidence.py": {
+          "destination": ".gemini/skills/verify-criteria-have-evidence/tests/test_verify_criteria_evidence.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "examples/changelog.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "examples/criteria.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "examples/evidence.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "examples/style-check.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "examples/test-run-before.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "examples/test-run.txt": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/evidence-format.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/verify_criteria_evidence.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_verify_criteria_evidence.py"
+        ]
+      },
+      "tests/test_verify_criteria_evidence.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/verify_criteria_evidence.py with --criteria for the ticket checklist and --evidence for the evidence entries, and read its JSON verdict.",
+    "done_when": [
+      "The answer holds the verdict and every uncovered, contradicted or unknown criterion.",
+      "Every item of references/checklist.md has a yes, no or unknown reply in the answer."
+    ],
+    "stop_and_report_when": [
+      "The verdict is fail or refused.",
+      "The script finds no criteria in the checklist."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "artifacts/first-party-harness-candidates-2026-09-22/packages/software/map-independent-acceptance-evidence/SKILL.md": "c435c0b7d61b72286384ea6e7017e96a4a749d826f9653b2b5232343c51aa135",
+      "src/loop_engine/core/overnight_outcome.py": "9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314"
+    },
+    "package_digest": "db5a1d5f8f157925deb6befb52fdcff92a3be1c525945ef471483444f66016df",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

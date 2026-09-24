@@ -1,0 +1,118 @@
+PRECHECKS for wave 5 package portable_step_packet_plugin
+written 2026-09-24T05:49:09.868310+00:00 by the a11_session_plugins generator (third run)
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/portable_step_packet_plugin
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/portable_step_packet_plugin
+{"fill": "done", "files": 24, "package_digest": "94bcaa376e7fb45090b16b6124792149d7dcb974b79b16799ec2936e22413b36"}
+exit 0
+package_digest now 94bcaa376e7fb45090b16b6124792149d7dcb974b79b16799ec2936e22413b36; report digest 94bcaa376e7fb45090b16b6124792149d7dcb974b79b16799ec2936e22413b36; same: True
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260924T054541361238Z.json) ==
+{
+ "identity": "portable_step_packet_plugin",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "warning",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ }
+}
+
+== 3. per-check detail of that report ==
+[passed] layout
+[warning] manifest_schema
+  - no target is in the first native review profile; styles cannot be checked there
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[warning] effects
+  - tests/test_plugin_layout.py:15: URL 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json' in code
+[passed] network_static
+[passed] agent_skills_validator
+  - agentskills_pypi_0_1_1 skills/read-step-assignment: exit 0 Valid skill: TMP/read-step-assignment
+  - skills_ref_official_git skills/read-step-assignment: exit 0 Valid skill: TMP/read-step-assignment
+  - agentskills_pypi_0_1_1 skills/write-step-result: exit 0 Valid skill: TMP/write-step-result
+  - skills_ref_official_git skills/write-step-result: exit 0 Valid skill: TMP/write-step-result
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 38}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 38}
+[passed] hooks_run
+[passed] servers_run
+  - portable_step_packet_plugin: initialize, tools/list, tools/call and error answered
+
+== 4. check-all --assignment a11_session_plugins (report reports/precheck-all-20260924T054546657835Z.json) ==
+{
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "competition_plugin",
+  "data_cleanup_plugin",
+  "overnight_ticket_plugin",
+  "portable_step_packet_plugin",
+  "step_status_plugin"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+
+== 5. guard mutants run by the generator (each removes one guard in a scratch copy) ==
+-- mutants-portable-20260924T053924Z.txt
+required fields not checked: caught by ['test_check_function_reports_every_problem_at_the_top_level_only', 'test_known_wrong_result_is_refused_and_nothing_is_written']
+result numbers always start at 1: caught by ['test_existing_result_file_is_never_overwritten', 'test_good_result_is_written_as_001_then_002_and_never_replaced', 'test_too_many_results_stop_the_writer']
+secret shapes not scanned: caught by ['test_secret_shaped_text_is_refused_without_echo']
+boolean counted as integer: caught by ['test_top_level_types_are_checked']
+unsafe names accepted: NOT CAUGHT by []
+step folder containment removed: caught by ['test_linked_task_and_binary_files_are_not_read']
+any protocol version echoed: caught by ['test_initialize_answers_a_supported_version_and_never_a_newer_one']
+tool arguments not checked: caught by ['test_invalid_tool_arguments_are_protocol_errors']
+answer size not bounded: caught by ['test_answer_above_the_limit_becomes_a_tool_error']
+notifications answered: caught by ['test_notification_gets_no_answer_and_ping_answers_empty']
+-- mutants-portable-rerun-20260924T054043Z.txt
+unsafe names accepted: caught by ['test_a_name_that_is_not_text_is_refused_before_any_path_is_built']
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+- Both skill folders pass both Agent Skills validators (agentskills 0.1.1 and skills-ref).
+- The server was driven by a scripted client in the tests: version negotiation for three supported versions and two unsupported ones, notifications without answers, ping, tools/list equal to the contract files, all three tools, the protocol error codes, an oversized line and the answer bound.
+- Local test runs of the payload: 38 tests pass under Python 3.14 and 3.10.
+
+== 7. every pre-check report of this package, oldest first ==
+precheck-20260924T054335795078Z.json: passed_for_wave_gate=True digest=94bcaa376e7f refused=[]
+precheck-20260924T054541361238Z.json: passed_for_wave_gate=True digest=94bcaa376e7f refused=[]
+
+== 8. checks that failed or changed before the final pass ==
+- The first run left only the licence file; the third run wrote the package.
+- Mutant run 1: nine of ten guard mutants were caught. 'unsafe names accepted' was not, because a later path check refuses the same names; a test for non-text names was added and the rerun caught it.
+- The first check, precheck-20260924T054335795078Z, passed with two warnings: styles cannot be checked because Copilot and Cursor are outside the first native review profile, and a URL constant in the layout test. Both are explained in the review note.
+
+== 9. what could not run here ==
+- Native loading in Copilot and Cursor was not probed: neither binary is installed here, and the specification says not to run harness binaries for placement.
+- The mcpServers key of Agent Plugins mcp.json and ${PLUGIN_ROOT} filling by Copilot are not documented in a repository file; they stay in unverified_targets.

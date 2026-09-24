@@ -1,0 +1,1 @@
+{"conversation_id": "example-conversation-1", "generation_id": "example-generation-1", "hook_event_name": "sessionStart", "workspace_roots": ["/work/examples/night"], "session_id": "example-session-3", "is_background_agent": false, "composer_mode": "agent"}

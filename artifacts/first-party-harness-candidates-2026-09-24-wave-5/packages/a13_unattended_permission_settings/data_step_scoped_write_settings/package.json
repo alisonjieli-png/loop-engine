@@ -1,0 +1,264 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "data_step_scoped_write_settings",
+    "title": "Data step scoped write settings",
+    "purpose": "Harness settings for a data step that may read the raw input folder and write only to the declared output and report folders, with source code and raw data protected from edits.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/opencode_step_composition.py",
+      "src/loop_engine/core/harness_additional_recipes.py",
+      "src/loop_engine/core/harness_responses_recipes.py",
+      "src/loop_engine/core/harness_confinement.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_settings_fragment",
+    "search_tags": [
+      "data cleaning agent settings",
+      "keep raw data read only",
+      "agent may write only to output folder",
+      "claude code edit only data output",
+      "opencode edit permission by folder",
+      "protect source code from a data step",
+      "data/raw read only data/output writable",
+      "unattended data cleanup permissions",
+      "block python edits in a data step",
+      "scoped write permissions for an agent"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness permissions",
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "run"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a13_unattended_permission_settings",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "a941739862d7c4ff212cff1ea332dbd520c88608e4ebc12909bfb5bc8fc3b668",
+        "size_bytes": 1031,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_data_step_scoped_write_settings.py",
+        "digest": "444670742e2e407783ac2f846c71a25182fe6d1fb84f43e08c1a8586b015ba45",
+        "size_bytes": 42652,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_data_step_scoped_write_settings.py",
+        "digest": "3eccaef61514d753ed132de6190e7f185f11f206d7122955cbd098f20709ec77",
+        "size_bytes": 8720,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "f8267d9535485f56c2f895b8404826d79b4f6d3f075c679688cf919a7777a123",
+        "size_bytes": 578,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "453d9f65c25f46915077a988ebb1eaa91f7f9a96324ccf689d534a68db416217",
+        "size_bytes": 636,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a13_unattended_permission_settings",
+    "file_class": "settings_fragment",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "claude_code": "The permissions block and Edit(path) rules are documented; defaultMode dontAsk and the root-relative /path form were read from the installed Claude Code 2.1.281 schema and reference, not observed in a run.",
+      "opencode": "The permission block is documented; edit patterns as worktree-relative paths and last-match order were read from the installed OpenCode binary and repository source, not observed with this file."
+    },
+    "not_placed": {
+      "codex": "Codex workspace-write makes the whole workspace writable, so .codex/config.toml cannot protect raw data or source folders inside it.",
+      "gemini_cli": "Gemini CLI settings.json cannot limit write_file and replace to folders, and the project policy files that could are disabled in 0.59.0."
+    },
+    "native_name": "data-step-scoped-write-settings",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "opencode": "variants/opencode/opencode.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_data_step_scoped_write_settings.py": {
+          "destination": ".baltor/data-step-scoped-write-settings/scripts/check_data_step_scoped_write_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_data_step_scoped_write_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/data-step-scoped-write-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_data_step_scoped_write_settings.py": {
+          "destination": ".baltor/data-step-scoped-write-settings/scripts/check_data_step_scoped_write_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_data_step_scoped_write_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/data-step-scoped-write-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_data_step_scoped_write_settings.py"
+        ]
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_data_step_scoped_write_settings.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_data_step_scoped_write_settings.py"
+        ]
+      },
+      "scripts/check_data_step_scoped_write_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_data_step_scoped_write_settings.py"
+        ]
+      },
+      "tests/test_data_step_scoped_write_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "List data/raw/ and data/output/ to see the input tables and what output already exists.",
+    "done_when": [
+      "Every result is under data/output/ and every report under reports/.",
+      "No file in data/raw/, in the source code or in the harness settings changed."
+    ],
+    "stop_and_report_when": [
+      "A needed write would land outside data/output/ or reports/.",
+      "An action is refused; report the path or command instead of working around it."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/opencode_step_composition.py": "8c7dec6114ef18ccf281b62b1d3047d38a6add56032c4c7873ca2c1cd9d25209",
+      "src/loop_engine/core/harness_additional_recipes.py": "0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9",
+      "src/loop_engine/core/harness_responses_recipes.py": "13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7",
+      "src/loop_engine/core/harness_confinement.py": "e9fb6b8e374294bdc74341d3168253492ff3eab2df405b80315fa3da79730272",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7"
+    },
+    "package_digest": "86279c8dd3d3c0c826d430465a939295edfe66b18e40f94119e274bbdf59506b",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

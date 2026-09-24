@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Changelog writer reply",
+  "description": "The changelog entry that was added under the unreleased heading and the documentation passage that was updated or not found; or a refusal. The changed files are exactly changelog.path and, when doc.status is updated, doc.path. A caller confirms them with a diff check.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/result"
+    },
+    {
+      "$ref": "#/$defs/refusal"
+    }
+  ],
+  "$defs": {
+    "editable_path": {
+      "type": "string",
+      "minLength": 1,
+      "allOf": [
+        {
+          "not": {
+            "pattern": "(^|/)\\."
+          }
+        },
+        {
+          "not": {
+            "pattern": "(^|/)(AGENTS|CLAUDE|CLAUDE\\.local|GEMINI|SKILL)\\.md$"
+          }
+        }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "changelog",
+        "doc"
+      ],
+      "properties": {
+        "changelog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "section",
+            "line",
+            "entry"
+          ],
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/editable_path"
+            },
+            "section": {
+              "type": "string",
+              "pattern": "[Uu]nreleased|UNRELEASED",
+              "maxLength": 80,
+              "description": "The heading the entry went under; never a released version."
+            },
+            "line": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "entry": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 600
+            }
+          }
+        },
+        "doc": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "line",
+                "status",
+                "before"
+              ],
+              "properties": {
+                "path": {
+                  "$ref": "#/$defs/editable_path",
+                  "pattern": "\\.(md|markdown|rst|txt|adoc)$"
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "const": "updated"
+                },
+                "before": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 600,
+                  "description": "The replaced text, which a caller can find in the previous version of the page."
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "line",
+                "status",
+                "before"
+              ],
+              "properties": {
+                "path": {
+                  "type": "null"
+                },
+                "line": {
+                  "type": "null"
+                },
+                "status": {
+                  "const": "no_passage_found"
+                },
+                "before": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refused"
+      ],
+      "properties": {
+        "refused": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    }
+  }
+}

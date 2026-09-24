@@ -1,0 +1,10 @@
+{
+  "record_type": "experiment_proposal/v1",
+  "base": "E-003",
+  "config": {"model": "gradient_boosting", "learning_rate": 0.05, "n_estimators": 1200, "max_depth": 6, "features": "base_plus_dates", "folds": "group_5", "seed": 7},
+  "change": "Halve learning_rate to 0.05 and double n_estimators to 1200 from E-003.",
+  "reason": "More trees helped from E-002 to E-003, the learning rate was never changed, and depth above 8 ran out of memory.",
+  "expected_effect": {"metric": "rmse", "direction": "lower", "size": 0.003},
+  "cost": {"minutes": 40, "model_calls": 0},
+  "ending_rule": "Stop at 50 minutes, or after fold 1 if its rmse is above 0.415."
+}

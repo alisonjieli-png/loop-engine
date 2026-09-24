@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "portable_step_packet_plugin": {
+      "command": "python3",
+      "args": ["-I", "-B", "${PLUGIN_ROOT}/server/step_packet_server.py"]
+    }
+  }
+}

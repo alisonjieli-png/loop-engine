@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Step packet manifest read by the step status plugin",
+  "description": "The host writes this file after it renders the packet and before the harness starts. It has the fields of a focused_step_packet_candidate/v1 record. Unlike the Codex renderer, a file path may hold folders, because packets live under .baltor/step/, and any short harness style name is read. packet_content_sha256 is the SHA-256 of the files map written as JSON with sorted keys and no spaces.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "run_id", "step_id", "context_version", "state_version", "brief_sha256",
+               "harness_style", "state", "persistent_library_items_added", "packet_content_sha256", "files"],
+  "properties": {
+    "record_type": {"const": "focused_step_packet_candidate/v1"},
+    "run_id": {"$ref": "#/$defs/text"},
+    "step_id": {"$ref": "#/$defs/text", "description": "Equals node_id in the listed task.json."},
+    "context_version": {"type": "integer", "minimum": 1},
+    "state_version": {"type": "integer", "minimum": 1},
+    "brief_sha256": {"$ref": "#/$defs/digest"},
+    "harness_style": {"$ref": "#/$defs/text"},
+    "state": {"$ref": "#/$defs/text"},
+    "persistent_library_items_added": {"type": "integer", "minimum": 0},
+    "packet_content_sha256": {"$ref": "#/$defs/digest"},
+    "files": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 64,
+      "propertyNames": {"maxLength": 200, "pattern": "^(?!/)(?!.*\\\\)(?!(?:.*/)?\\.{1,2}(?:/|$))[^\\u0000-\\u001f]+$"},
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sha256", "size_bytes"],
+        "properties": {
+          "sha256": {"$ref": "#/$defs/digest"},
+          "size_bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "maxLength": 200},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

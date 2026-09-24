@@ -1,0 +1,316 @@
+=== check_package.py check (run 1) at 2026-09-23T20:14:45Z, exit 0
+{
+ "identity": "reproducible_competition_notebooks",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T201445634483Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands at 2026-09-23T20:16:31Z
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source src/loop_engine/code_nodes/kaggle_executor.py: 715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9 equals recorded digest
+manifest_schema source benchmarks/kaggle_competitions/contract.py: 5759990a0ca299e4b4f69c03548f6c79de97b44aa9c2afafa7e254dfdd6d8cc3 equals recorded digest
+manifest_schema source tools/candidate_review/ledger.py: 1d0ffaf9e88dbd05a625530f8e4d504f60dce9fec854f27d4b814c0f2d0c42f1 equals recorded digest
+identity: grep -Fx reproducible_competition_notebooks existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/reproducible-competition-notebooks.md: sha256 equals package.json, 1600 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/reproducible-competition-notebooks.md: sha256 equals package.json, 1600 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/reproducible-competition-notebooks.instructions.md: sha256 equals package.json, 1580 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/reproducible-competition-notebooks.mdc: sha256 equals package.json, 1764 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/reproducible-competition-notebooks.md: YAML front matter keys ['paths']
+parse: variants/cline/reproducible-competition-notebooks.md: YAML front matter keys ['paths']
+parse: variants/copilot/reproducible-competition-notebooks.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/reproducible-competition-notebooks.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Producer command trial at 2026-09-23T20:17:32Z (not a check_package.py pre-check and not a harness loading test)
+Bubblewrap sandbox: no network, private /tmp, synthetic repository, read-only /usr; exit 0
+first action: tail -n 5 experiments/ledger.jsonl
+{"time": "2026-09-23T01:00:00Z", "name": "baseline", "commit": "abc1234", "seed": 7, "fold_sha256": "989b89a05e3b53f5f40b3ef1d297cc46850f5dca78d3f6a80d25fa683e951357", "change": "first baseline", "fold_scores": [0.81, 0.79, 0.8], "mean": 0.8}
+RESULT positive: fold file checksum equals the ledger value
+known-wrong: folds rebuilt in a notebook with seed 123
+RESULT known-wrong: fold checksum differs from the ledger; the rule says stop and report
+grep -n fit train_example.py (the model reads each fit call):
+1:scaler.fit(pd.concat([train_x, test_x]))
+2:model.fit(train_x.iloc[tr], train_y.iloc[tr])
+
+=== Path pattern sanity table with Python 3.14 PurePath.full_match (4 patterns; not a harness glob engine)
+  intended  eda.ipynb: matched by **/*.ipynb
+  intended  notebooks/01_baseline.ipynb: matched by **/*.ipynb
+  intended  notebooks/features.py: matched by **/notebooks/**
+  intended  experiments/ledger.jsonl: matched by **/experiments/**
+  intended  train.py: matched by **/train*.py
+  intended  src/train_lgbm.py: matched by **/train*.py
+  unrelated src/features.py: no match
+  unrelated README.md: no match
+  unrelated data/raw/train.csv: no match
+  unrelated src/model/predict.py: no match
+  summary: 6/6 intended paths matched, 4/4 unrelated paths stayed out
+
+=== Producer command trial, second version after aligning with sibling wave 5 packages, at 2026-09-23T20:25:09Z
+(not a check_package.py pre-check and not a harness loading test; Bubblewrap sandbox, no network, private /tmp; a06 pick_next_experiment helper scripts/experiment_ledger.py bound read-only, sha256 7d2b3f7b5934a31714eb672ee614adf05cdd448f0a5c70c5ce05d274f919e490, as present in this wave folder at trial time; exit 0)
+first action: tail -n 5 .baltor/experiments/ledger.jsonl
+{"record_type": "experiment_ledger/v1", "metric": "auc", "direction": "higher", "budget_minutes": 600}
+{"id": "E-001", "status": "done", "config": {"model": "logistic", "features": "base", "seed": 7, "folds_sha256": "989b89a05e3b53f5f40b3ef1d297cc46850f5dca78d3f6a80d25fa683e951357"}, "score": 0.8, "fold_scores": [0.81, 0.79, 0.8], "commit": "base"}
+{"id": "E-002", "status": "planned", "config": {"model": "logistic", "features": "base_plus_dates", "seed": 7, "folds_sha256": "989b89a05e3b53f5f40b3ef1d297cc46850f5dca78d3f6a80d25fa683e951357"}}
+RESULT positive: fold file checksum equals the ledger's
+step 5 as the rule says: update the planned line E-002 in the ledger's format
+{"id": "E-002", "status": "done", "config": {"model": "logistic", "features": "base_plus_dates", "seed": 7, "folds_sha256": "989b89a05e3b53f5f40b3ef1d297cc46850f5dca78d3f6a80d25fa683e951357"}, "score": 0.82, "fold_scores": [0.83, 0.81, 0.82], "commit": "<short commit>"}
+the a06 pick_next_experiment helper reads the ledger written this way:
+exit 0
+{'record_type': 'experiment_ledger_summary/v1', 'best': {'id': 'E-002', 'score': 0.82, 'config': {'model': 'logistic', 'features': 'base_plus_dates', 'seed': 7, 'folds_sha256': '989b89a05e3b53f5f40b3ef1d297cc46850f5dca78d3f6a80d25fa683e951357'}}, 'open': [], 'failed': []}
+known-wrong 1: a line in another shape (this rule's first draft format) appended to the same ledger
+a06 helper exit 2: ledger line 4 needs an id of letters, digits, '.', '-' or '_'
+known-wrong 2: folds rebuilt in a notebook with seed 123
+RESULT known-wrong 2: fold checksum differs from the ledger's; the rule says stop and report
+grep -n fit train_example.py (the model reads each fit call):
+1:scaler.fit(pd.concat([train_x, test_x]))
+2:model.fit(train_x.iloc[tr], train_y.iloc[tr])
+
+
+=== check_package.py fill after the alignment edits at 2026-09-23T20:28:03Z
+{"fill": "done", "files": 5, "package_digest": "ab32e1d90ebd8de6514279a0391d272a0545c3a3b365c4622bca7cc8d0c5bc15"}
+
+=== check_package.py check (run 2, after the alignment edits and the final review note) at 2026-09-23T20:28:35Z, exit 0
+{
+ "identity": "reproducible_competition_notebooks",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202835451709Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (run 3 for every package) at 2026-09-23T20:29:11Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T202912182077Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260923T202911832016Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260923T202911919458Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260923T202912008509Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260923T202912092138Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260923T202912181327Z.json']
+
+=== Checker controls (scout/test_check_package.py and scout/test_packet_fixture.py) at 2026-09-23T20:30:25Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 5.119s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.244s OK 
+
+=== Summary before the final check run
+Package: packages/a08_path_scoped_rules/reproducible_competition_notebooks (file class rules_file; targets cursor, copilot, cline, claude_code)
+Current package_digest: ab32e1d90ebd8de6514279a0391d272a0545c3a3b365c4622bca7cc8d0c5bc15
+  precheck-20260923T201445634483Z.json: passed_for_wave_gate True, package_digest 902adb69c516064f, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202835451709Z.json: passed_for_wave_gate True, package_digest ab32e1d90ebd8de6, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202912181327Z.json: passed_for_wave_gate True, package_digest ab32e1d90ebd8de6, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+agent_skills_validator is skipped because the payload holds no SKILL.md; tests_run, hooks_run and servers_run pass with nothing to run because the payload holds no Python, hook or server.
+This log sits in review/ because the checker's layout check refuses any extra entry at the package top level (only package.json, payload and review are allowed).
+
+=== check_package.py check (final run) at 2026-09-23T20:32:00Z, exit 0: passed_for_wave_gate and report: True review/precheck-20260923T203200774409Z.json
+
+=== Repair round 2 by the a08 repairer, record written at 2026-09-24T05:26:53Z
+Reason: the wave critic's verdict of 2026-09-23 for this package was repair (evidence: critic-a08_path_scoped_rules/critic-2/ in the wave folder).
+Predecessor state: unchanged since the producer's final check of 2026-09-23T20:31:59Z. An interrupted earlier repair attempt only took the snapshot repair-a08_path_scoped_rules/a08-predecessor-snapshot-20260924T005624Z.tar.gz (sha256 c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068). The repairer's own snapshot repair-a08_path_scoped_rules/round-2/a08-before-round-2-20260924T051531Z.tar.gz has the same sha256 (c8a03dcf67fe2f7be1ceb236901ffe1201cfe15577774b222091d78a19f50068), and an extracted copy equaled the package folder.
+Body word count by the checker's own count: 248 before round 2; first round 2 draft 288; final 250 (limit 40 to 250).
+Critic findings and repairs:
+  - 1. Commit and fold checksum inside config disabled the a06 repeat refusal (critic trials N1 and N3)
+    repair: Step 6 keeps the seed in config and puts commit, diff_sha256, folds_sha256, fold_scores and score beside config; trials N-pos (refused, exit 1) and N-kw (appended, exit 0).
+  - 2. Undeclared hard dependency on a ledger and a fold file (critic trial N2)
+    repair: Purpose and dependencies name both; with no ledger the facts go into the report instead of a stop; a missing fold file stays a stop case; trial N-noledger.
+  - 3. The commit alone does not identify code run from uncommitted changes
+    repair: Step 5 stages new code files by name and records git rev-parse HEAD and git diff HEAD -- '*.py' '*.ipynb' | sha256sum; trial N-code.
+  - 4. The ledger contract is not settled across the wave
+    repair: Recorded for the integrator with trial evidence: a06 refuses an a10 record (exit 2), the a02 ranker refuses a06 lines (exit 2) and ranks them after a per-fold conversion (exit 0).
+  - 5. The note's append-only claim was wrong
+    repair: Corrected in the review note: step 6 completes a planned line in place because a06 refuses a repeated id.
+  - 6. Over-triggering on exploration notebooks and web experiments
+    repair: Applies to now says the rule covers only notebooks and scripts that train or score a model.
+
+=== Repair trials, round 2 (not check_package.py pre-checks and not harness loading tests)
+script repair-a08_path_scoped_rules/round-2/trials/repair_trials.sh, sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+full output: repair-a08_path_scoped_rules/round-2/trials/repair-trials-output-1.txt
+# repair_trials.sh run at 2026-09-24T05:14:41Z in Bubblewrap (no network, private /tmp, read-only /usr)
+# a06 helper sha256 7d2b3f7b5934a31714eb672ee614adf05cdd448f0a5c70c5ce05d274f919e490
+# a15 verifier sha256 78ff2638115c66a958b0b282ea044082698477deca47672d3a8cca2a3edb0645
+# trial script sha256 1f89a55ac43e5aafb72ca3b53ca083dc0d2ece6a515a85d3da6ddc6655347fed
+=== N-pos reproducible_competition_notebooks: a06 ledger written as the repaired step 6 says
+first action: tail -n 5 .baltor/experiments/ledger.jsonl
+{"record_type": "experiment_ledger/v1", "metric": "rmse", "direction": "lower", "ignore_keys": ["run_label"], "budget_minutes": 600}
+{"id": "E-001", "status": "done", "config": {"model": "gradient_boosting", "n_estimators": 300, "max_depth": 6, "features": "base", "folds": "group_5"
+{"id": "E-002", "status": "failed", "config": {"model": "gradient_boosting", "n_estimators": 300, "max_depth": 10, "features": "base", "folds": "group
+a06 summary: exit 0 best E-001
+RESULT N-pos 1 (critic N1 case, repeat of E-001): a06 propose exit 1 already ran or is listed as E-001 (status done)
+RESULT N-pos 2 (critic N3 case, best's config with one key changed repeats the failed E-002): a06 propose exit 1 already ran or is listed as E-002 (status failed)
+=== N-kw known-wrong: the predecessor's step 5, commit and fold checksum inside config
+RESULT N-kw: a06 propose exit 0 ("appended": true), the failed configuration is planned again
+=== N-code: step 5 code identity with a new notebook, a tracked ledger and the later commit
+without staging the new notebook is missing from the diff; after git add -- PATH the hash covers it
+a changed tracked ledger leaves the code hash unchanged
+RESULT N-code: git diff START HEAD over the same paths after the commit gives the recorded hash, so the run's code can be confirmed later
+=== N-noledger (critic N2): first action in a project without a ledger
+tail: cannot open '.baltor/experiments/ledger.jsonl' for reading: No such file or directory
+tail exit 1; the repaired step 6 says: with no ledger, report these facts instead (no stop case names a missing ledger)
+=== N-folds: the step 7 fold checksum
+ledger folds_sha256 recorded: 2ef178e2460ea8271ae340c9beedf20f40125b6c746616819e2cdb64eae6a02b
+RESULT N-folds: folds rebuilt with seed 123 give another checksum, so the first stop case applies
+
+=== Supplementary ledger trials, round 2: script repair-a08_path_scoped_rules/round-2/trials/repair_trials_2.sh, sha256 c6e13d4888df71ea6ef7e36f6091fd727bbe80b28f0e3f1d16d36bd3c0e7a426
+# repair_trials_2.sh run at 2026-09-24T05:20:44Z in Bubblewrap (no network, private /tmp, read-only /usr)
+# a06 helper sha256 7d2b3f7b5934a31714eb672ee614adf05cdd448f0a5c70c5ce05d274f919e490
+# a02 ranker sha256 e7db328fb8ae71decce6730f60a8d7f850fb52ee72d35a5e36790f9af6ec3e26
+# a10 example record sha256 119a4b2e72f4a847795896d4f7d98d7fe332b60b5f30235729e2b4b1e0d323ef
+# trial script sha256 c6e13d4888df71ea6ef7e36f6091fd727bbe80b28f0e3f1d16d36bd3c0e7a426
+RESULT N-a10: a06 summary on a ledger holding one a10 experiment_record/v1 line: exit 2 the first ledger line must be the header with record_type experiment_ledger/v1
+RESULT N-a02: a02 ranker on the ledger written as step 6 says: exit 2 ledger_field_missing record 1 has no ['run', 'fold', 'score']
+a02 ranker after a one-line conversion to one record per run and fold: exit 0 leader E-001
+# sandbox exit status 0
+
+=== check_package.py fill, round 2
+reproducible_competition_notebooks 2026-09-24T05:17:35Z exit 0 {"fill": "done", "files": 5, "package_digest": "302de4a1d43013db3da9991ccb38c1655872c1ae305785203a94e0388cfd4c73"}
+
+=== check_package.py check (round 2, run 1) at 2026-09-24T05:22:31Z, exit 0
+{
+ "identity": "reproducible_competition_notebooks",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "warning",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052231795439Z.json"
+}
+
+[warning] effects
+  - reads_fs is declared but no step or code was detected using it; the reviewer judges
+  - writes_fs is declared but no step or code was detected using it; the reviewer judges
+
+=== Section 12 equivalent commands, round 2 (script repair-a08_path_scoped_rules/round-2/section12.py)
+layout: find PKG -type l -o -empty -> exit 0, output: [] (expected empty)
+layout: top-level entries ['package.json', 'payload', 'review']
+manifest_schema source src/loop_engine/core/service_runtime/catalogue_packages.py: 05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77 equals recorded digest
+manifest_schema source src/loop_engine/code_nodes/kaggle_executor.py: 715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9 equals recorded digest
+manifest_schema source benchmarks/kaggle_competitions/contract.py: 5759990a0ca299e4b4f69c03548f6c79de97b44aa9c2afafa7e254dfdd6d8cc3 equals recorded digest
+manifest_schema source tools/candidate_review/ledger.py: 1d0ffaf9e88dbd05a625530f8e4d504f60dce9fec854f27d4b814c0f2d0c42f1 equals recorded digest
+identity: grep -Fx reproducible_competition_notebooks existing-identities.txt -> exit 1, output: [] (exit 1 and empty means no collision)
+inventory: LICENSE: sha256 equals package.json, 1068 bytes, mode 644, media text/plain, role other
+inventory: variants/claude_code/reproducible-competition-notebooks.md: sha256 equals package.json, 1674 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cline/reproducible-competition-notebooks.md: sha256 equals package.json, 1674 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/copilot/reproducible-competition-notebooks.instructions.md: sha256 equals package.json, 1654 bytes, mode 644, media text/markdown, role instruction_file
+inventory: variants/cursor/reproducible-competition-notebooks.mdc: sha256 equals package.json, 1838 bytes, mode 644, media text/markdown, role instruction_file
+parse: package.json loads as JSON
+parse: variants/claude_code/reproducible-competition-notebooks.md: YAML front matter keys ['paths']
+parse: variants/cline/reproducible-competition-notebooks.md: YAML front matter keys ['paths']
+parse: variants/copilot/reproducible-competition-notebooks.instructions.md: YAML front matter keys ['applyTo']
+parse: variants/cursor/reproducible-competition-notebooks.mdc: Cursor key: value front matter keys ['description', 'globs', 'alwaysApply']
+variants: 1 distinct body across the four variants; pattern lists identical: True (4 patterns)
+network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' PKG/payload -> exit 1, output: [] (exit 1 and empty means no match)
+vocabulary: em, en and horizontal-bar dashes in payload files: []
+tests_run, hooks_run, servers_run: not applicable; the payload holds no Python file, hook or server, and wave5.tests is null.
+agent_skills_validator: not applicable; the payload holds no SKILL.md.
+
+=== Checker controls at 2026-09-24T05:23:02Z; checker sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+test_check_package.py exit 0: Ran 19 tests in 6.305s OK 
+test_packet_fixture.py exit 0: Ran 2 tests in 0.369s OK
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, run 2 for every package) at 2026-09-24T05:23:15Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052316446598Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052315986719Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052316096787Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052316205964Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052316318144Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052316445735Z.json']
+
+=== check_package.py check-all --assignment a08_path_scoped_rules (round 2, final) at 2026-09-24T05:25:45Z, exit 0
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052546986002Z.json
+passed_for_wave_gate: ['applied_migrations_stay_unchanged', 'generated_files_stay_unedited', 'honest_test_changes', 'raw_data_stays_read_only', 'reproducible_competition_notebooks']
+per-package reports: ['packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T052546052430Z.json', 'packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T052546309881Z.json', 'packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T052546546543Z.json', 'packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T052546743652Z.json', 'packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T052546984753Z.json']
+
+=== Summary after repair round 2
+Current package_digest: 302de4a1d43013db3da9991ccb38c1655872c1ae305785203a94e0388cfd4c73
+  precheck-20260923T201445634483Z.json: passed_for_wave_gate True, package_digest 902adb69c516064f, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202835451709Z.json: passed_for_wave_gate True, package_digest ab32e1d90ebd8de6, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T202912181327Z.json: passed_for_wave_gate True, package_digest ab32e1d90ebd8de6, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260923T203200774409Z.json: passed_for_wave_gate True, package_digest ab32e1d90ebd8de6, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052231795439Z.json: passed_for_wave_gate True, package_digest 302de4a1d43013db, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052316445735Z.json: passed_for_wave_gate True, package_digest 302de4a1d43013db, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+  precheck-20260924T052546984753Z.json: passed_for_wave_gate True, package_digest 302de4a1d43013db, not-passed checks {'effects': 'warning', 'agent_skills_validator': 'skipped'}
+No check_package.py run of either round refused this package. The only warning in every run: reads_fs and writes_fs are declared from the text of the steps and not found in code (see the review note, Effects).
+Candidate only. Not approved, staged, served or published. The package waits for the independent review panel.

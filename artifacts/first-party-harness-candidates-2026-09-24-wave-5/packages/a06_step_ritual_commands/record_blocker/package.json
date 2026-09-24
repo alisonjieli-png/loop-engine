@@ -1,0 +1,480 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "record_blocker",
+    "title": "Record a blocker and move on",
+    "purpose": "When a step cannot proceed, write a blocker record with what was tried, the exact error and what is needed from whom, mark the ticket blocked and continue with the next queued item.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md",
+      "src/loop_engine/core/node_provisioning.py",
+      "docs/guides/native-client-material-loading.md"
+    ],
+    "layer": "context",
+    "family": "native_command",
+    "search_tags": [
+      "record a blocker",
+      "agent is stuck on a ticket",
+      "mark ticket blocked and move on",
+      "skip to the next ticket",
+      "write down the exact error",
+      "who can unblock this",
+      "blocked ticket record",
+      "overnight run keeps going after a failure",
+      "hold tickets that depend on a blocked one"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main",
+      "command_new",
+      "command_file",
+      "check_record",
+      "log_problem",
+      "dependents",
+      "next_ticket",
+      "settings_mode"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a06_step_ritual_commands",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/night-queue-status.schema.json",
+        "digest": "a4238f345ed8ffd7c68d28cbe91ee2b1a0abd7612318596990eae6c64f6bd33c",
+        "size_bytes": 3443,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/night-queue.schema.json",
+        "digest": "3bfd64a9bf8b7a636068756b3319de20398cffddef1ba5efd27d25a79e993f15",
+        "size_bytes": 4907,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/blocker-example.md",
+        "digest": "472f33f1f94d32113083977ffe375f988109a84891b371dfaee1a6680ca65303",
+        "size_bytes": 642,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "examples/queue-status.json",
+        "digest": "c7464cb1234d5086100edcee2f9f75c48a1eaee9a693f81e359062042ce8ddf4",
+        "size_bytes": 344,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/queue.json",
+        "digest": "b4cba8c7ddccce45601e87ff8661986d816e0f72d44caf74e6aab36f5010491e",
+        "size_bytes": 1494,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/blocker.py",
+        "digest": "f34ca5af0008c3881fc53d99c26e283513aad461229fa1b5e45c5aa3da27c2d9",
+        "size_bytes": 23078,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_blocker.py",
+        "digest": "05f9ef8554948fc90ec17869ac59fe11b8525581bb54a8f1c597a131e2153130",
+        "size_bytes": 21478,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/record-blocker.md",
+        "digest": "f389c6af044c733044686ffcd773a94e7c430146c80533400a1b52720db33a2e",
+        "size_bytes": 2294,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/copilot/record-blocker.prompt.md",
+        "digest": "9b63249c5eedb0cec63e06969665f7dec576539b1bb5ef0ee7aed3021153bfd2",
+        "size_bytes": 2318,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/record-blocker.md",
+        "digest": "734a606784a710931be9b0b2ce3100eb6ccd55dd55fe4f64161beb18b9a62196",
+        "size_bytes": 2138,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/record-blocker.toml",
+        "digest": "0408f3eed0ed18b3d73168aaa43e7093986a8ed266c082e178a0737a1fb3e3c8",
+        "size_bytes": 2272,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/opencode/record-blocker.md",
+        "digest": "001507abf41ddf57a1b2c56d986372e5754d19bf90793f7325548844f2bf65c9",
+        "size_bytes": 2265,
+        "media_type": "text/markdown",
+        "role": "command"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a06_step_ritual_commands",
+    "file_class": "command_file",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli",
+      "opencode",
+      "copilot",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "copilot": "The prompt file folder .github/prompts/ is unverified in the wave placement table. The agent: agent front matter follows the VS Code prompt file documentation read by the repairer on 2026-09-24; native loading was not observed.",
+      "cursor": "The command folder .cursor/commands/ is unverified in the wave placement table. The Cursor documentation page read by the repairer on 2026-09-24 described skills and no project command folder, and native loading was not observed."
+    },
+    "not_placed": {},
+    "native_name": "record-blocker",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/record-blocker.md",
+      "gemini_cli": "variants/gemini_cli/record-blocker.toml",
+      "opencode": "variants/opencode/record-blocker.md",
+      "copilot": "variants/copilot/record-blocker.prompt.md",
+      "cursor": "variants/cursor/record-blocker.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/record-blocker.md": {
+          "destination": ".claude/commands/record-blocker.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/blocker.py": {
+          "destination": ".baltor/record-blocker/scripts/blocker.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue.json": null,
+        "examples/blocker-example.md": {
+          "destination": ".baltor/record-blocker/examples/blocker-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/record-blocker/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_blocker.py": null,
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue-status.json": null
+      },
+      "gemini_cli": {
+        "variants/gemini_cli/record-blocker.toml": {
+          "destination": ".gemini/commands/record-blocker.toml",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/blocker.py": {
+          "destination": ".baltor/record-blocker/scripts/blocker.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue.json": null,
+        "examples/blocker-example.md": {
+          "destination": ".baltor/record-blocker/examples/blocker-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/record-blocker/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_blocker.py": null,
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue-status.json": null
+      },
+      "opencode": {
+        "variants/opencode/record-blocker.md": {
+          "destination": ".opencode/commands/record-blocker.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/blocker.py": {
+          "destination": ".baltor/record-blocker/scripts/blocker.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue.json": null,
+        "examples/blocker-example.md": {
+          "destination": ".baltor/record-blocker/examples/blocker-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/record-blocker/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_blocker.py": null,
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue-status.json": null
+      },
+      "copilot": {
+        "variants/copilot/record-blocker.prompt.md": {
+          "destination": ".github/prompts/record-blocker.prompt.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/blocker.py": {
+          "destination": ".baltor/record-blocker/scripts/blocker.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue.json": null,
+        "examples/blocker-example.md": {
+          "destination": ".baltor/record-blocker/examples/blocker-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/record-blocker/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_blocker.py": null,
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue-status.json": null
+      },
+      "cursor": {
+        "variants/cursor/record-blocker.md": {
+          "destination": ".cursor/commands/record-blocker.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/blocker.py": {
+          "destination": ".baltor/record-blocker/scripts/blocker.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue.json": null,
+        "examples/blocker-example.md": {
+          "destination": ".baltor/record-blocker/examples/blocker-example.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/record-blocker/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_blocker.py": null,
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/record-blocker/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/queue-status.json": null
+      }
+    },
+    "file_extensions": {
+      "variants/claude_code/record-blocker.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "variants/gemini_cli/record-blocker.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "variants/opencode/record-blocker.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "variants/copilot/record-blocker.prompt.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "variants/cursor/record-blocker.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "scripts/blocker.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "tests/test_blocker.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/queue.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "examples/blocker-example.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/night-queue.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "contracts/night-queue-status.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      },
+      "examples/queue-status.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_blocker.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/record-blocker/scripts/blocker.py new --root . and open the record path it prints.",
+    "done_when": [
+      "file exits 0: the record passed its check, the ticket is blocked in .baltor/night/queue-status.json and next and continue_with are reported.",
+      "The record holds the exact error lines or a saved log that holds them, what was tried, what is needed and from whom."
+    ],
+    "stop_and_report_when": [
+      "A helper run exits 2, apart from one repeat with --ticket when a ticket id was given with the command.",
+      "continue_with is null; not_started_because says why, and the host starts the next ticket.",
+      "The same finding remains after two changes to the record.",
+      "Neither the error text nor a saved log exists; the attempt is reported and no error is invented."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md": "d6f1eb1aba11810ccc3b30c1fdd01931715ed101f090c5e9d0682b05e0eab509",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf"
+    },
+    "package_digest": "bab3def4d0f78e7c16aa3cc597eb8dc71142b907d027a297f676f68fa4e84752",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

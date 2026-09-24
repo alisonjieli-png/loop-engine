@@ -1,0 +1,179 @@
+=== 2026-09-23T20:27:34Z run 1: python3 check_package.py fill packages/a02_competition_modeling_tools/build_group_stratified_folds
+{"fill": "done", "files": 4, "package_digest": "cac294bf54185dd59cc8ff38fd5e0ffd05430201d4f66021650f9ac652010527"}
+exit 0
+=== 2026-09-23T20:27:34Z run 1: python3 check_package.py check packages/a02_competition_modeling_tools/build_group_stratified_folds
+{
+ "identity": "build_group_stratified_folds",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202736508253Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:37:12Z run 2 after payload change: entry commands use python3 -I -B
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/build_group_stratified_folds
+{"fill": "done", "files": 4, "package_digest": "c923c320dea8c868a7565d8f8f50afdb071663a8394cd299709797b85212782d"}
+exit 0
+=== 2026-09-23T20:37:12Z run 2: python3 check_package.py check packages/a02_competition_modeling_tools/build_group_stratified_folds
+{
+ "identity": "build_group_stratified_folds",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203714290688Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:38:00Z run 3: python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203800086149Z.json
+exit 0
+
+=== 2026-09-24T05:27:15Z run 4 (repair round 2) after payload change: tie-aware label bins, relative label cost, checks at_least_two_label_strata and each_label_in_every_fold with hints, --allow-missing-labels, group values compared without surrounding spaces, report v2, version 0.2.0
+=== note: a dry iteration ran first (fill at 2026-09-24T05:21:36Z, then the checker with write=False: passed, no report file); its output is in repair-a02_competition_modeling_tools/round-2-20260924T0501Z/evidence/dry-iterations.txt
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/build_group_stratified_folds
+{
+ "fill": "refused",
+ "undeclared_payload_files": [
+  "tests/__pycache__/test_build_group_folds.cpython-314.pyc"
+ ],
+ "declared_but_missing": []
+}
+exit 1
+=== 2026-09-24T05:27:15Z run 4: python3 check_package.py check packages/a02_competition_modeling_tools/build_group_stratified_folds
+{
+ "identity": "build_group_stratified_folds",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "refused",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "refused",
+  "text_hygiene": "refused",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "refused",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052728678397Z.json"
+}
+
+[refused] layout
+  - generated, cache or secret-like name payload/tests/__pycache__
+  - generated, cache or secret-like name payload/tests/__pycache__/test_build_group_folds.cpython-314.pyc
+
+[refused] inventory
+  - declared files differ from payload: undeclared ['tests/__pycache__/test_build_group_folds.cpython-314.pyc'], missing []
+  - wave5.file_extensions has one entry for every payload file
+
+[refused] text_hygiene
+  - tests/__pycache__/test_build_group_folds.cpython-314.pyc: not UTF-8
+
+[refused] placements
+  - claude_code: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement
+  - codex: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement
+  - opencode: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement
+  - pi: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement
+  - gemini_cli: payload file tests/__pycache__/test_build_group_folds.cpython-314.pyc has no placement
+exit 1
+
+=== 2026-09-24T05:28:30Z run 5 (repair round 2) after removing payload/tests/__pycache__: run 4 was refused (layout, inventory, text_hygiene, placements) because a repairer probe imported the test module without -B at 2026-09-24T05:23:16Z and left a bytecode cache in the payload; the refused report review/precheck-20260924T052728678397Z.json is kept. No payload file changed.
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/build_group_stratified_folds
+{"fill": "done", "files": 4, "package_digest": "ef1f62decd001f05de3a0e8d24f4f7546766dc6c5dd6d25f0f2af488bf79fbf6"}
+exit 0
+=== 2026-09-24T05:28:30Z run 5: python3 check_package.py check packages/a02_competition_modeling_tools/build_group_stratified_folds
+{
+ "identity": "build_group_stratified_folds",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052836726870Z.json"
+}
+exit 0
+
+=== 2026-09-24T05:28:52Z run 6 (repair round 2, final): python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052912778385Z.json
+exit 0

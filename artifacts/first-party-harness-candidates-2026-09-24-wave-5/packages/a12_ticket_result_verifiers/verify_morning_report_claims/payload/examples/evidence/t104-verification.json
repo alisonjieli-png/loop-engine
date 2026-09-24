@@ -1,0 +1,78 @@
+{
+ "record_type": "ticket_fix_verification_run/v1",
+ "ticket_id": "T-104",
+ "verdict": "ready_for_review",
+ "base_revision": "3f5c2a9e8d7b6a5f4e3d2c1b0a9f8e7d6c5b4a39",
+ "head_revision": "3f5c2a9e8d7b6a5f4e3d2c1b0a9f8e7d6c5b4a39",
+ "checks": [
+  {
+   "name": "head_at_base_revision",
+   "passed": true,
+   "detail": "HEAD is the base revision"
+  },
+  {
+   "name": "reproduction_test_unchanged",
+   "passed": true,
+   "detail": "the reproduction test has the recorded digest"
+  },
+  {
+   "name": "changed_paths_allowed",
+   "passed": true,
+   "detail": "every changed path is under an allowed prefix"
+  },
+  {
+   "name": "changed_file_count",
+   "passed": true,
+   "detail": "2 changed files; the limit is 4"
+  },
+  {
+   "name": "relevant_tests_pass",
+   "passed": true,
+   "detail": "exit code 0"
+  },
+  {
+   "name": "full_tests_pass",
+   "passed": true,
+   "detail": "exit code 0"
+  }
+ ],
+ "failed_checks": [],
+ "changed_paths": [
+  "shop/cart_badge.py",
+  "tests/test_cart_badge.py"
+ ],
+ "paths_outside_allowed": [],
+ "ignored_paths": [],
+ "reproduction_test_file": "tests/test_cart_badge.py",
+ "reproduction_test_sha256_expected": "5b0e7c2d4a91f3e8b6c7d2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a39281",
+ "reproduction_test_sha256_found": "5b0e7c2d4a91f3e8b6c7d2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a39281",
+ "runs": {
+  "relevant": {
+   "ran": true,
+   "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-rA",
+    "tests/test_cart_badge.py"
+   ],
+   "exit_code": 0,
+   "timed_out": false,
+   "output_tail": "4 passed in 0.03s\n"
+  },
+  "full": {
+   "ran": true,
+   "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-rA",
+    "tests"
+   ],
+   "exit_code": 0,
+   "timed_out": false,
+   "output_tail": "37 passed in 0.41s\n"
+  }
+ },
+ "written_at": "2026-09-23T03:10:44Z"
+}

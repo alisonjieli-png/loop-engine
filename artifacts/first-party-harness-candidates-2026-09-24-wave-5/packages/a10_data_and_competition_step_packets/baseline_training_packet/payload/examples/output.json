@@ -1,0 +1,85 @@
+{
+ "record_type": "experiment_record/v1",
+ "run_id": "baseline-ridge-01",
+ "step": "baseline_training",
+ "task_type": "binary",
+ "id_column": "customer_id",
+ "target_column": "renewed",
+ "metric": {
+  "name": "auc",
+  "direction": "maximize"
+ },
+ "model": {
+  "baseline": "ridge",
+  "features": [
+   "tenure_months",
+   "monthly_spend"
+  ],
+  "parameters": {
+   "ridge_alpha": 1.0,
+   "group_smoothing": 10.0,
+   "logistic_slope_penalty": 1.0
+  },
+  "target_transform": "none",
+  "probability": "logistic_fit_on_training_scores",
+  "dropped_features": {}
+ },
+ "folds": {
+  "path": "work/folds/folds.csv",
+  "sha256": "1538fb7357d2f7c3afe03e5a0af439a17d3b9a0b7f9d6489512c4e833aa2522a",
+  "count": 4,
+  "rows_per_fold": {
+   "0": 10,
+   "1": 10,
+   "2": 10,
+   "3": 10
+  }
+ },
+ "data": {
+  "train": {
+   "path": "competition/data/train.csv",
+   "sha256": "5f41e0d05814201cfc2ecf6d2080814db1385c526f43e836566cf65415cc5c56",
+   "rows": 40
+  },
+  "test": {
+   "path": "competition/data/test.csv",
+   "sha256": "53f0e4f0f7c42a82a15157fea1592fc7001cced25f6ba75b055cd6244951da87",
+   "rows": 12
+  }
+ },
+ "fold_scores": [
+  1.0,
+  0.96,
+  0.9166666667,
+  0.8333333333
+ ],
+ "mean_score": 0.9275,
+ "std_score": 0.0618409699,
+ "reference_constant": {
+  "fold_scores": [
+   0.5,
+   0.5,
+   0.5,
+   0.5
+  ],
+  "mean_score": 0.5
+ },
+ "flags": [],
+ "outputs": {
+  "oof": {
+   "path": "work/experiments/baseline-ridge-01.oof.csv",
+   "sha256": "6a91c722ed347ede3b7f491d70cc60e25d9868787eeb009ac372ed7fc5d0f601",
+   "rows": 40
+  },
+  "test_predictions": {
+   "path": "work/experiments/baseline-ridge-01.test.csv",
+   "sha256": "6501f4bf1b22f5ac5b921d72a5e442a8d308ee62f0fc1c717b707b19a20a0b92",
+   "rows": 12
+  }
+ },
+ "test_prediction_rule": "mean_of_fold_models",
+ "script": {
+  "name": "train_baseline.py",
+  "sha256": "32bba82b26f41402e70d8619e1a30722cce4cd6b05cbe03e8850758597db7f2d"
+ }
+}

@@ -1,0 +1,121 @@
+=== 2026-09-23T20:27:40Z run 1: python3 check_package.py fill packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{"fill": "done", "files": 4, "package_digest": "f7f40889315eca6830c25259e9cdcd8ae7be0ec32b20e5d0fe5a79f7c3f6fa85"}
+exit 0
+=== 2026-09-23T20:27:40Z run 1: python3 check_package.py check packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{
+ "identity": "target_encode_out_of_fold",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202742515394Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:37:19Z run 2 after payload change: entry commands use python3 -I -B
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{"fill": "done", "files": 4, "package_digest": "9fa14e9c8f952aaba9019e37f37f915911b9c139be6f9ab9c084e8cb8ee6393e"}
+exit 0
+=== 2026-09-23T20:37:19Z run 2: python3 check_package.py check packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{
+ "identity": "target_encode_out_of_fold",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203721512343Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:38:00Z run 3: python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203800086149Z.json
+exit 0
+
+=== 2026-09-24T05:27:48Z run 4 (repair round 2) after payload change: at most 100 folds, --check-group-column for fold files, second-order effect stated in the entry, version 0.2.0
+=== note: a dry iteration ran first (fill at 2026-09-24T05:21:36Z, then the checker with write=False: passed, no report file); its output is in repair-a02_competition_modeling_tools/round-2-20260924T0501Z/evidence/dry-iterations.txt
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{"fill": "done", "files": 4, "package_digest": "a38930c3f10053aace43063b79adab92d3fa83cbcdc08114c1ee085312678648"}
+exit 0
+=== 2026-09-24T05:27:48Z run 4: python3 check_package.py check packages/a02_competition_modeling_tools/target_encode_out_of_fold
+{
+ "identity": "target_encode_out_of_fold",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052759882404Z.json"
+}
+exit 0
+
+=== 2026-09-24T05:28:52Z run 6 (repair round 2, final): python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052912778385Z.json
+exit 0

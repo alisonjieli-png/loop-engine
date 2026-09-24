@@ -1,0 +1,658 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "ticket_triage_packet",
+    "title": "Ticket triage step packet",
+    "purpose": "A one-step packet that decides whether a ticket can be worked unattended tonight and returns a go, hold or split decision with the files to read, the first test to write and the open questions.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/node_provisioning.py",
+      "src/loop_engine/core/instance_instructions.py",
+      "examples/29_intelligence_service/starter-catalogue/items.json"
+    ],
+    "layer": "context",
+    "family": "native_task_packet",
+    "search_tags": [
+      "ticket triage for an overnight agent",
+      "can this ticket run unattended tonight",
+      "decide go hold or split for a ticket",
+      "which tickets can a local model work overnight",
+      "first failing test to write for a ticket",
+      "open questions before starting a ticket",
+      "ticket readiness check before coding",
+      "task packet for a fresh harness step"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software developer",
+        "engineering team lead"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a09_ticket_step_packets",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "7c2cd72a3eddd9466f15194f7c7315675fcd21971f3cf7e258d800eb7cea3f8a",
+        "size_bytes": 2919,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "7c2cd72a3eddd9466f15194f7c7315675fcd21971f3cf7e258d800eb7cea3f8a",
+        "size_bytes": 2919,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/input.schema.json",
+        "digest": "ca7ee259aa09c8459742a759daa92a180e20999eb7ab6f4e166b88e725784817",
+        "size_bytes": 2302,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/output.schema.json",
+        "digest": "fd724816433200c3036f07c625e8d33e6b99c6a0b872d32f73d768e76fcb635a",
+        "size_bytes": 5350,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/task.json",
+        "digest": "89e13788e789e2d4ed4078e326ea4a36bc3dc50a672d6b647463b037fb878887",
+        "size_bytes": 521,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/hold-input.json",
+        "digest": "52d768baca188044a69e7dba86e2d2532d5a171dc651f263601fe9eeaf4c3997",
+        "size_bytes": 512,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/hold-output.json",
+        "digest": "685407f7a5f6257e72d3986b27177fb272af8a25f5cfc1052c3b96f6adfea488",
+        "size_bytes": 763,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/hold-ticket.md",
+        "digest": "c184a4090d8a8209faa04093df13610fd060e3db166010ebcd2011644bbb4b6f",
+        "size_bytes": 257,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "examples/input.json",
+        "digest": "d99b79789169f6bf4bb8c1e3f8c3438355f35c436a8469c75dee4cfaf917d301",
+        "size_bytes": 512,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/output.json",
+        "digest": "b367e14e61329ef0683f2d5aa916667efb1488cad439949c58976480c5d836cd",
+        "size_bytes": 1176,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/ticket.md",
+        "digest": "b6776945436d6ed7167c03a4d34cae3104644192846393a9e949a2fc9d53cb0a",
+        "size_bytes": 276,
+        "media_type": "text/markdown",
+        "role": "other"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "bc4f4a6956ce1a05a56b8d3c4348506867feeafc59bdbe68aa1f9ca73b64994f",
+        "size_bytes": 846,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/node_context.md",
+        "digest": "c4fba9cc1b67e46ff8f3e82d08b4ae22766e6da4f07df60db52a51b2e9357fe1",
+        "size_bytes": 2297,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a09_ticket_step_packets",
+    "file_class": "task_packet",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "opencode",
+      "pi",
+      "gemini_cli",
+      "goose"
+    ],
+    "unverified_targets": {
+      "goose": "Goose 1.50.0 reads AGENTS.md from the git root down to the working folder according to the harness file standards research of September 23, 2026 (not on main at the pinned revision). No probe on this machine observed it, and a fresh scripted Goose session per step was not tested."
+    },
+    "not_placed": {},
+    "native_name": "ticket-triage-packet",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/ticket-triage-packet/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/input.schema.json": {
+          "destination": ".baltor/step/contracts/input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/output.schema.json": {
+          "destination": ".baltor/step/contracts/output.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/task.json": {
+          "destination": ".baltor/step/task.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/input.json": {
+          "destination": ".baltor/step/examples/input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/output.json": {
+          "destination": ".baltor/step/examples/output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".baltor/step/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/node_context.md": {
+          "destination": ".baltor/step/node_context.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/ticket.md": {
+          "destination": ".baltor/step/examples/ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-input.json": {
+          "destination": ".baltor/step/examples/hold-input.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-ticket.md": {
+          "destination": ".baltor/step/examples/hold-ticket.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/hold-output.json": {
+          "destination": ".baltor/step/examples/hold-output.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/output.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "contracts/task.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/node_context.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/ticket.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/hold-input.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/hold-ticket.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/hold-output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "HARNESS_STYLE": "The recipe style name of the harness that runs this step, such as codex, claude_code, opencode, pi or gemini_cli.",
+      "REPOSITORY_NOTES": "One to five plain sentences from the host about the repository layout and how its tests run, or the word none.",
+      "STEP_ID": "The step identifier the host assigns, one plain path component such as t-104-triage.",
+      "TICKET_ID": "The ticket identifier from the host's night queue, such as T-104; the same value as ticket_id in input.json.",
+      "TICKET_PATH": "The workspace-relative path of the ticket text that the host placed for this step; the same value as ticket_path in input.json."
+    },
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Read .baltor/step/input.json, then the ticket file it names from start to end.",
+    "done_when": [
+      "The final answer is one ticket_triage_decision/v1 object that holds every key and matches the output schema.",
+      "Every wanted result of the ticket is in acceptance word for word or asked about in open_questions, and any open question or need makes the decision hold.",
+      "Every path in files_to_read exists, a go names a first test whose command is a list of strings, and no file changed."
+    ],
+    "stop_and_report_when": [
+      "A marker in double braces is still present: answer only unrendered_step_input.",
+      "The ticket file is missing, empty or not text: answer hold and ask where the ticket text is.",
+      "The step input is missing or unreadable: answer only step_input_invalid.",
+      "Go and hold seem equally right: answer hold and ask what would settle it."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace",
+      "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f",
+      "examples/29_intelligence_service/starter-catalogue/items.json": "c9782c6929778c4133ce00d3cc9267fc27b3ed9e73702a79ffe5b2f4c267cccf"
+    },
+    "package_digest": "e41ea2f0fcc709e9854238f8cc23fcdd9a2f933cee87f6dd8f48a205db005607",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

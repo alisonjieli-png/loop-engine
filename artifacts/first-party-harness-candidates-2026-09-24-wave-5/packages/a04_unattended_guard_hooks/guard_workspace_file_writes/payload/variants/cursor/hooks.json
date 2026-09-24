@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "python3 -I -B .baltor/guard-workspace-file-writes/hooks/guard_file_writes.py --harness cursor",
+        "matcher": "Write|Delete",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

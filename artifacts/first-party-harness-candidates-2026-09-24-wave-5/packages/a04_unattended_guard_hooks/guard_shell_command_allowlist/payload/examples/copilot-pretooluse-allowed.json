@@ -1,0 +1,6 @@
+{
+  "timestamp": 1790000000000,
+  "cwd": "/work",
+  "toolName": "bash",
+  "toolArgs": "{\"command\": \"ls tests\", \"description\": \"List the test folder\"}"
+}

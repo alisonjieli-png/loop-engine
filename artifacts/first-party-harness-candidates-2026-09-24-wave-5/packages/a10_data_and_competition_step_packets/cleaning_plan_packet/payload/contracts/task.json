@@ -1,0 +1,13 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "reason",
+ "objective": "Profile one table and propose column-by-column cleaning rules with counted evidence, changing no data.",
+ "output_contract_refs": ["cleaning_plan/v1"],
+ "dependency_ids": [],
+ "required_capabilities": ["python3"],
+ "effects": ["reads_fs", "writes_fs", "{{PROCESS_EFFECT}}"],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

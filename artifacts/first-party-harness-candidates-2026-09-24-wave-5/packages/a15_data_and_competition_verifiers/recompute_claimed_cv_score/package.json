@@ -1,0 +1,388 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "recompute_claimed_cv_score",
+    "title": "Recompute a claimed cross-validation score",
+    "purpose": "Recompute a declared metric from out-of-fold predictions and the fold file, and fail when the claimed mean score differs from the recomputed score beyond a stated tolerance.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/read_the_train_validation_gap.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/choose_metrics_by_task_type_and_industry.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md",
+      "src/loop_engine/code_nodes/measurement.py"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "recompute a cross validation score",
+      "verify a claimed cv score",
+      "metric from out of fold predictions",
+      "check a reported auc",
+      "recompute roc auc from oof",
+      "log loss from out of fold predictions",
+      "rmse per fold",
+      "mean of fold scores check",
+      "audit an experiment score claim",
+      "does the cv score in the report match the files"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "model evaluation"
+      ],
+      "role": [
+        "data scientist",
+        "competition participant",
+        "reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a15_data_and_competition_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "3c890a70960c92e3a07f1f2ab3eff3a2269a71a55127e2f4787657730ded4475",
+        "size_bytes": 3050,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/oof-bundle.json",
+        "digest": "ccfeb1177b5018facdfbf5ddfb2279be89041e1984df6ccf3c7e98db87a5e31d",
+        "size_bytes": 850,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "ed552de873752206dffe68fb72a32c732c32ac733cb5e6f0ae0b06b062822528",
+        "size_bytes": 842,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/metrics.md",
+        "digest": "7d2dcd8fdc42ee4b42c8424293c3bb598d769d92214c25d74891c48c5cea416b",
+        "size_bytes": 3153,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/recompute_cv_score.py",
+        "digest": "b0b18f0379d9668510f5ee488594bf651ea120b4350e074fa098a8c6a76477f8",
+        "size_bytes": 30722,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_recompute_cv_score.py",
+        "digest": "7ede124aa4348f90b944389ed9c45f9218b4013e3aa8d58757113434b8d05224",
+        "size_bytes": 17246,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a15_data_and_competition_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "recompute-claimed-cv-score",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/oof-bundle.json": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/examples/oof-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/metrics.md": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/references/metrics.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/recompute_cv_score.py": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/scripts/recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_recompute_cv_score.py": {
+          "destination": ".claude/skills/recompute-claimed-cv-score/tests/test_recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/oof-bundle.json": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/examples/oof-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/metrics.md": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/references/metrics.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/recompute_cv_score.py": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/scripts/recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_recompute_cv_score.py": {
+          "destination": ".agents/skills/recompute-claimed-cv-score/tests/test_recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/oof-bundle.json": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/examples/oof-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/metrics.md": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/references/metrics.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/recompute_cv_score.py": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/scripts/recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_recompute_cv_score.py": {
+          "destination": ".opencode/skills/recompute-claimed-cv-score/tests/test_recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/oof-bundle.json": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/examples/oof-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/metrics.md": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/references/metrics.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/recompute_cv_score.py": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/scripts/recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_recompute_cv_score.py": {
+          "destination": ".pi/skills/recompute-claimed-cv-score/tests/test_recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/oof-bundle.json": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/examples/oof-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/metrics.md": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/references/metrics.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/recompute_cv_score.py": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/scripts/recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_recompute_cv_score.py": {
+          "destination": ".gemini/skills/recompute-claimed-cv-score/tests/test_recompute_cv_score.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_recompute_cv_score.py"
+        ]
+      },
+      "examples/oof-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_recompute_cv_score.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_recompute_cv_score.py"
+        ]
+      },
+      "references/metrics.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_recompute_cv_score.py"
+        ]
+      },
+      "scripts/recompute_cv_score.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_recompute_cv_score.py"
+        ]
+      },
+      "tests/test_recompute_cv_score.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/recompute_cv_score.py from the workspace root with --predictions, --folds, --labels, --metric and --claimed-score copied exactly, and read status, claim and coverage.",
+    "done_when": [
+      "The report quotes the claimed score, the recomputed score, the difference and the tolerance, lists the fold scores, repeats every hint and answers each item of references/checklist.md."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2, for example because a fold has no metric value.",
+      "The metric is not in references/metrics.md.",
+      "The task gives no claimed score."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/read_the_train_validation_gap.md": "e6acdaf7299bbe47721c001eccbc1cc33bbfc9e8eae849fe8a4b60db079d89f1",
+      "examples/29_intelligence_service/starter-catalogue/bodies/choose_metrics_by_task_type_and_industry.md": "d205a371b1a9a60c662f5c0217711264b5db71659a49846f4f2cd8a1154fb0cf",
+      "examples/29_intelligence_service/starter-catalogue/bodies/check_that_a_result_is_stable_and_generalizes.md": "f877a5071e30754ea5d82b2ad6bb746439196f3c4949ac50ad7dcc572d2607f7",
+      "src/loop_engine/code_nodes/measurement.py": "1befacd563c2c67b53cb18af4ff9a43799d830b05ca66f06cb1a62b1905b2acd"
+    },
+    "package_digest": "208f300636f00d70041473d4c076fe2b4367953dac3cf029daa7884dfb37ad7c",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

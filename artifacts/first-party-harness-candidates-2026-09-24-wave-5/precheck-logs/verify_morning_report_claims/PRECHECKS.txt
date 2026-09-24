@@ -1,0 +1,261 @@
+PRECHECKS for verify_morning_report_claims (wave 5, assignment a12_ticket_result_verifiers, generator a12_ticket_result_verifiers)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a12_ticket_result_verifiers/verify_morning_report_claims/
+This log sits outside the package folder because the layout check refuses any extra top-level entry there.
+Checker: $WAVE/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Every run of this generator session is appended below, failures included. Each check run also saved its
+own report as review/precheck-<UTC>.json inside the package folder; none of those reports was deleted.
+
+
+===== 2026-09-24T04:58:40Z run 1: baseline: check on the unchanged bytes of the earlier a12 generator pass (snapshot kept in earlier-attempt-20260924T0101Z.tar.gz beside this log), before any change in this session
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims
+{
+ "identity": "verify_morning_report_claims",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "refused",
+  "manifest_schema": "refused"
+ },
+ "report": "review/precheck-20260924T045841242622Z.json"
+}
+
+[refused] layout
+  - missing package.json
+  - missing review/REVIEW-NOTE.md
+
+[refused] manifest_schema
+  - package.json unreadable: [Errno 2] No such file or directory: '$WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims/package.json'
+exit 1
+
+===== 2026-09-24T05:31:43Z run 2: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'reproduction record rule removed' (scripts/verify_report_claims.py), test -k test_reproduction_records: killed (Ran 1 test in 0.001s; FAILED (failures=1)) AssertionError: 'unknown' != 'reproduced'
+    real payload, same test: exit 0 (Ran 1 test in 0.003s; OK)
+mutant 'reproduction record rule removed, night example' (scripts/verify_report_claims.py), test -k test_night_morning_report_passes_and_reads_the_reproduction_record: killed (Ran 1 test in 0.172s; FAILED (failures=1)) AssertionError: Lists differ: ['unknown', 'pass'] != ['reproduced', 'pass']
+    real payload, same test: exit 0 (Ran 1 test in 0.112s; OK)
+mutant 'undeclared failure not read' (scripts/verify_report_claims.py), test -k test_failing_run_without_a_stated_expectation_needs_reading: killed (Ran 1 test in 0.119s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', set()) != (1, 'review', {'evidence_shows_failure'})
+    real payload, same test: exit 0 (Ran 1 test in 0.246s; OK)
+mutant 'failures not moved to problems without a pass' (scripts/verify_report_claims.py), test -k test_complete_entry_whose_record_shows_a_failure: killed (Ran 1 test in 0.118s; FAILED (failures=1)) AssertionError: Items in the second set but not the first:
+    real payload, same test: exit 0 (Ran 1 test in 0.115s; OK)
+mutant 'handoff check removed' (scripts/verify_report_claims.py), test -k test_missing_handoff_is_a_problem: killed (Ran 1 test in 0.119s; FAILED (failures=1)) AssertionError: Tuples differ: (0, set()) != (1, {'handoff_missing'})
+    real payload, same test: exit 0 (Ran 1 test in 0.118s; OK)
+mutant 'handoff digest comparison removed' (scripts/verify_report_claims.py), test -k test_handoff_files_that_changed_after_the_handoff: killed (Ran 1 test in 0.003s; FAILED (failures=1)) AssertionError: Lists differ: [] != [('changed_since_handoff', 'examples/evide[83 chars]xt')]
+    real payload, same test: exit 0 (Ran 1 test in 0.002s; OK)
+mutant 'handoff status check removed' (scripts/verify_report_claims.py), test -k test_handoff_files_that_changed_after_the_handoff: killed (Ran 1 test in 0.004s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['handoff_status_differs']
+    real payload, same test: exit 0 (Ran 1 test in 0.002s; OK)
+mutant 'note evidence not checked' (scripts/verify_report_claims.py), test -k test_note_whose_file_is_missing_is_a_warning: killed (Ran 1 test in 0.098s; FAILED (failures=1)) AssertionError: False is not true
+    real payload, same test: exit 0 (Ran 1 test in 0.112s; OK)
+mutant 'test-change-only review removed' (scripts/verify_report_claims.py), test -k test_test_change_only_needs_reading: killed (Ran 1 test in 0.120s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', set()) != (1, 'review', {'only_tests_changed'})
+    real payload, same test: exit 0 (Ran 1 test in 0.127s; OK)
+
+===== 2026-09-24T05:32:43Z run 3: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'inherited: digest comparison removed' (scripts/verify_report_claims.py), test -k test_overclaimed_report_lists_every_unsupported_claim: killed (Ran 1 test in 0.141s; FAILED (failures=1)) AssertionError: {'T-1[87 chars]'T-108': {'evidence_shows_failure', 'no_passin[13 chars]ce'}} != {'T-1[87 chars]'T-107': {'no_passing_gate_evidence', 'digest_[71
+    real payload, same test: exit 0 (Ran 1 test in 0.121s; OK)
+mutant 'inherited: count comparison removed' (scripts/verify_report_claims.py), test -k test_counts_that_differ_from_the_lists: killed (Ran 1 test in 0.129s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['count_mismatch'])
+    real payload, same test: exit 0 (Ran 1 test in 0.083s; OK)
+mutant 'inherited: claim without citations accepted' (scripts/verify_report_claims.py), test -k test_overclaimed_report_lists_every_unsupported_claim: killed (Ran 1 test in 0.101s; FAILED (failures=1)) AssertionError: {'T-1[61 chars]'T-107': {'no_passing_gate_evidence', 'digest_[71 chars]re'}} != {'T-1[61 chars]'T-106': {'no_evidence'}, 'T-107': {'no_passin[97
+    real payload, same test: exit 0 (Ran 1 test in 0.105s; OK)
+
+===== 2026-09-24T05:46:29Z run 4: host-style walkthrough (producer probe, not a checker check). The skill folder was copied to a harness skill path in a fresh workspace, the folder was found with the SKILL.md discovery command, and the first action was run exactly as SKILL.md writes it, with its placeholders filled. No harness binary and no model ran.
+$ python3 -I -B .baltor/morning-report-packet/scripts/compile_morning_report.py --input .baltor/step/input.json   (the a09 morning report packet's own script)
+    exit 0; the compiled report lists complete ['T-301', 'T-302', 'T-304']
+    ok: the a09 compiler lists T-301, T-302 and T-304 as complete, since their cited files exist
+placed at .gemini/skills/verify-morning-report-claims; `ls -d .*/skills/verify-morning-report-claims` printed '.gemini/skills/verify-morning-report-claims' (exit 0)
+    ok: the discovery command in SKILL.md finds the folder
+$ python3 -I -B .gemini/skills/verify-morning-report-claims/scripts/verify_report_claims.py --report .baltor/night/morning-report.json
+    exit 1, verdict fail
+    supported ['T-301']; unsupported {'T-302': ['evidence_shows_failure', 'no_passing_gate_evidence']}; needs_reading {'T-304': ['changed_since_handoff']}
+    ok: T-301 is supported, T-302 is refused for its failing run, T-304 needs reading for a changed file
+
+===== 2026-09-24T05:49:13Z run 5: after this session's review and changes: package.json written by generator-a12-work/build_manifests.py with null digests, then fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims
+{"fill": "done", "files": 17, "package_digest": "32b93cbbb365f5823a0cef7b2549168b3645df22868d646c325fd2a3c2265583"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims
+{
+ "identity": "verify_morning_report_claims",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T054927118344Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_morning_report_claims $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 17 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/reproduce_the_evidence_a_report_claims.md | sha256sum
+0e753b006297daddd1afd4283a9b6ec92bf2fe4ba011ef5b593da086d2d0f267  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+9 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-morning-report-claims>
+Valid skill: $WAVE/generator-a12-work/a12-validate-ebo2o56f/verify-morning-report-claims
+exit 0
+$ skills-ref (official git) validate <copy named verify-morning-report-claims>
+Valid skill: $WAVE/generator-a12-work/a12-validate-ebo2o56f/verify-morning-report-claims
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 44 tests in 9.162s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 44 tests in 5.524s
+OK
+exit 0
+
+===== 2026-09-24T05:51:43Z run 6: assignment gate (SPEC section 11 step 6); it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each, and the plan in assignments.json
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055143281720Z.json
+exit 0
+
+===== 2026-09-24T05:53:56Z run 7: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'reproduction record rule removed' (scripts/verify_report_claims.py), test -k test_reproduction_records: killed (Ran 1 test in 0.001s; FAILED (failures=1)) AssertionError: 'unknown' != 'reproduced'
+    real payload, same test: exit 0 (Ran 1 test in 0.001s; OK)
+mutant 'reproduction record rule removed, night example' (scripts/verify_report_claims.py), test -k test_night_morning_report_passes_and_reads_the_reproduction_record: killed (Ran 1 test in 0.135s; FAILED (failures=1)) AssertionError: Lists differ: ['unknown', 'pass'] != ['reproduced', 'pass']
+    real payload, same test: exit 0 (Ran 1 test in 0.149s; OK)
+mutant 'undeclared failure not read' (scripts/verify_report_claims.py), test -k test_failing_run_without_a_stated_expectation_needs_reading: killed (Ran 1 test in 0.121s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', set()) != (1, 'review', {'evidence_shows_failure'})
+    real payload, same test: exit 0 (Ran 1 test in 0.251s; OK)
+mutant 'failures not moved to problems without a pass' (scripts/verify_report_claims.py), test -k test_complete_entry_whose_record_shows_a_failure: killed (Ran 1 test in 0.150s; FAILED (failures=1)) AssertionError: Items in the second set but not the first:
+    real payload, same test: exit 0 (Ran 1 test in 0.124s; OK)
+mutant 'handoff check removed' (scripts/verify_report_claims.py), test -k test_missing_handoff_is_a_problem: killed (Ran 1 test in 0.192s; FAILED (failures=1)) AssertionError: Tuples differ: (0, set()) != (1, {'handoff_missing'})
+    real payload, same test: exit 0 (Ran 1 test in 0.166s; OK)
+mutant 'handoff digest comparison removed' (scripts/verify_report_claims.py), test -k test_handoff_files_that_changed_after_the_handoff: killed (Ran 1 test in 0.003s; FAILED (failures=1)) AssertionError: Lists differ: [] != [('changed_since_handoff', 'examples/evide[83 chars]xt')]
+    real payload, same test: exit 0 (Ran 1 test in 0.002s; OK)
+mutant 'handoff status check removed' (scripts/verify_report_claims.py), test -k test_handoff_files_that_changed_after_the_handoff: killed (Ran 1 test in 0.004s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['handoff_status_differs']
+    real payload, same test: exit 0 (Ran 1 test in 0.003s; OK)
+mutant 'note evidence not checked' (scripts/verify_report_claims.py), test -k test_note_whose_file_is_missing_is_a_warning: killed (Ran 1 test in 0.109s; FAILED (failures=1)) AssertionError: False is not true
+    real payload, same test: exit 0 (Ran 1 test in 0.086s; OK)
+mutant 'test-change-only review removed' (scripts/verify_report_claims.py), test -k test_test_change_only_needs_reading: killed (Ran 1 test in 0.078s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', set()) != (1, 'review', {'only_tests_changed'})
+    real payload, same test: exit 0 (Ran 1 test in 0.091s; OK)
+mutant 'inherited: digest comparison removed' (scripts/verify_report_claims.py), test -k test_overclaimed_report_lists_every_unsupported_claim: killed (Ran 1 test in 0.220s; FAILED (failures=1)) AssertionError: {'T-2[87 chars]'T-208': {'evidence_shows_failure', 'no_passin[13 chars]ce'}} != {'T-2[87 chars]'T-207': {'no_passing_gate_evidence', 'digest_[71
+    real payload, same test: exit 0 (Ran 1 test in 0.154s; OK)
+mutant 'inherited: count comparison removed' (scripts/verify_report_claims.py), test -k test_counts_that_differ_from_the_lists: killed (Ran 1 test in 0.295s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['count_mismatch'])
+    real payload, same test: exit 0 (Ran 1 test in 0.221s; OK)
+mutant 'inherited: claim without citations accepted' (scripts/verify_report_claims.py), test -k test_overclaimed_report_lists_every_unsupported_claim: killed (Ran 1 test in 0.153s; FAILED (failures=1)) AssertionError: {'T-2[61 chars]'T-207': {'no_passing_gate_evidence', 'digest_[71 chars]ce'}} != {'T-2[61 chars]'T-206': {'no_evidence'}, 'T-207': {'no_passin[97
+    real payload, same test: exit 0 (Ran 1 test in 0.134s; OK)
+
+===== 2026-09-24T05:56:05Z run 8: final: after the answer wording, the diff base checklist item and the example test tracing in package.json; fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims
+{"fill": "done", "files": 17, "package_digest": "8323168c1c539239a7b83e6c655ef5381de8f23e33ee0e6ba15d5bd849beada6"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_morning_report_claims
+{
+ "identity": "verify_morning_report_claims",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055616433509Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_morning_report_claims $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 17 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/reproduce_the_evidence_a_report_claims.md | sha256sum
+0e753b006297daddd1afd4283a9b6ec92bf2fe4ba011ef5b593da086d2d0f267  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+9 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-morning-report-claims>
+Valid skill: $WAVE/generator-a12-work/a12-validate-l422yerl/verify-morning-report-claims
+exit 0
+$ skills-ref (official git) validate <copy named verify-morning-report-claims>
+Valid skill: $WAVE/generator-a12-work/a12-validate-l422yerl/verify-morning-report-claims
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 44 tests in 4.545s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 44 tests in 3.665s
+OK
+exit 0
+
+===== 2026-09-24T05:57:11Z run 9: final assignment gate (SPEC section 11 step 6) on the final bytes; it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055711456548Z.json
+exit 0
+
+===== 2026-09-24T05:58:45Z run 10: producer probes on real runner outputs and real diffs against the final bytes (not a checker check)
+The shipped a09-shaped examples against the a09 contracts in this wave folder (jsonschema, draft 2020-12):
+  examples/handoffs/t-104-verification.json against handoff.schema.json: valid
+  examples/night-morning-report.json against output.schema.json: ["'tickets' is a required property", "'tickets_complete' is a required property", "'tickets_blocked' is a required property"]
+  pyflakes on scripts and tests: exit 0 (no findings)

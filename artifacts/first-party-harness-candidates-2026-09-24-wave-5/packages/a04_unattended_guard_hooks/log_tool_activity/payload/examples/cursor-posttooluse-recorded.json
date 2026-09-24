@@ -1,0 +1,12 @@
+{
+  "conversation_id": "sample-conversation-0004",
+  "generation_id": "sample-generation-0005",
+  "hook_event_name": "postToolUse",
+  "workspace_roots": ["/work"],
+  "tool_name": "Write",
+  "tool_input": {"file_path": "/work/src/app.py"},
+  "tool_output": "{\"note\": \"SAMPLE-OUTPUT-NOT-LOGGED\"}",
+  "tool_use_id": "sample-tool-use-0004",
+  "cwd": "/work",
+  "duration": 42
+}

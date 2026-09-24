@@ -1,0 +1,500 @@
+PRECHECKS for cleaning_apply_packet (wave 5, assignment a10_data_and_competition_step_packets)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a10_data_and_competition_step_packets/cleaning_apply_packet/
+This log sits outside the package folder because the layout check refuses any extra top-level entry there.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+Every run of this generator session is appended below, failures included. Each check run also saved
+its own report as review/precheck-<UTC>.json inside the package folder.
+
+===== 2026-09-24T00:07:49Z run 1: baseline of the existing candidate bytes from the earlier a10 generator pass, before any change in this session
+$ python3 check_package.py fill packages/a10_data_and_competition_step_packets/cleaning_apply_packet
+{"fill": "done", "files": 15, "package_digest": "0920ec10f2aabaa1958e9dc355960b9c7f4af2fa36dd4830e80989e911c48102"}
+exit 0
+$ python3 check_package.py check packages/a10_data_and_competition_step_packets/cleaning_apply_packet
+{
+ "identity": "cleaning_apply_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T000752357776Z.json"
+}
+exit 0
+
+===== 2026-09-24T00:13:42Z walkthrough 1: host-style run of all five packets on the unchanged bytes (producer probe, not a checker check)
+Method: a temporary workspace under the wave folder (removed afterwards); each packet placed by its package.json placement map, markers rendered from examples/input.json after validation against contracts/input.schema.json, leftover markers refused, the bash blocks of the rendered AGENTS.md run exactly as written from the workspace root, the model's decision part replayed from the finished examples, and each packet's output handed to the next packet. No harness binary and no model was run.
+cleaning_plan_packet (codex placement)
+    ok: two shell blocks in the rendered AGENTS.md, found 2
+  first action (draft): exit 0, status drafted
+    ok: draft succeeds
+  step 7 check --write-evidence: exit 0, status pass
+    ok: check passes after the edit
+    ok: recounted plan equals examples/output.json of the plan packet
+    ok: table bytes unchanged
+cleaning_apply_packet (codex placement)
+    ok: one shell block, the check-only first action
+  first action (--check-only): exit 0, status ready
+    ok: the reviewed plan from the plan step is accepted
+    ok: check-only wrote nothing
+  step 2 (same command without --check-only): exit 0, status applied
+    ok: summary written
+    ok: every check true: {'header_equal': True, 'row_count_equal': True, 'every_difference_logged': True, 'log_matches_cells': True, 'source_unchanged': True}
+    ok: source table unchanged
+    counts {'r1': {'changed': 1, 'held': 0}, 'r2': {'changed': 6, 'held': 0}, 'r4': {'changed': 2, 'held': 0}, 'r5': {'changed': 3, 'held': 0}, 'r6': {'changed': 7, 'held': 0}, 'r7': {'changed': 1, 'held': 0}}, changed cells 19, held 0, not applied {'r3': 'dropped', 'r8': 'rejected'}
+competition_brief_packet (codex placement)
+  first action (start): exit 0, status started
+    ok: start succeeds
+  step 7 check: exit 0, status pass
+    ok: brief check passes on the 40-row data: []
+baseline_training_packet (codex placement), inputs taken from the brief
+  first action (--check-only): exit 0, status ready
+    ok: inputs accepted
+  step 2 (same command without --check-only): exit 0, status recorded
+    ok: run recorded
+    ok: record equals examples/output.json of the baseline packet
+    ok: the ledger's last line is the record
+    mean 0.9275 vs constant 0.5, flags []
+submission_assembly_packet (codex placement), value type taken from the brief
+  first action (--check-only): exit 0, status ready
+    ok: the ledger line written by the baseline packet is accepted: None
+  step 2 (same command without --check-only): exit 0, status assembled
+    ok: assembled, every check true, not uploaded
+    ok: rows follow the sample order, not the test order
+    ok: values equal the recorded test predictions
+placement maps of every packet for claude_code, gemini_cli, opencode, pi, kimi_cli
+    ok: cleaning_plan_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_apply_packet codex: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet gemini_cli: root files ['GEMINI.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet opencode: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet pi: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet kimi_cli: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: competition_brief_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+problems: none
+
+===== 2026-09-24T00:26:33Z known-wrong tests written before the repairs (run from each payload root with /usr/bin/python3 -I -B -m unittest discover -s tests -p "test_*.py" -v)
+Gaps found by probing the unchanged scripts: (1) plan_tool.py draft proposed parse_number for a zero-padded postal code column (01234 to 1234) with no question; (2) brief_tool.py check told the model only to copy the exact words when a quote was paraphrased or put on the wrong page; (3) train_baseline.py and assemble_submission.py read the ledger with replacement characters, so a damaged ledger passed silently and the recorded line digest could differ from the line bytes. New tests for each were added first and fail as expected:
+cleaning_plan_packet: exit 1; Ran 15 tests in 2.790s; FAILED (failures=1)
+    test_zero_padded_codes_get_a_question_instead_of_a_number_rule (test_plan_tool.PlanToolTests.test_zero_padded_codes_get_a_question_instead_of_a_number_rule) ... FAIL
+      FAIL: test_zero_padded_codes_get_a_question_instead_of_a_number_rule (test_plan_tool.PlanToolTests.test_zero_padded_codes_get_a_question_instead_of_a_number_rule) | AssertionError: Lists differ: [{'rule_id': 'r1', 'column': 'postal_code'[303 chars][]}}] != []
+cleaning_apply_packet: exit 0; Ran 14 tests in 0.817s; OK
+competition_brief_packet: exit 1; Ran 14 tests in 1.816s; FAILED (failures=1)
+    test_a_quote_that_is_not_found_points_to_the_page_sentence (test_brief_tool.BriefToolTests.test_a_quote_that_is_not_found_points_to_the_page_sentence) ... FAIL
+      FAIL: test_a_quote_that_is_not_found_points_to_the_page_sentence (test_brief_tool.BriefToolTests.test_a_quote_that_is_not_found_points_to_the_page_sentence) | AssertionError: 'metric: the quote is not found word for word in evaluation.md; the closest sentence there is "Submissions are evaluated on area under the ROC curve between the predicted probability and the observed target."' not found in 'metric: the quote is not found word for word in evaluation.m
+baseline_training_packet: exit 1; Ran 13 tests in 1.381s; FAILED (failures=1)
+    test_ledger_that_is_not_utf8_is_refused (test_train_baseline.BaselineTests.test_ledger_that_is_not_utf8_is_refused) ... FAIL
+      FAIL: test_ledger_that_is_not_utf8_is_refused (test_train_baseline.BaselineTests.test_ledger_that_is_not_utf8_is_refused) | AssertionError: 0 != 2 : {'status': 'recorded', 'ledger': 'work/experiments/ledger.jsonl', 'record': {'record_type': 'experiment_record/v1', 'run_id': 'baseline-ridge-01', 'step': 'baseline_training', 'task_type': 'binary', 'id_column': 'customer_id', 'target_column': 'renewed', 'metric': {'name': '
+submission_assembly_packet: exit 1; Ran 14 tests in 1.075s; FAILED (failures=1)
+    test_ledger_that_is_not_utf8_is_refused (test_assemble_submission.SubmissionTests.test_ledger_that_is_not_utf8_is_refused) ... FAIL
+      FAIL: test_ledger_that_is_not_utf8_is_refused (test_assemble_submission.SubmissionTests.test_ledger_that_is_not_utf8_is_refused) | AssertionError: 0 != 2 : {'record_type': 'submission_record/v1', 'status': 'assembled', 'run_id': 'baseline-ridge-01', 'ledger': {'path': 'work/experiments/ledger.jsonl', 'line': 2, 'line_sha256': '03169322ccd7fcd4959a1b0c8cb843a8a7e11ceed4e33217c03499022685a1ec'}, 'cross_validation': {'metric': {'n
+
+===== 2026-09-24T00:39:42Z repairs applied; example digests regenerated by real tool runs (plan example profile.sha256 9ac4b6ed966b to 85e1e5fd0e33, apply approved_plan profile.sha256 the same, apply example plan.sha256 8a5f0ec9ffee to 1b2301039f45, baseline example script.sha256 6f43a918d7af to 20c834232736); literal no-break space, narrow no-break space and curly quote characters in three scripts and three tests replaced by visible escapes; brief step 8 and the plan context updated
+Suites after the repairs, from each payload root:
+cleaning_plan_packet python3.14: exit 0; Ran 15 tests in 2.852s; OK
+cleaning_plan_packet python3.10: exit 0; Ran 15 tests in 2.207s; OK
+cleaning_apply_packet python3.14: exit 0; Ran 14 tests in 1.448s; OK
+cleaning_apply_packet python3.10: exit 0; Ran 14 tests in 0.932s; OK
+competition_brief_packet python3.14: exit 0; Ran 14 tests in 3.029s; OK
+competition_brief_packet python3.10: exit 0; Ran 14 tests in 1.889s; OK
+baseline_training_packet python3.14: exit 0; Ran 13 tests in 1.817s; OK
+baseline_training_packet python3.10: exit 0; Ran 13 tests in 1.299s; OK
+submission_assembly_packet python3.14: exit 0; Ran 14 tests in 1.426s; OK
+submission_assembly_packet python3.10: exit 0; Ran 14 tests in 0.818s; OK
+
+===== 2026-09-24T00:39:42Z mutant check, first attempt (FAILED ATTEMPT, kept beside its successor)
+The first attempt ran 'python3 -I -B -m unittest test_module.Class.test' from the payload root. With -I the tests folder is not on the import path, so both the mutants and the real payloads ended with errors=1 (an import error, not a test result). It proved nothing and was repeated through discovery with -k.
+
+===== 2026-09-24T00:39:42Z mutant check, second attempt: each new guard removed in a temporary copy, named test run through discover -k
+cleaning_plan_packet: mutant 'draft question guard removed' -> killed (Ran 1 test in 0.058s; FAILED (failures=1)) AssertionError: Lists differ: [{'rule_id': 'r1', 'column': 'postal_code'[303 chars][]}}] != []
+    real payload, same test: exit 0 (Ran 1 test in 0.155s; OK)
+cleaning_plan_packet: mutant 'check warning removed' -> killed (Ran 1 test in 0.147s; FAILED (failures=1)) AssertionError: False is not true : {'status': 'pass', 'plan': 'work/shops/cleaning_plan.json', 'evidence_written': True, 'rules': {'proposed': 1, 'dropped': 0}
+    real payload, same test: exit 0 (Ran 1 test in 0.124s; OK)
+competition_brief_packet: mutant 'closest-sentence hint removed' -> killed (Ran 1 test in 0.113s; FAILED (failures=1)) AssertionError: 'metric: the quote is not found word for word in evaluation.md; the closest sentence there is "Submissions are evaluated on area under the ROC c
+    real payload, same test: exit 0 (Ran 1 test in 0.201s; OK)
+baseline_training_packet: mutant 'strict ledger decoding removed' -> killed (Ran 1 test in 0.056s; FAILED (failures=1)) AssertionError: 0 != 2 : {'status': 'recorded', 'ledger': 'work/experiments/ledger.jsonl', 'record': {'record_type': 'experiment_record/v1', 'run_id': 'baseline
+    real payload, same test: exit 0 (Ran 1 test in 0.055s; OK)
+submission_assembly_packet: mutant 'strict ledger decoding removed' -> killed (Ran 1 test in 0.050s; FAILED (failures=1)) AssertionError: 0 != 2 : {'record_type': 'submission_record/v1', 'status': 'assembled', 'run_id': 'baseline-ridge-01', 'ledger': {'path': 'work/experiments/ledg
+    real payload, same test: exit 0 (Ran 1 test in 0.046s; OK)
+
+===== 2026-09-24T00:54:31Z profile record version: table_profile/v1 to table_profile/v2 (the profile gained a leading-zero count per number style, and check reads it); check now refuses a profile of any other version before any write; test_profile_of_another_version_is_refused added; example digests regenerated again from real runs
+Order note: this guard's test was written together with the guard, so its known-wrong evidence is the mutant below, not a run before the repair.
+profile record type: table_profile/v2
+cleaning_plan_packet/payload/examples/output.json: 85e1e5fd0e33 -> c6d3571bd88d
+cleaning_apply_packet/payload/examples/approved_plan.json: 85e1e5fd0e33 -> c6d3571bd88d
+cleaning_apply_packet/payload/examples/output.json: 1b2301039f45 -> f951dec001fc
+apply summary equal apart from the plan digest: True
+mutant without the version guard: exit 1; Ran 1 test in 0.139s; FAILED (failures=1)
+real payload: exit 0; Ran 1 test in 0.187s; OK
+
+#################################################################################################
+THIRD PASS: a new a10 generator session, September 24, 2026 (UTC times). Earlier entries above are kept
+unchanged. Work files and full logs of this pass: generator-a10-work/ in the wave folder.
+#################################################################################################
+
+===== 2026-09-24T04:53:21Z third pass: state found before any change
+The newest reports of the second pass (2026-09-24T00:07Z to 00:08Z) passed the gate for older bytes: these
+payload files of cleaning_apply_packet changed after the last fill, so the stored digests were stale:
+    examples/approved_plan.json
+    examples/output.json
+    scripts/apply_plan.py
+    tests/test_apply_plan.py
+No generated cache was present in this payload.
+A snapshot of the whole assignment folder and these logs, taken before any change, is kept at
+packages/a10_data_and_competition_step_packets-predecessor-snapshot-20260924T045321Z.tar.gz.
+The caches found in three other payloads of the assignment were removed (Python rebuilds them; they are not package bytes).
+
+===== about 2026-09-24T04:58Z third pass: producer probe of likely small-model mistakes and extreme values,
+before any repair (generator-a10-work/probe_edges.py; output copied from the terminal, exact second not kept)
+plan draft: exit 0, json; drafted  []
+plan check, broken JSON edit: exit 2, json; refused the plan is not strict JSON: Expecting property name enclosed in double quotes: line 25 column 25 (char 550) []
+plan check, trailing text: exit 2, json; refused the plan is not strict JSON: Extra data: line 47 column 1 (char 817) []
+plan draft, CRLF and quoted break: exit 0, json; drafted  []
+brief start: exit 0, json; started  []
+brief check, broken JSON edit: exit 2, json; refused the brief is not strict JSON: Expecting property name enclosed in double quotes: line 44 column 12 (char 809) []
+brief start, data file not UTF-8: exit 0, json; started  []
+baseline, feature 1e200, binary auc: exit 2, json; refused fold 0 holds one class only, so its AUC is undefined; use a stratified fold file []
+baseline, target 1e200, rmse: exit 1, NOT JSON;  ["OverflowError: (34, 'Numerical result out of range')"]
+baseline, target 1e200, constant rmse: exit 1, NOT JSON;  ["OverflowError: (34, 'Numerical result out of range')"]
+baseline, target 1e200, rmsle: exit 0, json; recorded  []
+baseline, test feature 1e308, rmse: exit 0, json; recorded  []
+submission, real_number with underscore: exit 0, json; assembled  []
+   submission bytes: b'id,y\nt2,0.5\nt1,1_0\n'
+apply, plan not JSON: exit 2, json; refused the plan is not strict JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1) []
+Gaps: a JSON syntax slip in the plan or brief that the model edits was refused with exit 2, which AGENTS.md
+treats as stop-and-report; an extreme target printed a Python traceback instead of one JSON object; a test
+value of 1e308 would give an infinite prediction (confirmed by the mutant run below); the submission step
+copied number text such as 1_0 that float() reads but a platform may refuse.
+
+===== 2026-09-24T04:59:58Z third pass: known-wrong tests written before the repairs (temporary payload copies,
+python3.14 -I -B -m unittest discover -s tests -p test_*.py -v); each new test fails as expected
+cleaning_plan_packet python3.14: exit 1; Ran 17 tests in 3.291s; FAILED (failures=1)
+    test_broken_json_edit_is_a_finding_to_fix (test_plan_tool.PlanToolTests.test_broken_json_edit_is_a_finding_to_fix) ... FAIL
+    FAIL: test_broken_json_edit_is_a_finding_to_fix (test_plan_tool.PlanToolTests.test_broken_json_edit_is_a_finding_to_fix) | AssertionError: Tuples differ: (2, 'refused') != (1, 'fail')
+cleaning_apply_packet python3.14: exit 0; Ran 14 tests in 1.095s; OK
+competition_brief_packet python3.14: exit 1; Ran 15 tests in 2.631s; FAILED (failures=1)
+    test_broken_json_edit_is_a_finding_to_fix (test_brief_tool.BriefToolTests.test_broken_json_edit_is_a_finding_to_fix) ... FAIL
+    FAIL: test_broken_json_edit_is_a_finding_to_fix (test_brief_tool.BriefToolTests.test_broken_json_edit_is_a_finding_to_fix) | AssertionError: Tuples differ: (2, 'refused') != (1, 'fail')
+baseline_training_packet python3.14: exit 1; Ran 14 tests in 1.821s; FAILED (errors=1)
+    test_numbers_too_large_to_compute_are_refused_as_json (test_train_baseline.BaselineTests.test_numbers_too_large_to_compute_are_refused_as_json) ... ERROR
+    ERROR: test_numbers_too_large_to_compute_are_refused_as_json (test_train_baseline.BaselineTests.test_numbers_too_large_to_compute_are_refused_as_json) | json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+submission_assembly_packet python3.14: exit 1; Ran 15 tests in 0.949s; FAILED (failures=1)
+    test_number_text_that_is_not_plain_decimal_is_refused (test_assemble_submission.SubmissionTests.test_number_text_that_is_not_plain_decimal_is_refused) ... FAIL
+    FAIL: test_number_text_that_is_not_plain_decimal_is_refused (test_assemble_submission.SubmissionTests.test_number_text_that_is_not_plain_decimal_is_refused) | AssertionError: 0 != 2 : {'record_type': 'submission_record/v1', 'status': 'assembled', 'run_id': 'baseline-ridge-01', 'ledger': {'path': 'work/experiments/ledger.jsonl', 'line': 1, 'line_sha256': 'ababb28725bdf7afa9600318daccde5b0fc4bf0161d8a474303f492de5cac546'}, 'cross_validation': {'metric': {'n
+
+===== 2026-09-24T05:01:44Z third pass: repairs applied
+Repairs, one per gap, each after its test failed:
+- cleaning_plan_packet scripts/plan_tool.py: check reports a plan that is not strict JSON as a finding with its line
+  and column (exit 1) and writes nothing, so the fix-and-check-again rule of AGENTS.md applies. Exit 2 stays for the
+  table, the profile and a plan without its table or profile section.
+- competition_brief_packet scripts/brief_tool.py: check reports a brief that is not strict JSON as a finding (exit 1).
+- baseline_training_packet scripts/train_baseline.py: every number, flags included, is computed before any file is
+  written; an ArithmeticError becomes a JSON refusal (exit 2); a prediction or score that is not finite is refused.
+  examples/output.json regenerated from a real run on the test fixture data: only script.sha256 changed
+  (20c834232736 -> b54534eb6e4e); every score and prediction is unchanged.
+- submission_assembly_packet scripts/assemble_submission.py: only plain ASCII decimal notation is accepted, in the
+  conversion and in the self-check that re-reads the built file; references/node_context.md states the rule.
+- cleaning_apply_packet: no payload change in this pass.
+After the repairs a further test, test_prediction_that_is_not_finite_is_refused (baseline), was written together with
+its guard; its known-wrong evidence is the mutant run below, not a run before the repair.
+
+===== 2026-09-24T05:02:05Z third pass: suites after the repairs, python3.14 and python3.10
+cleaning_plan_packet python3.14: exit 0; Ran 17 tests in 2.546s; OK
+cleaning_plan_packet python3.10: exit 0; Ran 17 tests in 1.929s; OK
+cleaning_apply_packet python3.14: exit 0; Ran 14 tests in 0.910s; OK
+cleaning_apply_packet python3.10: exit 0; Ran 14 tests in 0.599s; OK
+competition_brief_packet python3.14: exit 0; Ran 15 tests in 1.919s; OK
+competition_brief_packet python3.10: exit 0; Ran 15 tests in 1.217s; OK
+baseline_training_packet python3.14: exit 0; Ran 14 tests in 1.102s; OK
+baseline_training_packet python3.10: exit 0; Ran 14 tests in 0.793s; OK
+submission_assembly_packet python3.14: exit 0; Ran 15 tests in 0.892s; OK
+submission_assembly_packet python3.10: exit 0; Ran 15 tests in 0.557s; OK
+
+===== 2026-09-24T05:02:57Z third pass: mutant check, each new guard removed in a temporary copy, the named
+test run through discover -k on the mutant and on an unchanged copy
+cleaning_plan_packet: mutant 'plan syntax slip reported as a refusal again' -> killed (exit 1; Ran 1 test in 0.227s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'refused') != (1, 'fail')
+    real payload, same test test_broken_json_edit_is_a_finding_to_fix: exit 0 (Ran 1 test in 0.357s; OK)
+competition_brief_packet: mutant 'brief syntax slip reported as a refusal again' -> killed (exit 1; Ran 1 test in 0.136s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'refused') != (1, 'fail')
+    real payload, same test test_broken_json_edit_is_a_finding_to_fix: exit 0 (Ran 1 test in 0.221s; OK)
+baseline_training_packet: mutant 'arithmetic error no longer caught' -> killed (exit 1; Ran 1 test in 0.190s; FAILED (errors=1)) 
+    real payload, same test test_numbers_too_large_to_compute_are_refused_as_json: exit 0 (Ran 1 test in 0.184s; OK)
+baseline_training_packet: mutant 'finite check removed' -> killed (exit 1; Ran 1 test in 0.081s; FAILED (failures=1)) AssertionError: 0 != 2 : {'status': 'recorded', 'ledger': 'work/experiments/ledger.jsonl', 'record': {'record_type': 'experiment_record/v1', 'run_id': 'inf-01', 'step': 'baseline_training', 'task_type
+    real payload, same test test_prediction_that_is_not_finite_is_refused: exit 0 (Ran 1 test in 0.080s; OK)
+submission_assembly_packet: mutant 'plain number guard removed from convert' -> killed (exit 1; Ran 1 test in 0.080s; FAILED (failures=1)) AssertionError: 1 != 2 : {'status': 'self_check_failed', 'checks': {'header_matches_sample': True, 'ids_match_sample_order': True, 'row_count_matches': True, 'values_valid': False}, 'note': 'Nothing w
+    real payload, same test test_number_text_that_is_not_plain_decimal_is_refused: exit 0 (Ran 1 test in 0.199s; OK)
+submission_assembly_packet: mutant 'plain number guard removed from verify' -> killed (exit 1; Ran 1 test in 0.188s; FAILED (failures=1)) AssertionError: True is not false
+    real payload, same test test_number_text_that_is_not_plain_decimal_is_refused: exit 0 (Ran 1 test in 0.206s; OK)
+
+===== 2026-09-24T05:03:18Z third pass: suites with the added finite-prediction test, python3.14 and python3.10
+cleaning_plan_packet python3.14: exit 0; Ran 17 tests in 2.426s; OK
+cleaning_plan_packet python3.10: exit 0; Ran 17 tests in 1.611s; OK
+cleaning_apply_packet python3.14: exit 0; Ran 14 tests in 0.834s; OK
+cleaning_apply_packet python3.10: exit 0; Ran 14 tests in 0.611s; OK
+competition_brief_packet python3.14: exit 0; Ran 15 tests in 2.506s; OK
+competition_brief_packet python3.10: exit 0; Ran 15 tests in 1.468s; OK
+baseline_training_packet python3.14: exit 0; Ran 15 tests in 1.435s; OK
+baseline_training_packet python3.10: exit 0; Ran 15 tests in 1.024s; OK
+submission_assembly_packet python3.14: exit 0; Ran 15 tests in 1.273s; OK
+submission_assembly_packet python3.10: exit 0; Ran 15 tests in 1.044s; OK
+
+===== 2026-09-24T05:03:20Z third pass: the same probe after the repairs (every case answers with one JSON object)
+plan draft: exit 0, json; drafted  []
+plan check, broken JSON edit: exit 1, json; fail ['the plan is not strict JSON: Expecting property name enclosed in double quotes: line 25 column 25 (char 550). Fix the JSON syntax at that place, change nothing else, and run the check again'] []
+plan check, trailing text: exit 1, json; fail ['the plan is not strict JSON: Extra data: line 47 column 1 (char 817). Fix the JSON syntax at that place, change nothing else, and run the check again'] []
+plan draft, CRLF and quoted break: exit 0, json; drafted  []
+brief start: exit 0, json; started  []
+brief check, broken JSON edit: exit 1, json; fail ['the brief is not strict JSON: Expecting property name enclosed in double quotes: line 44 column 12 (char 809). Fix the JSON syntax at that place, change nothing else, and run the check again'] []
+brief start, data file not UTF-8: exit 0, json; started  []
+baseline, feature 1e200, binary auc: exit 2, json; refused fold 0 holds one class only, so its AUC is undefined; use a stratified fold file []
+baseline, target 1e200, rmse: exit 2, json; refused a calculation failed on this data (OverflowError: (34, 'Numerical result out of range')); check the target and feature columns for extreme values []
+baseline, target 1e200, constant rmse: exit 2, json; refused a calculation failed on this data (OverflowError: (34, 'Numerical result out of range')); check the target and feature columns for extreme values []
+baseline, target 1e200, rmsle: exit 0, json; recorded  []
+baseline, test feature 1e308, rmse: exit 0, json; recorded  []
+submission, real_number with underscore: exit 2, json; refused the prediction for id 't1' is not a plain decimal number: '1_0' []
+apply, plan not JSON: exit 2, json; refused the plan is not strict JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1) []
+
+===== 2026-09-24T05:05:59Z third pass: the checker's own controls (19 and 2 known-wrong cases)
+$ python3 scout/test_check_package.py  -> Ran 19 tests in 5.749s OK
+$ python3 scout/test_packet_fixture.py -> Ran 2 tests in 0.292s OK
+
+===== 2026-09-24T05:06:39Z third pass: fill and check of cleaning_apply_packet
+$ python3 check_package.py fill packages/a10_data_and_competition_step_packets/cleaning_apply_packet
+{"fill": "done", "files": 15, "package_digest": "f9303f056ba705b65285121027eb97a4ee8943d812bf554564dbd0863b1ab041"}
+exit 0
+$ python3 check_package.py check packages/a10_data_and_competition_step_packets/cleaning_apply_packet
+{
+ "identity": "cleaning_apply_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T050641344144Z.json"
+}
+exit 0
+(package digest of the second pass's last report: 0920ec10f2aabaa1958e9dc355960b9c7f4af2fa36dd4830e80989e911c48102)
+
+===== 2026-09-24T05:07:38Z third pass: equivalent commands of SPEC.md section 12 for cleaning_apply_packet
+== layout: find $PKG -type l -o -empty (expect no output)
+   exit 0; entries found: 0
+== identity: grep -Fx cleaning_apply_packet existing-identities.txt (expect exit 1, no match)
+   exit 1
+== manifest_schema: pinned source digests (git show a1fc7432:<source> | sha256sum)
+   src/loop_engine/core/service_runtime/catalogue_packages.py: equal
+   src/loop_engine/core/node_provisioning.py: equal
+   src/loop_engine/code_nodes/database_copy.py: equal
+== inventory: sha256sum and stat -c %a of every payload file against package.json
+   declared 15, present 15, undeclared [], missing [], digest/size/mode mismatches []
+== parse: strict json.load of every JSON file (no TOML, YAML or front matter in this class)
+   parsed 7 JSON files
+== network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload (expect no output)
+   exit 1 (1 means no match)
+== tests_run: bwrap with a READ-ONLY payload (--ro-bind), no network, /usr/bin/python3
+   Ran 14 tests in 0.732s
+   OK
+   exit 0
+== tests_run: bwrap with a READ-ONLY payload (--ro-bind), no network, /home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu/bin/python3.10
+   Ran 14 tests in 0.593s
+   OK
+   exit 0
+
+===== 2026-09-24T05:09:08Z third pass: walkthrough on the final bytes (producer probe, not a checker check)
+placement maps of every packet for all six targets
+    ok: baseline_training_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: baseline_training_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_apply_packet codex: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet gemini_cli: root files ['GEMINI.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet opencode: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet pi: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_apply_packet kimi_cli: root files ['AGENTS.md'], 11 files under .baltor, same as codex
+    ok: cleaning_plan_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: cleaning_plan_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: competition_brief_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet codex: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet claude_code: root files ['AGENTS.md', 'CLAUDE.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet gemini_cli: root files ['GEMINI.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet opencode: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet pi: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+    ok: submission_assembly_packet kimi_cli: root files ['AGENTS.md'], 9 files under .baltor, same as codex
+cleaning_plan_packet then cleaning_apply_packet (codex placement)
+    ok: cleaning_plan_packet: rendered values follow contracts/input.schema.json []
+    ok: cleaning_plan_packet: AGENTS.md holds no unrendered marker []
+    ok: cleaning_plan_packet: references/node_context.md holds no unrendered marker []
+    ok: cleaning_plan_packet: references/checklist.md holds no unrendered marker []
+    ok: cleaning_plan_packet: contracts/task.json holds no unrendered marker []
+    ok: cleaning_plan_packet: contracts/input.schema.json holds no unrendered marker []
+    ok: cleaning_plan_packet: contracts/output.schema.json holds no unrendered marker []
+    ok: cleaning_plan_packet: examples/input.json holds no unrendered marker []
+    ok: cleaning_plan_packet: examples/output.json holds no unrendered marker []
+    ok: cleaning_plan_packet: scripts/plan_tool.py holds no unrendered marker []
+    ok: cleaning_plan_packet: LICENSE holds no unrendered marker []
+    ok: two shell blocks in the rendered AGENTS.md, found 2
+    ok: first action (draft): exit 0, drafted
+    ok: a replayed syntax slip is a finding to fix: exit 1, ["the plan is not strict JSON: Expecting ',' delimiter: line 91 column 4 (char 1792). Fix the JSON syntax at that place, change nothing else, and run the check again"]
+    ok: step 7 check after the fix: exit 0, pass
+    ok: recounted plan equals examples/output.json
+    ok: table bytes unchanged
+    ok: cleaning_apply_packet: rendered values follow contracts/input.schema.json []
+    ok: cleaning_apply_packet: AGENTS.md holds no unrendered marker []
+    ok: cleaning_apply_packet: references/node_context.md holds no unrendered marker []
+    ok: cleaning_apply_packet: references/checklist.md holds no unrendered marker []
+    ok: cleaning_apply_packet: contracts/task.json holds no unrendered marker []
+    ok: cleaning_apply_packet: contracts/input.schema.json holds no unrendered marker []
+    ok: cleaning_apply_packet: contracts/output.schema.json holds no unrendered marker []
+    ok: cleaning_apply_packet: contracts/plan.schema.json holds no unrendered marker []
+    ok: cleaning_apply_packet: examples/input.json holds no unrendered marker []
+    ok: cleaning_apply_packet: examples/output.json holds no unrendered marker []
+    ok: cleaning_apply_packet: examples/approved_plan.json holds no unrendered marker []
+    ok: cleaning_apply_packet: scripts/apply_plan.py holds no unrendered marker []
+    ok: cleaning_apply_packet: LICENSE holds no unrendered marker []
+    ok: one shell block, the check-only first action
+    ok: first action (--check-only): exit 0, ready
+    ok: check-only wrote nothing
+    ok: step 2 without --check-only: exit 0, applied
+    ok: checks {'header_equal': True, 'row_count_equal': True, 'every_difference_logged': True, 'log_matches_cells': True, 'source_unchanged': True}
+    ok: source table unchanged
+    rule counts {'r1': {'changed': 1, 'held': 0}, 'r2': {'changed': 6, 'held': 0}, 'r4': {'changed': 2, 'held': 0}, 'r5': {'changed': 3, 'held': 0}, 'r6': {'changed': 7, 'held': 0}, 'r7': {'changed': 1, 'held': 0}}, not applied {'r3': 'dropped', 'r8': 'rejected'}
+competition_brief_packet, baseline_training_packet, submission_assembly_packet (codex placement)
+    ok: competition_brief_packet: rendered values follow contracts/input.schema.json []
+    ok: competition_brief_packet: AGENTS.md holds no unrendered marker []
+    ok: competition_brief_packet: references/node_context.md holds no unrendered marker []
+    ok: competition_brief_packet: references/checklist.md holds no unrendered marker []
+    ok: competition_brief_packet: contracts/task.json holds no unrendered marker []
+    ok: competition_brief_packet: contracts/input.schema.json holds no unrendered marker []
+    ok: competition_brief_packet: contracts/output.schema.json holds no unrendered marker []
+    ok: competition_brief_packet: examples/input.json holds no unrendered marker []
+    ok: competition_brief_packet: examples/output.json holds no unrendered marker []
+    ok: competition_brief_packet: scripts/brief_tool.py holds no unrendered marker []
+    ok: competition_brief_packet: LICENSE holds no unrendered marker []
+    ok: first action (start): exit 0, started
+    ok: a replayed syntax slip is a finding to fix: exit 1
+    ok: step 7 check: exit 0, []
+    ok: baseline_training_packet: rendered values follow contracts/input.schema.json []
+    ok: baseline_training_packet: AGENTS.md holds no unrendered marker []
+    ok: baseline_training_packet: references/node_context.md holds no unrendered marker []
+    ok: baseline_training_packet: references/checklist.md holds no unrendered marker []
+    ok: baseline_training_packet: contracts/task.json holds no unrendered marker []
+    ok: baseline_training_packet: contracts/input.schema.json holds no unrendered marker []
+    ok: baseline_training_packet: contracts/output.schema.json holds no unrendered marker []
+    ok: baseline_training_packet: examples/input.json holds no unrendered marker []
+    ok: baseline_training_packet: examples/output.json holds no unrendered marker []
+    ok: baseline_training_packet: scripts/train_baseline.py holds no unrendered marker []
+    ok: baseline_training_packet: LICENSE holds no unrendered marker []
+    ok: first action (--check-only): exit 0, ready
+    ok: step 2: exit 0, recorded
+    ok: record equals examples/output.json of the baseline packet
+    ok: the ledger's last line is the record
+    mean 0.9275 vs constant 0.5, flags []
+    ok: submission_assembly_packet: rendered values follow contracts/input.schema.json []
+    ok: submission_assembly_packet: AGENTS.md holds no unrendered marker []
+    ok: submission_assembly_packet: references/node_context.md holds no unrendered marker []
+    ok: submission_assembly_packet: references/checklist.md holds no unrendered marker []
+    ok: submission_assembly_packet: contracts/task.json holds no unrendered marker []
+    ok: submission_assembly_packet: contracts/input.schema.json holds no unrendered marker []
+    ok: submission_assembly_packet: contracts/output.schema.json holds no unrendered marker []
+    ok: submission_assembly_packet: examples/input.json holds no unrendered marker []
+    ok: submission_assembly_packet: examples/output.json holds no unrendered marker []
+    ok: submission_assembly_packet: scripts/assemble_submission.py holds no unrendered marker []
+    ok: submission_assembly_packet: LICENSE holds no unrendered marker []
+    ok: first action (--check-only): exit 0, None
+    ok: step 2: exit 0, checks {'header_matches_sample': True, 'ids_match_sample_order': True, 'row_count_matches': True, 'values_valid': True}
+    ok: rows follow the sample order
+    ok: values equal the recorded test predictions
+problems: none
+exit 0
+
+===== 2026-09-24T05:09:46Z third pass: check-all for the assignment
+$ python3 check_package.py check-all --assignment a10_data_and_competition_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051005291749Z.json
+exit 0
+Report: reports/precheck-all-20260924T051005291749Z.json
+
+===== third pass result for cleaning_apply_packet
+Package digest f9303f056ba705b65285121027eb97a4ee8943d812bf554564dbd0863b1ab041
+Newest report review/precheck-20260924T050951956848Z.json: passed_for_wave_gate true, refused false, runs_skipped false, checker sha256 0d433083cd132a3e...
+Checks: layout passed, manifest_schema passed, identity passed, inventory passed, text_hygiene passed, vocabulary passed, safety_static passed, secrets passed, parse passed, entry_shape passed, placements passed, effects passed, network_static passed, agent_skills_validator skipped, duplicates passed, review_note passed, tests_run passed, hooks_run passed, servers_run passed
+Checks that do not run for this class, and why:
+- agent_skills_validator: skipped by the checker because a task packet holds no SKILL.md; the Agent
+  Skills validators apply to skill folders only.
+- hooks_run and servers_run: pass without a run because this class declares no hooks and no servers.
+- Native loading by a harness binary: not run here; SPEC.md section 6 leaves native discovery probes to
+  the integrator. Kimi CLI placement stays unverified (wave5.unverified_targets).
+Candidate only. Not approved, staged, served or published.

@@ -1,0 +1,89 @@
+=== run 1: 2026-09-23T20:27:11Z python3 check_package.py check /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a04_unattended_guard_hooks/require_tests_before_stop
+{
+ "identity": "require_tests_before_stop",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202721002008Z.json"
+}
+exit: 0
+
+=== run 2: 2026-09-23T20:45:44Z final fill and check after the last payload and note edits
+{"fill": "done", "files": 17, "package_digest": "6580c7ba513891f37199b1bf1230b8b07c1b4965798b8e87a63ccc51f7de9c61"}
+{
+ "identity": "require_tests_before_stop",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204558238599Z.json"
+}
+exit: 0
+
+=== independent equivalent commands of the SPEC section 12 table, 2026-09-23T20:47:45Z
+--- layout: find PKG -type l -o -empty -> no output (no link, no empty file or folder)
+--- layout: top-level entries ['package.json', 'payload', 'review']
+--- identity: grep -Fx require_tests_before_stop existing-identities.txt -> exit 1 (1 means the identity is new)
+--- manifest_schema: git show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum -> 05203ed9b332c909 ... matches package.json
+--- manifest_schema: git show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/verify_the_requested_output.md | sha256sum -> 8055f487b9b15c4f ... matches package.json
+--- inventory: sha256sum and stat -c %a of 17 payload files -> all digests, sizes and modes 0644 match
+--- inventory: sha256sum payload/LICENSE -> 663e093e...a46ea
+--- parse: json.load of every .json file -> all parse
+--- network_static: grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' payload -> exit 1 (no match)
+--- tests_run: bwrap --bind python3.14 -m unittest discover (package writable) -> exit 0 Ran 17 tests in 6.182s OK
+--- tests_run: bwrap --bind python3.10 -m unittest discover (package writable) -> exit 0 Ran 17 tests in 4.085s OK
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness claude_code --root examples/workspace-changed < examples/claude_code-stop-refused.json -> exit 0, as expected, stdout {"decision": "block", "reason": "Source files changed after the last test run: src/app.py, tests/test_app.py. Before you
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness claude_code --root examples/workspace-tested < examples/claude_code-stop-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness cursor --root examples/workspace-changed < examples/cursor-stop-refused.json -> exit 0, as expected, stdout {"followup_message": "Source files changed after the last test run: src/app.py, tests/test_app.py. Before you finish, ru
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness cursor --root examples/workspace-tested < examples/cursor-stop-allowed.json -> exit 0, as expected, stdout {}
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness copilot --event agentStop --root examples/workspace-changed < examples/copilot-agentstop-refused.json -> exit 0, as expected, stdout {"decision": "block", "reason": "Source files changed after the last test run: src/app.py, tests/test_app.py. Before you
+--- hooks_run: bwrap python3 -I -B hooks/require_tests_before_stop.py --harness copilot --event agentStop --root examples/workspace-tested < examples/copilot-agentstop-allowed.json -> exit 0, as expected, stdout {}
+
+=== check-all: 2026-09-23T20:49:09Z python3 check_package.py check-all --assignment a04_unattended_guard_hooks
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204909086053Z.json
+exit: 0

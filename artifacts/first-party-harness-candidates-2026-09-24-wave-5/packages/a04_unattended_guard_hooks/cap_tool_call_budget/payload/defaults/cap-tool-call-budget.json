@@ -1,0 +1,8 @@
+{
+  "record_type": "tool_call_budget_policy/v1",
+  "step_id": "default-step",
+  "max_tool_calls": 200,
+  "handoff_path": ".baltor/step/handoff.md",
+  "max_handoff_calls": 5,
+  "max_refused_calls": 5
+}

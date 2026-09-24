@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {"command": "python3 -I -B .baltor/log-tool-activity/hooks/log_tool_activity.py --harness cursor", "timeout": 10}
+    ],
+    "postToolUseFailure": [
+      {"command": "python3 -I -B .baltor/log-tool-activity/hooks/log_tool_activity.py --harness cursor", "timeout": 10}
+    ]
+  }
+}

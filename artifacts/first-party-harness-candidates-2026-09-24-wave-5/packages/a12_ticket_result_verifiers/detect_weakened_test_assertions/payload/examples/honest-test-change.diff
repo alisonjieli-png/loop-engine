@@ -1,0 +1,22 @@
+diff --git a/src/totals.py b/src/totals.py
+index 1b2c3d4..5e6f7a8 100644
+--- a/src/totals.py
++++ b/src/totals.py
+@@ -1,2 +1,2 @@
+ def order_total(rows):
+-    return sum(row["price"] for row in rows)
++    return sum(row["price"] for row in rows if not row.get("cancelled"))
+diff --git a/tests/test_totals.py b/tests/test_totals.py
+index 3c4d5e6..7f8a9b0 100644
+--- a/tests/test_totals.py
++++ b/tests/test_totals.py
+@@ -7,3 +7,9 @@
+ def test_total_of_two_rows():
+     rows = [{"price": 4}, {"price": 7}]
+     assert order_total(rows) == 11
++
++
++def test_total_ignores_cancelled_rows():
++    rows = [{"price": 4}, {"price": 7, "cancelled": True}]
++    assert order_total(rows) == 4
++    assert order_total([]) == 0

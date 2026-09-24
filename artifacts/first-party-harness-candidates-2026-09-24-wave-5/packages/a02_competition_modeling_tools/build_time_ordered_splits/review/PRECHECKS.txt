@@ -1,0 +1,121 @@
+=== 2026-09-23T20:27:36Z run 1: python3 check_package.py fill packages/a02_competition_modeling_tools/build_time_ordered_splits
+{"fill": "done", "files": 4, "package_digest": "d44daad6eaef566182bffa4fcbbd927ae1df1ff79e80f3d76f0a3e3f0ef5f7b4"}
+exit 0
+=== 2026-09-23T20:27:36Z run 1: python3 check_package.py check packages/a02_competition_modeling_tools/build_time_ordered_splits
+{
+ "identity": "build_time_ordered_splits",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202738614600Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:37:14Z run 2 after payload change: entry commands use python3 -I -B, step 4 shortened
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/build_time_ordered_splits
+{"fill": "done", "files": 4, "package_digest": "ce661869c0954676bd6f28276993c46010df004285a8f4fb56d7ae6e29293c61"}
+exit 0
+=== 2026-09-23T20:37:14Z run 2: python3 check_package.py check packages/a02_competition_modeling_tools/build_time_ordered_splits
+{
+ "identity": "build_time_ordered_splits",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203716454943Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:38:00Z run 3: python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203800086149Z.json
+exit 0
+
+=== 2026-09-24T05:27:28Z run 4 (repair round 2) after payload change: gaps compared in seconds before rounding, --gap-unit, suggested_gap with exact or rounded-up arguments, forward check computed from assigned rows, report v2, version 0.2.0
+=== note: a dry iteration ran first (fill at 2026-09-24T05:21:36Z, then the checker with write=False: passed, no report file); its output is in repair-a02_competition_modeling_tools/round-2-20260924T0501Z/evidence/dry-iterations.txt
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/build_time_ordered_splits
+{"fill": "done", "files": 4, "package_digest": "9516f6eda460fa6a51a05dc0c8b1a883ef4413774a2e8f51bb7ba01867a9fac7"}
+exit 0
+=== 2026-09-24T05:27:29Z run 4: python3 check_package.py check packages/a02_competition_modeling_tools/build_time_ordered_splits
+{
+ "identity": "build_time_ordered_splits",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052738322867Z.json"
+}
+exit 0
+
+=== 2026-09-24T05:28:52Z run 6 (repair round 2, final): python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052912778385Z.json
+exit 0

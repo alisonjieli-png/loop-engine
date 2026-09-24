@@ -1,0 +1,557 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "guard_workspace_file_writes",
+    "title": "Guard file writes to the workspace",
+    "purpose": "Before each file write or edit, refuse a target that resolves outside the workspace, into version control metadata or onto a declared protected path, including through a symbolic link.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/workspace_local.py",
+      "docs/components/core-architecture/WORKSPACE-BACKENDS.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_file_paths_for_traversal_and_link_escape.md"
+    ],
+    "layer": "code",
+    "family": "native_hook",
+    "search_tags": [
+      "block writes outside the workspace",
+      "stop the agent editing .git",
+      "symlink escape guard for file writes",
+      "protected paths for a coding agent",
+      "claude code pretooluse write edit hook",
+      "cursor pretooluse write hook",
+      "copilot pretooluse edit hook",
+      "keep raw data read only for the agent",
+      "stop the agent changing its own hook settings",
+      "protect AGENTS.md, .mcp.json and editor settings from the agent",
+      "claude code worktree write guard"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "platform engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a04_unattended_guard_hooks",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "8ec91cde011c0ddd920d7ae060319604658bbc9b2d1b6e4ab676a7fdf73830ab",
+        "size_bytes": 1032,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "defaults/guard-workspace-file-writes.json",
+        "digest": "9b0f862a2212c60e616276f2fa0b82603d8acf3e026672d6cb60d9cc2cde6521",
+        "size_bytes": 554,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-allowed.json",
+        "digest": "692c2815b1018ac01b84329ca73e3bf532ede1d30b0d95f874d8a8e5729def8c",
+        "size_bytes": 296,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-pretooluse-refused.json",
+        "digest": "8afa225e8b5ddf4678adcd38a890a56e73731ab68959ecdfddfa4d1bd91b80b4",
+        "size_bytes": 328,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-allowed.json",
+        "digest": "9391238c6aba09888a07b25921b5e16c3135f93e1c5a7ec1bee3618f58b7b907",
+        "size_bytes": 168,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-pretooluse-refused.json",
+        "digest": "79e0b33907a65fe5cd930c15dd3f0c6c5e3f7f225409c10aa1072cf04f1f98d8",
+        "size_bytes": 168,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-pretooluse-allowed.json",
+        "digest": "64c73737335fb972d6f66fb447e86e41dbca90c48126629cb147b270b962caa8",
+        "size_bytes": 332,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-pretooluse-refused.json",
+        "digest": "eba213f957be18f31066a86b6b9b05a8a5aa0b0a0eef69aa281a0d084e1a5aa6",
+        "size_bytes": 334,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/invalid-policy.json",
+        "digest": "950abcb4f5e9cb934432f7f31ddc93d3a1bf49dddaa0e8f19602822eaf98dc81",
+        "size_bytes": 118,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/step-policy.json",
+        "digest": "efee1dc101c242360c07188318f1f92539205a4aa53641f7689590ce9be86a1d",
+        "size_bytes": 313,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "hooks/guard_file_writes.py",
+        "digest": "3026a3cea1e64fdca4016fe0658696b14d3f65cd88a14a3cf1652fcf46bdc284",
+        "size_bytes": 19704,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_guard_file_writes.py",
+        "digest": "29ad981af13e7928678f30c38690deb383072f31e3b99e4c8db958fd807a1b23",
+        "size_bytes": 17736,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "0b756e5fb7f7b200607b95d25f3ad1d441ecaa428247cb630187ddc8b121f1df",
+        "size_bytes": 378,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/copilot/guard-workspace-file-writes.json",
+        "digest": "5432adddc9ba4b586bdfae71e05a71ecc2c4abfcb59de700424620003d69c74f",
+        "size_bytes": 265,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/hooks.json",
+        "digest": "2bc2f5ecc27909c48ae3d68d2f5549cae0390bde17b163a21b2ceda2f768d589",
+        "size_bytes": 280,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a04_unattended_guard_hooks",
+    "file_class": "hook_with_script",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "cursor": "Event preToolUse with matcher Write|Delete, the failClosed option and the permission, user_message and agent_message answer come from a snapshot of Cursor's hook page in a local outside project and match Cursor's hook page as read on September 24, 2026, which requires permission in every answer and blocks the action on an answer that does not match the schema; so an allowed write is answered with permission allow. Neither page documents the Write input field that holds the path; the hook reads file_path, then path, and refuses when neither exists. Whether an allow answer also skips Cursor's own approval is unverified. No Cursor run was observed.",
+      "copilot": "Event preToolUse, the input fields toolName and toolArgs, the tool names create and edit, and the permissionDecision answer match GitHub's hooks configuration reference as read on September 24, 2026. The path field inside toolArgs is the producer's reading and was not confirmed there, and no Copilot run was observed."
+    },
+    "not_placed": {},
+    "native_name": "guard-workspace-file-writes",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "cursor": "variants/cursor/hooks.json",
+      "copilot": "variants/copilot/guard-workspace-file-writes.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-workspace-file-writes/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-workspace-file-writes.json": {
+          "destination": ".baltor/step/guard-workspace-file-writes.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_file_writes.py": {
+          "destination": ".baltor/guard-workspace-file-writes/hooks/guard_file_writes.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_file_writes.py": null,
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-workspace-file-writes/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-workspace-file-writes.json": {
+          "destination": ".baltor/step/guard-workspace-file-writes.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_file_writes.py": {
+          "destination": ".baltor/guard-workspace-file-writes/hooks/guard_file_writes.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_file_writes.py": null,
+        "variants/cursor/hooks.json": {
+          "destination": ".cursor/hooks.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "copilot": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/guard-workspace-file-writes/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "defaults/guard-workspace-file-writes.json": {
+          "destination": ".baltor/step/guard-workspace-file-writes.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-pretooluse-allowed.json": null,
+        "examples/claude_code-pretooluse-refused.json": null,
+        "examples/copilot-pretooluse-allowed.json": null,
+        "examples/copilot-pretooluse-refused.json": null,
+        "examples/cursor-pretooluse-allowed.json": null,
+        "examples/cursor-pretooluse-refused.json": null,
+        "examples/invalid-policy.json": null,
+        "examples/step-policy.json": null,
+        "hooks/guard_file_writes.py": {
+          "destination": ".baltor/guard-workspace-file-writes/hooks/guard_file_writes.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_guard_file_writes.py": null,
+        "variants/copilot/guard-workspace-file-writes.json": {
+          "destination": ".github/hooks/guard-workspace-file-writes.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "defaults/guard-workspace-file-writes.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/claude_code-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/copilot-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/copilot-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/cursor-pretooluse-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/cursor-pretooluse-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/invalid-policy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "examples/step-policy.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "hooks/guard_file_writes.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "tests/test_guard_file_writes.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "variants/copilot/guard-workspace-file-writes.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      },
+      "variants/cursor/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_guard_file_writes.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "PreToolUse",
+        "script": "hooks/guard_file_writes.py",
+        "arguments": [
+          "--harness",
+          "claude_code",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/claude_code-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "version control metadata"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "preToolUse",
+        "script": "hooks/guard_file_writes.py",
+        "arguments": [
+          "--harness",
+          "cursor",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"allow\""
+            ]
+          },
+          {
+            "input": "examples/cursor-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permission\": \"deny\"",
+              "outside the workspace"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "preToolUse",
+        "script": "hooks/guard_file_writes.py",
+        "arguments": [
+          "--harness",
+          "copilot",
+          "--policy",
+          "examples/step-policy.json"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-pretooluse-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          },
+          {
+            "input": "examples/copilot-pretooluse-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"permissionDecision\": \"deny\"",
+              "is a protected path"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read .baltor/step/guard-workspace-file-writes.json to learn the protected paths before writing any file.",
+    "done_when": [
+      "Every file the step wrote is inside the workspace and outside protected paths.",
+      "Every refused write was redirected to an allowed new file or reported."
+    ],
+    "stop_and_report_when": [
+      "The task needs a change to a protected file, a version control file or a file outside the workspace.",
+      "The hook says the write policy or the workspace root cannot be used.",
+      "The hook says it could not read the tool call."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/workspace_local.py": "bbc7a8c8f61e11d688d0ebb871004497b270d0f5b36703baa7f6f7133a866c4e",
+      "docs/components/core-architecture/WORKSPACE-BACKENDS.md": "82d5ef333c0de70a9ba143617bb7276dfa70eab40b691a5c83cf109689fd458b",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_file_paths_for_traversal_and_link_escape.md": "c5645436712e911c61aeec5b494013dd336dd50f7bf1fcca601437b2b6d2cc33"
+    },
+    "package_digest": "fe46172c9399b4f1fa1b0cfeee1f07dbc5ec380fa409bd63d36820fd81e357dd",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

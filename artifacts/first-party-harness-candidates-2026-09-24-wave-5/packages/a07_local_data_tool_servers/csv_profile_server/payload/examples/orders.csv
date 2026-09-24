@@ -1,0 +1,14 @@
+order_id,order_date,amount,currency,status,note
+1001,2025-03-01,19.99,EUR,paid,
+1002,2025-03-01,5.00,EUR,paid,first order
+1003,2025-03-02,N/A,EUR,cancelled,customer asked
+1004,2025-03-02,120,USD,paid,
+1005,03/04/2025,7.50,EUR,paid,
+1006,2025-03-04,"12,50",EUR,paid,
+1007,2025-03-05,19.99, EUR,refunded,"wrong size,
+sent back"
+1008,2025-03-05,42.00,EUR,paid,
+1009,2025-03-06,19.99,USD,paid,
+1010,2025-03-06,3.25,EUR,paid
+1011,2025-03-07,0.50,EUR,paid,
+1012,2025-03-07,64.10,EUR,cancelled,

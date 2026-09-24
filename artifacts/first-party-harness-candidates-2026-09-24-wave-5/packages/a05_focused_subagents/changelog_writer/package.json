@@ -1,0 +1,211 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "changelog_writer",
+    "title": "Changelog writer",
+    "purpose": "A helper that, after a fix has passed its checks, adds one changelog entry under the unreleased heading and updates the one existing documentation passage that describes the changed behavior.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "docs/guides/native-client-material-loading.md"
+    ],
+    "layer": "context",
+    "family": "native_subagent",
+    "search_tags": [
+      "write a changelog entry for this fix",
+      "update the docs after a fix",
+      "release note for a bug fix",
+      "keep a changelog unreleased section",
+      "documentation only edit",
+      "changelog subagent",
+      "describe the changed behavior for users"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "documentation",
+        "software change"
+      ],
+      "role": [
+        "software developer"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "opencode"
+    ],
+    "dependencies": [],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a05_focused_subagents",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/reply.schema.json",
+        "digest": "c37bb0c20b3d442989d3c29bb2d53567ce362b6c90ebfab2c53825bdb4105ca5",
+        "size_bytes": 3702,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/claude_code/changelog-writer.md",
+        "digest": "7f842ae73b8c40f41ff66492f12e5870c52cdd43cbf2aa936a63c1bfefd79b09",
+        "size_bytes": 2651,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/copilot/changelog-writer.agent.md",
+        "digest": "3efe71fb5ddf700780ec207f344bef9f0137e398373cb4b4477a92f33aa6bc2e",
+        "size_bytes": 2627,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/opencode/changelog-writer.md",
+        "digest": "b24e11e7754f629a5f3e14ab456deb0e0e014383d2f74b74a9dcbf746e8e01df",
+        "size_bytes": 3110,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a05_focused_subagents",
+    "file_class": "subagent_definition",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "opencode",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "opencode": "The folder .opencode/agents/ is documented and was observed with OpenCode 1.18.31 in docs/guides/native-client-material-loading.md, but discovery of this file and the effect of its mode, steps and permission keys were not probed. The keys, the last-match rule order and the edit permission that write and apply_patch share were read from the installed OpenCode program text (it embeds version 1.18.32), which was not run.",
+      "copilot": "GitHub's custom agents configuration reference, read on 2026-09-24, documents the path .github/agents/NAME.agent.md, the read, search and edit tool aliases (edit includes Write) and that unknown tool names are ignored. Discovery of this file was not observed; no Copilot surface was run, and this variant has no path limit."
+    },
+    "not_placed": {},
+    "native_name": "changelog-writer",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/changelog-writer.md",
+      "opencode": "variants/opencode/changelog-writer.md",
+      "copilot": "variants/copilot/changelog-writer.agent.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/changelog-writer.md": {
+          "destination": ".claude/agents/changelog-writer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/changelog-writer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/changelog-writer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/changelog-writer.md": {
+          "destination": ".opencode/agents/changelog-writer.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/changelog-writer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/changelog-writer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/changelog-writer.agent.md": {
+          "destination": ".github/agents/changelog-writer.agent.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/changelog-writer/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/reply.schema.json": {
+          "destination": ".baltor/changelog-writer/contracts/reply.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/reply.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/changelog-writer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/changelog-writer.agent.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/opencode/changelog-writer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Look for towncrier.toml, .changeset/config.json, changelog.d, newsfragments, releasenotes/notes and towncrier in pyproject.toml; if any exists, refuse, because fragments build the changelog.",
+    "done_when": [
+      "One entry of one to three lines sits under an Unreleased heading, the one passage that described the old behavior is updated or reported as not found, and the reply names the section and the replaced text."
+    ],
+    "stop_and_report_when": [
+      "The evidence does not name a command with exit status 0.",
+      "The changelog file does not exist, is built from fragment files, or says it is generated.",
+      "The change needs an edit outside the changelog and one existing page."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf"
+    },
+    "package_digest": "1637a8d4dd02aca9c1bf353d6ad0b435e58bb6d3e909701d69b062d83f35921f",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

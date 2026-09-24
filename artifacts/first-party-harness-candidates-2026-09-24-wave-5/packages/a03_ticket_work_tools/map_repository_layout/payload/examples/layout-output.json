@@ -1,0 +1,41 @@
+{
+ "record_type": "repository_layout/v1",
+ "status": "ok",
+ "source": "path_list",
+ "root": ".",
+ "focus": null,
+ "totals": {"files": 12, "folders": 7, "links": 0, "skipped_folders": 1, "by_category": {"source": 6, "test": 2, "config": 1, "docs": 2, "generated": 1}},
+ "languages": [
+  {"extension": ".py", "files": 7},
+  {"extension": ".sh", "files": 1}
+ ],
+ "key_files": {"readme": ["README.md"], "build_and_config": ["pyproject.toml"], "ci": []},
+ "largest_source_folders": [
+  {"path": "app", "source_files": 5},
+  {"path": "app/api", "source_files": 2},
+  {"path": "app/core", "source_files": 2},
+  {"path": "scripts", "source_files": 1}
+ ],
+ "test_file_folders": [
+  {"path": "tests", "test_files_here": 2}
+ ],
+ "tree": [
+  "./ [source] 12 files (docs 2, test 2, config 1, generated 1)",
+  "  app/ [source] 5 files",
+  "    api/ [source] 2 files",
+  "    core/ [source] 2 files",
+  "  tests/ [test] 2 files",
+  "  scripts/ [source] 1 file",
+  "  dist/ [generated] 1 file; build output, not expanded",
+  "  docs/ [docs] 1 file",
+  "skipped, not walked: node_modules/ (installed dependencies)"
+ ],
+ "omitted_tree_folders": 0,
+ "skipped": [
+  {"name": "node_modules", "reason": "installed dependencies", "places": 1, "first": "node_modules"}
+ ],
+ "sensitive_files": {"count": 0, "paths": []},
+ "notes": [
+  "built from a path list: skipped folders are those named in the list, and nothing on disk was read"
+ ]
+}

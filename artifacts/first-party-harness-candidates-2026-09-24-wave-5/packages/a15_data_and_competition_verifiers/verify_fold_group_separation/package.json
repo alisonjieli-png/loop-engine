@@ -1,0 +1,416 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "verify_fold_group_separation",
+    "title": "Verify fold assignments keep groups apart",
+    "purpose": "Check a fold assignment file so that every row has exactly one fold, no group appears in two folds and label shares per fold stay within a declared tolerance.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "check group k fold assignments",
+      "verify folds keep groups apart",
+      "group leakage in cross validation",
+      "same patient in two folds",
+      "fold assignment check",
+      "label balance per fold",
+      "every row has exactly one fold",
+      "validate a cv folds file",
+      "leakage safe validation check",
+      "stratified group folds check"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "model validation"
+      ],
+      "role": [
+        "data scientist",
+        "competition participant"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a15_data_and_competition_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "32a69b40bca31000b2b3b3bf64e058f2291992b6befdcc199a459b1d5e0abd92",
+        "size_bytes": 2937,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/group-folds-bundle.json",
+        "digest": "46e7c93269c7a91184861d9368e980effa28047e734e9526c764a8f8bbe0d3ba",
+        "size_bytes": 473,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/known-wrong-bundle.json",
+        "digest": "b9ac08db68fd1570f3c82cc87f7666c4db8117059694ccda65f34531f966a7e3",
+        "size_bytes": 473,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "dea3debf9c65a0eeea818ded809f1600c00c364794189ecf75293a6bb75c8041",
+        "size_bytes": 806,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/fold-file-format.md",
+        "digest": "e8f25c47e24bdce2c43e0e5d6769688a29b8f3dabc80068fc9840359b0b4c18e",
+        "size_bytes": 2309,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/verify_folds.py",
+        "digest": "dea815f339d207aab66de4333faa8b73ee0efea14a3abcd7083fdea8cf0072c8",
+        "size_bytes": 26562,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_verify_folds.py",
+        "digest": "67e273271e4b46cc421996f45bdabc5ab4a455c884cff94902ab26a99068c4cf",
+        "size_bytes": 11862,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a15_data_and_competition_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "verify-fold-group-separation",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/verify-fold-group-separation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/verify-fold-group-separation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/group-folds-bundle.json": {
+          "destination": ".claude/skills/verify-fold-group-separation/examples/group-folds-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".claude/skills/verify-fold-group-separation/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/verify-fold-group-separation/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/fold-file-format.md": {
+          "destination": ".claude/skills/verify-fold-group-separation/references/fold-file-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_folds.py": {
+          "destination": ".claude/skills/verify-fold-group-separation/scripts/verify_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_folds.py": {
+          "destination": ".claude/skills/verify-fold-group-separation/tests/test_verify_folds.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/verify-fold-group-separation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/verify-fold-group-separation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/group-folds-bundle.json": {
+          "destination": ".agents/skills/verify-fold-group-separation/examples/group-folds-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".agents/skills/verify-fold-group-separation/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/verify-fold-group-separation/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/fold-file-format.md": {
+          "destination": ".agents/skills/verify-fold-group-separation/references/fold-file-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_folds.py": {
+          "destination": ".agents/skills/verify-fold-group-separation/scripts/verify_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_folds.py": {
+          "destination": ".agents/skills/verify-fold-group-separation/tests/test_verify_folds.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/verify-fold-group-separation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/verify-fold-group-separation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/group-folds-bundle.json": {
+          "destination": ".opencode/skills/verify-fold-group-separation/examples/group-folds-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".opencode/skills/verify-fold-group-separation/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/verify-fold-group-separation/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/fold-file-format.md": {
+          "destination": ".opencode/skills/verify-fold-group-separation/references/fold-file-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_folds.py": {
+          "destination": ".opencode/skills/verify-fold-group-separation/scripts/verify_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_folds.py": {
+          "destination": ".opencode/skills/verify-fold-group-separation/tests/test_verify_folds.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/verify-fold-group-separation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/verify-fold-group-separation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/group-folds-bundle.json": {
+          "destination": ".pi/skills/verify-fold-group-separation/examples/group-folds-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".pi/skills/verify-fold-group-separation/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/verify-fold-group-separation/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/fold-file-format.md": {
+          "destination": ".pi/skills/verify-fold-group-separation/references/fold-file-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_folds.py": {
+          "destination": ".pi/skills/verify-fold-group-separation/scripts/verify_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_folds.py": {
+          "destination": ".pi/skills/verify-fold-group-separation/tests/test_verify_folds.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/verify-fold-group-separation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/verify-fold-group-separation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/group-folds-bundle.json": {
+          "destination": ".gemini/skills/verify-fold-group-separation/examples/group-folds-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".gemini/skills/verify-fold-group-separation/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/verify-fold-group-separation/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/fold-file-format.md": {
+          "destination": ".gemini/skills/verify-fold-group-separation/references/fold-file-format.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/verify_folds.py": {
+          "destination": ".gemini/skills/verify-fold-group-separation/scripts/verify_folds.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_verify_folds.py": {
+          "destination": ".gemini/skills/verify-fold-group-separation/tests/test_verify_folds.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "examples/group-folds-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "examples/known-wrong-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "references/fold-file-format.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "scripts/verify_folds.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_verify_folds.py"
+        ]
+      },
+      "tests/test_verify_folds.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/verify_folds.py from the workspace root with --folds, the match option, --group-column and --label-column, and read status, failed_checks and summary.",
+    "done_when": [
+      "The report gives the status, the sha256 of each file, the rows per fold, the groups in two folds, the largest label share gap, each failed check with its count, and one answer for each item of references/checklist.md."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2.",
+      "The task does not say which column identifies the entity.",
+      "The folds fail; the fold file stays as it is in this step."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/audit_data_splits_for_errors_and_leakage.md": "c768c92521111091a112fd97aef6cf5de2c5cd1fead52cee5c5a5560be7f6d9a"
+    },
+    "package_digest": "8c365c0b6a5999e8c1400f0d6a6926d435cb05a00386dfbc360a20e5002d81b3",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

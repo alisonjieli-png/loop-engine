@@ -1,0 +1,420 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "validate_submission_file",
+    "title": "Validate a submission file against the sample",
+    "purpose": "Check a submission against the sample submission for exact header, identifier set, row count, missing values and value ranges for the task type, before any upload step.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/code_nodes/kaggle_executor.py",
+      "docs/verification/KAGGLE-TWELVE-COMPETITION-CAMPAIGN-2026-09-03.md",
+      "examples/25_host_runtime/competition_prediction.py"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "validate a competition submission file",
+      "check submission against the sample submission",
+      "submission file format check",
+      "submission header and ids check",
+      "missing ids in a submission",
+      "probabilities between 0 and 1",
+      "class probabilities add up to one",
+      "check a submission before upload",
+      "duplicate ids in a submission",
+      "allowed labels in a submission"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data science",
+        "machine learning competitions"
+      ],
+      "role": [
+        "data scientist",
+        "competition participant"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a15_data_and_competition_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "2e31ce876c41a2ec8b7c14ebc355c71d4628439650b298dfb789d466f00ca683",
+        "size_bytes": 3119,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/known-wrong-bundle.json",
+        "digest": "9277981974abb2a76d332b58af16c1ea46855f1f1260ac768313bea733dff1bb",
+        "size_bytes": 374,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/submission-bundle.json",
+        "digest": "bc3e3aa6bbf5c0a0b14380b6562d58cb7e206648a836b2115df1451d5e6e4bb0",
+        "size_bytes": 323,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "0d1f675355534d69570b023d6e2cb89e324a87dda546481ef808b05400e36c6e",
+        "size_bytes": 845,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/task-types.md",
+        "digest": "58fc2681d97d0eaf08dccb59daa7a82bce831e0879ea097ac504fb9c0e1eee60",
+        "size_bytes": 3206,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/validate_submission.py",
+        "digest": "a783dbab42d0fdea972e71017e413c82fa418732bb76ce7388c8659ebfdfe7c8",
+        "size_bytes": 24923,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_validate_submission.py",
+        "digest": "a6ac80d3a7b453be8fa63311e7693226033281b9d4604607d1091fc22420845f",
+        "size_bytes": 15540,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a15_data_and_competition_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "validate-submission-file",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/validate-submission-file/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/validate-submission-file/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".claude/skills/validate-submission-file/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/submission-bundle.json": {
+          "destination": ".claude/skills/validate-submission-file/examples/submission-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/validate-submission-file/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/task-types.md": {
+          "destination": ".claude/skills/validate-submission-file/references/task-types.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/validate_submission.py": {
+          "destination": ".claude/skills/validate-submission-file/scripts/validate_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_validate_submission.py": {
+          "destination": ".claude/skills/validate-submission-file/tests/test_validate_submission.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/validate-submission-file/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/validate-submission-file/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".agents/skills/validate-submission-file/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/submission-bundle.json": {
+          "destination": ".agents/skills/validate-submission-file/examples/submission-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/validate-submission-file/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/task-types.md": {
+          "destination": ".agents/skills/validate-submission-file/references/task-types.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/validate_submission.py": {
+          "destination": ".agents/skills/validate-submission-file/scripts/validate_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_validate_submission.py": {
+          "destination": ".agents/skills/validate-submission-file/tests/test_validate_submission.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/validate-submission-file/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/validate-submission-file/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".opencode/skills/validate-submission-file/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/submission-bundle.json": {
+          "destination": ".opencode/skills/validate-submission-file/examples/submission-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/validate-submission-file/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/task-types.md": {
+          "destination": ".opencode/skills/validate-submission-file/references/task-types.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/validate_submission.py": {
+          "destination": ".opencode/skills/validate-submission-file/scripts/validate_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_validate_submission.py": {
+          "destination": ".opencode/skills/validate-submission-file/tests/test_validate_submission.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/validate-submission-file/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/validate-submission-file/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".pi/skills/validate-submission-file/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/submission-bundle.json": {
+          "destination": ".pi/skills/validate-submission-file/examples/submission-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/validate-submission-file/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/task-types.md": {
+          "destination": ".pi/skills/validate-submission-file/references/task-types.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/validate_submission.py": {
+          "destination": ".pi/skills/validate-submission-file/scripts/validate_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_validate_submission.py": {
+          "destination": ".pi/skills/validate-submission-file/tests/test_validate_submission.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/validate-submission-file/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/validate-submission-file/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/known-wrong-bundle.json": {
+          "destination": ".gemini/skills/validate-submission-file/examples/known-wrong-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/submission-bundle.json": {
+          "destination": ".gemini/skills/validate-submission-file/examples/submission-bundle.json",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/validate-submission-file/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/task-types.md": {
+          "destination": ".gemini/skills/validate-submission-file/references/task-types.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/validate_submission.py": {
+          "destination": ".gemini/skills/validate-submission-file/scripts/validate_submission.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_validate_submission.py": {
+          "destination": ".gemini/skills/validate-submission-file/tests/test_validate_submission.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "examples/known-wrong-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "examples/submission-bundle.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "references/task-types.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "scripts/validate_submission.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_validate_submission.py"
+        ]
+      },
+      "tests/test_validate_submission.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run scripts/validate_submission.py from the workspace root with --submission, --sample and --task from the competition rules, and read status, failed_checks, hints and warnings.",
+    "done_when": [
+      "The report gives the status, the sha256 of the submission, each failed check with its count, every hint and warning, and one answer for each item of references/checklist.md."
+    ],
+    "stop_and_report_when": [
+      "The script exits 2.",
+      "The rules do not say what each prediction value must be.",
+      "The check fails; the file is not uploaded."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/code_nodes/kaggle_executor.py": "715c044ac8300061cc38074e00523cd88eaba9299767014fe4a757f54313bae9",
+      "docs/verification/KAGGLE-TWELVE-COMPETITION-CAMPAIGN-2026-09-03.md": "d14c84d8f89bdb0a17f13a8fea5a3a947559a9f88b0a9a4875ec5d02ad144c98",
+      "examples/25_host_runtime/competition_prediction.py": "cbbc179f632882e8fa970b7fb4586adf3a5286075cf75b9d91cd17153af80a1b"
+    },
+    "package_digest": "8dd925637ce45972bf21442b1925e4486ca18acb8c0968f83b76dfaa68c97318",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

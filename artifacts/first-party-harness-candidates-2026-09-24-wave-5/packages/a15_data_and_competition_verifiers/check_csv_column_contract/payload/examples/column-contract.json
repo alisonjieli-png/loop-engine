@@ -1,0 +1,18 @@
+{
+ "record_type": "column_contract/v1",
+ "description": "Synthetic example: the cleaned customers table of a practice task.",
+ "empty_values": ["", "NA"],
+ "extra_columns": "not_allowed",
+ "column_order": "any",
+ "row_count": {"min": 1, "max": 1000000},
+ "columns": [
+  {"name": "customer_id", "type": "string", "empty": "never", "unique": true, "min_length": 6, "max_length": 6},
+  {"name": "signup_date", "type": "date", "format": "%Y-%m-%d", "empty": "never", "min": "2015-01-01", "max": "2026-12-31"},
+  {"name": "country", "type": "string", "empty": "never", "allowed": ["DE", "FR", "GB", "US"]},
+  {"name": "plan", "type": "string", "allowed": ["free", "pro", "team"]},
+  {"name": "monthly_spend", "type": "decimal", "min": 0, "max": 10000, "max_empty_share": 0.25},
+  {"name": "seats", "type": "integer", "min": 1, "max": 500},
+  {"name": "is_active", "type": "boolean", "true_values": ["true"], "false_values": ["false"], "empty": "never"},
+  {"name": "email", "type": "string", "required": false, "trimmed": true, "max_length": 254}
+ ]
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python3 -I -B .baltor/guard-shell-command-allowlist/hooks/guard_shell_commands.py --harness cursor",
+        "timeout": 10,
+        "failClosed": true
+      }
+    ]
+  }
+}

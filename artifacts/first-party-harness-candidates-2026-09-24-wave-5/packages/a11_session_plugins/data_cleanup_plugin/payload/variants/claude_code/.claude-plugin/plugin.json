@@ -1,0 +1,7 @@
+{
+  "name": "data-cleanup-plugin",
+  "version": "0.1.0",
+  "description": "Candidate plugin for data cleanup steps: a post-write hook that compares each cleaned CSV copy with its source by header and row count, a cleanup status command, and a read-only cleaning rule critic agent.",
+  "license": "MIT",
+  "keywords": ["data cleaning", "csv", "row count", "header check", "cleaning rules"]
+}

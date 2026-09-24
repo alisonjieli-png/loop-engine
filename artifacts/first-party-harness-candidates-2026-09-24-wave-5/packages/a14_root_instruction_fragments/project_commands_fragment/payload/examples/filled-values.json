@@ -1,0 +1,13 @@
+{
+ "description": "Synthetic values for a small Python project with src and tests folders. A rendering sample for the host, not a real project.",
+ "values": {
+  "BUILD_COMMAND": "python3 -m compileall -q src",
+  "TEST_COMMAND": "python3 -m unittest discover -s tests -v",
+  "TEST_ONE_FILE_COMMAND": "python3 -m unittest -v FILE",
+  "LINT_COMMAND": "none",
+  "FORMAT_COMMAND": "none",
+  "SOURCE_DIRS": "src/",
+  "TEST_DIRS": "tests/",
+  "PROTECTED_PATHS": "requirements.lock, src/generated/, migrations/applied/"
+ }
+}

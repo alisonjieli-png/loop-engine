@@ -1,0 +1,320 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "select_tests_for_changed_files",
+    "title": "Select Python tests for changed files",
+    "purpose": "List the test files that import, directly or through local modules, the Python files changed in a diff, so a step runs the narrowest relevant tests before the full suite.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/reachability_report.py",
+      ".github/workflows/ci.yml",
+      "AGENTS.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "select tests for changed files",
+      "which tests cover my change",
+      "run only affected tests",
+      "test impact from a git diff",
+      "tests that import a module",
+      "python import graph for tests",
+      "narrow test run before the full suite",
+      "conftest scope of a change",
+      "faster test feedback for a small model"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "test engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "parse_diff",
+      "build_graph",
+      "select"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a03_ticket_work_tools",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "e317522ad8ab86ce7b893afc4e3e8ddfafa1dcc7ca3661f6519f26c304ee072a",
+        "size_bytes": 2806,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/selection-output.json",
+        "digest": "a960bdf5ff172135edc8cb942c14bc165fb8954670e4107f30ee62b1823a8ca0",
+        "size_bytes": 1104,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "scripts/select_tests.py",
+        "digest": "be9bfd24d04ac976dd6d32512513ea89ebdfffe1a1d7a3d8cc453c44987b0b1c",
+        "size_bytes": 27880,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_select_tests.py",
+        "digest": "7bad42af35e5b7651039b1e6fd27f95363074dffe6f229ddb7bbd96a939f6156",
+        "size_bytes": 9570,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a03_ticket_work_tools",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "gemini_cli": "The .gemini/skills root is documented in the placement research file but was not observed on this machine, and native discovery of this package was not probed in Gemini CLI."
+    },
+    "not_placed": {},
+    "native_name": "select-tests-for-changed-files",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/select-tests-for-changed-files/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/select-tests-for-changed-files/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/selection-output.json": {
+          "destination": ".claude/skills/select-tests-for-changed-files/examples/selection-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/select_tests.py": {
+          "destination": ".claude/skills/select-tests-for-changed-files/scripts/select_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_select_tests.py": {
+          "destination": ".claude/skills/select-tests-for-changed-files/tests/test_select_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/select-tests-for-changed-files/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/select-tests-for-changed-files/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/selection-output.json": {
+          "destination": ".agents/skills/select-tests-for-changed-files/examples/selection-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/select_tests.py": {
+          "destination": ".agents/skills/select-tests-for-changed-files/scripts/select_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_select_tests.py": {
+          "destination": ".agents/skills/select-tests-for-changed-files/tests/test_select_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/select-tests-for-changed-files/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/select-tests-for-changed-files/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/selection-output.json": {
+          "destination": ".opencode/skills/select-tests-for-changed-files/examples/selection-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/select_tests.py": {
+          "destination": ".opencode/skills/select-tests-for-changed-files/scripts/select_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_select_tests.py": {
+          "destination": ".opencode/skills/select-tests-for-changed-files/tests/test_select_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/select-tests-for-changed-files/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/select-tests-for-changed-files/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/selection-output.json": {
+          "destination": ".pi/skills/select-tests-for-changed-files/examples/selection-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/select_tests.py": {
+          "destination": ".pi/skills/select-tests-for-changed-files/scripts/select_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_select_tests.py": {
+          "destination": ".pi/skills/select-tests-for-changed-files/tests/test_select_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/select-tests-for-changed-files/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/select-tests-for-changed-files/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/selection-output.json": {
+          "destination": ".gemini/skills/select-tests-for-changed-files/examples/selection-output.json",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/select_tests.py": {
+          "destination": ".gemini/skills/select-tests-for-changed-files/scripts/select_tests.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_select_tests.py": {
+          "destination": ".gemini/skills/select-tests-for-changed-files/tests/test_select_tests.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_select_tests.py"
+        ]
+      },
+      "examples/selection-output.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_select_tests.py"
+        ]
+      },
+      "scripts/select_tests.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_select_tests.py"
+        ]
+      },
+      "tests/test_select_tests.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Pipe the diff into scripts/select_tests.py with --root at the repository root and --diff -, then read status and test_paths in its JSON.",
+    "done_when": [
+      "The selected tests ran and their result is in the step notes.",
+      "Every changed file that no test covers is named in the step notes."
+    ],
+    "stop_and_report_when": [
+      "The status is full_suite_recommended and the full suite cannot run in this step.",
+      "The status is none_selected, so no test imports the change.",
+      "The script exits with status 2 because the input was refused."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/reachability_report.py": "fcc921f28cc55851b8e0fae4b0b527fafdafeaa84bb9f5e67c23144031b595f0",
+      ".github/workflows/ci.yml": "a52bb76804feac24d0f766e41363a0a09070780f700b4f1feb1ab288ff234eed",
+      "AGENTS.md": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9"
+    },
+    "package_digest": "ec020096b6eddd2e80333614f701c473ce5d4f8357b888467f6dbf991b26299b",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

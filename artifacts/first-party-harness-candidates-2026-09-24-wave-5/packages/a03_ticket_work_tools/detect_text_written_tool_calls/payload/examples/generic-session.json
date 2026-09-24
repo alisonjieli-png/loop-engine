@@ -1,0 +1,28 @@
+{
+ "tools": [
+  "read",
+  "write",
+  "bash"
+ ],
+ "turns": [
+  {
+   "role": "user",
+   "text": "Clean the phone column in data.csv and write clean.csv."
+  },
+  {
+   "role": "assistant",
+   "text": "I will read the file first.",
+   "tool_calls": [
+    "read"
+   ]
+  },
+  {
+   "role": "tool",
+   "text": "phone\n(555) 010 2030\n"
+  },
+  {
+   "role": "assistant",
+   "text": "```json\n{\"name\": \"write\", \"arguments\": {\"path\": \"clean.csv\", \"content\": \"phone\\n5550102030\\n\"}}\n```"
+  }
+ ]
+}

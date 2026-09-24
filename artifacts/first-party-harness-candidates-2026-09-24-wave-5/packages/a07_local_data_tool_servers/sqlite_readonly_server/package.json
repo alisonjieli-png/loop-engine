@@ -1,0 +1,592 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "sqlite_readonly_server",
+    "title": "Read-only SQLite query tool server",
+    "purpose": "A local standard-input protocol server that runs one SELECT statement against a declared SQLite file opened read-only, with row and time limits, and refuses every statement that writes.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md"
+    ],
+    "layer": "code",
+    "family": "native_protocol_server",
+    "search_tags": [
+      "query a sqlite database read only",
+      "run a select on a sqlite file",
+      "list tables and columns of a sqlite database",
+      "sqlite schema for a model",
+      "safe sql tool that cannot write",
+      "mcp server for sqlite",
+      "local database tool server",
+      "check data in a sqlite file",
+      "sql query with row and time limits",
+      "refuse insert update delete statements"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning",
+        "databases"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "main",
+      "describe_sqlite",
+      "query_sqlite",
+      "open_read_only",
+      "reading_only",
+      "describe_one",
+      "choose_objects"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a07_local_data_tool_servers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "4fa0daa34b1c7a5949dbce1d995cbb6b90d57ce4409d709a43935f83f923ab9b",
+        "size_bytes": 1157,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/describe_sqlite.input.schema.json",
+        "digest": "638b7ef8247d2df83bc04edfec3de4142ea8c85f2b207474d5c4fd6ff651ed4a",
+        "size_bytes": 1298,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/query_sqlite.input.schema.json",
+        "digest": "b4a4f8a3d4906fc731dcb2ae9fff6beb949026e160620b48971bfbbc8ca53259",
+        "size_bytes": 1531,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/describe_sqlite-arguments.json",
+        "digest": "2fd6874d63fddbff69b336935a6c2ebf0782369de8019e57d0a43a46a41e52ee",
+        "size_bytes": 29,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/query_sqlite-arguments.json",
+        "digest": "ea0b0d708197890ab0bc04fc3adb421052238443e88561e372856f94d4c669bb",
+        "size_bytes": 216,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/shop.sql",
+        "digest": "77f0f9e6473b62513321584abc50d7850bffe55aaa385e5af4175466fca36798",
+        "size_bytes": 795,
+        "media_type": "application/sql",
+        "role": "other"
+      },
+      {
+        "path": "server/sqlite_readonly_server.py",
+        "digest": "39bf20f7329fc00dfde40b7507e77e7a5c681d557e4923fa53236e103b5c43f2",
+        "size_bytes": 31231,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_sqlite_readonly_server.py",
+        "digest": "25bbc050eaf9b0fbae6d06b6e08c5c66c41f1da8846733aee458bd6754d12864",
+        "size_bytes": 26951,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.mcp.json",
+        "digest": "fc002053be2ca240d6c99fcf2199e882331145d427abe1bfa8677325eddb2377",
+        "size_bytes": 297,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "1c7de50ca3bd768062d86cdcef8287dbd6b7a9522a5cd513721de322257bcd88",
+        "size_bytes": 159,
+        "media_type": "application/toml",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/cursor/mcp.json",
+        "digest": "b55db7108c1d36a315c8740fd1190f4033106542c9054cedbde7bbd506de2762",
+        "size_bytes": 285,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "f27a262446d8e7509b84b1872b85335e85c6dadc7fea244f84375324f745a182",
+        "size_bytes": 249,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "fa45aa3ea1ccd24d6a907437eb4dccff4cd3e62837009f9ea2cd5c96f90ddb8c",
+        "size_bytes": 300,
+        "media_type": "application/json",
+        "role": "protocol_server_configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a07_local_data_tool_servers",
+    "file_class": "protocol_server_config_local",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "claude_code": "Project .mcp.json is documented. The launch line starts the server through ${CLAUDE_PROJECT_DIR:-.}. The Claude Code MCP documentation says Claude Code sets CLAUDE_PROJECT_DIR in the server's environment, not in its own, so the args expand to the absolute project root only when the host starts Claude Code with CLAUDE_PROJECT_DIR set; otherwise they expand to '.', which assumes the server starts in the project root. Neither start folder was observed. Project servers need the user's approval in a trusted workspace before first use.",
+      "codex": "Project .codex/config.toml is documented for trusted projects only, and the relative server path in the launch line assumes the harness starts the server in the workspace root; that working directory was not observed for this harness.",
+      "gemini_cli": "Project .gemini/settings.json mcpServers is documented. The server key is the hyphenated name sqlite-readonly-server, not the identity (a recorded deviation from SPEC 9.2), because the Gemini CLI 0.59.0 documentation says underscores in server names make policy and wildcard rules fail silently. With folder trust on (true by default in the 0.59.0 configuration reference), Gemini CLI ignores .gemini/settings.json and connects no protocol server in an untrusted folder, so the host must trust the workspace. The relative launch line assumes the server starts in the workspace root; that was not observed.",
+      "cursor": "Project .cursor/mcp.json with mcpServers is documented, and so is ${workspaceFolder} in command and args (the folder that holds .cursor/mcp.json), in the Cursor MCP documentation copy docs/cursor-mcp.md of madebywild/agent-harness at 2ecf44f, the revision that docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md records. Discovery, approval and the server start were not observed on this machine."
+    },
+    "not_placed": {},
+    "native_name": "sqlite-readonly-server",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "AGENTS.md",
+      "codex": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "gemini_cli": "AGENTS.md",
+      "cursor": "AGENTS.md"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/sqlite-readonly-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/describe_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/describe_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/query_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/query_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/describe_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/describe_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/query_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/query_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/shop.sql": {
+          "destination": ".baltor/sqlite-readonly-server/examples/shop.sql",
+          "operation": "copy_exact_bytes"
+        },
+        "server/sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/tests/test_sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/claude_code/.mcp.json": {
+          "destination": ".mcp.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/sqlite-readonly-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/describe_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/describe_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/query_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/query_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/describe_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/describe_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/query_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/query_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/shop.sql": {
+          "destination": ".baltor/sqlite-readonly-server/examples/shop.sql",
+          "operation": "copy_exact_bytes"
+        },
+        "server/sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/tests/test_sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/sqlite-readonly-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/describe_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/describe_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/query_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/query_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/describe_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/describe_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/query_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/query_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/shop.sql": {
+          "destination": ".baltor/sqlite-readonly-server/examples/shop.sql",
+          "operation": "copy_exact_bytes"
+        },
+        "server/sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/tests/test_sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/sqlite-readonly-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/describe_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/describe_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/query_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/query_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/describe_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/describe_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/query_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/query_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/shop.sql": {
+          "destination": ".baltor/sqlite-readonly-server/examples/shop.sql",
+          "operation": "copy_exact_bytes"
+        },
+        "server/sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/tests/test_sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/sqlite-readonly-server/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/describe_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/describe_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/query_sqlite.input.schema.json": {
+          "destination": ".baltor/sqlite-readonly-server/contracts/query_sqlite.input.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/describe_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/describe_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/query_sqlite-arguments.json": {
+          "destination": ".baltor/sqlite-readonly-server/examples/query_sqlite-arguments.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/shop.sql": {
+          "destination": ".baltor/sqlite-readonly-server/examples/shop.sql",
+          "operation": "copy_exact_bytes"
+        },
+        "server/sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/server/sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_sqlite_readonly_server.py": {
+          "destination": ".baltor/sqlite-readonly-server/tests/test_sqlite_readonly_server.py",
+          "operation": "copy_exact_bytes"
+        },
+        "variants/cursor/mcp.json": {
+          "destination": ".cursor/mcp.json",
+          "operation": "merge_json_object"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/describe_sqlite.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "contracts/query_sqlite.input.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "examples/describe_sqlite-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "examples/query_sqlite-arguments.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "examples/shop.sql": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "server/sqlite_readonly_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "tests/test_sqlite_readonly_server.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/.mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "variants/cursor/mcp.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_sqlite_readonly_server.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [
+      {
+        "name": "sqlite_readonly_server",
+        "script": "server/sqlite_readonly_server.py",
+        "arguments": [
+          "--root",
+          "examples"
+        ],
+        "tools": [
+          "describe_sqlite",
+          "query_sqlite"
+        ],
+        "protocol_versions": [
+          "2025-11-25",
+          "2025-06-18",
+          "2025-03-26"
+        ],
+        "sample_call": {
+          "tool": "describe_sqlite",
+          "arguments": {
+            "path": "shop.sqlite3"
+          },
+          "expect_is_error": true
+        }
+      }
+    ],
+    "first_action": "Call the describe_sqlite tool with the database path the step names, with names_only true first when the full description is too large, and note the exact table and column names before writing any SELECT.",
+    "done_when": [
+      "The rows that answer the step are held together with the exact SQL and parameters that produced them.",
+      "more_rows is false for the final query, or the step accepts the first max_rows rows."
+    ],
+    "stop_and_report_when": [
+      "query_sqlite refuses a statement as a write, a PRAGMA or ATTACH, or stops it at the time or memory limit.",
+      "The database is not an SQLite file, is outside the workspace root, or is in WAL mode with pending changes.",
+      "Neither tool is listed, whatever prefix the harness adds to the names; run the package tests. If they pass, the harness did not start a working server: report that. Otherwise report their last line."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md": "2614fa7bb1ef2619ca4afdf637f1c1e3c477ad6b1efeb1dcf030fc7d749b84df",
+      "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md": "0665234b5d1110a0c49b6f0873eae2d36f8e6f24dd1f7f660526ec3ea30169fb",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/AGENT-HARNESS-MADEBYWILD-2026-09-23.md": "5cc46b06fb4edab54b948d24d61793fa850ac775286eac564e806680e5b71bd7"
+    },
+    "package_digest": "d82efa87248cfee895ae9bcfe533ae05f43e4a3fd4108c1f5d62410c4894ca8f",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

@@ -1,0 +1,15 @@
+mutation check of scripts/summarize_test_run.py, run in Bubblewrap without network, Python 3.14
+killed   zero exit status hides reported failures: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+killed   errors do not count as failing: suite exit 1; failing tests ['test_zero_exit_status_does_not_hide_reported_failures']
+killed   pytest error word not mapped to errors: suite exit 1; failing tests ['test_known_wrong_passed_tests_do_not_hide_a_setup_error', 'test_zero_exit_status_does_not_hide_reported_failures']
+killed   shell operators allowed: suite exit 1; failing tests ['test_shell_operator_is_refused']
+killed   package installs allowed: suite exit 1; failing tests ['test_package_install_is_refused']
+killed   deletion and network tools allowed: suite exit 1; failing tests ['test_deletion_tool_is_refused']
+killed   folder outside the root allowed: suite exit 1; failing tests ['test_folder_outside_the_root_is_refused']
+killed   timeout does not stop the command: suite exit 1; failing tests ['test_timeout_stops_the_command']
+killed   unittest excerpt keeps only the first line: suite exit 1; failing tests ['test_failing_unittest_suite_is_summarized']
+killed   unknown runner reports zero counts: suite exit 1; failing tests ['test_unknown_output_keeps_counts_null']
+killed   tail left empty when no failure is found: suite exit 1; failing tests ['test_unknown_output_keeps_counts_null']
+killed   end of a long log is dropped: suite exit 1; failing tests ['test_long_output_is_bounded']
+survivors: []
+unmutated suite: exit 0 OK

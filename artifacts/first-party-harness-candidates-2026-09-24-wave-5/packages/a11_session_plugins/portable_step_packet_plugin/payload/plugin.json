@@ -1,0 +1,8 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "portable-step-packet-plugin",
+  "version": "0.1.0",
+  "description": "Candidate package: two portable skills that read a focused step assignment and write its result, and a local standard-input server that offers the step packet as three tools.",
+  "license": "MIT",
+  "keywords": ["focused step", "step packet", "step result", "local tools"]
+}

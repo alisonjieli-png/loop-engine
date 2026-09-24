@@ -1,0 +1,445 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "check_diff_allowed_paths",
+    "title": "Check a diff against allowed paths",
+    "purpose": "Refuse a unified diff that touches files outside the step's allowed path patterns, deletes tests, adds binary or very large files, or edits lock and generated files.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_a_change_for_what_is_missing.md"
+    ],
+    "layer": "code",
+    "family": "native_verifier",
+    "search_tags": [
+      "check a diff against allowed paths",
+      "did the change stay in scope",
+      "refuse edits outside the allowed files",
+      "detect deleted tests in a diff",
+      "lock file changed in a pull request",
+      "generated file edited by an agent",
+      "binary or very large file added",
+      "scope guard for an unattended change",
+      "new untracked files outside the task"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change and testing"
+      ],
+      "role": [
+        "software engineer",
+        "coding agent operator",
+        "code reviewer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a12_ticket_result_verifiers",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "0805f41e2d9f4dc0a9372d02237431a9e35706c6631468fc78786ec683374847",
+        "size_bytes": 3241,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "examples/allowed-paths.json",
+        "digest": "7c3d0ec3bf0c679788a5f8ebc39f7d1f703b9cb4ca293493f07312c7dc74707a",
+        "size_bytes": 75,
+        "media_type": "application/json",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/out-of-scope.diff",
+        "digest": "eb50bda73654d7b3ddf1dd5c077d30089a2c07bee01a0fbf8eb76d2b53250e93",
+        "size_bytes": 1451,
+        "media_type": "text/x-diff",
+        "role": "skill_asset"
+      },
+      {
+        "path": "examples/scoped-change.diff",
+        "digest": "3d28dfffb87364700d140ddd8002f98a3faf342874ac9673ffe98e434a60b109",
+        "size_bytes": 560,
+        "media_type": "text/x-diff",
+        "role": "skill_asset"
+      },
+      {
+        "path": "references/checklist.md",
+        "digest": "4803f299bd3a1f5af2fbb88a32120ee1ce6b7391fa29a7c8419149fe5da36006",
+        "size_bytes": 836,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "references/rules.md",
+        "digest": "96864f6d2151c2bcdb99ba5262f00993c093333d19bcf9b2bddd6f3ae972917c",
+        "size_bytes": 3176,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/check_diff_paths.py",
+        "digest": "317160d057157f1f9bfbd7257c106eab6e642de25ebd4abaa6fa6f3a01e6a687",
+        "size_bytes": 31906,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_check_diff_paths.py",
+        "digest": "f629a77d1efb39d6386f41f0dce1c15b82e00da7f0dbfae57ce982c27c4f6e83",
+        "size_bytes": 17226,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a12_ticket_result_verifiers",
+    "file_class": "verifier_package",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "check-diff-allowed-paths",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/check-diff-allowed-paths/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/check-diff-allowed-paths/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/allowed-paths.json": {
+          "destination": ".claude/skills/check-diff-allowed-paths/examples/allowed-paths.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/out-of-scope.diff": {
+          "destination": ".claude/skills/check-diff-allowed-paths/examples/out-of-scope.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/scoped-change.diff": {
+          "destination": ".claude/skills/check-diff-allowed-paths/examples/scoped-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".claude/skills/check-diff-allowed-paths/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/rules.md": {
+          "destination": ".claude/skills/check-diff-allowed-paths/references/rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_diff_paths.py": {
+          "destination": ".claude/skills/check-diff-allowed-paths/scripts/check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_diff_paths.py": {
+          "destination": ".claude/skills/check-diff-allowed-paths/tests/test_check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/check-diff-allowed-paths/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/check-diff-allowed-paths/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/allowed-paths.json": {
+          "destination": ".agents/skills/check-diff-allowed-paths/examples/allowed-paths.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/out-of-scope.diff": {
+          "destination": ".agents/skills/check-diff-allowed-paths/examples/out-of-scope.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/scoped-change.diff": {
+          "destination": ".agents/skills/check-diff-allowed-paths/examples/scoped-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".agents/skills/check-diff-allowed-paths/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/rules.md": {
+          "destination": ".agents/skills/check-diff-allowed-paths/references/rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_diff_paths.py": {
+          "destination": ".agents/skills/check-diff-allowed-paths/scripts/check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_diff_paths.py": {
+          "destination": ".agents/skills/check-diff-allowed-paths/tests/test_check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/allowed-paths.json": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/examples/allowed-paths.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/out-of-scope.diff": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/examples/out-of-scope.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/scoped-change.diff": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/examples/scoped-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/rules.md": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/references/rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_diff_paths.py": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/scripts/check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_diff_paths.py": {
+          "destination": ".opencode/skills/check-diff-allowed-paths/tests/test_check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/check-diff-allowed-paths/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/check-diff-allowed-paths/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/allowed-paths.json": {
+          "destination": ".pi/skills/check-diff-allowed-paths/examples/allowed-paths.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/out-of-scope.diff": {
+          "destination": ".pi/skills/check-diff-allowed-paths/examples/out-of-scope.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/scoped-change.diff": {
+          "destination": ".pi/skills/check-diff-allowed-paths/examples/scoped-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".pi/skills/check-diff-allowed-paths/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/rules.md": {
+          "destination": ".pi/skills/check-diff-allowed-paths/references/rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_diff_paths.py": {
+          "destination": ".pi/skills/check-diff-allowed-paths/scripts/check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_diff_paths.py": {
+          "destination": ".pi/skills/check-diff-allowed-paths/tests/test_check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/allowed-paths.json": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/examples/allowed-paths.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/out-of-scope.diff": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/examples/out-of-scope.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/scoped-change.diff": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/examples/scoped-change.diff",
+          "operation": "copy_exact_bytes"
+        },
+        "references/checklist.md": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/references/checklist.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/rules.md": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/references/rules.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/check_diff_paths.py": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/scripts/check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_check_diff_paths.py": {
+          "destination": ".gemini/skills/check-diff-allowed-paths/tests/test_check_diff_paths.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "examples/allowed-paths.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_diff_paths.py"
+        ]
+      },
+      "examples/out-of-scope.diff": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_diff_paths.py"
+        ]
+      },
+      "examples/scoped-change.diff": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_check_diff_paths.py"
+        ]
+      },
+      "references/checklist.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "references/rules.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "scripts/check_diff_paths.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_check_diff_paths.py"
+        ]
+      },
+      "tests/test_check_diff_paths.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Pipe git diff of the step into scripts/check_diff_paths.py with one --allow per allowed pattern from the task, and read its JSON verdict.",
+    "done_when": [
+      "The diff run and the untracked-file run both exit 0, or the answer lists every finding with its rule and path.",
+      "Every item of references/checklist.md has a yes, no or unknown reply in the answer."
+    ],
+    "stop_and_report_when": [
+      "Either run exits 1 or 2.",
+      "The task names no allowed paths.",
+      "A --permit value would be needed that the task does not name."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/review_a_change_for_what_is_missing.md": "35f747a634400edf8f210b09db892bb94558c49ede0ae14a6aa29c9d6bf107fd"
+    },
+    "package_digest": "e881783947d0881d13b55a12cea00d40a0cb75cefa8ba06ebe4affa51b87e0e9",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

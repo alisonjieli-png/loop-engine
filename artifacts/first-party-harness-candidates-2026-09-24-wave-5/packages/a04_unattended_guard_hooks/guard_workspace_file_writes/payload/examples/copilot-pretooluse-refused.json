@@ -1,0 +1,6 @@
+{
+  "timestamp": 1790000000101,
+  "cwd": "/work",
+  "toolName": "create",
+  "toolArgs": "{\"path\": \"data/raw/new-rows.csv\", \"file_text\": \"id,value\\n1,2\\n\"}"
+}

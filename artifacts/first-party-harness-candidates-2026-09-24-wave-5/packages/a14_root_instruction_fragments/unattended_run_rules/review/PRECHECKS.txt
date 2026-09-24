@@ -1,0 +1,141 @@
+=== 2026-09-23T20:20:01Z round 1: python3 $WAVE/check_package.py fill $PKG (unattended_run_rules)
+{"fill": "done", "files": 6, "package_digest": "e9159957cae13923cc6f0753cbc664f40edebf9ff5c6c07720696fa45a316887"}
+exit 0
+=== 2026-09-23T20:20:02Z round 1: python3 $WAVE/check_package.py check $PKG (unattended_run_rules)
+{
+ "identity": "unattended_run_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202005194994Z.json"
+}
+exit 0
+=== 2026-09-23T20:26:18Z round 2 after wording and test edits: python3 $WAVE/check_package.py fill $PKG (unattended_run_rules)
+{"fill": "done", "files": 6, "package_digest": "ecf4f9d33c2e09045b565a92535a7409df300a07de71ab8f2b1473bf639a6576"}
+exit 0
+=== 2026-09-23T20:26:18Z round 2: python3 $WAVE/check_package.py check $PKG (unattended_run_rules)
+{
+ "identity": "unattended_run_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202622455595Z.json"
+}
+exit 0
+=== 2026-09-23T20:29:49Z final round: python3 $WAVE/check_package.py fill $PKG (unattended_run_rules)
+{"fill": "done", "files": 6, "package_digest": "74e147c055180ffc0794b1af70014d6d8065b901c7b6f71d3976b4a27cffc87e"}
+exit 0
+=== 2026-09-23T20:29:50Z final round: python3 $WAVE/check_package.py check $PKG (unattended_run_rules)
+{
+ "identity": "unattended_run_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202953472808Z.json"
+}
+exit 0
+=== 2026-09-23T20:32:25Z mutation check on the final payload bytes (not a checker command; each guard removed in a temporary copy, then the package tests run)
+CAUGHT scripts/ticket_ledger.py: guard removed in a temporary copy -> test_second_ticket_while_one_is_open_is_refused failed
+CAUGHT scripts/ticket_ledger.py: guard removed in a temporary copy -> test_done_without_evidence_is_refused failed
+CAUGHT scripts/ticket_ledger.py: guard removed in a temporary copy -> test_evidence_link_that_leaves_the_workspace_is_refused failed
+CAUGHT scripts/ticket_ledger.py: guard removed in a temporary copy -> test_state_folder_that_is_a_link_is_refused failed
+CAUGHT scripts/ticket_ledger.py: guard removed in a temporary copy -> test_blocked_needs_what_is_needed failed
+5 of 5 caught
+=== 2026-09-23T20:32:56Z check after the review note history was completed: python3 $WAVE/check_package.py check $PKG (unattended_run_rules)
+{
+ "identity": "unattended_run_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203259717182Z.json"
+}
+exit 0
+=== 2026-09-23T20:33:09Z python3 $WAVE/check_package.py check-all --assignment a14_root_instruction_fragments
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203320797081Z.json
+exit 0

@@ -1,0 +1,628 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "night_morning_report/v1",
+ "description": "The report JSON that the compile script writes to report_json_path. The Markdown file renders the same content. Every list is sorted by ticket, then step. A report that matches this schema is not an acceptance of the night's work, and a complete ticket or step is not a verified claim.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "night_id",
+  "compiled_at",
+  "sources",
+  "counts",
+  "tickets",
+  "complete",
+  "blocked",
+  "unfinished",
+  "unsupported_claims",
+  "notes",
+  "superseded",
+  "activity",
+  "problems"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "night_morning_report/v1"
+  },
+  "night_id": {
+   "$ref": "#/$defs/identifier"
+  },
+  "compiled_at": {
+   "type": "string",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+  },
+  "sources": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "handoff_dir",
+    "handoff_files",
+    "activity_log_dir",
+    "activity_files",
+    "queue_path",
+    "notes_path"
+   ],
+   "properties": {
+    "handoff_dir": {
+     "$ref": "#/$defs/path"
+    },
+    "handoff_files": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "activity_log_dir": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/path"
+      }
+     ]
+    },
+    "activity_files": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "queue_path": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/path"
+      }
+     ]
+    },
+    "notes_path": {
+     "$ref": "#/$defs/path"
+    }
+   }
+  },
+  "counts": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "tickets_complete",
+    "tickets_blocked",
+    "tickets_unfinished",
+    "complete",
+    "blocked",
+    "unfinished",
+    "unsupported_claims",
+    "problems"
+   ],
+   "properties": {
+    "tickets_complete": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "tickets_blocked": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "tickets_unfinished": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "complete": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "blocked": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "unfinished": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "unsupported_claims": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "problems": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "tickets": {
+   "description": "One entry per ticket named by the queue or by a handoff. complete only when the handoff of the final step that the queue names is complete; blocked when a step of the ticket is blocked; unfinished otherwise.",
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "ticket_id",
+     "status",
+     "reason",
+     "final_step_id",
+     "steps"
+    ],
+    "properties": {
+     "ticket_id": {
+      "$ref": "#/$defs/identifier"
+     },
+     "status": {
+      "enum": [
+       "complete",
+       "blocked",
+       "unfinished"
+      ]
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "enum": [
+         "step_blocked",
+         "no_handoff_found",
+         "final_step_not_declared",
+         "final_step_not_complete"
+        ]
+       }
+      ]
+     },
+     "final_step_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "steps": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "additionalProperties": false,
+       "required": [
+        "step_id",
+        "section"
+       ],
+       "properties": {
+        "step_id": {
+         "$ref": "#/$defs/identifier"
+        },
+        "section": {
+         "enum": [
+          "complete",
+          "blocked",
+          "unfinished"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "complete": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "step_id",
+     "ticket_id",
+     "handoff",
+     "claims"
+    ],
+    "properties": {
+     "step_id": {
+      "$ref": "#/$defs/identifier"
+     },
+     "ticket_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "handoff": {
+      "$ref": "#/$defs/path"
+     },
+     "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+       "$ref": "#/$defs/claim"
+      }
+     }
+    }
+   }
+  },
+  "blocked": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "step_id",
+     "ticket_id",
+     "handoff",
+     "reason",
+     "question",
+     "evidence",
+     "evidence_found",
+     "claims"
+    ],
+    "properties": {
+     "step_id": {
+      "$ref": "#/$defs/identifier"
+     },
+     "ticket_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "handoff": {
+      "$ref": "#/$defs/path"
+     },
+     "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+     },
+     "question": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+       }
+      ]
+     },
+     "evidence": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "maxLength": 400
+       }
+      ]
+     },
+     "evidence_found": {
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "claims": {
+      "type": "array",
+      "items": {
+       "$ref": "#/$defs/claim"
+      }
+     }
+    }
+   }
+  },
+  "unfinished": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "step_id",
+     "ticket_id",
+     "handoff",
+     "source",
+     "reason",
+     "first_action",
+     "evidence",
+     "claims"
+    ],
+    "properties": {
+     "step_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "ticket_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "handoff": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/path"
+       }
+      ]
+     },
+     "source": {
+      "enum": [
+       "handoff",
+       "activity_only",
+       "queue_only"
+      ]
+     },
+     "reason": {
+      "enum": [
+       "handoff_status_unfinished",
+       "complete_without_evidence",
+       "handoff_invalid",
+       "activity_without_handoff",
+       "no_handoff_found"
+      ]
+     },
+     "first_action": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+       }
+      ]
+     },
+     "evidence": {
+      "$ref": "#/$defs/path"
+     },
+     "claims": {
+      "type": "array",
+      "items": {
+       "$ref": "#/$defs/claim"
+      }
+     }
+    }
+   }
+  },
+  "unsupported_claims": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "source",
+     "step_id",
+     "ticket_id",
+     "text",
+     "evidence",
+     "problem",
+     "handoff"
+    ],
+    "properties": {
+     "source": {
+      "enum": [
+       "handoff",
+       "notes"
+      ]
+     },
+     "step_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "ticket_id": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/identifier"
+       }
+      ]
+     },
+     "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+     },
+     "evidence": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "maxLength": 400
+       }
+      ]
+     },
+     "problem": {
+      "enum": [
+       "no_evidence_given",
+       "evidence_missing",
+       "evidence_outside_workspace",
+       "evidence_path_invalid",
+       "evidence_is_a_folder",
+       "evidence_is_a_night_record"
+      ]
+     },
+     "handoff": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "$ref": "#/$defs/path"
+       }
+      ]
+     }
+    }
+   }
+  },
+  "notes": {
+   "type": "array",
+   "maxItems": 20,
+   "items": {
+    "$ref": "#/$defs/claim"
+   }
+  },
+  "superseded": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "step_id",
+     "handoff",
+     "written_at"
+    ],
+    "properties": {
+     "step_id": {
+      "$ref": "#/$defs/identifier"
+     },
+     "handoff": {
+      "$ref": "#/$defs/path"
+     },
+     "written_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+     }
+    }
+   }
+  },
+  "activity": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "step_id",
+     "events",
+     "first_time",
+     "last_time",
+     "times_not_read",
+     "log"
+    ],
+    "properties": {
+     "step_id": {
+      "$ref": "#/$defs/identifier"
+     },
+     "events": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "first_time": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+       }
+      ]
+     },
+     "last_time": {
+      "anyOf": [
+       {
+        "type": "null"
+       },
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+       }
+      ]
+     },
+     "times_not_read": {
+      "type": "integer",
+      "minimum": 0
+     },
+     "log": {
+      "$ref": "#/$defs/path"
+     }
+    }
+   }
+  },
+  "problems": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "path",
+     "problem"
+    ],
+    "properties": {
+     "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+     },
+     "problem": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600
+     }
+    }
+   }
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "claim": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "text",
+    "evidence"
+   ],
+   "properties": {
+    "text": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 500
+    },
+    "evidence": {
+     "$ref": "#/$defs/path"
+    }
+   }
+  }
+ }
+}

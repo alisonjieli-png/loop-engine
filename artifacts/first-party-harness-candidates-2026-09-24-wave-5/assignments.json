@@ -1,0 +1,1213 @@
+{
+ "record_type": "wave5_assignments/v1",
+ "wave": "library-wave-5",
+ "prepared_on": "2026-09-23",
+ "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+ "state": "candidate_only",
+ "approval_state": "none",
+ "assignment_count": 15,
+ "package_count": 75,
+ "assignments": [
+  {
+   "id": "a01_data_cleanup_executors",
+   "file_class": "skill_with_scripts_and_tests",
+   "domain": "data_cleaning_and_quality",
+   "use_cases": [
+    "data_cleanup_without_an_expensive_model"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "pi",
+    "gemini_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "Data cleanup has 30 first-party items but only 6 executable tools, none for dates, numbers, categories, missing tokens or outliers. The September 22 cleanup study measured that prose rules cost 45 to 446 percent more prompt tokens and one prose item made a cheap model worse; deterministic tested scripts move the work out of the prompt.",
+   "packages": [
+    {
+     "identity": "parse_dates_by_declared_formats",
+     "title": "Parse dates by declared formats",
+     "purpose": "Convert a date column to ISO 8601 using only an ordered list of declared formats, and hold every value that no format parses or that two formats read differently, such as 03/04/2025.",
+     "closest_existing": [
+      "starter: detect_malformed_values_by_dominant_pattern (prose, finds malformed values, parses nothing)",
+      "wave_1: define_time_zone_reporting_window (reporting windows, not parsing)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "parse_numbers_by_declared_separators",
+     "title": "Parse numbers by declared separators",
+     "purpose": "Turn numeric text into exact decimal values using the declared decimal mark, grouping mark, currency symbols and percent rule, and hold values that mix conventions instead of guessing.",
+     "closest_existing": [
+      "wave_1: trace_numeric_rounding (rounding review, not parsing)",
+      "wave_1: audit_measurement_units (units, not separators)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "map_categories_by_reviewed_table",
+     "title": "Map category labels through a reviewed table",
+     "purpose": "Replace category values only through an explicit reviewed mapping table after case and spacing normalization, and list every unmapped value with its count instead of inventing a mapping.",
+     "closest_existing": [
+      "starter: layer_exception_catalogs_with_precedence (exception lists for one repository function)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "standardize_missing_value_tokens",
+     "title": "Standardize declared missing-value tokens",
+     "purpose": "Turn only the declared missing-value tokens, such as n/a, null or a lone dash, into empty cells, report counts per column, and leave zero, false and every other real value untouched.",
+     "closest_existing": [
+      "starter: handle_missing_values_without_inventing_them (prose method; this package executes one narrow rule)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "flag_outliers_by_median_deviation",
+     "title": "Flag numeric outliers by median deviation",
+     "purpose": "Flag numeric values that lie beyond a declared multiple of the median absolute deviation, per column or per group, and report them without deleting or changing any row.",
+     "closest_existing": [
+      "none found in first-party or staged material"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a02_competition_modeling_tools",
+   "file_class": "skill_with_scripts_and_tests",
+   "domain": "data_science_and_ml",
+   "use_cases": [
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "pi",
+    "gemini_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "Data science holds 11 first-party items, all prose or question sets. A competition solve needs leakage-safe validation and honest experiment comparison that a small model should run as code, not reason through.",
+   "packages": [
+    {
+     "identity": "build_group_stratified_folds",
+     "title": "Build group-aware stratified folds",
+     "purpose": "Assign every training row to one of K folds so that no group spans two folds and label shares stay close to the whole set, using a fixed seed and printing a self-check.",
+     "closest_existing": [
+      "starter: audit_data_splits_for_errors_and_leakage (question set; builds nothing)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "build_time_ordered_splits",
+     "title": "Build time-ordered validation splits",
+     "purpose": "Create forward-moving train and validation windows from a timestamp column with a declared gap, so no validation row is older than any training row it is scored against.",
+     "closest_existing": [
+      "starter: audit_data_splits_for_errors_and_leakage (question set)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "audit_train_test_drift",
+     "title": "Audit train and test column drift",
+     "purpose": "Compare each column of train and test files for missing rates, unseen categories and numeric range shifts, and list columns present in only one file, before any feature work starts.",
+     "closest_existing": [
+      "pilot: audit_csv_structure (row shape of one file, no comparison)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "target_encode_out_of_fold",
+     "title": "Target-encode categories out of fold",
+     "purpose": "Compute smoothed target means for categorical columns using only the other folds for each training row and the full training set for test rows, so no row's encoding sees its own label.",
+     "closest_existing": [
+      "none found in first-party or staged material"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "rank_experiments_by_fold_scores",
+     "title": "Rank experiment runs by fold scores",
+     "purpose": "Read an experiment ledger of per-fold scores and rank runs by mean and spread, marking a gain as not established when it is smaller than the fold-to-fold variation.",
+     "closest_existing": [
+      "starter: compare_a_smaller_model_against_the_larger_one (model comparison prose)",
+      "wave_1: compare_model_context_pairs_on_frozen_cases (frozen cases, not folds)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a03_ticket_work_tools",
+   "file_class": "skill_with_scripts_and_tests",
+   "domain": "software_change_and_testing",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "pi",
+    "gemini_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "Overnight ticket work has advisory prose but no tool that shrinks what a small model must read: ticket parsing, repository maps, failure extraction and test selection. The roadmap records a 7B local model writing tool calls as text in all 37 steps; a detector lets an unattended run notice that early.",
+   "packages": [
+    {
+     "identity": "extract_ticket_acceptance_criteria",
+     "title": "Extract acceptance criteria from a ticket",
+     "purpose": "Turn a ticket exported as Markdown, plain text or JSON into a numbered checklist of acceptance criteria, reproduction steps and named files, and flag a ticket that states no checkable outcome.",
+     "closest_existing": [
+      "starter: write_acceptance_criteria_a_reviewer_can_check (writing criteria, not extracting them)",
+      "starter: turn_a_vague_request_into_a_testable_statement (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "map_repository_layout",
+     "title": "Map a repository layout compactly",
+     "purpose": "Produce a bounded tree of a repository that marks source, test, configuration and generated folders with file counts, so a small model can choose where to look without opening every file.",
+     "closest_existing": [
+      "codex_hermes_plan: query_codegraph_change_impact (planned, impact graph, not a layout map)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "extract_test_failures",
+     "title": "Extract failures from test output",
+     "purpose": "Parse pytest, unittest or JUnit XML output into a short list of failing tests with the assertion message and the first project frame, leaving out passing noise and long logs.",
+     "closest_existing": [
+      "starter: read_a_failure_report_and_name_the_first_wrong_value (prose method)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "select_tests_for_changed_files",
+     "title": "Select Python tests for changed files",
+     "purpose": "List the test files that import, directly or through local modules, the Python files changed in a diff, so a step runs the narrowest relevant tests before the full suite.",
+     "closest_existing": [
+      "none found in first-party or staged material"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "detect_text_written_tool_calls",
+     "title": "Detect tool calls written as plain text",
+     "purpose": "Scan a saved harness session log for assistant turns that describe a tool call in plain text without making a structured call, the failure that stalls small local models, and report the rate.",
+     "closest_existing": [
+      "none found; roadmap evidence of September 23 records the failure mode"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a04_unattended_guard_hooks",
+   "file_class": "hook_with_script",
+   "domain": "agent_harness_operations",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "any_focused_step"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "cursor",
+    "copilot"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "No first-party hook exists outside one Codex plugin, and none of the 3,251 staged outside items is a hook. An unattended night needs guards that refuse out-of-scope commands and writes, cap spending of calls and keep a record for the morning.",
+   "packages": [
+    {
+     "identity": "guard_shell_command_allowlist",
+     "title": "Guard shell commands with an allowlist",
+     "purpose": "Before each shell command, refuse any command whose program and first arguments are not on the step's declared allowlist, and return a reason the model can act on.",
+     "closest_existing": [
+      "codex_plugin: focused_brief_plugin (startup context hook only)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "guard_workspace_file_writes",
+     "title": "Guard file writes to the workspace",
+     "purpose": "Before each file write or edit, refuse a target that resolves outside the workspace, into version control metadata or onto a declared protected path, including through a symbolic link.",
+     "closest_existing": [
+      "starter: review_file_paths_for_traversal_and_link_escape (code review prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "require_tests_before_stop",
+     "title": "Require a test run after the last edit",
+     "purpose": "When the agent tries to finish, block the stop once if source files changed after the last recorded test command, and name the test command to run.",
+     "closest_existing": [
+      "starter: verify_the_requested_output (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "log_tool_activity",
+     "title": "Log tool activity for the morning report",
+     "purpose": "After each tool call, append one bounded JSON line with time, tool, target and outcome to the step's activity log, without copying file contents or command output.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "cap_tool_call_budget",
+     "title": "Cap tool calls at a declared budget",
+     "purpose": "Count tool calls in a step and refuse further calls once the declared ceiling is reached, telling the agent to write its handoff instead of continuing.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a05_focused_subagents",
+   "file_class": "subagent_definition",
+   "domain": "agent_harness_operations",
+   "use_cases": [
+    "any_focused_step",
+    "overnight_tickets_on_a_local_model",
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "opencode",
+    "copilot"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "No standalone first-party subagent exists. A narrow helper with its own fresh context keeps the main step small, which is the product's central idea applied inside one harness.",
+   "packages": [
+    {
+     "identity": "repository_scout",
+     "title": "Repository scout",
+     "purpose": "A read-only helper that answers one question about where something lives in the code with file and line citations in at most twenty lines, so the main step keeps its context small.",
+     "closest_existing": [
+      "starter: supply_the_files_and_facts_an_assignment_needs (for brief writers, not a helper role)"
+     ],
+     "expected_effects": [
+      "reads_fs"
+     ]
+    },
+    {
+     "identity": "test_run_summarizer",
+     "title": "Test run summarizer",
+     "purpose": "A helper that runs one declared test command and returns the exact command, exit status, counts and the first failure in a fixed short format instead of the raw log.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "data_sample_inspector",
+     "title": "Data sample inspector",
+     "purpose": "A read-only helper that reads a bounded sample of a data file and returns per-column observations about types, formats and suspicious values as JSON, without loading the whole file into the main step.",
+     "closest_existing": [
+      "starter: profile_text_column_before_cleaning (one column, restates repository code)"
+     ],
+     "expected_effects": [
+      "reads_fs"
+     ]
+    },
+    {
+     "identity": "leakage_reviewer",
+     "title": "Leakage reviewer",
+     "purpose": "A read-only reviewer that inspects feature and validation code for target leakage, test rows used in fitting and folds split across groups, and returns findings with file and line references.",
+     "closest_existing": [
+      "starter: audit_data_splits_for_errors_and_leakage (question set, not a reviewer role over code)"
+     ],
+     "expected_effects": [
+      "reads_fs"
+     ]
+    },
+    {
+     "identity": "changelog_writer",
+     "title": "Changelog writer",
+     "purpose": "A helper that writes one changelog entry and updates the one documentation passage describing the changed behavior, limited to documentation paths, after a fix has passed its checks.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a06_step_ritual_commands",
+   "file_class": "command_file",
+   "domain": "agent_harness_operations",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "competition_solve_task_to_submission",
+    "any_focused_step"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "gemini_cli",
+    "opencode",
+    "copilot",
+    "cursor"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "No standalone first-party command or prompt file exists. Short named rituals at the start and end of a step make handoffs and preflight checks repeatable for a small model and for a person starting a night run.",
+   "packages": [
+    {
+     "identity": "write_step_handoff",
+     "title": "Write a step handoff note",
+     "purpose": "End a focused step by writing a handoff file that states what is done with evidence paths, what remains, open questions and the exact first action for the next fresh harness.",
+     "closest_existing": [
+      "starter: hand_over_a_result_its_consumer_can_use (prose)",
+      "codex_hermes_plan: validate_focused_attempt_handoff (planned validator)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    },
+    {
+     "identity": "plan_night_queue",
+     "title": "Plan the overnight ticket queue",
+     "purpose": "Order tonight's tickets by readiness, risk and estimated effort against a declared time and call budget, and write a queue file that names which tickets to hold and why.",
+     "closest_existing": [
+      "starter: split_a_large_request_into_assignable_parts (one request, not a queue)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    },
+    {
+     "identity": "record_blocker",
+     "title": "Record a blocker and move on",
+     "purpose": "When a step cannot proceed, write a blocker record with what was tried, the exact error and what is needed from whom, mark the ticket blocked and continue with the next queued item.",
+     "closest_existing": [
+      "starter: deliver_the_best_available_result_when_blocked (prose)",
+      "starter: diagnose_a_stall_and_change_strategy (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    },
+    {
+     "identity": "night_preflight",
+     "title": "Run an overnight preflight check",
+     "purpose": "Before leaving an unattended run, confirm that the model makes structured tool calls, the test command works, budgets and guards are set and the queue is not empty, and report go or no-go.",
+     "closest_existing": [
+      "starter: measure_the_environment_before_relying_on_it (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "pick_next_experiment",
+     "title": "Pick the next experiment",
+     "purpose": "Read the experiment ledger and notes, choose one next experiment with its expected effect, cost and ending rule, and refuse to repeat a configuration that already ran.",
+     "closest_existing": [
+      "starter: choose_one_next_action (general prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a07_local_data_tool_servers",
+   "file_class": "protocol_server_config_local",
+   "domain": "data_cleaning_and_quality",
+   "use_cases": [
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "gemini_cli",
+    "cursor"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "One first-party local server exists and it failed in a clean home because it needed a third-party package. The 2,210 staged outside connections are remote registry links. Standard-library stdio servers give small models exact data answers through a tool call with no install step.",
+   "packages": [
+    {
+     "identity": "csv_profile_server",
+     "title": "CSV profile tool server",
+     "purpose": "A local standard-input protocol server with a tool that profiles columns of a CSV under a declared root: inferred types, empty counts, distinct counts and the most common values, bounded in size.",
+     "closest_existing": [
+      "pilot: audit_csv_structure (structure only, as a skill script)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "csv_row_sampler_server",
+     "title": "CSV row sampler tool server",
+     "purpose": "A local standard-input protocol server with a tool that returns a seeded, bounded sample of rows from a large CSV, optionally a fixed number per group, so a model sees representative rows.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "sqlite_readonly_server",
+     "title": "Read-only SQLite query tool server",
+     "purpose": "A local standard-input protocol server that runs one SELECT statement against a declared SQLite file opened read-only, with row and time limits, and refuses every statement that writes.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "json_schema_check_server",
+     "title": "JSON schema check tool server",
+     "purpose": "A local standard-input protocol server that checks a JSON document against a supported subset of JSON Schema and returns every violation with its path, so outputs are checked before handoff.",
+     "closest_existing": [
+      "pilot: json_shape_stdio (reports shape, validates nothing, needs a third-party package)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "pattern_tester_server",
+     "title": "Pattern tester tool server",
+     "purpose": "A local standard-input protocol server that tests one regular expression against supplied examples and reports matches, groups and misses, with size limits, before a cleaning rule uses it.",
+     "closest_existing": [
+      "starter: detect_malformed_values_by_dominant_pattern (finds patterns in data; tests no expression)"
+     ],
+     "expected_effects": [
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a08_path_scoped_rules",
+   "file_class": "rules_file",
+   "domain": "repository_conventions_for_code_and_data",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "cursor",
+    "copilot",
+    "cline",
+    "claude_code"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "No first-party rules file exists. The 445 staged outside rules are framework coding conventions; none guards generated files, raw data, notebooks, tests or applied migrations, which are the files small models most often damage.",
+   "packages": [
+    {
+     "identity": "generated_files_stay_unedited",
+     "title": "Leave generated and vendored files unedited",
+     "purpose": "A path-scoped rule for lock files, generated code and vendored folders that tells the agent to change the source or rerun the declared generator instead of editing the output by hand.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "raw_data_stays_read_only",
+     "title": "Treat raw data files as read-only",
+     "purpose": "A path-scoped rule for raw data folders that forbids editing input files in place and directs every derived table to a separate output path with a change log.",
+     "closest_existing": [
+      "starter: copy_a_table_with_corrections_never_in_place (restates one repository function)"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "reproducible_competition_notebooks",
+     "title": "Keep competition notebooks reproducible",
+     "purpose": "A path-scoped rule for notebooks and training scripts that requires fixed seeds, a saved fold file, no fitting on test rows and one ledger line for every experiment.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "honest_test_changes",
+     "title": "Keep test changes honest",
+     "purpose": "A path-scoped rule for test files that forbids deleting, skipping or loosening an assertion to make a check pass and requires a new test to fail before the fix.",
+     "closest_existing": [
+      "starter: prove_a_check_can_fail_when_the_behaviour_is_removed (prose method)",
+      "starter: review_a_failed_check_before_repairing_the_work (prose)"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "applied_migrations_stay_unchanged",
+     "title": "Keep applied migrations unchanged",
+     "purpose": "A path-scoped rule for database migration folders that forbids editing a migration that may already have run and directs every schema change into a new migration file.",
+     "closest_existing": [
+      "starter: write_a_migration_that_is_safe_to_run_twice (prose method)",
+      "starter: plan_a_schema_change_in_compatible_steps (prose)"
+     ],
+     "expected_effects": []
+    }
+   ]
+  },
+  {
+   "id": "a09_ticket_step_packets",
+   "file_class": "task_packet",
+   "domain": "software_change_and_testing",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model"
+   ],
+   "harness_targets": [
+    "codex",
+    "claude_code",
+    "opencode",
+    "pi",
+    "gemini_cli",
+    "goose"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "The default design gives every step its own fresh harness, yet the library holds no reusable packet template: only one pilot step template and two Codex example packets that add no library item. These are the five steps of one ticket night.",
+   "packages": [
+    {
+     "identity": "ticket_triage_packet",
+     "title": "Ticket triage step packet",
+     "purpose": "A one-step packet that decides whether a ticket can be worked unattended tonight and returns a go, hold or split decision with the files to read, the first test to write and the open questions.",
+     "closest_existing": [
+      "starter: questions_to_ask_before_starting_work (question set)"
+     ],
+     "expected_effects": [
+      "reads_fs"
+     ]
+    },
+    {
+     "identity": "ticket_reproduction_packet",
+     "title": "Ticket reproduction step packet",
+     "purpose": "A one-step packet that turns a ticket's reported behavior into one new failing test, records the failing output and changes no product code.",
+     "closest_existing": [
+      "pilot: repair_one_failing_test (repairs an existing failure; this packet creates the failing test)",
+      "starter: write_a_regression_test_that_pins_a_defect (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "ticket_fix_verification_packet",
+     "title": "Ticket fix verification step packet",
+     "purpose": "A one-step packet that runs the relevant and full tests after a fix, checks the diff against the allowed paths and writes a change summary and proposed commit message without committing.",
+     "closest_existing": [
+      "starter: verify_an_agent_result_without_trusting_its_summary (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "interrupted_step_resume_packet",
+     "title": "Interrupted step resume packet",
+     "purpose": "A one-step packet that restarts interrupted work from the last handoff, checks that the workspace still matches it and either continues from the recorded first action or reports the drift.",
+     "closest_existing": [
+      "starter: keep_partial_work_when_a_long_job_is_interrupted (prose for job authors)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "morning_report_packet",
+     "title": "Overnight morning report packet",
+     "purpose": "A one-step packet that compiles the night's handoffs and activity logs into a report that separates complete, blocked and unfinished work, with an evidence path for every claim.",
+     "closest_existing": [
+      "starter: report_observed_derived_assumed_and_unknown (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a10_data_and_competition_step_packets",
+   "file_class": "task_packet",
+   "domain": "data_cleanup_and_competition_steps",
+   "use_cases": [
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "codex",
+    "claude_code",
+    "opencode",
+    "pi",
+    "gemini_cli",
+    "kimi_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "No packet template exists for data or competition steps. Two cleanup steps and three competition steps cover the path from a raw table to a checked submission, each bounded for one fresh harness.",
+   "packages": [
+    {
+     "identity": "cleaning_plan_packet",
+     "title": "Cleaning plan step packet",
+     "purpose": "A one-step packet that profiles one table and proposes column-by-column cleaning rules as JSON with the evidence for each rule, changing no data.",
+     "closest_existing": [
+      "pilot: profile_one_csv (quality assessment brief, proposes no rules)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "cleaning_apply_packet",
+     "title": "Cleaning application step packet",
+     "purpose": "A one-step packet that applies only the approved rules of a cleaning plan to a copy of the table, writes a cell-level change log and a hold list, and never edits the source file.",
+     "closest_existing": [
+      "starter: apply_hold_or_escalate_each_correction (restates repository code)",
+      "starter: copy_a_table_with_corrections_never_in_place (restates repository code)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "competition_brief_packet",
+     "title": "Competition brief step packet",
+     "purpose": "A one-step packet that reads the supplied competition overview, data description and evaluation pages and writes a structured brief of target, metric, submission format and rules.",
+     "closest_existing": [
+      "starter: orient_on_a_task_and_write_its_contracts (general prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs"
+     ]
+    },
+    {
+     "identity": "baseline_training_packet",
+     "title": "Baseline training step packet",
+     "purpose": "A one-step packet that trains one simple baseline on a fixed fold file, saves out-of-fold and test predictions and records the fold scores in the experiment ledger.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "submission_assembly_packet",
+     "title": "Submission assembly step packet",
+     "purpose": "A one-step packet that builds the final submission file from chosen predictions, checks it against the sample submission and records which run and data produced it, without uploading.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a11_session_plugins",
+   "file_class": "plugin_bundle",
+   "domain": "cross_use_case_session_kits",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission",
+    "any_focused_step"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "gemini_cli",
+    "cursor",
+    "copilot"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "One Codex plugin exists, for Claude Code only. Plugins are how several of the harnesses install hooks, commands and agents together; each kit here wires components that appear in no other wave 5 package.",
+   "packages": [
+    {
+     "identity": "overnight_ticket_plugin",
+     "title": "Overnight ticket session plugin",
+     "purpose": "A Claude Code plugin, with a Cursor plugin variant, that bundles a session-start hook showing the last handoff and queue position, a night status command and a ticket closer agent that writes the per-ticket result record.",
+     "closest_existing": [
+      "codex_plugin: focused_brief_plugin (brief structure checker)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ],
+     "harness_targets": [
+      "claude_code",
+      "cursor"
+     ]
+    },
+    {
+     "identity": "data_cleanup_plugin",
+     "title": "Data cleanup session plugin",
+     "purpose": "A Claude Code plugin, with a Gemini CLI extension variant, that bundles a post-write hook checking header and row counts of cleaned files against their source, a cleanup status command and a cleaning rule critic agent.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ],
+     "harness_targets": [
+      "claude_code",
+      "gemini_cli"
+     ]
+    },
+    {
+     "identity": "competition_plugin",
+     "title": "Competition session plugin",
+     "purpose": "A Claude Code plugin, with a Gemini CLI extension variant, that bundles a session-start hook loading the competition brief summary, an experiment note command and a pre-submission gate skill that never uploads.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ],
+     "harness_targets": [
+      "claude_code",
+      "gemini_cli"
+     ]
+    },
+    {
+     "identity": "step_status_plugin",
+     "title": "Focused step status plugin",
+     "purpose": "A Gemini CLI extension, with a Cursor plugin variant, that bundles a context file for focused step packets, a step status command and a packet manifest check script to run before work starts.",
+     "closest_existing": [
+      "none found for Gemini CLI"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ],
+     "harness_targets": [
+      "gemini_cli",
+      "cursor"
+     ]
+    },
+    {
+     "identity": "portable_step_packet_plugin",
+     "title": "Portable step packet plugin",
+     "purpose": "An Agent Plugins 1.0 package with two portable skills for reading a step assignment and writing its result, and a local standard-input server that exposes the packet to Copilot and Cursor.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+     ],
+     "harness_targets": [
+      "copilot",
+      "cursor"
+     ]
+    }
+   ],
+   "note": "Each plugin package names its own pair of harness targets in harness_targets; every pair has two placed targets."
+  },
+  {
+   "id": "a12_ticket_result_verifiers",
+   "file_class": "verifier_package",
+   "domain": "software_change_and_testing",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "pi",
+    "gemini_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "Accepted work needs independent checks, and a morning report must not claim more than the evidence shows. The library has review prose but no executable verifier for ticket results.",
+   "packages": [
+    {
+     "identity": "verify_fail_then_pass_evidence",
+     "title": "Verify fail-then-pass test evidence",
+     "purpose": "Check two saved test outputs and a diff to confirm that the named new test failed before the fix, passes after it, and that no previously passing test now fails.",
+     "closest_existing": [
+      "starter: write_a_regression_test_that_pins_a_defect (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "check_diff_allowed_paths",
+     "title": "Check a diff against allowed paths",
+     "purpose": "Refuse a unified diff that touches files outside the step's allowed path patterns, deletes tests, adds binary or very large files, or edits lock and generated files.",
+     "closest_existing": [
+      "starter: review_a_change_for_what_is_missing (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "detect_weakened_test_assertions",
+     "title": "Detect weakened test assertions",
+     "purpose": "Scan a diff of test files for removed assertions, added skip or expected-failure marks, widened tolerances and deleted test functions, and report each with its location.",
+     "closest_existing": [
+      "starter: prove_a_check_can_fail_when_the_behaviour_is_removed (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "verify_criteria_have_evidence",
+     "title": "Verify acceptance criteria have evidence",
+     "purpose": "Match every acceptance criterion in a ticket checklist to at least one evidence entry, such as a test name, command result or file, and fail when any criterion has none.",
+     "closest_existing": [
+      "wave_1: map_independent_acceptance_evidence (prose mapping method)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "verify_morning_report_claims",
+     "title": "Verify morning report claims",
+     "purpose": "Check each item a morning report marks complete against its cited evidence files, digests and exit codes, and list every claim the evidence does not support.",
+     "closest_existing": [
+      "starter: reproduce_the_evidence_a_report_claims (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a13_unattended_permission_settings",
+   "file_class": "settings_fragment",
+   "domain": "security_secrets_compliance",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "data_cleanup_without_an_expensive_model",
+    "any_focused_step"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "gemini_cli"
+   ],
+   "review_profile_status": "held_until_profile_extension",
+   "why": "No settings or permission fragment exists anywhere in the library. An unattended step must not stall on an approval prompt and must not gain more than it needs; each package is one policy rendered for each harness that can express it.",
+   "packages": [
+    {
+     "identity": "read_only_investigation_settings",
+     "title": "Read-only investigation settings",
+     "purpose": "Harness settings for a step that may read files and run declared read-only commands but may not edit files, use the network or run anything else, rendered for each supported harness.",
+     "closest_existing": [
+      "starter: state_the_permissions_and_limits_of_an_assignment (prose for brief writers)"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "workspace_write_no_network_settings",
+     "title": "Workspace write without network settings",
+     "purpose": "Harness settings for an unattended fix step that may edit files inside the workspace and run tests, with no network access and no approval prompt that would stall an overnight run.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "test_commands_only_settings",
+     "title": "Test commands only settings",
+     "purpose": "Harness settings that allow shell use only for the declared test, lint and format commands and refuse every other command, for steps that verify rather than build.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "data_step_scoped_write_settings",
+     "title": "Data step scoped write settings",
+     "purpose": "Harness settings for a data step that may read the raw input folder and write only to the declared output and report folders, with source code and raw data protected from edits.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "deny_env_file_reads_settings",
+     "title": "Deny environment file reads settings",
+     "purpose": "Harness settings that refuse reading or editing environment files and key files in the workspace, for steps that must never see credentials, even by accident.",
+     "closest_existing": [
+      "starter: keep_secrets_out_of_source_and_settings (prose)"
+     ],
+     "expected_effects": []
+    }
+   ]
+  },
+  {
+   "id": "a14_root_instruction_fragments",
+   "file_class": "root_instruction_fragment",
+   "domain": "agent_harness_operations",
+   "use_cases": [
+    "overnight_tickets_on_a_local_model",
+    "any_focused_step"
+   ],
+   "harness_targets": [
+    "codex",
+    "claude_code",
+    "gemini_cli",
+    "goose",
+    "opencode",
+    "pi",
+    "kimi_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "Only two first-party instruction templates exist, and no composable fragment. Every harness in the target list reads a root instruction file, so small sections here reach the widest set of clients.",
+   "packages": [
+    {
+     "identity": "unattended_run_rules",
+     "title": "Unattended run operating rules",
+     "purpose": "A composable instruction section for overnight work that sets one ticket at a time, no irreversible actions, a checkpoint after each ticket and a blocker record instead of a question to an absent person.",
+     "closest_existing": [
+      "starter: resolve_missing_information (asks the person; this section is for when no person is present)"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "project_commands_fragment",
+     "title": "Project commands and layout fragment",
+     "purpose": "A fill-in instruction section that tells every fresh step the project's build, test, lint and format commands, its source and test folders and the paths it must not edit.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "small_working_context_rules",
+     "title": "Small working context rules",
+     "purpose": "A composable instruction section that tells a small model to open only the files the step needs, search before reading, read large files in slices and write long results to files.",
+     "closest_existing": [
+      "starter: assemble_the_context_for_one_step (for the assembler, not the working model)",
+      "starter: decide_what_to_leave_out_of_a_prompt (prose)"
+     ],
+     "expected_effects": []
+    },
+    {
+     "identity": "unattended_git_rules",
+     "title": "Unattended git safety rules",
+     "purpose": "A composable instruction section that forbids pushing, force operations and history rewriting in unattended runs and keeps one local commit per ticket that names the ticket key.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "spawns_process",
+      "writes_fs"
+     ]
+    },
+    {
+     "identity": "focused_step_packet_rules",
+     "title": "Focused step packet rules",
+     "purpose": "A composable instruction section that tells any harness to treat task.json and node_context.md as the step's assignment, do the listed first action first and finish when the listed checks pass.",
+     "closest_existing": [
+      "codex_focused_step_packets (examples, not a reusable section)"
+     ],
+     "expected_effects": [
+      "reads_fs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a15_data_and_competition_verifiers",
+   "file_class": "verifier_package",
+   "domain": "data_cleanup_and_competition_verification",
+   "use_cases": [
+    "data_cleanup_without_an_expensive_model",
+    "competition_solve_task_to_submission"
+   ],
+   "harness_targets": [
+    "claude_code",
+    "codex",
+    "opencode",
+    "pi",
+    "gemini_cli"
+   ],
+   "review_profile_status": "reviewable_by_first_native_profile",
+   "why": "The cleanup study scored results with an independent deterministic scorer; customers need the same kind of check for their own data and submissions. No executable verifier for a cleaned table, a fold file, a claimed score or a submission exists.",
+   "packages": [
+    {
+     "identity": "check_csv_column_contract",
+     "title": "Check a CSV against a column contract",
+     "purpose": "Validate a CSV file against a JSON column contract of required columns, types, allowed values, ranges, uniqueness and empty-cell rules, and report violations by row and column.",
+     "closest_existing": [
+      "starter: write_a_data_contract_for_a_table_or_feed (writes a contract; checks nothing)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "verify_cleaned_copy_change_log",
+     "title": "Verify a cleaned copy against its change log",
+     "purpose": "Compare a source table, its cleaned copy and the change log by row key, and fail when a row appears or disappears or a cell changed without a matching log entry.",
+     "closest_existing": [
+      "starter: copy_a_table_with_corrections_never_in_place (restates repository code)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "verify_fold_group_separation",
+     "title": "Verify fold assignments keep groups apart",
+     "purpose": "Check a fold assignment file so that every row has exactly one fold, no group appears in two folds and label shares per fold stay within a declared tolerance.",
+     "closest_existing": [
+      "a02: build_group_stratified_folds (builds folds; this checks any fold file independently)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "recompute_claimed_cv_score",
+     "title": "Recompute a claimed cross-validation score",
+     "purpose": "Recompute a declared metric from out-of-fold predictions and the fold file, and fail when the claimed mean score differs from the recomputed score beyond a stated tolerance.",
+     "closest_existing": [
+      "starter: read_the_train_validation_gap (prose)"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    },
+    {
+     "identity": "validate_submission_file",
+     "title": "Validate a submission file against the sample",
+     "purpose": "Check a submission against the sample submission for exact header, identifier set, row count, missing values and value ranges for the task type, before any upload step.",
+     "closest_existing": [
+      "none found"
+     ],
+     "expected_effects": [
+      "reads_fs",
+      "spawns_process"
+     ]
+    }
+   ]
+  }
+ ]
+}

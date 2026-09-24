@@ -1,0 +1,55 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "cleaning_plan/v1 after review, as the cleaning application step accepts it",
+ "description": "A reviewer sets each proposed rule to approved or rejected and names themself in reviewed_by. Only approved rules are applied.",
+ "type": "object",
+ "required": ["record_type", "table", "profile", "rules", "questions"],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {"const": "cleaning_plan/v1"},
+  "table": {
+   "type": "object",
+   "required": ["path", "sha256", "delimiter", "columns", "rows_profiled", "row_cap", "row_cap_reached"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "delimiter": {"enum": ["comma", "semicolon", "tab", "pipe"]},
+    "columns": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "rows_profiled": {"type": "integer", "minimum": 1},
+    "row_cap": {"type": "integer", "minimum": 1},
+    "row_cap_reached": {"type": "boolean"}
+   }
+  },
+  "profile": {
+   "type": "object",
+   "required": ["path", "sha256"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"}
+   }
+  },
+  "rules": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/rule"}},
+  "questions": {"type": "array", "items": {"type": "string", "minLength": 5}}
+ },
+ "$defs": {
+  "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "rule": {
+   "type": "object",
+   "required": ["rule_id", "column", "operation", "parameters", "status", "reason", "evidence"],
+   "additionalProperties": false,
+   "properties": {
+    "rule_id": {"type": "string", "pattern": "^r[0-9]{1,4}$"},
+    "column": {"type": "string", "minLength": 1},
+    "operation": {"enum": ["trim_whitespace", "missing_tokens_to_empty", "map_values", "parse_number", "parse_date"]},
+    "parameters": {"type": "object"},
+    "status": {"enum": ["proposed", "dropped", "approved", "rejected"]},
+    "reason": {"type": "string", "minLength": 1},
+    "evidence": {"type": "object"},
+    "reviewed_by": {"type": "string", "minLength": 1, "maxLength": 200},
+    "review_note": {"type": "string", "maxLength": 2000}
+   }
+  }
+ }
+}

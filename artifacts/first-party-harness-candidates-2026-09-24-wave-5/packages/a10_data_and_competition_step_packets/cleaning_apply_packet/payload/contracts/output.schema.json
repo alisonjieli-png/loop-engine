@@ -1,0 +1,89 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "cleaning_apply_summary/v1, written last and only after every self-check passed",
+ "type": "object",
+ "required": ["record_type", "status", "source", "plan", "outputs", "rule_counts", "checks"],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {"const": "cleaning_apply_summary/v1"},
+  "status": {"const": "applied"},
+  "source": {
+   "type": "object",
+   "required": ["path", "sha256", "rows", "columns", "blank_lines_skipped", "unchanged_after_run"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 0},
+    "columns": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "blank_lines_skipped": {"type": "integer", "minimum": 0},
+    "unchanged_after_run": {"const": true}
+   }
+  },
+  "plan": {
+   "type": "object",
+   "required": ["path", "sha256", "applied_rules", "not_applied"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "applied_rules": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "not_applied": {"type": "object", "additionalProperties": {"enum": ["dropped", "rejected"]}}
+   }
+  },
+  "outputs": {
+   "type": "object",
+   "required": ["table", "change_log", "hold_list"],
+   "additionalProperties": false,
+   "properties": {
+    "table": {"$ref": "#/$defs/table_file"},
+    "change_log": {"$ref": "#/$defs/log_file"},
+    "hold_list": {"$ref": "#/$defs/log_file"}
+   }
+  },
+  "rule_counts": {
+   "type": "object",
+   "additionalProperties": {
+    "type": "object",
+    "required": ["changed", "held"],
+    "additionalProperties": false,
+    "properties": {"changed": {"type": "integer", "minimum": 0}, "held": {"type": "integer", "minimum": 0}}
+   }
+  },
+  "checks": {
+   "type": "object",
+   "required": ["header_equal", "row_count_equal", "every_difference_logged", "log_matches_cells", "source_unchanged"],
+   "additionalProperties": false,
+   "properties": {
+    "header_equal": {"const": true},
+    "row_count_equal": {"const": true},
+    "every_difference_logged": {"const": true},
+    "log_matches_cells": {"const": true},
+    "source_unchanged": {"const": true}
+   }
+  }
+ },
+ "$defs": {
+  "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "table_file": {
+   "type": "object",
+   "required": ["path", "sha256", "rows"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 0}
+   }
+  },
+  "log_file": {
+   "type": "object",
+   "required": ["path", "sha256", "entries"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "entries": {"type": "integer", "minimum": 0}
+   }
+  }
+ }
+}

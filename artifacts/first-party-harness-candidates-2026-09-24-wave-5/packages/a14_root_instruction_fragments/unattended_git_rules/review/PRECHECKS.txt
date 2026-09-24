@@ -1,0 +1,145 @@
+=== 2026-09-23T20:20:06Z round 1: python3 $WAVE/check_package.py fill $PKG (unattended_git_rules)
+{"fill": "done", "files": 6, "package_digest": "5041b1471294c65fe700bb048d583ee71b404a79fd2b7f6619f318664f8f61b2"}
+exit 0
+=== 2026-09-23T20:20:06Z round 1: python3 $WAVE/check_package.py check $PKG (unattended_git_rules)
+{
+ "identity": "unattended_git_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202011968156Z.json"
+}
+exit 0
+=== 2026-09-23T20:26:23Z round 2 after wording and test edits: python3 $WAVE/check_package.py fill $PKG (unattended_git_rules)
+{"fill": "done", "files": 6, "package_digest": "5c7ece5b496d678c7a455021bf1040cc0be0b9cfdbb67cf2a9cc1488e3036a57"}
+exit 0
+=== 2026-09-23T20:26:23Z round 2: python3 $WAVE/check_package.py check $PKG (unattended_git_rules)
+{
+ "identity": "unattended_git_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202630705485Z.json"
+}
+exit 0
+=== 2026-09-23T20:29:54Z final round: python3 $WAVE/check_package.py fill $PKG (unattended_git_rules)
+{"fill": "done", "files": 6, "package_digest": "5c7ece5b496d678c7a455021bf1040cc0be0b9cfdbb67cf2a9cc1488e3036a57"}
+exit 0
+=== 2026-09-23T20:29:54Z final round: python3 $WAVE/check_package.py check $PKG (unattended_git_rules)
+{
+ "identity": "unattended_git_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203002063835Z.json"
+}
+exit 0
+=== 2026-09-23T20:32:25Z mutation check on the final payload bytes (not a checker command; each guard removed in a temporary copy, then the package tests run)
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_amended_commit_is_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_reset_to_older_history_is_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_moved_remote_tracking_reference_is_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_commit_without_ticket_key_is_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_harness_files_in_the_commit_are_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_changes_made_before_the_ticket_are_protected failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_begin_refuses_a_tree_with_other_changes failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_second_commit_is_refused failed
+CAUGHT scripts/git_ticket_check.py: guard removed in a temporary copy -> test_stash_is_refused failed
+9 of 9 caught
+=== 2026-09-23T20:33:00Z check after the review note history was completed: python3 $WAVE/check_package.py check $PKG (unattended_git_rules)
+{
+ "identity": "unattended_git_rules",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203306962143Z.json"
+}
+exit 0
+=== 2026-09-23T20:33:09Z python3 $WAVE/check_package.py check-all --assignment a14_root_instruction_fragments
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203320797081Z.json
+exit 0

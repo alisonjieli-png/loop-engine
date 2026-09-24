@@ -1,0 +1,19 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Compile the handoffs and activity logs of night {{NIGHT_ID}} into a morning report that separates complete, blocked and unfinished work, with an evidence path for every claim.",
+ "output_contract_refs": [
+  "night_morning_report/v1"
+ ],
+ "dependency_ids": [],
+ "required_capabilities": [],
+ "effects": [
+  "reads_fs",
+  "writes_fs",
+  "{{PROCESS_EFFECT}}"
+ ],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

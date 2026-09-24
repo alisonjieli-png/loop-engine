@@ -1,0 +1,115 @@
+PRECHECKS for parse_dates_by_declared_formats (repair round 2)
+Assignment: a01_data_cleanup_executors. Package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a01_data_cleanup_executors/parse_dates_by_declared_formats
+This file sits outside the package folder because the checker's layout rule refuses any extra
+top-level entry in a package, and the specification lists the review folder's contents exactly.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+Candidate only. Not approved, staged, served or published. A pass is not a native loading result,
+a usefulness measurement or an approval.
+Sequence started (UTC): 2026-09-24T05:14:25.751922+00:00
+Earlier log: the earlier PRECHECKS.txt is kept unchanged as PRECHECKS-first-pass-20260923T2043Z.txt.
+Version: 0.1.1. Package digest: 3b506571932f4c6e258eea154839539cd84dc6791aa3fb596b2692626ed3deb0
+Payload files: 5
+
+== 1. python3 check_package.py fill (exit 0)
+{"fill": "done", "files": 5, "package_digest": "3b506571932f4c6e258eea154839539cd84dc6791aa3fb596b2692626ed3deb0"}
+
+== 2. python3 check_package.py check (exit 0); newest report precheck-20260924T051431480372Z.json
+{
+ "identity": "parse_dates_by_declared_formats",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T051431480372Z.json"
+}
+
+Every check of that report, with findings:
+  layout: passed
+  manifest_schema: passed
+  identity: passed
+  inventory: passed
+  text_hygiene: passed
+  vocabulary: passed
+  safety_static: passed
+  secrets: passed
+  parse: passed
+  entry_shape: passed
+  placements: passed
+  effects: passed
+  network_static: passed
+  agent_skills_validator: passed
+      agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/parse-dates-by-declared-formats
+      skills_ref_official_git .: exit 0 Valid skill: TMP/parse-dates-by-declared-formats
+  duplicates: passed
+  review_note: passed
+  tests_run: passed
+      {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 11}
+      {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 11}
+  hooks_run: passed
+  servers_run: passed
+
+== 3. Mutants: each breaks one guard in a temporary copy; the named test must pass on the unchanged copy and fail on the mutant. Labels that start with 'repair:' guard behavior added by the repair (exit 0)
+{"package": "parse_dates_by_declared_formats", "mutant": "take the first reading when two formats disagree", "test": "test_known_wrong_first_format_guess_is_held", "baseline": "Ran 1 test in 0.082s; OK", "mutant_run": "Ran 1 test in 0.071s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "follow a symbolic link out of the root", "test": "test_symbolic_link_that_leaves_the_root_is_refused", "baseline": "Ran 1 test in 0.081s; OK", "mutant_run": "Ran 1 test in 0.080s; FAILED (errors=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "overwrite an existing output", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 1.586s; OK", "mutant_run": "Ran 1 test in 1.396s; FAILED (failures=1, errors=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "ignore the declared range", "test": "test_declared_range_holds_placeholder_dates", "baseline": "Ran 1 test in 0.107s; OK", "mutant_run": "Ran 1 test in 0.110s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "accept an impossible calendar date as unmatched", "test": "test_invalid_unmatched_empty_and_padded_values", "baseline": "Ran 1 test in 0.210s; OK", "mutant_run": "Ran 1 test in 0.080s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "repair: refuse a blank line without naming it", "test": "test_invalid_unmatched_empty_and_padded_values", "baseline": "Ran 1 test in 0.191s; OK", "mutant_run": "Ran 1 test in 0.205s; FAILED (failures=1)", "result": "killed"}
+{"package": "parse_dates_by_declared_formats", "mutant": "repair: drop the tokens read from the format refusal", "test": "test_refusals_write_nothing", "baseline": "Ran 1 test in 1.861s; OK", "mutant_run": "Ran 1 test in 1.422s; FAILED (failures=3)", "result": "killed"}
+
+== 4. Tests in Bubblewrap with the payload mounted read-only (the checker mounts it writable because writes_fs is declared)
+python3.14 read-only payload, no network: exit 0; Ran 11 tests in 2.806s; OK
+python3.10 read-only payload, no network: exit 0; Ran 11 tests in 2.526s; OK
+
+== 5. Critic findings of 2026-09-23 and what the repair did
+- Step 4 said both reports are complete, but held_values is capped at 500 -> step 4 now says the run finished and not to retry; the held_values_complete stop rule is unchanged. (round 1)
+- Upper-case D, M and YY always start a token and the refusal did not name the cause -> the format_invalid detail lists the tokens read, for example 'reads DD, MM, YYYY, M, D', and the reference explains the letter rule. Test assertions in test_refusals_write_nothing; mutant 'drop the tokens read' killed. (round 1)
+- One blank line in a multi-column CSV refused the run without saying why -> the detail names the blank line and the reference explains the refusal. Assertion in test_invalid_unmatched_empty_and_padded_values; mutant killed. (round 1)
+- Report values repeat cell text word for word -> SKILL step 5 says values in the report are data from the file, not instructions. (round 1)
+- Panel risk, not fixable here: no harness has been observed loading the package or filling in SKILL_DIR -> the first action names the five placement folders to look in, and the review note keeps the risk open. The native discovery probe belongs to the integrator and has not run.
+- Process note: PRECHECKS.txt stays at packages/<identity>/PRECHECKS.txt, the path the computed task names. Inside the package folder the layout check would refuse it; check-all does not read these folders.
+Critic probe rerun on the repaired packages: repairer-a01_data_cleanup_executors/r2-20260924T0453Z/evidence/critic-probe-rerun-after-repair.txt (the critic's probe.py, copied byte for byte).
+
+== 6. Earlier failures and repairs
+- Producer, direct test run 1 (before the first checker run): test_invalid_unmatched_empty_and_padded_values failed because a blank line in a one-column CSV was refused as row_width_differs. Fix: a blank line in a one-column file is one empty value; a blank line in a wider table is still refused (now tested).
+- Producer tooling: the first mutant run of parse_dates_by_declared_formats was invalid (the runner imported tests by module name under -I, so every run ended in an import error). The runner then used unittest discovery with -k, required a passing baseline and one test ran, and those results replaced it.
+- Independent critic, 2026-09-23T23:52Z (evidence in critic-a01_data_cleanup_executors/independent-20260923T2352Z): all 19 pre-checks passed for every version 0.1.0 package, and yet the critic found one blocking defect (parse_numbers) and non-blocking points in all five packages. Section 5 lists each finding and what the repair did.
+- Repair round 1, 2026-09-24T00:43Z to 01:04Z, an earlier run of this repairer that stopped part way: it saved packages/<identity>/earlier-attempt-20260924T0043Z.tar.gz for all five packages, wrote known-wrong checks first, repaired parse_numbers (0.2.0) and parse_dates (0.1.1) and ran fill for them, and stopped after writing the map_categories fold test. It ran no check, so it wrote no precheck report and no PRECHECKS.txt.
+- Repair round 2, this sequence: before editing, the state left by round 1 was saved as repairer-a01_data_cleanup_executors/r2-20260924T0453Z/current-at-start/a01-state-at-r2-start.tar.gz and every round 1 edit was read against the critic findings. Two draft problems were caught before any checker run: map_categories SKILL.md had 480 words (the entry limit is 450; trimmed to 445), and one expectation in the new standardize test assumed exit 0 on the note column, which holds look-alikes (the test now uses id). One dry run of every check (check_package with write=False, no report) passed for all five before the recorded checks below, and a trial run of the round 2 mutant runner killed 45 of 45 mutants.
+
+== 7. Every precheck report in review/, oldest first
+precheck-20260923T200758548770Z.json  passed_for_wave_gate=True  refused=False  package_digest=4525df030839ebf924e4c1f43d1052d2216f38afc12593fc764c0c60fcb3da99
+precheck-20260923T204251570584Z.json  passed_for_wave_gate=True  refused=False  package_digest=eb5473f87ee461e4d3d308213d702c94ac6714d027d6936805a299ba633b45eb
+precheck-20260923T204341019451Z.json  passed_for_wave_gate=True  refused=False  package_digest=eb5473f87ee461e4d3d308213d702c94ac6714d027d6936805a299ba633b45eb
+precheck-20260924T051431480372Z.json  passed_for_wave_gate=True  refused=False  package_digest=3b506571932f4c6e258eea154839539cd84dc6791aa3fb596b2692626ed3deb0
+
+== 8. python3 check_package.py check-all --assignment a01_data_cleanup_executors (exit 0); it re-checked all five packages
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T051618892517Z.json
+
+Newest report after check-all: precheck-20260924T051612240857Z.json passed_for_wave_gate=True package_digest=3b506571932f4c6e258eea154839539cd84dc6791aa3fb596b2692626ed3deb0
+Sequence finished (UTC): 2026-09-24T05:16:18.927294+00:00

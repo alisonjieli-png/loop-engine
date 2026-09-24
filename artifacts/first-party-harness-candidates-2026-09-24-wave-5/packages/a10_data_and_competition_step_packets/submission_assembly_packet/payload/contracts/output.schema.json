@@ -1,0 +1,89 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "submission_record/v1, written after the submission file passed its self-check",
+ "description": "Names the run, the exact ledger line and every file digest. The step never uploads.",
+ "type": "object",
+ "required": ["record_type", "status", "run_id", "ledger", "cross_validation", "run_flags", "predictions", "test_data",
+              "sample", "submission", "checks", "upload"],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {"const": "submission_record/v1"},
+  "status": {"const": "assembled"},
+  "run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+  "ledger": {
+   "type": "object",
+   "required": ["path", "line", "line_sha256"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "line": {"type": "integer", "minimum": 1},
+    "line_sha256": {"$ref": "#/$defs/digest"}
+   }
+  },
+  "cross_validation": {
+   "type": "object",
+   "required": ["metric", "fold_scores", "mean_score"],
+   "additionalProperties": false,
+   "properties": {
+    "metric": {"type": ["object", "null"]},
+    "fold_scores": {"type": ["array", "null"], "items": {"type": "number"}},
+    "mean_score": {"type": ["number", "null"]}
+   }
+  },
+  "run_flags": {"type": "array", "items": {"type": "string"}},
+  "predictions": {
+   "type": "object",
+   "required": ["path", "sha256", "rows"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 1}
+   }
+  },
+  "test_data": {
+   "type": "object",
+   "required": ["path", "sha256"],
+   "additionalProperties": false,
+   "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/digest"}}
+  },
+  "sample": {
+   "type": "object",
+   "required": ["path", "sha256", "rows", "header"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 1},
+    "header": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "string"}}
+   }
+  },
+  "submission": {
+   "type": "object",
+   "required": ["path", "sha256", "rows", "prediction_column", "value_type"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 1},
+    "prediction_column": {"type": "string", "minLength": 1},
+    "value_type": {"enum": ["probability", "real_number", "binary_label"]}
+   }
+  },
+  "checks": {
+   "type": "object",
+   "required": ["header_matches_sample", "ids_match_sample_order", "row_count_matches", "values_valid"],
+   "additionalProperties": false,
+   "properties": {
+    "header_matches_sample": {"const": true},
+    "ids_match_sample_order": {"const": true},
+    "row_count_matches": {"const": true},
+    "values_valid": {"const": true}
+   }
+  },
+  "upload": {"const": "not_uploaded"}
+ },
+ "$defs": {
+  "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+ }
+}

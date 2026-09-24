@@ -1,0 +1,96 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "experiment_record/v1, one line of the experiment ledger",
+ "description": "Written by the step script from the data, never typed. Scores are rounded to 10 decimal places.",
+ "type": "object",
+ "required": ["record_type", "run_id", "step", "task_type", "id_column", "target_column", "metric", "model", "folds",
+              "data", "fold_scores", "mean_score", "std_score", "reference_constant", "flags", "outputs",
+              "test_prediction_rule", "script"],
+ "additionalProperties": false,
+ "properties": {
+  "record_type": {"const": "experiment_record/v1"},
+  "run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+  "step": {"const": "baseline_training"},
+  "task_type": {"enum": ["regression", "binary"]},
+  "id_column": {"type": "string", "minLength": 1},
+  "target_column": {"type": "string", "minLength": 1},
+  "metric": {
+   "type": "object",
+   "required": ["name", "direction"],
+   "additionalProperties": false,
+   "properties": {
+    "name": {"enum": ["rmse", "mae", "rmsle", "log_loss", "auc", "accuracy"]},
+    "direction": {"enum": ["maximize", "minimize"]}
+   }
+  },
+  "model": {
+   "type": "object",
+   "required": ["baseline", "features", "parameters", "target_transform", "probability", "dropped_features"],
+   "additionalProperties": false,
+   "properties": {
+    "baseline": {"enum": ["constant", "group_mean", "ridge"]},
+    "features": {"type": "array", "items": {"type": "string"}},
+    "parameters": {"type": "object"},
+    "target_transform": {"enum": ["none", "log1p"]},
+    "probability": {"enum": ["none", "logistic_fit_on_training_scores"]},
+    "dropped_features": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}
+   }
+  },
+  "folds": {
+   "type": "object",
+   "required": ["path", "sha256", "count", "rows_per_fold"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "count": {"type": "integer", "minimum": 2},
+    "rows_per_fold": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 1}}
+   }
+  },
+  "data": {
+   "type": "object",
+   "required": ["train", "test"],
+   "additionalProperties": false,
+   "properties": {"train": {"$ref": "#/$defs/file"}, "test": {"$ref": "#/$defs/file"}}
+  },
+  "fold_scores": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+  "mean_score": {"type": "number"},
+  "std_score": {"type": "number", "minimum": 0},
+  "reference_constant": {
+   "type": "object",
+   "required": ["fold_scores", "mean_score"],
+   "additionalProperties": false,
+   "properties": {
+    "fold_scores": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+    "mean_score": {"type": "number"}
+   }
+  },
+  "flags": {"type": "array", "uniqueItems": true, "items": {"enum": ["worse_than_constant", "suspiciously_perfect"]}},
+  "outputs": {
+   "type": "object",
+   "required": ["oof", "test_predictions"],
+   "additionalProperties": false,
+   "properties": {"oof": {"$ref": "#/$defs/file"}, "test_predictions": {"$ref": "#/$defs/file"}}
+  },
+  "test_prediction_rule": {"const": "mean_of_fold_models"},
+  "script": {
+   "type": "object",
+   "required": ["name", "sha256"],
+   "additionalProperties": false,
+   "properties": {"name": {"type": "string", "minLength": 1}, "sha256": {"$ref": "#/$defs/digest"}}
+  }
+ },
+ "$defs": {
+  "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "file": {
+   "type": "object",
+   "required": ["path", "sha256", "rows"],
+   "additionalProperties": false,
+   "properties": {
+    "path": {"type": "string", "minLength": 1},
+    "sha256": {"$ref": "#/$defs/digest"},
+    "rows": {"type": "integer", "minimum": 1}
+   }
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+  "brief_sha256": "2cfbfa9c9808bde76895b1204031e5bfce3916bb0e1c164ea89f999236b68cdf",
+  "context_version": 1,
+  "files": {
+    ".baltor/step/checklist.md": {
+      "sha256": "a82857007558fe058b3e8ac3e0fe4b188df18ed65d51de05ae4757d9e9c39638",
+      "size_bytes": 236
+    },
+    ".baltor/step/contracts/output.schema.json": {
+      "sha256": "c6d6540c171b498b823cec000ed7a379111ea46a7ed38eec216b98a34486181a",
+      "size_bytes": 257
+    },
+    ".baltor/step/node_context.md": {
+      "sha256": "a26aecd4ff97dfa005f1d4000694f335bd1403fd09e846616e569c80a14f6017",
+      "size_bytes": 556
+    },
+    ".baltor/step/task.json": {
+      "sha256": "e532e420e8f6ac012e310f077ed0832eb355f35039088c97a88d3995a106be6b",
+      "size_bytes": 413
+    },
+    "AGENTS.md": {
+      "sha256": "538cf17c27d58625f11561de4a9ff044cdacafca0f952f45e796c981e1aed79d",
+      "size_bytes": 968
+    }
+  },
+  "harness_style": "gemini",
+  "packet_content_sha256": "08433babb738faf839a6aefeb8a0dda63ddd504a3d81076de4c19640d1e4c000",
+  "persistent_library_items_added": 0,
+  "record_type": "focused_step_packet_candidate/v1",
+  "run_id": "example-run",
+  "state": "candidate",
+  "state_version": 1,
+  "step_id": "list-failing-tests"
+}

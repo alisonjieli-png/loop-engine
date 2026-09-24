@@ -1,0 +1,615 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "plan_night_queue",
+    "title": "Plan the overnight ticket queue",
+    "purpose": "Order tonight's tickets by readiness, risk and estimated effort against a declared time and call budget, and write a queue file that names which tickets to hold and why.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "AGENTS.md",
+      "docs/guides/native-client-material-loading.md"
+    ],
+    "layer": "context",
+    "family": "native_command",
+    "search_tags": [
+      "plan overnight tickets",
+      "order tickets for a night run",
+      "fit tickets into a time budget",
+      "model call budget for tonight",
+      "which tickets to skip tonight",
+      "unattended ticket queue",
+      "hold risky tickets",
+      "ticket queue with reasons",
+      "night queue status",
+      "mark a ticket done"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "main",
+      "command_gaps",
+      "command_plan",
+      "command_status",
+      "command_mark",
+      "assess",
+      "merged_estimate",
+      "entry_problems",
+      "order_queue",
+      "next_ticket"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a06_step_ritual_commands",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/night-estimates.schema.json",
+        "digest": "d7bfd74a9fe427bce5246b16ab8350e3fc9989c4d187dda20bac770d0e2b8de4",
+        "size_bytes": 1882,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/night-queue-status.schema.json",
+        "digest": "a4238f345ed8ffd7c68d28cbe91ee2b1a0abd7612318596990eae6c64f6bd33c",
+        "size_bytes": 3443,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/night-queue.schema.json",
+        "digest": "3bfd64a9bf8b7a636068756b3319de20398cffddef1ba5efd27d25a79e993f15",
+        "size_bytes": 4907,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/night-settings.schema.json",
+        "digest": "4cce7be5e78ad0b319d21c6845e61581a99612a8981ad03a370320fe6672bbc7",
+        "size_bytes": 2393,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/night-tickets.schema.json",
+        "digest": "b6c80628536a632d8f37669b911efecf800bc935587d8efc8e03478e4d485edd",
+        "size_bytes": 2471,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/estimates.json",
+        "digest": "b5acdf36315bc8e40a642f9485a3e2468516070aedcbddf083340f3874bcb010",
+        "size_bytes": 339,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/settings.json",
+        "digest": "312d75c023dae63e1411d3539d4425aa728a414d55207600abab3bd7c684f25f",
+        "size_bytes": 374,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/tickets.json",
+        "digest": "d147b6ada7879a2ca07f5882cfb3d67e057a5746c6570d9cb236554e7218259b",
+        "size_bytes": 2240,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/plan_queue.py",
+        "digest": "95d97755d6067a225927e7c60e623ce592e0ed9a3a5cf31677c613021aa860b0",
+        "size_bytes": 31534,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_plan_queue.py",
+        "digest": "7d4619a4184580a0d431e2d2448858c30a052922f929f1d0e80d2c478ffc862b",
+        "size_bytes": 24954,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/plan-night-queue.md",
+        "digest": "899af7d88d3fdd8527697e6c54fc67df3fab155013e72adca06c2677fc643411",
+        "size_bytes": 2353,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/copilot/plan-night-queue.prompt.md",
+        "digest": "9d9f05fef9c956b47e3229bbce8c9d5777b1a2dc227b1ed5f97614ccd239483e",
+        "size_bytes": 2366,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/plan-night-queue.md",
+        "digest": "b9fc6c273b87f18e141167a1df32a860ded689111b6a51f792567b416bbaec39",
+        "size_bytes": 2213,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/gemini_cli/plan-night-queue.toml",
+        "digest": "f61ff85785d71da3735a0aa9acde084718414bcf17efce6608276f61e63f1a3f",
+        "size_bytes": 2362,
+        "media_type": "application/toml",
+        "role": "command"
+      },
+      {
+        "path": "variants/opencode/plan-night-queue.md",
+        "digest": "899af7d88d3fdd8527697e6c54fc67df3fab155013e72adca06c2677fc643411",
+        "size_bytes": 2353,
+        "media_type": "text/markdown",
+        "role": "command"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a06_step_ritual_commands",
+    "file_class": "command_file",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "gemini_cli",
+      "opencode",
+      "copilot",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "copilot": "The prompt file folder .github/prompts/ is unverified in the wave placement table. The agent: agent front matter follows the VS Code prompt file documentation read by the repairer on 2026-09-24; native loading was not observed.",
+      "cursor": "The command folder .cursor/commands/ is unverified in the wave placement table. The Cursor documentation page read by the repairer on 2026-09-24 described skills and no project command folder, and native loading was not observed."
+    },
+    "not_placed": {},
+    "native_name": "plan-night-queue",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/plan-night-queue.md",
+      "gemini_cli": "variants/gemini_cli/plan-night-queue.toml",
+      "opencode": "variants/opencode/plan-night-queue.md",
+      "copilot": "variants/copilot/plan-night-queue.prompt.md",
+      "cursor": "variants/cursor/plan-night-queue.md"
+    },
+    "placements": {
+      "claude_code": {
+        "variants/claude_code/plan-night-queue.md": {
+          "destination": ".claude/commands/plan-night-queue.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/plan_queue.py": {
+          "destination": ".baltor/plan-night-queue/scripts/plan_queue.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/settings.json": {
+          "destination": ".baltor/plan-night-queue/examples/settings.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/tickets.json": {
+          "destination": ".baltor/plan-night-queue/examples/tickets.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/estimates.json": {
+          "destination": ".baltor/plan-night-queue/examples/estimates.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/plan-night-queue/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_plan_queue.py": null,
+        "contracts/night-tickets.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-tickets.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-settings.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-settings.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-estimates.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-estimates.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "variants/gemini_cli/plan-night-queue.toml": {
+          "destination": ".gemini/commands/plan-night-queue.toml",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/plan_queue.py": {
+          "destination": ".baltor/plan-night-queue/scripts/plan_queue.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/settings.json": {
+          "destination": ".baltor/plan-night-queue/examples/settings.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/tickets.json": {
+          "destination": ".baltor/plan-night-queue/examples/tickets.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/estimates.json": {
+          "destination": ".baltor/plan-night-queue/examples/estimates.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/plan-night-queue/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_plan_queue.py": null,
+        "contracts/night-tickets.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-tickets.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-settings.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-settings.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-estimates.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-estimates.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "variants/opencode/plan-night-queue.md": {
+          "destination": ".opencode/commands/plan-night-queue.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/plan_queue.py": {
+          "destination": ".baltor/plan-night-queue/scripts/plan_queue.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/settings.json": {
+          "destination": ".baltor/plan-night-queue/examples/settings.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/tickets.json": {
+          "destination": ".baltor/plan-night-queue/examples/tickets.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/estimates.json": {
+          "destination": ".baltor/plan-night-queue/examples/estimates.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/plan-night-queue/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_plan_queue.py": null,
+        "contracts/night-tickets.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-tickets.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-settings.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-settings.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-estimates.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-estimates.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/plan-night-queue.prompt.md": {
+          "destination": ".github/prompts/plan-night-queue.prompt.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/plan_queue.py": {
+          "destination": ".baltor/plan-night-queue/scripts/plan_queue.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/settings.json": {
+          "destination": ".baltor/plan-night-queue/examples/settings.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/tickets.json": {
+          "destination": ".baltor/plan-night-queue/examples/tickets.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/estimates.json": {
+          "destination": ".baltor/plan-night-queue/examples/estimates.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/plan-night-queue/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_plan_queue.py": null,
+        "contracts/night-tickets.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-tickets.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-settings.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-settings.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-estimates.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-estimates.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cursor": {
+        "variants/cursor/plan-night-queue.md": {
+          "destination": ".cursor/commands/plan-night-queue.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/plan_queue.py": {
+          "destination": ".baltor/plan-night-queue/scripts/plan_queue.py",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/settings.json": {
+          "destination": ".baltor/plan-night-queue/examples/settings.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/tickets.json": {
+          "destination": ".baltor/plan-night-queue/examples/tickets.json",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/estimates.json": {
+          "destination": ".baltor/plan-night-queue/examples/estimates.json",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/plan-night-queue/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_plan_queue.py": null,
+        "contracts/night-tickets.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-tickets.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-settings.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-settings.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-estimates.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-estimates.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue.schema.json",
+          "operation": "copy_exact_bytes"
+        },
+        "contracts/night-queue-status.schema.json": {
+          "destination": ".baltor/plan-night-queue/contracts/night-queue-status.schema.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/claude_code/plan-night-queue.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "variants/gemini_cli/plan-night-queue.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "variants/opencode/plan-night-queue.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "variants/copilot/plan-night-queue.prompt.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "variants/cursor/plan-night-queue.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "scripts/plan_queue.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "tests/test_plan_queue.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "examples/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "examples/tickets.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "examples/estimates.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/night-tickets.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "contracts/night-settings.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "contracts/night-estimates.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "contracts/night-queue.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      },
+      "contracts/night-queue-status.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plan_queue.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B .baltor/plan-night-queue/scripts/plan_queue.py gaps --root . and read ready_to_plan, need_estimate and fix_estimate.",
+    "done_when": [
+      "gaps reports ready_to_plan true, then plan exits 0 and .baltor/night/queue.json lists the ordered items and every held ticket with a reason.",
+      "The planned minutes and calls stay within the usable budget."
+    ],
+    "stop_and_report_when": [
+      "A helper run exits 2, for example a missing settings file, an existing queue or status file, or estimates that still need fixing.",
+      "plan exits 1 because no ticket is ready or fits the budget.",
+      "The settings or tickets file is missing; tickets and budgets are never invented.",
+      "The same entry stays in fix_estimate after two changes."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "AGENTS.md": "ee2ab453be6369c7a79793c852a7f0df9933d9a16914eea0f9521c04da1ca0c9",
+      "docs/guides/native-client-material-loading.md": "6c6620be656ad03542a0ed2510a6c175476e0e7c0645021f00b90b6c635b4ccf"
+    },
+    "package_digest": "1b566d0418230a20c974ccba75fbc346f80049b6b72202cae32192ee54a4cd6d",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

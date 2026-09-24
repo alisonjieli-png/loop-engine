@@ -1,0 +1,32 @@
+===== 2026-09-23T20:50:08Z python3 check_package.py fill submission_assembly_packet
+{"fill": "done", "files": 13, "package_digest": "f9d8eccb2273379200784c5d16c4dceb7f5ed2f7ba3fd37487c074c8907ceb5d"}
+exit 0
+===== 2026-09-23T20:50:09Z python3 check_package.py check submission_assembly_packet
+{
+ "identity": "submission_assembly_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T205010965962Z.json"
+}
+exit 0

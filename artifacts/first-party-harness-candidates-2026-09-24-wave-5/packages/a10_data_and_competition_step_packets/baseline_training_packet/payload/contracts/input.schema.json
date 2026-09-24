@@ -1,0 +1,32 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Values the host renders into the baseline training step",
+ "description": "Every value is placed inside a shell command, so paths and names use only safe characters.",
+ "type": "object",
+ "required": ["train_path", "test_path", "folds_path", "id_column", "target_column", "task_type", "metric", "baseline",
+              "features", "run_id", "output_dir", "ledger_path"],
+ "additionalProperties": false,
+ "properties": {
+  "train_path": {"$ref": "#/$defs/relative_path"},
+  "test_path": {"$ref": "#/$defs/relative_path"},
+  "folds_path": {"$ref": "#/$defs/relative_path"},
+  "id_column": {"$ref": "#/$defs/column"},
+  "target_column": {"$ref": "#/$defs/column"},
+  "task_type": {"enum": ["regression", "binary"]},
+  "metric": {"enum": ["rmse", "mae", "rmsle", "log_loss", "auc", "accuracy"]},
+  "baseline": {"enum": ["constant", "group_mean", "ridge"]},
+  "features": {"type": "string", "maxLength": 4000,
+               "pattern": "^(none|[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}(,[A-Za-z0-9_][A-Za-z0-9_.-]{0,63})*)$"},
+  "run_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+  "output_dir": {"$ref": "#/$defs/relative_path"},
+  "ledger_path": {"$ref": "#/$defs/relative_path"}
+ },
+ "$defs": {
+  "relative_path": {
+   "type": "string",
+   "maxLength": 200,
+   "pattern": "^[A-Za-z0-9_][A-Za-z0-9._-]*(/[A-Za-z0-9_][A-Za-z0-9._-]*)*$"
+  },
+  "column": {"type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$"}
+ }
+}

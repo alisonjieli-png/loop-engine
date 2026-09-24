@@ -1,0 +1,23 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Verify the fix for ticket {{TICKET_ID}} with the relevant and full tests and the allowed paths, then write a change summary and a proposed commit message without committing.",
+ "output_contract_refs": [
+  "ticket_fix_verification_record/v1",
+  "ticket_fix_verification_run/v1"
+ ],
+ "dependency_ids": [
+  "{{REPRODUCTION_STEP_ID}}",
+  "{{FIX_STEP_ID}}"
+ ],
+ "required_capabilities": [],
+ "effects": [
+  "reads_fs",
+  "writes_fs",
+  "{{PROCESS_EFFECT}}"
+ ],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

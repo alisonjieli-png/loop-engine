@@ -1,0 +1,73 @@
+{
+ "record_type": "night_queue/v1",
+ "created_at": "2026-09-24T05:27:34Z",
+ "order": "risk_first",
+ "budget": {
+  "time_minutes": 240,
+  "model_calls": 200,
+  "reserve_percent": 10,
+  "usable_minutes": 216,
+  "usable_calls": 180
+ },
+ "planned": {
+  "minutes": 125,
+  "calls": 150
+ },
+ "inputs": {
+  ".baltor/night/settings.json": "9005d21de55e492dc0225be27cef2f4e7589be85c177009633e244841e76937b",
+  ".baltor/night/tickets.json": "553a792cb94a455d2e68d09e7151a72203312b62803337110487bbcbb650fa24",
+  ".baltor/night/estimates.json": null
+ },
+ "items": [
+  {
+   "position": 1,
+   "id": "T-101",
+   "title": "Monthly report drops rows dated on the last day of the month",
+   "risk": "low",
+   "minutes": 25,
+   "calls": 30,
+   "priority": 2,
+   "depends_on": [],
+   "status": "queued"
+  },
+  {
+   "position": 2,
+   "id": "T-103",
+   "title": "Quarter filter needs the same month-end rule",
+   "risk": "low",
+   "minutes": 20,
+   "calls": 20,
+   "priority": 3,
+   "depends_on": [
+    "T-101"
+   ],
+   "status": "queued"
+  },
+  {
+   "position": 3,
+   "id": "T-108",
+   "title": "Year filter reuses the quarter rule",
+   "risk": "low",
+   "minutes": 20,
+   "calls": 20,
+   "priority": 4,
+   "depends_on": [
+    "T-103"
+   ],
+   "status": "queued"
+  },
+  {
+   "position": 4,
+   "id": "T-102",
+   "title": "CSV export writes an empty header row",
+   "risk": "medium",
+   "minutes": 60,
+   "calls": 80,
+   "priority": 1,
+   "depends_on": [],
+   "status": "queued"
+  }
+ ],
+ "held": [],
+ "warnings": []
+}

@@ -1,0 +1,6 @@
+{
+  "path": "readings.csv",
+  "group_by": "site",
+  "per_group": 2,
+  "seed": 7
+}

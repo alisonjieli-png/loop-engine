@@ -1,0 +1,2 @@
+Unreleased
+- slugify now returns lower-case text and turns a run of spaces into one hyphen (T-204).

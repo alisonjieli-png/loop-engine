@@ -1,0 +1,246 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ticket_fix_verification_record/v1",
+ "description": "The record the step writes to .baltor/step-output/output.json. A record that matches this schema is not yet accepted; a person reviews the fix, the summary and the evidence.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "ticket_id",
+  "verdict",
+  "evidence_path",
+  "failed_checks",
+  "changed_paths",
+  "summary_path",
+  "commit_message_path",
+  "committed",
+  "concerns",
+  "blocker"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "ticket_fix_verification_record/v1"
+  },
+  "ticket_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "verdict": {
+   "enum": [
+    "ready_for_review",
+    "not_ready",
+    "blocked"
+   ]
+  },
+  "evidence_path": {
+   "description": "The evidence file of the newest checks run.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/output_path"
+    }
+   ]
+  },
+  "failed_checks": {
+   "type": "array",
+   "uniqueItems": true,
+   "items": {
+    "enum": [
+     "head_at_base_revision",
+     "base_is_ancestor_of_head",
+     "reproduction_test_unchanged",
+     "changed_paths_allowed",
+     "changed_file_count",
+     "relevant_tests_pass",
+     "full_tests_pass"
+    ]
+   }
+  },
+  "changed_paths": {
+   "type": "array",
+   "maxItems": 500,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "#/$defs/path"
+   }
+  },
+  "summary_path": {
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/output_path"
+    }
+   ]
+  },
+  "commit_message_path": {
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/output_path"
+    }
+   ]
+  },
+  "committed": {
+   "const": false
+  },
+  "concerns": {
+   "description": "Problems found by reading the diff that no check covers, each naming a file.",
+   "type": "array",
+   "maxItems": 20,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 600
+   }
+  },
+  "blocker": {
+   "description": "For blocked, the reason the checks script printed with exit code 2; otherwise null.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 1200,
+     "pattern": "\\S"
+    }
+   ]
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "required": [
+     "verdict"
+    ],
+    "properties": {
+     "verdict": {
+      "const": "ready_for_review"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "evidence_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "summary_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "commit_message_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "failed_checks": {
+      "maxItems": 0
+     },
+     "concerns": {
+      "maxItems": 0
+     },
+     "blocker": {
+      "type": "null"
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "verdict"
+    ],
+    "properties": {
+     "verdict": {
+      "const": "not_ready"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "evidence_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "summary_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "commit_message_path": {
+      "type": "null"
+     },
+     "blocker": {
+      "type": "null"
+     }
+    },
+    "anyOf": [
+     {
+      "properties": {
+       "failed_checks": {
+        "minItems": 1
+       }
+      }
+     },
+     {
+      "properties": {
+       "concerns": {
+        "minItems": 1
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "verdict"
+    ],
+    "properties": {
+     "verdict": {
+      "const": "blocked"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "commit_message_path": {
+      "type": "null"
+     },
+     "blocker": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ ],
+ "$defs": {
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "output_path": {
+   "description": "A path inside .baltor/ and outside .baltor/step/, the packet folder that the step only reads.",
+   "allOf": [
+    {
+     "$ref": "#/$defs/path"
+    },
+    {
+     "pattern": "^\\.baltor/"
+    },
+    {
+     "not": {
+      "pattern": "^\\.baltor/step(/|$)"
+     }
+    }
+   ]
+  }
+ }
+}

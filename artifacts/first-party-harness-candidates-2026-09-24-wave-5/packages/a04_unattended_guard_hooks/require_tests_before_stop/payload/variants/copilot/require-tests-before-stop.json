@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": "python3 -I -B .baltor/require-tests-before-stop/hooks/require_tests_before_stop.py --harness copilot --event postToolUse",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ],
+    "agentStop": [
+      {
+        "type": "command",
+        "bash": "python3 -I -B .baltor/require-tests-before-stop/hooks/require_tests_before_stop.py --harness copilot --event agentStop",
+        "cwd": ".",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

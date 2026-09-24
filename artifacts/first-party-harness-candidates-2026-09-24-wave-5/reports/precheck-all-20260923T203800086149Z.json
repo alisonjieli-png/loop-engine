@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-23T20:38:00.086132+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "audit_train_test_drift",
+  "build_group_stratified_folds",
+  "build_time_ordered_splits",
+  "rank_experiments_by_fold_scores",
+  "target_encode_out_of_fold"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a02_competition_modeling_tools/audit_train_test_drift/review/precheck-20260923T203752315192Z.json",
+  "packages/a02_competition_modeling_tools/build_group_stratified_folds/review/precheck-20260923T203754241285Z.json",
+  "packages/a02_competition_modeling_tools/build_time_ordered_splits/review/precheck-20260923T203755949252Z.json",
+  "packages/a02_competition_modeling_tools/rank_experiments_by_fold_scores/review/precheck-20260923T203758063981Z.json",
+  "packages/a02_competition_modeling_tools/target_encode_out_of_fold/review/precheck-20260923T203800085241Z.json"
+ ]
+}

@@ -1,0 +1,8 @@
+============================= test session starts ==============================
+collected 6 items
+
+tests/test_export.py .....F                                              [100%]
+
+=========================== short test summary info ============================
+FAILED tests/test_export.py::test_writes_header_once - AssertionError: assert 2 == 1
+========================= 1 failed, 5 passed in 0.12s ==========================

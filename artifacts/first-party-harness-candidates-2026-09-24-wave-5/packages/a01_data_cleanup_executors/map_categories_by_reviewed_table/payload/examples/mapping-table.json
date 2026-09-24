@@ -1,0 +1,14 @@
+{
+  "record_type": "category_mapping_table/v1",
+  "columns": ["example_status"],
+  "reviewed_by": "example only; a real table names the person or step that reviewed it",
+  "reviewed_on": "2026-01-15",
+  "targets_map_to_themselves": true,
+  "entries": [
+    {"from": "shpd", "to": "Shipped"},
+    {"from": "shipped already", "to": "Shipped"},
+    {"from": "in transit", "to": "In transit"},
+    {"from": "cancelled", "to": "Canceled", "note": "one spelling for reports"},
+    {"from": "on hold", "to": "Paused"}
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterShellExecution": [
+      {"command": "python3 -I -B .baltor/require-tests-before-stop/hooks/require_tests_before_stop.py --harness cursor", "timeout": 10}
+    ],
+    "afterFileEdit": [
+      {"command": "python3 -I -B .baltor/require-tests-before-stop/hooks/require_tests_before_stop.py --harness cursor", "timeout": 10}
+    ],
+    "stop": [
+      {"command": "python3 -I -B .baltor/require-tests-before-stop/hooks/require_tests_before_stop.py --harness cursor", "timeout": 10}
+    ]
+  }
+}

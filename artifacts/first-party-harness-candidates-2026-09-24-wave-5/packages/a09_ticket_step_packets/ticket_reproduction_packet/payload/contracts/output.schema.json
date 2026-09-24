@@ -1,0 +1,214 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ticket_reproduction_record/v1",
+ "description": "The record the step writes to .baltor/step-output/output.json. A record that matches this schema is not yet accepted; the host or a person checks it against the evidence files.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "ticket_id",
+  "status",
+  "test_file",
+  "test_name",
+  "evidence_path",
+  "failure_line",
+  "fails_for_reported_reason",
+  "explanation",
+  "evidence_files",
+  "product_code_changed",
+  "blocker"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "ticket_reproduction_record/v1"
+  },
+  "ticket_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "status": {
+   "enum": [
+    "reproduced",
+    "not_reproduced",
+    "blocked"
+   ]
+  },
+  "test_file": {
+   "$ref": "#/$defs/path"
+  },
+  "test_name": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 200
+  },
+  "evidence_path": {
+   "description": "The evidence file of the run this record rests on, normally the newest one.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "$ref": "#/$defs/output_path"
+    }
+   ]
+  },
+  "failure_line": {
+   "description": "One line copied word for word from output_tail of the cited evidence file.",
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 500
+    }
+   ]
+  },
+  "fails_for_reported_reason": {
+   "type": "boolean"
+  },
+  "explanation": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 1200
+  },
+  "evidence_files": {
+   "description": "Every evidence file the recorder wrote in this step, failed attempts included.",
+   "type": "array",
+   "maxItems": 100,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "#/$defs/output_path"
+   }
+  },
+  "product_code_changed": {
+   "type": "boolean"
+  },
+  "blocker": {
+   "anyOf": [
+    {
+     "type": "null"
+    },
+    {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 1200
+    }
+   ]
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "required": [
+     "status"
+    ],
+    "properties": {
+     "status": {
+      "const": "reproduced"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "evidence_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "failure_line": {
+      "type": "string"
+     },
+     "fails_for_reported_reason": {
+      "const": true
+     },
+     "product_code_changed": {
+      "const": false
+     },
+     "blocker": {
+      "type": "null"
+     },
+     "evidence_files": {
+      "minItems": 1
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "status"
+    ],
+    "properties": {
+     "status": {
+      "const": "not_reproduced"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "evidence_path": {
+      "$ref": "#/$defs/output_path"
+     },
+     "fails_for_reported_reason": {
+      "const": false
+     },
+     "blocker": {
+      "type": "null"
+     },
+     "evidence_files": {
+      "minItems": 1
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "required": [
+     "status"
+    ],
+    "properties": {
+     "status": {
+      "const": "blocked"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "fails_for_reported_reason": {
+      "const": false
+     },
+     "blocker": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ ],
+ "$defs": {
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "output_path": {
+   "description": "A path inside .baltor/ and outside .baltor/step/, the packet folder that the step only reads.",
+   "allOf": [
+    {
+     "$ref": "#/$defs/path"
+    },
+    {
+     "pattern": "^\\.baltor/"
+    },
+    {
+     "not": {
+      "pattern": "^\\.baltor/step(/|$)"
+     }
+    }
+   ]
+  }
+ }
+}

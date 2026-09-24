@@ -1,0 +1,121 @@
+=== 2026-09-23T20:27:38Z run 1: python3 check_package.py fill packages/a02_competition_modeling_tools/audit_train_test_drift
+{"fill": "done", "files": 6, "package_digest": "0cae02aa653419166268ef8d99d6d4c34f9221861f57c77ee7524cfce4eb32ce"}
+exit 0
+=== 2026-09-23T20:27:38Z run 1: python3 check_package.py check packages/a02_competition_modeling_tools/audit_train_test_drift
+{
+ "identity": "audit_train_test_drift",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202740336843Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:37:16Z run 2 after payload change: distinct-value cap raised to 50,000 after a 300,000-row scale run, skipped-check note test added, entry commands use python3 -I -B
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/audit_train_test_drift
+{"fill": "done", "files": 6, "package_digest": "1400c814f55cdc39bc0f70f0cd62f3d63a3cd9c21357d46c434cdecc67d33a80"}
+exit 0
+=== 2026-09-23T20:37:16Z run 2: python3 check_package.py check packages/a02_competition_modeling_tools/audit_train_test_drift
+{
+ "identity": "audit_train_test_drift",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T203719162346Z.json"
+}
+exit 0
+
+=== 2026-09-23T20:38:00Z run 3: python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203800086149Z.json
+exit 0
+
+=== 2026-09-24T05:27:38Z run 4 (repair round 2) after payload change: tie-aware numeric PSI buckets, bounded memory (no test value tracking, 5,000-value numeric cap, packed samples, text decoded while read), data-not-instructions line, report v2, version 0.2.0
+=== note: a dry iteration ran first (fill at 2026-09-24T05:21:36Z, then the checker with write=False: passed, no report file); its output is in repair-a02_competition_modeling_tools/round-2-20260924T0501Z/evidence/dry-iterations.txt
+=== python3 check_package.py fill packages/a02_competition_modeling_tools/audit_train_test_drift
+{"fill": "done", "files": 6, "package_digest": "d2e893b78a3512c9c1d9680a4be77cb32d8e1a4bdf2445db077281faebb1fabe"}
+exit 0
+=== 2026-09-24T05:27:39Z run 4: python3 check_package.py check packages/a02_competition_modeling_tools/audit_train_test_drift
+{
+ "identity": "audit_train_test_drift",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T052748127396Z.json"
+}
+exit 0
+
+=== 2026-09-24T05:28:52Z run 6 (repair round 2, final): python3 check_package.py check-all --assignment a02_competition_modeling_tools
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T052912778385Z.json
+exit 0

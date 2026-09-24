@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:55:33.897134+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "night_preflight",
+  "pick_next_experiment",
+  "plan_night_queue",
+  "record_blocker",
+  "write_step_handoff"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a06_step_ritual_commands/night_preflight/review/precheck-20260924T055452382015Z.json",
+  "packages/a06_step_ritual_commands/pick_next_experiment/review/precheck-20260924T055502702262Z.json",
+  "packages/a06_step_ritual_commands/plan_night_queue/review/precheck-20260924T055516338797Z.json",
+  "packages/a06_step_ritual_commands/record_blocker/review/precheck-20260924T055526387553Z.json",
+  "packages/a06_step_ritual_commands/write_step_handoff/review/precheck-20260924T055533894999Z.json"
+ ]
+}

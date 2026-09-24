@@ -1,0 +1,116 @@
+PRECHECKS for wave 5 package overnight_ticket_plugin
+written 2026-09-24T05:49:09.602716+00:00 by the a11_session_plugins generator (third run)
+package folder: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/overnight_ticket_plugin
+checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d
+This file sits outside the package folder because the checker's layout rule refuses any extra top-level entry in a package.
+Candidate only. Not approved, staged, served or published. A pass is not an approval, a rights decision or a native loading result.
+
+== 1. fill (digests, sizes and package digest) ==
+$ python3 check_package.py fill /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/packages/a11_session_plugins/overnight_ticket_plugin
+{"fill": "done", "files": 27, "package_digest": "62f47b405c218a0b06c79bb77b67dc3e2316294fe68a3961f35b603a9bb5a7c4"}
+exit 0
+package_digest now 62f47b405c218a0b06c79bb77b67dc3e2316294fe68a3961f35b603a9bb5a7c4; report digest 62f47b405c218a0b06c79bb77b67dc3e2316294fe68a3961f35b603a9bb5a7c4; same: True
+
+== 2. check, as run for this package inside the final check-all (report review/precheck-20260924T054519946508Z.json) ==
+{
+ "identity": "overnight_ticket_plugin",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ }
+}
+
+== 3. per-check detail of that report ==
+[passed] layout
+[passed] manifest_schema
+[passed] identity
+[passed] inventory
+[passed] text_hygiene
+[passed] vocabulary
+[passed] safety_static
+[passed] secrets
+[passed] parse
+[passed] entry_shape
+[passed] placements
+[passed] effects
+[passed] network_static
+[skipped] agent_skills_validator
+  - no SKILL.md in the payload
+[passed] duplicates
+[passed] review_note
+[passed] tests_run
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 49}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 49}
+[passed] hooks_run
+  - claude_code SessionStart examples/claude_code-sessionstart-startup.json: exit 0
+  - claude_code SessionStart examples/claude_code-sessionstart-malformed.json: exit 0
+  - cursor sessionStart examples/cursor-sessionstart-startup.json: exit 0
+  - cursor sessionStart examples/cursor-sessionstart-malformed.json: exit 0
+[passed] servers_run
+
+== 4. check-all --assignment a11_session_plugins (report reports/precheck-all-20260924T054546657835Z.json) ==
+{
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "competition_plugin",
+  "data_cleanup_plugin",
+  "overnight_ticket_plugin",
+  "portable_step_packet_plugin",
+  "step_status_plugin"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+
+== 5. guard mutants run by the generator (each removes one guard in a scratch copy) ==
+-- mutants-overnight-20260924T054621Z.txt
+old strict title rule put back: caught by ['test_planning_step_queue_with_an_empty_title_is_still_read', 'test_ticket_without_a_title_is_named_by_its_id']
+record from another queue counted: caught by ['test_record_problems_block_closing', 'test_record_written_for_another_queue_is_a_problem_not_progress']
+fixed allowed with failing evidence: caught by ['test_fixed_with_a_failing_check_is_refused']
+ticket check command not required: caught by ['test_fixed_needs_evidence_and_changed_files', 'test_fixed_without_the_ticket_check_command_is_refused']
+records overwritten: caught by ['test_writer_itself_refuses_to_replace_a_record']
+
+== 6. extra verification by the generator (not part of check_package.py) ==
+- Integration with the wave 5 planning step was checked by reading plan_night_queue's plan_queue.py: it writes night_queue/v1 with items (position, id, title) and copies a missing ticket title as an empty string. The third run found that the earlier version of this plugin refused such a queue and repaired it.
+- Local test runs of the payload: 49 tests pass under Python 3.14 and 3.10.
+
+== 7. every pre-check report of this package, oldest first ==
+precheck-20260923T202212937364Z.json: passed_for_wave_gate=False digest=d5bdd7c87dd1 refused=['layout']
+precheck-20260923T202241791554Z.json: passed_for_wave_gate=True digest=d5bdd7c87dd1 refused=[]
+precheck-20260924T004200160221Z.json: passed_for_wave_gate=False digest=f6027db75eb0 refused=['inventory']
+precheck-20260924T004314078111Z.json: passed_for_wave_gate=True digest=f6027db75eb0 refused=[]
+precheck-20260924T050727503481Z.json: passed_for_wave_gate=True digest=f6027db75eb0 refused=[]
+precheck-20260924T052030316716Z.json: passed_for_wave_gate=True digest=62f47b405c21 refused=[]
+precheck-20260924T054519946508Z.json: passed_for_wave_gate=True digest=62f47b405c21 refused=[]
+
+== 8. checks that failed or changed before the final pass ==
+- precheck-20260923T202212937364Z: refused (layout: an empty helper file in review/); first draft, digest d5bdd7c8.
+- precheck-20260923T202241791554Z: passed for digest d5bdd7c8; that draft was replaced because it read its own queue shape instead of the planning step's.
+- precheck-20260924T004200160221Z: refused (inventory: file modes) for digest f6027db7; modes set to 0644.
+- precheck-20260924T004314078111Z and precheck-20260924T050727503481Z: passed for digest f6027db7.
+- Third run: the empty-title conflict with plan_night_queue was repaired, two tests were added, the Cursor basis text was rewritten; precheck-20260924T052030316716Z passed for the new digest.
+
+== 9. what could not run here ==
+- Native loading in Claude Code and Cursor was not probed: the specification says not to run harness binaries for placement. The Claude Code plugin layout follows a Codex plugin whose SessionStart hook ran on Claude Code 2.1.280; the Cursor names are unverified and listed in unverified_targets.
+- agent_skills_validator is skipped by the checker because the payload holds no SKILL.md.
+- The first native review profile holds plugin packages until a versioned profile extension exists (specification section 13).

@@ -1,0 +1,264 @@
+PRECHECKS for verify_fail_then_pass_evidence (wave 5, assignment a12_ticket_result_verifiers, generator a12_ticket_result_verifiers)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence/
+This log sits outside the package folder because the layout check refuses any extra top-level entry there.
+Checker: $WAVE/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Every run of this generator session is appended below, failures included. Each check run also saved its
+own report as review/precheck-<UTC>.json inside the package folder; none of those reports was deleted.
+
+
+===== 2026-09-24T04:58:33Z run 1: baseline: check on the unchanged bytes of the earlier a12 generator pass (snapshot kept in earlier-attempt-20260924T0101Z.tar.gz beside this log), before any change in this session
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence
+{
+ "identity": "verify_fail_then_pass_evidence",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "refused",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T045840001612Z.json"
+}
+
+[refused] inventory
+  - tests/test_verify_fail_then_pass.py: digest or size differs from the bytes; run the fill command
+exit 1
+
+===== 2026-09-24T05:31:43Z run 2: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'skipped-before tests ignored again' (scripts/verify_fail_then_pass.py), test -k test_test_skipped_before_and_failing_after_is_a_new_failure: killed (Ran 1 test in 0.003s; FAILED (failures=1)) AssertionError: 'pass' != 'fail'
+    real payload, same test: exit 0 (Ran 1 test in 0.002s; OK)
+mutant 'same runner check removed' (scripts/verify_fail_then_pass.py), test -k test_outputs_of_two_different_runners: killed (Ran 1 test in 0.126s; FAILED (failures=1)) AssertionError: 'same_runner_format' not found in {'no_previously_passing_test_fails'}
+    real payload, same test: exit 0 (Ran 1 test in 0.128s; OK)
+mutant 'quiet output hint removed' (scripts/verify_fail_then_pass.py), test -k test_quiet_pytest_output_gets_a_hint: killed (Ran 1 test in 0.136s; FAILED (failures=1)) AssertionError: '-v or -rA' not found in 'the before run holds no passing test besides the new tests; run the same test selection before and after the fix'
+    real payload, same test: exit 0 (Ran 1 test in 0.113s; OK)
+mutant 'combined diff refusal removed' (scripts/verify_fail_then_pass.py), test -k test_combined_diff_of_a_merge: killed (Ran 1 test in 0.169s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'unreadable_diff') != (2, 'combined_diff')
+    real payload, same test: exit 0 (Ran 1 test in 0.122s; OK)
+
+===== 2026-09-24T05:32:43Z run 3: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'inherited: failed-before check always passes' (scripts/verify_fail_then_pass.py), test -k test_new_test_that_never_failed_is_refused: killed (Ran 1 test in 0.094s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.095s; OK)
+mutant 'inherited: passes-after check always passes' (scripts/verify_fail_then_pass.py), test -k test_new_test_still_failing_after_the_fix: killed (Ran 1 test in 0.120s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.102s; OK)
+mutant 'inherited: diff-adds-test check always passes' (scripts/verify_fail_then_pass.py), test -k test_diff_that_does_not_add_the_new_test: killed (Ran 1 test in 0.131s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.086s; OK)
+mutant 'inherited: non-test file check always passes' (scripts/verify_fail_then_pass.py), test -k test_diff_that_changes_only_tests: killed (Ran 1 test in 0.133s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.092s; OK)
+
+===== 2026-09-24T05:46:29Z run 4: host-style walkthrough (producer probe, not a checker check). The skill folder was copied to a harness skill path in a fresh workspace, the folder was found with the SKILL.md discovery command, and the first action was run exactly as SKILL.md writes it, with its placeholders filled. No harness binary and no model ran.
+placed at .claude/skills/verify-fail-then-pass-evidence; `ls -d .*/skills/verify-fail-then-pass-evidence` printed '.claude/skills/verify-fail-then-pass-evidence' (exit 0)
+    ok: the discovery command in SKILL.md finds the folder
+$ python3 -I -B .claude/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py --before before-pytest-v.txt --after after-pytest-v.txt --diff change.diff --test tests/test_dates.py::DateTests::test_rejects_day_32
+    exit 0, verdict pass
+    ok: real pytest -v outputs and git diff give pass
+$ python3 -I -B .claude/skills/verify-fail-then-pass-evidence/scripts/verify_fail_then_pass.py --before after-pytest-v.txt --after after-pytest-v.txt --diff change.diff --test tests/test_dates.py::DateTests::test_rejects_day_32
+    exit 1, verdict fail
+    ok: the after run given as BEFORE fails new_test_failed_before
+
+===== 2026-09-24T05:48:03Z run 5: after this session's review and changes: package.json written by generator-a12-work/build_manifests.py with null digests, then fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence
+{"fill": "done", "files": 9, "package_digest": "16446365aeef0458b5de27877d1c59176421d60fb401e5db9f1de2a5b903b0b3"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence
+{
+ "identity": "verify_fail_then_pass_evidence",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T054810952717Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_fail_then_pass_evidence $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 9 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/write_a_regression_test_that_pins_a_defect.md | sha256sum
+e01f0ce543f0a9528242ceb5a42df4b70941ca6c743e4b7d5425232a0ee71103  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+1 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-fail-then-pass-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-f_6v4r4p/verify-fail-then-pass-evidence
+exit 0
+$ skills-ref (official git) validate <copy named verify-fail-then-pass-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-f_6v4r4p/verify-fail-then-pass-evidence
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 40 tests in 2.720s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 40 tests in 2.061s
+OK
+exit 0
+
+===== 2026-09-24T05:51:43Z run 6: assignment gate (SPEC section 11 step 6); it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each, and the plan in assignments.json
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055143281720Z.json
+exit 0
+
+===== 2026-09-24T05:53:56Z run 7: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'skipped-before tests ignored again' (scripts/verify_fail_then_pass.py), test -k test_test_skipped_before_and_failing_after_is_a_new_failure: killed (Ran 1 test in 0.003s; FAILED (failures=1)) AssertionError: 'pass' != 'fail'
+    real payload, same test: exit 0 (Ran 1 test in 0.003s; OK)
+mutant 'same runner check removed' (scripts/verify_fail_then_pass.py), test -k test_outputs_of_two_different_runners: killed (Ran 1 test in 0.174s; FAILED (failures=1)) AssertionError: 'same_runner_format' not found in {'no_previously_passing_test_fails'}
+    real payload, same test: exit 0 (Ran 1 test in 0.135s; OK)
+mutant 'quiet output hint removed' (scripts/verify_fail_then_pass.py), test -k test_quiet_pytest_output_gets_a_hint: killed (Ran 1 test in 0.131s; FAILED (failures=1)) AssertionError: '-v or -rA' not found in 'the before run holds no passing test besides the new tests; run the same test selection before and after the fix'
+    real payload, same test: exit 0 (Ran 1 test in 0.131s; OK)
+mutant 'combined diff refusal removed' (scripts/verify_fail_then_pass.py), test -k test_combined_diff_of_a_merge: killed (Ran 1 test in 0.131s; FAILED (failures=1)) AssertionError: Tuples differ: (2, 'unreadable_diff') != (2, 'combined_diff')
+    real payload, same test: exit 0 (Ran 1 test in 0.185s; OK)
+mutant 'inherited: failed-before check always passes' (scripts/verify_fail_then_pass.py), test -k test_new_test_that_never_failed_is_refused: killed (Ran 1 test in 0.122s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.124s; OK)
+mutant 'inherited: passes-after check always passes' (scripts/verify_fail_then_pass.py), test -k test_new_test_still_failing_after_the_fix: killed (Ran 1 test in 0.112s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.111s; OK)
+mutant 'inherited: diff-adds-test check always passes' (scripts/verify_fail_then_pass.py), test -k test_diff_that_does_not_add_the_new_test: killed (Ran 1 test in 0.112s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.108s; OK)
+mutant 'inherited: non-test file check always passes' (scripts/verify_fail_then_pass.py), test -k test_diff_that_changes_only_tests: killed (Ran 1 test in 0.120s; FAILED (failures=1)) AssertionError: 0 != 1
+    real payload, same test: exit 0 (Ran 1 test in 0.124s; OK)
+
+===== 2026-09-24T05:54:34Z run 8: final: after the answer wording, the diff base checklist item and the example test tracing in package.json; fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence
+{"fill": "done", "files": 9, "package_digest": "93d413959f8abf39130f382494b46bcb4368092f2821b08d296d8714702fad1b"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence
+{
+ "identity": "verify_fail_then_pass_evidence",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055443298257Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_fail_then_pass_evidence $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 9 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:examples/29_intelligence_service/starter-catalogue/bodies/write_a_regression_test_that_pins_a_defect.md | sha256sum
+e01f0ce543f0a9528242ceb5a42df4b70941ca6c743e4b7d5425232a0ee71103  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+1 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-fail-then-pass-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-9okgjpem/verify-fail-then-pass-evidence
+exit 0
+$ skills-ref (official git) validate <copy named verify-fail-then-pass-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-9okgjpem/verify-fail-then-pass-evidence
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 40 tests in 3.867s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 40 tests in 3.324s
+OK
+exit 0
+
+===== 2026-09-24T05:57:11Z run 9: final assignment gate (SPEC section 11 step 6) on the final bytes; it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055711456548Z.json
+exit 0
+
+===== 2026-09-24T05:58:45Z run 10: producer probes on real runner outputs and real diffs against the final bytes (not a checker check)
+Real outputs of pytest 9.1.1, pytest JUnit XML and python -m unittest -v (3.14.4 and 3.10.20), saved in generator-a12-work/probe/proj, with its real git diff:
+  before-pytest-v.txt + after-pytest-v.txt: exit 0, verdict pass, failed checks []
+  before-pytest-rA.txt + after-pytest-rA.txt: exit 0, verdict pass, failed checks []
+  before-junit.xml + after-junit.xml: exit 0, verdict pass, failed checks []
+  before-ut314.txt + after-ut314.txt: exit 0, verdict pass, failed checks []
+  before-ut310.txt + after-ut310.txt: exit 0, verdict pass, failed checks []
+  before-pytest-q.txt + after-pytest-v.txt: exit 1, verdict fail, failed checks ['baseline_has_other_tests']
+  before-ut314.txt + after-pytest-v.txt: exit 1, verdict fail, failed checks ['same_runner_format', 'no_previously_passing_test_fails']
+  after-pytest-v.txt + after-pytest-v.txt: exit 1, verdict fail, failed checks ['new_test_failed_before']
+  git apply --numstat --summary examples/change.diff: exit 0, 2 lines 
+  pyflakes on scripts and tests: exit 0 (no findings)

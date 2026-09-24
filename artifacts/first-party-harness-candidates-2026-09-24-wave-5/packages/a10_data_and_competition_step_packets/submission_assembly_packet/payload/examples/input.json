@@ -1,0 +1,8 @@
+{
+ "sample_submission_path": "competition/data/sample_submission.csv",
+ "ledger_path": "work/experiments/ledger.jsonl",
+ "run_id": "baseline-ridge-01",
+ "id_column": "customer_id",
+ "value_type": "probability",
+ "output_dir": "work/submissions"
+}

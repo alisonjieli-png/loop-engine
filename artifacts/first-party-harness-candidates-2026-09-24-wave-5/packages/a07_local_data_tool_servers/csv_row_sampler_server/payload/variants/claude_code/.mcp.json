@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "csv_row_sampler_server": {
+      "command": "python3",
+      "args": [
+        "-I",
+        "-B",
+        "${CLAUDE_PROJECT_DIR:-.}/.baltor/csv-row-sampler-server/server/csv_row_sampler_server.py",
+        "--root",
+        "${CLAUDE_PROJECT_DIR:-.}"
+      ]
+    }
+  }
+}

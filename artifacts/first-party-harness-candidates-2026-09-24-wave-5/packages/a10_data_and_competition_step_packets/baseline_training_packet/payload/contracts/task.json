@@ -1,0 +1,13 @@
+{
+ "record_type": "node_assignment/v3",
+ "node_id": "{{STEP_ID}}",
+ "kind": "build",
+ "objective": "Train one simple baseline on a fixed fold file, save out-of-fold and test predictions, and append its fold scores to the experiment ledger.",
+ "output_contract_refs": ["experiment_record/v1"],
+ "dependency_ids": ["{{BRIEF_STEP_ID}}", "{{FOLDS_STEP_ID}}"],
+ "required_capabilities": ["python3"],
+ "effects": ["reads_fs", "writes_fs", "{{PROCESS_EFFECT}}"],
+ "harness_style": "{{HARNESS_STYLE}}",
+ "model_calls_authorized": true,
+ "mode": "hybrid"
+}

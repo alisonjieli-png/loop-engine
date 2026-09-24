@@ -1,0 +1,37 @@
+{
+ "record_type": "ticket_fix_verification_input/v1",
+ "ticket_id": "T-104",
+ "base_revision": "3f5c2a9e8d7b6a5f4e3d2c1b0a9f8e7d6c5b4a39",
+ "reproduction_test_file": "tests/test_cart_badge.py",
+ "reproduction_test_sha256": "8d0e4c1f2a3b5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6",
+ "relevant_test_command": [
+  "python3",
+  "-m",
+  "unittest",
+  "tests.test_cart_badge"
+ ],
+ "full_test_command": [
+  "python3",
+  "-m",
+  "unittest",
+  "discover",
+  "-s",
+  "tests"
+ ],
+ "timeout_seconds": 900,
+ "allowed_path_prefixes": [
+  "shop/",
+  "tests/"
+ ],
+ "max_files_changed": 4,
+ "host_placed_paths": [
+  "AGENTS.md",
+  "CLAUDE.md",
+  "GEMINI.md"
+ ],
+ "evidence_dir": ".baltor/step-output/evidence",
+ "summary_path": ".baltor/step-output/change-summary.md",
+ "commit_message_path": ".baltor/step-output/commit-message.txt",
+ "commit_message_style": "Subject in the imperative mood that starts with the ticket id, for example: T-104: Use singular badge text for one item. Then a blank line and a short body.",
+ "allow_commits_since_base": false
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "File path relative to the step folder, for example node_context.md or contracts/output.schema.json. Absolute paths, '..' and links are refused."
+    }
+  },
+  "required": ["name"],
+  "additionalProperties": false
+}

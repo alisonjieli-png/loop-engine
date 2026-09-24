@@ -1,0 +1,6 @@
+{
+  "command": "python3 -m pytest -q tests/test_rounding.py",
+  "exit_code": 1,
+  "passed": false,
+  "finished_at": "2026-09-22T04:02:11Z"
+}

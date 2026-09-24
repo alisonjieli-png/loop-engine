@@ -1,0 +1,28 @@
+diff --git a/src/dates.py b/src/dates.py
+index 3b18e51..9c2f0d4 100644
+--- a/src/dates.py
++++ b/src/dates.py
+@@ -2,8 +2,5 @@
+ 
+ 
+ def parse_date(text):
+-    try:
+-        day, month, year = (int(part) for part in text.split("/"))
+-        return date(year, month, day)
+-    except ValueError:
+-        return None
++    day, month, year = (int(part) for part in text.split("/"))
++    return date(year, month, day)
+diff --git a/tests/test_dates.py b/tests/test_dates.py
+index 5d41c02..7e0a9b1 100644
+--- a/tests/test_dates.py
++++ b/tests/test_dates.py
+@@ -11,3 +11,8 @@ def test_parses_day_first():
+ 
+ def test_parses_last_day_of_year():
+     assert parse_date("31/12/2025") == date(2025, 12, 31)
++
++
++def test_rejects_day_32():
++    with pytest.raises(ValueError):
++        parse_date("32/01/2026")

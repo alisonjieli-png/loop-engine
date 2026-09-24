@@ -1,0 +1,17 @@
+{
+  "mcp": {
+    "csv_profile_server": {
+      "type": "local",
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        ".baltor/csv-profile-server/server/csv_profile_server.py",
+        "--root",
+        "."
+      ],
+      "cwd": ".",
+      "enabled": true
+    }
+  }
+}

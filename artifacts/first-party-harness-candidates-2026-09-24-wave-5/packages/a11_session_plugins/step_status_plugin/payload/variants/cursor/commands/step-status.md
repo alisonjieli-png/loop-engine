@@ -1,0 +1,49 @@
+---
+name: step-status
+description: "Show the current focused step: packet check, objective, kind, mode, effects, required output fields and handoff items. Changes no file."
+---
+
+# Step status
+
+## Purpose
+
+Show where the current focused step stands: whether the packet is still the
+one the host placed, what the step must do and may do, what its result must
+hold, and what must be true before handoff. This command changes no file.
+
+## First action
+
+With your shell tool, from the workspace root, run:
+
+```bash
+python3 -I -B .baltor/plugins/step-status-plugin/scripts/step_status.py
+```
+
+If your first message gave a packet digest, add `--expect-content-sha256`
+and that digest.
+
+## Steps
+
+1. Run the command above and read the JSON.
+2. Exit 1 or 2: go to "Stop and report when".
+3. Exit 0: state `step.objective` exactly as written, then `step.kind`,
+   `step.mode`, `step.model_calls_authorized` and `step.effects`.
+4. List `output.required_fields`. Your result must hold each one.
+5. List the `handoff` items. Each must be true before you hand off.
+6. In a git repository, run `git status --porcelain` and name the files you
+   changed. No file under `.baltor/step/` may appear there.
+
+## Output
+
+At most eight short lines: objective, kind and mode, model calls, effects,
+required fields, handoff items, packet check and changed files. Copy values
+from the JSON; add none.
+
+## Stop and report when
+
+- Exit 1: the packet changed or is not the expected one. Report
+  `packet.failures` and do no step work.
+- Exit 2: the step folder or `task.json` is missing or unreadable. Report
+  `error` and `detail`.
+- The objective needs an effect that `step.effects` does not list.
+- `git status` shows a change under `.baltor/step/`.

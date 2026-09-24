@@ -1,0 +1,222 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "raw_data_stays_read_only",
+    "title": "Treat raw data files as read-only",
+    "purpose": "A path-scoped rule for data files in raw data folders that forbids changing them in place and directs every derived table to a separate output path with a cell-level change log.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/code_nodes/database_copy.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/copy_a_table_with_corrections_never_in_place.md"
+    ],
+    "layer": "context",
+    "family": "native_rules_file",
+    "search_tags": [
+      "raw data read-only rule",
+      "do not modify input data files",
+      "agent overwrote my csv",
+      "keep original data unchanged",
+      "write cleaned data to a separate folder",
+      "change log for cleaned data",
+      "protect data/raw folder",
+      "cursor rule for raw data",
+      "copilot instructions for data folders",
+      "checksum raw files before and after",
+      "checksum a raw data folder with subfolders"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "find, sort and sha256sum commands, or shasum -a 256 on macOS, for the folder checksum"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a08_path_scoped_rules",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "variants/claude_code/raw-data-stays-read-only.md",
+        "digest": "a464d176229d30288a80b764722ecb1ff4d0a17564209b185614a7545f3e36cc",
+        "size_bytes": 1570,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cline/raw-data-stays-read-only.md",
+        "digest": "a464d176229d30288a80b764722ecb1ff4d0a17564209b185614a7545f3e36cc",
+        "size_bytes": 1570,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/copilot/raw-data-stays-read-only.instructions.md",
+        "digest": "927fdc20a96a67137dcd4437c2147f3da39353cf7ce87e6ce1e17a91d65b8741",
+        "size_bytes": 1550,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "variants/cursor/raw-data-stays-read-only.mdc",
+        "digest": "542aaab2e1d9c77812dcc51442b353a2c4883f485930a7a41fd760847ddcb08b",
+        "size_bytes": 1709,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a08_path_scoped_rules",
+    "file_class": "rules_file",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model",
+      "competition_solve_task_to_submission"
+    ],
+    "harness_targets": [
+      "cursor",
+      "copilot",
+      "cline",
+      "claude_code"
+    ],
+    "unverified_targets": {
+      "cursor": "Cursor's rules page (cursor.com/docs/context/rules, read on 2026-09-24) documents .mdc files in .cursor/rules with description, comma-separated globs and alwaysApply: false, which attaches a rule when a matching file is in context. Its example puts a space after each comma; this file uses none. Native loading was not observed.",
+      "copilot": "GitHub's page on repository custom instructions (docs.github.com, read on 2026-09-24) documents .github/instructions/NAME.instructions.md with applyTo and several comma-separated patterns; on GitHub.com only Copilot cloud agent and Copilot code review read these files. Native loading was not observed on any Copilot surface."
+    },
+    "not_placed": {},
+    "native_name": "raw-data-stays-read-only",
+    "version": "0.1.0",
+    "entrypoints": {
+      "cursor": "variants/cursor/raw-data-stays-read-only.mdc",
+      "copilot": "variants/copilot/raw-data-stays-read-only.instructions.md",
+      "cline": "variants/cline/raw-data-stays-read-only.md",
+      "claude_code": "variants/claude_code/raw-data-stays-read-only.md"
+    },
+    "placements": {
+      "cursor": {
+        "variants/cursor/raw-data-stays-read-only.mdc": {
+          "destination": ".cursor/rules/raw-data-stays-read-only.mdc",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/raw-data-stays-read-only/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "copilot": {
+        "variants/copilot/raw-data-stays-read-only.instructions.md": {
+          "destination": ".github/instructions/raw-data-stays-read-only.instructions.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/raw-data-stays-read-only/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "cline": {
+        "variants/cline/raw-data-stays-read-only.md": {
+          "destination": ".clinerules/raw-data-stays-read-only.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/raw-data-stays-read-only/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "claude_code": {
+        "variants/claude_code/raw-data-stays-read-only.md": {
+          "destination": ".claude/rules/raw-data-stays-read-only.md",
+          "operation": "copy_exact_bytes"
+        },
+        "LICENSE": {
+          "destination": ".baltor/raw-data-stays-read-only/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "variants/cursor/raw-data-stays-read-only.mdc": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/copilot/raw-data-stays-read-only.instructions.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/cline/raw-data-stays-read-only.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "variants/claude_code/raw-data-stays-read-only.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": null,
+    "hooks": [],
+    "servers": [],
+    "first_action": "Record one checksum of the whole raw folder, subfolders included, with find, sha256sum and sort (shasum -a 256 on macOS), before reading or writing anything else.",
+    "done_when": [
+      "The raw folder checksum equals the first result.",
+      "Every cleaned or derived table is at a new path.",
+      "Every changed cell and dropped row is in a change log beside its output, with row, column, before, after and rule, or change row_removed."
+    ],
+    "stop_and_report_when": [
+      "The task asks to change a raw file itself.",
+      "A raw file is missing or unreadable, or the folder checksum changed.",
+      "No output folder is allowed for writing.",
+      "A needed tool can only change files in place."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/code_nodes/database_copy.py": "a3b2a781702cb8dd09f97f1d27a315ba9184ea52cbbc12b52d1b003b3df3e18b",
+      "examples/29_intelligence_service/starter-catalogue/bodies/copy_a_table_with_corrections_never_in_place.md": "9c1c6cd654f5cafe00042c481a35ad698c0cac026249729f1e2078bf27245971"
+    },
+    "package_digest": "83dbcf2acc1ea2e94a2c35e9517c0d0da48eb73fcdb686dda7d56801bc71a0f7",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

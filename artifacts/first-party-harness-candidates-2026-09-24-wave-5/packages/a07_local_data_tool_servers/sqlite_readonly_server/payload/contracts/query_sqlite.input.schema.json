@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Database file path relative to the workspace root, for example data/shop.sqlite3. Absolute paths, '..' and links that leave the root are refused."
+    },
+    "sql": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20000,
+      "description": "Exactly one statement that starts with SELECT, WITH or VALUES. Use ? for values."
+    },
+    "parameters": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+        ]
+      },
+      "description": "Values for the ? placeholders, in order."
+    },
+    "max_rows": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 100,
+      "description": "Return at most this many rows; more_rows says whether more exist."
+    },
+    "time_limit_ms": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 30000,
+      "default": 5000,
+      "description": "Stop the work after this many milliseconds."
+    },
+    "max_cell_chars": {
+      "type": "integer",
+      "minimum": 20,
+      "maximum": 10000,
+      "default": 500,
+      "description": "Longer text values are cut to this many characters and listed in shortened_cells."
+    }
+  },
+  "required": [
+    "path",
+    "sql"
+  ],
+  "additionalProperties": false
+}

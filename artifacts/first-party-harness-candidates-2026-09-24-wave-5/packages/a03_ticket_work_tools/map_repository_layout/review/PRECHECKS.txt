@@ -1,0 +1,30 @@
+PRECHECKS for map_repository_layout (a03_ticket_work_tools)
+Each block summarizes one 'check_package.py check' report, oldest first. The JSON report named in
+the block is kept in review/ and holds the same findings. Failed runs are kept beside their successors.
+
+### run 1: precheck-20260923T203331908053Z.json
+package_digest=e2fd1d17e6d6e6e0b37c220a11d8b2da727375d6d4b6d83c8ca12363568a8aa2 refused=False passed_for_wave_gate=True runs_skipped=False
+layout: passed
+manifest_schema: passed
+identity: passed
+inventory: passed
+text_hygiene: passed
+vocabulary: passed
+safety_static: passed
+secrets: passed
+parse: passed
+entry_shape: passed
+placements: passed
+effects: passed
+network_static: passed
+agent_skills_validator: passed
+  - agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/map-repository-layout
+  - skills_ref_official_git .: exit 0 Valid skill: TMP/map-repository-layout
+duplicates: passed
+review_note: passed
+tests_run: passed
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 10}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 10}
+hooks_run: passed
+servers_run: passed
+

@@ -1,0 +1,6 @@
+{
+  "conversation_id": "sample-conversation-0004",
+  "generation_id": "sample-generation-0006",
+  "hook_event_name": "sessionStart",
+  "workspace_roots": ["/work"]
+}

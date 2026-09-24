@@ -1,0 +1,107 @@
+{
+ "record_type": "night_morning_report/v1",
+ "night_id": "2026-09-22",
+ "compiled_at": "2026-09-23T06:40:00Z",
+ "sources": {
+  "handoff_dir": "examples/handoffs",
+  "handoff_files": 3,
+  "activity_log_dir": null,
+  "activity_files": 0,
+  "queue_path": null,
+  "notes_path": "examples/report-notes.json"
+ },
+ "counts": {
+  "tickets_complete": 1,
+  "tickets_blocked": 1,
+  "tickets_unfinished": 1,
+  "complete": 1,
+  "blocked": 1,
+  "unfinished": 1,
+  "unsupported_claims": 0,
+  "problems": 0
+ },
+ "tickets": [
+  {
+   "ticket_id": "T-104",
+   "status": "complete",
+   "reason": null,
+   "final_step_id": "t-104-verification",
+   "steps": [
+    {
+     "step_id": "t-104-verification",
+     "section": "complete"
+    }
+   ]
+  },
+  {
+   "ticket_id": "T-105",
+   "status": "blocked",
+   "reason": "step_blocked",
+   "final_step_id": "t-105-verification",
+   "steps": [
+    {
+     "step_id": "t-105-triage",
+     "section": "blocked"
+    }
+   ]
+  },
+  {
+   "ticket_id": "T-106",
+   "status": "unfinished",
+   "reason": "final_step_not_complete",
+   "final_step_id": "t-106-verification",
+   "steps": [
+    {
+     "step_id": "t-106-fix",
+     "section": "unfinished"
+    }
+   ]
+  }
+ ],
+ "complete": [
+  {
+   "step_id": "t-104-verification",
+   "ticket_id": "T-104",
+   "handoff": "examples/handoffs/t-104-verification.json",
+   "claims": [
+    {
+     "text": "The new test test_badge_uses_singular_for_one_item failed before the fix.",
+     "evidence": "examples/evidence/t104-reproduction.json"
+    },
+    {
+     "text": "The relevant and full test runs passed after the fix.",
+     "evidence": "examples/evidence/t104-verification.json"
+    }
+   ]
+  }
+ ],
+ "blocked": [
+  {
+   "step_id": "t-105-triage",
+   "ticket_id": "T-105",
+   "handoff": "examples/handoffs/t-105-triage.json",
+   "reason": "The ticket does not say which currency the export should use.",
+   "question": "Should the export use the account currency or the order currency?",
+   "evidence": null,
+   "evidence_found": null,
+   "claims": []
+  }
+ ],
+ "unfinished": [
+  {
+   "step_id": "t-106-fix",
+   "ticket_id": "T-106",
+   "handoff": "examples/handoffs/t-106-fix.json",
+   "source": "handoff",
+   "reason": "handoff_status_unfinished",
+   "first_action": "Run the checks again; the last run stopped at the step time limit.",
+   "evidence": "examples/handoffs/t-106-fix.json",
+   "claims": []
+  }
+ ],
+ "unsupported_claims": [],
+ "notes": [],
+ "superseded": [],
+ "activity": [],
+ "problems": []
+}

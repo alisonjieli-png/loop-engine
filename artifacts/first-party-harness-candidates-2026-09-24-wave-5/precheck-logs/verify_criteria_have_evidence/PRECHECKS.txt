@@ -1,0 +1,243 @@
+PRECHECKS for verify_criteria_have_evidence (wave 5, assignment a12_ticket_result_verifiers, generator a12_ticket_result_verifiers)
+Candidate only. Not approved, staged, served or published.
+Package folder: packages/a12_ticket_result_verifiers/verify_criteria_have_evidence/
+This log sits outside the package folder because the layout check refuses any extra top-level entry there.
+Checker: $WAVE/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d when this log was started)
+WAVE=/tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5
+Every run of this generator session is appended below, failures included. Each check run also saved its
+own report as review/precheck-<UTC>.json inside the package folder; none of those reports was deleted.
+
+
+===== 2026-09-24T04:58:40Z run 1: baseline: check on the unchanged bytes of the earlier a12 generator pass (snapshot kept in earlier-attempt-20260924T0101Z.tar.gz beside this log), before any change in this session
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence
+{
+ "identity": "verify_criteria_have_evidence",
+ "refused": true,
+ "passed_for_wave_gate": false,
+ "checks": {
+  "layout": "refused",
+  "manifest_schema": "refused"
+ },
+ "report": "review/precheck-20260924T045840896017Z.json"
+}
+
+[refused] layout
+  - missing package.json
+
+[refused] manifest_schema
+  - package.json unreadable: [Errno 2] No such file or directory: '$WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence/package.json'
+exit 1
+
+===== 2026-09-24T05:31:43Z run 2: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'command output requirement removed' (scripts/verify_criteria_evidence.py), test -k test_command_without_saved_output_is_not_evidence: killed (Ran 1 test in 0.112s; FAILED (failures=1)) AssertionError: 'output_not_cited' not found in {'missing_field'}
+    real payload, same test: exit 0 (Ran 1 test in 0.107s; OK)
+mutant 'failing output beside exit 0 accepted' (scripts/verify_criteria_evidence.py), test -k test_command_exit_zero_whose_output_shows_a_failure: killed (Ran 1 test in 0.123s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.122s; OK)
+mutant 'passing output beside nonzero exit accepted' (scripts/verify_criteria_evidence.py), test -k test_command_nonzero_exit_whose_output_shows_a_pass: killed (Ran 1 test in 0.145s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.143s; OK)
+mutant 'recorded exit code not compared' (scripts/verify_criteria_evidence.py), test -k test_command_exit_code_that_its_record_contradicts: killed (Ran 1 test in 0.322s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.256s; OK)
+
+===== 2026-09-24T05:32:43Z run 3: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'inherited: failing test accepted' (scripts/verify_criteria_evidence.py), test -k test_citing_the_failing_run_contradicts_the_criterion: killed (Ran 1 test in 0.116s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['AC-1', 'AC-2']
+    real payload, same test: exit 0 (Ran 1 test in 0.108s; OK)
+mutant 'inherited: uncovered criteria pass' (scripts/verify_criteria_evidence.py), test -k test_ticked_box_without_evidence: killed (Ran 1 test in 0.097s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', ['AC-4']) != (1, 'fail', ['AC-4'])
+    real payload, same test: exit 0 (Ran 1 test in 0.136s; OK)
+
+===== 2026-09-24T05:46:29Z run 4: host-style walkthrough (producer probe, not a checker check). The skill folder was copied to a harness skill path in a fresh workspace, the folder was found with the SKILL.md discovery command, and the first action was run exactly as SKILL.md writes it, with its placeholders filled. No harness binary and no model ran.
+placed at .pi/skills/verify-criteria-have-evidence; `ls -d .*/skills/verify-criteria-have-evidence` printed '.pi/skills/verify-criteria-have-evidence' (exit 0)
+    ok: the discovery command in SKILL.md finds the folder
+$ python3 -I -B .pi/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py --criteria ticket.md --evidence evidence.json
+    exit 0, verdict pass
+    ok: a real pytest -rA output covers both criteria
+$ python3 -I -B .pi/skills/verify-criteria-have-evidence/scripts/verify_criteria_evidence.py --criteria ticket.md --evidence evidence.json
+    exit 1, verdict fail
+    ok: the same evidence against the failing run contradicts both criteria
+
+===== 2026-09-24T05:48:58Z run 5: after this session's review and changes: package.json written by generator-a12-work/build_manifests.py with null digests, then fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence
+{"fill": "done", "files": 12, "package_digest": "613204235b752c2d78b26198b5b678964e111e275b47b13010ad00f3e4afd3b2"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence
+{
+ "identity": "verify_criteria_have_evidence",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T054906711738Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_criteria_have_evidence $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 12 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:artifacts/first-party-harness-candidates-2026-09-22/packages/software/map-independent-acceptance-evidence/SKILL.md | sha256sum
+c435c0b7d61b72286384ea6e7017e96a4a749d826f9653b2b5232343c51aa135  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+3 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-criteria-have-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-753vhsol/verify-criteria-have-evidence
+exit 0
+$ skills-ref (official git) validate <copy named verify-criteria-have-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-753vhsol/verify-criteria-have-evidence
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 32 tests in 3.394s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 32 tests in 2.454s
+OK
+exit 0
+
+===== 2026-09-24T05:51:43Z run 6: assignment gate (SPEC section 11 step 6); it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each, and the plan in assignments.json
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055143281720Z.json
+exit 0
+
+===== 2026-09-24T05:53:56Z run 7: mutation check, each new or repaired guard removed in a temporary copy; the named test must fail on the copy and pass on the real payload
+mutant 'command output requirement removed' (scripts/verify_criteria_evidence.py), test -k test_command_without_saved_output_is_not_evidence: killed (Ran 1 test in 0.117s; FAILED (failures=1)) AssertionError: 'output_not_cited' not found in {'missing_field'}
+    real payload, same test: exit 0 (Ran 1 test in 0.114s; OK)
+mutant 'failing output beside exit 0 accepted' (scripts/verify_criteria_evidence.py), test -k test_command_exit_zero_whose_output_shows_a_failure: killed (Ran 1 test in 0.116s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.100s; OK)
+mutant 'passing output beside nonzero exit accepted' (scripts/verify_criteria_evidence.py), test -k test_command_nonzero_exit_whose_output_shows_a_pass: killed (Ran 1 test in 0.117s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.087s; OK)
+mutant 'recorded exit code not compared' (scripts/verify_criteria_evidence.py), test -k test_command_exit_code_that_its_record_contradicts: killed (Ran 1 test in 0.214s; FAILED (failures=1)) AssertionError: Tuples differ: (0, []) != (1, ['AC-3'])
+    real payload, same test: exit 0 (Ran 1 test in 0.242s; OK)
+mutant 'inherited: failing test accepted' (scripts/verify_criteria_evidence.py), test -k test_citing_the_failing_run_contradicts_the_criterion: killed (Ran 1 test in 0.160s; FAILED (failures=1)) AssertionError: Lists differ: [] != ['AC-1', 'AC-2']
+    real payload, same test: exit 0 (Ran 1 test in 0.155s; OK)
+mutant 'inherited: uncovered criteria pass' (scripts/verify_criteria_evidence.py), test -k test_ticked_box_without_evidence: killed (Ran 1 test in 0.149s; FAILED (failures=1)) AssertionError: Tuples differ: (0, 'pass', ['AC-4']) != (1, 'fail', ['AC-4'])
+    real payload, same test: exit 0 (Ran 1 test in 0.160s; OK)
+
+===== 2026-09-24T05:55:51Z run 8: final: after the answer wording, the diff base checklist item and the example test tracing in package.json; fill, check and the section 12 equivalent commands
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence
+{"fill": "done", "files": 12, "package_digest": "db5a1d5f8f157925deb6befb52fdcff92a3be1c525945ef471483444f66016df"}
+exit 0
+$ python3 $WAVE/check_package.py check $WAVE/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence
+{
+ "identity": "verify_criteria_have_evidence",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "passed",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055558986273Z.json"
+}
+exit 0
+-- section 12 equivalent commands --
+$ find $PKG -type l -o -empty
+(no output: no symbolic link, no empty file or folder)
+exit 0
+$ grep -Fx verify_criteria_have_evidence $WAVE/existing-identities.txt
+(no output: the identity is new)
+exit 1
+$ sha256sum and stat -c %a for every payload file, compared with package.json
+all 12 files match their declared digest and size, mode 644
+LICENSE sha256 663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/service_runtime/catalogue_packages.py | sha256sum
+05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:artifacts/first-party-harness-candidates-2026-09-22/packages/software/map-independent-acceptance-evidence/SKILL.md | sha256sum
+c435c0b7d61b72286384ea6e7017e96a4a749d826f9653b2b5232343c51aa135  matches package.json
+$ git -C /home/username/loop-engine show a1fc7432:src/loop_engine/core/overnight_outcome.py | sha256sum
+9aae9b3a6957e4d9e83a857b4db362f9abca293d1b4adb9627f104d63c3f3314  matches package.json
+$ python3 -c 'import json, tomllib, yaml ...' on every JSON file and Markdown front matter
+3 JSON files and front matter blocks parse
+$ grep -rnE 'socket|urllib|http\.client|requests|httpx|curl |wget ' $PKG/payload
+(no output)
+exit 1
+$ agentskills (PyPI 0.1.1) validate <copy named verify-criteria-have-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-pkmizh2h/verify-criteria-have-evidence
+exit 0
+$ skills-ref (official git) validate <copy named verify-criteria-have-evidence>
+Valid skill: $WAVE/generator-a12-work/a12-validate-pkmizh2h/verify-criteria-have-evidence
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.14 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 32 tests in 3.115s
+OK
+exit 0
+$ bwrap ... --ro-bind PAYLOAD_COPY /work --unshare-net ... python3.10 -I -B -m unittest discover -s tests -p 'test_*.py' -v
+Ran 32 tests in 2.239s
+OK
+exit 0
+
+===== 2026-09-24T05:57:11Z run 9: final assignment gate (SPEC section 11 step 6) on the final bytes; it checks all five a12 packages again, writing one more review/precheck-<UTC>.json each
+$ python3 $WAVE/check_package.py check-all --assignment a12_ticket_result_verifiers
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055711456548Z.json
+exit 0
+
+===== 2026-09-24T05:58:45Z run 10: producer probes on real runner outputs and real diffs against the final bytes (not a checker check)
+The command output reader on real outputs saved in generator-a12-work/probe/proj, through a command entry with exit code 0 (standard input evidence, --root at the probe project):
+  after-pytest-v.txt: exit 0, verdict pass, problems []
+  after-pytest-rA.txt: exit 0, verdict pass, problems []
+  after-junit.xml: exit 0, verdict pass, problems []
+  after-ut314.txt: exit 0, verdict pass, problems []
+  after-ut310.txt: exit 0, verdict pass, problems []
+  before-pytest-v.txt: exit 1, verdict fail, problems ['output_shows_failure']
+  before-pytest-q.txt: exit 1, verdict fail, problems ['output_shows_failure']
+  before-junit.xml: exit 1, verdict fail, problems ['output_shows_failure']
+  before-ut314.txt: exit 1, verdict fail, problems ['output_shows_failure']
+  before-ut310.txt: exit 1, verdict fail, problems ['output_shows_failure']
+  pyflakes on scripts and tests: exit 0 (no findings)

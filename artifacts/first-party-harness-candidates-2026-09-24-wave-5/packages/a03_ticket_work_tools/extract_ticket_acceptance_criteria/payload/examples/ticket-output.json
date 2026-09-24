@@ -1,0 +1,137 @@
+{
+ "record_type": "ticket_criteria/v1",
+ "status": "ok",
+ "source": {
+  "path": "examples/ticket.json",
+  "format": "json",
+  "sha256": "287dbe61731795213239bbf81783ca5bdbc08d69bf9db114c2abc693fe2efb87"
+ },
+ "title": "CSV export drops leading zeros from product codes",
+ "acceptance_criteria": [
+  {
+   "id": "AC1",
+   "text": "The CSV cell holds \"007\".",
+   "source": "expected_behavior",
+   "line": null,
+   "field": "body",
+   "checkable": true,
+   "signals": [
+    "number",
+    "literal"
+   ],
+   "vague_terms": []
+  },
+  {
+   "id": "AC2",
+   "text": "Exporting code `007` writes `007` to the CSV file.",
+   "source": "acceptance_section",
+   "line": null,
+   "field": "body",
+   "already_checked": false,
+   "checkable": true,
+   "signals": [
+    "number",
+    "literal",
+    "observable_result"
+   ],
+   "vague_terms": []
+  },
+  {
+   "id": "AC3",
+   "text": "Codes without a leading zero are unchanged.",
+   "source": "acceptance_section",
+   "line": null,
+   "field": "body",
+   "already_checked": false,
+   "checkable": true,
+   "signals": [
+    "number",
+    "observable_result"
+   ],
+   "vague_terms": []
+  },
+  {
+   "id": "AC4",
+   "text": "`pytest tests/test_export.py` passes.",
+   "source": "acceptance_section",
+   "line": null,
+   "field": "body",
+   "already_checked": false,
+   "checkable": true,
+   "signals": [
+    "literal",
+    "file",
+    "command",
+    "observable_result"
+   ],
+   "vague_terms": []
+  },
+  {
+   "id": "AC5",
+   "text": "The export feels faster.",
+   "source": "acceptance_section",
+   "line": null,
+   "field": "body",
+   "already_checked": false,
+   "checkable": false,
+   "signals": [],
+   "vague_terms": [
+    "faster",
+    "feels"
+   ]
+  }
+ ],
+ "reproduction_steps": [
+  {
+   "id": "R1",
+   "text": "Create a product with code `007`.",
+   "line": null
+  },
+  {
+   "id": "R2",
+   "text": "Run `python3 -m shop.export --format csv`.",
+   "line": null
+  },
+  {
+   "id": "R3",
+   "text": "Open `exports/products.csv`.",
+   "line": null
+  }
+ ],
+ "expected_behavior": [
+  "The CSV cell holds \"007\"."
+ ],
+ "actual_behavior": [
+  "The CSV cell holds \"7\"."
+ ],
+ "named_files": [
+  {
+   "path": "exports/products.csv",
+   "mentioned_at_line": null,
+   "field": "body",
+   "exists": false
+  },
+  {
+   "path": "tests/test_export.py",
+   "mentioned_at_line": null,
+   "field": "body",
+   "exists": false
+  },
+  {
+   "path": "src/shop/export.py",
+   "mentioned_at_line": null,
+   "field": "body",
+   "exists": false
+  }
+ ],
+ "commands": [
+  "python3 -m shop.export --format csv",
+  "pytest tests/test_export.py"
+ ],
+ "flags": [
+  "some_criteria_not_checkable",
+  "named_file_not_found"
+ ],
+ "notes": [],
+ "checklist_markdown": "Ticket: CSV export drops leading zeros from product codes\n\nAcceptance criteria:\n1. [ ] The CSV cell holds \"007\".\n2. [ ] Exporting code `007` writes `007` to the CSV file.\n3. [ ] Codes without a leading zero are unchanged.\n4. [ ] `pytest tests/test_export.py` passes.\n5. [ ] The export feels faster. (not checkable as written)\n\nReproduction steps:\n1. Create a product with code `007`.\n2. Run `python3 -m shop.export --format csv`.\n3. Open `exports/products.csv`.\n\nNamed files:\n- exports/products.csv (not found)\n- tests/test_export.py (not found)\n- src/shop/export.py (not found)\n"
+}

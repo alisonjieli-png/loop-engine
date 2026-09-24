@@ -1,0 +1,91 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "ticket_triage_input/v1",
+ "description": "The step input that the host writes to .baltor/step/input.json before launch. Every path is relative to the workspace root.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "record_type",
+  "ticket_id",
+  "ticket_path",
+  "allowed_path_prefixes",
+  "max_files_changed",
+  "unavailable_tonight",
+  "test_command_example"
+ ],
+ "properties": {
+  "record_type": {
+   "const": "ticket_triage_input/v1"
+  },
+  "ticket_id": {
+   "$ref": "#/$defs/identifier"
+  },
+  "ticket_path": {
+   "description": "The ticket text, placed in the workspace by the host.",
+   "$ref": "#/$defs/path"
+  },
+  "allowed_path_prefixes": {
+   "description": "Where tonight's change may go. A prefix that ends with a slash covers a folder; any other prefix names one file.",
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 50,
+   "uniqueItems": true,
+   "items": {
+    "$ref": "#/$defs/path"
+   }
+  },
+  "max_files_changed": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 200
+  },
+  "unavailable_tonight": {
+   "description": "Things no step can use tonight, in plain words, such as network access or a decision by a person.",
+   "type": "array",
+   "maxItems": 30,
+   "uniqueItems": true,
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 120,
+    "pattern": "\\S"
+   }
+  },
+  "test_command_example": {
+   "description": "A command that runs one existing test in this repository, as the program and its arguments, so the first test command can follow the same form.",
+   "$ref": "#/$defs/command"
+  }
+ },
+ "$defs": {
+  "identifier": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+  },
+  "path": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 400,
+   "pattern": "^[^/~][^\\\\]*$",
+   "not": {
+    "pattern": "(^|/)\\.\\.(/|$)"
+   }
+  },
+  "command": {
+   "description": "The program and its arguments, the program first, as the next step runs them without a shell from the workspace root.",
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 64,
+   "prefixItems": [
+    {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "\\S"
+    }
+   ],
+   "items": {
+    "type": "string",
+    "maxLength": 1000
+   }
+  }
+ }
+}

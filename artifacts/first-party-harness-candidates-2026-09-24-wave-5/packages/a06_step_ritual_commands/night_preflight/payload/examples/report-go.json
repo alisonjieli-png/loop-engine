@@ -1,0 +1,17 @@
+{
+ "record_type": "night_preflight_report/v1",
+ "checked_at": "2026-09-23T21:55:00Z",
+ "decision": "go",
+ "failed": [],
+ "checks": [
+  {"name": "structured_tool_calls", "passed": true, "detail": "the nonce from probe came back unchanged 41 seconds after it was written"},
+  {"name": "budgets", "passed": true, "detail": "420 minutes and 300 model calls declared"},
+  {"name": "guards", "passed": true, "detail": "guard rules found in .claude/settings.json (deny rules)"},
+  {"name": "queue", "passed": true, "detail": "4 ticket(s) queued or in progress in .baltor/night/queue.json"},
+  {"name": "test_command", "passed": true, "detail": "exit 0 after 12.4 seconds"}
+ ],
+ "test_command": {"argv": ["python3", "-m", "unittest", "discover", "-s", "tests"], "cwd": ".", "timeout_seconds": 900, "expected_exit": 0, "program": "/usr/bin/python3"},
+ "guard_files": [{"path": ".claude/settings.json", "kind": "claude_code_settings", "guards": ["deny rules"], "problems": []}],
+ "test_output": ".baltor/state/night-preflight/test-output-20260923T215500000000Z.txt",
+ "report_path": ".baltor/state/night-preflight/report-20260923T215500000000Z.json"
+}

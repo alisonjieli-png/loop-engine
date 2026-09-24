@@ -1,0 +1,361 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "project_commands_fragment",
+    "title": "Project commands and layout fragment",
+    "purpose": "A fill-in instruction section that tells every fresh step the project's build, test, lint and format commands, its source and test folders and the paths it must not edit.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/context/README.md",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/context/repair-one-failing-test/codex/work/AGENTS.md",
+      "src/loop_engine/core/instance_instructions.py"
+    ],
+    "layer": "context",
+    "family": "native_instruction_fragment",
+    "search_tags": [
+      "project build and test commands for agents",
+      "agents md commands section template",
+      "tell the agent how to run tests",
+      "lint and format commands for a coding agent",
+      "paths the agent must not edit",
+      "source and test folders for an agent",
+      "fill-in project instructions",
+      "stop the agent guessing test commands",
+      "check agent command values before rendering",
+      "render an agents md section from project values"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "instruction_file",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a14_root_instruction_fragments",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "d3228ec2d1c2dd602d625e394ffc56528863dca61034e0fc3623005767f1324d",
+        "size_bytes": 1965,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "CLAUDE.md",
+        "digest": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+        "size_bytes": 11,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "GEMINI.md",
+        "digest": "d3228ec2d1c2dd602d625e394ffc56528863dca61034e0fc3623005767f1324d",
+        "size_bytes": 1965,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "examples/filled-values.json",
+        "digest": "5133f38fca89d17795bbef2cd14eade1c44d3a93beb10bc2cc29ee3a767f9c8a",
+        "size_bytes": 517,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/render_commands_section.py",
+        "digest": "11654138510b36e59a3328b537260b0d6bc73d1188aabd694814ece63f78e7c7",
+        "size_bytes": 9837,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_render_commands_section.py",
+        "digest": "b7631048a353d5cb76241a67088bdfc1c7668b67951d9c775f2ac2d0f3b554fb",
+        "size_bytes": 6437,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a14_root_instruction_fragments",
+    "file_class": "root_instruction_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "codex",
+      "claude_code",
+      "gemini_cli",
+      "goose",
+      "opencode",
+      "pi",
+      "kimi_cli"
+    ],
+    "unverified_targets": {
+      "kimi_cli": "No repository research file documents or observed Kimi CLI reading a project AGENTS.md; the section is composed there by the common convention and needs a native discovery probe."
+    },
+    "not_placed": {},
+    "native_name": "project-commands-fragment",
+    "version": "0.1.0",
+    "entrypoints": {
+      "codex": "AGENTS.md",
+      "claude_code": "CLAUDE.md",
+      "gemini_cli": "GEMINI.md",
+      "goose": "AGENTS.md",
+      "opencode": "AGENTS.md",
+      "pi": "AGENTS.md",
+      "kimi_cli": "AGENTS.md"
+    },
+    "placements": {
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": {
+          "destination": "CLAUDE.md",
+          "operation": "compose_instruction_section"
+        },
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "gemini_cli": {
+        "AGENTS.md": null,
+        "CLAUDE.md": null,
+        "GEMINI.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "goose": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "pi": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      },
+      "kimi_cli": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "CLAUDE.md": null,
+        "GEMINI.md": null,
+        "LICENSE": {
+          "destination": ".baltor/project-commands-fragment/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/filled-values.json": null,
+        "scripts/render_commands_section.py": null,
+        "tests/test_render_commands_section.py": null
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_render_commands_section.py"
+        ]
+      },
+      "CLAUDE.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_render_commands_section.py"
+        ]
+      },
+      "GEMINI.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_render_commands_section.py"
+        ]
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "examples/filled-values.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_render_commands_section.py"
+        ]
+      },
+      "scripts/render_commands_section.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_render_commands_section.py"
+        ]
+      },
+      "tests/test_render_commands_section.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {
+      "BUILD_COMMAND": "One simple command, run from the workspace root, that builds the project, or the word none. No shell operators and no install or fetch step.",
+      "TEST_COMMAND": "One simple command, run from the workspace root, that runs the whole test suite. Every step needs it, so it is never none.",
+      "TEST_ONE_FILE_COMMAND": "One simple command that runs the tests of one file, with the literal word FILE once where the test file path goes, or the word none.",
+      "LINT_COMMAND": "One simple lint command run from the workspace root, or the word none.",
+      "FORMAT_COMMAND": "One simple format command with the literal word FILES once where the changed file paths go, or the word none when the formatter cannot take file paths.",
+      "SOURCE_DIRS": "Comma-separated workspace-relative folders that hold the source code, for example src/, written with path characters only.",
+      "TEST_DIRS": "Comma-separated workspace-relative folders that hold the tests, for example tests/, written with path characters only.",
+      "PROTECTED_PATHS": "Comma-separated workspace-relative paths or glob patterns the step must never edit, such as lock files, generated code, vendored folders and applied migrations, written with path characters only, or the word none."
+    },
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Before the first edit, run the tests for the file you will change with the rendered one-file command, or All tests when it is none, and write down which tests fail.",
+    "done_when": [
+      "After the last edit, Format ran on the changed files, then Lint, Build and All tests in that order; each is reported with its exit code, a command written as none is reported as skipped, and every test that fails now but passed before is named.",
+      "No protected path and no file the step did not change was modified, and no command or test configuration was changed to get a pass."
+    ],
+    "stop_and_report_when": [
+      "All tests is none.",
+      "A value still shows an unfilled double-brace marker.",
+      "A command cannot start at all, for example command not found.",
+      "Format changed a protected path or a file the step did not change.",
+      "The work needs an edit to a protected path."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/context/README.md": "cec8ed76bd5ddeec332d477619862892f62459d6458f9d7ad9765a00e9c7f095",
+      "artifacts/harness-intelligence-format-pilot-2026-09-22/context/repair-one-failing-test/codex/work/AGENTS.md": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235",
+      "src/loop_engine/core/instance_instructions.py": "ba60ead8e3cea2c327f1847cfceda0384859b6cf8d686174647b4835d3353a6f"
+    },
+    "package_digest": "c10592a320a4b65db65858d024cd2dc4bb046deccb9547c6fbb4a3654ed976a5",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

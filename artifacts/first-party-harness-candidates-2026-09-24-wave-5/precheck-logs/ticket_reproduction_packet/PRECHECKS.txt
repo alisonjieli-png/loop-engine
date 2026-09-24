@@ -1,0 +1,98 @@
+PRECHECKS for ticket_reproduction_packet (wave 5, assignment a09_ticket_step_packets)
+Written by the generator on 2026-09-23T20:45:53Z. Candidate only. Not approved, staged, served or published.
+Checker: /tmp/claude-1000/-home-username-loop-engine/4d86b429-7c1c-493e-b03d-37b529827fe7/scratchpad/grow/library-wave-5/check_package.py (sha256 0d433083cd132a3ed09c363b6318f6ffc50edd52dac032445dab7ad05668dd9d)
+Location note: kept in review/ because the specification's layout check refuses any extra top-level entry in a package folder.
+
+== python3 check_package.py fill ticket_reproduction_packet
+{"fill": "done", "files": 13, "package_digest": "b70360e5e5532b309f4bd984bcc92243037b55aa50efa5f928b41cdce40e818f"}
+
+== python3 check_package.py check ticket_reproduction_packet
+{
+ "identity": "ticket_reproduction_packet",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T204600533595Z.json"
+}
+exit status: 0
+
+== python3 check_package.py check-all --assignment a09_ticket_step_packets
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T204701100723Z.json
+
+== Every precheck report kept in review/ (oldest first)
+precheck-20260923T203920235017Z.json: passed_for_wave_gate=False package_digest=19af21336ca1388623a775ea2ab980fcda317bf3e4bd81072b9b0d9211601172 refused_checks=['vocabulary']
+precheck-20260923T204211869942Z.json: passed_for_wave_gate=True package_digest=571eb8a9ab9acd194ed97058e87e8e9b815254c3252d84b2539432a4cd02e93c refused_checks=[]
+precheck-20260923T204600533595Z.json: passed_for_wave_gate=True package_digest=b70360e5e5532b309f4bd984bcc92243037b55aa50efa5f928b41cdce40e818f refused_checks=[]
+precheck-20260923T204700915997Z.json: passed_for_wave_gate=True package_digest=b70360e5e5532b309f4bd984bcc92243037b55aa50efa5f928b41cdce40e818f refused_checks=[]
+
+== Local unit test runs from the payload root: python -I -B -m unittest discover -s tests -p 'test_*.py'
+-- /usr/bin/python3 exit 0
+test_every_run_keeps_its_own_evidence_file (test_record_reproduction_run.RecordReproductionRun.test_every_run_keeps_its_own_evidence_file) ... ok
+test_example_output_matches_the_output_rules (test_record_reproduction_run.RecordReproductionRun.test_example_output_matches_the_output_rules) ... ok
+test_host_placed_files_and_caches_are_ignored (test_record_reproduction_run.RecordReproductionRun.test_host_placed_files_and_caches_are_ignored) ... ok
+test_known_wrong_product_change_is_not_a_reproduction (test_record_reproduction_run.RecordReproductionRun.test_known_wrong_product_change_is_not_a_reproduction) ... ok
+test_missing_name_and_unchanged_file_are_reported (test_record_reproduction_run.RecordReproductionRun.test_missing_name_and_unchanged_file_are_reported) ... ok
+test_new_failing_test_is_recorded (test_record_reproduction_run.RecordReproductionRun.test_new_failing_test_is_recorded) ... ok
+test_passing_test_is_reported_and_not_forced (test_record_reproduction_run.RecordReproductionRun.test_passing_test_is_reported_and_not_forced) ... ok
+test_paths_that_leave_the_workspace_are_refused (test_record_reproduction_run.RecordReproductionRun.test_paths_that_leave_the_workspace_are_refused) ... ok
+test_timeout_is_recorded (test_record_reproduction_run.RecordReproductionRun.test_timeout_is_recorded) ... ok
+test_unrendered_marker_is_refused (test_record_reproduction_run.RecordReproductionRun.test_unrendered_marker_is_refused) ... ok
+----------------------------------------------------------------------
+Ran 10 tests in 2.199s
+OK
+-- /home/username/.local/share/uv/python/cpython-3.10.20-linux-x86_64-gnu/bin/python3.10 exit 0
+test_every_run_keeps_its_own_evidence_file (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_example_output_matches_the_output_rules (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_host_placed_files_and_caches_are_ignored (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_known_wrong_product_change_is_not_a_reproduction (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_missing_name_and_unchanged_file_are_reported (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_new_failing_test_is_recorded (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_passing_test_is_reported_and_not_forced (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_paths_that_leave_the_workspace_are_refused (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_timeout_is_recorded (test_record_reproduction_run.RecordReproductionRun) ... ok
+test_unrendered_marker_is_refused (test_record_reproduction_run.RecordReproductionRun) ... ok
+----------------------------------------------------------------------
+Ran 10 tests in 1.949s
+OK
+
+== Contract checks with the jsonschema Draft 2020-12 validator
+contracts/input.schema.json: valid Draft 2020-12 schema
+contracts/output.schema.json: valid Draft 2020-12 schema
+examples/input.json against contracts/input.schema.json: valid
+examples/output.json against contracts/output.schema.json: valid
+known-wrong output 'reproduced with a product change': refused
+known-wrong output 'reproduced without a failure line': refused
+known-wrong output 'blocked without a blocker': refused
+known-wrong output 'not_reproduced but failing for the reason': refused
+
+== Removed-guard controls (scratch copy, Python 3.14): each guard removed, the named test must fail
+scripts/record_reproduction_run.py: detected by test_known_wrong_product_change_is_not_a_reproduction; failing tests ['test_known_wrong_product_change_is_not_a_reproduction']
+scripts/record_reproduction_run.py: detected by test_passing_test_is_reported_and_not_forced; failing tests ['test_passing_test_is_reported_and_not_forced']
+
+Result: every pre-check of the specification ran here and passed for the current package digest. This is not an approval, a native loading result or a usefulness claim.

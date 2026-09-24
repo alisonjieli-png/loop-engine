@@ -1,0 +1,6 @@
+{
+  "timestamp": 1790000000401,
+  "cwd": "/work/examples/budget-spent",
+  "toolName": "bash",
+  "toolArgs": "{\"command\": \"git diff --stat\"}"
+}

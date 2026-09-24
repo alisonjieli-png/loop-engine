@@ -1,0 +1,43 @@
+{
+ "record_type": "night_tickets/v1",
+ "tickets": [
+  {
+   "id": "T-101",
+   "title": "Export writes dates as month first",
+   "priority": 2,
+   "acceptance_criteria": [
+    "Exported dates use the form 2025-03-04.",
+    "A test covers a day number below 13."
+   ],
+   "check": "python3 -m unittest tests.test_export"
+  },
+  {
+   "id": "T-102",
+   "title": "Totals row counts refunds twice",
+   "priority": 1,
+   "acceptance_criteria": [
+    "The totals row counts each refund once.",
+    "A test covers a refund that appears in both exports."
+   ],
+   "check": "python3 -m unittest tests.test_totals"
+  },
+  {
+   "id": "T-103",
+   "title": "Import stops on an empty last line",
+   "priority": 3,
+   "acceptance_criteria": [
+    "A file that ends with an empty line imports every row."
+   ],
+   "check": "python3 -m unittest tests.test_import"
+  },
+  {
+   "id": "T-104",
+   "title": "Dashboard feels slow",
+   "priority": 1,
+   "acceptance_criteria": [
+    "The dashboard loads faster."
+   ],
+   "check": ""
+  }
+ ]
+}

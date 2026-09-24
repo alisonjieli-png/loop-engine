@@ -1,0 +1,22 @@
+{
+ "record_type": "wave5_precheck_all_report/v1",
+ "checked_at": "2026-09-24T05:10:05.291726+00:00",
+ "packages": 5,
+ "refused": [],
+ "passed_for_wave_gate": [
+  "baseline_training_packet",
+  "cleaning_apply_packet",
+  "cleaning_plan_packet",
+  "competition_brief_packet",
+  "submission_assembly_packet"
+ ],
+ "missing_planned": [],
+ "cross_package_refusals": [],
+ "reports": [
+  "packages/a10_data_and_competition_step_packets/baseline_training_packet/review/precheck-20260924T050949730519Z.json",
+  "packages/a10_data_and_competition_step_packets/cleaning_apply_packet/review/precheck-20260924T050951956848Z.json",
+  "packages/a10_data_and_competition_step_packets/cleaning_plan_packet/review/precheck-20260924T050957557465Z.json",
+  "packages/a10_data_and_competition_step_packets/competition_brief_packet/review/precheck-20260924T051001881072Z.json",
+  "packages/a10_data_and_competition_step_packets/submission_assembly_packet/review/precheck-20260924T051005289794Z.json"
+ ]
+}

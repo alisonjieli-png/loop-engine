@@ -1,0 +1,20 @@
+diff --git a/src/slugs.py b/src/slugs.py
+index 41c2d7e..b9a0e13 100644
+--- a/src/slugs.py
++++ b/src/slugs.py
+@@ -1,2 +1,2 @@
+ def slugify(title):
+-    return title.replace(" ", "-")
++    return "-".join(title.lower().split())
+diff --git a/tests/test_slugs.py b/tests/test_slugs.py
+index 6e0f5a2..d31c8b4 100644
+--- a/tests/test_slugs.py
++++ b/tests/test_slugs.py
+@@ -3,3 +3,7 @@
+ 
+ def test_joins_words():
+     assert slugify("hello world") == "hello-world"
++
++
++def test_lowercases_and_collapses_spaces():
++    assert slugify("Hello  World") == "hello-world"

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Competition brief read by the competition plugin",
+  "description": "Written once from the competition rules before any experiment. The hook summarizes it; the note script and the gate check against it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "competition_id", "task_type", "metric", "target_column", "id_column", "submission_columns",
+               "validation", "daily_submission_limit", "deadline_utc", "data_version", "rules"],
+  "properties": {
+    "record_type": {"const": "competition_brief/v1"},
+    "competition_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._ -]{0,79}$"},
+    "task_type": {"enum": ["regression", "binary_classification", "multiclass_classification", "ranking", "forecasting", "other"]},
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "direction"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 40},
+        "direction": {"enum": ["minimize", "maximize"]}
+      }
+    },
+    "target_column": {"type": "string", "minLength": 1, "maxLength": 80},
+    "id_column": {"type": "string", "minLength": 1, "maxLength": 80},
+    "submission_columns": {"type": "array", "minItems": 1, "maxItems": 50, "uniqueItems": true,
+                           "items": {"type": "string", "minLength": 1, "maxLength": 80}},
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "folds"],
+      "properties": {
+        "scheme": {"enum": ["kfold", "stratified_kfold", "group_kfold", "time_split", "holdout"]},
+        "folds": {"type": "integer", "minimum": 1, "maximum": 50},
+        "group_column": {"type": "string", "minLength": 1, "maxLength": 80}
+      }
+    },
+    "daily_submission_limit": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "deadline_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "data_version": {"type": "string", "minLength": 1, "maxLength": 80},
+    "rules": {"type": "array", "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 200}}
+  }
+}

@@ -1,0 +1,336 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "workspace_write_no_network_settings",
+    "title": "Workspace write without network settings",
+    "purpose": "Harness settings for an unattended fix step that may edit files inside the workspace and run tests, with no network access and no approval prompt that would stall an overnight run.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "src/loop_engine/core/opencode_step_composition.py",
+      "src/loop_engine/core/harness_responses_recipes.py",
+      "src/loop_engine/core/harness_additional_recipes.py",
+      "src/loop_engine/core/harness_confinement.py",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "docs/research/HARNESS-FORKS-2026-09-22.md"
+    ],
+    "layer": "context",
+    "family": "native_settings_fragment",
+    "search_tags": [
+      "unattended fix step settings",
+      "overnight agent no approval prompts",
+      "claude code sandbox no network",
+      "codex workspace-write network_access false",
+      "opencode allow edits deny webfetch",
+      "gemini cli allow write_file and pytest only",
+      "agent can edit files and run tests offline",
+      "block pip install and git push for an agent",
+      "protect .claude and .git from agent edits",
+      "local model overnight ticket settings"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "harness permissions",
+        "security"
+      ],
+      "role": [
+        "software engineer",
+        "agent operator"
+      ]
+    },
+    "symbols": [
+      "run"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a13_unattended_permission_settings",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "5c7eab77c5191906213392c76f94d6d9de2244583126b29efe36a236f9ab76ad",
+        "size_bytes": 1080,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "scripts/check_workspace_write_no_network_settings.py",
+        "digest": "5a9f99aae5111ebb0afff26ad9ce58a8b161c1c477e028445b1aec0026579c01",
+        "size_bytes": 42697,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_workspace_write_no_network_settings.py",
+        "digest": "63ee457863c3e48d03e137c3c3c4154810548dc1bf9abd2dc610b35962c7d646",
+        "size_bytes": 12185,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "619b13194e1a3ab6e026c23698d57298a7a45e21448b6eb4c71bb7f0299c5dfc",
+        "size_bytes": 940,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/codex/config.toml",
+        "digest": "1407d659b8b026c750761ccb8d03da462960b3e9a7ddc929d5b1c425e3103ba0",
+        "size_bytes": 153,
+        "media_type": "application/toml",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/gemini_cli/settings.json",
+        "digest": "f6d7651deae039d929de3adb8aadee21e9f018246713730ea4962b57bf05e0c3",
+        "size_bytes": 619,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/opencode/opencode.json",
+        "digest": "1c1b005d3ecc93257f03acd93c7e0b4c370072d2bc34f3ba4e12a8e37b87ae9a",
+        "size_bytes": 831,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a13_unattended_permission_settings",
+    "file_class": "settings_fragment",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "gemini_cli"
+    ],
+    "unverified_targets": {
+      "claude_code": "The permissions block is documented; defaultMode dontAsk and the sandbox keys (enabled, failIfUnavailable, allowUnsandboxedCommands, autoAllowBashIfSandboxed, network.allowedDomains) were read from the installed Claude Code 2.1.281 schema, not observed in a run, and the sandbox needs bubblewrap on Linux.",
+      "codex": "Project .codex/config.toml keys are unverified for project scope and load only in a trusted project; sandbox_workspace_write.network_access was read from Codex 0.155.1, not observed from a project file.",
+      "gemini_cli": "Key names were read from the installed Gemini CLI 0.59.0 settings schema and bundled docs; they vary by version, and workspace settings apply only in a trusted folder or with --skip-trust.",
+      "opencode": "The permission block is documented; the default rules, last-match order and edit path form were read from the installed OpenCode binary and repository source, not observed with this file."
+    },
+    "not_placed": {},
+    "native_name": "workspace-write-no-network-settings",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "codex": "variants/codex/config.toml",
+      "opencode": "variants/opencode/opencode.json",
+      "gemini_cli": "variants/gemini_cli/settings.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_workspace_write_no_network_settings.py": {
+          "destination": ".baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_workspace_write_no_network_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/workspace-write-no-network-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/codex/config.toml": {
+          "destination": ".codex/config.toml",
+          "operation": "merge_toml_table"
+        },
+        "scripts/check_workspace_write_no_network_settings.py": {
+          "destination": ".baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_workspace_write_no_network_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/workspace-write-no-network-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/opencode/opencode.json": {
+          "destination": "opencode.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_workspace_write_no_network_settings.py": {
+          "destination": ".baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_workspace_write_no_network_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/workspace-write-no-network-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "AGENTS.md": {
+          "destination": "GEMINI.md",
+          "operation": "compose_instruction_section"
+        },
+        "variants/gemini_cli/settings.json": {
+          "destination": ".gemini/settings.json",
+          "operation": "merge_json_object"
+        },
+        "scripts/check_workspace_write_no_network_settings.py": {
+          "destination": ".baltor/workspace-write-no-network-settings/scripts/check_workspace_write_no_network_settings.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_workspace_write_no_network_settings.py": null,
+        "LICENSE": {
+          "destination": ".baltor/workspace-write-no-network-settings/LICENSE",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "variants/codex/config.toml": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "variants/opencode/opencode.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "variants/gemini_cli/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "scripts/check_workspace_write_no_network_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_workspace_write_no_network_settings.py"
+        ]
+      },
+      "tests/test_workspace_write_no_network_settings.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run the tests once with python3 -m pytest -q or python3 -m unittest before changing any file, to record the starting state.",
+    "done_when": [
+      "The intended change is made inside the workspace and the declared test command passes.",
+      "No protected folder, harness settings file or file outside the workspace changed."
+    ],
+    "stop_and_report_when": [
+      "A test needs the network or a package that is not installed.",
+      "An action is refused; report the action and why it was needed instead of trying another way."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "src/loop_engine/core/opencode_step_composition.py": "8c7dec6114ef18ccf281b62b1d3047d38a6add56032c4c7873ca2c1cd9d25209",
+      "src/loop_engine/core/harness_responses_recipes.py": "13cef4fc5d6447b25f18726e519e58171056c363ee3f7394d813990f94b3efc7",
+      "src/loop_engine/core/harness_additional_recipes.py": "0ecf56361f91d40607fe7e200d24be47ec73760c9ea3567b7d78572d5f2238e9",
+      "src/loop_engine/core/harness_confinement.py": "e9fb6b8e374294bdc74341d3168253492ff3eab2df405b80315fa3da79730272",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "docs/research/HARNESS-FORKS-2026-09-22.md": "cd9abe680762117ea5a6e2657dea0563fbc0db0fe7d3e1b7b40058c3514e1e6e"
+    },
+    "package_digest": "dfb21ed7fff965ab167a032bc04012ec0567fae92e5438f6fa9db7313403d231",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

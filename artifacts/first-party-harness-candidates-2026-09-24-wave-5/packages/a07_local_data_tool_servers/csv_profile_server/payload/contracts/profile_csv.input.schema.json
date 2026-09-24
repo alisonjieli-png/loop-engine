@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "CSV file path relative to the workspace root, for example data/orders.csv. Absolute paths, '..' and links that leave the root are refused."
+    },
+    "delimiter": {
+      "type": "string",
+      "enum": [
+        "auto",
+        ",",
+        ";",
+        "\t",
+        "|"
+      ],
+      "default": "auto",
+      "description": "Field separator. auto picks the one that gives the most rows of equal width."
+    },
+    "encoding": {
+      "type": "string",
+      "enum": [
+        "utf-8",
+        "latin-1",
+        "cp1252"
+      ],
+      "default": "utf-8",
+      "description": "Text encoding. utf-8 also accepts a byte order mark."
+    },
+    "has_header": {
+      "type": "boolean",
+      "default": true,
+      "description": "true when the first row holds column names. When false, columns are named column_1, column_2 and so on."
+    },
+    "columns": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "description": "Profile only these column names. Needed when the file has more than 100 columns."
+    },
+    "top_values": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20,
+      "default": 5,
+      "description": "How many of the most common values to list for each column."
+    },
+    "include_values": {
+      "type": "boolean",
+      "default": true,
+      "description": "false leaves out common values, examples and the numeric range, and keeps counts, types and shapes. A shape writes each letter of any script as A or a, each digit as 9 and each other character as _, except ASCII punctuation and spaces, which stay visible."
+    },
+    "max_rows": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000000,
+      "description": "Read only the first max_rows data rows. The answer then says complete false. Default: every row."
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "additionalProperties": false
+}

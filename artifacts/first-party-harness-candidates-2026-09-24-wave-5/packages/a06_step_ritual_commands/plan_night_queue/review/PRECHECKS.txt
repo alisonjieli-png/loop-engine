@@ -1,0 +1,202 @@
+PRECHECKS for packages/a06_step_ritual_commands/plan_night_queue
+Written 2026-09-24T05:56:21Z by the a06 repairer (Claude Code, family anthropic) after critic round 2.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: 1b566d0418230a20c974ccba75fbc346f80049b6b72202cae32192ee54a4cd6d
+Digest before this repair round: e83f7ffe (snapshot repairer-a06_step_ritual_commands/a06-predecessor-snapshot-*.tar.gz)
+
+1. Checker reports kept in this folder, oldest first (generator rounds, then this repair round)
+   precheck-20260923T200724611782Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=2402d5adc43fac7c
+   precheck-20260923T202940995238Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=e83f7ffeae960398
+   precheck-20260923T202958750847Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=e83f7ffeae960398
+   precheck-20260923T203149728306Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=e83f7ffeae960398
+   precheck-20260924T052459151692Z.json: refused=false passed_for_wave_gate=false runs_skipped=true package_digest=7e7fcfc21ec8c42e
+   precheck-20260924T055305166693Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=1b566d0418230a20
+   precheck-20260924T055516338797Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=1b566d0418230a20
+   precheck-20260924T055651052822Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=1b566d0418230a20
+   precheck-20260924T055730625366Z.json: refused=false passed_for_wave_gate=true runs_skipped=false package_digest=1b566d0418230a20
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/plan_night_queue
+{"fill": "done", "files": 16, "package_digest": "1b566d0418230a20c974ccba75fbc346f80049b6b72202cae32192ee54a4cd6d"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/plan_night_queue
+{
+ "identity": "plan_night_queue",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260924T055730625366Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260924T055730625366Z.json
+   passed_for_wave_gate=true package_digest matches=True
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 17} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 17}
+
+4. Payload tests run directly in a temporary copy: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 17 tests in 5.477s  OK
+   python3.10: exit 0; Ran 17 tests in 4.096s  OK
+
+5. The critic's placed probes, reproduced before the repair at the old digest
+   (repairer-a06_step_ritual_commands/baseline/baseline-probe-placed-results.json)
+   bash blocks in placed Claude Code command: ["python3 -I -B .baltor/plan-night-queue/scripts/plan_queue.py gaps --root .", "python3 -I -B .baltor/plan-night-queue/scripts/plan_queue.py plan --root ."]
+   gaps with a ticket that carries only a risk label: {"exit": 0, "need_estimate": [{"id": "A-2", "title": "no estimate"}], "not_ready": {"A-1": ["bad_estimate"]}}
+   gaps after the model wrote minutes as a string: {"exit": 0, "need_estimate": [], "not_ready": {"A-1": ["bad_estimate"], "A-2": ["bad_estimate"]}}
+
+6. The same probes and the wave consumers after the repair, on the Claude Code placement
+   (repairer-a06_step_ritual_commands/after-probe-results.json; as_intended true for every row)
+   [ok] gaps with a ticket that carries only a risk label
+   [ok] gaps after the model wrote minutes as a string
+   [ok] plan refuses while an estimate still needs fixing
+   [ok] plan writes a queue that follows the published contract
+   [ok] a11 overnight_ticket_plugin night_status.py reads the planned queue
+   [ok] mark moves a ticket to in_progress and done in the status file and leaves the queue bytes alone
+
+7. Mutation checks: one guard removed in a temporary copy; the full suite must pass on the unchanged
+   copy (control) and fail on the changed copy (mutant). repairer-a06_step_ritual_commands/after-mutants-results.json
+   control: exit 0; Ran 17 tests in 7.800s | OK
+   KILLED: only tickets missing every estimate field are asked for; mutant Ran 17 tests in 5.904s | FAILED (failures=2, errors=1) | test_cycles_unknown_dependencies_duplicates_and_bad_ticket_estimates_are_held, test_known_wrong_a_risk_label_alone_is_asked_for_not_hidden, tes
+   KILLED: malformed estimates are not reported; mutant Ran 17 tests in 7.379s | FAILED (failures=1) | test_known_wrong_malformed_estimates_are_reported_and_block_planning
+   KILLED: an estimate may lower the ticket's risk; mutant Ran 17 tests in 8.306s | FAILED (errors=1) | test_an_estimate_never_lowers_what_the_ticket_states
+   KILLED: the budget is ignored; mutant Ran 17 tests in 7.226s | FAILED (failures=6) | test_a_model_hold_keeps_a_ready_ticket_and_its_dependents_out, test_known_wrong_priority_only_plan_is_not_what_the_helper_writes, test_mark_moves_follow_
+   KILLED: a ticket may start before its dependencies are done; mutant Ran 17 tests in 6.707s | FAILED (failures=1) | test_mark_moves_follow_the_ticket_lifecycle
+   KILLED: two tickets may be in progress; mutant Ran 17 tests in 7.007s | FAILED (failures=1) | test_mark_moves_follow_the_ticket_lifecycle
+   KILLED: done accepts evidence older than the start; mutant Ran 17 tests in 7.833s | FAILED (failures=1) | test_mark_moves_follow_the_ticket_lifecycle
+   KILLED: a status file of another queue is accepted; mutant Ran 17 tests in 8.666s | FAILED (failures=1) | test_mark_back_to_queued_needs_a_reason_and_a_foreign_status_file_is_refused
+
+8. Schema validator embedded in the tests, compared with the jsonschema library (4.26.0) on valid and
+   mutated instances (repairer-a06_step_ritual_commands/crosscheck-embedded-results.json)
+   contracts/night-settings.schema.json: 116 of 116 cases agree
+   contracts/night-tickets.schema.json: 160 of 160 cases agree
+   contracts/night-estimates.schema.json: 95 of 95 cases agree
+
+9. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260924T055700886283Z.json
+(exit 0)
+
+10. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+Earlier summary written by the generator on 2026-09-23 (kept unchanged below)
+PRECHECKS for packages/a06_step_ritual_commands/plan_night_queue
+Written 2026-09-23T20:30:57Z by Claude Code wave 5 generator a06_step_ritual_commands.
+Candidate only. Not approved, staged, served or published. A pass below is a
+deterministic pre-check result, not an approval, a rights decision or a native loading result.
+Current package_digest: e83f7ffeae9603984a146f014f3d83ee12cbb297ce34bc00419bd6cfdfafb1d6
+
+1. Checker reports kept in this folder, oldest first
+   precheck-20260923T200724611782Z.json: refused=false passed_for_wave_gate=true package_digest=2402d5adc43fac7c
+   precheck-20260923T202940995238Z.json: refused=false passed_for_wave_gate=true package_digest=e83f7ffeae960398
+   precheck-20260923T202958750847Z.json: refused=false passed_for_wave_gate=true package_digest=e83f7ffeae960398
+
+2. Final run of the specification's pre-check commands (WAVE is the wave folder)
+$ python3 $WAVE/check_package.py fill $WAVE/packages/a06_step_ritual_commands/plan_night_queue
+{"fill": "done", "files": 11, "package_digest": "e83f7ffeae9603984a146f014f3d83ee12cbb297ce34bc00419bd6cfdfafb1d6"}
+(exit 0)
+$ python3 $WAVE/check_package.py check $WAVE/packages/a06_step_ritual_commands/plan_night_queue
+{
+ "identity": "plan_night_queue",
+ "refused": false,
+ "passed_for_wave_gate": true,
+ "checks": {
+  "layout": "passed",
+  "manifest_schema": "passed",
+  "identity": "passed",
+  "inventory": "passed",
+  "text_hygiene": "passed",
+  "vocabulary": "passed",
+  "safety_static": "passed",
+  "secrets": "passed",
+  "parse": "passed",
+  "entry_shape": "passed",
+  "placements": "passed",
+  "effects": "passed",
+  "network_static": "passed",
+  "agent_skills_validator": "skipped",
+  "duplicates": "passed",
+  "review_note": "passed",
+  "tests_run": "passed",
+  "hooks_run": "passed",
+  "servers_run": "passed"
+ },
+ "report": "review/precheck-20260923T202940995238Z.json"
+}
+(exit 0)
+
+3. Details from the newest report precheck-20260923T202958750847Z.json (every check with findings)
+   agent_skills_validator (skipped): no SKILL.md in the payload
+   tests_run (passed): {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 11} | {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 11}
+
+4. Payload tests run directly: python -I -B -m unittest discover -s tests -p 'test_*.py'
+   python3.14: exit 0; Ran 11 tests in 0.874s  OK
+   python3.10: exit 0; Ran 11 tests in 0.628s  OK
+
+5. Mutation checks: one guard removed in a temporary copy of the payload; the named test
+   must pass on the unchanged copy (control) and fail on the changed copy (mutant)
+   a ticket is queued only while the budget holds: scripts/plan_queue.py; test test_known_wrong_priority_only_plan_is_not_what_the_helper_writes; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   high-risk tickets are held: scripts/plan_queue.py; test test_known_wrong_priority_only_plan_is_not_what_the_helper_writes; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   a model hold keeps a ticket out: scripts/plan_queue.py; test test_a_model_hold_keeps_a_ready_ticket_and_its_dependents_out; control exit 0 (1 test); mutant exit 1 [FAILED (failures=1)]; KILLED by an assertion
+   Earlier attempt, discarded: the first mutation run used 'python3 -I -m unittest module.Class.test'.
+   Isolated mode keeps the tests folder off the import path, so every run, controls included,
+   failed with an import error. Those results proved nothing and were replaced by the runs above.
+
+6. Assignment check
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203002252913Z.json
+(exit 0)
+
+7. Checks that cannot fail or cannot run for this class
+   agent_skills_validator: skipped by the checker, because a command package has no SKILL.md.
+   hooks_run and servers_run: pass with nothing to run; this class declares no hooks or servers.
+   Native discovery of the command files in each harness: not run; the specification says harness
+   binaries are not run by generators. The integrator's probes run later.
+
+8. Confirming run after this file was written (the layout, secrets and every other check see this file)
+$ python3 $WAVE/check_package.py check-all --assignment a06_step_ritual_commands
+{
+ "packages": 5,
+ "refused": [],
+ "missing_planned": [],
+ "cross_package_refusals": []
+}
+report: reports/precheck-all-20260923T203153908527Z.json
+(exit 0)
+   newest report precheck-20260923T203149728306Z.json: passed_for_wave_gate and digest match = True True

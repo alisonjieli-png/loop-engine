@@ -1,0 +1,88 @@
+PRECHECKS for extract_test_failures (a03_ticket_work_tools)
+Each block summarizes one 'check_package.py check' report, oldest first. The JSON report named in
+the block is kept in review/ and holds the same findings. Failed runs are kept beside their successors.
+
+### run 1: precheck-20260923T200810273315Z.json
+package_digest=e1e8d010db1da48e5165143586ebf85aa914df0b77871f0eed48b66b0aeb43c2 refused=True passed_for_wave_gate=False runs_skipped=False
+layout: refused
+  - empty file review/.check-run-1.txt
+manifest_schema: passed
+identity: passed
+inventory: refused
+  - LICENSE: payload files are mode 0644 on disk and declared as "0644"
+  - SKILL.md: payload files are mode 0644 on disk and declared as "0644"
+  - examples/pytest-short-output.json: payload files are mode 0644 on disk and declared as "0644"
+  - scripts/extract_failures.py: payload files are mode 0644 on disk and declared as "0644"
+  - tests/test_extract_failures.py: payload files are mode 0644 on disk and declared as "0644"
+text_hygiene: passed
+vocabulary: passed
+safety_static: passed
+secrets: passed
+parse: passed
+entry_shape: passed
+placements: passed
+effects: passed
+network_static: passed
+agent_skills_validator: passed
+  - agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/extract-test-failures
+  - skills_ref_official_git .: exit 0 Valid skill: TMP/extract-test-failures
+duplicates: passed
+review_note: passed
+tests_run: passed
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 19}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 19}
+hooks_run: passed
+servers_run: passed
+
+### run 2: precheck-20260923T200844281273Z.json
+package_digest=e1e8d010db1da48e5165143586ebf85aa914df0b77871f0eed48b66b0aeb43c2 refused=False passed_for_wave_gate=True runs_skipped=False
+layout: passed
+manifest_schema: passed
+identity: passed
+inventory: passed
+text_hygiene: passed
+vocabulary: passed
+safety_static: passed
+secrets: passed
+parse: passed
+entry_shape: passed
+placements: passed
+effects: passed
+network_static: passed
+agent_skills_validator: passed
+  - agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/extract-test-failures
+  - skills_ref_official_git .: exit 0 Valid skill: TMP/extract-test-failures
+duplicates: passed
+review_note: passed
+tests_run: passed
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 19}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 19}
+hooks_run: passed
+servers_run: passed
+
+### run 3: precheck-20260923T202253006789Z.json
+package_digest=17d5b49e44ced2421a0291c7fad35722bf6bda849cff86b3c590a10b56ad7186 refused=False passed_for_wave_gate=True runs_skipped=False
+layout: passed
+manifest_schema: passed
+identity: passed
+inventory: passed
+text_hygiene: passed
+vocabulary: passed
+safety_static: passed
+secrets: passed
+parse: passed
+entry_shape: passed
+placements: passed
+effects: passed
+network_static: passed
+agent_skills_validator: passed
+  - agentskills_pypi_0_1_1 .: exit 0 Valid skill: TMP/extract-test-failures
+  - skills_ref_official_git .: exit 0 Valid skill: TMP/extract-test-failures
+duplicates: passed
+review_note: passed
+tests_run: passed
+  - {"python": "python3.14", "exit": 0, "summary": "OK", "tests_ran": 19}
+  - {"python": "python3.10", "exit": 0, "summary": "OK", "tests_ran": 19}
+hooks_run: passed
+servers_run: passed
+

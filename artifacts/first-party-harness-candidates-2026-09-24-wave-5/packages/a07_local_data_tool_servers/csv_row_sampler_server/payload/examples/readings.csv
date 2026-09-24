@@ -1,0 +1,26 @@
+reading_id,site,day,temperature_c,status,note
+R001,north,2025-01-01,4.2,ok,
+R002,north,2025-01-02,3.9,ok,
+R003,north,2025-01-03,-1.5,ok,
+R004,north,2025-01-04,-2.0,ok,
+R005,north,2025-01-05,0.4,ok,
+R006,north,2025-01-06,1.1,ok,
+R007,north,2025-01-07,2.8,ok,
+R008,north,2025-01-08,3.3,ok,
+R009,north,2025-01-09,2.2,ok,
+R010,north,2025-01-10,1.7,ok,
+R011,north,2025-01-11,0.9,ok,
+R012,north,2025-01-12,1.4,ok,
+R013,south,2025-01-01,14.8,ok,
+R014,south,2025-01-02,15.2,ok,
+R015,south,2025-01-03,99.9,fault,"sensor reported its upper limit, reading kept for review"
+R016,south,2025-01-04,15.9,ok,
+R017,south,2025-01-05,16.1,ok,
+R018,south,2025-01-06,,missing,"no reading
+received"
+R019,south,2025-01-07,15.5,ok,
+R020,south,2025-01-08,15.0,ok,
+R021,east,2025-01-01,9.1,ok,
+R022,east,2025-01-02,9.4,ok,
+R023,east,2025-01-03,8.8,ok,
+R024,east,2025-01-04,9.0,ok,

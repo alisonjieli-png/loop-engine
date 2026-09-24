@@ -1,0 +1,727 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "overnight_ticket_plugin",
+    "title": "Overnight ticket session plugin",
+    "purpose": "A Claude Code plugin, with a Cursor plugin variant, that bundles a session-start hook showing the last handoff and queue position, a night status command and a ticket closer agent that writes the per-ticket result record.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/overnight-cheap-model-with-and-without-baltor/DESIGN.md",
+      "src/loop_engine/core/node_provisioning.py"
+    ],
+    "layer": "code",
+    "family": "native_plugin",
+    "search_tags": [
+      "overnight ticket run",
+      "work tickets while I sleep",
+      "next ticket at session start",
+      "last handoff at session start",
+      "ticket queue position",
+      "night status command",
+      "close a ticket with evidence",
+      "per ticket result record",
+      "claude code plugin for tickets",
+      "cursor plugin for overnight work",
+      "resume after an interrupted session",
+      "unattended ticket queue",
+      "ticket check command before closing"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "software change",
+        "harness operations"
+      ],
+      "role": [
+        "software engineer"
+      ]
+    },
+    "symbols": [
+      "night_summary",
+      "load_queue",
+      "ticket_details",
+      "load_results",
+      "summarize",
+      "context_text",
+      "rule_failures",
+      "write_record",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a11_session_plugins",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "contracts/night-queue.schema.json",
+        "digest": "72310590661bc3b54228b55f594be2f29163fc5bd443c32d393cd76203c0b6ba",
+        "size_bytes": 1236,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/ticket-result-draft.schema.json",
+        "digest": "5fba27cf8094aebc32e64adbbb5cc1c1b2c07884b175c0d788b096ed19610aea",
+        "size_bytes": 1687,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "contracts/ticket-result-record.schema.json",
+        "digest": "9417e03c5b29f555962991d38f0008c7af2691ecaa1dedd9f3dd03ce05639938",
+        "size_bytes": 1738,
+        "media_type": "application/schema+json",
+        "role": "configuration"
+      },
+      {
+        "path": "examples/claude_code-sessionstart-malformed.json",
+        "digest": "3aa4f7a7e087045a8fe5f4714ab80dadd525b23419bca52a70a94a6687729a6e",
+        "size_bytes": 84,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-sessionstart-startup.json",
+        "digest": "4a7532c8971a57704ac84a73221ce656a996f63f9612d0ad6130a33990378786",
+        "size_bytes": 175,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-sessionstart-malformed.json",
+        "digest": "70759a39c54f5c6eaee144a48b90c899b1e20ed0f0e89845fe17aa49e3cc99b1",
+        "size_bytes": 40,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-sessionstart-startup.json",
+        "digest": "2aff49231baf225cec24d6fda8588ad44f30f218511b0816619868e9e29b7541",
+        "size_bytes": 258,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/night/.baltor/night/queue.json",
+        "digest": "de79e379771fb48a23a32fb52ea4a2e7475863b7c72c165d713f060c42b9c8d4",
+        "size_bytes": 1264,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/night/.baltor/night/tickets.json",
+        "digest": "f9206668042ee05c36eae5360789d97997a22edce95c26a4a664e363656e4433",
+        "size_bytes": 1017,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/night/.baltor/state/overnight-ticket-plugin/results/T-101.json",
+        "digest": "608e11e59293db565093fbf33d4ca4d3e5eed5da222504d40f97d320a3127811",
+        "size_bytes": 693,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/ticket-result-draft.json",
+        "digest": "b243d45f40ffb6fd3d2b3ba325fa1396ea42c108b42beda6995962143f539932",
+        "size_bytes": 528,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "scripts/close_ticket.py",
+        "digest": "fdc2b3182f01763b86151331034c317239f0c94e04e0c1d8be926b0d8bf8680f",
+        "size_bytes": 9457,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "scripts/night_status.py",
+        "digest": "ad9850af4e854d0216301972e0354a323bebcfaff4319cf98c5c150191b759e3",
+        "size_bytes": 14139,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "scripts/session_start.py",
+        "digest": "dfc4c8f1188f75566d278b53e8e4ff1c3d9c722e73c63c6aaf598884663d754d",
+        "size_bytes": 6124,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_close_ticket.py",
+        "digest": "84cfa2a19215db47d5c7cd360742fdb0fe71ba63d5a9626c7dda0b5b767f42d0",
+        "size_bytes": 10593,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_night_status.py",
+        "digest": "27eef6b7755058c1f48b819fa408399720b5ae48e5b3b3440807f21518e9b6f7",
+        "size_bytes": 10396,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_plugin_layout.py",
+        "digest": "c2d1d07de57ddc2cfefefa152ffa36064d6e04c3b9e82ccc722911a0702447c0",
+        "size_bytes": 6049,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "tests/test_session_start.py",
+        "digest": "042011888d51060459fac357e25f327b491c82239750a3c78324a40cdf377992",
+        "size_bytes": 7632,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/.claude-plugin/plugin.json",
+        "digest": "f3940599d198ad9a0fdd1d1886ab63785f2ca2f536a94dc61dc9ed00d6e2fbbe",
+        "size_bytes": 380,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/claude_code/agents/ticket-closer.md",
+        "digest": "f59854a9eee1d87d358fa1a4d71207e98da07a82f4a47d85d2f9c5feeff22f1f",
+        "size_bytes": 2169,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/claude_code/commands/night-status.md",
+        "digest": "ba6506ef1887997b81631803089c7f0b6738f7f7d722b16207867896d33698d3",
+        "size_bytes": 1582,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/claude_code/hooks/hooks.json",
+        "digest": "fda1a5c94024f0f2145149fd5c0567f2651996bc5fc8ce8869e1bc1ac5525316",
+        "size_bytes": 339,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/.cursor-plugin/plugin.json",
+        "digest": "f3940599d198ad9a0fdd1d1886ab63785f2ca2f536a94dc61dc9ed00d6e2fbbe",
+        "size_bytes": 380,
+        "media_type": "application/json",
+        "role": "plugin_manifest"
+      },
+      {
+        "path": "variants/cursor/agents/ticket-closer.md",
+        "digest": "cab8f909e02f6d831a44ab05f7fafb814f76faedfcb45db25334e62a5a85a200",
+        "size_bytes": 2142,
+        "media_type": "text/markdown",
+        "role": "subagent_definition"
+      },
+      {
+        "path": "variants/cursor/commands/night-status.md",
+        "digest": "4c23e5be5306de0727d37ce391b68b45803b2dd132682ab12732b1b405bfd644",
+        "size_bytes": 1601,
+        "media_type": "text/markdown",
+        "role": "command"
+      },
+      {
+        "path": "variants/cursor/hooks/hooks.json",
+        "digest": "0e18337e196ca43571c2aead5aaf7b8515263bf851de9b4e3bfbfe66ada5d4b2",
+        "size_bytes": 207,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a11_session_plugins",
+    "file_class": "plugin_bundle",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor"
+    ],
+    "unverified_targets": {
+      "cursor": "The repository research file documents .cursor-plugin/plugin.json for rules, agents, commands and hooks, and says a sessionStart hook cannot block startup. The hooks.json version and timeout fields, the additional_context output, CURSOR_PROJECT_DIR and ${CURSOR_PLUGIN_ROOT} follow Cursor pages that an earlier run of this generator read on 2026-09-23; no copy of those pages is saved with the package. The subagent front matter and local plugin activation are undocumented here, and no Cursor behavior was observed."
+    },
+    "not_placed": {},
+    "native_name": "overnight-ticket-plugin",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/.claude-plugin/plugin.json",
+      "cursor": "variants/cursor/.cursor-plugin/plugin.json"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/night-queue.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/ticket-result-draft.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/ticket-result-draft.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/ticket-result-record.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/ticket-result-record.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-sessionstart-malformed.json": null,
+        "examples/claude_code-sessionstart-startup.json": null,
+        "examples/cursor-sessionstart-malformed.json": null,
+        "examples/cursor-sessionstart-startup.json": null,
+        "examples/night/.baltor/night/queue.json": null,
+        "examples/night/.baltor/night/tickets.json": null,
+        "examples/night/.baltor/state/overnight-ticket-plugin/results/T-101.json": null,
+        "examples/ticket-result-draft.json": null,
+        "scripts/close_ticket.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/close_ticket.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/night_status.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/night_status.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/session_start.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/session_start.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_close_ticket.py": null,
+        "tests/test_night_status.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_session_start.py": null,
+        "variants/claude_code/.claude-plugin/plugin.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/.claude-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/agents/ticket-closer.md": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/agents/ticket-closer.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/commands/night-status.md": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/commands/night-status.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/claude_code/hooks/hooks.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      },
+      "cursor": {
+        "LICENSE": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/LICENSE",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/night-queue.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/night-queue.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/ticket-result-draft.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/ticket-result-draft.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "contracts/ticket-result-record.schema.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/contracts/ticket-result-record.schema.json",
+          "operation": "plugin_directory_binding"
+        },
+        "examples/claude_code-sessionstart-malformed.json": null,
+        "examples/claude_code-sessionstart-startup.json": null,
+        "examples/cursor-sessionstart-malformed.json": null,
+        "examples/cursor-sessionstart-startup.json": null,
+        "examples/night/.baltor/night/queue.json": null,
+        "examples/night/.baltor/night/tickets.json": null,
+        "examples/night/.baltor/state/overnight-ticket-plugin/results/T-101.json": null,
+        "examples/ticket-result-draft.json": null,
+        "scripts/close_ticket.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/close_ticket.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/night_status.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/night_status.py",
+          "operation": "plugin_directory_binding"
+        },
+        "scripts/session_start.py": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/scripts/session_start.py",
+          "operation": "plugin_directory_binding"
+        },
+        "tests/test_close_ticket.py": null,
+        "tests/test_night_status.py": null,
+        "tests/test_plugin_layout.py": null,
+        "tests/test_session_start.py": null,
+        "variants/cursor/.cursor-plugin/plugin.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/.cursor-plugin/plugin.json",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/cursor/agents/ticket-closer.md": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/agents/ticket-closer.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/cursor/commands/night-status.md": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/commands/night-status.md",
+          "operation": "plugin_directory_binding"
+        },
+        "variants/cursor/hooks/hooks.json": {
+          "destination": ".baltor/plugins/overnight-ticket-plugin/hooks/hooks.json",
+          "operation": "plugin_directory_binding"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "contracts/night-queue.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "contracts/ticket-result-draft.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "contracts/ticket-result-record.schema.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "examples/claude_code-sessionstart-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/claude_code-sessionstart-startup.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/cursor-sessionstart-malformed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/cursor-sessionstart-startup.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/night/.baltor/night/queue.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_close_ticket.py",
+          "tests/test_night_status.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/night/.baltor/night/tickets.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_close_ticket.py",
+          "tests/test_night_status.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/night/.baltor/state/overnight-ticket-plugin/results/T-101.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_close_ticket.py",
+          "tests/test_night_status.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_session_start.py"
+        ]
+      },
+      "examples/ticket-result-draft.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_close_ticket.py"
+        ]
+      },
+      "scripts/close_ticket.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_close_ticket.py",
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "scripts/night_status.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_close_ticket.py",
+          "tests/test_night_status.py",
+          "tests/test_plugin_layout.py",
+          "tests/test_session_start.py"
+        ]
+      },
+      "scripts/session_start.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py",
+          "tests/test_session_start.py"
+        ]
+      },
+      "tests/test_close_ticket.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_night_status.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_plugin_layout.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "tests/test_session_start.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": []
+      },
+      "variants/claude_code/.claude-plugin/plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/agents/ticket-closer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/commands/night-status.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/claude_code/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/.cursor-plugin/plugin.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "launch_binding",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/agents/ticket-closer.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/commands/night-status.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      },
+      "variants/cursor/hooks/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_plugin_layout.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "SessionStart",
+        "script": "scripts/session_start.py",
+        "arguments": [
+          "--harness",
+          "claude_code"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}/examples/night"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-sessionstart-startup.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"hookEventName\": \"SessionStart\"",
+              "Next ticket: 2 of 3, T-102",
+              "check command: python3 -m unittest tests.test_totals",
+              "Last handoff, from T-101"
+            ]
+          },
+          {
+            "input": "examples/claude_code-sessionstart-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "sessionStart",
+        "script": "scripts/session_start.py",
+        "arguments": [
+          "--harness",
+          "cursor"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}/examples/night"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-sessionstart-startup.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"additional_context\"",
+              "T-102"
+            ]
+          },
+          {
+            "input": "examples/cursor-sessionstart-malformed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read the session start message; it names the next ticket, its queue position, its check command and the last handoff. If the message is missing, run the night-status command.",
+    "done_when": [
+      "The current ticket has a result record written by close_ticket.py.",
+      "night_status.py names the following ticket, or reports that every ticket is closed."
+    ],
+    "stop_and_report_when": [
+      "The night queue is missing or cannot be read.",
+      "night_status.py reports a result record problem.",
+      "close_ticket.py refuses the same draft twice.",
+      "Every ticket already has a result record."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/overnight-cheap-model-with-and-without-baltor/DESIGN.md": "ea1d2f243fc25591f9c24a636680776615a90af1fe5a3187f39d8f25153a3ca7",
+      "src/loop_engine/core/node_provisioning.py": "3bbffb4e873bf3f4badb338a746d0a9070f5118ef7e81dd33bf141b3b81bbace"
+    },
+    "package_digest": "62f47b405c218a0b06c79bb77b67dc3e2316294fe68a3961f35b603a9bb5a7c4",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

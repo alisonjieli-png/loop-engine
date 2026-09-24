@@ -1,0 +1,608 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "require_tests_before_stop",
+    "title": "Require a test run after the last edit",
+    "purpose": "When the agent tries to finish, block the stop once if source files changed after the last recorded test command, and name the test command to run.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "examples/29_intelligence_service/starter-catalogue/bodies/verify_the_requested_output.md"
+    ],
+    "layer": "code",
+    "family": "native_hook",
+    "search_tags": [
+      "run tests before the agent finishes",
+      "block the agent stopping without tests",
+      "claude code stop hook tests",
+      "cursor stop hook follow up message",
+      "copilot agent stop hook",
+      "rerun pytest after the last edit",
+      "stop hook that blocks only once",
+      "overnight agent must test its change"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "agent harness operations"
+      ],
+      "role": [
+        "software developer",
+        "platform engineer"
+      ]
+    },
+    "symbols": [
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "tool",
+    "styles": [
+      "claude_code"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a04_unattended_guard_hooks",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "digest": "bbdd8ebf5590b534521cd8b0faa58f305cbf4a953b8eea341d02a091c19b1604",
+        "size_bytes": 797,
+        "media_type": "text/markdown",
+        "role": "instruction_file"
+      },
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-stop-allowed.json",
+        "digest": "c212e9b75193dc206aaa8fdeed7972c09b22a0d7c56486026da471e9ae9d5917",
+        "size_bytes": 215,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/claude_code-stop-refused.json",
+        "digest": "6230369bbec057e0150347dcc9ec01e41bd8c9eea9514c3d2b8f0718f37a3f57",
+        "size_bytes": 215,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-agentstop-allowed.json",
+        "digest": "f51035fefeae1a59777e8f9bdce95b5d53fbe455c108c104f8c628b89d2e92b8",
+        "size_bytes": 51,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/copilot-agentstop-refused.json",
+        "digest": "f51035fefeae1a59777e8f9bdce95b5d53fbe455c108c104f8c628b89d2e92b8",
+        "size_bytes": 51,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-stop-allowed.json",
+        "digest": "1344d7b9dac7788dddd0c4a31fd4ba50bb4539c56fd8a0dc7aea512c11653a68",
+        "size_bytes": 189,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/cursor-stop-refused.json",
+        "digest": "925ed548a4864274b03ad401256bad212fbd38ab29b27e8798c9745b177db3f9",
+        "size_bytes": 189,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace-changed/.baltor/state/require-tests-before-stop/state.json",
+        "digest": "35fabb4348664d64d776799857fb53accda960f9e79a26e6e709c904ed26a98a",
+        "size_bytes": 297,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace-changed/.baltor/step/require-tests-before-stop.json",
+        "digest": "9ec0ff7c26fde7726a56248d58f44f176f423ee8a11d0360cde08f25d603c073",
+        "size_bytes": 230,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace-tested/.baltor/state/require-tests-before-stop/state.json",
+        "digest": "5da4b7141fc128d3da9469659aa8e6444ffb31368701ffdbba75e0c0128b2b45",
+        "size_bytes": 257,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "examples/workspace-tested/.baltor/step/require-tests-before-stop.json",
+        "digest": "9ec0ff7c26fde7726a56248d58f44f176f423ee8a11d0360cde08f25d603c073",
+        "size_bytes": 230,
+        "media_type": "application/json",
+        "role": "other"
+      },
+      {
+        "path": "hooks/require_tests_before_stop.py",
+        "digest": "417be8a635cb614c34c39569a4126d52e0b231745f38d7cd80b8f2406aece0b0",
+        "size_bytes": 19633,
+        "media_type": "text/x-python",
+        "role": "hook"
+      },
+      {
+        "path": "tests/test_require_tests_before_stop.py",
+        "digest": "642897a906870249b64dbf18b0c3edd669a74b3c00143c886a83187c2925f27b",
+        "size_bytes": 13094,
+        "media_type": "text/x-python",
+        "role": "executable_tool"
+      },
+      {
+        "path": "variants/claude_code/settings.json",
+        "digest": "109dc87bc03d3d333b2c2d9217bef4f7dc500fc8f918632bfdca82b02feb57c0",
+        "size_bytes": 1035,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/copilot/require-tests-before-stop.json",
+        "digest": "09a93e29f961e928017890ffb23128f9b060212bba757c376284a2f9288d39a6",
+        "size_bytes": 544,
+        "media_type": "application/json",
+        "role": "configuration"
+      },
+      {
+        "path": "variants/cursor/hooks.json",
+        "digest": "7ee2f2a5d1565fccf099a6b8bb10b79f0fd47bea8efe149a097d1ac7507bec19",
+        "size_bytes": 531,
+        "media_type": "application/json",
+        "role": "configuration"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a04_unattended_guard_hooks",
+    "file_class": "hook_with_script",
+    "use_cases": [
+      "overnight_tickets_on_a_local_model",
+      "any_focused_step"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "cursor",
+      "copilot"
+    ],
+    "unverified_targets": {
+      "cursor": "Events afterShellExecution, afterFileEdit and stop, the status input and the followup_message answer come from a snapshot of Cursor's hook page in a local outside project; no cited research file names them and no Cursor run was observed.",
+      "copilot": "Events postToolUse and agentStop, the toolName, toolArgs and toolResult fields, and whether agentStop honours a decision block answer are the producer's reading of GitHub's hook reference; the cited research confirms only the .github/hooks location, and no Copilot run was observed."
+    },
+    "not_placed": {},
+    "native_name": "require-tests-before-stop",
+    "version": "0.1.0",
+    "entrypoints": {
+      "claude_code": "variants/claude_code/settings.json",
+      "cursor": "variants/cursor/hooks.json",
+      "copilot": "variants/copilot/require-tests-before-stop.json"
+    },
+    "placements": {
+      "claude_code": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/require-tests-before-stop/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-stop-allowed.json": null,
+        "examples/claude_code-stop-refused.json": null,
+        "examples/copilot-agentstop-allowed.json": null,
+        "examples/copilot-agentstop-refused.json": null,
+        "examples/cursor-stop-allowed.json": null,
+        "examples/cursor-stop-refused.json": null,
+        "examples/workspace-changed/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-changed/.baltor/step/require-tests-before-stop.json": null,
+        "examples/workspace-tested/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-tested/.baltor/step/require-tests-before-stop.json": null,
+        "hooks/require_tests_before_stop.py": {
+          "destination": ".baltor/require-tests-before-stop/hooks/require_tests_before_stop.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_require_tests_before_stop.py": null,
+        "variants/claude_code/settings.json": {
+          "destination": ".claude/settings.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "cursor": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/require-tests-before-stop/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-stop-allowed.json": null,
+        "examples/claude_code-stop-refused.json": null,
+        "examples/copilot-agentstop-allowed.json": null,
+        "examples/copilot-agentstop-refused.json": null,
+        "examples/cursor-stop-allowed.json": null,
+        "examples/cursor-stop-refused.json": null,
+        "examples/workspace-changed/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-changed/.baltor/step/require-tests-before-stop.json": null,
+        "examples/workspace-tested/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-tested/.baltor/step/require-tests-before-stop.json": null,
+        "hooks/require_tests_before_stop.py": {
+          "destination": ".baltor/require-tests-before-stop/hooks/require_tests_before_stop.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_require_tests_before_stop.py": null,
+        "variants/cursor/hooks.json": {
+          "destination": ".cursor/hooks.json",
+          "operation": "merge_json_object"
+        }
+      },
+      "copilot": {
+        "AGENTS.md": {
+          "destination": "AGENTS.md",
+          "operation": "compose_instruction_section"
+        },
+        "LICENSE": {
+          "destination": ".baltor/require-tests-before-stop/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "examples/claude_code-stop-allowed.json": null,
+        "examples/claude_code-stop-refused.json": null,
+        "examples/copilot-agentstop-allowed.json": null,
+        "examples/copilot-agentstop-refused.json": null,
+        "examples/cursor-stop-allowed.json": null,
+        "examples/cursor-stop-refused.json": null,
+        "examples/workspace-changed/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-changed/.baltor/step/require-tests-before-stop.json": null,
+        "examples/workspace-tested/.baltor/state/require-tests-before-stop/state.json": null,
+        "examples/workspace-tested/.baltor/step/require-tests-before-stop.json": null,
+        "hooks/require_tests_before_stop.py": {
+          "destination": ".baltor/require-tests-before-stop/hooks/require_tests_before_stop.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_require_tests_before_stop.py": null,
+        "variants/copilot/require-tests-before-stop.json": {
+          "destination": ".github/hooks/require-tests-before-stop.json",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "AGENTS.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "composed_instruction",
+        "tested_by": []
+      },
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "examples/claude_code-stop-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/claude_code-stop-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/copilot-agentstop-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/copilot-agentstop-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/cursor-stop-allowed.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/cursor-stop-refused.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/workspace-changed/.baltor/state/require-tests-before-stop/state.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/workspace-changed/.baltor/step/require-tests-before-stop.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/workspace-tested/.baltor/state/require-tests-before-stop/state.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "examples/workspace-tested/.baltor/step/require-tests-before-stop.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "hooks/require_tests_before_stop.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "registered_event",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "tests/test_require_tests_before_stop.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      },
+      "variants/claude_code/settings.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "variants/copilot/require-tests-before-stop.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      },
+      "variants/cursor/hooks.json": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_require_tests_before_stop.py"
+        ]
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [
+      {
+        "harness": "claude_code",
+        "event": "Stop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "claude_code",
+          "--root",
+          "examples/workspace-changed"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-stop-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"decision\": \"block\"",
+              "python3 -m pytest"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "claude_code",
+        "event": "Stop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "claude_code",
+          "--root",
+          "examples/workspace-tested"
+        ],
+        "environment": {
+          "CLAUDE_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/claude_code-stop-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "stop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "cursor",
+          "--root",
+          "examples/workspace-changed"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-stop-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"followup_message\"",
+              "python3 -m pytest"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "cursor",
+        "event": "stop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "cursor",
+          "--root",
+          "examples/workspace-tested"
+        ],
+        "environment": {
+          "CURSOR_PROJECT_DIR": "{WORKSPACE}"
+        },
+        "samples": [
+          {
+            "input": "examples/cursor-stop-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "agentStop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "copilot",
+          "--event",
+          "agentStop",
+          "--root",
+          "examples/workspace-changed"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-agentstop-refused.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "\"decision\": \"block\"",
+              "python3 -m pytest"
+            ]
+          }
+        ]
+      },
+      {
+        "harness": "copilot",
+        "event": "agentStop",
+        "script": "hooks/require_tests_before_stop.py",
+        "arguments": [
+          "--harness",
+          "copilot",
+          "--event",
+          "agentStop",
+          "--root",
+          "examples/workspace-tested"
+        ],
+        "environment": {},
+        "samples": [
+          {
+            "input": "examples/copilot-agentstop-allowed.json",
+            "expect_exit": 0,
+            "expect_stdout_json": true,
+            "expect_stdout_contains": [
+              "{}"
+            ]
+          }
+        ]
+      }
+    ],
+    "servers": [],
+    "first_action": "Read .baltor/step/require-tests-before-stop.json to learn the test command, and plan to run it after your last edit.",
+    "done_when": [
+      "The test command ran after the last source edit and its result was read.",
+      "Failures that remain are written into the handoff with the failing test names."
+    ],
+    "stop_and_report_when": [
+      "The test command cannot start in this workspace.",
+      "The tests fail for a reason outside this step's change."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "examples/29_intelligence_service/starter-catalogue/bodies/verify_the_requested_output.md": "8055f487b9b15c4f898bb3f465f0d498b0783c4ad55f698bbc601f33c634d78c"
+    },
+    "package_digest": "6580c7ba513891f37199b1bf1230b8b07c1b4965798b8e87a63ccc51f7de9c61",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

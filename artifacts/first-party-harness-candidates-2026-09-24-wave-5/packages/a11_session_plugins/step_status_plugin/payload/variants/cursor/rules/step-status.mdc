@@ -1,0 +1,22 @@
+---
+description: Check the focused step packet before any work and show the step status
+alwaysApply: true
+---
+
+# Focused step packet check
+
+This applies only when the folder `.baltor/step/` exists in the workspace.
+
+1. Before any other work, run this from the workspace root:
+   `python3 -I -B .baltor/plugins/step-status-plugin/scripts/check_step_packet.py`
+   If your first message gave a packet digest, add
+   `--expect-content-sha256` and that digest.
+2. Exit 1 or 2: stop. Report the printed JSON and do no step work.
+3. Exit 0: the packet is the one the host placed. Run the step status
+   command, or run
+   `python3 -I -B .baltor/plugins/step-status-plugin/scripts/step_status.py`,
+   and work only on the objective it shows.
+4. Keep every file under `.baltor/step/` as it is. Any change there makes
+   the check fail.
+5. Before you hand off, run the step status command again. It must still
+   exit 0.

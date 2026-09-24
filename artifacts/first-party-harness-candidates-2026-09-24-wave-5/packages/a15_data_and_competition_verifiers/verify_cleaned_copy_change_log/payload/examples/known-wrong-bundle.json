@@ -1,0 +1,5 @@
+{
+ "source": "customer_id,name,city,country,phone\nC-0001,Ana,Lyon ,France,555-0100\nC-0007,Bo,Paris,France,N/A\nC-0041,Cy,Nice,France,555-0141\nC-0042,Cy,Nice,France,555-0141\nC-0050,Di,Leeds,Untied Kingdom,555-0150\nC-0063,Ed,  Bristol,United Kingdom,555-0163\n",
+ "cleaned": "customer_id,name,city,country,phone\nC-0001,Ana,Lyon,France,555-0100\nC-0007,Bo,Paris,France,\nC-0041,Cy,Nice,France,555-0141\nC-0050,Di,Leeds,United Kingdom,555-0150\nC-0063,Ed,Bristol,United Kingdom,555-0163\n",
+ "log": "{\"key\": \"C-0001\", \"column\": \"city\", \"before\": \"Lyon \", \"after\": \"Lyon\", \"rule\": \"trim_spaces\"}\n{\"key\": \"C-0063\", \"column\": \"city\", \"before\": \"  Bristol\", \"after\": \"Bristol\", \"rule\": \"trim_spaces\"}\n{\"key\": \"C-0050\", \"column\": \"country\", \"before\": \"Untied Kingdom\", \"after\": \"United Kingdom\", \"rule\": \"reviewed_country_map\"}\n"
+}

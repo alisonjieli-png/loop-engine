@@ -1,0 +1,67 @@
+{
+ "record_type": "night_queue/v1",
+ "created_at": "2026-09-23T21:40:00Z",
+ "order": "risk_first",
+ "budget": {
+  "time_minutes": 240,
+  "model_calls": 200,
+  "reserve_percent": 10,
+  "usable_minutes": 216,
+  "usable_calls": 180
+ },
+ "planned": {
+  "minutes": 70,
+  "calls": 75
+ },
+ "inputs": {
+  ".baltor/night/settings.json": null,
+  ".baltor/night/tickets.json": null,
+  ".baltor/night/estimates.json": null
+ },
+ "items": [
+  {
+   "position": 1,
+   "id": "T-101",
+   "title": "Export writes dates as month first",
+   "risk": "low",
+   "minutes": 25,
+   "calls": 30,
+   "priority": 2,
+   "depends_on": [],
+   "status": "queued"
+  },
+  {
+   "position": 2,
+   "id": "T-102",
+   "title": "Totals row counts refunds twice",
+   "risk": "low",
+   "minutes": 25,
+   "calls": 25,
+   "priority": 1,
+   "depends_on": [],
+   "status": "queued"
+  },
+  {
+   "position": 3,
+   "id": "T-103",
+   "title": "Import stops on an empty last line",
+   "risk": "low",
+   "minutes": 20,
+   "calls": 20,
+   "priority": 3,
+   "depends_on": [],
+   "status": "queued"
+  }
+ ],
+ "held": [
+  {
+   "id": "T-104",
+   "reason_code": "vague_acceptance",
+   "reason": "Its acceptance criteria cannot be checked by a command.",
+   "reasons": [
+    "vague_acceptance"
+   ]
+  }
+ ],
+ "warnings": []
+}

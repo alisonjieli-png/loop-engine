@@ -1,0 +1,6 @@
+{
+ "table_path": "data/raw/customers.csv",
+ "output_dir": "work/cleaning-plan",
+ "max_rows": 50000,
+ "delimiter": "comma"
+}

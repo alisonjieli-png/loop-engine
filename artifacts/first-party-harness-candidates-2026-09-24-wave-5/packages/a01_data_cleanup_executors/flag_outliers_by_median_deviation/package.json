@@ -1,0 +1,338 @@
+{
+  "record_type": "wave5_candidate_package/v1",
+  "proposal": {
+    "id": "flag_outliers_by_median_deviation",
+    "title": "Flag numeric outliers by median deviation",
+    "purpose": "Flag numeric values that lie beyond a declared multiple of the median absolute deviation, per column or per group, and report them without deleting or changing any row.",
+    "sources": [
+      "src/loop_engine/core/service_runtime/catalogue_packages.py",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md",
+      "examples/29_intelligence_service/starter-catalogue/bodies/choose_metrics_by_task_type_and_industry.md"
+    ],
+    "layer": "code",
+    "family": "native_skill_with_scripts",
+    "search_tags": [
+      "flag outliers",
+      "median absolute deviation",
+      "robust outlier detection",
+      "outliers per group",
+      "find extreme values in a csv column",
+      "mad based anomaly flags",
+      "outliers without deleting rows",
+      "suspicious amounts per store",
+      "modified z score alternative",
+      "mark outliers in a copy"
+    ],
+    "tags": {
+      "language": [
+        "en"
+      ],
+      "domain": [
+        "data cleaning"
+      ],
+      "role": [
+        "data analyst",
+        "data engineer"
+      ]
+    },
+    "symbols": [
+      "Refusal",
+      "Arguments",
+      "plain_number",
+      "median",
+      "text_of",
+      "ratio_text",
+      "delimiter_of",
+      "root_of",
+      "confined",
+      "read_input",
+      "parse_table",
+      "column_index",
+      "prepare_output",
+      "write_copy",
+      "shown",
+      "multiple_of",
+      "arguments",
+      "run",
+      "render",
+      "emit",
+      "main"
+    ],
+    "declared_effects": [
+      "reads_fs",
+      "writes_fs",
+      "spawns_process"
+    ],
+    "kind": "skill",
+    "styles": [
+      "claude_code",
+      "codex",
+      "gemini",
+      "opencode",
+      "pi"
+    ],
+    "dependencies": [
+      "python>=3.10 standard library only"
+    ],
+    "producer": {
+      "producer_identity": "Claude Code wave 5 generator a01_data_cleanup_executors",
+      "family": "anthropic",
+      "method_identity": "claude_code_wave5_native_authoring/v1"
+    },
+    "files": [
+      {
+        "path": "LICENSE",
+        "digest": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea",
+        "size_bytes": 1068,
+        "media_type": "text/plain",
+        "role": "other"
+      },
+      {
+        "path": "SKILL.md",
+        "digest": "dcaee59a51b02e5cca9633e2db6fd63fa6a2eeeaef18f100bea40a589e393f4e",
+        "size_bytes": 3271,
+        "media_type": "text/markdown",
+        "role": "skill_definition"
+      },
+      {
+        "path": "references/method-and-fields.md",
+        "digest": "537335e0c558bd65296014d93a3cea74b659ccf8719eb935546113d5902b97a0",
+        "size_bytes": 4983,
+        "media_type": "text/markdown",
+        "role": "skill_reference"
+      },
+      {
+        "path": "scripts/flag_outliers.py",
+        "digest": "b51b7d2388812e0d7ef244fe9fb8eddab9d96ac8ad47c2f166bd97caeaf8c6b5",
+        "size_bytes": 20241,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      },
+      {
+        "path": "tests/test_flag_outliers.py",
+        "digest": "e9669b8aa228c4f6c0507917dacddf79def73e86b813442b0071efade32f6679",
+        "size_bytes": 11659,
+        "media_type": "text/x-python",
+        "role": "skill_script"
+      }
+    ]
+  },
+  "wave5": {
+    "assignment_id": "a01_data_cleanup_executors",
+    "file_class": "skill_with_scripts_and_tests",
+    "use_cases": [
+      "data_cleanup_without_an_expensive_model"
+    ],
+    "harness_targets": [
+      "claude_code",
+      "codex",
+      "opencode",
+      "pi",
+      "gemini_cli"
+    ],
+    "unverified_targets": {},
+    "not_placed": {},
+    "native_name": "flag-outliers-by-median-deviation",
+    "version": "0.2.0",
+    "entrypoints": {
+      "claude_code": "SKILL.md",
+      "codex": "SKILL.md",
+      "opencode": "SKILL.md",
+      "pi": "SKILL.md",
+      "gemini_cli": "SKILL.md"
+    },
+    "placements": {
+      "claude_code": {
+        "LICENSE": {
+          "destination": ".claude/skills/flag-outliers-by-median-deviation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".claude/skills/flag-outliers-by-median-deviation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/method-and-fields.md": {
+          "destination": ".claude/skills/flag-outliers-by-median-deviation/references/method-and-fields.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/flag_outliers.py": {
+          "destination": ".claude/skills/flag-outliers-by-median-deviation/scripts/flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_flag_outliers.py": {
+          "destination": ".claude/skills/flag-outliers-by-median-deviation/tests/test_flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "codex": {
+        "LICENSE": {
+          "destination": ".agents/skills/flag-outliers-by-median-deviation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".agents/skills/flag-outliers-by-median-deviation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/method-and-fields.md": {
+          "destination": ".agents/skills/flag-outliers-by-median-deviation/references/method-and-fields.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/flag_outliers.py": {
+          "destination": ".agents/skills/flag-outliers-by-median-deviation/scripts/flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_flag_outliers.py": {
+          "destination": ".agents/skills/flag-outliers-by-median-deviation/tests/test_flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "opencode": {
+        "LICENSE": {
+          "destination": ".opencode/skills/flag-outliers-by-median-deviation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".opencode/skills/flag-outliers-by-median-deviation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/method-and-fields.md": {
+          "destination": ".opencode/skills/flag-outliers-by-median-deviation/references/method-and-fields.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/flag_outliers.py": {
+          "destination": ".opencode/skills/flag-outliers-by-median-deviation/scripts/flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_flag_outliers.py": {
+          "destination": ".opencode/skills/flag-outliers-by-median-deviation/tests/test_flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "pi": {
+        "LICENSE": {
+          "destination": ".pi/skills/flag-outliers-by-median-deviation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".pi/skills/flag-outliers-by-median-deviation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/method-and-fields.md": {
+          "destination": ".pi/skills/flag-outliers-by-median-deviation/references/method-and-fields.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/flag_outliers.py": {
+          "destination": ".pi/skills/flag-outliers-by-median-deviation/scripts/flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_flag_outliers.py": {
+          "destination": ".pi/skills/flag-outliers-by-median-deviation/tests/test_flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        }
+      },
+      "gemini_cli": {
+        "LICENSE": {
+          "destination": ".gemini/skills/flag-outliers-by-median-deviation/LICENSE",
+          "operation": "copy_exact_bytes"
+        },
+        "SKILL.md": {
+          "destination": ".gemini/skills/flag-outliers-by-median-deviation/SKILL.md",
+          "operation": "copy_exact_bytes"
+        },
+        "references/method-and-fields.md": {
+          "destination": ".gemini/skills/flag-outliers-by-median-deviation/references/method-and-fields.md",
+          "operation": "copy_exact_bytes"
+        },
+        "scripts/flag_outliers.py": {
+          "destination": ".gemini/skills/flag-outliers-by-median-deviation/scripts/flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        },
+        "tests/test_flag_outliers.py": {
+          "destination": ".gemini/skills/flag-outliers-by-median-deviation/tests/test_flag_outliers.py",
+          "operation": "copy_exact_bytes"
+        }
+      }
+    },
+    "file_extensions": {
+      "LICENSE": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "licence_notice",
+        "tested_by": []
+      },
+      "SKILL.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "native_discovery",
+        "tested_by": [
+          "tests/test_flag_outliers.py"
+        ]
+      },
+      "references/method-and-fields.md": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "referenced_resource",
+        "tested_by": [
+          "tests/test_flag_outliers.py"
+        ]
+      },
+      "scripts/flag_outliers.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": [
+          "tests/test_flag_outliers.py"
+        ]
+      },
+      "tests/test_flag_outliers.py": {
+        "mode": "0644",
+        "license": "MIT",
+        "pickup": "explicit_invocation",
+        "tested_by": []
+      }
+    },
+    "render_placeholders": {},
+    "tests": {
+      "command": [
+        "python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "minimum_python": "3.10"
+    },
+    "hooks": [],
+    "servers": [],
+    "first_action": "Run python3 -I -B SKILL_DIR/scripts/flag_outliers.py with --input, each --column and the declared --multiple (and any declared --group-by) as a dry run, and read its JSON report.",
+    "done_when": [
+      "Every flagged value and every group not evaluated is in the report.",
+      "numeric + empty + not_numeric equals input.data_rows for each checked column.",
+      "The report names the copy written with --output, or says that none was written."
+    ],
+    "stop_and_report_when": [
+      "The task gives no multiple.",
+      "The script exits 2 and refuses the input or the arguments.",
+      "flagged_complete, groups_not_evaluated_complete or not_numeric_values_complete is false.",
+      "Values are not plain numbers and need a parsing step first."
+    ],
+    "source_revision": "a1fc74321912cb9e7d0af7dc5d0ecee24c7081f4",
+    "source_digests": {
+      "src/loop_engine/core/service_runtime/catalogue_packages.py": "05203ed9b332c9098aceef9b880f2335dd11c6dd722beaf070cb739b9fd62d77",
+      "case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md": "ffc656d480a5819c2ab7ee91edc055357ab4c34fd61ec5d986735881c2a55558",
+      "docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md": "db802f048e5419483c1a6703e8864c3e8348d704fa553b038cd8395f5711d1e7",
+      "examples/29_intelligence_service/starter-catalogue/bodies/choose_metrics_by_task_type_and_industry.md": "d205a371b1a9a60c662f5c0217711264b5db71659a49846f4f2cd8a1154fb0cf"
+    },
+    "package_digest": "bcc13ab2ca9fbac0ecac0c2716b7401f3ade3e1c8f8f259a432c5f03b790ae5c",
+    "review_note": "review/REVIEW-NOTE.md",
+    "state": "candidate_only",
+    "approval_state": "none"
+  }
+}

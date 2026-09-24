@@ -1,0 +1,30 @@
+{
+  "night": "2026-09-21",
+  "items": [
+    {
+      "id": "T-201",
+      "title": "Reject impossible dates",
+      "status": "verified",
+      "evidence": [{"path": "examples/evidence/t201-after-run.txt", "sha256": "c4cbe579796991d3319dccad7e8cb89e86b348b58ebb56cd047510235551607d", "exit_code": 0}]
+    },
+    {
+      "id": "T-202",
+      "title": "Lower-case slugs",
+      "status": "verified",
+      "evidence": [{"path": "examples/evidence/t202-gate.json", "sha256": "f4b3028e299d7ea78d258d52f05a65cd25a9905aae69e74c880da2653b0316c5"}]
+    },
+    {
+      "id": "T-203",
+      "title": "Nightly export to the warehouse",
+      "status": "blocked_named",
+      "blocked_on": "needs read access to the staging database"
+    },
+    {
+      "id": "T-204",
+      "title": "Duplicate rows in the invoice list",
+      "status": "negative_result",
+      "evidence": ["examples/evidence/t201-after-run.txt"]
+    }
+  ],
+  "counts": {"verified": 2, "blocked_named": 1, "negative_result": 1}
+}
