@@ -37,4 +37,4 @@ A script writes the whole address in lower case. `https://example.com/Docs/Guide
 
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `website_normalize`.
 
-Licence: MIT. Compiled from revision 390643e. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision db18890. The operations module uses only the Python standard library.

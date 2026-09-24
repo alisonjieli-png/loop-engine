@@ -38,4 +38,4 @@ A plan says that the machine has 64 gigabytes of memory. The number comes from a
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the guidance records about measuring and not declaring, probing the environment and streaming when the size is unknown, and the perspectives of the environment prober, the scale reasoner, the performance engineer and the reproducibility engineer.
 - `src/loop_engine/strings/question_engine.py`: the question forms named `inventory_setting` and `workplace_setup`.
 
-Licence: MIT. Compiled from revision 390643e.
+Licence: MIT. Compiled from revision db18890.

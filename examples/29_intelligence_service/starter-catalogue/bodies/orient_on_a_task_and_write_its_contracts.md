@@ -46,4 +46,4 @@ The request says: clean the customer file and send me the result. The agent star
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the questions of the orient and standardize steps, and the guidance records about preserving the original request and separating facts from assumptions.
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for orienting and representing a task.
 
-Licence: MIT. Compiled from revision 390643e.
+Licence: MIT. Compiled from revision db18890.
