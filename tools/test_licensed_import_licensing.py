@@ -97,6 +97,12 @@ class LicenceRuleChecks(unittest.TestCase):
                          {"LICENSE": support.MIT, "skills/demo/LICENSE.txt": support.PROPRIETARY})
         self.assertEqual(result.decision, REFUSED)
 
+    def test_a_primary_file_named_like_a_licence_is_still_decided(self):
+        members = {".claude/commands/license-check.md": "Check every dependency's licence before a release.\n"}
+        result = _decide(members, {"LICENSE": support.MIT}, primary=".claude/commands/license-check.md")
+        self.assertEqual((result.decision, result.spdx_expression), (VERBATIM, "MIT"))
+        self.assertIn(".claude/commands/license-check.md", result.per_file)
+
     def test_manifest_metadata_and_headers_are_read(self):
         self.assertEqual(own_metadata_licence("plugins/x/.claude-plugin/plugin.json", b'{"license": "MIT"}'), "MIT")
         self.assertIsNone(own_metadata_licence("assets/data.json", b'{"license": "GPL-3.0"}'))

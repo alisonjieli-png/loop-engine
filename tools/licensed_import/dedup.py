@@ -91,6 +91,34 @@ def near_engine(settings: "dict | None" = None):
     return decision, chosen[0].from_settings({}, {})
 
 
+class LazyShingles:
+    """Shingle sets made one at a time as an engine iterates, so a round's texts never all hold theirs at once.
+
+    Both near-duplicate engines read their documents only through `items()`,
+    turning each shingle set into a signature before the next is made. Texts
+    with no words are left out, as they were when the sets were built eagerly.
+    """
+
+    def __init__(self, texts: dict) -> None:
+        self._texts = {key: text for key, text in texts.items() if normalized(text)}
+
+    def __len__(self) -> int:
+        return len(self._texts)
+
+    def __iter__(self):
+        return iter(self._texts)
+
+    def keys(self):
+        return self._texts.keys()
+
+    def items(self):
+        for key, text in self._texts.items():
+            yield key, shingles(text)
+
+    def __getitem__(self, key):
+        return shingles(self._texts[key])
+
+
 class DuplicateIndex:
     """Every subject of one resolution, grouped by the four signals and decided group by group."""
 
@@ -135,8 +163,7 @@ class DuplicateIndex:
                     join(by_text[digest], key, "normalized_text", 1.0)
                 else:
                     by_text[digest] = key
-        documents = {key: shingles(self.subjects[key].text) for key in keys}
-        documents = {key: value for key, value in documents.items() if value}
+        documents = LazyShingles({key: self.subjects[key].text for key in keys})
         if len(documents) > 1:
             for left, right, estimate in self.engine.pairs(documents, self.threshold):
                 join(left, right, "near_text", estimate)

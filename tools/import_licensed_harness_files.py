@@ -235,6 +235,51 @@ def sync(args) -> dict:
     return summary
 
 
+def export_review(args) -> dict:
+    """Select, scan and write stored candidates as a catalogue folder the review panel can load."""
+    from loop_engine.catalog.query import IntelligenceQuery
+    from licensed_import import review_export
+    from licensed_import.storage import NAMESPACE
+    store = ImportStore(Path(args.store_root), writes_authorized=False)
+    try:
+        payloads = [row["payload"] for row in store.records.query(
+            IntelligenceQuery(namespaces=(NAMESPACE,), lifecycle=("candidate",)))]
+        sizes = {entry["digest"]: entry["size_bytes"] for payload in payloads for entry in payload["package"]["files"]}
+        reader = lambda digest: store.bodies.read(digest, sizes[digest])  # noqa: E731
+        first_source = {}
+        for row in _read_jsonl(Path(args.run_folder) / "leads.jsonl"):
+            key = row["repository"].lower()
+            if key not in first_source or discovery.SOURCE_PRIORITY.get(row["engine_id"], 99) < \
+                    discovery.SOURCE_PRIORITY.get(first_source[key], 99):
+                first_source[key] = row["engine_id"]
+        chosen, skipped = review_export.select(payloads, first_source, discovery.SOURCE_PRIORITY,
+                                               limit=args.limit, per_repository=args.per_repository)
+        checks = None
+        if args.skillspector_program or args.cisco_scanner_program:
+            extra = ([CiscoSkillScanner(args.cisco_scanner_program, str(Path(args.work_folder) / "cisco"))]
+                     if args.cisco_scanner_program else [])
+            checks = StaticChecks({"skillspector_program": args.skillspector_program or "",
+                                   "work_folder": str(Path(args.work_folder) / "scan")},
+                                  extra_engines=extra, switched_off=("builtin_static_rules",))
+        started = time.monotonic()
+        kept, refused = review_export.scan_selection(chosen, reader, checks, target=args.target,
+                                                     scan_workers=args.scan_workers)
+        summary = {"stored_candidates": len(payloads), "limit": args.limit, "target": args.target,
+                   "per_repository": args.per_repository, "selected": len(chosen),
+                   "not_selected": dict(skipped), "scanned": len(chosen) if checks else 0,
+                   "scan_seconds": round(time.monotonic() - started, 1),
+                   "scan_engines": checks.describe()["engines"] if checks else [],
+                   "blocked": dict(Counter(row["detail"] for row in refused).most_common()),
+                   "blocked_count": len(refused)}
+        report = review_export.export(kept, reader, Path(args.output), code_revision=args.code_revision,
+                                      first_source=first_source, summary=summary)
+        _rewrite(Path(args.output) / "scan-refusals.jsonl", refused)
+    finally:
+        store.close()
+    print(json.dumps({key: report[key] for key in ("items", "licences", "kinds", "repositories")}, indent=1))
+    return report
+
+
 def report(args) -> dict:
     result = build_report(Path(args.run_folder).resolve(), Path(args.store_root).resolve(), Path(args.output).resolve(),
                           workers=args.workers)
@@ -276,6 +321,18 @@ def parser() -> argparse.ArgumentParser:
     two.add_argument("--corpus-artifacts", action="append")
     two.add_argument("--corpus-overnight", action="append")
     two.add_argument("--corpus-ls1", action="append")
+    four = commands.add_parser("export-review")
+    four.add_argument("--run-folder", required=True)
+    four.add_argument("--store-root", required=True)
+    four.add_argument("--output", required=True, help="a new folder outside the repository")
+    four.add_argument("--code-revision", required=True, help="the committed revision of this tool")
+    four.add_argument("--limit", type=int, default=2400)
+    four.add_argument("--target", type=int, default=2000)
+    four.add_argument("--per-repository", type=int, default=15)
+    four.add_argument("--work-folder", default="")
+    four.add_argument("--scan-workers", type=int, default=8)
+    four.add_argument("--skillspector-program")
+    four.add_argument("--cisco-scanner-program")
     three = commands.add_parser("report")
     three.add_argument("--run-folder", required=True)
     three.add_argument("--store-root", required=True)
@@ -286,7 +343,7 @@ def parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = parser().parse_args(argv)
-    {"discover": discover, "sync": sync, "report": report}[args.command](args)
+    {"discover": discover, "sync": sync, "report": report, "export-review": export_review}[args.command](args)
     return 0
 
 

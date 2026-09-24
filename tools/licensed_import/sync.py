@@ -334,6 +334,12 @@ class SyncRound:
             outcome.refusals.append(refusal("repository", reason, repository=repository, revision=snapshot.commit,
                                             detail=error.detail[:200], source_ids=plan.sources))
             outcome.state = REFUSED_STATE
+        except Exception as error:  # one repository's unexpected failure never stops the round
+            outcome.candidates, outcome.ideas, outcome.texts, outcome.restricted = [], [], {}, {}
+            outcome.refusals.append(refusal("repository", "repository_job_failed", repository=repository,
+                                            revision=snapshot.commit, detail=f"{type(error).__name__}: {error}"[:200],
+                                            source_ids=plan.sources))
+            outcome.state = REFUSED_STATE
         finally:
             engine.close(snapshot)
         outcome.elapsed_seconds = round(self.clock() - started, 3)

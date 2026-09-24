@@ -237,6 +237,60 @@ class SyncChecks(unittest.TestCase):
         self.assertNotIn("k3", resolution.kept)
         self.assertEqual(len(resolution.kept), 6)
 
+    def test_one_repository_failing_unexpectedly_never_stops_the_round(self):
+        from unittest import mock
+        from licensed_import import sync as sync_module
+        original = sync_module.decide_package
+
+        def exploding(members, primary, *args, **kwargs):
+            if "skills/join-check/SKILL.md" in members:
+                raise RuntimeError("unexpected")
+            return original(members, primary, *args, **kwargs)
+
+        with mock.patch.object(sync_module, "decide_package", exploding):
+            _engine, _sync, outcomes, *_rest = self._round("boom", REPOSITORIES, LICENCES)
+        failed = [row for outcome in outcomes for row in outcome.refusals if row["reason"] == "repository_job_failed"]
+        self.assertEqual(sorted(row["repository"] for row in failed), ["acme/tools", "mirror/copy"])
+        self.assertIn("collector/c", {outcome.repository for outcome in outcomes})
+
+    def test_the_review_export_writes_the_panels_layout_outside_the_repository(self):
+        import json
+        from loop_engine.catalog.query import IntelligenceQuery as Query
+        from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+        from licensed_import import review_export
+        from licensed_import.discovery import SOURCE_PRIORITY
+        self._round("one", REPOSITORIES, LICENCES)
+        payloads = [row["payload"] for row in self.store.records.query(
+            Query(namespaces=(NAMESPACE,), lifecycle=("candidate",)))]
+        sizes = {entry["digest"]: entry["size_bytes"] for payload in payloads for entry in payload["package"]["files"]}
+        reader = lambda digest: self.store.bodies.read(digest, sizes[digest])  # noqa: E731
+        first = {"acme/tools": DECLARED}
+        chosen, skipped = review_export.select(payloads, first, SOURCE_PRIORITY, limit=10, per_repository=5)
+        self.assertEqual({payload["name"] for payload in chosen}, {"join-check", "reviewer"})
+        kept, refused = review_export.scan_selection(chosen, reader, None, target=10)
+        report = review_export.export(kept, reader, self.folder / "export", code_revision="a" * 40,
+                                      first_source=first, summary={})
+        self.assertEqual((report["items"], report["licences"]), (2, {"MIT": 2}))
+        items = json.loads((self.folder / "export" / "items.json").read_text())
+        self.assertEqual(items["record_type"], "starter_catalogue_candidate_items/v3")
+        for row in items["items"]:
+            package = CataloguePackage.from_dict(row["package"])
+            self.assertEqual((self.folder / "export" / row["body_path"]).read_bytes(), package.document())
+            tree = {path.relative_to(self.folder / "export" / row["package_root"]).as_posix()
+                    for path in (self.folder / "export" / row["package_root"]).rglob("*") if path.is_file()}
+            self.assertEqual(tree, {entry.path for entry in package.files})
+            self.assertEqual(row["producer"]["family"], "upstream_author")
+        population = json.loads((self.folder / "export" / "specifications-001.json").read_text())
+        self.assertEqual({spec["provenance"]["authoring"] for spec in population["specifications"]},
+                         {"imported_verbatim_under_permissive_licence"})
+        shell = {**payloads[0], "package": {"body_form": "package", "files": payloads[0]["package"]["files"] + [
+            {"path": "run.sh", "digest": "0" * 64, "size_bytes": 3, "media_type": "application/x-sh",
+             "role": "skill_script"}]}}
+        self.assertEqual(review_export.reviewable(shell), "a_file_is_not_reviewable_text")
+        with self.assertRaises(FileExistsError):
+            review_export.export(kept, reader, self.folder / "export", code_revision="a" * 40, first_source=first,
+                                 summary={})
+
     def test_resolved_metadata_is_cached_and_not_read_again(self):
         repositories = {f"o/r{index}": {"commit": "1" * 40, "licence": "MIT"} for index in range(3)}
         cache = self.folder / "metadata.jsonl"

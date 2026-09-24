@@ -122,7 +122,9 @@ def decide_package(members: dict, primary: str, licence_bytes: dict, *, github_s
     files = licence_file_set(licence_bytes, root, github_spdx)
     per_file, carried = {}, set()
     for path, payload in sorted(members.items()):
-        if is_licence_file(path) or is_notice_file(path):
+        # A licence or notice text inside the package is carried, not decided; the primary file
+        # is always decided, even when its name looks like one (a command named license-check.md).
+        if path != primary and (is_licence_file(path) or is_notice_file(path)):
             continue
         folder_notices = tuple(
             (notice, bytes_digest(licence_bytes[notice])) for notice in sorted(licence_bytes)

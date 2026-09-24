@@ -84,7 +84,7 @@ REASONS = {
                 "lead_not_a_harness_path", "ambiguous_seed_name", "seed_name_not_found"),
     REPOSITORY: ("repository_unavailable", "repository_is_fork", "repository_is_private", "repository_empty",
                  "tree_too_large", "fetch_failed", "blob_fetch_incomplete", "no_harness_files",
-                 "repository_declared_excluded"),
+                 "repository_declared_excluded", "repository_job_failed"),
     PACKAGE: ("package_path_invalid", "package_too_many_files", "package_too_large", "file_above_fetch_limit",
               "file_bytes_mismatch", "symbolic_link_in_package", "submodule_in_package", "empty_package",
               "primary_file_not_text", "primary_file_too_short", "manifest_not_json"),
