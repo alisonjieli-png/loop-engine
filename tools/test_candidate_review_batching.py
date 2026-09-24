@@ -367,6 +367,8 @@ class RunLimitTest(unittest.TestCase):
                               families=("zhipu", "deepseek"))
             silent = run(harness, requests())
             self.assertEqual(silent.calls, [], "without a written reason no call is spent below the quorum")
+            self.assertTrue(all(panel_module.NOT_ENOUGH_FAMILIES in item.reasons for item in silent.items),
+                            "each item says why no reviewer was asked")
             collected = run(harness, requests(), run_id="run-2", collect_below_quorum_reason=reason)
             self.assertEqual(len(collected.calls), 2)
             self.assertEqual(set(outcomes(collected).values()), {panel_module.PANEL_INCOMPLETE})

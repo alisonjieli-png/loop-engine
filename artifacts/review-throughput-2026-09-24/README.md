@@ -8,6 +8,12 @@ Nothing here is approved, staged or served.
 review-throughput-2026-09-24
 ├── probes/review-engine-probes.json
 │   └── two Codex probes (usage limit, no model response) and one Claude probe
+├── probes/ollama-allowance-probe-N.json and probe_ollama_allowance.py
+│   └── one small recorded Ollama Cloud call before each batch of review calls
+├── check_removed_guards.py
+│   └── removes each new guard in a scratch worktree and runs its checks
+├── calibration/
+│   └── the shipped calibration sets in reversed order, for position effects
 └── overnight-attribution/
     ├── attribution.json   every overnight candidate of the zhipu, moonshot and
     │                      nvidia lanes: lane, model, declared family, file kind,
@@ -23,10 +29,14 @@ review-throughput-2026-09-24
 | codex-1 | `codex exec --json`, the panel's arguments without `--ephemeral` | The service refused for the subscription's usage limit, until September 29 at 5:24 PM. The session record names the thread once and the pinned model `gpt-6-sol`. |
 | codex-2 | the same with `-c project_doc_max_bytes=0` | The same refusal. The owner's global instruction pointer (624 characters) was still sent, so the setting does not keep it out. |
 | claude-1 | `claude -p --safe-mode --tools '' --output-format json --no-session-persistence --model claude-opus-5-5` | Answered `READY`; model usage names only `claude-opus-5-5`; 2 input, 4 output, 531 cache read and 1,311 cache write tokens; a list cost of 0.0107 United States dollars, charged to the owner's subscription, not billed separately. |
+| ollama-1 | `probe_ollama_allowance.py --installation ollama.gpt-oss-120b`, 17:16 UTC | The listing answered (19 models). The one call ended `usage_limit_reached` in 0.4 seconds with no usage reported: the Ollama Cloud allowance was still spent after 1 PM Eastern. |
 
 The Codex probes count against the Codex ceiling of 300 calls (2 used, no
 model response). The Claude probe counts against the owner's cap of 150 Claude
-review calls (1 used).
+review calls (1 used). Each Ollama probe is one recorded call through the
+panel's own gateway engine, made before any batch of review calls; a spent
+allowance keeps every Ollama installation out of the next command with that
+probe as the written reason.
 
 ## Overnight attribution
 
