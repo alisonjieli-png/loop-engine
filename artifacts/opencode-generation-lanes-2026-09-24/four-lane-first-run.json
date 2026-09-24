@@ -1,0 +1,76 @@
+{
+  "lanes": 4,
+  "ideas_per_lane": 1,
+  "runs": [
+    {
+      "record_type": "opencode_generation_lane_run/v1",
+      "run_id": "lane-ollama-gpt-oss-20b-text-standardization-data-cleaning-20260924T032920Z",
+      "lane_id": "lane-ollama-gpt-oss-20b",
+      "provider": "ollama-cloud",
+      "base_url": "https://ollama.com/v1",
+      "model": "gpt-oss:20b",
+      "idea_id": "text-standardization-data-cleaning",
+      "method_signature": "text|standardization|data_cleaning",
+      "started_at": "20260924T032920Z",
+      "exit_code": 0,
+      "artifact_files": {},
+      "candidate_sha256": "2588aa8608784af6db86b445398324582f418c4fbe633013272182dc13ba320d",
+      "candidate_bytes": 1121,
+      "outcome": "candidate_written",
+      "finished_at": "20260924T032932Z"
+    },
+    {
+      "record_type": "opencode_generation_lane_run/v1",
+      "run_id": "lane-ollama-gemma4-31b-text-standardization-data-cleaning-20260924T032932Z",
+      "lane_id": "lane-ollama-gemma4-31b",
+      "provider": "ollama-cloud",
+      "base_url": "https://ollama.com/v1",
+      "model": "gemma4:31b",
+      "idea_id": "text-standardization-data-cleaning",
+      "method_signature": "text|standardization|data_cleaning",
+      "started_at": "20260924T032932Z",
+      "exit_code": 0,
+      "artifact_files": {},
+      "candidate_sha256": "6288e4a9d487ea6db345a086014ada93ed39b13c81fa59ed9d7902c7f3e71bdf",
+      "candidate_bytes": 1299,
+      "outcome": "candidate_written",
+      "finished_at": "20260924T032937Z"
+    },
+    {
+      "record_type": "opencode_generation_lane_run/v1",
+      "run_id": "lane-ollama-glm-53-flash-text-standardization-data-cleaning-20260924T032937Z",
+      "lane_id": "lane-ollama-glm-53-flash",
+      "provider": "ollama-cloud",
+      "base_url": "https://ollama.com/v1",
+      "model": "glm-5.3-flash",
+      "idea_id": "text-standardization-data-cleaning",
+      "method_signature": "text|standardization|data_cleaning",
+      "started_at": "20260924T032937Z",
+      "exit_code": 0,
+      "artifact_files": {
+        "skill_md": "/tmp/opencode/lane-smoke/lane-ollama-glm-53-flash/workspace/text-standardization-data-cleaning/SKILL.md"
+      },
+      "candidate_sha256": "318f44d0d993b8ebac50598706265acb1190d2f166ef9d9727d71197d8a681f3",
+      "candidate_bytes": 3773,
+      "outcome": "candidate_written",
+      "finished_at": "20260924T033011Z"
+    },
+    {
+      "record_type": "opencode_generation_lane_run/v1",
+      "run_id": "lane-tactical-gemma4-text-standardization-data-cleaning-20260924T033011Z",
+      "lane_id": "lane-tactical-gemma4",
+      "provider": "tactical",
+      "base_url": "https://ai.tacticalengineering.net:6969/v1",
+      "model": "gemma-4-coding-abliterated",
+      "idea_id": "text-standardization-data-cleaning",
+      "method_signature": "text|standardization|data_cleaning",
+      "started_at": "20260924T033011Z",
+      "exit_code": 0,
+      "artifact_files": {},
+      "candidate_sha256": "7c803427fe99f82c9d709866b04129e1852cf7e2ba22712f3ca99a49cd60285c",
+      "candidate_bytes": 1084,
+      "outcome": "candidate_written",
+      "finished_at": "20260924T033016Z"
+    }
+  ]
+}
