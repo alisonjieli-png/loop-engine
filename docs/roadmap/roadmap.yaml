@@ -1389,6 +1389,8 @@ continuation:
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.100, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1511,6 +1513,7 @@ continuation:
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
       continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.100]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -3654,3 +3657,19 @@ steps:
     acceptance: "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call."
     evidence: "September 24, 2026, the owner: \"Do we have an MCP or tool or API endpoint for managemnet functions like managing users, searching users, searching data, activity logs, adding credits to users, emailing users custom information, signing users up if they sign up offline via an email collection form or breadsheet share\" and \"can we easily add more files and searchable database entries without having to go through a full deploy\". Built and checked locally the same day; see docs/verification/STAFF-TOOLS-2026-09-24.md."
     next_local_work: "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service."
+  - id: S-6.100
+    phase: 6
+    title: "The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply"
+    status: offline_verified
+    depends_on: [S-6.36]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/deck.html, tools/test_deck_page.py, tools/deck_checks.mjs]
+    verify:
+      - "deck.baltor.ai opens the deck at its root through the typed hostname table, and /deck serves the same page on every hostname"
+      - "every number on a slide sits in a fact that names its saved record, a visible source note links that record, and the record contains the number"
+      - "no retired word, word of an invitation-only service or runtime word on the page, in its head or in its script"
+      - "the arrow keys, a swipe, the overview, a slide's own address and full screen move the deck; every slide fits 1440 by 900 and reads at 390 wide"
+      - "the shared header and footer match the site map, and a shared link shows the deck's own card"
+    adversarial: "A number without a source note or absent from its record, a record or pointer that does not exist, a retired or invitation word, a dropped arrow key or swipe, and a hostname that opens another page must each fail a named check with its known-wrong case or removed-guard control."
+    acceptance: "The owner can send deck.baltor.ai to anyone, and every number on it traces to a record a reader can open."
+    evidence: "September 24, 2026: the page, its checks and the evidence in artifacts/deck-2026-09-24. tools/test_deck_page.py passes 17 of 17 with a mutant control for each rule, and the browser suite passed 707 of 707 with 135 of 135 removed-guard controls detected; the hardcoding gate finds no new high finding. The fact check replaced the README's three model families with three independent reviewers, which reviews.json supports."
+    next_local_work: "Merge with the hostname routing of the showcase work: in its version 2 site map give /deck a description, a listing choice and a footer or page link, because version 2 refuses a hostname root that only earlier links reach; keep the deck's own shared-link card, which the version 2 head writer replaces with the site-wide picture unless a page can name its own; copy the merged shared header and footer into deck.html. Then release and check deck.baltor.ai live, and correct the README sentence on model families. The owner supplies any team, funding or contact email slide."
