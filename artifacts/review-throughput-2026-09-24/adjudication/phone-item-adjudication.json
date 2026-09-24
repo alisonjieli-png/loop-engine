@@ -1,0 +1,193 @@
+{
+ "calls": [
+  {
+   "body_sha256": "da32d40945936bdc4895fc8ee536f44b2baabc90bb4339b63f924d2eddd010e3",
+   "charge_basis": "reservation",
+   "charged_tokens": 27204,
+   "decision": "",
+   "elapsed_seconds": 3.524,
+   "engine_kind": "provider_binding",
+   "engine_version": "provider_binding/tactical_gemma_4_coding_abliterated",
+   "error_code": "network_unreachable",
+   "family": "google",
+   "identity": "normalize_phone_numbers",
+   "installation_id": "tactical.gemma-4-coding-abliterated",
+   "installation_sha256": "99e0113479e0bcf770ada3da98c99f3df480ada9ae5b492ea69ea042daee46a8",
+   "invalid_answer_excerpt": "",
+   "model": "gemma-4-coding-abliterated",
+   "model_version": {
+    "binding_sha256": "701d978e37f88c60906cf2c668481ce4796a64dc4c2f6dc61549df8f2058ee80",
+    "capacity_sha256": "f0b71ce3764e1eb6018060676a2ff8102f427b82c71b36e8515246f6ff01825e",
+    "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+    "tls_pinned_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+   },
+   "outcome": "provider_unavailable",
+   "pause_seconds_after": 0.0,
+   "physical_calls_basis": "",
+   "physical_model_calls": 1,
+   "prompt_sha256": "3ca0b8c2c338ed01a71ae940461a86e449995bff1d8bf90abc62153bee0fa181",
+   "record_type": "candidate_review_call/v2",
+   "reported_model": "",
+   "request_record_type": "candidate_review_request/v1",
+   "request_sha256": "d170e94eecd12d5dde9bde10fa640d1ff1ad18b9a3835acacdea4beb19419450",
+   "reserved_tokens": 27204,
+   "retry_after_seconds": null,
+   "review_key": "8fffc789d93b3acc28cd529b73f320e584727510ec8360b6007afff6d5345b0a",
+   "route_or_command": "tactical:review.tactical.gemma-4-coding-abliterated",
+   "run_id": "phone-adjudication-20260924T222137Z",
+   "sequence": 1,
+   "started_at": "2026-09-24T22:21:39.619216Z",
+   "usage": {
+    "cached_input_tokens": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "reasoning_output_tokens": null,
+    "source": "unknown"
+   }
+  }
+ ],
+ "decision": "no_verdict",
+ "decision_rule": "Any independent written rejection withdraws the standing approval of the judged bytes and of every earlier digest of the item that differs only in its anchor line. The rejecting reasons name the repair (narrow or replace); a repair is new bytes that need a new review and a new measurement. If every eligible reviewer approves, the standing approval is left unchanged; one family cannot grant a new approval.",
+ "evidence": {
+  "path": "artifacts/review-throughput-2026-09-24/adjudication/phone-item-evidence.md",
+  "sha256": "71e900debc543183fdc45fe8fdd41ef8d4676d24def5bb05f2dc25cfe295b204"
+ },
+ "identity": "normalize_phone_numbers",
+ "ineligible": {
+  "claude_code.bare": "disabled",
+  "claude_code.subscription": "producer_family",
+  "codex.gpt-6-sol": "the Codex subscription usage limit lasts until 2026-09-29 17:24 Eastern (probes codex-1 and codex-2)",
+  "ollama.deepseek-v4-pro": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.glm-5.3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.gpt-oss-120b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.kimi-k2.6": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.kimi-k3": "disabled",
+  "ollama.minimax-m3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.mistral-large-3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC",
+  "ollama.qwen3.5-397b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-2 recorded usage_limit_reached at 22:21 UTC"
+ },
+ "ledger": "artifacts/review-throughput-2026-09-24/adjudication/ledger.jsonl",
+ "panel_outcome": "panel_incomplete",
+ "panel_rule": "no_standing_verdict_yet",
+ "prechecks": {
+  "reasons": [],
+  "refused": false,
+  "results": [
+   {
+    "engine_id": "builtin_licence_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "licence",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "builtin_format_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "format",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "agent_skills_reference",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the program 'agentskills' is not installed on this machine"
+     }
+    ],
+    "kind": "format",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   },
+   {
+    "engine_id": "builtin_static_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "safety",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "skillspector_static",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the program 'skillspector' is not installed on this machine"
+     }
+    ],
+    "kind": "safety",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   },
+   {
+    "engine_id": "builtin_effect_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "effects",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "builtin_secret_patterns",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "secrets",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "exact_shingle_jaccard",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "duplicates",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "datasketch_minhash_lsh",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the datasketch library (MIT licence) is not installed in this interpreter"
+     }
+    ],
+    "kind": "duplicates",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   }
+  ]
+ },
+ "producer": {
+  "family": "anthropic",
+  "producer_identity": "Claude Code"
+ },
+ "reasons": [
+  "approvals_below_quorum"
+ ],
+ "record_type": "catalogue_item_adjudication/v1",
+ "recorded_at": "2026-09-24T22:21:43.422947Z",
+ "repair": [],
+ "request_sha256": "d170e94eecd12d5dde9bde10fa640d1ff1ad18b9a3835acacdea4beb19419450",
+ "reviewed_body_digest": "da32d40945936bdc4895fc8ee536f44b2baabc90bb4339b63f924d2eddd010e3",
+ "reviewed_body_size_bytes": 2579,
+ "reviewed_revision": "9ac6a78e29067df017c616c23a086374d3dcf2b3",
+ "run_id": "phone-adjudication-20260924T222137Z",
+ "served_body_digest_measured": "8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef",
+ "served_body_relation": {
+  "anchor_line_only": true,
+  "different_lines": [
+   43
+  ],
+  "lines": 44,
+  "same_length": true
+ },
+ "served_body_revision": "bb4c6c5b",
+ "served_digest_named_by_the_coordinator": "8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef",
+ "stop_reason": "completed",
+ "verdicts": []
+}

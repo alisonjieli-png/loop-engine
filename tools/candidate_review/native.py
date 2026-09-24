@@ -296,7 +296,10 @@ class NativeCatalogue:
         try:
             folder = self.folder.relative_to(self.repository).as_posix()
         except ValueError:
-            refuse("native_record_root_outside_repository", "persisted review references require a repository-relative catalogue")
+            # Library bodies live outside the public repository. Such a catalogue is named by its absolute
+            # folder; the dated review record's reader refuses any absolute path, so a committed record can
+            # never point outside the repository.
+            folder = self.folder.as_posix()
         return ProducerDeclaration(folder, next(iter(producers.values())), MappingProxyType(producers),
                                    f"{folder}/items.json", "Producer identity, family and versioned method are declared per item.")
 

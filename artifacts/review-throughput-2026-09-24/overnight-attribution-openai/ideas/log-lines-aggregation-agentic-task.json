@@ -1,0 +1,27 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "13-1081.00",
+  "occupation_title": "Logisticians",
+  "task_reference": "Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity."
+ },
+ "brief": "Propose one original harness method for a Logisticians whose task is: Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.. The method's input is a log_lines; the method performs aggregation; the use case is agentic_task. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "log_lines",
+ "id": "log-lines-aggregation-agentic-task",
+ "known_wrong": "A plausible but wrong aggregation of a log_lines is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "log_lines|aggregation|agentic_task",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "agentic_task"
+}

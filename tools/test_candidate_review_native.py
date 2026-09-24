@@ -101,6 +101,17 @@ def codes(outcome):
 
 
 class NativeReaderTest(unittest.TestCase):
+    def test_a_catalogue_outside_the_repository_is_named_by_its_absolute_folder(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = str(Path(directory).resolve())
+            self.assertFalse(directory.startswith(str(ROOT) + "/"))
+            fixture(directory)
+            catalogue = native.NativeCatalogue.load(Path(directory), ROOT)
+            declaration = catalogue.producer_declaration(("anthropic", "google", "openai"))
+        self.assertEqual(declaration.catalogue_folder, Path(directory).resolve().as_posix())
+        self.assertTrue(declaration.evidence_path.startswith("/"),
+                        "a dated record's reader refuses this absolute path, so no committed record names it")
+
     def test_same_size_changed_payload_digest_is_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             row = fixture(directory)
