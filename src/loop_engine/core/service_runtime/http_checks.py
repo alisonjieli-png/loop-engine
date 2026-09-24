@@ -531,6 +531,12 @@ def self_test():
                       "detail": "injected provider transports and owned loopback listeners; no provider is contacted"})
     with tempfile.TemporaryDirectory(prefix="service-account-email-") as directory:
         account_email_checks(account_check, Path(directory))
+    from .account_origin_checks import run_checks as account_origin_checks
+    with tempfile.TemporaryDirectory(prefix="service-account-origin-") as directory:
+        account_origin_checks(check, Path(directory))
+    from .account_administration_checks import run_checks as account_administration_checks
+    with tempfile.TemporaryDirectory(prefix="service-account-administration-") as directory:
+        account_administration_checks(check, Path(directory))
     from .waitlist_checks import run_all_checks as waiting_list_checks
     with tempfile.TemporaryDirectory(prefix="service-waitlist-") as directory:
         for row in waiting_list_checks(Path(directory))["tests"]:

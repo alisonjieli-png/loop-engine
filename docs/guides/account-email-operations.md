@@ -107,7 +107,13 @@ Read them before switching sign-up on.
   generates is random and kept nowhere. The choose-a-password step replaces
   whatever password the account held before the account opens. The provider's
   own public sign-up is the remaining path, because it takes a password from
-  anyone who holds the public key, so it is closed before registration opens.
+  anyone who holds the public key. Since the accounts release of September 24,
+  2026 the service closes that path itself: it honours only an account that
+  carries the provider mark and its own record, and Baltor's sign-up archives
+  and replaces any other account under the address. The
+  [service component guide](../components/service-runtime/README.md#one-way-in)
+  explains it. Closing the provider's public sign-up as well remains advised,
+  and is no longer a condition for opening registration.
 - Whether closing the provider's public sign-up also stops the administration
   interface from creating a user is not established. If it did, every sign-up
   would be answered like an ineligible address and receive the notice message
@@ -246,11 +252,15 @@ To switch one operation on:
    a message is accepted by the service and refused or filtered later.
 2. State the client address source in `http.request_limits`, as shown above.
    Without it the service refuses to start with either Boolean true.
-3. For sign-up only: close the identity provider's own public sign-up
-   ("Allow new users to sign up" off in the project's authentication
-   settings), which only the owner can reach. Then send one sign-up to a
-   reserved address through the service and confirm that the message holds an
-   `/auth/confirm` link, as "What is not established" explains.
+3. For sign-up only: run `loop-engine service mark-accounts` on the host,
+   read the plan, then run it again with `--apply` and the printed
+   `--expected-plan` digest, so that accounts from before the one way in keep
+   working. Then send one sign-up to a reserved address through the service
+   and confirm that the message holds an `/auth/confirm` link. Closing the
+   identity provider's own public sign-up ("Allow new users to sign up" off in
+   the project's authentication settings, which only the owner can reach) is
+   advised and not required; if it is closed, repeat the reserved sign-up, as
+   "What is not established" explains.
 4. For sign-up only: set `browser_identity.registration_enabled` and
    `browser_identity.email_signup_enabled` to true. The service refuses to
    start when sign-up is open and account creation is closed.

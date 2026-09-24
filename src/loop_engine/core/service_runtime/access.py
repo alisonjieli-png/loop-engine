@@ -30,11 +30,12 @@ ACCESS_SOURCE_NAMES = {STRIPE_SNAPSHOT_SOURCE: "subscription", HOST_GRANT_SOURCE
 def paid_access_source(runtime, tenant_id):
     """Where one account's paid access comes from now, read from its recorded source.
 
-    `subscription` for a provider subscription snapshot, `operator_grant` for
-    an explicit host grant, such as an invitation, `promotion_code` for a
+    `subscription` for a provider subscription snapshot, `founding_free_monthly`
+    and `free_monthly` for the two kinds of free monthly Baltor Pro,
+    `operator_grant` for any other explicit host grant, `promotion_code` for a
     redeemed code, and `none` while the account holds no paid access. The
     account holder reads it on the session record, so the website can say that
-    an invitation covers the plan instead of offering a payment. It applies
+    the account includes Baltor Pro instead of offering a payment. It applies
     the entitlement rule the runtime's access source report applies, and reads
     the recorded `source` field; it never guesses from an expiry, a grant or a
     name.
@@ -47,7 +48,9 @@ def paid_access_source(runtime, tenant_id):
         if (row is None or tenant.get("enabled") is not True or tenant.get("body_access_revoked") is not False
                 or runtime._entitlement(row, policy) != BODIES):
             return "none"
-        return ACCESS_SOURCE_NAMES.get(runtime._payload(row, ENTITLEMENT).get("source"), "none")
+        from .free_monthly import free_monthly_kind
+        value = runtime._payload(row, ENTITLEMENT)
+        return free_monthly_kind(value) or ACCESS_SOURCE_NAMES.get(value.get("source"), "none")
 
 
 def _validate_limits(policy):

@@ -8,6 +8,9 @@
   // What the funnel reads: whether the service reports account creation open, where a signed-in account's paid access comes
   // from, and whether this page has asked for a sign-up link.
   let registrationOpen = false, accessSource = "", funnelSent = false;
+  // A signed-in staff member's role, read from the session record. The service decides every permission again.
+  let staffRole = "", staffBusy = false;
+  const coveredSources = ["operator_grant", "free_monthly", "founding_free_monthly"];
   const pending = new Set(), downloads = new Map(), billingRequests = new Map();
   const message = (id, text, error = false) => { $(id).textContent = text; $(id).classList.toggle("error", error); };
   const element = (tag, text, className = "") => { const item = document.createElement(tag); item.textContent = text; if (className) item.className = className; return item; };
@@ -137,6 +140,7 @@
     $("workspace-access-link").textContent = "Sign in to this service"; $("account-access-link").textContent = "Sign in";
     showSignedIn(false);
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
+    staffRole = ""; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
@@ -234,6 +238,8 @@
       const value = await request("/api/v1/session");
       authenticationMode = value.authentication_mode;
       accessSource = typeof value.access_source === "string" ? value.access_source : "";
+      staffRole = typeof value.staff_role === "string" ? value.staff_role : "";
+      $("account-plan").hidden = !coveredSources.includes(accessSource); $("account-plan").textContent = "Your account includes Baltor Pro.";
       const entries = [["Tenant", value.principal.tenant_id], ["Namespace", value.principal.namespace], ["Scopes", value.principal.scopes.join(", ")], ["Access", value.principal.entitlement]];
       facts($("identity-facts"), entries); facts($("account-facts"), entries);
       $("account-state").textContent = "Connected"; $("account-note").textContent = "This connection is scoped to the identity below. Access and subscriptions are checked by the service.";
@@ -247,10 +253,11 @@
       principalScopes = value.principal.scopes;
       $("test-protocol").disabled = authenticationMode === "browser_identity" || !value.principal.scopes.includes("provisioning:metadata") || !capabilities;
       $("setup-identity").textContent = "Connected as " + value.principal.tenant_id + ". Client setup uses a separate local copy of your service token.";
-      $("admin-nav").hidden = !administrator; $("refresh-access").disabled = !administrator;
+      $("admin-nav").hidden = !administrator && !staffRole; $("refresh-access").disabled = !administrator;
       renderFunnel();
       const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app"));
       if (administrator) await loadAccess();
+      if (staffRole) await loadStaff().catch(error => message("staff-message", error.message, true));
       clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : error.message, true); }
   }
@@ -441,6 +448,8 @@
      control unless the service reports checkout open. */
   const funnelPlans = {
     operator_grant:{title:"Your account covers Baltor Pro", text:"There is nothing to pay on this account. Search and downloads are open.", covered:true},
+    free_monthly:{title:"Your account includes Baltor Pro", text:"It is free for this account each month. Search and downloads are open to this account.", covered:true},
+    founding_free_monthly:{title:"Your account includes Baltor Pro", text:"As one of the first accounts, it is free each month. Search and downloads are open to this account.", covered:true},
     promotion_code:{title:"A promotion code covers Baltor Pro", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
     subscription:{title:"You subscribe to Baltor Pro", text:"Manage or cancel the subscription from your account page.", covered:true},
     checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
@@ -606,6 +615,47 @@
     message("admin-message", "Administrator access confirmed. Test tokens cannot delegate administration or billing management.");
   }
   $("refresh-access").addEventListener("click", () => loadAccess().catch(error => message("admin-message", error.message, true)));
+  /* Staff administration. The overview shows what the role may read; a superadmin also sees every account and acts on one
+     at a time, each action under a new request identity. The service checks the role, the session and the time again. */
+  const planNames = {paid:"Paid", free_monthly:"Free monthly", founding_free_monthly:"Founding, free monthly", other_comped:"Other free access", none:"None"};
+  const when = value => value ? new Date(typeof value === "number" ? value * 1000 : value).toLocaleDateString() : "Never";
+  async function loadStaff() {
+    const overview = await request("/api/v1/admin/overview");
+    $("staff-admin").hidden = false; $("admin-login").hidden = true; $("staff-role").textContent = overview.role;
+    const counts = overview.account_counts, usage = overview.usage_counts, health = overview.diagnostics?.health;
+    facts($("staff-counts"), [...(counts ? [["Accounts", String(counts.accounts)], ["Paid", String(counts.plans.paid)],
+      ["Free monthly", String(counts.plans.free_monthly + counts.plans.founding_free_monthly)], ["Founding places", counts.founding_holders + " of " + counts.founding_limit],
+      ["Switched off", String(counts.switched_off)]] : []), ...(usage ? [["Downloads in 30 days", String(usage.downloads_in_the_last_30_days)]] : []),
+      ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : [])]);
+    $("staff-accounts").replaceChildren();
+    if (!overview.permissions.includes("accounts.list")) { message("staff-message", "Your role reads the figures above. Account changes need a superadmin."); return; }
+    const listing = await request("/api/v1/admin/accounts");
+    for (const row of listing.accounts) {
+      const item = element("article", "", "result"); item.dataset.tenant = row.tenant_id;
+      item.append(element("h3", row.email || row.provider_user_id), element("span", planNames[row.plan_state] || row.plan_state, "badge"));
+      item.append(element("p", "Created " + when(row.created_at) + " · " + (row.email_confirmed ? "Confirmed" : "Not confirmed") + " · Last use " + when(row.last_item_at || row.last_sign_in_at)));
+      if (row.founding) item.append(element("p", "Founding account", "caption"));
+      if (row.enabled === false) item.append(element("p", "Switched off", "caption"));
+      const free = row.plan_state === "free_monthly" || row.plan_state === "founding_free_monthly";
+      const actions = !row.tenant_id ? [] : [[free ? "revoke_free_monthly" : "grant_free_monthly", free ? "Revoke free monthly" : "Grant free monthly"],
+        [row.enabled === false ? "enable" : "disable", row.enabled === false ? "Enable" : "Disable"]];
+      for (const [operation, label] of actions) {
+        if (operation === "grant_free_monthly" && row.plan_state === "paid") continue;
+        const button = element("button", label + " for " + (row.email || row.tenant_id), "quiet"); button.type = "button";
+        button.addEventListener("click", async () => {
+          if (staffBusy || !confirm(label + " for " + (row.email || row.tenant_id) + "?")) return;
+          staffBusy = true; button.disabled = true;
+          try { await request("/api/v1/admin/accounts", {record_type:"service_account_administration_request/v1", operation, request_id:crypto.randomUUID(), tenant_id:row.tenant_id});
+            await loadStaff(); message("staff-message", label + " is done."); }
+          catch (error) { message("staff-message", error.message + " Refresh to see the current state before trying again.", true); }
+          finally { staffBusy = false; button.disabled = false; }
+        }); item.append(button);
+      }
+      $("staff-accounts").append(item);
+    }
+    message("staff-message", listing.total + " accounts. Founding places used: " + listing.founding_holders + " of " + listing.founding_limit + ".");
+  }
+  $("refresh-staff").addEventListener("click", () => loadStaff().catch(error => message("staff-message", error.message, true)));
   $("issue-access").addEventListener("submit", async event => {
     event.preventDefault(); if (accessBusy || !accessOptions) return;
     const fields = {record_type:"service_access_request/v1", operation:"issue", tenant_id:$("token-tenant").value, label:$("token-label").value.trim(),

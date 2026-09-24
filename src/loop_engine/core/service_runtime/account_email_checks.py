@@ -1091,9 +1091,13 @@ class IdentityProjectStandIn:
     def _new_user(self, address, password):
         now = datetime.now(timezone.utc)
         user = {"id": str(uuid.uuid4()), "email": address, "password": password, "confirmed_at": None,
-                "created_at": now, "tokens": {SIGNUP_ACTION: None, RECOVERY_ACTION: None}}
+                "created_at": now, "tokens": {SIGNUP_ACTION: None, RECOVERY_ACTION: None}, "app_metadata": {}}
         self.users[address] = user
         return user
+
+    def _user_by_id(self, user_id):
+        """The live user with this identity, or None. A session belongs to a user identity, not an address."""
+        return next((user for user in self.users.values() if user["id"] == user_id), None)
 
     def generate_link(self, request, secret):
         """The administration interface the service calls: record the request and answer it."""
@@ -1146,19 +1150,19 @@ class IdentityProjectStandIn:
 
     def _open(self, user):
         session = self._session_factory(self, user)
-        self.sessions[session] = user["email"]
+        self.sessions[session] = user["id"]
         return session
 
     def set_password(self, session, password):
         """Replace the password of the account a session belongs to, and end its other sessions."""
         with self._lock:
             self._called("set_password")
-            address = self.sessions.get(session)
-            if (address is None or not isinstance(password, str)
+            user = self._user_by_id(self.sessions.get(session))
+            if (user is None or not isinstance(password, str)
                     or not 6 <= len(password.encode("utf-8")) <= MAXIMUM_PASSWORD_BYTES):
                 return False
-            self.users[address]["password"] = password
-            for other in [key for key, owner in self.sessions.items() if owner == address and key != session]:
+            user["password"] = password
+            for other in [key for key, owner in self.sessions.items() if owner == user["id"] and key != session]:
                 del self.sessions[other]
             return True
 
@@ -1175,12 +1179,13 @@ class IdentityProjectStandIn:
     def user_record(self, session):
         """The user as the provider's user address answers it for one session, or None."""
         with self._lock:
-            user = self.users.get(self.sessions.get(session, ""))
+            user = self._user_by_id(self.sessions.get(session, ""))
             if user is None:
                 return None
             return {"id": user["id"], "aud": "authenticated", "role": "authenticated", "email": user["email"],
                     "email_confirmed_at": _stamp(user["confirmed_at"]), "confirmed_at": _stamp(user["confirmed_at"]),
-                    "is_anonymous": False, "app_metadata": {"provider": "email", "providers": ["email"]},
+                    "is_anonymous": False, "app_metadata": {"provider": "email", "providers": ["email"],
+                                                            **user.get("app_metadata", {})},
                     "user_metadata": {}, "identities": [], "created_at": _stamp(user["created_at"]),
                     "updated_at": _stamp(datetime.now(timezone.utc))}
 

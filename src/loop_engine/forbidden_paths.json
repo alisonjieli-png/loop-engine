@@ -199,7 +199,10 @@
     "core/service_runtime/observability_checks.py",
     "core/local_model_readiness.py",
     "core/service_runtime/catalogue_serving_checks.py",
-    "core/library_ingestion/https_transport.py"
+    "core/library_ingestion/https_transport.py",
+    "core/service_runtime/account_origin.py",
+    "core/service_runtime/account_origin_checks.py",
+    "core/service_runtime/account_administration_checks.py"
   ],
   "notes": [
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
@@ -858,6 +861,9 @@
     "core/service_runtime/observability_checks.py": "Real loopback-only acceptance for the request reference, the failure journal and the measured readiness answer. It drives the owned temporary fixture server over loopback so that the privacy guard can read every byte of the durable store afterwards. No external provider, remote account or hosted credential is used.",
     "core/local_model_readiness.py": "Reads the operator-declared local inference server's own model listing and model information before an unattended run starts. Bounded GET and POST to the declared address only, no credential read or sent, no generation, and an injectable opener so every check runs offline.",
     "core/service_runtime/catalogue_serving_checks.py": "Loopback-only catalogue release acceptance: owned temporary listeners from http_test_fixtures, a temporary service store and body folder, and the official HTTP client. No identity, payment or model provider is contacted and no body leaves the machine.",
-    "core/library_ingestion/https_transport.py": "The library ingestion component's one network module: bounded read-only HTTPS GET requests to hosts a run declares (the official Model Context Protocol registry, the npm and PyPI registries for exact-version package checks, the OpenCode schema host), no redirects, no credential sent, every request admitted by a declared ceiling and recorded; it also owns the component's address parsing helpers."
+    "core/library_ingestion/https_transport.py": "The library ingestion component's one network module: bounded read-only HTTPS GET requests to hosts a run declares (the official Model Context Protocol registry, the npm and PyPI registries for exact-version package checks, the OpenCode schema host), no redirects, no credential sent, every request admitted by a declared ceiling and recorded; it also owns the component's address parsing helpers.",
+    "core/service_runtime/account_origin.py": "Identity administration engine for the one way in. Fixed-origin requests to the identity provider's administration interface only, under the account email block's explicit network authority and server key: create a marked user, look one address up, delete a user, mark a user and read one page of users. Redirects are refused, no proxy is inherited and nothing is repeated.",
+    "core/service_runtime/account_origin_checks.py": "Loopback-only checks of the one way in: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider is the in-process stand-in project; no provider, mailbox or external network is used.",
+    "core/service_runtime/account_administration_checks.py": "Loopback-only checks of staff roles and account administration: an owned key set for signed browser tokens and the real service over an owned loopback socket. The provider user list is an injected stand-in; no provider or external network is used."
   }
 }

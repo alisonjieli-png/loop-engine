@@ -127,6 +127,9 @@ class AuthenticatedHttpRequest:
     mode: str
     expires_at: float | None = None
     token_scopes: tuple[str, ...] = ()
+    #: The provider facts a browser session was admitted with, or None. Only
+    #: the browser identity adapter sets it; a staff role is read from it.
+    identity: object = field(default=None, repr=False, compare=False)
 
     @property
     def effective_scopes(self):

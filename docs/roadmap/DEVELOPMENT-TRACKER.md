@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:999b63b768264a664cf2780997b78afbbbf94bbfb7fc3cc073258c17d4ecef60`.
+Source fingerprint: `sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec028695207ffdf`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 40 |
+| Being built now | 41 |
 | Can start next | 13 |
-| Waiting on earlier work | 71 |
+| Waiting on earlier work | 70 |
 | Blocked | 2 |
 | Done | 42 |
 
@@ -24,6 +24,7 @@ Source fingerprint: `sha256:999b63b768264a664cf2780997b78afbbbf94bbfb7fc3cc07325
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
 | S-6.67 | Serve every built page and hostname surface | building | S-6.33 |
 | S-6.65 | Open public registration with email-first sign-up | building | S-6.24, S-6.46 |
+| S-6.85 | One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code | building | S-6.65 |
 | S-6.89 | Superadmin user management and the first 10 accounts free each month | building | S-6.85 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | building | S-6.28 |
@@ -84,7 +85,6 @@ Source fingerprint: `sha256:999b63b768264a664cf2780997b78afbbbf94bbfb7fc3cc07325
 |---|---|---|---|
 | S-6.68 | Support, status and incident response for paying customers | proposed | S-6.35 |
 | S-6.46 | Close the dated deadlines and small gaps before inviting users | proposed | S-6.35 |
-| S-6.85 | One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code | proposed | S-6.65 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
 | S-6.66 | Self-serve paid onboarding with a verified first load in the customer's harness | proposed | S-6.65, S-6.21, S-6.48 |

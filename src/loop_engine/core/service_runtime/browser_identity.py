@@ -4,6 +4,12 @@ Supabase owns passwords, email verification and session issuance. This adapter
 verifies the exact browser-token audience and current provider user before
 mapping the subject through the existing catalogue. Browser tokens are not
 accepted by the Model Context Protocol resource-audience verifier.
+
+Every sign-in and every activation also needs the two marks of an account this
+service created, `account_origin.require_admitted`, so an account made through
+the provider's own public sign-up, or any other way than Baltor's sign-up, is
+refused with `account_origin_unverified`. A new account that came from
+Baltor's sign-up is then considered once for the founding offer.
 """
 from __future__ import annotations
 
@@ -18,6 +24,7 @@ from .http_auth import (AuthenticatedHttpRequest, BROWSER_IDENTITY_AUTHENTICATIO
                         ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url)
 from .records import (ACCESS_MANAGE_SCOPE, DEFAULT_SCOPES, SubjectTenantRegistration,
                       ServiceRuntimeError, identifier, scopes, text)
+from . import account_origin
 
 
 CONFIGURATION_RECORD_TYPE = "browser_identity_configuration/v1"
@@ -65,6 +72,15 @@ class BrowserIdentityConfiguration:
             raise ServiceRuntimeError("invalid_identity_request_limits")
         object.__setattr__(self, "project_url", origin)
         object.__setattr__(self, "allowed_scopes", selected)
+
+
+@dataclass(frozen=True)
+class VerifiedIdentity:
+    """The provider facts one request was admitted with: its subject, its address and its origin."""
+
+    subject: str
+    email: str = field(repr=False)
+    origin: str
 
 
 @dataclass(frozen=True)
@@ -130,10 +146,16 @@ class BrowserIdentityAdapter:
     protocol_version = "browser_identity/v1"
 
     def __init__(self, runtime, configuration: BrowserIdentityConfiguration, secret_resolver, *,
-                 starter_bindings=(), transport=None, follows_active_release=False):
+                 starter_bindings=(), transport=None, follows_active_release=False, founding_accounts=None):
         if not isinstance(configuration, BrowserIdentityConfiguration) or not callable(secret_resolver):
             raise TypeError("typed browser identity configuration and a host secret resolver are required")
+        if founding_accounts is not None and (type(founding_accounts) is not int or founding_accounts < 0):
+            raise TypeError("the founding account count is a whole number")
         self.runtime, self.configuration = runtime, configuration
+        # How many accounts that finish Baltor's sign-up hold the founding offer.
+        # None considers nobody, which is what a host without the accounts
+        # block and every check that does not ask for the offer get.
+        self.founding_accounts = founding_accounts
         self._secrets = secret_resolver
         self._transport = transport or read_identity_user
         self._starter_bindings = tuple(starter_bindings)
@@ -187,29 +209,49 @@ class BrowserIdentityAdapter:
             valid = False
         if not valid:
             raise HttpAuthenticationError("verified_email_required")
+        # One way in: the provider's mark and this service's own record, both
+        # written only when this service created or marked the account.
+        origin = account_origin.require_admitted(self.runtime, self._verifier.configuration.issuer, result)
         if self.runtime.browser_session_revoked(hashlib.sha256(credential.encode()).hexdigest()):
             raise HttpAuthenticationError("browser_session_revoked")
         if expired_by_now(claims, self.runtime._now()):
             raise HttpAuthenticationError()
-        return claims
+        email = result.get("email") if isinstance(result.get("email"), str) else ""
+        return claims, VerifiedIdentity(claims["sub"], email.strip().lower(), origin["origin"])
 
     def activate(self, credential):
+        """Create or find the account of a verified identity that this service created.
+
+        An account that came from Baltor's sign-up is considered once for the
+        founding offer, when it is created or at a later activation if the first
+        consideration was deferred. The offer never delays or refuses the account.
+        """
         if self.configuration.registration_enabled is not True:
             raise ServiceRuntimeError("account_registration_unavailable")
-        claims = self._identity(credential)
-        return self.runtime.ensure_subject_tenant(SubjectTenantRegistration(
+        claims, identity = self._identity(credential)
+        activation = self.runtime.ensure_subject_tenant(SubjectTenantRegistration(
             self._verifier.configuration.issuer, claims["sub"], self.configuration.namespace_prefix,
             self.configuration.allowed_scopes, self._starter_bindings,
             follows_active_release=self._follows_active_release))
+        if self.founding_accounts is not None and identity.origin == account_origin.SIGNUP_ORIGIN:
+            from .free_monthly import DEFERRED, consider_founding_offer
+            try:
+                decision = consider_founding_offer(self.runtime, activation["tenant_id"], self.founding_accounts)
+            except ServiceRuntimeError:
+                # The account is already committed. A store fault here leaves
+                # the decision unmade, and the next activation makes it.
+                decision = DEFERRED
+            activation = {**activation, "founding_offer": decision}
+        return activation
 
     def authenticate(self, credential):
-        claims = self._identity(credential)
+        claims, identity = self._identity(credential)
         try:
             principal = self.runtime.authenticate_subject(self._verifier.configuration.issuer, claims["sub"])
         except Exception:
             raise HttpAuthenticationError("account_unavailable") from None
         return AuthenticatedHttpRequest(principal, credential, BROWSER_IDENTITY_AUTHENTICATION,
-                                        float(claims["exp"]), self.configuration.allowed_scopes)
+                                        float(claims["exp"]), self.configuration.allowed_scopes, identity=identity)
 
     def logout(self, request):
         """Refuse this browser session until the last moment its token could still be accepted.

@@ -54,8 +54,10 @@ records. None of them is an executable graph vertex.
 Hosted intelligence service
 ├── Tenant authority
 │   ├── durable tenant registration
+│   ├── one way in: only accounts its own sign-up created, marked in two places
 │   ├── customer-owned client keys and their scopes
-│   └── administrator access grants
+│   ├── administrator access grants
+│   └── staff roles fixed in code, and superadmin account administration
 ├── Authenticated delivery
 │   ├── catalogue discovery, listing and manifests
 │   ├── one selected body, inline or by download
@@ -71,7 +73,8 @@ Hosted intelligence service
 │   └── the tenant's own usage total
 └── Subscription
     ├── plan listing, checkout and customer portal sessions
-    └── one payment customer bound to one account
+    ├── one payment customer bound to one account
+    └── free monthly Baltor Pro and the founding offer
 ```
 
 It does not own the catalogue's content. Approval of an intelligence item
@@ -99,6 +102,9 @@ effect, so an older release cannot silently reinterpret a newer request.
 | Client access | `service_client_access_options/v1` | `service_client_access_result/v1` |
 | Administrator access | `service_client_access_options/v1` | `service_client_access_result/v1` |
 | Billing session | `billing_session_request/v1` | `billing_session_effect_outcome/v1` |
+| Staff overview | none | `service_staff_overview/v1` |
+| Account list | none | `service_account_listing/v1` |
+| Account action | `service_account_administration_request/v1` | `service_account_administration_result/v1` |
 
 These are the addresses the service answers on. They are read from
 `core.service_runtime.http`, so a route renamed in the source fails the
@@ -118,6 +124,8 @@ component guide check rather than surviving here.
 | `/api/v1/account/access` | Issue or revoke a customer-owned client key. |
 | `/api/v1/account/logout` | End the browser session. |
 | `/api/v1/admin/access` | Administrator grants. |
+| `/api/v1/admin/overview` | A staff member's role, its permissions and what the role may read. |
+| `/api/v1/admin/accounts` | The account list and one account action, for a superadmin. |
 | `/api/v1/billing/plans` | The plans on offer. |
 | `/api/v1/billing/checkout` | Start a checkout session. |
 | `/api/v1/billing/portal` | Open the customer portal. |
@@ -210,6 +218,9 @@ These are the refusals a client meets most often:
 | `item_withdrawn` | The item version was withdrawn from the library after the served view was built. |
 | `search_filter_not_allowed` | A search filtered on an attribute that is undeclared, internal or not filterable. |
 | `package_file_not_found` | A download named a path the item's package does not hold. |
+| `account_origin_unverified` | The sign-in was not created through Baltor's sign-up. Sign up again with the same address. |
+| `staff_role_required` | The caller holds no staff role. |
+| `account_administration_forbidden` | The caller's staff role does not include that action. |
 
 The request limit is separate. When a client address exceeds the configured
 failed-attempt limit, the service answers with
@@ -262,6 +273,120 @@ live mode, plans, return addresses, portal configuration and the discount code
 choice. A changed timeout or network switch no longer invalidates it. The
 [service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#billing-policies-after-a-release)
 records the decision, its reasons and the checks that hold each rule.
+
+## One way in
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it and the marking command below.
+
+The owner decided on September 23, 2026 that a customer account comes from
+Baltor's sign-up and from nowhere else. The identity provider still takes its
+own public sign-up until the owner closes it, and through that route anyone can
+register an address that is not theirs with a password they chose. The service
+therefore honours an identity only when two places say that the service
+created it or marked it:
+
+```text
+One way in
+├── The provider's mark
+│   └── `baltor_account` in the user's `app_metadata`, which only the
+│       provider's administration interface can write
+├── The service's own record
+│   └── `service_account_origin/v1`, keyed by issuer and provider user
+├── Every sign-in and every activation checks both, in `require_admitted`
+│   └── either one missing: refused with `account_origin_unverified`
+└── Baltor's sign-up, in `AccountOrigins`
+    ├── a new address: a marked user through the administration interface,
+    │   then the service record, then the link
+    ├── an account with both marks: the link, or for a confirmed account the
+    │   usual notice
+    ├── an account the service already holds a sign-in for: it predates the
+    │   guard, keeps its place until the marking command marks it, and its
+    │   owner is sent the usual notice
+    └── any other account under the address
+        ├── archived first in `service_account_replacement/v1`: provider user,
+        │   creation time, confirmation state and a digest of the address
+        ├── deleted at the provider, which removes its sessions and refresh tokens
+        └── replaced by a fresh marked account for the same address
+```
+
+A public sign-up never deletes an account the service already holds a sign-in
+for. Anyone who knows an address can ask for a sign-up, so deleting such an
+account would let a stranger end a real person's account and its history. It
+cannot open without both marks either way.
+
+The archive keeps a digest of the address, not the address. The published
+privacy notice lists no address in the service database outside the waiting
+list, so the address stays with the identity provider on the replacement
+account, and an operator reaches it through the replacement's provider user.
+
+The provider's administration interface sits behind the edge
+`identity_administration/v1`. `SupabaseIdentityAdministration` is its one
+engine: create a marked user, look one address up, delete a user, mark a user,
+and read one page of users.
+
+Accounts that predate the guard get both marks once, through
+`loop-engine service mark-accounts`. Without `--apply` the command reads every
+provider user, lists each account it would mark, with its reason and a masked
+address, prints the `plan_digest` and changes nothing. It marks an account
+that the service already holds a sign-in for, and one the host's staff list
+names. Everything else stays unmarked and refused, and is replaced when its
+owner signs up through Baltor. With `--apply` and `--expected-plan` set to the
+printed digest, it marks exactly the listed accounts; a plan that changed in
+between is refused with `account_marking_plan_changed`, and a second run
+changes nothing.
+
+## Staff roles and account administration
+
+Staff sign in on the website like anyone else. Three roles exist, and what
+each may do is the table `ROLE_PERMISSIONS` in code:
+
+```text
+Staff roles
+├── superadmin: every permission below
+├── developer: service diagnostics, meaning the measured health record and
+│   the newest refusal codes, counted; no account or billing change
+└── analytics: account counts and usage counts; no address and no change
+```
+
+Who holds a role comes from the `staff` list of the host file's `accounts`
+block, record `service_account_policy/v1`, by provider user identity or by
+address. The addresses stay in the private host file. A host file that names
+a permission, a fourth role or a field of its own is refused before the
+service serves anything. A service key never holds a role, and nothing in a
+request can name one.
+
+A superadmin reads every account, with its address, creation, confirmation,
+plan and last use, in the Administration view, and applies one action at a
+time: `grant_free_monthly`, `revoke_free_monthly`, `disable` or `enable`. Each
+action is one `service_account_administration_request/v1` with its own
+request identity. A repeated identity returns the first result, and a changed
+request under the same identity is refused. The action and its audit record,
+`service_account_administration_event/v1`, commit together, and the write is
+refused when the staff session was signed out or expired meanwhile. A
+superadmin cannot switch off their own account, and a host tenant without a
+browser sign-in is not an account here.
+
+## Free monthly Baltor Pro and the founding offer
+
+Free monthly Baltor Pro is the existing operator entitlement with a
+`grant_kind` of `free_monthly` or `founding_free_monthly`. Its `valid_until`
+is the end of the current calendar month, and `FreeMonthlyRenewalSchedule`
+moves it on by one month when it is three days away, until it is revoked. The
+health record reports the task as `free_monthly_renewal_current`, a check that
+is never required. A revocation takes effect at the account's next check.
+
+The first accounts that finish Baltor's sign-up receive the founding offer.
+The number is `founding_free_monthly_accounts` in the `accounts` block, ten
+by default. `consider_founding_offer` decides once for each account, and every
+grant commits against the exact version of one counter,
+`service_founding_offer/v1`, so two sign-ups at the last place yield one
+holder. A revoked founding place goes to the next account that finishes
+sign-up. An account created by the marking command is not considered.
+
+The account page and the Get started page say "Your account includes Baltor
+Pro" for a founding or free monthly account. The session record names the
+source as `access_source` and the caller's `staff_role`.
 
 ## Records kept for a bounded time
 
