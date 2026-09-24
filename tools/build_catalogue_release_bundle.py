@@ -40,6 +40,7 @@ from loop_engine.core.service_runtime.catalogue_packages import (
     FILE_BODY, PACKAGE_BODY, CataloguePackage, CataloguePackageFile, sha256_hex,
 )
 from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
+from loop_engine.core.service_runtime.catalogue_tiers import VERIFIED_TIER
 from loop_engine.core.service_runtime.http_entrypoint import HostFamilyPolicy, HostLicensePolicy
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
@@ -131,7 +132,9 @@ def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="sta
         exact = replace(item, digest=package.served_digest, size_bytes=package.served_size)
         lines.append({"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": exact.reference(),
                       "package": package.to_dict(),
-                      "approval": {"approval_ref": review["approval_ref"], "approved_digest": review["body_digest"]},
+                      # The independent review record approved these bytes, so the item is verified.
+                      "approval": {"tier": VERIFIED_TIER, "approval_ref": review["approval_ref"],
+                                   "approved_digest": review["body_digest"]},
                       "attributes": schema.validate_values(_attributes(row, review, recorded_at, batch))})
         payloads.extend(files)
     if not lines:

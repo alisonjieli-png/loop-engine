@@ -20,7 +20,7 @@ from ...loop.encapsulate import as_loop
 from ...loop.loop_role import LoopRole, LoopRoleIdentity
 from ..facets import EFFECTS
 from ..provisioning_mcp import TOOL_OPERATIONS, _schema
-from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding
+from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding, tierless_answer
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
@@ -904,7 +904,10 @@ class ServiceHttpApplication:
             elif operation == DISCOVER_OPERATION:
                 result = {**result, "bodies_available": False}
         self.authenticator.revalidate(authentication)
-        return result
+        # `service_provisioning_request/v1` predates trust tiers, so it is
+        # asked with the default community choice, which offers only verified
+        # items, and it is answered in the version 2 shapes its readers check.
+        return tierless_answer(result)
 
     def _search(self, authentication, fields):
         from dataclasses import asdict

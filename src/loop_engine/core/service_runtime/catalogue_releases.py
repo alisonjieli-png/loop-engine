@@ -11,7 +11,8 @@ withdrew relative to the release it was built on.
 Catalogue state in the service store
 ├── catalogue_state/v1              one marker; its state version gates every image at start
 ├── catalogue_attribute_schema/v1   one record for each schema digest
-├── catalogue_item_version/v1       one immutable record for each item version digest
+├── catalogue_item_version/v1       one immutable record for each verified item version digest
+├── catalogue_item_version/v2       the same for a community item version, with its admission
 ├── catalogue_release/v1            one record for each release digest
 ├── catalogue_release_pointer/v1    the active release, moved only under an expected-version guard
 └── catalogue_withdrawal/v1         one durable record for each withdrawn identity and body digest
@@ -22,13 +23,18 @@ first, and the release record, the pointer move, the withdrawals and the
 marker commit together in one atomic batch. A withdrawal is honoured by every
 later release, every rollback and every image that understands the marker. An
 image that does not understand the marker's state version refuses to start.
+
+The marker's state version is 1 until a release names a community item
+version. That publish writes state version 2, and no later write lowers it, so
+an image that cannot tell a community item from a verified one refuses to
+start against the store instead of serving the community item as reviewed.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 import time
 
-from .catalogue_bundle import ITEM_VERSION_RECORD_TYPE, canonical_bytes, note
+from .catalogue_bundle import ITEM_VERSION_RECORD_TYPES, canonical_bytes, note
 from .catalogue_packages import CataloguePackage, sha256_hex
 from .catalogue_schema import CatalogueAttributeSchema
 from .records import ServiceRuntimeError, identifier
@@ -47,7 +53,10 @@ OPERATION_RECORD_TYPE = "service_catalogue_operation/v1"
 #: an older image must not ignore writes a higher state version, and every
 #: image refuses to start against a state version it does not list here.
 CATALOGUE_STATE_VERSION = 1
-SUPPORTED_CATALOGUE_STATE_VERSIONS = (1,)
+#: Written by the first publish of a release that names a community item
+#: version, and never lowered afterwards.
+COMMUNITY_STATE_VERSION = 2
+SUPPORTED_CATALOGUE_STATE_VERSIONS = (1, 2)
 STATE_LOGICAL, POINTER_LOGICAL = "catalogue", "active"
 #: Immutable records are written in batches of this size before the release is
 #: committed, so a large first release does not hold one enormous batch.
@@ -89,8 +98,9 @@ def _payload(binding, store, kind, logical, record_type):
     if row is None:
         return None, None
     payload = row["payload"]
-    if payload.get("record_type") != record_type:
-        _refuse("catalogue_record_unsupported", f"a {kind} record is not {record_type}")
+    accepted = record_type if isinstance(record_type, tuple) else (record_type,)
+    if payload.get("record_type") not in accepted:
+        _refuse("catalogue_record_unsupported", f"a {kind} record is not one of {accepted}")
     return row, payload
 
 
@@ -146,7 +156,7 @@ def load_release(binding, store, release_id):
         _refuse("catalogue_release_digest_mismatch", "the schema record differs from its digest")
     versions = []
     for identity, version in document["items"]:
-        _item_row, payload = _payload(binding, store, ITEM_KIND, version, ITEM_VERSION_RECORD_TYPE)
+        _item_row, payload = _payload(binding, store, ITEM_KIND, version, ITEM_VERSION_RECORD_TYPES)
         if payload is None:
             _refuse("catalogue_release_incomplete", "the release names an item version the store does not hold")
         if sha256_hex(canonical_bytes(payload)) != version or payload["reference"]["identity"] != identity:
@@ -155,10 +165,12 @@ def load_release(binding, store, release_id):
     return LoadedRelease(release_id, document, schema, tuple(versions))
 
 
-def _marker_row(binding, previous, clock):
+def _marker_row(binding, previous, clock, *, state_version=CATALOGUE_STATE_VERSION):
+    """The next marker. Its state version is the higher of the one held and the one this write needs."""
     revision = (previous["payload"]["revision"] + 1) if previous is not None else 1
+    held = previous["payload"]["state_version"] if previous is not None else CATALOGUE_STATE_VERSION
     return binding.record(STATE_KIND, STATE_LOGICAL, {
-        "record_type": STATE_RECORD_TYPE, "state_version": CATALOGUE_STATE_VERSION,
+        "record_type": STATE_RECORD_TYPE, "state_version": max(held, state_version),
         "revision": revision, "updated_at": int(clock())})
 
 
@@ -275,7 +287,10 @@ def publish(context, bundle, *, expected_release=None, clock=time.time):
             "record_type": POINTER_RECORD_TYPE, "release_id": release_id, "moved_at": now, "move": "publish",
             "previous_release_id": active_id,
             "sequence": (latest["sequence"] + 1) if latest is not None else 1}))
-        records.append(_marker_row(binding, state_row, clock))
+        from .catalogue_tiers import VERIFIED_TIER
+        needed = (COMMUNITY_STATE_VERSION if any(entry.tier != VERIFIED_TIER for entry in bundle.items)
+                  else CATALOGUE_STATE_VERSION)
+        records.append(_marker_row(binding, state_row, clock, state_version=needed))
         binding.commit(store, tuple(records), tuple(guards))
     changes = document["changes"]
     return {"record_type": OPERATION_RECORD_TYPE, "operation": "publish",
@@ -364,15 +379,15 @@ def withdraw(context, *, identity, note_text, item_version=None, all_versions=Fa
             chosen = {}
             for row in binding.rows_all(store, ITEM_KIND):
                 payload = row["payload"]
-                if payload.get("record_type") != ITEM_VERSION_RECORD_TYPE:
-                    _refuse("catalogue_record_unsupported", f"an item record is not {ITEM_VERSION_RECORD_TYPE}")
+                if payload.get("record_type") not in ITEM_VERSION_RECORD_TYPES:
+                    _refuse("catalogue_record_unsupported", f"an item record is not one of {ITEM_VERSION_RECORD_TYPES}")
                 if payload["reference"]["identity"] == identity:
                     chosen[sha256_hex(canonical_bytes(payload))] = payload
         else:
             if item_version is None:
                 active = load_release(binding, store, pointer["release_id"]) if pointer is not None else None
                 item_version = dict(active.items).get(identity) if active is not None else None
-            _item_row, payload = (_payload(binding, store, ITEM_KIND, item_version, ITEM_VERSION_RECORD_TYPE)
+            _item_row, payload = (_payload(binding, store, ITEM_KIND, item_version, ITEM_VERSION_RECORD_TYPES)
                                   if item_version else (None, None))
             if payload is not None and payload["reference"]["identity"] != identity:
                 _refuse("catalogue_item_not_found", "that item version belongs to another identity")

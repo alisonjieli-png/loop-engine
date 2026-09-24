@@ -9,6 +9,21 @@ Body reads verify bytes before asking an installed meter for an exact committed
 acknowledgment. Unknown commitment never becomes success. The reference meter
 is volatile and idempotent within its lifetime. Durable billing and all-layer
 admission remain host integrations, not new stores in this module.
+
+Every approval names its trust tier, and every list row, manifest and body
+carries it, so a caller always knows which admission path an item passed:
+
+```text
+Trust tier of an approved item
+├── baltor_verified   the independent review panel approved these exact bytes
+└── community         written automated criteria, applied by a process that is
+                      not the producer, admitted these exact bytes; no person at
+                      Baltor reviewed them and Baltor never ran them
+```
+
+A request states which community items it may be offered. The default offers
+none, so a caller that says nothing receives verified items only. Verified
+items are listed before community items.
 """
 from __future__ import annotations
 
@@ -27,16 +42,26 @@ from .harness_intelligence import (KINDS, SOURCE_LAYERS, HarnessIntelligenceCata
 from .service_api import ServiceError, key_digest
 
 SERVER_RECORD_TYPE = "provisioning_server/v2"
-REQUEST_RECORD_TYPE = "provisioning_request/v2"
+#: Version 3 adds the community item choice. Version 2 had no trust tier, so a
+#: reader of it must not receive a community item it cannot tell apart.
+REQUEST_RECORD_TYPE = "provisioning_request/v3"
+#: The answers a reader that predates trust tiers reads: verified items only,
+#: with no tier field. `tierless_answer` produces them from the tiered answers.
 DISCOVER_RECORD_TYPE = "provisioning_discover/v2"
 LIST_RECORD_TYPE = "provisioning_list/v2"
 MANIFEST_RECORD_TYPE = "provisioning_manifest/v2"
 BODY_RECORD_TYPE = "provisioning_body/v2"
+#: Version 3 of each answer names the trust tier of every item it describes.
+TIERED_DISCOVER_RECORD_TYPE = "provisioning_discover/v3"
+TIERED_LIST_RECORD_TYPE = "provisioning_list/v3"
+TIERED_MANIFEST_RECORD_TYPE = "provisioning_manifest/v3"
+TIERED_BODY_RECORD_TYPE = "provisioning_body/v3"
 REFUSAL_RECORD_TYPE = "provisioning_refusal/v2"
 BINDING_RECORD_TYPE = "provisioning_item_binding/v1"
 POLICY_RECORD_TYPE = "provisioning_access_policy/v1"
 GRANT_RECORD_TYPE = "provisioning_grant/v1"
-QUALIFICATION_RECORD_TYPE = "provisioning_qualification/v1"
+#: Version 2 adds the trust tier, which every approval must state.
+QUALIFICATION_RECORD_TYPE = "provisioning_qualification/v2"
 RESOLVER_RECORD_TYPE = "provisioning_qualification_resolver/v1"
 METER_REQUEST_RECORD_TYPE = "provisioning_meter_request/v1"
 METER_ACKNOWLEDGMENT_RECORD_TYPE = "provisioning_meter_acknowledgment/v1"
@@ -47,6 +72,17 @@ METERING_POLICIES = ("required", "unmetered")
 QUALIFICATION_STATUSES = ("approved", "refused", "unknown")
 QUALIFICATION_APPROVED, QUALIFICATION_REFUSED, QUALIFICATION_UNKNOWN = QUALIFICATION_STATUSES
 QUALIFICATION_BASES = ("host_attested", "authoritative")
+#: The two admission paths an approved item can have passed. See the module text.
+TRUST_TIERS = ("baltor_verified", "community")
+VERIFIED_TIER, COMMUNITY_TIER = TRUST_TIERS
+#: Verified items are listed and ranked before community items.
+TIER_ORDER = {VERIFIED_TIER: 0, COMMUNITY_TIER: 1}
+#: Which community items a request may be offered. A file a harness may run is
+#: an item that declares RUNNABLE_EFFECT, which the release rules require of
+#: every package holding a script, a hook or an executable tool.
+COMMUNITY_ITEM_CHOICES = ("excluded", "without_runnable_files", "included")
+COMMUNITY_EXCLUDED, COMMUNITY_WITHOUT_RUNNABLE, COMMUNITY_INCLUDED = COMMUNITY_ITEM_CHOICES
+RUNNABLE_EFFECT = "spawns_process"
 METER_DURABILITY = ("volatile", "durable", "unknown")
 NEVER_METERED = ("listing authorized items", "a manifest with digests and sizes",
                  "a refusal before metering", "reading the tenant's own usage")
@@ -111,12 +147,21 @@ class ProvisioningItemBinding:
 
 @dataclass(frozen=True)
 class ProvisioningQualification:
-    """Exact resolver decision, never approval inferred from catalogue tags."""
+    """Exact resolver decision, never approval inferred from catalogue tags.
+
+    Every approval has a trust tier. An approval that names none came through
+    the independent review panel, the only approval path before the community
+    tier existed, so it is `baltor_verified`. A community approval always
+    names its tier: only a release whose item version records the community
+    tier with its admission produces one. A decision that is not an approval
+    has no tier.
+    """
 
     binding: ProvisioningItemBinding
     status: str
     basis: str
     approval_ref: str = ""
+    trust_tier: str = ""
     record_type: str = QUALIFICATION_RECORD_TYPE
 
     def __post_init__(self) -> None:
@@ -127,6 +172,12 @@ class ProvisioningQualification:
             raise ProvisioningError("qualification status or basis is unsupported")
         if self.status == QUALIFICATION_APPROVED:
             _name(self.approval_ref, "approval evidence reference")
+            if not self.trust_tier:
+                object.__setattr__(self, "trust_tier", VERIFIED_TIER)
+            if self.trust_tier not in TRUST_TIERS:
+                raise ProvisioningError("an approval names a known trust tier", "trust_tier_invalid")
+        elif self.trust_tier:
+            raise ProvisioningError("only an approval has a trust tier", "trust_tier_invalid")
 
 
 @dataclass(frozen=True)
@@ -233,12 +284,17 @@ class ProvisioningRequest:
     authority_effects: tuple[str, ...] = ()
     kinds: tuple[str, ...] = ()
     request_id: str = ""
+    #: Which community items this request may be offered; the host sets it from
+    #: the account's library setting. The default offers none.
+    community_items: str = COMMUNITY_EXCLUDED
     record_type: str = REQUEST_RECORD_TYPE
 
     def __post_init__(self) -> None:
         _version(self.record_type, REQUEST_RECORD_TYPE)
         if self.operation not in OPERATIONS:
             raise ProvisioningError("unsupported provisioning operation")
+        if self.community_items not in COMMUNITY_ITEM_CHOICES:
+            raise ProvisioningError(f"community items are one of {COMMUNITY_ITEM_CHOICES}")
         _name(self.key, "caller key")
         for name in ("identity", "style", "request_id"):
             if not isinstance(getattr(self, name), str):
@@ -401,24 +457,35 @@ class ProvisioningServer:
             approval = self._approved(tenant, item)
             if approval is None:
                 continue
+            grant, decision = approval
+            if not in_library(item, decision, request.community_items):
+                # The account chose not to receive this item. It is not held
+                # back for a reason the caller could act on in this request,
+                # so it is left out silently, like an item of another kind.
+                continue
             reason = self._visible(item, request)
             if reason:
                 withheld.append({"identity": item.identity, "reason": reason})
             else:
-                grant, decision = approval
                 offered.append({**item.reference(), "qualification_basis": decision.basis,
+                                "trust_tier": decision.trust_tier,
                                 "metering_policy": grant.metering,
                                 "body_allowed": grant.body_allowed
                                 and tenant.entitlement == ENTITLEMENTS[1]})
+        offered.sort(key=lambda row: (TIER_ORDER[row["trust_tier"]], row["identity"]))
+        withheld.sort(key=lambda row: row["identity"])
         return offered, withheld
 
     def _discover(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
         offered, _ = self._offered(tenant, request)
-        return {"record_type": DISCOVER_RECORD_TYPE, "server_id": self.server_id,
+        return {"record_type": TIERED_DISCOVER_RECORD_TYPE, "server_id": self.server_id,
                 "operations": list(OPERATIONS),
                 "kinds": [kind for kind in KINDS if any(item["kind"] == kind for item in offered)],
                 "tenant_id": tenant.tenant_id, "entitlement": tenant.entitlement,
-                "items_held": len(offered), "metered_unit": METERED_UNIT,
+                "items_held": len(offered),
+                "items_by_trust_tier": {tier: sum(1 for item in offered if item["trust_tier"] == tier)
+                                        for tier in TRUST_TIERS},
+                "community_items": request.community_items, "metered_unit": METERED_UNIT,
                 "metered": False, "never_metered": list(NEVER_METERED),
                 "bodies_available": callable(self.body_reader) and any(
                     item["body_allowed"] and (item["metering_policy"] == "unmetered"
@@ -426,15 +493,18 @@ class ProvisioningServer:
 
     def _list(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
         offered, withheld = self._offered(tenant, request)
-        return {"record_type": LIST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
+        return {"record_type": TIERED_LIST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 "entitlement": tenant.entitlement, "items": offered,
-                "withheld": withheld, "metered": False}
+                "withheld": withheld, "community_items": request.community_items, "metered": False}
 
     def _item(self, tenant: ProvisioningTenant, request: ProvisioningRequest):
         item = self.catalogue.items.get(request.identity)
         approval = self._approved(tenant, item) if item is not None else None
         if approval is None:
             raise ProvisioningError("item is unavailable to this tenant", "item_unavailable")
+        if not in_library(item, approval[1], request.community_items):
+            raise ProvisioningError("item is a community item this account's library setting leaves out",
+                                    "item_outside_library_setting")
         reason = self._visible(item, request)
         if reason:
             raise ProvisioningError(f"item is withheld: {reason}", "item_withheld")
@@ -442,9 +512,9 @@ class ProvisioningServer:
 
     def _manifest(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
         item, grant, decision = self._item(tenant, request)
-        return {"record_type": MANIFEST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
+        return {"record_type": TIERED_MANIFEST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 **{key: value for key, value in item.reference().items() if key != "record_type"},
-                "qualification_basis": decision.basis,
+                "qualification_basis": decision.basis, "trust_tier": decision.trust_tier,
                 "metering_policy": grant.metering,
                 "body_allowed": grant.body_allowed and tenant.entitlement == ENTITLEMENTS[1],
                 "verify_before_use": True, "metered": False}
@@ -495,13 +565,61 @@ class ProvisioningServer:
                     "meter commitment is not established; retry the same request identity",
                     "meter_commit_unknown")
             self._recheck(tenant, request, binding, grant, decision)
-        return {"record_type": BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
+        return {"record_type": TIERED_BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 "identity": item.identity, "digest": item.digest,
                 "size_bytes": item.size_bytes, "body": body,
-                "qualification_basis": decision.basis,
+                "qualification_basis": decision.basis, "trust_tier": decision.trust_tier,
                 "metered": acknowledgment is not None,
                 "metered_unit": METERED_UNIT if acknowledgment is not None else None,
                 "metering_acknowledgment": asdict(acknowledgment) if acknowledgment else None}
+
+
+#: Each tiered answer and the version 2 answer a reader that predates trust
+#: tiers reads instead. Version 2 carried no tier, so it describes verified
+#: items only.
+TIERLESS_RECORD_TYPES = {TIERED_DISCOVER_RECORD_TYPE: DISCOVER_RECORD_TYPE, TIERED_LIST_RECORD_TYPE: LIST_RECORD_TYPE,
+                         TIERED_MANIFEST_RECORD_TYPE: MANIFEST_RECORD_TYPE, TIERED_BODY_RECORD_TYPE: BODY_RECORD_TYPE}
+_TIER_FIELDS = ("trust_tier", "items_by_trust_tier", "community_items")
+
+
+def tierless_answer(result: dict) -> dict:
+    """The version 2 shape of one answer, for a reader that cannot tell a community item from a verified one.
+
+    It refuses rather than drop a label: an answer that names a community item,
+    or was produced for a request that could receive one, has no version 2
+    shape. A caller that negotiated version 2 therefore asks with the default
+    community choice, which offers none.
+    """
+    record_type = result.get("record_type") if isinstance(result, dict) else None
+    if record_type not in TIERLESS_RECORD_TYPES:
+        raise ProvisioningError("this answer has no version 2 shape", "unsupported_version")
+    rows = result.get("items", ()) if record_type == TIERED_LIST_RECORD_TYPE else (result,)
+    if (result.get("community_items", COMMUNITY_EXCLUDED) != COMMUNITY_EXCLUDED
+            or any(row.get("trust_tier", VERIFIED_TIER) != VERIFIED_TIER for row in rows)
+            or any(count for tier, count in result.get("items_by_trust_tier", {}).items() if tier != VERIFIED_TIER)):
+        raise ProvisioningError("a version 2 reader cannot receive a community item", "tier_required_by_answer")
+    answer = {key: value for key, value in result.items() if key not in _TIER_FIELDS}
+    if record_type == TIERED_LIST_RECORD_TYPE:
+        answer["items"] = [{key: value for key, value in row.items() if key not in _TIER_FIELDS}
+                           for row in result["items"]]
+    answer["record_type"] = TIERLESS_RECORD_TYPES[record_type]
+    return answer
+
+
+def in_library(item: HarnessIntelligenceItem, decision: ProvisioningQualification, community_items: str) -> bool:
+    """Whether an approved item belongs to what a request with this community choice may be offered.
+
+    A verified item always does. A community item does only when the choice
+    includes it: `without_runnable_files` leaves out every community item that
+    declares RUNNABLE_EFFECT, and `excluded` leaves out every community item.
+    """
+    if decision.trust_tier == VERIFIED_TIER:
+        return True
+    if decision.trust_tier != COMMUNITY_TIER or community_items not in COMMUNITY_ITEM_CHOICES:
+        return False
+    if community_items == COMMUNITY_INCLUDED:
+        return True
+    return community_items == COMMUNITY_WITHOUT_RUNNABLE and RUNNABLE_EFFECT not in item.declared_effects
 
 
 @dataclass

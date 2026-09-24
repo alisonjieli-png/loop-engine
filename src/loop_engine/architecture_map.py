@@ -71,7 +71,7 @@ MODULE_MAP = {
         "retention", "retention_checks", "waitlist_source_checks",
         "catalogue_packages", "catalogue_schema", "catalogue_bundle", "catalogue_releases",
         "catalogue_search", "catalogue_serving", "catalogue_grants", "catalogue_commands",
-        "catalogue_release_checks", "catalogue_serving_checks",
+        "catalogue_release_checks", "catalogue_serving_checks", "catalogue_tiers", "catalogue_tier_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "core.library_ingestion": ("__init__", "candidates", "connection_rendering", "duplicates", "effects", "engines", "fetch_cache", "format_builtin", "format_connection", "format_json_schema", "format_skills_ref", "github_reader", "https_transport", "licence_checks", "licences", "near_duplicate_builtin", "near_duplicate_datasketch", "optional_engine_checks", "outline_deterministic", "outline_model", "package_resolver", "pipeline", "pipeline_checks", "processes", "provenance", "provenance_checks", "quarantine", "record_rules", "registry_sync", "render_checks", "rendering_types", "request_log", "scan_builtin", "scan_checks", "scan_skillspector", "selection", "skill_rendering", "source_checks", "source_declarations", "source_github", "source_mcp_registry", "staging_rows", "topics"),

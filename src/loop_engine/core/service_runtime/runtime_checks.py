@@ -18,7 +18,7 @@ from ...catalog.protocol import (ATOMIC_BATCH_OPERATION, CatalogBatchAcknowledgm
 from ...catalog.stores.in_memory import EphemeralRecordStore
 from ...catalog.stores.sqlite_store import SQLiteRecordStore
 from ..harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceDraft, item_from_body
-from ..provisioning_server import (ProvisioningError, ProvisioningGrant, ProvisioningItemBinding,
+from ..provisioning_server import (VERIFIED_TIER, ProvisioningError, ProvisioningGrant, ProvisioningItemBinding,
     ProvisioningQualification, ProvisioningQualificationResolver)
 from .provisioning import DurableProvisioningBinding
 from .records import (BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerAccountRelease,
@@ -68,7 +68,7 @@ def fixture(folder):
     binding = ProvisioningItemBinding.from_item(item)
     runtime.set_grants("tenant-a", (ProvisioningGrant("tenant-a", binding, True),))
     qualifier = ProvisioningQualificationResolver("fixture:review", lambda selected:
-        ProvisioningQualification(selected, "approved", "host_attested", "fixture:review"))
+        ProvisioningQualification(selected, "approved", "host_attested", "fixture:review", VERIFIED_TIER))
     reads = []
     app = DurableProvisioningBinding(runtime, catalogue, qualifier,
         lambda item: reads.append(item.identity) or "fixture body")

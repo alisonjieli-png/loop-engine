@@ -16,7 +16,8 @@ import time
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceDraft, item_from_body
 from ..provisioning_server import (
-    ProvisioningGrant, ProvisioningItemBinding, ProvisioningQualification, ProvisioningQualificationResolver,
+    VERIFIED_TIER, ProvisioningGrant, ProvisioningItemBinding, ProvisioningQualification,
+    ProvisioningQualificationResolver,
 )
 from .http import ServiceHttpApplication, ServiceHttpConfiguration
 from .http_auth import ServiceHttpAuthentication
@@ -58,7 +59,8 @@ class HttpDomainFixture:
         def qualify(binding):
             if binding.identity == "skill.candidate" or self.bindings.get(binding.identity) != binding:
                 return ProvisioningQualification(binding, "unknown", "host_attested")
-            return ProvisioningQualification(binding, "approved", "host_attested", "fixture-review:exact")
+            return ProvisioningQualification(binding, "approved", "host_attested", "fixture-review:exact",
+                                             VERIFIED_TIER)
         def read(item):
             self.reads.append(item.identity)
             if self.before_read is not None:

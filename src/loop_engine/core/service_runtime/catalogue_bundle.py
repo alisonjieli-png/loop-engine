@@ -16,6 +16,14 @@ approval names the digest of the bytes it covers, so an approval of other
 bytes is refused, and a package holding a file a harness may run must declare
 the process effect, so the existing effect filter withholds it from a client
 that did not declare that authority.
+
+Every approval names its trust tier (`catalogue_tiers.py`). A verified
+approval is the review panel's reference, unchanged. A community approval
+carries its `community_admission/v1` record, which must satisfy the written
+criteria for exactly these bytes, and its reference is the digest of that
+record. A verified item version keeps the `catalogue_item_version/v1` shape,
+so an older image still serves a verified-only release; a community item
+version is `catalogue_item_version/v2`, which an older image refuses.
 """
 from __future__ import annotations
 
@@ -30,11 +38,18 @@ from ..practitioner_runtime.provisioning import _item
 from .catalogue_packages import (EXECUTABLE_EFFECT, FILE_BODY, CataloguePackage, VolumeBodyStore,
                                  exact_digest, sha256_hex)
 from .catalogue_schema import CatalogueAttributeSchema
+from .catalogue_tiers import (ADMISSION_RECORD_TYPE, COMMUNITY_TIER, TRUST_TIERS, VERIFIED_TIER, CommunityAdmission,
+                              community_admission_refusal)
 from .records import ServiceRuntimeError
 
 BUNDLE_RECORD_TYPE = "catalogue_release_bundle/v1"
-BUNDLE_ITEM_RECORD_TYPE = "catalogue_bundle_item/v1"
+#: Version 2 names the trust tier of every approval. Version 1 had none.
+BUNDLE_ITEM_RECORD_TYPE = "catalogue_bundle_item/v2"
+#: A verified item version, the shape every image since release 17 reads.
 ITEM_VERSION_RECORD_TYPE = "catalogue_item_version/v1"
+#: A community item version: the version 1 fields, its tier and its admission.
+COMMUNITY_ITEM_VERSION_RECORD_TYPE = "catalogue_item_version/v2"
+ITEM_VERSION_RECORD_TYPES = (ITEM_VERSION_RECORD_TYPE, COMMUNITY_ITEM_VERSION_RECORD_TYPE)
 HEADER_FILE, ITEMS_FILE, BLOBS_FOLDER = "bundle.json", "items.jsonl", "blobs"
 #: The header is a host file and has the same bound as every host file.
 MAXIMUM_HEADER_BYTES = 2_000_000
@@ -90,10 +105,31 @@ def _regular(path, code):
     return info
 
 
-def item_version_document(item, package, approval_ref, attributes):
+def item_version_document(item, package, approval_ref, attributes, tier=VERIFIED_TIER, admission=None):
     """The canonical content of one item version; its digest is the version's identity."""
-    return {"record_type": ITEM_VERSION_RECORD_TYPE, "reference": item.reference(),
-            "package": package.to_dict(), "approval_ref": approval_ref, "attributes": attributes}
+    document = {"record_type": ITEM_VERSION_RECORD_TYPE, "reference": item.reference(),
+                "package": package.to_dict(), "approval_ref": approval_ref, "attributes": attributes}
+    if tier == VERIFIED_TIER and admission is None:
+        return document
+    if tier != COMMUNITY_TIER or not isinstance(admission, CommunityAdmission):
+        _refuse("catalogue_item_tier_invalid", "a community item version carries its admission; a verified one none")
+    return {**document, "record_type": COMMUNITY_ITEM_VERSION_RECORD_TYPE, "trust_tier": COMMUNITY_TIER,
+            "admission": admission.to_dict()}
+
+
+def item_version_tier(payload):
+    """The trust tier and admission of one stored item version, read from its exact record version."""
+    record_type = payload.get("record_type")
+    if record_type == ITEM_VERSION_RECORD_TYPE:
+        if set(payload) != {"record_type", "reference", "package", "approval_ref", "attributes"}:
+            _refuse("catalogue_record_unsupported", "a version 1 item record has exactly its own fields")
+        return VERIFIED_TIER, None
+    if record_type == COMMUNITY_ITEM_VERSION_RECORD_TYPE:
+        if (set(payload) != {"record_type", "reference", "package", "approval_ref", "attributes", "trust_tier",
+                             "admission"} or payload["trust_tier"] != COMMUNITY_TIER):
+            _refuse("catalogue_record_unsupported", "a version 2 item record is a community item with its admission")
+        return COMMUNITY_TIER, CommunityAdmission.from_dict(payload["admission"])
+    _refuse("catalogue_record_unsupported", f"an item record is one of {ITEM_VERSION_RECORD_TYPES}")
 
 
 @dataclass(frozen=True)
@@ -104,6 +140,8 @@ class BundleItem:
     package: CataloguePackage
     approval_ref: str
     attributes: dict
+    tier: str = VERIFIED_TIER
+    admission: object = None
 
     @property
     def identity(self):
@@ -111,7 +149,8 @@ class BundleItem:
 
     @property
     def document(self):
-        return item_version_document(self.item, self.package, self.approval_ref, self.attributes)
+        return item_version_document(self.item, self.package, self.approval_ref, self.attributes,
+                                     self.tier, self.admission)
 
     @property
     def version(self):
@@ -137,7 +176,7 @@ class CatalogueBundle:
 
 def approval_refusal(approval, package):
     """Empty text when an approval covers exactly the bytes this item serves, otherwise the refusal code."""
-    if not isinstance(approval, dict) or set(approval) != {"approval_ref", "approved_digest"}:
+    if not isinstance(approval, dict) or not {"approval_ref", "approved_digest"} <= set(approval):
         return "explicit_host_review_required"
     reference = approval["approval_ref"]
     if (not isinstance(reference, str) or not reference.strip()
@@ -154,8 +193,30 @@ def effect_refusal(item, package):
             if package.executable and EXECUTABLE_EFFECT not in item.declared_effects else "")
 
 
+def tier_refusal(approval, item, package):
+    """Empty text when an approval names a tier and satisfies that tier's rule, otherwise the refusal code.
+
+    A verified approval is the review panel's reference and nothing else. A
+    community approval carries its admission record, the written criteria must
+    admit exactly these bytes, and its reference is the digest of that record,
+    so one admission cannot vouch for another package.
+    """
+    tier = approval.get("tier") if isinstance(approval, dict) else None
+    if tier == VERIFIED_TIER:
+        return "" if set(approval) == {"tier", "approval_ref", "approved_digest"} else "catalogue_item_tier_invalid"
+    if tier != COMMUNITY_TIER or set(approval) != {"tier", "approval_ref", "approved_digest", "admission"}:
+        return "catalogue_item_tier_invalid" if tier not in TRUST_TIERS else "community_admission_required"
+    try:
+        admission = CommunityAdmission.from_dict(approval["admission"])
+    except ServiceRuntimeError as error:
+        return error.code
+    if approval["approval_ref"] != f"{ADMISSION_RECORD_TYPE}:{admission.digest}":
+        return "community_approval_reference_mismatch"
+    return community_admission_refusal(admission, item, package)
+
+
 def validate_item(value, schema, *, license_policy, family_policy):
-    """Apply the manifest rules and the two added rules to one bundle line."""
+    """Apply the manifest rules, the two added rules and the tier rule to one bundle line."""
     if (not isinstance(value, dict)
             or set(value) != {"record_type", "reference", "package", "approval", "attributes"}
             or value["record_type"] != BUNDLE_ITEM_RECORD_TYPE):
@@ -170,11 +231,15 @@ def validate_item(value, schema, *, license_policy, family_policy):
     package = CataloguePackage.from_dict(value["package"])
     if item.digest != package.served_digest or item.size_bytes != package.served_size:
         _refuse("bundle_item_digest_mismatch", "the item reference names other bytes than its package serves")
-    refused = approval_refusal(value["approval"], package) or effect_refusal(item, package)
+    refused = (approval_refusal(value["approval"], package) or effect_refusal(item, package)
+               or tier_refusal(value["approval"], item, package))
     if refused:
-        _refuse(refused, "an unapproved item, an approval of other bytes and an undeclared process effect "
-                         "are never published")
-    return BundleItem(item, package, value["approval"]["approval_ref"], schema.validate_values(value["attributes"]))
+        _refuse(refused, "an unapproved item, an approval of other bytes, an undeclared process effect and an "
+                         "approval whose trust tier does not hold are never published")
+    approval = value["approval"]
+    admission = CommunityAdmission.from_dict(approval["admission"]) if approval["tier"] == COMMUNITY_TIER else None
+    return BundleItem(item, package, approval["approval_ref"], schema.validate_values(value["attributes"]),
+                      approval["tier"], admission)
 
 
 def read_bundle(folder, *, license_policy, family_policy, verify_blobs=True):

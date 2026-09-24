@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import concurrent.futures
 from dataclasses import FrozenInstanceError, replace
+from unittest.mock import patch
 
 from . import provisioning_server as serving
 from .harness_intelligence import (HarnessIntelligenceCatalogue, HarnessIntelligenceDraft,
@@ -38,9 +39,10 @@ def fixture():
     decisions = {}
     for item in catalogue.items.values():
         binding = serving.ProvisioningItemBinding.from_item(item)
+        refused = item.identity == "skill.candidate"
         decisions[binding.identity] = serving.ProvisioningQualification(
-            binding, "refused" if item.identity == "skill.candidate" else "approved",
-            "host_attested", "fixture:review:" + item.identity)
+            binding, "refused" if refused else "approved",
+            "host_attested", "fixture:review:" + item.identity, "" if refused else serving.VERIFIED_TIER)
     grants = []
     for tenant in ("free", "paid"):
         for identity in ("skill.reviewed", "tool.files", "skill.metadata"):
@@ -174,7 +176,7 @@ def self_test() -> dict:
     check("grants_without_qualification_resolver_disclose_nothing", missing_resolver)
 
     for label, callback in (
-            ("unknown", lambda decision: replace(decision, status="unknown")),
+            ("unknown", lambda decision: replace(decision, status="unknown", trust_tier="")),
             ("mismatched", lambda decision: replace(decision, binding=replace(
                 decision.binding, source_ref="another-source"))),
             ("untyped", lambda decision: {"status": "approved"})):
@@ -371,6 +373,120 @@ def self_test() -> dict:
                 and not reads and not meter.rows)
 
     check("wrong_key_refuses_before_catalogue_or_body_effects", unknown_key)
+    _tier_checks(check)
     passed = sum(row["passed"] for row in tests)
     return {"record_type": "provisioning_server_test/v2", "tests": tests,
             "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
+
+
+def tier_fixture():
+    """Two verified and two community items granted to one paid tenant; one community item runs a script."""
+    catalogue = HarnessIntelligenceCatalogue()
+    tiers = {"skill.verified": serving.VERIFIED_TIER, "tool.verified_runs": serving.VERIFIED_TIER,
+             "skill.community": serving.COMMUNITY_TIER, "tool.community_runs": serving.COMMUNITY_TIER}
+    bodies = {identity: f"Tier fixture: {identity}\n" for identity in tiers}
+    for identity in tiers:
+        runs = identity.endswith("_runs")
+        catalogue.register(item_from_body(HarnessIntelligenceDraft(
+            identity, "tool" if runs else "skill", "Tier fixture " + identity, "context_intelligence",
+            "context:" + identity, "MIT", declared_effects=("spawns_process",) if runs else ()),
+            bodies[identity]))
+    decisions = {}
+    for item in catalogue.items.values():
+        binding = serving.ProvisioningItemBinding.from_item(item)
+        decisions[item.identity] = serving.ProvisioningQualification(
+            binding, "approved", "host_attested", "fixture:admission:" + item.identity, tiers[item.identity])
+    policy = serving.ProvisioningAccessPolicy(
+        tuple(serving.ProvisioningGrant("paid", decision.binding, True) for decision in decisions.values()),
+        serving.ProvisioningQualificationResolver("fixture:tiers", lambda binding: decisions.get(binding.identity)))
+    reads = []
+    server = serving.ProvisioningServer(
+        catalogue, (serving.ProvisioningTenant("paid", key_digest("paid-key"), "bodies"),),
+        lambda item: reads.append(item.identity) or bodies[item.identity], serving.RecordedMeter(),
+        access_policy=policy)
+    return server, reads
+
+
+def _tier_checks(check):
+    """Known-wrong cases of the trust tier, each with a control that removes its guard."""
+    runs = ("spawns_process",)
+
+    def listed(server, choice, effects=runs):
+        return [(row["identity"], row["trust_tier"]) for row in
+                ask(server, "list", authority_effects=effects, community_items=choice)["items"]]
+
+    def silent_by_default():
+        server, reads = tier_fixture()
+        rows = listed(server, serving.COMMUNITY_EXCLUDED)
+        return (rows == [("skill.verified", "baltor_verified"), ("tool.verified_runs", "baltor_verified")]
+                and ask(server, "list", authority_effects=runs)["items"] == ask(
+                    server, "list", authority_effects=runs, community_items=serving.COMMUNITY_EXCLUDED)["items"]
+                and refusal(lambda: ask(server, "manifest", "skill.community"), "item_outside_library_setting")
+                and refusal(lambda: ask(server, "read", "skill.community"), "item_outside_library_setting")
+                and not reads)
+
+    check("a_request_that_says_nothing_is_offered_no_community_item", silent_by_default)
+    with patch.object(serving, "in_library", lambda item, decision, choice: True):
+        check("removed_community_default_rule_is_detected", lambda: not silent_by_default())
+
+    def runnable_needs_inclusion():
+        server, reads = tier_fixture()
+        middle = listed(server, serving.COMMUNITY_WITHOUT_RUNNABLE)
+        every = listed(server, serving.COMMUNITY_INCLUDED)
+        loaded = ask(server, "read", "tool.community_runs", authority_effects=runs,
+                     community_items=serving.COMMUNITY_INCLUDED)
+        return (middle == [("skill.verified", "baltor_verified"), ("tool.verified_runs", "baltor_verified"),
+                           ("skill.community", "community")]
+                and every == middle + [("tool.community_runs", "community")]
+                and refusal(lambda: ask(server, "read", "tool.community_runs", authority_effects=runs,
+                                        community_items=serving.COMMUNITY_WITHOUT_RUNNABLE),
+                            "item_outside_library_setting")
+                and loaded["trust_tier"] == "community" and reads == ["tool.community_runs"])
+
+    check("a_community_item_that_runs_a_file_is_offered_only_when_the_account_includes_it", runnable_needs_inclusion)
+    with patch.object(serving, "RUNNABLE_EFFECT", "not_an_effect"):
+        check("removed_runnable_community_rule_is_detected", lambda: not runnable_needs_inclusion())
+
+    def every_answer_names_the_tier():
+        server, _ = tier_fixture()
+        choice = serving.COMMUNITY_INCLUDED
+        rows = ask(server, "list", authority_effects=runs, community_items=choice)["items"]
+        manifest = ask(server, "manifest", "skill.community", community_items=choice)
+        body = ask(server, "read", "skill.verified", community_items=choice)
+        held = ask(server, "discover", authority_effects=runs, community_items=choice)
+        order = [serving.TIER_ORDER[row["trust_tier"]] for row in rows]
+        return (all(row["trust_tier"] in serving.TRUST_TIERS for row in rows) and order == sorted(order)
+                and manifest["trust_tier"] == "community"
+                and manifest["record_type"] == serving.TIERED_MANIFEST_RECORD_TYPE
+                and body["trust_tier"] == "baltor_verified" and body["record_type"] == serving.TIERED_BODY_RECORD_TYPE
+                and held["items_by_trust_tier"] == {"baltor_verified": 2, "community": 2})
+
+    check("every_list_row_manifest_and_body_names_its_trust_tier_and_verified_rows_come_first",
+          every_answer_names_the_tier)
+
+    def approval_states_its_tier():
+        server, _ = tier_fixture()
+        binding = serving.ProvisioningItemBinding.from_item(server.catalogue.items["skill.verified"])
+        return (serving.ProvisioningQualification(binding, "approved", "host_attested", "ref").trust_tier
+                == serving.VERIFIED_TIER
+                and refusal(lambda: serving.ProvisioningQualification(binding, "approved", "host_attested", "ref",
+                                                                      "reviewed_by_someone"), "trust_tier_invalid")
+                and refusal(lambda: serving.ProvisioningQualification(binding, "unknown", "host_attested", "",
+                                                                      "community"), "trust_tier_invalid")
+                and refusal(lambda: serving.ProvisioningRequest("list", "paid-key", community_items="all")))
+
+    check("an_approval_names_a_known_tier_panel_approvals_are_verified_and_nothing_else_carries_one",
+          approval_states_its_tier)
+
+    def unknown_tier_is_never_offered():
+        server, reads = tier_fixture()
+        decision = server.access_policy.qualification_resolver.resolve(
+            serving.ProvisioningItemBinding.from_item(server.catalogue.items["skill.community"]))
+        forged = object.__new__(serving.ProvisioningQualification)
+        for name in ("binding", "status", "basis", "approval_ref", "record_type"):
+            object.__setattr__(forged, name, getattr(decision, name))
+        object.__setattr__(forged, "trust_tier", "reviewed_elsewhere")
+        return (not serving.in_library(server.catalogue.items["skill.community"], forged, serving.COMMUNITY_INCLUDED)
+                and not reads)
+
+    check("a_decision_with_an_unknown_tier_belongs_to_no_library", unknown_tier_is_never_offered)

@@ -63,7 +63,8 @@ def bundle_line(identity, files, *, effects=(), attributes=None, approved_digest
                                      "harness_local", "fixture:" + identity, "MIT", tuple(effects))
     item = replace(item_from_body(draft, "placeholder"), digest=package.served_digest, size_bytes=package.served_size)
     return {"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": item.reference(), "package": package.to_dict(),
-            "approval": {"approval_ref": "review:" + identity if approval_ref is None else approval_ref,
+            "approval": {"tier": "baltor_verified",
+                         "approval_ref": "review:" + identity if approval_ref is None else approval_ref,
                          "approved_digest": package.served_digest if approved_digest is None else approved_digest},
             "attributes": attributes or {}}
 
@@ -519,7 +520,7 @@ def _gate_checks(check, root):
         with binding.store(write=True) as store:
             state_row, state = catalogue_releases.read_state(binding, store)
             future = binding.record(catalogue_releases.STATE_KIND, catalogue_releases.STATE_LOGICAL,
-                                    {**state, "state_version": 2, "revision": state["revision"] + 1})
+                                    {**state, "state_version": 3, "revision": state["revision"] + 1})
             # A later release withdraws the item through a record kind this
             # release has never heard of, and raises the state version with it.
             blocked = binding.record("service_catalogue_block", "gated",
@@ -535,10 +536,10 @@ def _gate_checks(check, root):
         def ignoring_image_serves_withdrawn():
             # A later state version can carry a withdrawal kind this image never
             # reads. An image that ignored the marker would serve the item.
-            with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2)):
+            with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2, 3)):
                 return "gated" in case.listed(case.binding())
         check("an_image_that_ignores_the_marker_serves_a_withdrawn_item", ignoring_image_serves_withdrawn())
-        with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2)):
+        with patch.object(catalogue_releases, "SUPPORTED_CATALOGUE_STATE_VERSIONS", (1, 2, 3)):
             check("removed_state_version_gate_is_detected", not start_refused())
     with fixture() as case:
         case.publish([case.line("gated", "# Gated\n")])
@@ -719,6 +720,8 @@ def run_checks(check=None):
     _schema_as_data_checks(check)
     with tempfile.TemporaryDirectory(prefix="catalogue-gates-") as directory:
         _gate_checks(check, directory)
+    from .catalogue_tier_checks import run_checks as tier_checks
+    tier_checks(check)
     return {"record_type": "catalogue_release_checks/v1", "tests": tests,
             "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}

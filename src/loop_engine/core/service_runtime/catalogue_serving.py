@@ -27,8 +27,8 @@ import threading
 import time
 
 from ..harness_intelligence import HarnessIntelligenceCatalogue
-from ..provisioning_server import (QUALIFICATION_APPROVED, ProvisioningItemBinding, ProvisioningQualification,
-                                   ProvisioningQualificationResolver)
+from ..provisioning_server import (QUALIFICATION_APPROVED, RUNNABLE_EFFECT, ProvisioningItemBinding,
+                                   ProvisioningQualification, ProvisioningQualificationResolver)
 from .catalogue_packages import FILE_BODY, CataloguePackage, VolumeBodyStore, require_body_store
 from .catalogue_schema import EMPTY_SCHEMA
 from .records import ServiceRuntimeError
@@ -106,6 +106,8 @@ class CatalogueView:
     index: object = field(default=None, repr=False)
     state_revision: int = 0
     built_at: float = 0.0
+    #: identity -> the `CommunityAdmission` of each community item; verified items have none.
+    admissions: dict = field(default_factory=dict, repr=False)
     _lazy: dict = field(default_factory=dict, repr=False, compare=False)
 
     def approved_bindings(self):
@@ -148,6 +150,15 @@ class CatalogueView:
     def shown_attributes(self, identity):
         return self.schema.shown_values(self.attributes.get(identity, {}))
 
+    def attribution(self, identity):
+        """What a customer must keep with a copy: the licence file and attribution of a community item.
+
+        A verified item names its cited source and licence in its reference,
+        so it has no separate attribution record.
+        """
+        admission = self.admissions.get(identity)
+        return admission.public_summary() if admission is not None else None
+
     def package_summary(self, identity):
         package = self.packages.get(identity)
         if package is None:
@@ -172,6 +183,7 @@ class CatalogueView:
                 if (identity, item.digest) not in withdrawn}
         return replace(self, catalogue=HarnessIntelligenceCatalogue(keep),
                        bindings={identity: value for identity, value in self.bindings.items() if identity in keep},
+                       admissions={identity: value for identity, value in self.admissions.items() if identity in keep},
                        withdrawn=frozenset(withdrawn), state_revision=state_revision, built_at=time.time(),
                        index=self.search_index(), _lazy={})
 
@@ -215,8 +227,10 @@ def image_view(catalogue, resolver, reader, *, config=None, withdrawn=frozenset(
 def store_view(config, settings, *, license_policy, family_policy):
     """Build the view of the active release: verify every record and body, then index it once."""
     from ..practitioner_runtime.provisioning import _item
+    from .catalogue_bundle import item_version_tier
     from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_keys
     from .catalogue_search import IndexEntry, ReleaseSearchIndex, entry_text
+    from . import catalogue_tiers
     binding = ServiceCatalogBinding(config)
     body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
     with binding.store() as store:
@@ -230,6 +244,7 @@ def store_view(config, settings, *, license_policy, family_policy):
     # can be installed; a changed byte keeps the previous view serving.
     verify_release_bodies(release, body_store, withdrawn=withdrawn)
     catalogue, approvals, packages, attributes, bindings, entries = HarnessIntelligenceCatalogue(), {}, {}, {}, {}, []
+    admissions = {}
     for _version, payload in release.versions:
         item = _item(payload["reference"])
         package = CataloguePackage.from_dict(payload["package"])
@@ -240,12 +255,23 @@ def store_view(config, settings, *, license_policy, family_policy):
             _refuse("catalogue_release_digest_mismatch", "an item reference names other bytes than its package")
         if (item.identity, package.served_digest) in withdrawn:
             continue
+        tier, admission = item_version_tier(payload)
+        if admission is not None:
+            # The criteria are applied again when the view is built, so an
+            # admission made under criteria this release no longer holds is
+            # refused rather than served under a label it did not earn.
+            refused = catalogue_tiers.community_admission_refusal(admission, item, package)
+            if refused:
+                _refuse(refused, "a community item of the active release does not meet this release's criteria")
+            admissions[item.identity] = admission
         values = release.schema.validate_values(payload["attributes"])
         catalogue.register(item)
         exact = ProvisioningItemBinding.from_item(item)
-        approvals[item.identity] = ProvisioningQualification(exact, "approved", "host_attested", payload["approval_ref"])
+        approvals[item.identity] = ProvisioningQualification(exact, "approved", "host_attested", payload["approval_ref"],
+                                                             tier)
         packages[item.identity], attributes[item.identity], bindings[item.identity] = package, values, exact
-        entries.append(IndexEntry(item.identity, entry_text(item, release.schema.search_text(values)), values))
+        entries.append(IndexEntry(item.identity, entry_text(item, release.schema.search_text(values)), values,
+                                  tier, RUNNABLE_EFFECT in item.declared_effects))
     check = _withdrawal_check(config)
 
     def reader(item):
@@ -262,7 +288,8 @@ def store_view(config, settings, *, license_policy, family_policy):
                          withdrawn=frozenset(key for key in withdrawn if key[0] in dict(release.items)),
                          withdrawal_check=check, body_store=body_store,
                          index=ReleaseSearchIndex(tuple(entries), release.schema),
-                         state_revision=state["revision"] if state else 0, built_at=time.time())
+                         state_revision=state["revision"] if state else 0, built_at=time.time(),
+                         admissions=admissions)
 
 
 def catalogue_state_gate(config, settings):

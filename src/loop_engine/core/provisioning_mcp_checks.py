@@ -19,7 +19,7 @@ from .provisioning_mcp import (
     AUTHENTICATION_ERROR, PROTOCOL_VERSION, ProvisioningMcpError,
     ProvisioningMcpProfile, ProvisioningMcpTransport)
 from .provisioning_server import (
-    ProvisioningAccessPolicy, ProvisioningGrant, ProvisioningItemBinding,
+    VERIFIED_TIER, ProvisioningAccessPolicy, ProvisioningGrant, ProvisioningItemBinding,
     ProvisioningMeterAcknowledgment, ProvisioningQualification,
     ProvisioningQualificationResolver, ProvisioningServer, ProvisioningTenant,
     RecordedMeter)
@@ -42,9 +42,11 @@ def _fixture(*, meter=None, metering="required"):
     bindings = {name: ProvisioningItemBinding.from_item(item) for name, item in catalogue.items.items()}
 
     def qualify(binding):
+        candidate = binding.identity == _CANDIDATE
         return ProvisioningQualification(
-            binding, "unknown" if binding.identity == _CANDIDATE else "approved",
-            "host_attested", "" if binding.identity == _CANDIDATE else "fixture-review:" + binding.identity)
+            binding, "unknown" if candidate else "approved",
+            "host_attested", "" if candidate else "fixture-review:" + binding.identity,
+            "" if candidate else VERIFIED_TIER)
 
     policy = ProvisioningAccessPolicy(tuple(
         ProvisioningGrant("tenant", binding, name != "metadata", metering)

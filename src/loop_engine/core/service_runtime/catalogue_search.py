@@ -37,6 +37,7 @@ import re
 import sqlite3
 import threading
 
+from ..provisioning_server import TIER_ORDER, VERIFIED_TIER
 from ..retrieval import _bucket, hash_vector, record_search_text
 from ..retrieval_backends import RetrievalRankingPolicy
 from ..store_serve import StoreRecord
@@ -100,6 +101,11 @@ class IndexEntry:
     identity: str
     text: str
     values: dict
+    #: The trust tier of the item's approval, and whether it declares the
+    #: process effect; search orders verified items first and a library
+    #: setting can leave out community items that run a file.
+    tier: str = VERIFIED_TIER
+    runnable: bool = False
 
 
 def index_for_items(items):
@@ -216,7 +222,12 @@ class ReleaseSearchIndex:
 
 
 def fuse(pools, allowed, policy, top_n):
-    """Reciprocal rank fusion over the authorized candidates only, as `Retriever.search` fuses."""
+    """Reciprocal rank fusion over the authorized candidates only, as `Retriever.search` fuses.
+
+    Verified items come before community items; within a tier the fused score
+    orders them. `allowed` maps each authorized identity to its provisioning
+    row, whose trust tier the provisioning authority stated.
+    """
     fused = {}
     for name, rows in pools.items():
         rank = 0
@@ -227,7 +238,11 @@ def fuse(pools, allowed, policy, top_n):
             entry[0] += 1.0 / (policy.reciprocal_rank_offset + rank)
             entry[1].add(name)
             rank += 1
-    ordered = sorted(fused.items(), key=lambda row: (-row[1][0], row[0]))[:top_n]
+
+    def tier_rank(identity):
+        row = allowed[identity]
+        return TIER_ORDER[row["trust_tier"]] if isinstance(row, dict) and "trust_tier" in row else 0
+    ordered = sorted(fused.items(), key=lambda row: (tier_rank(row[0]), -row[1][0], row[0]))[:top_n]
     return [(identity, round(score, 5), sorted(modes)) for identity, (score, modes) in ordered]
 
 
