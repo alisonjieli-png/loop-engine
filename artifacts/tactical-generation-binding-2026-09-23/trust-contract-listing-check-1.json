@@ -1,0 +1,36 @@
+{
+  "record_type": "endpoint_trust_contract_listing_check/v1",
+  "at": "2026-09-24T00:37:07.792337+00:00",
+  "purpose": "metadata-only model listing through the custom endpoint adapter's new TLS trust contract before any measurement call; no model call",
+  "connect": "https://ai.tacticalengineering.net:6969/v1/models (DNS answer 172.11.142.224)",
+  "tls": {
+    "ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
+    "ca_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
+    "server_name": "ai.iamretarded.net",
+    "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+  },
+  "results": [
+    {
+      "control": "correct_contract",
+      "ok": true,
+      "http_status": 200,
+      "models": [
+        "gemma-4-coding-abliterated"
+      ],
+      "model_listed": true,
+      "error": "",
+      "error_type": ""
+    },
+    {
+      "control": "wrong_pin_all_zero",
+      "ok": false,
+      "http_status": null,
+      "models": [],
+      "model_listed": false,
+      "error": "tls_trust_refused: the server's leaf certificate differs from the pinned SHA-256; no request was sent",
+      "error_type": "TLSTrustRefused"
+    }
+  ],
+  "model_calls": 0,
+  "credential_written": false
+}

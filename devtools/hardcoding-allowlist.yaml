@@ -6958,6 +6958,97 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-24'
     expires_on: '2027-09-24'
+  - finding_id: hardcoding.18cff4c33e8efebe29da35cd
+    owner: loop_engine.core.custom_endpoint:CustomEndpoint.__post_init__
+    rationale: >-
+      The https:// scheme is the TLS trust contract itself: an endpoint that
+      declares a private anchor, an expected server name or a pinned certificate
+      must use HTTPS, so plain HTTP cannot carry its key. This is a protocol
+      requirement tested by known-wrong controls, not a provider, host or route
+      choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.c11bf51512f80d0313558b16
+    owner: loop_engine.core.runtime_settings:ProviderSettings.__post_init__
+    rationale: >-
+      The custom provider kind from the existing closed vocabulary PROVIDER_KINDS in
+      runtime_settings.py, checked beside the existing uses of the same literal. TLS
+      identity fields apply only to a custom endpoint, and only a custom declaration
+      builds a CustomEndpoint.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.025915cd56f5128e61ae9f7a
+    owner: loop_engine.core.runtime_settings:ProviderSettings.__post_init__
+    rationale: >-
+      The custom provider kind from the existing closed vocabulary PROVIDER_KINDS in
+      runtime_settings.py, checked beside the existing uses of the same literal. TLS
+      identity fields apply only to a custom endpoint, and only a custom declaration
+      builds a CustomEndpoint.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.97d0cab0914d4d52708874d3
+    owner: loop_engine.core.runtime_settings:ProviderSettings.__post_init__
+    rationale: >-
+      The https:// scheme is the TLS trust contract itself: an endpoint that
+      declares a private anchor, an expected server name or a pinned certificate
+      must use HTTPS, so plain HTTP cannot carry its key. This is a protocol
+      requirement tested by known-wrong controls, not a provider, host or route
+      choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.ac176db67515f855a08ffcdb
+    owner: loop_engine.core.runtime_settings:ProviderSettings.custom_endpoint
+    rationale: >-
+      The custom provider kind from the existing closed vocabulary PROVIDER_KINDS in
+      runtime_settings.py, checked beside the existing uses of the same literal. TLS
+      identity fields apply only to a custom endpoint, and only a custom declaration
+      builds a CustomEndpoint.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.876419dfc45c2fab6bbc86b4
+    owner: tools.generate_original_native_candidates:load_provider_binding
+    rationale: >-
+      A generation provider binding must select a custom endpoint, the provider kind
+      from the closed vocabulary PROVIDER_KINDS; the reviewed Ollama Cloud path
+      keeps its own selection.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.809e01d2bf7723f23aa96450
+    owner: tools.generate_original_native_candidates:load_provider_binding
+    rationale: >-
+      A generation provider binding must name a verified HTTPS endpoint before any
+      credential is read; the scheme is the contract requirement, tested by
+      known-wrong controls, not a host or route choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.30a50a469b44c6be3745c874
+    owner: tools.operator_credentials.json:api_keys.tactical-model-generation.environment
+    rationale: >-
+      The environment variable name that the existing operator credential helper
+      uses when a trusted command asks for this keyring reference with the run
+      operation. It names where a value would be placed, never a value. The owner
+      supplied the Tactical key on 2026-09-23 and it lives only in the system
+      keyring.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
+  - finding_id: hardcoding.5643efb95fcf09aaa8f17c1a
+    owner: tools.resources.original-native-generation-providers.tactical-gemma-4-coding-abliterated.json:provider.endpoint
+    rationale: >-
+      The one endpoint of a committed, digest-bound generation provider binding for
+      the owner's own model server. Selecting it needs the binding path and digest
+      on the command line, and it is refused before any request while its capacity
+      record is unknown. It is data for one reviewed binding, not a default route.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23

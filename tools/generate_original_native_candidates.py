@@ -4,6 +4,12 @@ The frozen plan owns method identity, effects, dependencies, paths and roles.
 The model supplies UTF-8 file text only. The existing native factory owns
 package identity and materialization. A private run journal records dispatch
 before the provider call; an interrupted dispatch is never repeated silently.
+
+The provider is Ollama Cloud with a reviewed panel installation, or one
+committed provider binding (``original_native_generation_provider_binding/v1``)
+that selects a custom endpoint through the existing settings, endpoint and
+gateway contracts, with its own family evidence, measured capacity record,
+TLS trust and operator credential reference.
 """
 from __future__ import annotations
 
@@ -18,19 +24,25 @@ import re
 import stat
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 if __name__ == "__main__" and __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from loop_engine.core import runtime_settings, settings_loader
+from loop_engine.core.custom_endpoint import EndpointError
 from loop_engine.core.model_call_records import default_secret_patterns
-from loop_engine.core.model_capabilities import ModelOutputAllocation
+from loop_engine.core.model_capabilities import (
+    ModelOutputAllocation,
+    ModelOutputCapability,
+)
 from loop_engine.core.model_gateway import (
     ModelGateway,
     ModelGatewayConfig,
     ModelGatewayRequest,
     builtin_provider_specs,
+    provider_spec_from_endpoint,
 )
 from loop_engine.core.model_routes import ModelRoute, screen_route
 from loop_engine.core.model_token_preflight import ProviderTokenBound
@@ -48,8 +60,16 @@ from tools import prepare_harness_candidates as factory
 
 PLAN_TYPE = "original_native_generation_plan/v1"
 DRAFT_TYPE = "original_native_file_draft/v1"
-RUN_TYPE = "original_native_generation_run/v4"
+RUN_TYPE = "original_native_generation_run/v5"
 EVENT_TYPE = "original_native_generation_event/v2"
+BINDING_TYPE = "original_native_generation_provider_binding/v1"
+CAPACITY_TYPE = "endpoint_output_capacity/v1"
+FAMILY_EVIDENCE_TYPE = "generation_producer_family_evidence/v1"
+BINDING_FIELDS = {"record_type", "binding_id", "provider", "trust_anchor_sha256", "producer_family",
+                  "family_evidence", "capacity", "credential_reference"}
+PANEL_PATH = "tools/candidate_review/resources/panel.json"
+STOP_ERROR_CODES = ("rate_limited", "provider_unavailable", "authentication_failed", "timeout",
+                    "model_identity_mismatch", "model_not_found", "missing_credential", "tls_trust_refused")
 PLAN_FIELDS = {"record_type", "source_revision", "license", "sources", "methods"}
 METHOD_FIELDS = (native.NATIVE_FIELDS - {"files", "producer"}) | {"brief", "acceptance", "files", "opportunity"}
 FILE_FIELDS = {"path", "role", "media_type", "purpose"}
@@ -188,6 +208,161 @@ def require_provider_credential(spec):
         refuse("provider_credential_unavailable")
 
 
+@dataclass(frozen=True)
+class ProviderBinding:
+    """One committed provider binding, validated before any provider exists.
+
+    It holds the parsed ProviderSettings (repository-relative trust anchor),
+    the capacity from its measured record, the producer family from its
+    evidence, and the name of an operator credential reference. It never
+    holds a credential.
+    """
+
+    binding_id: str
+    path: str
+    sha256: str
+    settings: runtime_settings.ProviderSettings
+    capability: ModelOutputCapability
+    producer_family: str
+    trust_anchor_sha256: str | None
+    family_evidence_sha256: str
+    capacity_sha256: str
+    panel_sha256: str
+    credential_reference: str
+
+    def summary(self):
+        return {"record_type": BINDING_TYPE, "binding_id": self.binding_id, "path": self.path,
+                "sha256": self.sha256, "settings_sha256": digest(canonical(self.settings.safe_summary())),
+                "endpoint": self.settings.endpoint, "tls_verification": self.settings.tls_verification,
+                "tls_server_name": self.settings.tls_server_name,
+                "tls_pinned_sha256": self.settings.tls_pinned_sha256,
+                "trust_anchor_sha256": self.trust_anchor_sha256,
+                "family_evidence_sha256": self.family_evidence_sha256,
+                "capacity_sha256": self.capacity_sha256, "panel_vocabulary_sha256": self.panel_sha256,
+                "credential_reference": "operator:" + self.credential_reference}
+
+
+def committed_bytes(repository, revision, relative, expected, code):
+    """Bytes of one repository file that are committed unchanged at the plan revision."""
+    if type(relative) is not str or type(expected) is not str:
+        refuse(code)
+    try:
+        factory._checked_source(repository, revision, relative, expected)
+    except factory.PreparationError:
+        refuse(code)
+    raw = read_file(repository / relative, MAX_PLAN_BYTES)
+    if digest(raw) != expected:
+        refuse(code)
+    return raw
+
+
+def committed_record(repository, revision, reference, record_type, code):
+    """A small JSON record named by {path, sha256}, committed at the plan revision."""
+    exact(reference, {"path", "sha256"}, code)
+    raw = committed_bytes(repository, revision, reference["path"], reference["sha256"], code)
+    if secret_present(raw.decode("utf-8")):
+        refuse(code)
+    value = strict_json(raw)
+    if type(value) is not dict or value.get("record_type") != record_type:
+        refuse(code)
+    return value
+
+
+def load_provider_binding(repository, revision, path, expected_digest, model, family):
+    """Validate one provider binding and everything it names, before any credential is read."""
+    raw = committed_bytes(repository, revision, path, expected_digest, "provider_binding_not_committed")
+    if secret_present(raw.decode("utf-8")):
+        refuse("provider_binding_contains_secret")
+    value = strict_json(raw)
+    exact(value, BINDING_FIELDS, "provider_binding_fields_invalid")
+    if value["record_type"] != BINDING_TYPE:
+        refuse("provider_binding_version_unsupported")
+    if type(value["binding_id"]) is not str or not re.fullmatch(r"[a-z][a-z0-9_]{0,63}", value["binding_id"]):
+        refuse("provider_binding_identity_invalid")
+    provider = value["provider"]
+    if type(provider) is not dict or any(key in provider for key in (
+            "credential_env", "maximum_output_tokens", "maximum_output_source")):
+        # One credential path (the operator reference) and one capacity source (the record).
+        refuse("provider_binding_settings_invalid")
+    # The settings loader is a cited source of the starter catalogue, so its
+    # key list gains the two TLS identity fields only with the next catalogue
+    # re-anchor. Until then they are applied through ProviderSettings' own
+    # validation, and every other key through the loader's.
+    identity_fields = {key: provider[key] for key in ("tls_server_name", "tls_pinned_sha256") if key in provider}
+    try:
+        parsed = settings_loader.runtime_settings_from_mapping({"version": 1, "models": {"providers": [
+            {key: item for key, item in provider.items() if key not in identity_fields}]}})
+        if any(type(item) is not str for item in identity_fields.values()):
+            refuse("provider_binding_settings_invalid")
+        settings = replace(parsed.models.providers[0], **identity_fields)
+    except (runtime_settings.SettingsError, EndpointError, ValueError, TypeError):
+        refuse("provider_binding_settings_invalid")
+    if (settings.kind != "custom" or not settings.enabled or "generation" not in settings.purposes
+            or not settings.endpoint.startswith("https://") or settings.tls_verification == "skip"):
+        refuse("provider_binding_requires_verified_https")
+    if settings.model != model:
+        refuse("provider_binding_model_mismatch")
+    if value["producer_family"] != family:
+        refuse("provider_binding_family_mismatch")
+    anchor = value["trust_anchor_sha256"]
+    if settings.tls_verification == "ca_file":
+        committed_bytes(repository, revision, settings.tls_ca_file, anchor, "provider_binding_trust_anchor_invalid")
+    elif anchor is not None:
+        refuse("provider_binding_trust_anchor_invalid")
+    reference = value["credential_reference"]
+    if type(reference) is not str or not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", reference):
+        refuse("provider_binding_credential_reference_invalid")
+    panel_digest = digest(read_file(repository / PANEL_PATH, MAX_PLAN_BYTES))
+    panel_raw = committed_bytes(repository, revision, PANEL_PATH, panel_digest, "review_panel_not_committed")
+    if family not in strict_json(panel_raw)["families"]:
+        # The review panel refuses an unknown producer family, so generation does too.
+        refuse("producer_family_outside_review_vocabulary")
+    identity = {"provider_id": settings.provider_id, "endpoint": settings.endpoint, "model": settings.model}
+    evidence = committed_record(repository, revision, value["family_evidence"], FAMILY_EVIDENCE_TYPE,
+                                "family_evidence_invalid")
+    if {key: evidence.get(key) for key in identity} != identity or evidence.get("family") != family:
+        refuse("family_evidence_not_for_this_binding")
+    capacity = committed_record(repository, revision, value["capacity"], CAPACITY_TYPE, "capacity_record_invalid")
+    if {key: capacity.get(key) for key in identity} != identity:
+        refuse("capacity_record_not_for_this_binding")
+    try:
+        capability = ModelOutputCapability(
+            capacity["maximum_output_tokens"],
+            f"{CAPACITY_TYPE} {value['capacity']['path']} sha256:{value['capacity']['sha256'][:16]}",
+            endpoint=settings.endpoint, observed_at=capacity["observed_at"])
+    except (KeyError, ValueError, TypeError):
+        refuse("capacity_record_invalid")
+    if capability.declared_maximum is None:
+        # Refused here, before any credential is read or provider built.
+        refuse("output_capacity_unknown")
+    return ProviderBinding(value["binding_id"], path, expected_digest, settings, capability, family, anchor,
+                           value["family_evidence"]["sha256"], value["capacity"]["sha256"], panel_digest, reference)
+
+
+def operator_credential(reference):
+    """Resolve an operator credential reference in this process only; never printed or stored."""
+    from tools import operator_credentials
+    return operator_credentials.resolve(reference)
+
+
+def binding_provider_spec(repository, binding, credential_resolver):
+    """Build the isolated ProviderSpec for a binding with the credential resolved just now."""
+    try:
+        key = credential_resolver(binding.credential_reference)
+    except Exception:  # noqa: BLE001 - keyring and helper failures are reported by a stable code only
+        refuse("provider_credential_unavailable")
+    if type(key) is not str or not key:
+        refuse("provider_credential_unavailable")
+    settings = binding.settings
+    if settings.tls_ca_file:
+        settings = replace(settings, tls_ca_file=str(plain_path(repository / settings.tls_ca_file)))
+    try:
+        endpoint = replace(settings.custom_endpoint(key), output_capability=binding.capability)
+    except (EndpointError, runtime_settings.SettingsError, ValueError):
+        refuse("provider_binding_settings_invalid")
+    return replace(provider_spec_from_endpoint(endpoint), credential_ref="operator:" + binding.credential_reference)
+
+
 def write_new(path, raw):
     path = plain_path(path)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -270,6 +445,10 @@ class GenerationRequest:
     writes_authorized: bool = False
     retry_failed: bool = False
     timeout_seconds: float = 180.0
+    #: Repository-relative path and digest of a committed provider binding;
+    #: both absent selects the reviewed Ollama Cloud path.
+    provider_binding: str | None = None
+    provider_binding_sha256: str | None = None
 
 
 class ExactRequestBounds:
@@ -434,12 +613,12 @@ def verify_success(output, row):
         native._verify_tree(prepared, item, package)
 
 
-def implementation_digests(spec):
+def implementation_digests(spec, extra=()):
     adapter = spec.adapter if inspect.ismodule(spec.adapter) or inspect.isclass(spec.adapter) else type(spec.adapter)
     try:
         paths = (Path(__file__), Path(native.__file__), Path(factory.__file__),
                  Path(inspect.getfile(PromptResourceBundle)),
-                 Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)))
+                 Path(inspect.getfile(ModelGateway)), Path(inspect.getfile(adapter)), *extra)
     except (TypeError, OSError):
         refuse("implementation_source_unavailable")
     result = {}
@@ -450,7 +629,8 @@ def implementation_digests(spec):
     return result
 
 
-def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=None, fixture_run=False):
+def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=None, fixture_run=False,
+             credential_resolver=None):
     if request.calls_authorized is not True or request.writes_authorized is not True:
         refuse("generation_authority_required")
     if type(request.call_ceiling) is not int or request.call_ceiling < 1:
@@ -462,7 +642,10 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
         refuse("token_ceiling_invalid")
     if gateway is not None and fixture_run is not True:
         refuse("injected_gateway_requires_fixture_marker")
-    if fixture_run and (gateway is None or provider_spec is None):
+    bound = request.provider_binding is not None or request.provider_binding_sha256 is not None
+    if bound and provider_spec is not None:
+        refuse("provider_binding_excludes_injected_provider")
+    if fixture_run and (gateway is None or (provider_spec is None and not bound)):
         refuse("fixture_requires_injected_gateway_and_provider")
     text(request.model, 128)
     if secret_present(request.model):
@@ -471,9 +654,16 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
         refuse("producer_family_invalid")
     repository = plain_path(request.repository)
     plan = load_plan(repository, request.plan, request.plan_sha256)
+    binding = None
     family_source_digest = "fixture"
-    if not fixture_run:
-        family_path = "tools/candidate_review/resources/panel.json"
+    if bound:
+        # A custom producer is bound by its own committed evidence, never by
+        # adding an unqualified reviewer installation to the review panel.
+        binding = load_provider_binding(repository, plan["source_revision"], request.provider_binding,
+                                        request.provider_binding_sha256, request.model, request.producer_family)
+        family_source_digest = binding.family_evidence_sha256
+    elif not fixture_run:
+        family_path = PANEL_PATH
         family_raw = read_file(repository / family_path, MAX_PLAN_BYTES)
         family_source_digest = digest(family_raw)
         factory._checked_source(repository, plan["source_revision"], family_path, family_source_digest)
@@ -482,10 +672,15 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                     and row["engine_kind"] == "model_gateway" and row["settings"].get("provider_id") == "ollama_cloud"}
         if families != {request.producer_family}:
             refuse("producer_family_not_bound_to_registered_model")
-    spec = provider_spec or next(p for p in builtin_provider_specs() if p.provider_id == "ollama_cloud")
-    if not fixture_run:
-        require_provider_credential(spec)
+    if binding is None:
+        spec = provider_spec or next(p for p in builtin_provider_specs() if p.provider_id == "ollama_cloud")
+        if not fixture_run:
+            require_provider_credential(spec)
     system, prompt_binding = load_prompt_resource()
+    if binding is not None:
+        # The credential is resolved in this process immediately before the
+        # provider is built, and only after every committed input was checked.
+        spec = binding_provider_spec(repository, binding, credential_resolver or operator_credential)
     capability = spec.output_capability_for(request.model)
     maximum = capability.declared_maximum
     if maximum is None:
@@ -521,7 +716,10 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                   "output_tokens": maximum, "capacity": capability.summary(), "fixture_run": fixture_run,
                   "token_bounds_source": getattr(token_bound_resolver, "source_sha256", "host-injected")
                       if token_bound_resolver is not None else None,
-                  "implementations": implementation_digests(spec), "prompt_resource": prompt_binding}
+                  "provider_binding": binding.summary() if binding is not None else None,
+                  "implementations": implementation_digests(spec, (
+                      Path(runtime_settings.__file__), Path(settings_loader.__file__)) if binding is not None else ()),
+                  "prompt_resource": prompt_binding}
         meta = output / "run.json"
         if meta.exists():
             if strict_json(read_file(meta, MAX_PLAN_BYTES)) != config:
@@ -650,8 +848,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                     (remaining is not None and (not complete_usage or charge > remaining))):
                 stop = "unknown_or_exceeded_accounting"
                 break
-            if error_code in ("rate_limited", "provider_unavailable", "authentication_failed", "timeout",
-                              "model_identity_mismatch", "model_not_found", "missing_credential"):
+            if error_code in STOP_ERROR_CODES:
                 stop = error_code
                 break
         cursor = {"record_type": "original_native_generation_cursor/v1", "plan_sha256": request.plan_sha256,
@@ -686,13 +883,17 @@ def main(argv=None):
     parser.add_argument("--authorize-model-calls", action="store_true")
     parser.add_argument("--authorize-writes", action="store_true")
     parser.add_argument("--retry-failed", action="store_true")
+    parser.add_argument("--provider-binding",
+                        help="repository-relative path of a committed provider binding")
+    parser.add_argument("--provider-binding-sha256")
     args = parser.parse_args(argv)
     try:
         resolver = ExactRequestBounds(args.token_bounds, args.token_bounds_sha256) if args.token_bounds else None
         request = GenerationRequest(args.repository, args.plan, args.plan_sha256, args.output, args.model,
                                     args.family, args.max_calls, args.output_tokens, args.token_ceiling,
                                     args.allow_unbounded_total, args.authorize_model_calls, args.authorize_writes,
-                                    args.retry_failed)
+                                    args.retry_failed, provider_binding=args.provider_binding,
+                                    provider_binding_sha256=args.provider_binding_sha256)
         print(json.dumps(generate(request, token_bound_resolver=resolver), indent=2))
         return 0
     except (GenerationError, factory.PreparationError, ValueError, OSError) as error:

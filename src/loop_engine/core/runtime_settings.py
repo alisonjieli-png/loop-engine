@@ -192,6 +192,11 @@ class ProviderSettings:
     stream: "str | bool | None" = None
     tls_verification: str = "default"
     tls_ca_file: str = ""
+    #: The certificate name a custom endpoint must prove when it differs
+    #: from the endpoint host; empty means the endpoint host.
+    tls_server_name: str = ""
+    #: Optional SHA-256 of a custom endpoint's leaf certificate.
+    tls_pinned_sha256: str = ""
     #: Whether a reasoning model thinks before it answers on the Ollama
     #: wire: None leaves the model's default; off, on, or a boolean.
     think: "str | bool | None" = None
@@ -270,6 +275,29 @@ class ProviderSettings:
             raise SettingsError(
                 "provider.tls_ca_file must be declared exactly when "
                 "tls_verification is ca_file")
+        if self.tls_server_name or self.tls_pinned_sha256:
+            from .custom_endpoint import _SHA256_HEX, _TLS_SERVER_NAME
+            if self.kind != "custom" or self.tls_verification == "skip":
+                raise SettingsError(
+                    "provider.tls_server_name and provider.tls_pinned_sha256 "
+                    "apply only to a custom endpoint whose certificate is "
+                    "verified")
+            if self.tls_server_name and not _TLS_SERVER_NAME.fullmatch(
+                    self.tls_server_name):
+                raise SettingsError(
+                    "provider.tls_server_name must be a lower-case DNS name")
+            pin = self.tls_pinned_sha256.replace(":", "").lower()
+            if self.tls_pinned_sha256 and not _SHA256_HEX.fullmatch(pin):
+                raise SettingsError(
+                    "provider.tls_pinned_sha256 must be the 64-character "
+                    "SHA-256 of the endpoint's leaf certificate")
+            object.__setattr__(self, "tls_pinned_sha256", pin)
+        if (self.kind == "custom"
+                and (self.tls_verification == "ca_file"
+                     or self.tls_server_name or self.tls_pinned_sha256)
+                and not self.endpoint.startswith("https://")):
+            raise SettingsError(
+                "a custom provider's TLS trust needs an https:// endpoint")
         if self.kind == "builtin" and self.provider_id not in (
                 "ollama_cloud", "mistral", "openrouter"):
             raise SettingsError(
@@ -321,8 +349,44 @@ class ProviderSettings:
             "auth_header": self.auth_header,
             "tls_verification": self.tls_verification,
             "tls_ca_file": self.tls_ca_file,
+            "tls_server_name": self.tls_server_name,
+            "tls_pinned_sha256": self.tls_pinned_sha256,
             "think": self.think,
         }
+
+    def custom_endpoint(self, api_key: str = ""):
+        """The CustomEndpoint this custom declaration describes.
+
+        The caller resolves the key and passes it here; it never enters the
+        settings, their summary, or the endpoint's record.
+        """
+        from .custom_endpoint import CustomEndpoint
+        from .model_capabilities import ModelOutputCapability
+        if self.kind != "custom":
+            raise SettingsError("only a custom provider declares an endpoint")
+        return CustomEndpoint(
+            name=self.provider_id,
+            base_url=self.endpoint,
+            model=self.model,
+            api_key=api_key,
+            wire=self.wire,
+            locality=self.locality,
+            output_capability=(ModelOutputCapability(
+                self.maximum_output_tokens,
+                self.maximum_output_source,
+                endpoint=self.endpoint)
+                if self.maximum_output_tokens is not None else None),
+            counts_as_evidence=self.counts_as_evidence,
+            headers=self.headers,
+            auth_scheme=self.auth_scheme,
+            auth_header=self.auth_header,
+            stream=(self.stream if self.stream is not None else "auto"),
+            tls_verification=str(self.tls_verification or "default"),
+            tls_ca_file=self.tls_ca_file,
+            tls_server_name=self.tls_server_name,
+            tls_pinned_sha256=self.tls_pinned_sha256,
+            think=(self.think if self.think is not None else "default"),
+            credential_env=self.credential_env)
 
 @dataclass(frozen=True)
 class ModelTier:
@@ -729,7 +793,6 @@ class RuntimeSettings:
 
     def build_gateway(self, environ: "Mapping[str, str] | None" = None):
         """Build a provider-neutral gateway without probing or calling it."""
-        from .custom_endpoint import CustomEndpoint
         from .model_capabilities import ModelOutputCapability
         from .model_gateway import (ModelGateway, builtin_provider_specs,
                                     provider_spec_from_endpoint)
@@ -760,30 +823,8 @@ class RuntimeSettings:
                         for spec in built)
                 providers.extend(built)
                 continue
-            endpoint = CustomEndpoint(
-                name=configured.provider_id,
-                base_url=configured.endpoint,
-                model=configured.model,
-                api_key=env.get(configured.credential_env, ""),
-                wire=configured.wire,
-                locality=configured.locality,
-                output_capability=(ModelOutputCapability(
-                    configured.maximum_output_tokens,
-                    configured.maximum_output_source,
-                    endpoint=configured.endpoint)
-                    if configured.maximum_output_tokens is not None else None),
-                counts_as_evidence=configured.counts_as_evidence,
-                headers=configured.headers,
-                auth_scheme=configured.auth_scheme,
-                auth_header=configured.auth_header,
-                stream=(configured.stream if configured.stream is not None
-                        else "auto"),
-                tls_verification=str(
-                    configured.tls_verification or "default"),
-                tls_ca_file=configured.tls_ca_file,
-                think=(configured.think if configured.think is not None
-                       else "default"),
-                credential_env=configured.credential_env)
+            endpoint = configured.custom_endpoint(
+                env.get(configured.credential_env, ""))
             spec = provider_spec_from_endpoint(endpoint)
             providers.append(replace(
                 spec, credential_ref=(

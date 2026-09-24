@@ -53,10 +53,13 @@ credential-leak paths.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import http.client
 import json
 import os
 import re
+import ssl
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -161,9 +164,27 @@ def _normalize_stream(value: object) -> str:
 
 LOCALITIES = ("cloud", "organization", "local")
 
+#: A lower-case DNS name for ``tls_server_name``: labels of letters, digits
+#: and inner hyphens, 253 characters at most, no wildcard.
+_TLS_SERVER_NAME = re.compile(
+    r"(?=.{1,253}\Z)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
+    r"(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\Z")
+_SHA256_HEX = re.compile(r"[0-9a-f]{64}\Z")
+
 
 class EndpointError(ValueError):
     """A custom endpoint declared something inconsistent."""
+
+
+class TLSTrustRefused(OSError):
+    """The endpoint's TLS trust contract refused the connection.
+
+    Raised while the connection is set up: the declared trust anchor could
+    not be loaded, the server did not prove the expected name, its leaf
+    certificate differs from the pin, or a plain HTTP request was attempted.
+    No request line, header, body or credential has been sent when it is
+    raised.
+    """
 
 
 @dataclass(frozen=True)
@@ -189,6 +210,16 @@ class CustomEndpoint:
     stream: str = "auto"
     tls_verification: str = "default"
     tls_ca_file: str = ""
+    #: The name the server certificate must carry when it differs from the
+    #: host the URL connects to, such as an origin that presents a
+    #: certificate for a second domain the same owner holds. Empty means the
+    #: URL host. Hostname checking stays on either way.
+    tls_server_name: str = ""
+    #: The SHA-256 of the server's leaf certificate (DER bytes), or empty.
+    #: Colons and upper case are accepted and stored as 64 lower-case
+    #: hexadecimal characters. A different certificate is refused before
+    #: any request is sent.
+    tls_pinned_sha256: str = ""
     think: str = "default"
     #: The name of the variable the key was to be read from, when a
     #: declaration named one. Never the key. An endpoint whose declared
@@ -222,10 +253,38 @@ class CustomEndpoint:
             raise EndpointError(f"locality must be one of {LOCALITIES}")
         if self.tls_verification not in ("default", "skip", "ca_file"):
             raise EndpointError(
-                "tls_verification must be default or skip; skip is the "
-                "explicit operator choice for an origin behind a private "
-                "certificate authority (such as a Cloudflare Origin CA on "
-                "a DNS-only hostname) and is recorded in every run")
+                "tls_verification must be default, ca_file, or skip; "
+                "ca_file trusts one declared private certificate authority "
+                "(such as a Cloudflare Origin CA on a DNS-only hostname) "
+                "and skip is the explicit operator choice that disables "
+                "verification; both are recorded in every run")
+        if not all(isinstance(getattr(self, name), str) for name in (
+                "tls_ca_file", "tls_server_name", "tls_pinned_sha256")):
+            raise EndpointError("TLS options must be text")
+        if (self.tls_verification == "ca_file") != bool(
+                self.tls_ca_file.strip()):
+            # An empty file under ca_file would silently trust the system
+            # store; a file under another policy would be silently ignored.
+            raise EndpointError(
+                "tls_ca_file must be declared exactly when tls_verification "
+                "is ca_file")
+        pin = self.tls_pinned_sha256.replace(":", "").lower()
+        if self.tls_pinned_sha256 and not _SHA256_HEX.fullmatch(pin):
+            raise EndpointError(
+                "tls_pinned_sha256 must be the 64-character SHA-256 of the "
+                "server's leaf certificate")
+        object.__setattr__(self, "tls_pinned_sha256", pin)
+        if self.tls_server_name and not _TLS_SERVER_NAME.fullmatch(
+                self.tls_server_name):
+            raise EndpointError(
+                "tls_server_name must be a lower-case DNS name without a "
+                "wildcard")
+        if self.tls_verification == "skip" and (
+                self.tls_server_name or self.tls_pinned_sha256):
+            raise EndpointError(
+                "tls_verification skip disables certificate checks, so it "
+                "cannot carry an expected server name or a pinned "
+                "certificate")
         if self.auth_scheme not in ("bearer", "header", "none"):
             raise EndpointError(
                 "auth_scheme must be bearer, header, or none")
@@ -272,6 +331,12 @@ class CustomEndpoint:
         if not self.base_url.startswith(("http://", "https://")):
             raise EndpointError(
                 f"base_url {self.base_url!r} must be an http(s) URL")
+        if self.has_tls_trust_contract and not self.base_url.startswith(
+                "https://"):
+            raise EndpointError(
+                "a TLS trust contract (ca_file, tls_server_name or "
+                "tls_pinned_sha256) needs an https:// base_url; plain HTTP "
+                "would send the request and its key unencrypted")
         base = self.model.split("/")[-1].split(":")[0]
         if any(f in self.model or f in base for f in FORBIDDEN_MODELS):
             raise EndpointError(
@@ -324,6 +389,14 @@ class CustomEndpoint:
         """Where this wire lists its models, beside the chat path."""
         return self.api_root + ("/api/tags" if self.wire == "ollama"
                                 else "/models")
+
+    @property
+    def has_tls_trust_contract(self) -> bool:
+        """Whether this endpoint declares its own TLS trust: a private
+        anchor, an expected server name, or a pinned leaf certificate."""
+        return (self.tls_verification == "ca_file"
+                or bool(self.tls_server_name)
+                or bool(self.tls_pinned_sha256))
 
     @property
     def credential_missing(self) -> bool:
@@ -386,7 +459,9 @@ class CustomEndpoint:
                 "context_tokens": self.context_tokens,
                 "context_tokens_sent": self.context_tokens_sent,
                 "tls_verification": self.tls_verification,
-                "tls_ca_file": self.tls_ca_file}
+                "tls_ca_file": self.tls_ca_file,
+                "tls_server_name": self.tls_server_name,
+                "tls_pinned_sha256": self.tls_pinned_sha256}
 
 
 def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
@@ -401,6 +476,91 @@ def _request_headers(ep: CustomEndpoint) -> dict[str, str]:
     return headers
 
 
+class _TrustedHTTPSConnection(http.client.HTTPSConnection):
+    """One HTTPS connection held to an endpoint's TLS trust contract.
+
+    The TCP connection goes to the URL host. The handshake names the
+    expected server name, the context trusts only the declared anchor and
+    checks that name, and an optional pin compares the leaf certificate.
+    Every refusal happens inside ``connect``, before http.client writes the
+    request line, so no header, body or credential leaves the process.
+    """
+
+    def __init__(self, host, *, tls_server_name="", tls_pinned_sha256="",
+                 **kwargs):
+        super().__init__(host, **kwargs)
+        self._tls_server_name = tls_server_name
+        self._tls_pinned_sha256 = tls_pinned_sha256
+
+    def connect(self):
+        http.client.HTTPConnection.connect(self)
+        expected = self._tls_server_name or self._tunnel_host or self.host
+        try:
+            secured = self._context.wrap_socket(
+                self.sock, server_hostname=expected)
+        except (ssl.SSLEOFError, ssl.SSLZeroReturnError):
+            # The peer closed the connection: a transport failure, not a
+            # verdict about its identity.
+            raise
+        except ssl.SSLError as exc:
+            self.sock.close()
+            raise TLSTrustRefused(
+                f"the server did not prove the expected name {expected!r} "
+                f"under the declared trust anchor: {exc}") from None
+        if self._tls_pinned_sha256:
+            leaf = secured.getpeercert(binary_form=True) or b""
+            if not hmac.compare_digest(hashlib.sha256(leaf).hexdigest(),
+                                       self._tls_pinned_sha256):
+                secured.close()
+                raise TLSTrustRefused(
+                    "the server's leaf certificate differs from the pinned "
+                    "SHA-256")
+        self.sock = secured
+
+
+class _TrustedHTTPSHandler(urllib.request.HTTPSHandler):
+    """Opens every HTTPS request through ``_TrustedHTTPSConnection``."""
+
+    def __init__(self, context, tls_server_name, tls_pinned_sha256):
+        super().__init__(context=context)
+        self._trust_context = context
+        self._trust = {"tls_server_name": tls_server_name,
+                       "tls_pinned_sha256": tls_pinned_sha256}
+
+    def https_open(self, req):
+        trust = self._trust
+
+        def connection(host, **kwargs):
+            return _TrustedHTTPSConnection(host, **trust, **kwargs)
+
+        return self.do_open(connection, req, context=self._trust_context)
+
+
+class _RedirectRefused(urllib.request.HTTPRedirectHandler):
+    """Ends a redirect as the HTTP error it is: the key is sent only to the
+    URL the endpoint declared, and a 3xx answer is one physical request."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+class _PlainHTTPRefused(urllib.request.HTTPHandler):
+    """Refuses plain HTTP for an endpoint that declared TLS trust, so a
+    redirect or a proxy cannot move its key onto an unencrypted hop."""
+
+    def http_open(self, req):
+        raise urllib.error.URLError(TLSTrustRefused(
+            "plain HTTP is refused for an endpoint with a TLS trust contract"))
+
+
+def _trust_refusal(error) -> TLSTrustRefused | None:
+    """The trust refusal inside an opener error, or None."""
+    if isinstance(error, TLSTrustRefused):
+        return error
+    reason = getattr(error, "reason", None)
+    return reason if isinstance(reason, TLSTrustRefused) else None
+
+
 def _endpoint_opener(ep: CustomEndpoint):
     """Return an opener honoring the endpoint's TLS verification policy.
 
@@ -409,21 +569,34 @@ def _endpoint_opener(ep: CustomEndpoint):
     Cloudflare Origin CA on a DNS-only hostname). The choice is declared
     on the endpoint, appears in its describe() record, and never applies
     to any other provider.
+
+    An endpoint with a TLS trust contract (``ca_file``, an expected server
+    name, or a pinned leaf certificate) gets a context that trusts only its
+    declared anchor, or the system store when none is declared, keeps
+    hostname checking on, follows no redirect, and refuses plain HTTP. An
+    anchor that cannot be loaded raises ``TLSTrustRefused`` before any
+    socket is opened.
     """
-    if ep.tls_verification == "default":
-        return urllib.request.build_opener()
-    import ssl
-    if ep.tls_verification == "ca_file":
-        # Pinned private authority: hostname checking stays on and only the
-        # declared CA file is trusted for this endpoint.
-        context = ssl.create_default_context(cafile=ep.tls_ca_file or None)
+    if ep.tls_verification == "skip":
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
         handler = urllib.request.HTTPSHandler(context=context)
         return urllib.request.build_opener(handler)
-    context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
-    handler = urllib.request.HTTPSHandler(context=context)
-    return urllib.request.build_opener(handler)
+    if not ep.has_tls_trust_contract:
+        return urllib.request.build_opener()
+    try:
+        # With a cafile the context trusts that file alone, never the
+        # system store as well.
+        context = ssl.create_default_context(cafile=ep.tls_ca_file or None)
+    except (OSError, ValueError) as exc:
+        raise TLSTrustRefused(
+            "the declared trust anchor for this endpoint cannot be loaded "
+            f"({type(exc).__name__})") from None
+    return urllib.request.build_opener(
+        _TrustedHTTPSHandler(context, ep.tls_server_name,
+                             ep.tls_pinned_sha256),
+        _RedirectRefused(), _PlainHTTPRefused())
 
 
 def _sse_lines(response):
@@ -890,6 +1063,14 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                               response_received=True,
                               physical_requests=physical_requests)
         except (urllib.error.URLError, OSError, ValueError) as e:
+            refused = _trust_refusal(e)
+            if refused is not None:
+                # Refused while connecting: this attempt sent nothing, so it
+                # is not a physical request.
+                return ChatResult(
+                    text="", model="", ok=False,
+                    error=f"tls_trust_refused: {refused}; no request was sent",
+                    physical_requests=physical_requests - 1)
             if allow_transport_retry and ep.stream == "auto" and not use_streaming \
                     and isinstance(e, (urllib.error.URLError, OSError)) \
                     and "timed out" in str(e).lower():
@@ -1077,6 +1258,12 @@ def make_adapter(ep: CustomEndpoint):
                         getattr(exc, "headers", None)))
                 return record
             except (urllib.error.URLError, OSError) as exc:
+                refused = _trust_refusal(exc)
+                if refused is not None:
+                    record.update(error=f"tls_trust_refused: {refused}; no "
+                                        "request was sent",
+                                  error_type="TLSTrustRefused")
+                    return record
                 record.update(error=f"{type(exc).__name__}: {str(exc)[:250]}",
                               error_type=type(exc).__name__)
                 return record
@@ -1183,6 +1370,7 @@ def endpoints_from_env(value: "str | None" = None) -> list:
                                  "max_output_source", "evidence",
                                  "auth_scheme", "auth_header", "stream",
                                  "think", "tls_verification", "tls_ca_file",
+                                 "tls_server_name", "tls_pinned_sha256",
                                  "residency_seconds", "context_tokens"}
         if unknown:
             raise EndpointError(
@@ -1218,6 +1406,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             context_tokens=int(fields.get("context_tokens", "0")),
             tls_verification=fields.get("tls_verification", "default"),
             tls_ca_file=fields.get("tls_ca_file", ""),
+            tls_server_name=fields.get("tls_server_name", ""),
+            tls_pinned_sha256=fields.get("tls_pinned_sha256", ""),
             credential_env=key_env,
             output_capability=capability,
             counts_as_evidence=fields.get("evidence", "").lower()

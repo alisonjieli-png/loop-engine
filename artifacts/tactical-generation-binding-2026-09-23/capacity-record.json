@@ -1,0 +1,82 @@
+{
+ "record_type": "endpoint_output_capacity/v1",
+ "provider_id": "tactical",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "maximum_output_tokens": "unknown",
+ "observed_at": "2026-09-23",
+ "observed_window": "2026-09-23 20:37 to 21:02 United States Eastern (2026-09-24 00:37 to 01:02 UTC)",
+ "method": "At most three recorded model calls, each streamed with temperature 0 and max_tokens 10,000,000, asking for an answer longer than any plausible limit, to read where the server itself stops (finish_reason and reported completion tokens); then read-only metadata routes for a stated limit. Acceptance of a large max_tokens is not evidence, because this server accepted 10,000,000 without stating a limit.",
+ "call_ceiling": 3,
+ "calls_used": 3,
+ "calls": [
+  {
+   "record": "capacity-measurement-call-1.json",
+   "sha256": "c5f7b082bcec389948b9c5407b5e74571057642a07f95a3ddb928b27725e3170",
+   "route": "chat",
+   "prompt_kind": "count",
+   "max_tokens_requested": 10000000,
+   "outcome": "model_stopped_before_any_limit",
+   "finish_reason": "stop",
+   "stop_token_id": 106,
+   "prompt_tokens": 45,
+   "completion_tokens": 186,
+   "streamed_chunks": 189,
+   "elapsed_seconds": 2.198,
+   "error": null
+  },
+  {
+   "record": "capacity-measurement-call-2.json",
+   "sha256": "c4f73c9fc0d8e4aedced56a0a1930e88430084b553e40ef96b82ba2aef73043a",
+   "route": "chat",
+   "prompt_kind": "count_checked",
+   "max_tokens_requested": 10000000,
+   "outcome": "model_stopped_before_any_limit",
+   "finish_reason": "stop",
+   "stop_token_id": 106,
+   "prompt_tokens": 109,
+   "completion_tokens": 558,
+   "streamed_chunks": 561,
+   "elapsed_seconds": 6.28,
+   "error": null
+  },
+  {
+   "record": "capacity-measurement-call-3.json",
+   "sha256": "c8ba795bf10020fb57d47015dae5db4fea47bb53a45e800b74e859055e3b02cf",
+   "route": "completions",
+   "prompt_kind": "raw_continuation",
+   "max_tokens_requested": 10000000,
+   "outcome": "transport_error",
+   "finish_reason": null,
+   "stop_token_id": null,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "streamed_chunks": 105574,
+   "elapsed_seconds": 1075.927,
+   "error": "TimeoutError: The read operation timed out"
+  }
+ ],
+ "metadata_reads": {
+  "record": "metadata-reads-after-measurement-1.json",
+  "sha256": "bcbecfceb15cb99a315bd3e9060f6ffae1b84e3415a5cb8e0ceb84ea57bde16b"
+ },
+ "observed": [
+  "The server accepted max_tokens 10,000,000 on all three calls without an error or a stated limit.",
+  "Calls 1 and 2 (chat route) ended by the model itself: finish_reason stop on token id 106 after 186 and 558 completion tokens. No limit was reached.",
+  "Call 3 (completions route, raw counting text) streamed 105,574 one-token chunks in about 776 seconds (about 136 tokens a second), fell into repeating one line, then sent nothing for 300 seconds; the client read timeout closed it. It carried no finish_reason, no usage and no [DONE], so it is not a completed response.",
+  "No read-only route states a sequence, input or output limit. /server_info reports max_batch_size 1 and tokens_per_block 32; /metrics returns an empty list; the server version is 1.3.0rc25 (TensorRT-LLM)."
+ ],
+ "not_observed": [
+  "A completed response ended by the server's own length limit.",
+  "The server's max_seq_len, max_input_len, max_num_tokens or KV cache capacity.",
+  "Whether the server clamps or refuses when prompt tokens plus max_tokens exceed its sequence limit.",
+  "Why the third stream stopped, and whether the server released that request after the client closed the connection."
+ ],
+ "owner_must_supply": [
+  "max_seq_len of the running trtllm-serve instance (the limit for prompt plus output in one request)",
+  "max_input_len and max_num_tokens",
+  "KV cache capacity in tokens, or kv_cache_free_gpu_memory_fraction with the GPU memory it applies to",
+  "the server's behavior when prompt plus max_tokens exceeds max_seq_len: clamp, or refuse with a stated limit"
+ ],
+ "decision": "The maximum output is unknown. The generator refuses this binding with output_capacity_unknown before it reads the credential. A successor capacity record under a new name may state a maximum from the server's own configuration or a completed length stop; this record keeps its bytes."
+}

@@ -1,0 +1,62 @@
+diff --git a/src/loop_engine/core/provider_failure_classes.py b/src/loop_engine/core/provider_failure_classes.py
+index 69d75158..dc31180a 100644
+--- a/src/loop_engine/core/provider_failure_classes.py
++++ b/src/loop_engine/core/provider_failure_classes.py
+@@ -54,6 +54,10 @@ PROVIDER_FAILURE_CLASSES = MappingProxyType({
+     "model_not_found": CONFIGURATION, "invalid_request": CONFIGURATION,
+     "provider_not_configured": CONFIGURATION, "no_eligible_route": CONFIGURATION,
+     "unknown_model_output_limit": CONFIGURATION,
++    # The endpoint's declared TLS trust (anchor, expected name, pinned
++    # certificate) refused the server; nothing was sent, and the same
++    # configuration refuses again until the endpoint or its contract changes.
++    "tls_trust_refused": CONFIGURATION,
+     # This request cannot succeed as posed; the cell fails, the campaign goes on.
+     "context_window_exceeded": REQUEST, "output_limit_reached": REQUEST,
+     "output_validation_failed": REQUEST, "unsupported_tool_call": REQUEST,
+@@ -133,7 +137,9 @@ def self_test() -> dict:
+                 "invalid_response_body: endpoint answered with a body that is not JSON",
+                 "HTTP 413: Payload Too Large", "HTTP 422: validation error", "HTTP 408: Request Timeout",
+                 'HTTP 400: {"error": {"message": "This model\'s maximum context length is 131072 tokens"}}',
+-                "HTTP 404: model 'monkey-7b' not found")
++                "HTTP 404: model 'monkey-7b' not found",
++                "tls_trust_refused: the server's leaf certificate differs from the pinned SHA-256; "
++                "no request was sent")
+     emitted = {_error_code(message) for message in messages}
+     check("every_code_the_gateway_emits_for_these_messages_has_a_class",
+           all(code in PROVIDER_FAILURE_CLASSES for code in emitted), sorted(emitted))
+@@ -144,6 +150,12 @@ def self_test() -> dict:
+           and decide(["network_unreachable", "authentication_failed"])["decision"] == STOP_ROUTE
+           and decide(["missing_credential"])["decision"] == STOP_ROUTE
+           and decide(["model_not_found"])["decision"] == STOP_ROUTE)
++    check("a_tls_trust_refusal_stops_the_route_and_is_never_an_outage",
++          _error_code("tls_trust_refused: the server did not prove the expected name; "
++                      "no request was sent") == "tls_trust_refused"
++          and failure_class("tls_trust_refused") == CONFIGURATION
++          and decide(["tls_trust_refused"])["decision"] == STOP_ROUTE
++          and decide(["network_unreachable", "tls_trust_refused"])["decision"] == STOP_ROUTE)
+     check("an_outage_waits_for_recovery_and_an_allowance_waits_for_its_reset",
+           decide(["network_unreachable", "provider_unavailable"])["decision"] == WAIT_FOR_RECOVERY
+           and decide(["rate_limited"])["decision"] == WAIT_FOR_ALLOWANCE
+diff --git a/src/loop_engine/core/settings_loader.py b/src/loop_engine/core/settings_loader.py
+index 9afc2c3c..a9130394 100644
+--- a/src/loop_engine/core/settings_loader.py
++++ b/src/loop_engine/core/settings_loader.py
+@@ -118,7 +118,8 @@ def _provider(value: Mapping) -> ProviderSettings:
+                   "maximum_output_tokens", "maximum_output_source",
+                   "context_window",
+                   "purposes", "headers", "auth_scheme", "auth_header",
+-                  "stream", "tls_verification", "tls_ca_file", "think"),
++                  "stream", "tls_verification", "tls_ca_file",
++                  "tls_server_name", "tls_pinned_sha256", "think"),
+            "provider")
+     if not body.get("id"):
+         raise SettingsError("each models.providers item needs id")
+@@ -160,6 +161,8 @@ def _provider(value: Mapping) -> ProviderSettings:
+         stream=raw_stream,
+         tls_verification=str(body.get("tls_verification", "default")),
+         tls_ca_file=str(body.get("tls_ca_file", "")),
++        tls_server_name=str(body.get("tls_server_name", "")),
++        tls_pinned_sha256=str(body.get("tls_pinned_sha256", "")),
+         think=raw_think)
+ 
+ 

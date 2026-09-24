@@ -18,6 +18,9 @@ venv/
 !.env.example
 *.pem
 *.key
+# One public certificate authority root, the committed trust anchor of a
+# reviewed generation provider binding. It is a certificate, never a key.
+!tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem
 
 # Local run artifacts
 src/loop_engine/evidence/runs/

@@ -132,6 +132,19 @@ selected policy appears in `loop-engine configure`, in the provider
 description, and as a `tls_verification_policy` event in the run's model
 routing history.
 
+Two more fields finish the trust for an origin reached by one name that
+presents a certificate for another. `tls_server_name` is the name the
+certificate must prove; the connection still goes to the endpoint host.
+`tls_pinned_sha256` is the SHA-256 of the leaf certificate, for example the
+value `openssl x509 -noout -fingerprint -sha256` prints, colons allowed. Both
+are accepted by `CustomEndpoint`, `ProviderSettings`, `LOOP_ENGINE_ENDPOINTS`
+and a generation provider binding; the settings file does not accept them
+yet. An endpoint with `ca_file`, a server name or a pin must use `https://`,
+follows no redirect and refuses plain HTTP. A server that cannot prove the
+declared identity is refused with `tls_trust_refused` before the request
+line, the headers or the key are sent, and the attempt counts zero physical
+requests.
+
 Select a settings-declared provider for a solve with
 `--compile-provider <provider_id>`; for a `kind: custom` provider the key is
 read from that provider's `credential_env` variable, and for a built-in

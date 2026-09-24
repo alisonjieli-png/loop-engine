@@ -1,0 +1,86 @@
+{
+ "record_type": "endpoint_metadata_read/v1",
+ "at": "2026-09-24T04:55:49.918649+00:00",
+ "purpose": "look for a provider-stated sequence or output limit on read-only routes after the three measurement calls",
+ "model_calls": 0,
+ "method": "GET only, through the endpoint's TLS trust contract",
+ "reads": [
+  {
+   "path": "/metrics",
+   "status": 200,
+   "bytes": 2,
+   "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "excerpt": "[]"
+  },
+  {
+   "path": "/health",
+   "status": 200,
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "excerpt": ""
+  },
+  {
+   "path": "/version",
+   "status": 200,
+   "bytes": 23,
+   "sha256": "db636a9ddc42b8a889e0dec6a2566acdbc467ef3815f7d921e7f3d64b24c5901",
+   "excerpt": "{\"version\":\"1.3.0rc25\"}"
+  },
+  {
+   "path": "/v1/models",
+   "status": 200,
+   "bytes": 126,
+   "sha256": "13fd751150d3507d04007b48232757e6aa5a74f06a0ff106c5cf1f4c01a209da",
+   "excerpt": "{\"object\":\"list\",\"data\":[{\"id\":\"gemma-4-coding-abliterated\",\"object\":\"model\",\"created\":1790225757,\"owned_by\":\"tensorrt_llm\"}]}"
+  },
+  {
+   "path": "/v1/models/gemma-4-coding-abliterated",
+   "status": 404,
+   "excerpt": "{\"detail\":\"Not Found\"}"
+  },
+  {
+   "path": "/server_info",
+   "status": 200,
+   "bytes": 327,
+   "sha256": "691146b39f114dff90e8bfeae43df7db167922cc1d71e5a626ef562c7436bb1c",
+   "excerpt": "{\"disaggregated_params\":{},\"max_batch_size\":1,\"kv_cache_hash_algo\":\"v1_block_key\",\"tokens_per_block\":32,\"startup_metrics\":{\"model_loader\":{\"checkpoint_preparation_seconds\":14.47262104699999,\"weight_population_seconds\":23.382872327,\"post_load_processing_seconds\":0.37122180400001525,\"total_model_loading_seconds\":66.128072849}}}"
+  },
+  {
+   "path": "/perf_metrics",
+   "status": 404,
+   "excerpt": "{\"detail\":\"Not Found\"}"
+  },
+  {
+   "path": "/prometheus/metrics",
+   "status": 404,
+   "excerpt": "{\"detail\":\"Not Found\"}"
+  },
+  {
+   "path": "/openapi.json",
+   "status": 200,
+   "bytes": 172328,
+   "sha256": "f1409140550864c923af91e9573038de3882ffdd19b93c81ff88914d5322bec6",
+   "excerpt": "",
+   "routes": [
+    "/_internal/tokenize",
+    "/energy_metrics",
+    "/health",
+    "/health_generate",
+    "/kv_cache_events",
+    "/metrics",
+    "/release_memory",
+    "/resume_memory",
+    "/server_info",
+    "/steady_clock_offset",
+    "/update_weights",
+    "/v1/chat/completions",
+    "/v1/completions",
+    "/v1/data_transceiver_state",
+    "/v1/models",
+    "/v1/responses",
+    "/v1/responses/{response_id}",
+    "/version"
+   ]
+  }
+ ]
+}

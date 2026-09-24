@@ -74,6 +74,8 @@ export LOOP_ENGINE_ENDPOINTS="name=box_a,url=https://a.example/v1,model=m1,max_o
 | `think` | no | `default` | `default` (`think: false` on the Ollama wire, nothing on the OpenAI wire), `off`, `on`, or `model` (send nothing; the model's own default) |
 | `tls_verification` | no | `default` | `default`, `ca_file`, or `skip`; see the providers guide |
 | `tls_ca_file` | with `ca_file` | none | the private authority to trust for this endpoint |
+| `tls_server_name` | no | the URL host | the name the certificate must prove, when it differs from the host the URL connects to |
+| `tls_pinned_sha256` | no | none | the SHA-256 of the server's leaf certificate; a different certificate is refused before any request is sent |
 
 The `url` may name the bare root, the API prefix, or the chat path
 (`https://ollama.com`, `https://ollama.com/api`, `https://ollama.com/api/chat`

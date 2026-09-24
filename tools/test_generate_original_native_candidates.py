@@ -364,9 +364,10 @@ class GenerationTest(unittest.TestCase):
     def test_old_run_contract_is_refused_without_reinterpretation(self):
         gateway=FakeGateway();self.run_generation(gateway)
         p=self.root/'run/run.json';value=json.loads(p.read_text())
-        self.assertEqual(value['record_type'],'original_native_generation_run/v4')
+        self.assertEqual(value['record_type'],'original_native_generation_run/v5')
         self.assertEqual(value['journal_record_type'],'original_native_generation_event/v2')
-        value['record_type']='original_native_generation_run/v1';p.write_text(json.dumps(value))
+        self.assertIsNone(value['provider_binding'])
+        value['record_type']='original_native_generation_run/v4';p.write_text(json.dumps(value))
         with self.assertRaisesRegex(ValueError,'resume_binding_changed'):self.run_generation(gateway)
         self.assertEqual(len(gateway.calls),1)
 

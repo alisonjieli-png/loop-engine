@@ -649,6 +649,11 @@ def _error_code(error: str) -> str:
         return "provider_attempt_contract_violated"
     if "model_output_limit_mismatch" in low:
         return "model_output_limit_mismatch"
+    if low.startswith("tls_trust_refused"):
+        # The endpoint's declared TLS trust refused the server before any
+        # request was sent: a configuration or identity fault, never an
+        # outage to wait out.
+        return "tls_trust_refused"
     # Abrupt TLS termination: the endpoint, a reverse proxy, or an
     # intervening network closed the connection before a complete
     # HTTP/model response arrived. Transport-level, so retryable.

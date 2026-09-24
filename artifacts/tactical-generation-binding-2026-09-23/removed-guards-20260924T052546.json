@@ -1,0 +1,415 @@
+{
+ "record_type": "tactical_binding_removed_guards/v1",
+ "provider_calls": 0,
+ "at": "2026-09-24T05:25:46.000370+00:00",
+ "source_sha256": {
+  "custom_endpoint.py": "c627146720781d45aa9f5ed0afde4bc008ce9f9d4f19c80751e25602f6fdc8bf",
+  "runtime_settings.py": "a23e5e8f5c61d66d2e4746fdfde97f733dd006376d2c59d795f8f6933ac50059",
+  "generate_original_native_candidates.py": "18700ba65b101731de7cbc2bd309a0fd520dd316ea5254676f4d7ce80c8f0ac8",
+  "test_custom_endpoint_tls_trust.py": "eb66945ab66ee7e5c57f8910ac646a606c57c53bff04837f1af61d3eeced0dbb",
+  "test_generate_original_native_provider_binding.py": "798c01e7eb8336e0f15385508995f86bf2b66d2b27d3961ae0dba97ec0191c62"
+ },
+ "all_detected": true,
+ "controls": 21,
+ "results": [
+  {
+   "guard": "leaf_pin_not_compared",
+   "checks": [
+    "test_wrong_pin_refuses_before_any_request"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "expected_server_name_ignored",
+   "checks": [
+    "test_correct_name_anchor_and_pin_pass"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "hostname_check_disabled",
+   "checks": [
+    "test_wrong_server_name_refuses_before_any_request"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "declared_anchor_ignored",
+   "checks": [
+    "test_missing_anchor_file_refuses_before_any_socket"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "https_only_declaration_removed",
+   "checks": [
+    "test_plain_http_declarations_are_refused"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "ca_file_consistency_removed",
+   "checks": [
+    "test_inconsistent_trust_declarations_are_refused"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "plain_http_transport_allowed",
+   "checks": [
+    "test_plain_http_through_a_trusted_opener_sends_nothing"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "redirect_followed",
+   "checks": [
+    "test_redirect_is_not_followed_and_the_key_stays_with_the_verified_server"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "refusal_counted_as_physical_request",
+   "checks": [
+    "test_wrong_pin_refuses_before_any_request"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "refusal_not_classified",
+   "checks": [
+    "test_wrong_server_name_refuses_before_any_request"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "settings_drop_the_pin",
+   "checks": [
+    "test_endpoint_record_and_settings_carry_the_contract_but_never_the_key"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "binding_bytes_not_checked_at_revision",
+   "checks": [
+    "test_uncommitted_binding_refuses_even_when_its_digest_matches"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "credential_and_capacity_fields_admitted",
+   "checks": [
+    "test_unverified_plain_or_credential_bearing_settings_refuse"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 3,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "unverified_or_plain_endpoint_admitted",
+   "checks": [
+    "test_unverified_or_plain_endpoint_refuses_even_without_trust_options"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 1
+   },
+   "detected": true
+  },
+  {
+   "guard": "model_not_bound",
+   "checks": [
+    "test_model_or_family_that_differs_from_the_binding_refuses_without_alias_normalization"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 0,
+    "errors": 1
+   },
+   "detected": true
+  },
+  {
+   "guard": "family_not_bound",
+   "checks": [
+    "test_model_or_family_that_differs_from_the_binding_refuses_without_alias_normalization"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "family_evidence_not_matched",
+   "checks": [
+    "test_family_evidence_for_another_model_or_family_refuses"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 2,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "capacity_not_matched",
+   "checks": [
+    "test_unknown_or_foreign_capacity_refuses_before_credential"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 3,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "unknown_capacity_reaches_the_credential",
+   "checks": [
+    "test_unknown_or_foreign_capacity_refuses_before_credential"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 4,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "tls_refusal_does_not_stop_the_run",
+   "checks": [
+    "test_tls_trust_refusal_sends_nothing_and_stops_the_run"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  },
+  {
+   "guard": "binding_not_bound_on_resume",
+   "checks": [
+    "test_changed_binding_summary_refuses_resume_before_another_call"
+   ],
+   "baseline": {
+    "passed": true,
+    "run": 1,
+    "failures": 0,
+    "errors": 0
+   },
+   "removed": {
+    "passed": false,
+    "run": 1,
+    "failures": 1,
+    "errors": 0
+   },
+   "detected": true
+  }
+ ]
+}

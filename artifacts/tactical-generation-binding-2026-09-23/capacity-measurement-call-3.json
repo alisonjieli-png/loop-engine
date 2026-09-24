@@ -1,0 +1,49 @@
+{
+  "record_type": "endpoint_output_capacity_measurement/v1",
+  "call_number": 3,
+  "call_ceiling": 3,
+  "started_at": "2026-09-24T00:43:43.486098+00:00",
+  "finished_at": "2026-09-24T01:01:39.473054+00:00",
+  "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+  "model_requested": "gemma-4-coding-abliterated",
+  "tls": {
+    "ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
+    "ca_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
+    "server_name": "ai.iamretarded.net",
+    "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+  },
+  "credential_reference": "operator:tactical-model-generation",
+  "request": {
+    "route": "completions",
+    "max_tokens": 10000000,
+    "temperature": 0.0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    },
+    "prompt_kind": "raw_continuation",
+    "system": "",
+    "prompt": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n",
+    "prompt_sha256": "93d4e5c77838e0aa5cb6647c385c810a7c2782bf769029e6c420052048ab22bb"
+  },
+  "response": {
+    "http_status": 200,
+    "model_identities": [
+      "gemma-4-coding-abliterated"
+    ],
+    "chunks": 105574,
+    "content_bytes": 105574,
+    "content_sha256": "5ab41327cc9bbf784568e9203dc96f4aaef9259dd1d51fb008c1d3f88d5e54f9",
+    "content_head": "101\n102\n103\n104\n105\n106\n107\n108\n109\n110\n111\n112\n113\n114\n115\n116\n117\n118\n119\n120\n121\n122\n123\n124\n125\n126\n127\n128\n129\n130\n131\n132\n133\n134\n135\n136\n137\n138\n139\n140\n141\n142\n143\n144\n145\n146\n147\n148\n149\n150\n",
+    "content_tail": "59\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059\n40059",
+    "last_line": "40059",
+    "finish_reason": "",
+    "stop_reason": null,
+    "usage": null,
+    "saw_done": false,
+    "time_to_first_content_seconds": 8.484,
+    "elapsed_seconds": 1075.927
+  },
+  "outcome": "transport_error",
+  "error": "TimeoutError: The read operation timed out"
+}

@@ -1,0 +1,54 @@
+{
+ "record_type": "generation_producer_family_evidence/v1",
+ "provider_id": "tactical",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "family": "google",
+ "provider_operator": "The owner, who runs this server under Tactical Engineering and iamretarded.net. Provider ownership is not model family.",
+ "reviewed_on": "2026-09-23",
+ "reviewed_by": "The Claude Code session that implemented this binding. It produced no generated candidate and approves none.",
+ "observed_on_this_endpoint": [
+  {
+   "fact": "The server lists exactly this model and reports it in every completed response.",
+   "records": [
+    "trust-contract-listing-check-1.json",
+    "capacity-measurement-call-1.json",
+    "capacity-measurement-call-2.json"
+   ]
+  },
+  {
+   "fact": "Completed chat responses stopped on token id 106.",
+   "records": [
+    "capacity-measurement-call-1.json",
+    "capacity-measurement-call-2.json"
+   ]
+  },
+  {
+   "fact": "Digits stream one per token: 105,574 chunks carried 105,574 bytes of digits and newlines.",
+   "records": [
+    "capacity-measurement-call-3.json"
+   ]
+  }
+ ],
+ "reference": {
+  "what": "Google's Gemma 4 tokenizer as packaged in the Ollama library model gemma4:latest, read from its GGUF header on this workstation",
+  "model_blob_sha256": "4c27e0f5b5adf02ac956c7322bd2ee7636fe3f45a8512c9aba5385242cb6e09a",
+  "license_blob_sha256": "7339fa418c9ad3e8e12e74ad0fd26a9cc4be8703f9c110728a992b193be85cb2",
+  "general.architecture": "gemma4",
+  "vocabulary_size": 262144,
+  "tokenizer.ggml.eos_token_ids": [
+   1,
+   106,
+   50
+  ],
+  "token_105": "<|turn>",
+  "token_106": "<turn|>",
+  "multi_digit_tokens_in_vocabulary": false
+ },
+ "conclusion": "google. The served model ends its turn on Gemma 4's end-of-turn token id and tokenizes digits the way Gemma 4's vocabulary does, and its served name names Gemma 4. 'abliterated' names a modification of weights, not a different family.",
+ "limitations": [
+  "Tokenizer and turn-format lineage does not prove where the weights came from; the owner has not stated the base checkpoint.",
+  "A model sharing Gemma 4's tokenizer but trained from other weights would carry the same fingerprint.",
+  "Consequence for review: a google-family reviewer may not approve this producer's candidates. No google reviewer is installed today."
+ ]
+}

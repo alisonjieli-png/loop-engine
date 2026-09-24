@@ -1,0 +1,33 @@
+{
+ "record_type": "original_native_generation_provider_binding/v1",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "provider": {
+  "id": "tactical",
+  "kind": "custom",
+  "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+  "model": "gemma-4-coding-abliterated",
+  "wire": "openai",
+  "locality": "organization",
+  "counts_as_evidence": false,
+  "purposes": [
+   "generation"
+  ],
+  "auth_scheme": "bearer",
+  "stream": "stream",
+  "tls_verification": "ca_file",
+  "tls_ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
+  "tls_server_name": "ai.iamretarded.net",
+  "tls_pinned_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+ },
+ "trust_anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
+ "producer_family": "google",
+ "family_evidence": {
+  "path": "artifacts/tactical-generation-binding-2026-09-23/family-evidence.json",
+  "sha256": "0d216e16f1055e3f4e0dc44209c9e52f76cbe7fc086e0ed09380a210c729f710"
+ },
+ "capacity": {
+  "path": "artifacts/tactical-generation-binding-2026-09-23/capacity-record.json",
+  "sha256": "7acd787ac2327431c57e330ab3b1f056711deda6f11e74f7028b0007a13997ce"
+ },
+ "credential_reference": "tactical-model-generation"
+}

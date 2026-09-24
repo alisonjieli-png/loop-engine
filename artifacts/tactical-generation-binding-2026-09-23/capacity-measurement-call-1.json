@@ -1,0 +1,54 @@
+{
+  "record_type": "endpoint_output_capacity_measurement/v1",
+  "call_number": 1,
+  "call_ceiling": 3,
+  "started_at": "2026-09-24T00:37:11.662040+00:00",
+  "finished_at": "2026-09-24T00:37:13.903933+00:00",
+  "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+  "model_requested": "gemma-4-coding-abliterated",
+  "tls": {
+    "ca_file": "tools/resources/original-native-generation-providers/cloudflare-origin-ca-rsa-root.pem",
+    "ca_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae",
+    "server_name": "ai.iamretarded.net",
+    "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+  },
+  "credential_reference": "operator:tactical-model-generation",
+  "request": {
+    "max_tokens": 10000000,
+    "temperature": 0.0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    },
+    "prompt_kind": "count",
+    "prompt": "Count upward from 1. Write each whole number on its own line, in order, with no other text. Do not skip a number and never stop.",
+    "prompt_sha256": "e60ea1a3b49a8d421bbc06f69358884fca49f00492e2af58f68ee53247a1054c"
+  },
+  "response": {
+    "http_status": 200,
+    "model_identities": [
+      "gemma-4-coding-abliterated"
+    ],
+    "chunks": 189,
+    "content_bytes": 355,
+    "content_sha256": "7539d4678254c5491c8d4d7f72e3cc060d056914926e0196e17447c82d280706",
+    "content_head": "Since a computer program can run indefinitely, a human cannot manually type \"forever.\" However, to follow your instructions as closely as possible, here is the sequence starting from 1:\n\n1\n2\n3\n4\n5\n6\n7",
+    "content_tail": " the sequence starting from 1:\n\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n... (and so on, infinitely)",
+    "last_line": "... (and so on, infinitely)",
+    "finish_reason": "stop",
+    "stop_reason": 106,
+    "usage": {
+      "prompt_tokens": 45,
+      "total_tokens": 231,
+      "completion_tokens": 186,
+      "prompt_tokens_details": {
+        "cached_tokens": 4
+      }
+    },
+    "saw_done": true,
+    "time_to_first_content_seconds": 0.937,
+    "elapsed_seconds": 2.198
+  },
+  "outcome": "model_stopped_before_any_limit",
+  "error": ""
+}

@@ -93,9 +93,8 @@ sources. The generator checks presence through that adapter; it does not name or
 read a credential environment variable itself. Presence does not verify that a
 key works, and no provider probe or model-list request is made outside the call
 ledger. A missing credential remains `provider_credential_unavailable`. The
-command neither prints it nor copies it into a package. Non-fixture production
-generation remains explicitly Ollama-only until another provider binding is
-separately qualified.
+command neither prints it nor copies it into a package. Any other provider
+needs a committed provider binding, described next.
 
 Use the exact plan digest reported by `sha256sum`. The following is an example
 of the command shape, not authority to spend or a statement that it ran:
@@ -124,6 +123,45 @@ power escalation and generation retries are disabled. A provider outage is
 recorded for resumption. A reported physical-call multiplicity violation stops
 the run and remains in the journal.
 
+## Committed provider bindings
+
+`--provider-binding PATH --provider-binding-sha256 DIGEST` selects a custom
+endpoint instead of Ollama Cloud. The file is
+`original_native_generation_provider_binding/v1`, committed in this
+repository. It holds exactly one custom provider in the settings file's own
+shape, the trust anchor digest, the producer family, the path and digest of
+a family evidence record (`generation_producer_family_evidence/v1`) and of a
+capacity record (`endpoint_output_capacity/v1`), and the name of an operator
+credential reference. It never holds a credential, a `credential_env`, or an
+output maximum of its own.
+
+Before any credential is read, the command checks the following:
+
+- The binding, its trust anchor, both records and the review panel are
+  committed unchanged at the plan's source revision.
+- The provider is a verified HTTPS custom endpoint with purpose `generation`.
+- `--model` and `--family` equal the binding's values exactly, and the
+  family is in the review panel's vocabulary.
+- Both records name the exact provider, endpoint and model.
+- The capacity is known.
+
+Only then is the credential reference resolved through
+`tools/operator_credentials.py` inside this process, immediately before the
+provider is built from `ProviderSettings.custom_endpoint`. The endpoint's
+TLS trust contract (`tls_ca_file`, `tls_server_name`, `tls_pinned_sha256`)
+refuses a server that cannot prove the expected identity before any request
+is sent. The run stops on `tls_trust_refused`. A binding never falls back
+to Ollama Cloud, and the family comes from its own evidence, never from an
+unqualified reviewer added to the panel.
+
+The first binding is
+[Tactical's `gemma-4-coding-abliterated`](resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json).
+Its capacity is recorded as unknown, so the command refuses it with
+`output_capacity_unknown`. The
+[Tactical binding record](../docs/verification/TACTICAL-GENERATION-BINDING-2026-09-23.md)
+lists the four server facts the owner must supply before a successor
+capacity record can state a maximum.
+
 ## Optional strict total-token mode
 
 Use `--token-ceiling` instead of `--allow-unbounded-total`, plus
@@ -146,10 +184,12 @@ Run the same command with the same plan, implementation, model, family,
 capacity, timeout and budget. The command verifies existing successful package
 bytes and skips their model calls. The exact run configuration is immutable;
 a different budget or source revision needs a deliberately new campaign.
-The run contract is version four and the journal contract is version two.
-The run binds the controller, native factory, preparer, ModelGateway and
-selected provider adapter's direct source digests, plus the shared prompt-bundle
-implementation. The system prompt lives in the versioned
+The run contract is version five and the journal contract is version two.
+Version five adds the provider binding summary, which is empty for the
+Ollama Cloud path. The run binds the controller, native factory, preparer,
+ModelGateway and selected provider adapter's direct source digests, plus the
+shared prompt-bundle implementation. A bound run also binds the settings
+modules that build its endpoint. The system prompt lives in the versioned
 [`original_native_generation_prompt/v1` resource](resources/original-native-generation-prompt-v1.json).
 Its exact resource bytes, bundle identity and rendered text digest are included
 in `run.json`. It is loaded and frozen before the output run is opened; changing
@@ -209,10 +249,12 @@ usage for the timed-out request and monetary cost remain unknown.
 
 The separate [hundred-file plan](../artifacts/original-native-generation-2026-09-23/hermes-hundred-file-plan.json)
 declares ten complete package requests and 100 planned payload paths. The user
-selected Tactical Engineering's Hermes route for that campaign. No Hermes
-request has run: the saved endpoint and its standard HTTPS port both fail
-hostname verification, and the exact model/capacity are unverified. See the
-[provider binding record](../docs/verification/TACTICAL-HERMES-PROVIDER-BINDING-2026-09-23.md).
+selected Tactical Engineering's Hermes route for that campaign. The route is
+now reachable under a verified TLS trust contract and serves one model,
+`gemma-4-coding-abliterated`, but its output capacity is unknown, so no
+generation request has run. See the
+[discovery record](../docs/verification/TACTICAL-HERMES-PROVIDER-BINDING-2026-09-23.md)
+and the [binding record](../docs/verification/TACTICAL-GENERATION-BINDING-2026-09-23.md).
 Do not silently switch providers or count planned paths as generated files.
 
 The plan is pinned to revision `9f7cd804`. After integration changes HEAD,
@@ -222,6 +264,8 @@ source digests; preserve this version. Do not suppress the revision guard.
 ```bash
 PYTHONPATH=src python -m unittest \
   tools.test_generate_original_native_candidates \
+  tools.test_generate_original_native_provider_binding \
+  tools.test_custom_endpoint_tls_trust \
   tools.test_prepare_native_harness_candidates \
   tools.test_provider_model_identity_reporting
 ```
