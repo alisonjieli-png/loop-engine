@@ -65,6 +65,13 @@ creation is closed, that an operator issues or revokes access, or that names
 test tokens, and on one that offers account creation where the service takes
 none.
 
+The guide's connection check runs the protocol handshake with the page's
+token, and it takes a client token, not an email sign-in. A visitor who is not
+signed in sees "Sign in to check access". Signed in with an email address, the
+guide offers "Create a client token" instead, which opens the account page at
+its token panel with the panel loaded, and one line says that the check runs
+with a client token.
+
 The header, signed out, lists How it works, Library, Pricing and Docs, then
 Sign in and "Get started"; signed in, it lists Workspace, Get set up, Library
 and Docs, then Account, Administration for an operator, and Sign out. A

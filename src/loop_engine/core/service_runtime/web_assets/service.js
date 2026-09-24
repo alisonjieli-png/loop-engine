@@ -169,7 +169,7 @@
     staffRole = ""; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
-    $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
+    $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a client token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset(); catalogueBrowser?.reset();
     accessSource = ""; renderFunnel();
@@ -279,7 +279,10 @@
       const administrator = value.principal.scopes.includes("access:manage");
       principalScopes = value.principal.scopes;
       $("test-protocol").disabled = authenticationMode === "browser_identity" || !value.principal.scopes.includes("provisioning:metadata") || !capabilities;
-      $("setup-identity").textContent = "Connected as " + value.principal.tenant_id + ". Client setup uses a separate local copy of your service token.";
+      // An email sign-in cannot run the protocol check, which takes a client token, so the guide says where one comes from.
+      $("setup-identity").textContent = authenticationMode === "browser_identity"
+        ? "This check runs with a client token, not with your email sign-in. Create one on your account page, set it in your harness, then run the check command above."
+        : "Connected as " + value.principal.tenant_id + ". Client setup uses a separate local copy of your service token.";
       $("admin-nav").hidden = !administrator && !staffRole; $("refresh-access").disabled = !administrator;
       renderFunnel();
       // A kept sign-in opened again by a reload stays on the page the person asked for.
@@ -899,6 +902,13 @@
       message("protocol-result", "Service connection passed. Protocol " + version + "; " + listed.tools.length + " tools available. No file bodies fetched or models called. Native client loading is not tested here.");
     } catch (error) { if (epoch === generation) message("protocol-result", error.name === "AbortError" ? "The check timed out. No automatic retry was made." : error.message, true); }
     finally { connectionBusy = false; if (epoch === generation) $("test-protocol").disabled = !token || !principalScopes.includes("provisioning:metadata"); }
+  });
+  /* Signed in, Get set up offers "Create a client token" where a visitor sees "Sign in to check access": the connection check
+     and every harness run with a client token. The link opens the account page at its token panel and loads the panel, so the
+     form that creates a token is ready. Fix 4 of the persona journeys of September 24, 2026. */
+  $("setup-create-token").addEventListener("click", event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0 || !token) return;
+    clientAccess.refresh().then(() => { if (!$("client-access-controls").hidden) $("client-token-label").focus({preventScroll:true}); });
   });
   $("try-example").addEventListener("click", () => { navigate("/app"); $("query").value = "review inputs"; message("search-message", token ? "Example query prepared. Select Search to retrieve permitted references." : "Sign in first. This button does not submit a query or download a file."); });
   /* A reload or a typed address in a tab that keeps an email sign-in opens the same account again, on the page asked for. A page

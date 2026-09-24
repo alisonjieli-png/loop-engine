@@ -130,7 +130,9 @@ with ExitStack() as stack:
     project=IdentityProjectStandIn(session_factory=stand_in_session)
     confirm_identity_origin=stack.enter_context(serving_identity_project(project,[{**json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(stand_in_key.public_key())),"kid":"stand-in","alg":"RS256","use":"sig"}]))
     confirm_identity=BrowserIdentityAdapter(confirm.runtime,BrowserIdentityConfiguration(confirm_identity_origin,"fixture:publishable","browser-confirm",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(confirm.bindings["skill.alpha"],))
-    confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin,confirm.runtime)),display_name="Baltor",request_limits=stated))
+    # Like the live service, it lets a signed-in customer create client tokens, so Get set up can lead a signed-in person to them.
+    confirm_access=ServiceAccessAdministration(confirm.runtime,ServiceClientAccessPolicy(writes_authorized=True))
+    confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin,confirm.runtime),client_access=confirm_access),display_name="Baltor",request_limits=stated))
     # An invited account on the billing service: an operator grant, the way an invitation gives paid access. The other account has none.
     billing.runtime.set_operator_entitlement("beta",valid_until=int(time.time())+30*86400,evidence_ref="browser fixture invitation")
     # A third account holds free monthly Baltor Pro, written by the same rows a superadmin grant commits.
@@ -2770,6 +2772,33 @@ try {
     note("a_reload_keeps_the_administration_link_and_view_for_staff",reloaded.path==="/admin"&&reloaded.link&&reloaded.section&&reloaded.rows>=2
       &&reopened.path==="/admin"&&reopened.samePage&&JSON.stringify(reopened.views)===JSON.stringify(["admin"])&&reopened.section,{reloaded,reopened});
   };
+  /* Fix 4 of the persona journeys of September 24, 2026: signed in with an email address, Get set up still offered only "Sign in
+     to check access", which led back to the sign-in page, beside a disabled check that needs a client token. Signed in, the guide
+     now offers "Create a client token", which opens the account page's token panel, loaded and ready, and says in one line that the
+     check runs with a client token. A visitor who is not signed in still sees the sign-in link. */
+  const setupCheck=target=>target.evaluate(()=>{const seen=id=>{const node=document.getElementById(id);return Boolean(node&&node.getClientRects().length);};
+    return {path:location.pathname,hash:location.hash,signIn:seen("setup-sign-in"),create:seen("setup-create-token"),createText:document.getElementById("setup-create-token")?.textContent||"",
+      createHref:document.getElementById("setup-create-token")?.getAttribute("href")||"",line:document.getElementById("setup-identity")?.textContent||"",
+      controls:seen("client-access-controls"),creator:document.getElementById("create-client-token")?.disabled===false,focused:document.activeElement?.id||"",
+      views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view)};});
+  const setupSignedIn=async (target,note)=>{
+    await target.goto(fixture.confirm_base+"/setup");await settled(target);await target.waitForTimeout(300);
+    const visitor=await setupCheck(target);
+    await confirmedAccount(target,"setup-owner-"+randomBytes(8).toString("hex"));
+    await target.evaluate(()=>{history.pushState({},"","/setup");dispatchEvent(new PopStateEvent("popstate"));});
+    await target.waitForTimeout(300);
+    const member=await setupCheck(target);
+    note("get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in",visitor.signIn&&!visitor.create&&member.path==="/setup"&&!member.signIn&&member.create
+      &&member.createText==="Create a client token"&&member.createHref==="/account#account-keys"
+      &&member.line.startsWith("This check runs with a client token, not with your email sign-in.")&&await target.locator("#test-protocol").isDisabled(),{visitor,member});
+    if(member.create)await target.click("#setup-create-token");
+    await target.waitForFunction(()=>document.getElementById("client-access-controls")?.hidden===false,null,{timeout:10000}).catch(()=>{});
+    await target.waitForTimeout(200);
+    const panel=await setupCheck(target);
+    if(note===check)await target.screenshot({path:output.replace(/\.json$/,"-setup-client-token.png")}).catch(()=>{});
+    note("create_a_client_token_opens_the_loaded_token_panel",member.create&&panel.path==="/account"&&panel.hash==="#account-keys"&&JSON.stringify(panel.views)===JSON.stringify(["account"])
+      &&panel.controls&&panel.creator&&panel.focused==="client-token-label",{panel});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2801,7 +2830,7 @@ try {
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
     confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true),
     access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false),
-    kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn};
+    kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2866,6 +2895,14 @@ try {
      expected:["a_confirmation_whose_password_is_not_set_is_never_kept"]},
     {name:"restore_a_kept_sign_in_over_a_confirmation_link",scenario:"kept_sign_in",path:"/assets/service.js",find:"if (kept && !confirmation && ",replacement:"if (kept && ",
      expected:["a_page_opened_by_a_confirmation_link_starts_from_the_link"]},
+    {name:"keep_offering_sign_in_to_a_signed_in_visitor_on_get_set_up",scenario:"setup_signed_in",path:"/auth/confirm",
+     find:'data-after-login="/setup" data-signed-out>',replacement:'data-after-login="/setup">',expected:["get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in"]},
+    {name:"offer_no_client_token_on_get_set_up",scenario:"setup_signed_in",path:"/auth/confirm",
+     find:'data-page="account" data-signed-in hidden>Create a client token</a>',replacement:'data-page="account" hidden>Create a client token</a>',
+     expected:["get_set_up_offers_a_signed_in_visitor_a_client_token_instead_of_sign_in","create_a_client_token_opens_the_loaded_token_panel"]},
+    {name:"open_the_account_page_without_loading_the_token_panel",scenario:"setup_signed_in",path:"/assets/service.js",
+     find:'clientAccess.refresh().then(() => { if (!$("client-access-controls").hidden) $("client-token-label").focus({preventScroll:true}); });',replacement:"",
+     expected:["create_a_client_token_opens_the_loaded_token_panel"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){
