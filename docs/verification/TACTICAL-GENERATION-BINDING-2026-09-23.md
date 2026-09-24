@@ -21,6 +21,11 @@ The proposal keeps its bytes as history.
 - **No real generation call was made.** The brief makes that call conditional
   on a recorded capacity. The section [What the owner must supply](#what-the-owner-must-supply)
   names the four facts that unblock it.
+- End to end, after commit `9f437c05`, the generator command was run with
+  the committed binding (digest `9fd0a56e51581501bf23b2d807099d6ee6b3c49fd6546f78ff0fc4997229722a`), a one-method plan pinned to that
+  commit (`minimum_cost_unique_assignment`) and `--max-calls 1`. It refused with
+  `output_capacity_unknown`, exit code 1. It created no run folder and sent no
+  request.
 
 ## The server
 
