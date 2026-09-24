@@ -62,6 +62,7 @@ def run_checks(check, root: Path):
     from .http_auth import HttpAuthenticationError
     from .http_test_fixtures import HttpDomainFixture, running_http, running_key_set
     from .records import ServiceRuntimeError, SubjectBindingRequest
+    from .account_origin import ACCOUNT_MARK, ACCOUNT_MARKER, SIGNUP_ORIGIN, record_origin
 
     fixture = HttpDomainFixture(root)
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
@@ -81,7 +82,12 @@ def run_checks(check, root: Path):
             subject = jwt.decode(request.access_token, options={"verify_signature": False})["sub"]
             return {"id": "wrong-user" if state["wrong_subject"] else subject, "role": "authenticated",
                     "is_anonymous": False, "email_confirmed_at": "2026-01-01T00:00:00Z" if state["confirmed"] else None,
-                    "user_metadata": {"email_verified": True, "tenant_id": "alpha", "role": "administrator"}}
+                    "user_metadata": {"email_verified": True, "tenant_id": "alpha", "role": "administrator"},
+                    "app_metadata": {ACCOUNT_MARKER: ACCOUNT_MARK}}
+        # Every person here came through Baltor's sign-up, so the service holds
+        # the second mark of each; `account_origin_checks` holds the refusals.
+        for subject in ("verified-user", "other-customer", "unverified", "blocked", "waiting"):
+            record_origin(fixture.runtime, provider + "/auth/v1", subject, SIGNUP_ORIGIN)
         adapter = BrowserIdentityAdapter(fixture.runtime, policy, lambda _: "sb_publishable_local_fixture",
             starter_bindings=(fixture.bindings["skill.alpha"],), transport=user)
         client_access = ServiceAccessAdministration(fixture.runtime, ServiceClientAccessPolicy(writes_authorized=True))

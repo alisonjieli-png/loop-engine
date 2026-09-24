@@ -93,6 +93,9 @@ PROMOTION_REDEMPTION_PATH = "/api/v1/account/promotion"
 #: the first without signing in. An operator with the administration scope reads
 #: the list and applies one decision at a time at the second.
 WAITLIST_PATH, ADMIN_WAITLIST_PATH = "/api/v1/waitlist", "/api/v1/admin/waitlist"
+#: Staff administration. A signed-in staff member reads the overview their role
+#: allows; a superadmin reads every account and applies one action at a time.
+ADMIN_OVERVIEW_PATH, ADMIN_ACCOUNTS_PATH = "/api/v1/admin/overview", "/api/v1/admin/accounts"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -117,6 +120,8 @@ API_ROUTES = {
     WAITLIST_PATH: ("POST",),
     "/api/v1/admin/access": ("GET", "POST"),
     ADMIN_WAITLIST_PATH: ("GET", "POST"),
+    ADMIN_OVERVIEW_PATH: ("GET",),
+    ADMIN_ACCOUNTS_PATH: ("GET", "POST"),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
     "/api/v1/provisioning": ("POST",),
@@ -512,7 +517,8 @@ def _status(error):
     if code in ("body_forbidden", "scope_denied", "entitlement_required", "forbidden", "scope_required",
                 "disclosure_grant_changed", "access_administration_forbidden", "access_target_forbidden",
                 "scope_escalation_refused", "access_writes_not_authorized", "browser_session_required",
-                "waitlist_administration_forbidden", "waitlist_writes_not_authorized"):
+                "waitlist_administration_forbidden", "waitlist_writes_not_authorized",
+                "staff_role_required", "account_administration_forbidden", "staff_cannot_switch_off_own_account"):
         return 403, code
     if code in ("access_request_identity_conflict", "access_token_limit_reached", "concurrent_update",
                 "access_token_history_limit_reached", "access_token_already_revoked",
@@ -520,7 +526,9 @@ def _status(error):
                 "paid_subscription_active",
                 "session_request_identity_conflict", "session_selection_changed", "session_policy_changed",
                 "waitlist_address_already_listed", "waitlist_address_has_account",
-                "waitlist_transition_refused", "waitlist_decision_identity_conflict"):
+                "waitlist_transition_refused", "waitlist_decision_identity_conflict",
+                "free_monthly_already_held", "free_monthly_not_held", "account_state_unchanged",
+                "account_administration_request_identity_conflict"):
         return 409, code
     # Accepted requests to join the waiting list, counted for one declared
     # source. It is a wait like the failed-attempt limit, not a bad request.
@@ -536,7 +544,7 @@ def _status(error):
     if code == "promotion_redemption_unavailable":
         return 503, code
     if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
-                "item_withdrawn", "package_file_not_found", "package_files_unavailable"):
+                "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found"):
         return 404, code
     if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
@@ -563,6 +571,9 @@ class ServiceHttpApplication:
     promotions: object | None = field(default=None, repr=False)
     account_email: object | None = field(default=None, repr=False)
     waitlist: object | None = field(default=None, repr=False)
+    #: Staff roles and superadmin account administration, from the host's
+    #: accounts block. None serves neither administration route.
+    account_administration: object | None = field(default=None, repr=False)
     observability: ServiceObservabilityPolicy = ServiceObservabilityPolicy()
     retention: ServiceRetentionPolicy = ServiceRetentionPolicy()
     #: The host's catalogue refresher, started with the application and
@@ -599,6 +610,10 @@ class ServiceHttpApplication:
         # The one periodic removal of records whose promised time has passed.
         # The lifespan starts it and cancels it; health reads its last outcome.
         self.retention_schedule = RetentionSchedule(self.runtime, self.retention, waitlist=self.waitlist)
+        # The one periodic renewal of free monthly Baltor Pro, on the same
+        # lifespan. It writes nothing unless a grant is due.
+        from .free_monthly import FreeMonthlyRenewalSchedule
+        self.renewal_schedule = FreeMonthlyRenewalSchedule(self.runtime)
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -804,7 +819,7 @@ class ServiceHttpApplication:
                 billing_sessions_installed=self.billing_sessions is not None,
                 billing_webhook_installed=self.billing_processor is not None,
                 billing_policy=(lambda: billing_policy_refusal(self)) if billed else None,
-                retention=self.retention_schedule.readiness_check())
+                task_checks=(self.retention_schedule.readiness_check(), self.renewal_schedule.readiness_check()))
         waiting = asyncio.get_running_loop().run_in_executor(None, measure)
         try:
             return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
@@ -1000,6 +1015,45 @@ class ServiceHttpApplication:
         request = ServiceAccessRequest.from_customer_dict(fields, current.principal.tenant_id)
         return self.client_access.apply(current.principal, request, session=session)
 
+    def _staff_facts(self, context):
+        """The staff role of a signed-in session and its permissions, for the page's navigation only."""
+        from .account_policy import permissions_for
+        role = self.account_administration.role_of(context) if self.account_administration is not None else ""
+        return {"staff_role": role or None, "staff_permissions": sorted(permissions_for(role))}
+
+    def _administer_accounts(self, context, path, fields):
+        """Revalidate the staff session at the provider, then read or act within its role."""
+        from .account_administration import AccountAdministrationRequest
+        current = self.authenticator.revalidate(context)
+        staff = self.account_administration.staff_session(current, self.authenticator.credential_digest(current))
+        if path == ADMIN_OVERVIEW_PATH:
+            return self.account_administration.overview(staff, diagnostics=self._staff_diagnostics)
+        if fields is None:
+            return self.account_administration.accounts(staff)
+        return self.account_administration.apply(staff, AccountAdministrationRequest.from_dict(fields))
+
+    def _staff_diagnostics(self):
+        """What a developer reads: the measured health record and the newest refusal codes, counted."""
+        from .billing_policy import billing_policy_refusal
+        billed = self.billing_sessions is not None or self.billing_processor is not None
+        health = readiness_report(config=self.runtime.config, provisioning=self.provisioning,
+            authentication_modes=self.authentication.modes, policy=self.observability,
+            browser_identity_installed=self.browser_identity is not None,
+            billing_sessions_installed=self.billing_sessions is not None,
+            billing_webhook_installed=self.billing_processor is not None,
+            billing_policy=(lambda: billing_policy_refusal(self)) if billed else None,
+            task_checks=(self.retention_schedule.readiness_check(), self.renewal_schedule.readiness_check()))
+        refusals = {}
+        try:
+            for row in self.failure_journal.recent(limit=100).get("failures", ()):
+                name = str(row.get("refusal_code", "")) + " " + str(row.get("route", ""))
+                refusals[name] = refusals.get(name, 0) + 1
+        except Exception:
+            refusals = {"failure_records_unreadable": 1}
+        return {"record_type": "service_staff_diagnostics/v1", "health": health,
+                "recent_refusals": dict(sorted(refusals.items())),
+                "registration_available": self.registration_available()}
+
     def _redeem_promotion(self, context, request):
         """Revalidate the signed-in account, then redeem for that account only."""
         current = self.authenticator.revalidate(context)
@@ -1149,13 +1203,15 @@ class ServiceHttpApplication:
 
         @asynccontextmanager
         async def lifespan(_app):
-            schedule = self.retention_schedule
+            schedule, renewal = self.retention_schedule, self.renewal_schedule
             schedule.start()
+            renewal.start()
             try:
                 async with manager.run(), self._catalogue_refresh():
                     yield
             finally:
                 await schedule.stop()
+                await renewal.stop()
             self._workers.shutdown(wait=False, cancel_futures=False)
 
         async def transport(scope, receive, send):
@@ -1407,7 +1463,7 @@ class ServiceHttpApplication:
                                                                                      context.principal.tenant_id))
                 output = {"record_type": "service_session/v1", "principal": context.principal.to_dict(),
                           "authentication_mode": context.mode, "token_expires_at": context.expires_at,
-                          "access_source": source}
+                          "access_source": source, **self._staff_facts(context)}
                 output["principal"]["scopes"] = list(context.effective_scopes)
             elif path == "/api/v1/account/logout" and method == "POST":
                 from .http_auth import BROWSER_IDENTITY_AUTHENTICATION
@@ -1455,6 +1511,17 @@ class ServiceHttpApplication:
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
                     "waitlist_administration",
                     lambda: administer_waitlist(self.waitlist, self.authenticator.revalidate(context), decided)))
+            elif path in (ADMIN_OVERVIEW_PATH, ADMIN_ACCOUNTS_PATH):
+                if request.query_params:
+                    raise ServiceHttpError("unknown_request_field")
+                if self.account_administration is None:
+                    raise ServiceHttpError("account_administration_unavailable", 503)
+                fields = _parse_json(await self._body(request)) if method == "POST" else None
+                # The account list reads the identity provider, so every staff
+                # route also draws on the share of work that waits on another service.
+                output = await self._work(lambda: invoke_http_service_as_loop("account_administration",
+                    lambda: self._administer_accounts(context, path, fields)),
+                    shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif path == BILLING_PLANS_PATH and method == "GET":
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("billing_plans",
                     lambda: self._session_options(context)))

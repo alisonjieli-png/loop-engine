@@ -70,6 +70,14 @@ CODE_GUIDANCE = {
                                  "Sign in on the website and repeat the operation there."),
     "verified_email_required": ("This account has not confirmed its email address yet.",
                                 "Open the confirmation link that was emailed to you, then sign in again."),
+    "account_origin_unverified": ("This sign-in was not created through Baltor's sign-up, so the service does "
+                                  "not open it.",
+                                  "Create your account on the Get started page with the same email address. "
+                                  "The service replaces the earlier sign-in and emails you a link."),
+    "staff_role_required": ("Only Baltor staff can open the administration pages.",
+                            "Sign in with a staff account, or use the account page for your own account."),
+    "account_administration_forbidden": ("Your staff role does not include that operation.",
+                                         "Ask a superadmin to make the change."),
     "insufficient_scope": ("This token is not allowed to perform that operation.",
                            "Create a token that includes the operation you need, then retry with it."),
     "scope_required": ("This token is not allowed to perform that operation.",

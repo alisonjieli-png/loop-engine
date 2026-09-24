@@ -61,6 +61,8 @@ MODULE_MAP = {
         "request_limits", "request_limit_checks", "capacity_checks",
         "promotions", "promotion_checks",
         "account_email", "account_email_checks",
+        "account_origin", "account_origin_checks", "account_policy", "account_administration",
+        "account_administration_checks", "free_monthly",
         "observability", "observability_checks",
         "waitlist", "waitlist_checks",
         "protocol_checks",

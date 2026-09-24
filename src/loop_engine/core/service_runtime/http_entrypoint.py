@@ -37,7 +37,7 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 #: because a command the help names and the parser refuses fails only on the
 #: day an operator needs it.
 SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures",
-                    "apply-billing-policy", "remove-expired",
+                    "apply-billing-policy", "remove-expired", "mark-accounts",
                     "publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item", "catalogue-status",
                     "follow-catalogue-release", "stop-following-catalogue-release")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
@@ -247,6 +247,19 @@ def retention_policy(configuration):
     return ServiceRetentionPolicy(**settings)
 
 
+def account_policy(configuration):
+    """Return the accounts block a host declares, or the default: ten founding accounts and no staff.
+
+    Staff roles and their permissions are fixed in code. This block says only
+    who holds a role, so the addresses and identities stay in the private host
+    file and never in the repository.
+    """
+    from .account_policy import ServiceAccountPolicy
+    if "accounts" not in configuration:
+        return ServiceAccountPolicy()
+    return ServiceAccountPolicy.from_host(configuration["accounts"])
+
+
 def _host_json(path, *, maximum_bytes=2_000_000):
     selected = Path(path)
     if not selected.is_absolute() or selected.resolve() != selected or not selected.is_file():
@@ -366,12 +379,13 @@ def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
-               "retention", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue"}
+               "retention", "accounts", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue"}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
     license_policy = host_license_policy(configuration)
     family_policy = host_family_policy(configuration)
+    accounts = account_policy(configuration)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
     # The catalogue section chooses the packaged manifest or the active store
     # release. Either way one view is built now, with its index, after the
@@ -393,7 +407,7 @@ def load_host_application(path):
             raise ServiceRuntimeError("invalid_starter_identities")
         browser_identity = BrowserIdentityAdapter(runtime, BrowserIdentityConfiguration(**settings),
             environment_secret, starter_bindings=tuple(ProvisioningItemBinding.from_item(catalogue.items[identity]) for identity in identities),
-            follows_active_release=follows_release)
+            follows_active_release=follows_release, founding_accounts=accounts.founding_free_monthly_accounts)
     client_access = None
     if configuration.get("client_access"):
         from .access import ServiceAccessAdministration, ServiceClientAccessPolicy
@@ -410,7 +424,7 @@ def load_host_application(path):
         waitlist = ServiceWaitlist(runtime, WaitlistPolicy(**configuration["waitlist"]),
                                    secret_resolver=environment_secret)
     transport = ServiceHttpConfiguration(**configuration["http"])
-    account_email = None
+    account_email = origins = identity_secret = None
     if configuration.get("account_email"):
         from .account_email import AccountEmailAdapter, AccountEmailConfiguration
         settings = AccountEmailConfiguration.from_host(configuration["account_email"])
@@ -432,15 +446,27 @@ def load_host_application(path):
             raise ServiceRuntimeError("account_email_signup_needs_open_registration",
                 "account_email.signup_enabled requires browser_identity.registration_enabled and "
                 "browser_identity.email_signup_enabled, because sign-up finishes at account activation")
+        # The one way in: every sign-up creates, or replaces, its account with
+        # both marks through the identity provider's administration interface.
+        from .account_origin import AccountOrigins, SupabaseIdentityAdministration, identity_administration_secret
+        origins = AccountOrigins(runtime, browser_identity.configuration.project_url + "/auth/v1",
+            SupabaseIdentityAdministration(settings.identity_origin, allow_network=settings.allow_network,
+                                           timeout_seconds=settings.timeout_seconds))
+        def identity_secret(reference=settings.identity_service_key_ref):
+            return identity_administration_secret(environment_secret, reference)
         account_email = AccountEmailAdapter(settings, environment_secret,
             public_base_url=transport.public_base_url, address_limits=transport.request_limits,
-            display_name=transport.display_name)
+            display_name=transport.display_name, account_origins=origins)
     # The adapter is installed through the constructor, so that the declared
     # `account_email/v1` boundary is validated before the application exists.
     application = ServiceHttpApplication(runtime, binding, transport,
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
         client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
         observability=observability_policy(configuration), retention=retention_policy(configuration))
+    if browser_identity is not None:
+        from .account_administration import AccountAdministration
+        application.account_administration = AccountAdministration(runtime, accounts,
+            browser_identity.configuration.project_url + "/auth/v1", origins=origins, identity_secret=identity_secret)
     if catalogue_source is not None:
         from .catalogue_serving import refresher_for
         application.catalogue_refresher = refresher_for(application, catalogue_source, license_policy=license_policy,
@@ -643,6 +669,10 @@ def main(argv=None):
                              "serves; every other account is named with --tenant.")
     parser.add_argument("--deny", action="append",
                         help="follow-catalogue-release: an item identity the account never receives.")
+    parser.add_argument("--apply", action="store_true",
+                        help="mark-accounts: make the changes of the plan named by --expected-plan.")
+    parser.add_argument("--expected-plan",
+                        help="mark-accounts: the plan_digest a run without --apply printed.")
     from .records import SCOPES
     parser.add_argument("--scope", action="append", choices=SCOPES,
                         help="Repeat to narrow issued-key scopes; billing requires an explicit billing:manage grant.")
@@ -663,6 +693,19 @@ def main(argv=None):
     if arguments.command == "apply-billing-policy":
         from .billing_policy import run_command
         return run_command(arguments.config, reset_paid_access=arguments.reset_paid_access)
+    if arguments.command == "mark-accounts":
+        # Lists every account it would mark and changes nothing, unless --apply
+        # names the exact plan the operator read. A second apply changes nothing.
+        from .account_origin import run_mark_accounts
+        from .http import ServiceHttpError
+        try:
+            report = run_mark_accounts(arguments.config, apply=arguments.apply, expected_plan=arguments.expected_plan)
+        except (ServiceRuntimeError, ServiceHttpError) as error:
+            print(json.dumps({"record_type": "service_account_marking_refusal/v1",
+                              "code": getattr(error, "code", "refused")}, sort_keys=True))
+            return 1
+        print(json.dumps(report, sort_keys=True))
+        return 0
     if arguments.command == "remove-expired":
         from .retention import COMPLETED
         report = remove_expired_records(arguments.config)

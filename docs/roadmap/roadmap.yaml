@@ -2983,8 +2983,8 @@ steps:
       - "a second request for the same address, a forged confirmation link and an expired link are each refused with their own typed code"
     adversarial: "An account created through the provider's public sign-up link, a password set before email confirmation, a flood of sign-up requests from one machine and a confirmation link replayed after use must each be refused by a named check."
     acceptance: "Anyone can create an account on baltor.ai with an email address, confirm it and choose a password, and the provider's own sign-up path cannot create an account that keeps an attacker's first password."
-    evidence: "September 23, 2026, the owner: \"I have approved the terms, you can open it\". The identity probe of September 23 found that the provider's public sign-up keeps the first password, so activation waits for OWNER-03. Codex integrated the email-first flow, switched off, in its consolidation of September 23."
-    next_local_work: "After OWNER-03, stage the secrets, switch registration_enabled and email_signup_enabled on in the host configuration, release, and run the live sign-up journey with a fresh address and the negative controls."
+    evidence: "September 23, 2026, the owner: \"I have approved the terms, you can open it\". The identity probe of September 23 found that the provider's public sign-up keeps the first password, so activation waited for OWNER-03. Codex integrated the email-first flow, switched off, in its consolidation of September 23. September 24, 2026: the service-side guard is built and checked locally (docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md): the service honours only accounts with the provider mark and its own record, and Baltor's sign-up archives and replaces any other account under the address, so registration no longer waits for OWNER-03."
+    next_local_work: "Release the accounts change through the guarded workflow, run loop-engine service mark-accounts on the host (list, then apply the printed plan), stage the two sign-up secrets, add the account_email and accounts blocks, switch registration_enabled and email_signup_enabled on, and run the live sign-up journey with a fresh address and the negative controls, including an account made through the provider's public sign-up."
   - id: S-6.66
     phase: 6
     title: "Self-serve paid onboarding with a verified first load in the customer's harness"
@@ -3261,7 +3261,7 @@ steps:
   - id: S-6.85
     phase: 6
     title: "One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code"
-    status: proposed
+    status: building
     depends_on: [S-6.65]
     boundary: [src/loop_engine/core/service_runtime/browser_identity.py, src/loop_engine/core/service_runtime/http.py]
     verify:
@@ -3271,8 +3271,8 @@ steps:
       - "every page, email and command that named an old way in is changed in the same release"
     adversarial: "An account created through the provider's raw endpoint, a customer key issued by hand, a staff role granted through configuration instead of code, and a waiting-list entry that opens an account must each be refused by a named check."
     acceptance: "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account."
-    evidence: "September 23, 2026, the owner: \"We don't want weird orphaned ways of signing up, we want a complete fully working SaaS, we can have superadmin accounts, and developer accounts, and analytics accounts with various permissions that are hardcoded for internal staff but nothing else weird\"."
-    next_local_work: "Inventory every current way in (provider sign-up, waiting list, invitations, operator-issued keys, operator entitlements, the pilot tenants), define the three staff roles and their permissions in code, and retire the rest behind the new sign-up."
+    evidence: "September 23, 2026, the owner: \"We don't want weird orphaned ways of signing up, we want a complete fully working SaaS, we can have superadmin accounts, and developer accounts, and analytics accounts with various permissions that are hardcoded for internal staff but nothing else weird\", and \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status\". September 24, 2026: the one way in, the three staff roles with permissions in code, superadmin account administration with audit records, free monthly Baltor Pro with monthly renewal and the race-safe founding offer are built and checked locally; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md."
+    next_local_work: "After the release and the marking command, retire the remaining ways in as history: the invitation command, operator-issued customer keys and the waiting list routes as a way to open an account; page the superadmin account list before it passes a few thousand accounts."
   - id: S-6.86
     phase: 6
     title: "Task decomposition as a functional component with several engines"
@@ -3327,7 +3327,7 @@ steps:
       - "developer and analytics staff cannot change accounts or billing"
     adversarial: "An eleventh free account, a grant by a non-superadmin, and an action without an audit record must each be refused by a named check."
     acceptance: "The owner manages users from one dashboard, and the first 10 users can verify the product for free."
-    evidence: "September 23, 2026, the owner: \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status, etc\"."
+    evidence: "September 23, 2026, the owner: \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status, etc\". September 24, 2026: built and checked locally with the accounts release; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md."
     next_local_work: "Merge the accounts release, apply its host configuration, release, and verify the dashboard and the founding offer live."
   - id: S-6.90
     phase: 6

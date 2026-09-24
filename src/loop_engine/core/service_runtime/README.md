@@ -52,6 +52,10 @@ Existing service boundary
 ├── request_limits.py: failed-attempt settings record and its table in process memory
 ├── waitlist.py: the public waiting list, its operator decisions and removal on request
 ├── retention.py: removal of the records the privacy notice keeps for a bounded time
+├── account_origin.py: the one way in, the identity administration edge and the marking command
+├── account_policy.py: staff roles and permissions fixed in code, and the host's accounts block
+├── account_administration.py: the staff overview, the account list and superadmin actions
+├── free_monthly.py: free monthly Baltor Pro, the founding offer and the monthly renewal
 ├── web_pages.py: the served page address table and the packaged files behind it
 ├── catalogue_*.py: catalogue releases, the body store edge and the served view
 └── http*.py: separately owned remote transport and host configuration
@@ -1058,6 +1062,69 @@ either operation without a stated source is refused before the service starts.
 
 The operator guide is
 [account email operations](../../../../docs/guides/account-email-operations.md).
+
+## One way in, staff roles and free monthly Baltor Pro
+
+This section describes current behavior of the source. The component guide
+explains it for a reader of the service; this is the rule list and the checks
+that hold each rule. The owner's decisions of September 23, 2026: one way in,
+three staff roles with permissions fixed in code, and the first ten accounts
+free each month.
+
+- `require_admitted` refuses a provider identity unless its current user record
+  carries `baltor_account` in `app_metadata` and the service holds
+  `service_account_origin/v1` for the same issuer and provider user. The
+  browser identity adapter calls it on every sign-in and every activation.
+- The sign-up adapter calls `AccountOrigins.prepare_signup` before it asks for
+  a link, whenever the host loader installed it, which it always does. The link
+  must name the provider user that call prepared.
+- A replacement archives first, then deletes at the provider, then creates
+  the fresh marked account. The archive holds a digest of the address and no
+  address, and it commits only while no service sign-in is bound to the
+  account. An account the service already holds a sign-in for is never
+  replaced by a public sign-up; its owner is sent the notice, and the marking
+  command admits it.
+- `ServiceAccountPolicy` reads the `accounts` host block. It names staff by
+  provider user identity or address, and the founding count, ten by default.
+  `ROLE_PERMISSIONS` is the only source of a permission.
+- `AccountAdministration.apply` checks the permission, rechecks the staff
+  session, its sign-out record and its expiry, and commits the action with its
+  audit record against the request identity.
+- `consider_founding_offer` compares the decision and the count about to be
+  written separately, and commits against the counter's exact version.
+
+| Guard | Named check | Removed-guard control |
+|---|---|---|
+| The provider's mark | `an_unmarked_provider_identity_is_refused_and_only_both_marks_admit` | `removed_provider_mark_requirement_is_detected` |
+| The service's own record | the same check | `removed_service_record_requirement_is_detected` |
+| The guard in the browser identity adapter | the same check | `removed_one_way_in_guard_is_detected` |
+| Replacement of an unmarked account | `the_replacement_flow_leaves_no_old_session_refresh_token_or_password_usable` | `removed_replacement_keeps_the_first_registrant_in_and_is_detected` |
+| Deletion at the provider | the same check | `removed_deletion_at_the_provider_is_detected` |
+| The archive before replacement | the same check | `removed_archive_before_replacement_is_detected` |
+| No public deletion of an account with a service sign-in | `an_account_the_service_already_holds_a_sign_in_for_is_never_deleted_by_a_public_sign_up` | `removed_bound_account_rule_is_detected` |
+| The link names the prepared account | `a_sign_up_link_for_another_account_is_refused_before_any_message` | `removed_link_to_prepared_account_rule_is_detected` |
+| The plan digest of the marking command | `the_marking_command_lists_before_changing_applies_only_the_listed_plan_and_is_idempotent` | `removed_plan_digest_rule_is_detected` |
+| The permission table | `developer_and_analytics_roles_cannot_grant_revoke_disable_enable_or_list` | `removed_role_permission_table_is_detected` |
+| Revocation | `revoking_free_monthly_removes_access_at_the_next_check` | `removed_revocation_is_detected` |
+| The founding limit | `the_first_ten_accounts_hold_the_founding_offer_and_the_eleventh_does_not` | `removed_founding_limit_is_detected` |
+| The founding counter's exact version | `a_race_for_the_last_founding_place_yields_exactly_ten` | `removed_counter_guard_lets_the_race_pass_ten_and_is_detected` |
+| Monthly renewal | `free_monthly_renews_each_month_until_revoked` | `removed_renewal_is_detected` |
+
+Other named checks hold the rest: the host loader installs all three parts and
+refuses a permission or a fourth role in the host file; a customer or a host
+key cannot reach the staff routes; a foreign browser origin is refused; an
+expired or signed-out staff session changes nothing; every action writes one
+audit record; a repeated request identity replays; analytics reads no address
+and a developer reads no count; the sign-up answer is the same for a new, a
+known and a replaced address. They run in `account_origin_checks.py` and
+`account_administration_checks.py`, both from the service smoke run.
+
+Limits. The number of requests a sign-up makes to the identity provider now
+depends on who held the address, so the time an answer takes can differ; its
+status and bytes do not. The founding decision is kept for each account, so an
+account that finished sign-up while the places were full is not granted later.
+The account list reads every provider user on each request, which suits a
+young service and needs paging before many thousands of accounts.
 
 ## Waiting list
 

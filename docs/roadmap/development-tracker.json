@@ -3,8 +3,8 @@
   "blocked": 2,
   "done": 42,
   "next": 13,
-  "now": 40,
-  "waiting": 71
+  "now": 41,
+  "waiting": 70
  },
  "lanes": {
   "blocked": [
@@ -835,13 +835,28 @@
      "S-6.46"
     ],
     "id": "S-6.65",
-    "next_local_work": "After OWNER-03, stage the secrets, switch registration_enabled and email_signup_enabled on in the host configuration, release, and run the live sign-up journey with a fresh address and the negative controls.",
+    "next_local_work": "Release the accounts change through the guarded workflow, run loop-engine service mark-accounts on the host (list, then apply the printed plan), stage the two sign-up secrets, add the account_email and accounts blocks, switch registration_enabled and email_signup_enabled on, and run the live sign-up journey with a fresh address and the negative controls, including an account made through the provider's public sign-up.",
     "phase": 6,
     "status": "building",
     "title": "Open public registration with email-first sign-up",
     "waiting_on": [
      "S-6.24",
      "S-6.46"
+    ]
+   },
+   {
+    "acceptance": "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65"
+    ],
+    "id": "S-6.85",
+    "next_local_work": "After the release and the marking command, retire the remaining ways in as history: the invitation command, operator-issued customer keys and the waiting list routes as a way to open an account; page the superadmin account list before it passes a few thousand accounts.",
+    "phase": 6,
+    "status": "building",
+    "title": "One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code",
+    "waiting_on": [
+     "S-6.65"
     ]
    },
    {
@@ -1392,21 +1407,6 @@
     "title": "Close the dated deadlines and small gaps before inviting users",
     "waiting_on": [
      "S-6.35"
-    ]
-   },
-   {
-    "acceptance": "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.65"
-    ],
-    "id": "S-6.85",
-    "next_local_work": "Inventory every current way in (provider sign-up, waiting list, invitations, operator-issued keys, operator entitlements, the pilot tenants), define the three staff roles and their permissions in code, and retire the rest behind the new sign-up.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code",
-    "waiting_on": [
-     "S-6.65"
     ]
    },
    {
@@ -3578,8 +3578,8 @@
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 3,
-    "proposed": 5
+    "building": 4,
+    "proposed": 4
    },
    "steps": [
     "S-6.65",
@@ -3749,5 +3749,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:999b63b768264a664cf2780997b78afbbbf94bbfb7fc3cc073258c17d4ecef60"
+ "source_fingerprint": "sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec028695207ffdf"
 }

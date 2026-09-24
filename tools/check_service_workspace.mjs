@@ -62,7 +62,13 @@ from loop_engine.core.service_runtime.stripe_session_transport_checks import _ap
 from loop_engine.core.service_runtime.http_test_fixtures import running_key_set
 from loop_engine.core.service_runtime.browser_identity import BrowserIdentityAdapter,BrowserIdentityConfiguration
 from loop_engine.core.service_runtime.account_email import AccountEmailAdapter
-from loop_engine.core.service_runtime.account_email_checks import IdentityProjectStandIn,serving_identity_project,_settings as account_settings,_secrets as account_secrets
+from loop_engine.core.service_runtime.account_email_checks import serving_identity_project,_settings as account_settings,_secrets as account_secrets
+from loop_engine.core.service_runtime.account_email import ProviderAnswer
+from loop_engine.core.service_runtime.account_origin_checks import MarkingIdentityProjectStandIn as IdentityProjectStandIn
+from loop_engine.core.service_runtime.account_origin import ACCOUNT_MARK,ACCOUNT_MARKER,AccountOrigins,SupabaseIdentityAdministration,record_origin
+from loop_engine.core.service_runtime.account_administration import AccountAdministration
+from loop_engine.core.service_runtime.account_policy import ServiceAccountPolicy
+from loop_engine.core.service_runtime.free_monthly import grant_rows
 from loop_engine.core.service_runtime.request_limits import SOCKET_PEER_SOURCE,ServiceRequestLimits
 from loop_engine.core.service_runtime.access import ServiceAccessAdministration,ServiceClientAccessPolicy
 from loop_engine.core.service_runtime.waitlist import ServiceWaitlist,WaitlistPolicy
@@ -85,8 +91,11 @@ with ExitStack() as stack:
     public_keys["keys"]=[{**json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(private_key.public_key())),"kid":"browser-test","alg":"RS256","use":"sig"}]
     subject="7b2fd7e8-168a-49c5-87c2-d52b79df1a94"
     identity_token=jwt.encode({"iss":provider+"/auth/v1","aud":"authenticated","sub":subject,"exp":int(time.time())+1800,"iat":int(time.time()),"role":"authenticated","is_anonymous":False},private_key,algorithm="RS256",headers={"kid":"browser-test"})
-    user={"id":subject,"email":"account-test@example.invalid","role":"authenticated","is_anonymous":False,"email_confirmed_at":"2026-01-01T00:00:00Z"}
+    # Every identity these services honour came through Baltor's sign-up: the provider's mark is in its app_metadata, and each
+    # service that signs it in holds the second mark, written below with the same function the sign-up and the marking command use.
+    user={"id":subject,"email":"account-test@example.invalid","role":"authenticated","is_anonymous":False,"email_confirmed_at":"2026-01-01T00:00:00Z","app_metadata":{ACCOUNT_MARKER:ACCOUNT_MARK}}
     identity=BrowserIdentityAdapter(account.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-customers",registration_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(account.bindings["skill.alpha"],),transport=lambda _:user)
+    record_origin(account.runtime,provider+"/auth/v1",subject,"signup")
     manager=ServiceAccessAdministration(account.runtime,ServiceClientAccessPolicy(writes_authorized=True))
     account.runtime.register_tenant(TenantRegistration("operator","operator:private",(ACCESS_MANAGE_SCOPE,)))
     account_operator=account.runtime.issue_key(TenantKeyIssue("operator","browser waiting list operator"))
@@ -95,17 +104,20 @@ with ExitStack() as stack:
     # Account creation is open only where this service sends the sign-up link itself, so every service that reports registration open carries an
     # account email adapter. Its two transports are one identity project stand-in, and its client address source is stated, as the adapter requires.
     stated=ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE,failures_allowed=100,window_seconds=600)
-    def account_email(config,project,origin):
-        return AccountEmailAdapter(account_settings(identity_origin=origin,mail_origin=origin,allow_loopback=True,attempts_for_each_address=200,attempts_for_each_email=20),account_secrets,public_base_url=config.public_base_url,address_limits=config.request_limits,display_name=config.display_name,identity_transport=project.generate_link,mail_transport=project.send_mail)
+    def account_email(config,project,origin,runtime):
+        origins=AccountOrigins(runtime,origin+"/auth/v1",SupabaseIdentityAdministration(origin,allow_network=True,transport=project.admin))
+        return AccountEmailAdapter(account_settings(identity_origin=origin,mail_origin=origin,allow_loopback=True,attempts_for_each_address=200,attempts_for_each_email=20),account_secrets,public_base_url=config.public_base_url,address_limits=config.request_limits,display_name=config.display_name,identity_transport=project.generate_link,mail_transport=project.send_mail,account_origins=origins)
     quiet_project=IdentityProjectStandIn()
     # A fourth real service whose own configuration opens email sign-up, so the page is compared with a service that reports registration, not with a rewritten reply.
     signups=HttpDomainFixture(root/"signups",operator_access=False)
     signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
-    signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity,account_email=account_email(config,quiet_project,provider)),display_name="Baltor",request_limits=stated))
+    signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity,account_email=account_email(config,quiet_project,provider,signups.runtime)),display_name="Baltor",request_limits=stated))
+    record_origin(signups.runtime,provider+"/auth/v1",subject,"signup")
     # A sixth real service that opens email sign-up and takes payment, so the one public state that says payment is open is compared with a service that reports both, not with a rewritten reply.
     selling=fixture(root/"selling")
     selling_identity=BrowserIdentityAdapter(selling.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-selling",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",transport=lambda _:user)
-    checkout_signup_base,_=stack.enter_context(running_http(selling,application_factory=lambda config:replace(_application(selling,config),browser_identity=selling_identity,account_email=account_email(config,quiet_project,provider)),display_name="Baltor",request_limits=stated))
+    checkout_signup_base,_=stack.enter_context(running_http(selling,application_factory=lambda config:replace(_application(selling,config),browser_identity=selling_identity,account_email=account_email(config,quiet_project,provider,selling.runtime)),display_name="Baltor",request_limits=stated))
+    record_origin(selling.runtime,provider+"/auth/v1",subject,"signup")
     # A seventh real service for the whole sign-up journey. Its browser identity and its account email speak to one identity project stand-in, served
     # over a loopback socket, so the address the Get started page sends, the link in the message, the password the confirmation page sets and the
     # sign-in that follows all meet the same project. The stand-in keeps the first password of an address that is not confirmed, as the probe of
@@ -117,9 +129,35 @@ with ExitStack() as stack:
     project=IdentityProjectStandIn(session_factory=stand_in_session)
     confirm_identity_origin=stack.enter_context(serving_identity_project(project,[{**json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(stand_in_key.public_key())),"kid":"stand-in","alg":"RS256","use":"sig"}]))
     confirm_identity=BrowserIdentityAdapter(confirm.runtime,BrowserIdentityConfiguration(confirm_identity_origin,"fixture:publishable","browser-confirm",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(confirm.bindings["skill.alpha"],))
-    confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin)),display_name="Baltor",request_limits=stated))
+    confirm_base,_=stack.enter_context(running_http(confirm,application_factory=lambda config:ServiceHttpApplication(confirm.runtime,confirm.provisioning,config,browser_identity=confirm_identity,account_email=account_email(config,project,confirm_identity_origin,confirm.runtime)),display_name="Baltor",request_limits=stated))
     # An invited account on the billing service: an operator grant, the way an invitation gives paid access. The other account has none.
     billing.runtime.set_operator_entitlement("beta",valid_until=int(time.time())+30*86400,evidence_ref="browser fixture invitation")
+    # A third account holds free monthly Baltor Pro, written by the same rows a superadmin grant commits.
+    billing.runtime.register_tenant(TenantRegistration("gamma","tenant:gamma"))
+    free_key=billing.runtime.issue_key(TenantKeyIssue("gamma","browser fixture free monthly"))
+    with billing.runtime._catalog.store(write=True) as store:
+        rows,guards,_detail=grant_rows(billing.runtime,store,"gamma",int(time.time()),"browser fixture")
+        billing.runtime._catalog.commit(store,rows,guards)
+    # An eighth real service for staff administration: a superadmin, named by provider identity in its accounts policy, and one
+    # customer. Both came through Baltor's sign-up, and the provider's user list for them is a stand-in transport.
+    (root/"staff").mkdir()
+    staff=HttpDomainFixture(root/"staff",operator_access=False)
+    staff_subject,customer_subject="4c3b2a19-8f7e-4d6c-9b5a-0e1f2a3b4c5d","5d4c3b2a-9f8e-4e7d-8c6b-1f2e3a4b5c6d"
+    staff_people={staff_subject:"staff-test@example.invalid",customer_subject:"customer-test@example.invalid"}
+    staff_users={person:{"id":person,"email":address,"role":"authenticated","is_anonymous":False,"email_confirmed_at":"2026-01-01T00:00:00Z","app_metadata":{ACCOUNT_MARKER:ACCOUNT_MARK}} for person,address in staff_people.items()}
+    def staff_user(request):
+        return staff_users[jwt.decode(request.access_token,options={"verify_signature":False})["sub"]]
+    def staff_listing(request,secret):
+        first="page=1" in request.url
+        return ProviderAnswer(200,{"users":[{**record,"created_at":"2026-09-2%dT00:00:00Z"%index,"last_sign_in_at":"2026-09-23T00:00:00Z"} for index,record in enumerate(staff_users.values(),start=1)] if first else []})
+    staff_identity=BrowserIdentityAdapter(staff.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-staff",registration_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",transport=staff_user)
+    staff_tokens={}
+    for person in staff_people:
+        record_origin(staff.runtime,provider+"/auth/v1",person,"signup")
+        staff_tokens[person]=jwt.encode({"iss":provider+"/auth/v1","aud":"authenticated","sub":person,"exp":int(time.time())+1800,"iat":int(time.time()),"role":"authenticated","is_anonymous":False},private_key,algorithm="RS256",headers={"kid":"browser-test"})
+        staff_identity.activate(staff_tokens[person])
+    staff_administration=AccountAdministration(staff.runtime,ServiceAccountPolicy(staff=({"role":"superadmin","provider_user_id":staff_subject},)),provider+"/auth/v1",origins=AccountOrigins(staff.runtime,provider+"/auth/v1",SupabaseIdentityAdministration(provider,allow_network=True,transport=staff_listing)),identity_secret=lambda:"sb_secret_browser_fixture")
+    staff_base,_=stack.enter_context(running_http(staff,application_factory=lambda config:ServiceHttpApplication(staff.runtime,staff.provisioning,config,browser_identity=staff_identity,account_administration=staff_administration),display_name="Baltor"))
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
@@ -140,7 +178,7 @@ with ExitStack() as stack:
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject]}),flush=True)
     sys.stdin.readline()
 `;
 /* The Python that runs the fixture services: PYTHON when it is set, so a worktree without its own environment can name a
@@ -153,7 +191,7 @@ const checks=[],errors=[],network=[]; let browser;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.staff_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
@@ -520,7 +558,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin,fixture.confirm_base,fixture.confirm_identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin,fixture.confirm_base,fixture.confirm_identity_origin,fixture.staff_base].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -2506,11 +2544,39 @@ try {
     const second=await ask();
     note("get_started_funnel_tells_a_second_request_from_the_same_address_that_it_is_registered",second.error&&second.message.startsWith("This address is already registered.")&&second.form&&!invitationWords.test(second.message),second);
   };
-  const signedInFunnel=(credential,covered)=>async (target,note)=>{
+  /* Staff administration through the website. A superadmin named in the service's accounts policy signs in like anyone,
+     sees the Administration link, every account with its plan, and grants free monthly Baltor Pro to one of them. */
+  const staffJourney=async (target,note)=>{
+    await target.route(fixture.identity_origin+"/auth/v1/token**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":fixture.staff_base,"Access-Control-Allow-Headers":"*","Access-Control-Allow-Methods":"POST, OPTIONS"},body:JSON.stringify({access_token:fixture.staff_token,refresh_token:"local-fixture-refresh",expires_in:1800,token_type:"bearer",user:fixture.staff_user})}));
+    await target.route(fixture.identity_origin+"/auth/v1/logout**",route=>route.fulfill({status:204,headers:{"Access-Control-Allow-Origin":fixture.staff_base,"Access-Control-Allow-Headers":"*"}}));
+    await target.goto(fixture.staff_base+"/login");await target.waitForSelector("#email-login:not([hidden])",{timeout:10000});
+    await target.fill("#login-email",fixture.staff_user.email);await target.fill("#login-password","local-browser-fixture-password");await target.click("#email-login-button");
+    await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
+    await target.evaluate(()=>{history.pushState({},"","/admin");dispatchEvent(new PopStateEvent("popstate"));});
+    await target.waitForFunction(()=>document.querySelectorAll("#staff-accounts article").length>=2,null,{timeout:10000}).catch(()=>{});
+    const read=()=>target.evaluate(()=>({link:!document.getElementById("admin-nav")?.hidden,section:document.getElementById("staff-admin")?.hidden===false,
+      role:document.getElementById("staff-role")?.textContent||"",rows:[...document.querySelectorAll("#staff-accounts article")].map(item=>({title:item.querySelector("h3")?.textContent||"",plan:item.querySelector(".badge")?.textContent||"",
+      text:item.innerText}))}));
+    const before=await read(),customer=before.rows.find(row=>row.title==="customer-test@example.invalid");
+    /* The scenario runs again for its removed-guard control, so it grants when the account has no free plan and revokes when it has one. */
+    const granting=customer?.plan!=="Free monthly",label=(granting?"Grant":"Revoke")+" free monthly for customer-test@example.invalid";
+    target.once("dialog",dialog=>dialog.accept());
+    await target.getByRole("button",{name:label,exact:true}).click({timeout:5000}).catch(()=>{});
+    await target.waitForFunction(()=>/is done\.$/.test(document.getElementById("staff-message")?.textContent||""),null,{timeout:10000}).catch(()=>{});
+    const after=await read(),changed=after.rows.find(row=>row.title==="customer-test@example.invalid");
+    note("a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view",before.link&&before.section&&before.role==="superadmin"
+      &&before.rows.length===2&&/Confirmed/.test(customer?.text||"")&&changed?.plan===(granting?"Free monthly":"None"),{before,after,granting});
+  };
+  const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
     await target.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
     const facts=await funnelFacts(target);
+    /* The owner's wording of September 23, 2026: an account with free monthly Baltor Pro, founding or granted, reads that its
+       account includes Baltor Pro, on the funnel and on the account page, with no invitation or trial word. */
+    if(covered&&freeMonthly){const plan=await target.evaluate(()=>({shown:document.getElementById("account-plan")?.hidden===false,text:document.getElementById("account-plan")?.textContent||""}));
+      note("get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",facts.state==="plan"&&facts.title==="Your account includes Baltor Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
+        &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup"&&plan.shown&&plan.text==="Your account includes Baltor Pro.",{...facts,plan});return;}
     if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Baltor Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
       &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup",facts);return;}
     let link="";
@@ -2527,7 +2593,9 @@ try {
     used_link:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>usedLink(second,note,journey));},
     recovery:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>recoveryJourney(second,note,journey));},
     funnel_open:funnelScenario(fixture.confirm_base,true),funnel_closed:funnelScenario(fixture.base,false),funnel_waitlist:funnelScenario(fixture.account_base,false,true),list_request:listRequest,
-    invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false)};
+    invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false),
+    free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
+    staff:(target,note)=>staffJourney(target,note)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2555,6 +2623,9 @@ try {
     {name:"push_the_first_step_below_the_first_screen_closed",scenario:"funnel_closed",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_closed_1440","get_started_funnel_first_step_fits_the_first_screen_closed_390"]},
     {name:"push_the_first_step_below_the_first_screen_list",scenario:"funnel_waitlist",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_list_1440","get_started_funnel_first_step_fits_the_first_screen_list_390"]},
     {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_a_granted_account_that_its_plan_is_covered"]},
+    {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Baltor Pro"',replacement:'free_monthly:{title:"Your account covers Baltor Pro"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
+    {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
+    {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};

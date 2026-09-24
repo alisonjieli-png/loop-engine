@@ -546,7 +546,7 @@ class AccountEmailAdapter:
     protocol_version = "account_email/v1"
 
     def __init__(self, configuration, secret_resolver, *, public_base_url, address_limits, display_name,
-                 identity_transport=None, mail_transport=None):
+                 identity_transport=None, mail_transport=None, account_origins=None):
         if not isinstance(configuration, AccountEmailConfiguration) or not callable(secret_resolver):
             raise ServiceRuntimeError("invalid_account_email_adapter",
                                       "a typed account email configuration and a host secret resolver are required")
@@ -561,6 +561,13 @@ class AccountEmailAdapter:
         self._secrets = secret_resolver
         self._identity_transport = identity_transport or generate_identity_link
         self._mail_transport = mail_transport or send_account_mail
+        # The one way in. The host loader always installs it: a sign-up then
+        # creates or replaces the account through the administration interface
+        # with both marks before the link is generated. Without it a sign-up
+        # makes an account this service refuses to open, never one it honours.
+        if account_origins is not None and not callable(getattr(account_origins, "prepare_signup", None)):
+            raise ServiceRuntimeError("invalid_account_email_adapter", "account origins must prepare a sign-up")
+        self.account_origins = account_origins
         self.transport_basis = ("injected_transport" if identity_transport is not None or mail_transport is not None
                                 else "provider_https")
         stated = ServiceRequestLimits.from_host(address_limits)
@@ -684,12 +691,19 @@ class AccountEmailAdapter:
         # The key is resolved first, so that a missing or wrong key stops the
         # request before a password is generated for it.
         secret = self._secret(configuration.identity_service_key_ref, IDENTITY_SECRET_PREFIX)
-        # A sign-up password exists only inside the one request built here. It
+        # A sign-up password exists only inside the requests built here. It
         # is not kept on this adapter, returned, put in a message or logged.
+        password = generated_signup_password() if prepared.action == SIGNUP_ACTION else ""
+        expected_user = ""
+        if password and self.account_origins is not None:
+            expected_user = self.account_origins.prepare_signup(prepared.email, password, secret)
+            # None: an account from before the one way in holds the address.
+            # Its owner gets the notice, exactly as for a confirmed account.
+            if expected_user is None:
+                return ""
         answer = self._ask(self._identity_transport,
             IdentityLinkRequest(configuration.identity_origin + GENERATE_LINK_PATH, prepared.action, prepared.email,
-                                generated_signup_password() if prepared.action == SIGNUP_ACTION else "",
-                                configuration.timeout_seconds, configuration.maximum_response_bytes),
+                                password, configuration.timeout_seconds, configuration.maximum_response_bytes),
             secret, "identity_link_unavailable")
         if 400 <= answer.status_code < 500:
             if answer.status_code in SERVICE_REFUSAL_STATUSES:
@@ -708,6 +722,9 @@ class AccountEmailAdapter:
         # confirm that other account and then set its password.
         if (not names_the_same_address(answer.payload, prepared.email)
                 or not names_the_same_action(answer.payload, prepared.action)):
+            raise AccountEmailError("identity_link_unusable", 503)
+        # A sign-up link opens exactly the account the one way in prepared.
+        if expected_user and answer.payload.get("id") != expected_user:
             raise AccountEmailError("identity_link_unusable", 503)
         return value
 
