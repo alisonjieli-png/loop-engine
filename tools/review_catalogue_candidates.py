@@ -8,9 +8,29 @@ command, and writes a dated review record beside the catalogue's ``reviews.json`
 It never edits ``reviews.json``, the item file, the bodies or a host manifest.
 
 No model is called without ``--authorize-model-calls``. Without it the command
-runs the pre-checks and reports what it would have asked. A stopped command can
-be run again with the same ledger: it reuses every verdict already given and
-never repeats a call that was dispatched and not completed.
+runs the pre-checks and reports what it would have asked, and no credential is
+resolved. A stopped command can be run again with the same ledger: it reuses
+every verdict already given and never repeats a call that was dispatched and
+not completed.
+
+Run limits and modes, each recorded in the summary:
+
+- ``--batch-size INSTALLATION=N`` asks that reviewer about up to N items in one
+  call (the calibration decides whether a reviewer may be asked this way);
+- ``--quota-group-ceiling GROUP=N`` stops a quota group after N calls in this
+  command while other groups continue;
+- ``--stop-after-repeated-failures N`` stops asking an installation that failed
+  the same way N calls in a row;
+- ``--exclude-installation ID=REASON`` keeps an installation out of this
+  command with a written reason, for example a spent allowance;
+- ``--collect-below-quorum REASON`` asks each reachable family once although
+  the reachable families cannot reach the quorum; the approval rule is
+  unchanged and the verdicts wait in the ledger for the missing families;
+- ``--calibrate-only`` runs the calibration and no real candidate.
+
+The dated review record does not yet read batch calls, so ``--record`` is
+refused together with a batch size above one; the ledger records every batch
+call and verdict.
 
     PYTHONPATH=src:tools python tools/review_catalogue_candidates.py \\
         --catalogue examples/29_intelligence_service/starter-catalogue \\
@@ -42,6 +62,7 @@ from candidate_review.catalogue import StarterCatalogue, select_population  # no
 from candidate_review.ledger import ReviewLedger  # noqa: E402
 from candidate_review.panel import PanelRunRequest, ReviewPanel  # noqa: E402
 from candidate_review.records import CandidateReviewError, refuse  # noqa: E402
+from candidate_review.prompt import MAXIMUM_BATCH  # noqa: E402
 from candidate_review.reviewers import ReviewerContext  # noqa: E402
 from candidate_review.reviewers.gateway import listed_model_versions  # noqa: E402
 
@@ -64,6 +85,37 @@ def _programs(values) -> dict:
             refuse("invalid_program_option", "a program is written ENGINE_ID=PATH for a known pre-check engine")
         programs[engine_id] = path
     return programs
+
+
+def _pairs(values, name: str, parse) -> dict:
+    """``NAME=VALUE`` options into a mapping; a repeated name or an unreadable value is refused."""
+    pairs = {}
+    for value in values:
+        key, separator, raw = value.partition("=")
+        if not separator or not key or key in pairs:
+            refuse("invalid_option", f"{name} is written NAME=VALUE, each name once")
+        pairs[key] = parse(raw)
+    return pairs
+
+
+def _whole_number(low: int, high: int):
+    def parse(raw: str) -> int:
+        if not raw.isdigit() or not low <= int(raw) <= high:
+            refuse("invalid_option", f"a value here is a whole number from {low} to {high}")
+        return int(raw)
+    return parse
+
+
+def _reason(raw: str) -> str:
+    if not raw.strip():
+        refuse("invalid_option", "an exclusion carries a written reason")
+    return raw.strip()
+
+
+def _operator_resolver():
+    """The operator credential resolver, imported only when model calls are authorized."""
+    from tools import operator_credentials
+    return operator_credentials.resolve
 
 
 def _write_record(path: Path, value: dict, replace: bool) -> None:
@@ -108,12 +160,41 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--replace-record", action="store_true", help="Replace an existing record at --record.")
     parser.add_argument("--authorize-model-calls", action="store_true",
                         help="Allow calls to the declared reviewer models within the ceilings.")
+    parser.add_argument("--batch-size", action="append", default=[],
+                        help=f"Ask an installation about up to N items per call, as INSTALLATION=N (1 to "
+                             f"{MAXIMUM_BATCH}).")
+    parser.add_argument("--quota-group-ceiling", action="append", default=[],
+                        help="The most calls one quota group may take in this command, as GROUP=N.")
+    parser.add_argument("--stop-after-repeated-failures", type=int, default=0,
+                        help="Stop asking an installation after this many identical failures in a row; 0 is off.")
+    parser.add_argument("--exclude-installation", action="append", default=[],
+                        help="Keep an installation out of this command, as INSTALLATION=REASON.")
+    parser.add_argument("--collect-below-quorum", default="",
+                        help="The written reason to ask each reachable family once although the reachable "
+                             "families cannot reach the quorum.")
+    parser.add_argument("--calibrate-only", action="store_true",
+                        help="Run the calibration and no real candidate; needs --calibrate.")
     return parser
 
 
 def run(options) -> dict:
     repository = options.repository.resolve()
     configuration = config.PanelConfiguration.from_dict(_json(options.panel))
+    batch_sizes = _pairs(options.batch_size, "--batch-size", _whole_number(1, MAXIMUM_BATCH))
+    group_ceilings = _pairs(options.quota_group_ceiling, "--quota-group-ceiling", _whole_number(0, 1_000_000))
+    exclusions = _pairs(options.exclude_installation, "--exclude-installation", _reason)
+    known = {item.installation_id for item in configuration.installations}
+    if set(batch_sizes) - known or set(exclusions) - known:
+        refuse("invalid_option", "a batch size or an exclusion names an installation the panel does not declare")
+    if options.record and any(size > 1 for size in batch_sizes.values()):
+        refuse("record_batch_calls_unsupported",
+               "the dated review record does not yet read batch calls; the ledger records them")
+    if options.calibrate_only and not options.calibrate:
+        refuse("invalid_option", "--calibrate-only needs --calibrate")
+    if options.stop_after_repeated_failures < 0:
+        refuse("invalid_option", "--stop-after-repeated-failures is a whole number of zero or more")
+    limits = {"batch_sizes": batch_sizes, "quota_group_call_ceilings": group_ceilings,
+              "repeated_failure_limit": options.stop_after_repeated_failures}
     if options.content_profile == "native-original":
         from candidate_review import native, native_profile
         if (options.criteria != RESOURCES / "criteria.json" or options.producers != RESOURCES / "producer-starter-catalogue.json"
@@ -157,7 +238,8 @@ def run(options) -> dict:
                "error": "model calls were not authorized, so the provider listing was not read"}
     if options.authorize_model_calls:
         listing = listed_model_versions()
-    context = ReviewerContext(model_listing=listing["models"] if listing["ok"] else None)
+    context = ReviewerContext(model_listing=listing["models"] if listing["ok"] else None, repository=repository,
+                              credential_resolver=_operator_resolver() if options.authorize_model_calls else None)
     reviewers = {item.installation_id: engines.build_reviewer(item, configuration.policy, context)
                  for item in configuration.installations}
     prechecks = engines.build_precheck_engines(configuration, programs=_programs(options.program))
@@ -165,30 +247,46 @@ def run(options) -> dict:
     panel = ReviewPanel(configuration, criteria, instructions, reviewers, prechecks, ledger)
     run_id = options.run_id or "run-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     calls_left, tokens_left = options.call_ceiling, options.token_ceiling
-    report, calibration_requests, excluded, calibration_result = None, (), {}, None
+    report, calibration_requests, excluded, calibration_result = None, (), dict(exclusions), None
     if options.calibrate:
         calibration_requests = tuple(request.request_sha256 for _item, request in pairs)
         calibration_result = panel.run(PanelRunRequest(
             run_id=run_id + "-calibration", requests=tuple(request for _item, request in pairs),
             population=chosen.population(catalogue.population_bodies()), call_ceiling=calls_left,
             token_ceiling=tokens_left, model_calls_authorized=options.authorize_model_calls,
-            item_concurrency=options.item_concurrency, ask_every_eligible_reviewer=True))
+            item_concurrency=options.item_concurrency, ask_every_eligible_reviewer=True,
+            excluded_installations=dict(exclusions), **limits))
         report = calibration_module.evaluate(chosen, calibration_result)
-        excluded = dict(report["excluded"])
+        excluded.update({key: value for key, value in report["excluded"].items() if key not in excluded})
         calls_left -= calibration_result.budget["calls_reserved"]
         tokens_left = max(0, tokens_left - calibration_result.budget["tokens_charged"])
-    result = panel.run(PanelRunRequest(
-        run_id=run_id, requests=requests, population=catalogue.population_bodies(),
-        call_ceiling=max(0, calls_left), token_ceiling=tokens_left,
-        model_calls_authorized=options.authorize_model_calls, item_concurrency=options.item_concurrency,
-        excluded_installations=excluded))
+        group_used = {}
+        for call in calibration_result.calls:
+            group = configuration.installation(call["installation_id"]).quota_group
+            group_used[group] = group_used.get(group, 0) + 1
+        limits["quota_group_call_ceilings"] = {group: max(0, ceiling - group_used.get(group, 0))
+                                               for group, ceiling in group_ceilings.items()}
+    result = None
+    if not options.calibrate_only:
+        result = panel.run(PanelRunRequest(
+            run_id=run_id, requests=requests, population=catalogue.population_bodies(),
+            call_ceiling=max(0, calls_left), token_ceiling=tokens_left,
+            model_calls_authorized=options.authorize_model_calls, item_concurrency=options.item_concurrency,
+            excluded_installations=excluded, collect_below_quorum_reason=options.collect_below_quorum, **limits))
     summary = {"record_type": SUMMARY_RECORD, "run_id": run_id, "listing": {key: listing.get(key) for key in (
-        "ok", "error", "withheld")}, "stop_reason": result.stop_reason, "totals": result.totals(),
-        "ineligible": result.ineligible, "calibration": None if report is None else {
+        "ok", "error", "withheld")}, "stop_reason": result.stop_reason if result else "calibration_only",
+        "totals": result.totals() if result else None, "ineligible": result.ineligible if result else None,
+        "capped_quota_groups": sorted(result.capped_quota_groups) if result else [],
+        "run_limits": {"batch_sizes": batch_sizes, "quota_group_call_ceilings": group_ceilings,
+                       "repeated_failure_limit": options.stop_after_repeated_failures,
+                       "excluded_installations": exclusions, "collect_below_quorum": options.collect_below_quorum},
+        "calibration": None if report is None else {
             "stop_reason": calibration_result.stop_reason, "totals": calibration_result.totals(),
-            "installations": {key: value["status"] for key, value in report["installations"].items()}},
+            "ineligible": calibration_result.ineligible,
+            "installations": {key: value["status"] for key, value in report["installations"].items()},
+            "report": report},
         "record": None}
-    if options.record:
+    if options.record and result is not None:
         if not options.recorded_at:
             refuse("record_date_missing", "a record states the date it was written: pass --recorded-at")
         path = options.record.resolve()

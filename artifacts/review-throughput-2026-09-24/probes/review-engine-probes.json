@@ -1,0 +1,255 @@
+{
+ "record_type": "review_engine_probe_record/v1",
+ "recorded_at": "2026-09-24",
+ "codex": [
+  {
+   "probe": "codex-1",
+   "arguments": "the panel's codex_exec_jsonl arguments without --ephemeral",
+   "events": [
+    {
+     "type": "thread.started",
+     "thread_id": "01a0d39f-95d9-7023-a6aa-606d1c71ff9e"
+    },
+    {
+     "type": "turn.started"
+    },
+    {
+     "type": "error",
+     "message": "You’ve hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 29th, 2026 5:24 PM."
+    },
+    {
+     "type": "turn.failed",
+     "error": {
+      "message": "You’ve hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 29th, 2026 5:24 PM."
+     }
+    }
+   ],
+   "session": {
+    "thread_id": "01a0d39f-95d9-7023-a6aa-606d1c71ff9e",
+    "session_record_file": "rollout-2026-09-24T09-34-06-01a0d39f-95d9-7023-a6aa-606d1c71ff9e.jsonl",
+    "session_meta": {
+     "id": "01a0d39f-95d9-7023-a6aa-606d1c71ff9e",
+     "cli_version": "0.155.1",
+     "originator": "codex_exec",
+     "model_provider": "openai",
+     "source": "exec"
+    },
+    "turn_context_models": [
+     "gpt-6-sol"
+    ],
+    "messages_before_the_model": [
+     {
+      "role": "developer",
+      "characters": 3166
+     },
+     {
+      "role": "developer",
+      "characters": 341
+     },
+     {
+      "role": "developer",
+      "characters": 920
+     },
+     {
+      "role": "developer",
+      "characters": 2429
+     },
+     {
+      "role": "developer",
+      "characters": 271
+     },
+     {
+      "role": "user",
+      "characters": 624
+     },
+     {
+      "role": "user",
+      "characters": 476
+     },
+     {
+      "role": "user",
+      "characters": 34
+     }
+    ],
+    "task_complete_error": "usage_limit_exceeded",
+    "last_agent_message": null
+   }
+  },
+  {
+   "probe": "codex-2",
+   "arguments": "the same with -c project_doc_max_bytes=0, to test whether instruction files can be kept out",
+   "events": [
+    {
+     "type": "thread.started",
+     "thread_id": "01a0d3c5-c687-7f41-83fe-33c3330f02b0"
+    },
+    {
+     "type": "turn.started"
+    },
+    {
+     "type": "error",
+     "message": "You’ve hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 29th, 2026 5:24 PM."
+    },
+    {
+     "type": "turn.failed",
+     "error": {
+      "message": "You’ve hit your usage limit. Visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Sep 29th, 2026 5:24 PM."
+     }
+    }
+   ],
+   "session": {
+    "thread_id": "01a0d3c5-c687-7f41-83fe-33c3330f02b0",
+    "session_record_file": "rollout-2026-09-24T10-15-49-01a0d3c5-c687-7f41-83fe-33c3330f02b0.jsonl",
+    "session_meta": {
+     "id": "01a0d3c5-c687-7f41-83fe-33c3330f02b0",
+     "cli_version": "0.155.1",
+     "originator": "codex_exec",
+     "model_provider": "openai",
+     "source": "exec"
+    },
+    "turn_context_models": [
+     "gpt-6-sol"
+    ],
+    "messages_before_the_model": [
+     {
+      "role": "developer",
+      "characters": 3166
+     },
+     {
+      "role": "developer",
+      "characters": 341
+     },
+     {
+      "role": "developer",
+      "characters": 920
+     },
+     {
+      "role": "developer",
+      "characters": 2429
+     },
+     {
+      "role": "developer",
+      "characters": 271
+     },
+     {
+      "role": "user",
+      "characters": 624
+     },
+     {
+      "role": "user",
+      "characters": 470
+     },
+     {
+      "role": "user",
+      "characters": 34
+     }
+    ],
+    "task_complete_error": "usage_limit_exceeded",
+    "last_agent_message": null
+   }
+  }
+ ],
+ "claude": {
+  "probe": "claude-1",
+  "command": "claude -p --safe-mode --tools '' --output-format json --no-session-persistence --model claude-opus-5-5",
+  "prompt": "Reply with the single word READY.",
+  "result": {
+   "duration_api_ms": 1624,
+   "stop_reason": "end_turn",
+   "session_id": "2f769596-79a6-4cbb-ab91-8b26ec344d6d",
+   "total_cost_usd": 0.010682200000000001,
+   "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 1311,
+    "cache_read_input_tokens": 531,
+    "output_tokens": 4,
+    "output_tokens_details": {
+     "thinking_tokens": 0
+    },
+    "server_tool_use": {
+     "web_search_requests": 0,
+     "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1311,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "not_available",
+    "iterations": [
+     {
+      "input_tokens": 2,
+      "output_tokens": 4,
+      "cache_read_input_tokens": 531,
+      "cache_creation_input_tokens": 1311,
+      "cache_creation": {
+       "ephemeral_5m_input_tokens": 0,
+       "ephemeral_1h_input_tokens": 1311
+      },
+      "type": "message"
+     }
+    ],
+    "speed": "standard"
+   },
+   "modelUsage": {
+    "claude-opus-5-5": {
+     "inputTokens": 2,
+     "outputTokens": 4,
+     "cacheReadInputTokens": 531,
+     "cacheCreationInputTokens": 1311,
+     "webSearchRequests": 0,
+     "costUSD": 0.010682200000000001,
+     "contextWindow": 1000000,
+     "maxOutputTokens": 128000,
+     "thinkingTokens": 0,
+     "canonicalModel": "claude-opus-5-5",
+     "provider": "firstParty",
+     "costBasis": "list"
+    }
+   },
+   "permission_denials": [],
+   "terminal_reason": "completed",
+   "fast_mode_state": "off",
+   "fast_mode_disabled_reason": "sdk_opt_in_required",
+   "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+     "background": 0,
+     "foreground": 0,
+     "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+     "parent": 0,
+     "user": 0,
+     "system": 0
+    },
+    "refused": {
+     "depth_limit": 0,
+     "concurrency_limit": 0,
+     "budget": 0
+    },
+    "by_type": {}
+   },
+   "is_error": false,
+   "num_turns": 1,
+   "subtype": "success",
+   "api_error_status": null,
+   "result": "READY",
+   "ttft_ms": 1673,
+   "type": "result",
+   "duration_ms": 1735,
+   "uuid": "2bc294f4-a4a2-4c1f-a6e8-b69d7890b299",
+   "ttft_stream_ms": 1671,
+   "time_to_request_ms": 117,
+   "first_content_frame_ms": 1672,
+   "queued_turn_count": 0,
+   "result_index": 0
+  }
+ },
+ "limits": "Codex: both probes reached the service and were refused for the subscription usage limit before any model response, so they prove the session record names the pinned model and the thread, not an answer. The session record states the model the command line asked for; the service reports no model to the command line. Claude: one answered call through the owner's subscription login in safe mode."
+}

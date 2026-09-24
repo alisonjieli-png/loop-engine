@@ -161,37 +161,44 @@ class GatewayReviewer:
         missing = credential_missing(self.spec)
         if missing:
             return failed(AUTHENTICATION_UNAVAILABLE, self.route_or_command, missing)
-        try:
-            capability = self.spec.output_capability_for(self.installation.model)
-            allocation = ModelOutputAllocation(capability, self.provider_id, self.installation.model,
-                                               self.route_name, allowance.max_output_tokens,
-                                               ALLOCATION_DECISION, ALLOCATION_REASON)
-        except (UnknownModelOutputLimit, ValueError) as error:
-            return failed(ENGINE_UNAVAILABLE, self.route_or_command, type(error).__name__)
-        gateway = ModelGateway(providers=(self.spec,), routes=(self.route,))
-        config = ModelGatewayConfig(purpose=self.purpose, route_names=(self.route_name,), allow_failover=False,
-                                    max_route_attempts=1,
-                                    timeout_seconds=min(allowance.timeout_seconds, self.timeout_seconds),
-                                    output_allocation=allocation)
-        request = ModelGatewayRequest(prompt=prompt.user, config=config, system=prompt.system,
-                                      temperature=allowance.temperature, output_contract=VERDICT_RECORD)
-        started = time.monotonic()
-        result = gateway.invoke(request)
-        elapsed = round(time.monotonic() - started, 3)
-        physical = result.physical_provider_attempts
-        last = physical[-1] if physical else (result.attempts[-1] if result.attempts else None)
-        usage = Usage(last.input_tokens if last else None, last.output_tokens if last else None,
-                      source=PROVIDER_REPORTED if last is not None and last.input_tokens is not None
-                      and last.output_tokens is not None else USAGE_UNKNOWN)
-        calls = result.physical_model_calls
-        retry_after = last.retry_after_seconds if last else None
-        reported = last.model if last else ""
-        if result.ok:
-            return ReviewerAttempt(ANSWERED, result.text, usage, calls, elapsed, None, reported,
-                                   self.route_or_command, "", "the gateway's count of physical provider requests")
-        outcome = OUTCOME_FOR_ERROR.get(result.error_code, PROVIDER_FAILED)
-        return failed(outcome, self.route_or_command, result.error_code, physical_model_calls=calls,
-                      elapsed_seconds=elapsed, usage=usage, retry_after_seconds=retry_after, reported_model=reported)
+        return invoke_once(self.spec, self.route, self.installation.model, self.purpose, prompt, allowance,
+                           min(allowance.timeout_seconds, self.timeout_seconds), self.route_or_command)
+
+
+def invoke_once(spec, route, model: str, purpose: str, prompt, allowance, timeout_seconds: float,
+                route_or_command: str) -> ReviewerAttempt:
+    """One gateway attempt on one route with no failover, read into the reviewer edge's attempt.
+
+    The output allocation is typed and bound to the model's source-backed capacity; usage is what the
+    provider reported, and a count it did not report stays unknown."""
+    try:
+        capability = spec.output_capability_for(model)
+        allocation = ModelOutputAllocation(capability, spec.provider_id, model, route.name,
+                                           allowance.max_output_tokens, ALLOCATION_DECISION, ALLOCATION_REASON)
+    except (UnknownModelOutputLimit, ValueError) as error:
+        return failed(ENGINE_UNAVAILABLE, route_or_command, type(error).__name__)
+    gateway = ModelGateway(providers=(spec,), routes=(route,))
+    config = ModelGatewayConfig(purpose=purpose, route_names=(route.name,), allow_failover=False,
+                                max_route_attempts=1, timeout_seconds=timeout_seconds, output_allocation=allocation)
+    request = ModelGatewayRequest(prompt=prompt.user, config=config, system=prompt.system,
+                                  temperature=allowance.temperature, output_contract=VERDICT_RECORD)
+    started = time.monotonic()
+    result = gateway.invoke(request)
+    elapsed = round(time.monotonic() - started, 3)
+    physical = result.physical_provider_attempts
+    last = physical[-1] if physical else (result.attempts[-1] if result.attempts else None)
+    usage = Usage(last.input_tokens if last else None, last.output_tokens if last else None,
+                  source=PROVIDER_REPORTED if last is not None and last.input_tokens is not None
+                  and last.output_tokens is not None else USAGE_UNKNOWN)
+    calls = result.physical_model_calls
+    retry_after = last.retry_after_seconds if last else None
+    reported = last.model if last else ""
+    if result.ok:
+        return ReviewerAttempt(ANSWERED, result.text, usage, calls, elapsed, None, reported,
+                               route_or_command, "", "the gateway's count of physical provider requests")
+    outcome = OUTCOME_FOR_ERROR.get(result.error_code, PROVIDER_FAILED)
+    return failed(outcome, route_or_command, result.error_code, physical_model_calls=calls,
+                  elapsed_seconds=elapsed, usage=usage, retry_after_seconds=retry_after, reported_model=reported)
 
 
 def listed_model_versions(timeout: float = 30.0) -> dict:

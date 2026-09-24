@@ -10,6 +10,17 @@ Two output protocols are read exactly:
   This qualified event subset does not report the answering model, so a
   completed response cannot count as a reviewer verdict. Requested identity
   is never substituted for missing reported identity.
+- ``codex_exec_session``: the same events, and the model read back from the
+  command line's own session record. The events name the thread; the command
+  line writes one session record per thread under its home folder
+  (``$CODEX_HOME/sessions``, by default ``~/.codex/sessions``), and every turn
+  context in that record names the model the turn ran on. The answer counts only
+  when exactly one record names the thread and every turn in it names the
+  installation's model. The installation must pin that model with ``-m
+  {model}`` and must not pass ``--ephemeral``, which suppresses the record. The
+  record is the command line's statement of the model it asked for; the service
+  behind it does not report a model to the command line, so the call record
+  keeps the protocol's name beside the model it read.
 - ``claude_print_json``: ``claude -p --output-format json`` prints one JSON
   result with the answer, the usage and the models used. A result that used no
   model (for example a refused login) records zero physical calls.
@@ -28,6 +39,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -47,10 +59,20 @@ SETTINGS_FIELDS = ("program", "arguments", "version_arguments", "output_protocol
 MODEL_PLACEHOLDER, WORKDIR_PLACEHOLDER = "{model}", "{workdir}"
 PLACEHOLDERS = (MODEL_PLACEHOLDER, WORKDIR_PLACEHOLDER)
 CODEX_PROTOCOL, CLAUDE_PROTOCOL = "codex_exec_jsonl", "claude_print_json"
+CODEX_SESSION_PROTOCOL = "codex_exec_session"
 VERSION_TIMEOUT_SECONDS = 30.0
 ONE_TURN = "one completed turn reported by the command line; retries inside it are not visible"
 NO_MODEL_USED = "the command line reports that no model was used"
 CODEX_MODEL_UNREPORTED = "the codex_exec_jsonl protocol does not report the answering model"
+#: The arguments that pin the requested model, followed by the model placeholder.
+MODEL_OPTIONS = ("-m", "--model")
+#: The protocols whose answer counts only for the model the installation pins, so the pin is required.
+MODEL_PINNED_PROTOCOLS = (CODEX_SESSION_PROTOCOL, CLAUDE_PROTOCOL)
+#: The Codex argument that suppresses the session record the session protocol reads the model from.
+EPHEMERAL = "--ephemeral"
+CODEX_HOME_VARIABLE = "CODEX_HOME"
+THREAD_IDENTITY = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+SESSION_RECORD_LIMIT_BYTES = 64 * 1024 * 1024
 #: Words in a command line's error text, checked in this order, and the outcome each one names.
 ERROR_WORDS = (
     (USAGE_LIMIT_REACHED, ("usage limit", "quota", "insufficient_quota", "out of credits", "credit balance")),
@@ -76,8 +98,8 @@ def _count(value) -> "int | None":
     return value if type(value) is int and value >= 0 else None
 
 
-def read_codex(stdout: str, stderr: str, returncode: int, installation, command: str,
-               elapsed: float) -> ReviewerAttempt:
+def _codex_events(stdout: str) -> dict:
+    """The parts of ``codex exec --json`` output a reader uses: answer, usage, errors and threads."""
     events = []
     for line in stdout.splitlines():
         try:
@@ -99,13 +121,88 @@ def read_codex(stdout: str, stderr: str, returncode: int, installation, command:
         usage = Usage(_count(reported.get("input_tokens")), _count(reported.get("output_tokens")),
                       _count(reported.get("reasoning_output_tokens")), _count(reported.get("cached_input_tokens")),
                       COMMAND_LINE_REPORTED)
-    text = answers[-1] if answers and type(answers[-1]) is str else ""
-    if returncode == 0 and text.strip() and usages and not errors:
-        return ReviewerAttempt(MODEL_IDENTITY_MISMATCH, "", usage, 1, elapsed, None, "", command,
+    return {"text": answers[-1] if answers and type(answers[-1]) is str else "", "usages": usages,
+            "errors": errors, "usage": usage,
+            "threads": [event.get("thread_id") for event in events if event.get("type") == "thread.started"]}
+
+
+def _codex_failure(parts: dict, stderr: str, returncode: int, command: str, elapsed: float) -> ReviewerAttempt:
+    detail = " ".join(parts["errors"] + [stderr]).strip() or f"the command exited with {returncode} and no answer"
+    return failed(classify(detail), command, detail[:300], physical_model_calls=1 if parts["usages"] else None,
+                  elapsed_seconds=elapsed, usage=parts["usage"])
+
+
+def _codex_completed(parts: dict, returncode: int) -> bool:
+    return returncode == 0 and bool(parts["text"].strip()) and bool(parts["usages"]) and not parts["errors"]
+
+
+def read_codex(stdout: str, stderr: str, returncode: int, installation, command: str,
+               elapsed: float) -> ReviewerAttempt:
+    parts = _codex_events(stdout)
+    if _codex_completed(parts, returncode):
+        return ReviewerAttempt(MODEL_IDENTITY_MISMATCH, "", parts["usage"], 1, elapsed, None, "", command,
                                CODEX_MODEL_UNREPORTED, ONE_TURN)
-    detail = " ".join(errors + [stderr]).strip() or f"the command exited with {returncode} and no answer"
-    return failed(classify(detail), command, detail[:300], physical_model_calls=1 if usages else None,
-                  elapsed_seconds=elapsed, usage=usage)
+    return _codex_failure(parts, stderr, returncode, command, elapsed)
+
+
+def codex_session_root() -> Path:
+    """Where the Codex command line writes its session records: ``$CODEX_HOME/sessions`` or ``~/.codex/sessions``."""
+    home = os.environ.get(CODEX_HOME_VARIABLE, "").strip()
+    return (Path(home) if home else Path.home() / ".codex") / "sessions"
+
+
+def session_model(root: Path, thread_id) -> tuple:
+    """The one model the command line's session record names for one thread, or ("", why not).
+
+    Exactly one record must name the thread, it must hold exactly one session header naming that thread, and
+    every turn context in it must name the same model. Anything else is no model at all."""
+    if type(thread_id) is not str or THREAD_IDENTITY.fullmatch(thread_id) is None:
+        return "", "the events name no session thread"
+    matches = sorted(Path(root).glob(f"*/*/*/rollout-*-{thread_id}.jsonl"))
+    if len(matches) != 1:
+        return "", f"{len(matches)} session records name the thread {thread_id}"
+    path = matches[0]
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > SESSION_RECORD_LIMIT_BYTES:
+            return "", "the session record is not a bounded regular file"
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeError):
+        return "", "the session record could not be read"
+    headers, models = [], []
+    for line in lines:
+        try:
+            row = json.loads(line)
+        except ValueError:
+            return "", "the session record holds a line that is not JSON"
+        payload = row.get("payload") if type(row) is dict else None
+        if type(payload) is not dict:
+            continue
+        if row.get("type") == "session_meta":
+            headers.append(payload.get("id"))
+        elif row.get("type") == "turn_context":
+            models.append(payload.get("model"))
+    if headers != [thread_id]:
+        return "", "the session record does not name its thread exactly once"
+    if not models or len(set(map(str, models))) != 1 or type(models[0]) is not str or not models[0].strip():
+        return "", "the session record names no single model for its turns"
+    return models[0], ""
+
+
+def read_codex_session(stdout: str, stderr: str, returncode: int, installation, command: str, elapsed: float, *,
+                       session_root: "Path | None" = None) -> ReviewerAttempt:
+    """``codex_exec_session``: a completed answer counts only for the model its own session record names."""
+    parts = _codex_events(stdout)
+    if not _codex_completed(parts, returncode):
+        return _codex_failure(parts, stderr, returncode, command, elapsed)
+    threads = parts["threads"]
+    model, reason = session_model(session_root or codex_session_root(), threads[0] if len(threads) == 1 else None)
+    if not model:
+        return ReviewerAttempt(MODEL_IDENTITY_MISMATCH, "", parts["usage"], 1, elapsed, None, "", command,
+                               reason, ONE_TURN)
+    if model != installation.model:
+        return ReviewerAttempt(MODEL_IDENTITY_MISMATCH, "", parts["usage"], 1, elapsed, None, model, command,
+                               f"the session record names the model {model}", ONE_TURN)
+    return ReviewerAttempt(ANSWERED, parts["text"], parts["usage"], 1, elapsed, None, model, command, "", ONE_TURN)
 
 
 def read_claude(stdout: str, stderr: str, returncode: int, installation, command: str,
@@ -144,7 +241,13 @@ def read_claude(stdout: str, stderr: str, returncode: int, installation, command
                            "", basis)
 
 
-PROTOCOLS = {CODEX_PROTOCOL: read_codex, CLAUDE_PROTOCOL: read_claude}
+PROTOCOLS = {CODEX_PROTOCOL: read_codex, CLAUDE_PROTOCOL: read_claude, CODEX_SESSION_PROTOCOL: read_codex_session}
+
+
+def model_pinned(arguments) -> bool:
+    """Whether the arguments ask for the installation's model by name: ``-m {model}`` or ``--model {model}``."""
+    return any(argument in MODEL_OPTIONS and index + 1 < len(arguments)
+               and arguments[index + 1] == MODEL_PLACEHOLDER for index, argument in enumerate(arguments))
 
 
 class CommandLineReviewer:
@@ -156,9 +259,16 @@ class CommandLineReviewer:
         self.program = text_field(settings["program"], "program", limit=1000)
         self.arguments = self._arguments(settings["arguments"], PLACEHOLDERS)
         self.version_arguments = self._arguments(settings["version_arguments"], ())
-        if settings["output_protocol"] not in PROTOCOLS:
+        protocol = settings["output_protocol"]
+        if protocol not in PROTOCOLS:
             refuse("installation_output_protocol_unknown", f"output protocols are {sorted(PROTOCOLS)}")
-        self.reader = PROTOCOLS[settings["output_protocol"]]
+        if protocol in MODEL_PINNED_PROTOCOLS and not model_pinned(self.arguments):
+            refuse("installation_model_not_pinned",
+                   f"the {protocol} protocol counts an answer only for the pinned model: pass -m {{model}}")
+        if protocol == CODEX_SESSION_PROTOCOL and EPHEMERAL in self.arguments:
+            refuse("installation_setting_invalid",
+                   f"the {protocol} protocol reads the session record, which {EPHEMERAL} suppresses")
+        self.protocol, self.reader = protocol, PROTOCOLS[protocol]
         self.timeout_seconds = positive_number(settings["timeout_seconds"], "timeout_seconds")
         overhead = settings["reserved_overhead_tokens"]
         if type(overhead) is not int or overhead < 0:
@@ -204,7 +314,7 @@ class CommandLineReviewer:
         lines = (finished.stdout or finished.stderr).strip().splitlines()
         if finished.returncode != 0 or not lines:
             return Availability(False, "the version could not be read", "", {}, ENGINE_UNAVAILABLE)
-        if self.reader is read_codex:
+        if self.protocol == CODEX_PROTOCOL:
             return Availability(False, CODEX_MODEL_UNREPORTED, lines[0][:200], {}, MODEL_IDENTITY_MISMATCH)
         return Availability(True, "", lines[0][:200], {})
 

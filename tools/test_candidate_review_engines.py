@@ -280,12 +280,38 @@ for event in ({"type": "thread.started", "thread_id": "t"}, {"type": "turn.start
 """
 
 
+THREAD = "01a0d39f-95d9-7023-a6aa-606d1c71ff9e"
+OTHER_THREAD = "01a0d39f-95d9-7023-a6aa-000000000000"
+#: A fake Codex command line that writes its session record the way the real one does: one header naming the
+#: thread and one turn context per turn naming the model it ran on. The environment chooses what it writes.
+CODEX_SESSION = """
+import json, os, pathlib, sys
+if sys.argv[1:] == ["--version"]:
+    print("codex-cli 0.0.1-fake"); sys.exit(0)
+sys.stdin.read()
+thread = os.environ["FAKE_THREAD"]
+if not os.environ.get("FAKE_NO_RECORD"):
+    folder = pathlib.Path(os.environ["CODEX_HOME"]) / "sessions" / "2026" / "09" / "24"
+    folder.mkdir(parents=True, exist_ok=True)
+    rows = [{"type": "session_meta", "payload": {"id": os.environ.get("FAKE_HEADER", thread), "originator": "codex_exec"}}]
+    rows += [{"type": "turn_context", "payload": {"model": model}}
+             for model in os.environ.get("FAKE_MODELS", "").split(",") if model]
+    (folder / f"rollout-2026-09-24T09-00-00-{thread}.jsonl").write_text("".join(json.dumps(row) + "\\n" for row in rows))
+for event in ({"type": "thread.started", "thread_id": thread}, {"type": "turn.started"},
+              {"type": "item.completed", "item": {"id": "item_0", "type": "agent_message", "text": "the answer"}},
+              {"type": "turn.completed", "usage": {"input_tokens": 20000, "cached_input_tokens": 15000,
+               "output_tokens": 300, "reasoning_output_tokens": 100}}):
+    print(json.dumps(event))
+"""
+
+
 class CommandLineEngineTest(unittest.TestCase):
     """The Codex and Claude Code command lines, each read by its own output protocol."""
 
     def test_codex_usage_is_read_without_inventing_the_answering_model(self):
         with tempfile.TemporaryDirectory() as directory:
-            engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SUCCESS))
+            engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SUCCESS),
+                              output_protocol="codex_exec_jsonl")
             availability = engine.availability()
             self.assertFalse(availability.available)
             self.assertEqual(availability.reason_code, reviewers.MODEL_IDENTITY_MISMATCH)
@@ -347,6 +373,64 @@ class CommandLineEngineTest(unittest.TestCase):
                 self.assertEqual(attempt.outcome, outcome)
                 self.assertEqual(attempt.text, "")
                 self.assertIsNone(attempt.usage.input_tokens)
+
+    def _session_run(self, **environment):
+        """One fake Codex run under a temporary CODEX_HOME; the fake writes its own session record."""
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "codex-home"
+            engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SESSION))
+            values = {"CODEX_HOME": str(home), "FAKE_THREAD": THREAD, **environment}
+            with mock.patch.dict(os.environ, values):
+                availability = engine.availability()
+                attempt = engine.review(PROMPT, ALLOWANCE)
+        return availability, attempt
+
+    def test_codex_session_record_names_the_answering_model(self):
+        availability, attempt = self._session_run(FAKE_MODELS="gpt-6-sol,gpt-6-sol")
+        self.assertTrue(availability.available)
+        self.assertEqual(attempt.outcome, reviewers.ANSWERED)
+        self.assertEqual((attempt.text, attempt.reported_model), ("the answer", "gpt-6-sol"))
+        self.assertEqual((attempt.usage.input_tokens, attempt.usage.output_tokens), (20000, 300))
+        self.assertEqual(attempt.physical_model_calls, 1)
+
+    def test_codex_session_record_that_disagrees_or_is_missing_is_refused(self):
+        cases = {"another model": ({"FAKE_MODELS": "gpt-5.5"}, "gpt-5.5", "names the model gpt-5.5"),
+                 "two models": ({"FAKE_MODELS": "gpt-6-sol,gpt-5.5"}, "", "no single model"),
+                 "no turn context": ({"FAKE_MODELS": ""}, "", "no single model"),
+                 "no record": ({"FAKE_MODELS": "gpt-6-sol", "FAKE_NO_RECORD": "1"}, "", "0 session records"),
+                 "another thread": ({"FAKE_MODELS": "gpt-6-sol", "FAKE_HEADER": OTHER_THREAD}, "",
+                                    "does not name its thread"),
+                 "a thread that is not a session identity": ({"FAKE_MODELS": "gpt-6-sol", "FAKE_THREAD": "t"}, "",
+                                                             "no session thread")}
+        for name, (environment, reported, detail) in cases.items():
+            with self.subTest(case=name):
+                _availability, attempt = self._session_run(**environment)
+                self.assertEqual(attempt.outcome, reviewers.MODEL_IDENTITY_MISMATCH)
+                self.assertEqual((attempt.text, attempt.reported_model), ("", reported))
+                self.assertIn(detail, attempt.error_detail)
+                self.assertEqual(attempt.usage.input_tokens, 20000, "the usage is kept although the answer is not")
+
+    def test_session_protocol_needs_the_record_and_a_pinned_model(self):
+        value = next(dict(item) for item in PANEL_RECORD["installations"]
+                     if item["installation_id"] == "codex.gpt-6-sol")
+        arguments = value["settings"]["arguments"]
+        cases = {"installation_setting_invalid": ["--ephemeral", *arguments],
+                 "installation_model_not_pinned": [argument for argument in arguments
+                                                   if argument not in ("-m", "{model}")]}
+        for code, changed in cases.items():
+            with self.subTest(code=code):
+                changed_value = dict(value, settings=dict(value["settings"], arguments=changed))
+                installation = config.ReviewerInstallation.from_dict(changed_value, PANEL.families)
+                with self.assertRaises(CandidateReviewError) as caught:
+                    engines.build_reviewer(installation, PANEL.policy, reviewers.ReviewerContext())
+                self.assertEqual(caught.exception.code, code)
+        claude = next(dict(item) for item in PANEL_RECORD["installations"]
+                      if item["installation_id"] == "claude_code.subscription")
+        unpinned = dict(claude, settings=dict(claude["settings"], arguments=["-p", "--output-format", "json"]))
+        with self.assertRaises(CandidateReviewError) as caught:
+            engines.build_reviewer(config.ReviewerInstallation.from_dict(unpinned, PANEL.families), PANEL.policy,
+                                   reviewers.ReviewerContext())
+        self.assertEqual(caught.exception.code, "installation_model_not_pinned")
 
     def test_a_command_that_runs_too_long_is_a_timeout_with_unknown_usage(self):
         with tempfile.TemporaryDirectory() as directory:

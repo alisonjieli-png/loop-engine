@@ -26,6 +26,7 @@ from .prechecks.minhash import DatasketchMinHash
 from .prechecks.safety_rules import StaticSafetyRules
 from .prechecks.secrets import SecretPatterns
 from .prechecks.skillspector import SkillSpectorStatic
+from .reviewers.binding import BindingReviewer
 from .reviewers.command_line import CommandLineReviewer
 from .reviewers.fixture import FixtureReviewer
 from .reviewers.gateway import GatewayReviewer
@@ -61,6 +62,7 @@ def _fixture_reviewer(installation, policy, context):
 REVIEWER_ENGINE_FACTORIES = {
     "model_gateway": GatewayReviewer,
     "command_line": CommandLineReviewer,
+    "provider_binding": BindingReviewer,
     FIXTURE_ENGINE_KIND: _fixture_reviewer,
 }
 

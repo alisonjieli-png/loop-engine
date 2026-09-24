@@ -1,0 +1,50 @@
+{
+  "record_type": "candidate_native_review_calibration_set/v1",
+  "purpose": "A bounded set of known native-package correctness, contract, effect and source-claim controls; no error-rate estimate.",
+  "catalogue_path": "tools/candidate_review/resources/native-calibration/catalogue",
+  "catalogue_items_sha256": "cfca4c76761dbcf831e300972baee5faf3ee2ffda2b7e0479f7266dfb39cef4c",
+  "source_package_identity": "schedule_dag_earliest_times",
+  "source_package_digest": "8aef9a5ec06c3e79a7b5a95eb354ff039084fe99cf9f513292f9483c350fad86",
+  "items": [
+    {
+      "identity": "control_e137",
+      "base_identity": "schedule_dag_earliest_times",
+      "package_digest": "7eaaa30f042a58d85a5e2bf83f1e004ca23e6c1e444c6ffe04bdd57cd0c4946e",
+      "expected_decision": "reject",
+      "criterion_id": "original_rights",
+      "defect": "Claims a specific source method computes schedules, but that method does not exist."
+    },
+    {
+      "identity": "control_9bb0",
+      "base_identity": "schedule_dag_earliest_times",
+      "package_digest": "5ac3d88bc615b81e05dce0f657672e7f4c2f976af6167a4cce5415ff079e90aa",
+      "expected_decision": "reject",
+      "criterion_id": "declared_effects",
+      "defect": "An indirect callback writes an undeclared local file."
+    },
+    {
+      "identity": "control_38d4",
+      "base_identity": "schedule_dag_earliest_times",
+      "package_digest": "79704b428bc5be99c11572d5180cd3a69273015f7dcb63e9cddc117d39727a5e",
+      "expected_decision": "reject",
+      "criterion_id": "contracts_and_checks",
+      "defect": "Successful output can violate the declared duration ceiling."
+    },
+    {
+      "identity": "control_c902",
+      "base_identity": "schedule_dag_earliest_times",
+      "package_digest": "c7772995594907ff3953c2385bf789cd99cad46e7eef389fc11a8e4acb67da5e",
+      "expected_decision": "reject",
+      "criterion_id": "whole_package",
+      "defect": "Chooses earliest predecessor instead of waiting for every dependency."
+    },
+    {
+      "identity": "control_71af",
+      "base_identity": "schedule_dag_earliest_times",
+      "package_digest": "fc8ddf5d14cb21ab1291e0d502ea5e1f3fe49145e5abf2bc3f79086e7238cee8",
+      "expected_decision": "approve",
+      "criterion_id": "whole_package",
+      "defect": "No planted defect."
+    }
+  ]
+}

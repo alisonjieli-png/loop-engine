@@ -137,9 +137,9 @@
       "disabled_reason": "",
       "settings": {
         "program": "codex",
-        "arguments": ["exec", "--json", "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "apps", "--disable", "plugins", "--disable", "browser_use", "--disable", "computer_use", "--disable", "multi_agent", "--disable", "image_generation", "--disable", "view_image", "-m", "{model}", "-c", "model_reasoning_effort=\"medium\"", "-C", "{workdir}", "-"],
+        "arguments": ["exec", "--json", "--sandbox", "read-only", "--skip-git-repo-check", "--ignore-user-config", "--ignore-rules", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "apps", "--disable", "plugins", "--disable", "browser_use", "--disable", "computer_use", "--disable", "multi_agent", "--disable", "image_generation", "--disable", "view_image", "-m", "{model}", "-c", "model_reasoning_effort=\"medium\"", "-C", "{workdir}", "-"],
         "version_arguments": ["--version"],
-        "output_protocol": "codex_exec_jsonl",
+        "output_protocol": "codex_exec_session",
         "timeout_seconds": 900.0,
         "reserved_overhead_tokens": 16384
       }
@@ -224,8 +224,8 @@
       "model": "claude-opus-5-5",
       "quota_group": "anthropic_api",
       "lens": "adversarial",
-      "enabled": true,
-      "disabled_reason": "",
+      "enabled": false,
+      "disabled_reason": "The --bare mode signs in only with an API key in ANTHROPIC_API_KEY, and this host signs in to Claude Code with the owner's subscription instead, so every call here is refused before any model runs. The anthropic family is reviewed through claude_code.subscription, which the owner capped at 150 review calls in total on 24 September 2026 because it shares the subscription with the engineering sessions.",
       "settings": {
         "program": "claude",
         "arguments": ["-p", "--bare", "--tools", "", "--output-format", "json", "--no-session-persistence", "--model", "{model}"],
@@ -234,6 +234,37 @@
         "timeout_seconds": 900.0,
         "reserved_overhead_tokens": 16384
       }
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "claude_code.subscription",
+      "engine_kind": "command_line",
+      "family": "anthropic",
+      "model": "claude-opus-5-5",
+      "quota_group": "claude_subscription",
+      "lens": "provenance_licence_and_safety",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {
+        "program": "claude",
+        "arguments": ["-p", "--safe-mode", "--tools", "", "--output-format", "json", "--no-session-persistence", "--model", "{model}"],
+        "version_arguments": ["--version"],
+        "output_protocol": "claude_print_json",
+        "timeout_seconds": 900.0,
+        "reserved_overhead_tokens": 16384
+      }
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "tactical.gemma-4-coding-abliterated",
+      "engine_kind": "provider_binding",
+      "family": "google",
+      "model": "gemma-4-coding-abliterated",
+      "quota_group": "tactical_endpoint",
+      "lens": "correctness_and_usefulness",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"binding_path": "tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json", "binding_sha256": "701d978e37f88c60906cf2c668481ce4796a64dc4c2f6dc61549df8f2058ee80", "route_name": "review.tactical.gemma-4-coding-abliterated", "purpose": "decide_label", "timeout_seconds": 900.0, "output_allocation_tokens": 16384, "answer_format": "json_after_reasoning"}
     }
   ]
 }

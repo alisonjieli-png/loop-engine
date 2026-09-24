@@ -150,7 +150,9 @@ def evaluate(calibration: CalibrationSet, result) -> dict:
     # calibration never measured is not trusted with real candidates.
     asked = {identity: set() for identity in set(result.availability) | set(result.ineligible)}
     for call in result.calls:
-        asked.setdefault(call["installation_id"], set()).add(call["identity"])
+        # A batch call asked its reviewer about every member it names.
+        names = [member["identity"] for member in call["members"]] if "members" in call else [call["identity"]]
+        asked.setdefault(call["installation_id"], set()).update(names)
     for item in result.items:
         for verdict in item.verdicts:
             asked.setdefault(verdict["reviewer_id"], set()).add(item.identity)

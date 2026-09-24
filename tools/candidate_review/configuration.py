@@ -44,7 +44,7 @@ PERMISSIVE_LICENCES = frozenset({"MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Cla
 #: The emphasis an installation adds to the shared instructions. Each has a section in the resource.
 LENSES = ("correctness_and_usefulness", "provenance_licence_and_safety", "adversarial")
 #: The kinds of reviewer engine. ``fixture`` exists for offline checks and never decides a real record.
-ENGINE_KINDS = ("model_gateway", "command_line", "fixture")
+ENGINE_KINDS = ("model_gateway", "command_line", "provider_binding", "fixture")
 FIXTURE_ENGINE_KIND = "fixture"
 #: The only criteria match mode this release reads: quotes and sheet compared with whitespace collapsed.
 MATCH_MODE = "whitespace_canonical"

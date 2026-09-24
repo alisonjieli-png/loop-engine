@@ -33,6 +33,21 @@ a stop is seen before the next call. Every call is written to the ledger with
 its model, route or command, version, usage exactly as reported (unknown stays
 unknown), charge, pause and outcome. Every text written is scanned with the
 secret patterns first and a secret-shaped value is replaced.
+
+A run request may also declare, each with its own recorded effect:
+
+- a batch size per installation: that reviewer is asked about several items in
+  one call, each item still chosen by the same reviewer order, each verdict
+  bound to its own item's digest, and one bad verdict costing only its own
+  item (the calibration decides whether a reviewer is asked this way);
+- a call ceiling per quota group: a group that reaches it is asked no more in
+  the run, as if its allowance were spent, while other groups continue;
+- a limit on repeated identical failures: an installation that fails the same
+  way that many calls in a row is asked no more in the run;
+- a written reason to collect verdicts below the quorum: while a family is out
+  of reach, the families that remain are each asked once, the approval rule is
+  unchanged, and the stored verdicts wait in the ledger for the missing
+  families, which a later run asks without asking the others again.
 """
 from __future__ import annotations
 
@@ -46,15 +61,16 @@ from .configuration import FIXTURE_ENGINE_KIND, thawed
 from .ledger import ReviewLedger
 from .prechecks import PrecheckContext, run_prechecks
 from .prechecks.secrets import secret_patterns
-from .prompt import build_prompt
+from .prompt import MAXIMUM_BATCH, build_batch_prompt, build_prompt, member_prompt_sha256
 from .records import (
-    CALL_RECORD, DISPATCH_RECORD, RUN_END_RECORD, RUN_RECORD, VERDICT_RECORD, CandidateReviewError, digest, refuse,
+    BATCH_CALL_RECORD, BATCH_DISPATCH_RECORD, CALL_RECORD, DISPATCH_RECORD, RUN_END_RECORD, RUN_RECORD,
+    VERDICT_RECORD, CandidateReviewError, digest, refuse,
 )
 from .reviewers import (
     ANSWERED, AUTHENTICATION_UNAVAILABLE, ENGINE_UNAVAILABLE, MODEL_IDENTITY_MISMATCH, MODEL_NOT_FOUND, PROVIDER_FAILED, RATE_LIMITED,
     REFUSED_BY_ROUTE_POLICY, USAGE_LIMIT_REACHED, CallAllowance, failed,
 )
-from .verdicts import APPROVE, JSON_ONLY, REJECT, parse_verdict
+from .verdicts import APPROVE, JSON_ONLY, REJECT, parse_batch_verdicts, parse_verdict
 
 APPROVED, REJECTED, REFUSED_BEFORE_REVIEW = "approved", "rejected", "refused_before_review"
 PANEL_INCOMPLETE, NOT_STARTED = "panel_incomplete", "not_started"
@@ -66,6 +82,9 @@ INCOMPLETE_RULE = "no_standing_verdict_yet"
 NOT_STARTED_RULE = "the_run_stopped_before_this_item"
 #: Call outcomes beyond the engine's own: an answer that is not a valid verdict, and a verdict.
 VERDICT_OUTCOME, INVALID_RESPONSE, INTERRUPTED = "verdict", "invalid_response", "interrupted"
+#: A batch call the reviewer answered, whose member rows name each item's own outcome, and a member whose
+#: call failed before any answer.
+BATCH_ANSWERED, NOT_ANSWERED = "batch_answered", "not_answered"
 #: Why an installation was not asked.
 PRODUCER_FAMILY, DISABLED, FIXTURE_OUTSIDE_FIXTURE_RUN = "producer_family", "disabled", "fixture_outside_fixture_run"
 ENGINE_NOT_BUILT = "engine_not_built"
@@ -74,6 +93,11 @@ ENGINE_NOT_BUILT = "engine_not_built"
 LASTING_FAILURES = frozenset({AUTHENTICATION_UNAVAILABLE, MODEL_NOT_FOUND, REFUSED_BY_ROUTE_POLICY,
                               ENGINE_UNAVAILABLE})
 UNUSABLE_DURING_RUN = "unusable_during_run:"
+#: The reason an installation that failed the same way too many calls in a row is asked no more in the run.
+REPEATED_FAILURE = "repeated_failure:"
+#: Outcomes that never count toward a repeated failure: a rate limit is paused and retried, and a spent
+#: allowance or a lasting failure already stops the installation.
+NOT_A_REPEATABLE_FAILURE = frozenset({RATE_LIMITED, USAGE_LIMIT_REACHED})
 #: Why an item has no standing verdict.
 NOT_ENOUGH_FAMILIES, APPROVALS_BELOW_QUORUM = "not_enough_families", "approvals_below_quorum"
 #: Why a run stopped.
@@ -92,8 +116,13 @@ def review_key(installation, request, prompt) -> str:
 
     The prompt is part of the key because a verdict answers the words its
     reviewer read. A changed prompt is a new review, and the ledger keeps both."""
+    return review_key_for(installation, request, prompt.sha256)
+
+
+def review_key_for(installation, request, prompt_sha256: str) -> str:
+    """The review key for a prompt digest: a single prompt's, or a batch member's own digest."""
     return digest({"installation_sha256": installation.sha256, "request_sha256": request.request_sha256,
-                   "prompt_sha256": prompt.sha256, "record_type": VERDICT_RECORD,
+                   "prompt_sha256": prompt_sha256, "record_type": VERDICT_RECORD,
                    "request_record_type": request.to_record()["record_type"]})
 
 
@@ -164,6 +193,14 @@ class PanelRunRequest:
     ask_every_eligible_reviewer: bool = False
     #: Installations this run must not ask, each with its written reason (for example a failed calibration).
     excluded_installations: dict = field(default_factory=dict)
+    #: How many items one call asks each installation about; an installation not named is asked one at a time.
+    batch_sizes: dict = field(default_factory=dict)
+    #: When not empty, why verdicts are collected although the reachable families cannot reach the quorum.
+    collect_below_quorum_reason: str = ""
+    #: The most calls each named quota group may take in this run; a group not named has no own ceiling.
+    quota_group_call_ceilings: dict = field(default_factory=dict)
+    #: After this many identical failures in a row an installation is asked no more in the run; zero is off.
+    repeated_failure_limit: int = 0
 
     def __post_init__(self):
         if type(self.run_id) is not str or not self.run_id.strip():
@@ -183,6 +220,27 @@ class PanelRunRequest:
         identities = [request.identity for request in self.requests]
         if not identities or len(set(identities)) != len(identities):
             refuse("invalid_run_request", "a run reviews at least one item and each item once")
+        if type(self.batch_sizes) is not dict or any(
+                type(name) is not str or type(size) is not int or not 1 <= size <= MAXIMUM_BATCH
+                for name, size in self.batch_sizes.items()):
+            refuse("invalid_run_request", f"a batch size names an installation and is a whole number from 1 to "
+                                          f"{MAXIMUM_BATCH}")
+        if type(self.collect_below_quorum_reason) is not str or len(self.collect_below_quorum_reason) > 2000:
+            refuse("invalid_run_request", "the reason to collect verdicts below the quorum is text")
+        if type(self.quota_group_call_ceilings) is not dict or any(
+                type(name) is not str or type(ceiling) is not int or ceiling < 0
+                for name, ceiling in self.quota_group_call_ceilings.items()):
+            refuse("invalid_run_request", "a quota group ceiling is a whole number of zero or more")
+        if type(self.repeated_failure_limit) is not int or self.repeated_failure_limit < 0:
+            refuse("invalid_run_request", "the repeated failure limit is a whole number of zero or more")
+
+    @property
+    def batched(self) -> bool:
+        return any(size > 1 for size in self.batch_sizes.values())
+
+    @property
+    def below_quorum(self) -> bool:
+        return bool(self.collect_below_quorum_reason.strip())
 
 
 @dataclass
@@ -217,6 +275,8 @@ class PanelRunResult:
     elapsed_seconds: float
     budget: dict
     pause_seconds: float
+    #: Quota groups that reached their own call ceiling in this run.
+    capped_quota_groups: set = field(default_factory=set)
 
     def totals(self) -> dict:
         outcomes = [item.outcome for item in self.items]
@@ -242,7 +302,8 @@ class PanelRunResult:
         return {"run_id": self.run_id, "stop_reason": self.stop_reason, "started_at": self.started_at,
                 "finished_at": self.finished_at, "items": [item.to_dict() for item in self.items],
                 "calls": list(self.calls), "ineligible": dict(self.ineligible),
-                "spent_quota_groups": sorted(self.spent_quota_groups), "interrupted": sorted(self.interrupted),
+                "spent_quota_groups": sorted(self.spent_quota_groups),
+                "capped_quota_groups": sorted(self.capped_quota_groups), "interrupted": sorted(self.interrupted),
                 "budget": dict(self.budget), "totals": self.totals()}
 
 
@@ -257,6 +318,9 @@ class _RunState:
         self.interrupted = set()
         self.ineligible = {}
         self.unusable = set()
+        self.capped = set()
+        self.group_calls = {}
+        self.streaks = {}
 
 
 class ReviewPanel:
@@ -309,7 +373,9 @@ class ReviewPanel:
         def one(request):
             return self._item(request, run_request, eligible, availability, budget, state)
 
-        if run_request.item_concurrency == 1:
+        if run_request.batched:
+            items = self._items_batched(run_request, eligible, availability, budget, state)
+        elif run_request.item_concurrency == 1:
             items = [one(request) for request in run_request.requests]
         else:
             with ThreadPoolExecutor(max_workers=run_request.item_concurrency) as pool:
@@ -322,7 +388,7 @@ class ReviewPanel:
         return PanelRunResult(run_request.run_id, items, list(state.calls), state.stop_reason or COMPLETED,
                               dict(state.ineligible), set(state.spent), set(state.interrupted), availability,
                               _timestamp(started), _timestamp(finished), round(finished - started, 3),
-                              budget.to_dict(), round(state.pause_total, 3))
+                              budget.to_dict(), round(state.pause_total, 3), set(state.capped))
 
     def _ineligible(self, installation, run_request) -> str:
         if installation.installation_id in run_request.excluded_installations:
@@ -365,7 +431,8 @@ class ReviewPanel:
         if stopped and not verdicts:
             return ItemResult(request.identity, request, prechecks, [], NOT_STARTED, NOT_STARTED_RULE, [stopped])
         every = run_request.ask_every_eligible_reviewer
-        if not every and distinct_families([item.installation_id for item in candidates], self.family_of) \
+        if not every and not run_request.below_quorum and \
+                distinct_families([item.installation_id for item in candidates], self.family_of) \
                 < self.policy.minimum_distinct_families:
             return self._decided(request, prechecks, verdicts, extra=[NOT_ENOUGH_FAMILIES])
         target = len(candidates) if every else self.policy.reviewers_per_item
@@ -377,7 +444,7 @@ class ReviewPanel:
                 if state.stop_reason:
                     break
             installation = (self._next_in_order(candidates, tried, state) if every
-                            else self._next(candidates, tried, verdicts, state))
+                            else self._next(candidates, tried, verdicts, state, run_request.below_quorum))
             if installation is None:
                 break
             tried.add(installation.installation_id)
@@ -396,20 +463,22 @@ class ReviewPanel:
     @staticmethod
     def _next_in_order(candidates, tried, state):
         with state.lock:
-            spent, unusable = set(state.spent), set(state.unusable)
+            spent, unusable = set(state.spent) | set(state.capped), set(state.unusable)
         return next((item for item in candidates if item.installation_id not in tried
                      and item.installation_id not in unusable and item.quota_group not in spent), None)
 
-    def _next(self, candidates, tried, verdicts, state):
+    def _next(self, candidates, tried, verdicts, state, below_quorum: bool = False):
         """The next reviewer to ask: a new family first; a family already heard only once the quorum's
-        families are reached; nobody when the families still reachable cannot make the quorum."""
+        families are reached; nobody when the families still reachable cannot make the quorum, unless the
+        run collects verdicts below the quorum, when each reachable family is still asked once."""
         with state.lock:
-            spent, unusable = set(state.spent), set(state.unusable)
+            spent, unusable = set(state.spent) | set(state.capped), set(state.unusable)
         remaining = [item for item in candidates if item.installation_id not in tried
                      and item.installation_id not in unusable and item.quota_group not in spent]
         heard = list(verdicts)
         needed = self.policy.minimum_distinct_families
-        if distinct_families(heard + [item.installation_id for item in remaining], self.family_of) < needed:
+        if not below_quorum and \
+                distinct_families(heard + [item.installation_id for item in remaining], self.family_of) < needed:
             return None
         current = distinct_families(heard, self.family_of)
         for item in remaining:
@@ -436,6 +505,8 @@ class ReviewPanel:
                 if state.stop_reason or installation.quota_group in state.spent \
                         or installation.installation_id in state.unusable:
                     return None
+            if not self._claim_group_call(installation, run_request, state):
+                return None
             if not budget.reserve(reservation):
                 with state.lock:
                     state.stop_reason = state.stop_reason or budget.stop_reason
@@ -508,6 +579,8 @@ class ReviewPanel:
             self.ledger.complete(call, verdict)
             with state.lock:
                 state.calls.append(call)
+            self._note_failure(installation, None if verdict is not None else (outcome, error_code),
+                               run_request, state)
             if verdict is not None:
                 return verdict
             if attempt.outcome == USAGE_LIMIT_REACHED:
@@ -524,6 +597,280 @@ class ReviewPanel:
                 retries += 1
                 continue
             return None
+
+    def _items_batched(self, run_request, eligible, availability, budget, state) -> list:
+        """Every item through the same reviewer order as one at a time, with calls grouped per reviewer.
+
+        Each round finds, for every item still short of verdicts, the reviewer the item-at-a-time order would
+        ask next, and asks each chosen reviewer about its items together, in calls of at most its batch size.
+        Items fail, retry and move to the next reviewer on their own. Rounds for different reviewers run side by
+        side up to the run's item concurrency; one reviewer's calls run in sequence."""
+        decided, pending = {}, []
+        every, below = run_request.ask_every_eligible_reviewer, run_request.below_quorum
+        for request in run_request.requests:
+            prechecks = run_prechecks(request, self.prechecks, PrecheckContext(self.policy, run_request.population))
+            if prechecks.refused:
+                decided[request.identity] = ItemResult(request.identity, request, prechecks, [],
+                                                       REFUSED_BEFORE_REVIEW, PRECHECK_RULE, list(prechecks.reasons))
+                continue
+            candidates = []
+            for installation in eligible:
+                if producer_family_excluded(installation, request.producer):
+                    with state.lock:
+                        state.ineligible.setdefault(installation.installation_id, PRODUCER_FAMILY)
+                    continue
+                candidates.append(installation)
+            verdicts, tried = {}, set()
+            for installation in candidates:
+                key = self._key(installation, request, run_request)
+                stored = self.ledger.verdict(key)
+                if stored is not None:
+                    verdicts[installation.installation_id] = stored
+                    tried.add(installation.installation_id)
+                elif self.ledger.interrupted(key):
+                    tried.add(installation.installation_id)
+                    with state.lock:
+                        state.interrupted.add(key)
+            with state.lock:
+                stopped = state.stop_reason
+            if stopped and not verdicts:
+                decided[request.identity] = ItemResult(request.identity, request, prechecks, [], NOT_STARTED,
+                                                       NOT_STARTED_RULE, [stopped])
+                continue
+            if not every and not below and distinct_families([item.installation_id for item in candidates],
+                                                             self.family_of) < self.policy.minimum_distinct_families:
+                decided[request.identity] = self._decided(request, prechecks, verdicts, extra=[NOT_ENOUGH_FAMILIES])
+                continue
+            pending.append({"request": request, "prechecks": prechecks, "candidates": candidates,
+                            "verdicts": verdicts, "tried": tried})
+        order = {installation.installation_id: position for position, installation in enumerate(eligible)}
+        while True:
+            groups = {}
+            for row in pending:
+                target = len(row["candidates"]) if every else self.policy.reviewers_per_item
+                if len(row["verdicts"]) >= target:
+                    continue
+                if self.policy.stop_asking_after_first_rejection and any(
+                        verdict["decision"] == REJECT for verdict in row["verdicts"].values()):
+                    continue
+                with state.lock:
+                    if state.stop_reason:
+                        break
+                installation = (self._next_in_order(row["candidates"], row["tried"], state) if every
+                                else self._next(row["candidates"], row["tried"], row["verdicts"], state, below))
+                if installation is not None:
+                    groups.setdefault(installation.installation_id, (installation, []))[1].append(row)
+            if not groups:
+                break
+
+            def ask_group(entry):
+                installation, rows = entry
+                size = run_request.batch_sizes.get(installation.installation_id, 1)
+                for start in range(0, len(rows), size):
+                    chunk = rows[start:start + size]
+                    for row in chunk:
+                        row["tried"].add(installation.installation_id)
+                    if size == 1:
+                        request = chunk[0]["request"]
+                        verdict = self._ask(installation, request,
+                                            build_prompt(request, installation, self.instructions), availability,
+                                            budget, state, run_request)
+                        answers = {request.identity: verdict} if verdict is not None else {}
+                    else:
+                        answers = self._ask_batch(installation, [row["request"] for row in chunk], availability,
+                                                  budget, state, run_request)
+                    for row in chunk:
+                        if row["request"].identity in answers:
+                            row["verdicts"][installation.installation_id] = answers[row["request"].identity]
+
+            entries = [groups[name] for name in sorted(groups, key=lambda name: order.get(name, len(order)))]
+            workers = min(len(entries), run_request.item_concurrency)
+            if workers == 1:
+                for entry in entries:
+                    ask_group(entry)
+            else:
+                with ThreadPoolExecutor(max_workers=workers) as pool:
+                    list(pool.map(ask_group, entries))
+        for row in pending:
+            request, verdicts = row["request"], row["verdicts"]
+            if not verdicts:
+                with state.lock:
+                    stopped = state.stop_reason
+                if stopped:
+                    decided[request.identity] = ItemResult(request.identity, request, row["prechecks"], [],
+                                                           NOT_STARTED, NOT_STARTED_RULE, [stopped])
+                    continue
+            decided[request.identity] = self._decided(request, row["prechecks"], verdicts)
+        return [decided[request.identity] for request in run_request.requests]
+
+    def _key(self, installation, request, run_request) -> str:
+        """The key an installation's verdict on this item is stored under in this run's mode of asking."""
+        if run_request.batch_sizes.get(installation.installation_id, 1) > 1:
+            return review_key_for(installation, request, member_prompt_sha256(request, installation,
+                                                                              self.instructions))
+        return review_key(installation, request, build_prompt(request, installation, self.instructions))
+
+    def _ask_batch(self, installation, requests, availability, budget, state, run_request) -> dict:
+        """One call about several items; returns each item's verdict row by identity, for the items that got one."""
+        engine = self.reviewers[installation.installation_id]
+        settings = thawed(installation.settings)
+        allowance = CallAllowance(getattr(engine, "output_allocation_tokens", None)
+                                  or self.policy.output_allocation_tokens,
+                                  float(settings.get("timeout_seconds", DEFAULT_TIMEOUT_SECONDS)),
+                                  self.policy.temperature)
+        answer_format = getattr(engine, "answer_format", JSON_ONLY)
+        overhead = settings.get(OVERHEAD_SETTING, 0)
+        batch = build_batch_prompt(requests, installation, self.instructions)
+        reservation = batch.estimated_input_tokens + allowance.max_output_tokens + \
+            (overhead if type(overhead) is int and overhead > 0 else 0)
+        members = [(member, review_key_for(installation, member.request, member.member_prompt_sha256))
+                   for member in batch.members]
+        batch_key = digest({"record_type": BATCH_CALL_RECORD, "installation_sha256": installation.sha256,
+                            "prompt_sha256": batch.sha256})
+        probe = availability.get(installation.installation_id)
+        retries = 0
+        while True:
+            with state.lock:
+                if state.stop_reason or installation.quota_group in state.spent \
+                        or installation.installation_id in state.unusable:
+                    return {}
+            if not self._claim_group_call(installation, run_request, state):
+                return {}
+            if not budget.reserve(reservation):
+                with state.lock:
+                    state.stop_reason = state.stop_reason or budget.stop_reason
+                return {}
+            with state.lock:
+                state.sequence += 1
+                sequence = state.sequence
+            started = self.clock()
+            self.ledger.dispatch({
+                "record_type": BATCH_DISPATCH_RECORD, "run_id": run_request.run_id, "sequence": sequence,
+                "batch_key": batch_key, "installation_id": installation.installation_id,
+                "members": [self._member(position, member, key) for position, (member, key) in enumerate(members)],
+                "dispatched_at": _timestamp(started)})
+            try:
+                attempt = engine.review(batch.as_prompt(), allowance)
+            except CandidateReviewError as error:
+                attempt = failed(ENGINE_UNAVAILABLE, installation.installation_id, error.code,
+                                 physical_model_calls=None)
+            except Exception as error:  # noqa: BLE001 - an engine defect is recorded, never read as a verdict
+                attempt = failed(PROVIDER_FAILED, installation.installation_id, type(error).__name__,
+                                 physical_model_calls=None)
+            if attempt.outcome == ANSWERED and not answering_model_matches(installation, attempt):
+                attempt = replace(attempt, outcome=MODEL_IDENTITY_MISMATCH, text="",
+                                  error_detail="reviewer_answering_model_mismatch")
+            results, error_code = None, ""
+            if attempt.outcome == ANSWERED:
+                results, error_code = parse_batch_verdicts(
+                    attempt.text, members=[(member.identity, member.body_sha256,
+                                            member.request.applicable_criteria_ids) for member, _key in members],
+                    answer_format=answer_format)
+            else:
+                error_code = attempt.error_detail[:120] or attempt.outcome
+            usage = attempt.usage
+            charged, basis = ((usage.total, CHARGED_AS_REPORTED) if usage.complete
+                              else (reservation, CHARGED_AT_RESERVATION))
+            budget.settle(reservation, charged)
+            pause = 0.0
+            if attempt.outcome == RATE_LIMITED and retries < self.policy.rate_limit.maximum_retries_per_call:
+                pause = self._pause(attempt.retry_after_seconds, retries, state)
+            member_rows, verdict_rows, found = [], [], {}
+            for position, (member, key) in enumerate(members):
+                content, code = results[position] if results is not None else (None, error_code)
+                outcome = VERDICT_OUTCOME if content else (INVALID_RESPONSE if attempt.outcome == ANSWERED
+                                                           else NOT_ANSWERED)
+                member_rows.append({**self._member(position, member, key), "outcome": outcome,
+                                    "error_code": "" if content else code[:120],
+                                    "decision": content.decision if content else ""})
+                if content is not None:
+                    verdict = self._redacted({
+                        "record_type": VERDICT_RECORD, "run_id": run_request.run_id, "sequence": sequence,
+                        "review_key": key, "installation_id": installation.installation_id,
+                        "family": installation.family, "identity": member.identity,
+                        "body_sha256": member.body_sha256, "request_sha256": member.request.request_sha256,
+                        "reported_model": attempt.reported_model,
+                        "request_record_type": member.request.to_record()["record_type"], **content.to_dict()})
+                    verdict_rows.append(verdict)
+                    found[member.identity] = verdict
+            call_outcome = BATCH_ANSWERED if attempt.outcome == ANSWERED else attempt.outcome
+            call = self._redacted({
+                "record_type": BATCH_CALL_RECORD, "run_id": run_request.run_id, "sequence": sequence,
+                "batch_key": batch_key, "installation_id": installation.installation_id,
+                "installation_sha256": installation.sha256, "engine_kind": installation.engine_kind,
+                "family": installation.family, "model": installation.model,
+                "reported_model": attempt.reported_model,
+                "model_version": dict(probe.model_version) if probe else {},
+                "engine_version": probe.engine_version if probe else "",
+                "route_or_command": attempt.route_or_command, "prompt_sha256": batch.sha256,
+                "started_at": _timestamp(started), "elapsed_seconds": attempt.elapsed_seconds,
+                "outcome": call_outcome, "error_code": error_code if results is None else "",
+                "invalid_answer_excerpt": (attempt.text[:EXCERPT_CHARACTERS]
+                                           if attempt.outcome == ANSWERED and len(found) < len(members) else ""),
+                "physical_model_calls": attempt.physical_model_calls,
+                "physical_calls_basis": attempt.physical_calls_basis, "usage": usage.to_dict(),
+                "reserved_tokens": reservation, "charged_tokens": charged, "charge_basis": basis,
+                "retry_after_seconds": attempt.retry_after_seconds, "pause_seconds_after": pause,
+                "members": member_rows})
+            self.ledger.complete_batch(call, verdict_rows)
+            with state.lock:
+                state.calls.append(call)
+            if found:
+                self._note_failure(installation, None, run_request, state)
+                return found
+            self._note_failure(installation, (call_outcome if results is None else INVALID_RESPONSE,
+                                              error_code or next((row["error_code"] for row in member_rows), "")),
+                               run_request, state)
+            if attempt.outcome == USAGE_LIMIT_REACHED:
+                with state.lock:
+                    state.spent.add(installation.quota_group)
+                return {}
+            if attempt.outcome in LASTING_FAILURES:
+                with state.lock:
+                    state.unusable.add(installation.installation_id)
+                    state.ineligible[installation.installation_id] = UNUSABLE_DURING_RUN + attempt.outcome
+                return {}
+            if pause > 0:
+                self.sleeper(pause)
+                retries += 1
+                continue
+            return {}
+
+    @staticmethod
+    def _member(position, member, key) -> dict:
+        return {"position": position, "review_key": key, "identity": member.identity,
+                "body_sha256": member.body_sha256, "request_sha256": member.request.request_sha256,
+                "request_record_type": member.request.to_record()["record_type"],
+                "member_prompt_sha256": member.member_prompt_sha256}
+
+    @staticmethod
+    def _claim_group_call(installation, run_request, state) -> bool:
+        """Count one call against the installation's quota group, or refuse it at the group's own ceiling."""
+        ceiling = run_request.quota_group_call_ceilings.get(installation.quota_group)
+        with state.lock:
+            used = state.group_calls.get(installation.quota_group, 0)
+            if ceiling is not None and used >= ceiling:
+                state.capped.add(installation.quota_group)
+                return False
+            state.group_calls[installation.quota_group] = used + 1
+        return True
+
+    @staticmethod
+    def _note_failure(installation, signature, run_request, state) -> None:
+        """Track identical failures in a row; at the run's limit the installation is asked no more."""
+        limit = run_request.repeated_failure_limit
+        with state.lock:
+            if signature is None or signature[0] in NOT_A_REPEATABLE_FAILURE:
+                if signature is None:
+                    state.streaks.pop(installation.installation_id, None)
+                return
+            previous, count = state.streaks.get(installation.installation_id, (None, 0))
+            count = count + 1 if previous == signature else 1
+            state.streaks[installation.installation_id] = (signature, count)
+            if limit and count >= limit:
+                state.unusable.add(installation.installation_id)
+                state.ineligible[installation.installation_id] = (
+                    UNUSABLE_DURING_RUN + REPEATED_FAILURE + ":".join(str(part) for part in signature if part))
 
     def _pause(self, requested, retries: int, state) -> float:
         rate = self.policy.rate_limit

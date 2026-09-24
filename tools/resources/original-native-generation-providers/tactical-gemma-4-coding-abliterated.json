@@ -10,7 +10,8 @@
   "locality": "organization",
   "counts_as_evidence": false,
   "purposes": [
-   "generation"
+   "generation",
+   "decide_label"
   ],
   "auth_scheme": "bearer",
   "stream": "stream",

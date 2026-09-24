@@ -97,11 +97,16 @@ Candidate review
 ├── Reviewer edge: prompt and call allowance in, ReviewerAttempt out
 │   ├── model_gateway: Ollama Cloud models through core.model_gateway
 │   ├── command_line: codex exec and claude -p, each read by its own protocol
+│   ├── provider_binding: an organisation endpoint named by a committed
+│   │   provider binding, through core.model_gateway
 │   └── fixture: scripted reviewers for offline checks, never in a real record
 └── Envelope: panel.ReviewPanel
     ├── pre-checks, eligibility, family exclusion and the quorum rule
-    ├── budget, rate limit pauses and spent allowances
-    └── the ledger: dispatch, call and verdict rows, the resumable cursor
+    ├── one item per call, or several items per call for a calibrated reviewer
+    ├── budget, per-group call ceilings, rate limit pauses, spent allowances
+    │   and a stop after repeated identical failures
+    └── the ledger: dispatch, call, batch call and verdict rows, the resumable
+        cursor
 ```
 
 Every kind of pre-check must be decided for every item. A kind whose engines
@@ -182,14 +187,31 @@ installation of the item's producer family.
 |---|---|---|---|
 | `ollama.deepseek-v4-pro` | deepseek | model_gateway | Model `deepseek-v4-pro:0813`. |
 | `ollama.qwen3.5-397b` | alibaba | model_gateway | Model `qwen3.5:397b`. |
-| `codex.gpt-6-sol` | openai | command_line | Currently unavailable for review: the qualified `codex exec` JSONL protocol does not report the answering model. Its requested model is not evidence of the model that answered. |
+| `codex.gpt-6-sol` | openai | command_line | Protocol `codex_exec_session`: the model is pinned with `-m {model}` and read back from the command line's own session record for the thread the events name (every turn context must name the pinned model). `--ephemeral`, which suppresses that record, is refused for this protocol. The older `codex_exec_jsonl` protocol reports no model and stays refused. On 24 September 2026 the subscription's usage limit ran until 29 September, so the readback has offline checks only. |
 | `ollama.minimax-m3` | minimax | model_gateway | |
 | `ollama.kimi-k2.6` | moonshot | model_gateway | The admissible model of the Kimi family. |
 | `ollama.glm-5.3` | zhipu | model_gateway | Writes its reasoning into the answer text, so it declares the answer format `json_after_reasoning` and a 32,768 token allocation. |
 | `ollama.mistral-large-3` | mistral | model_gateway | Model `mistral-large-3:675b`. |
 | `ollama.gpt-oss-120b` | openai | model_gateway | Model `gpt-oss:120b`. |
 | `ollama.kimi-k3` | moonshot | model_gateway | Disabled. The repository's model policy refuses this model on every route. |
-| `claude_code.bare` | anthropic | command_line | `claude -p --bare` with no tools. Never asked about an item Claude Code wrote. In bare mode the command line reads only `ANTHROPIC_API_KEY`, never the login of an interactive session; on the pilot machine that variable is not set, and one probe recorded `authentication_unavailable` with no model call. |
+| `claude_code.bare` | anthropic | command_line | Disabled. `claude -p --bare` reads only `ANTHROPIC_API_KEY`, never the login of an interactive session; on this machine that variable is not set, and one probe recorded `authentication_unavailable` with no model call. |
+| `claude_code.subscription` | anthropic | command_line | `claude -p --safe-mode` with no tools and no session persistence: every customization (instruction files, skills, plugins, hooks, protocol servers) is off while the owner's subscription login still works. The model is pinned with `--model {model}`, and the result's model usage must name only that model. The owner capped it at 150 review calls in total on 24 September 2026, because it shares the subscription with the engineering sessions; the command's `--quota-group-ceiling claude_subscription=N` holds each command to what remains. Never asked about an item Claude Code wrote. |
+| `tactical.gemma-4-coding-abliterated` | google | provider_binding | The owner's Tactical Engineering endpoint through the committed provider binding `tools/resources/original-native-generation-providers/tactical-gemma-4-coding-abliterated.json`, which declares the review purpose `decide_label` beside `generation`. The TLS trust contract, family evidence and measured capacity are the binding's; the credential reference `tactical-model-generation` is resolved inside the review process only. The model writes reasoning before its verdict, so the installation declares `json_after_reasoning` and a 16,384 token allocation within the measured 65,536. Never asked about an item the same endpoint produced, because both are the google family. |
+
+## The provider_binding engine
+
+A `provider_binding` installation names a committed provider binding by path and
+exact digest. The engine validates it with the candidate generator's own loader
+at the checkout's current commit: the binding bytes, trust anchor, family
+evidence, capacity record and panel vocabulary must be committed unchanged, the
+binding's model and family must be the installation's, and the binding must
+declare the installation's purpose. Only then is the operator credential
+resolved, inside the review process, by the resolver the command supplies when
+model calls are authorized. A command without model authority resolves no
+credential, and the engine is then unavailable with
+`authentication_unavailable`. Every call goes through `core.model_gateway` with
+one route, no failover and a typed output allocation within the binding's
+measured capacity; the answering model is the one the endpoint reports.
 
 ## What one reviewer is sent
 
@@ -215,6 +237,37 @@ real item; the comparison of the two attempts is in the pilot evidence folder.
 The prompt digest names both parts of the prompt, and the ledger reuses a
 verdict only for the same installation, the same exact request and the same
 exact prompt. A changed prompt is a new review, and the ledger keeps both.
+
+## Batched review
+
+With `--batch-size INSTALLATION=N` one call asks that reviewer about up to N
+items (at most 12) of one content profile. The system part is the reviewer's
+instructions and lens followed by the batch answer contract in
+[`resources/BATCH-ANSWER.md`](resources/BATCH-ANSWER.md). The request part holds
+each item's own material exactly as its single prompt holds it, inside a block
+fenced by markers built from that item's digest, and ends with the ordered list
+of identities and digests the answer must copy.
+
+The answer is one JSON object with exactly the key `verdicts`: exactly one
+verdict per item, in order, each with the item's `identity` and
+`body_sha256` and the single answer's fields, read by the single answer's
+rules. A verdict that names another item or other bytes, or breaks a rule,
+costs only its own item, which moves to the next reviewer alone. A list of
+another length counts for no item. Items are still chosen reviewer by reviewer
+in the same order as one at a time, so the approval rule, the family exclusion
+and the quorum are unchanged.
+
+Each item's verdict is keyed by a member digest that names the batch system part
+and that item's own material, never its companions, so a later command reuses
+it whichever items share the request. A batched verdict never reuses a
+single-item verdict or the other way round. The ledger writes one batch dispatch
+row naming every member's key before the call, and one batch call row with the
+call's usage once and one member row per item with its own outcome.
+Calibration runs in the same mode as the command, so a reviewer is measured
+exactly as it will be asked; the engines and the batch contract are recorded in
+[the September 24 review engines record](../../docs/verification/REVIEW-ENGINES-AND-BATCHING-2026-09-24.md).
+The dated review record does not yet read batch calls, so `--record` is refused
+with a batch size above one; the ledger holds every batch call and verdict.
 
 ## Calibration
 
@@ -267,6 +320,22 @@ within one run: the installation that reports one is asked no more in that
 run, and the record names it with the reason `unusable_during_run:` and the
 failure. The next reviewer of a family not yet heard takes its place.
 
+A command may also declare `--quota-group-ceiling GROUP=N`, which stops a quota
+group after N calls in the command (calibration included) while other groups
+continue, and `--stop-after-repeated-failures N`, which stops asking an
+installation that failed the same way, with the same outcome and code, N calls
+in a row. A rate limit, which is paused and retried, and a spent allowance never
+count toward that limit. `--exclude-installation ID=REASON` keeps an
+installation out of the command with its written reason, for example an
+allowance known to be spent.
+
+`--collect-below-quorum REASON` is for a family that is out of reach for a
+known time. Without it the panel spends no call on an item whose reachable
+families cannot reach the quorum. With it, each reachable family is asked once
+for each item; the approval rule is unchanged, so such an item ends rejected
+or incomplete, never approved, and its verdicts wait in the ledger. A later
+command with the missing family asks only that family.
+
 The ledger is the resumable cursor. A dispatch row is synced to disk before a
 call and a call row after it. A later command with the same ledger reuses every
 verdict already given for the same installation, the same exact request and
@@ -289,6 +358,7 @@ completed.
 | `candidate_review_calibration_set/v1` | `resources/calibration-set.json` | Known-wrong and known-good items. |
 | `candidate_review_request/v1`, `candidate_native_package_review_request/v1`, `candidate_precheck_result/v1`, `candidate_review_verdict/v2` | edges | The explicitly typed body or native-package subject, each pre-check result, and the exact model verdict. |
 | `candidate_review_run/v2`, `candidate_review_run_end/v2`, `candidate_review_dispatch/v2`, `candidate_review_call/v2` | the ledger | Every run, dispatch and call, including requested and reported model identity, subject type, usage, charge, pause and outcome. |
+| `candidate_review_batch_dispatch/v1`, `candidate_review_batch_call/v1` | the ledger | One call about several items: the dispatch names every member's review key before the call; the call row holds the requested and reported model, the usage once, and one member row per item with its own outcome, code and decision. A verdict row names its batch call and must agree with its member row. |
 | `starter_catalogue_panel_review/v3` | dated review artifact | The complete typed panel configuration and exact subjects bind both content profiles. Calibration eligibility is reconstructed from trusted requests and typed verdict/call evidence; version two exports are historical and refused. |
 | `candidate_review_calibration_result/v2` | calibration section of the dated artifact | Complete verdict records, calls, all installation outcomes, and recomputable exclusions. Missing any control verdict makes an installation incomplete. |
 
@@ -420,6 +490,8 @@ record with their reasons.
 | `tools/test_candidate_review_panel.py` | The approval rule, the family exclusion in both the selection and the decision, pre-checks before any call, the kind of body and its criteria in the prompt, answer validation, ceilings, pauses, spent allowances, failures that last a run, the cursor bound to the exact prompt, and secret redaction. |
 | `tools/test_candidate_review_calibration.py` | The committed calibration set, each item's criterion applying to its kind, and the exclusion of a reviewer that approves a known-wrong item or was never measured. |
 | `tools/test_candidate_review_record.py` | The strict reader of the dated record, interrupted dispatches, criteria applied per row, each reviewer's family and installation bound to its calls, each row's pre-checks and licence, its serialization, and the committed pilot record against the bodies committed with it, read from the repository history. |
+| `tools/test_candidate_review_batching.py` | Batch answers bound per item, batch prompts whose members keep their keys, batched runs under the unchanged rule, the cursor across batches, per-group ceilings, the stop after repeated failures, collection below the quorum, the batch ledger rows and the command's new options. |
+| `tools/test_candidate_review_binding_engine.py` | The provider_binding engine through the real adapter and gateway with a fixture transport: the credential reaches only the request header, and a binding that is not committed, names another model or family, lacks the review purpose or cannot hold the allocation is refused before the credential is read. |
 
 Each file holds mutant controls: with one guard replaced, its known-wrong case
 passes, which proves the case is held by that guard. The pilot evidence folder

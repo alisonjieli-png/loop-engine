@@ -305,7 +305,7 @@ class ProviderBindingTest(unittest.TestCase):
                  ({"credential_env": "FIXTURE_KEY"}, "provider_binding_settings_invalid"),
                  ({"maximum_output_tokens": 999999, "maximum_output_source": "guess"},
                   "provider_binding_settings_invalid"),
-                 ({"purposes": ["decide_label"]}, "provider_binding_requires_verified_https"))
+                 ({"purposes": ["decide_label"]}, "provider_binding_purpose_undeclared"))
         for change, code in cases:
             with self.subTest(change=sorted(change)):
                 saved = dict(self.provider)
@@ -313,6 +313,19 @@ class ProviderBindingTest(unittest.TestCase):
                 self.commit()
                 self.assert_refused_before_credential(code)
                 self.provider = saved
+
+    def test_a_binding_serves_only_the_purposes_it_declares(self):
+        def load(purpose):
+            return generation.load_provider_binding(self.repo, _git(self.repo, "rev-parse", "HEAD"), BINDING,
+                                                    self.binding_digest, MODEL, "google", purpose=purpose)
+
+        self.assertEqual(load("generation").binding_id, "fixture_binding")
+        with self.assertRaisesRegex(generation.GenerationError, "provider_binding_purpose_undeclared"):
+            load("decide_label")
+        self.provider["purposes"] = ["generation", "decide_label"]
+        self.commit()
+        self.assertEqual(load("decide_label").binding_id, "fixture_binding")
+        self.assertEqual(self.resolved, [], "a purpose check never reads the credential")
 
     def test_binding_and_injected_provider_are_mutually_exclusive(self):
         with self.assertRaisesRegex(generation.GenerationError, "provider_binding_excludes_injected_provider"):

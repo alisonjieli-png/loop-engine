@@ -318,8 +318,11 @@ def committed_record(repository, revision, reference, record_type, code):
     return value
 
 
-def load_provider_binding(repository, revision, path, expected_digest, model, family):
-    """Validate one provider binding and everything it names, before any credential is read."""
+def load_provider_binding(repository, revision, path, expected_digest, model, family, *, purpose="generation"):
+    """Validate one provider binding and everything it names, before any credential is read.
+
+    ``purpose`` is the use the caller makes of the endpoint; the binding's provider settings must declare it,
+    so a binding committed for generation only is refused as a review route, and the other way round."""
     raw = committed_bytes(repository, revision, path, expected_digest, "provider_binding_not_committed")
     if secret_present(raw.decode("utf-8")):
         refuse("provider_binding_contains_secret")
@@ -347,7 +350,9 @@ def load_provider_binding(repository, revision, path, expected_digest, model, fa
         settings = replace(parsed.models.providers[0], **identity_fields)
     except (runtime_settings.SettingsError, EndpointError, ValueError, TypeError):
         refuse("provider_binding_settings_invalid")
-    if (settings.kind != "custom" or not settings.enabled or "generation" not in settings.purposes
+    if purpose not in settings.purposes:
+        refuse("provider_binding_purpose_undeclared")
+    if (settings.kind != "custom" or not settings.enabled
             or not settings.endpoint.startswith("https://") or settings.tls_verification == "skip"):
         refuse("provider_binding_requires_verified_https")
     if settings.model != model:

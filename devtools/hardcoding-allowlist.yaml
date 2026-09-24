@@ -1,5 +1,16 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.20ea916032835992d349a0b5
+    owner: tools.candidate_review.reviewers.command_line:codex_session_root
+    rationale: CODEX_HOME is the Codex command line's own documented variable for its home folder. The
+      codex_exec_session reviewer protocol reads it only to find the session record that command line wrote
+      for the thread its events name, exactly where the command line itself resolves it, and falls back to
+      the command line's own default home. It is not a Loop Engine setting, selects no model or route and
+      grants no authority; the answer still counts only when that record names the installation's pinned
+      model.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
   - finding_id: hardcoding.b8c2de715f0926b6fb499569
     owner: tools.check_service_workspace.mjs:url
     rationale: Exact hosted-checkout URL prefix in the loopback browser acceptance scenario. It verifies

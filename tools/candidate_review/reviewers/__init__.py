@@ -128,11 +128,17 @@ class ReviewerAttempt:
 
 @dataclass
 class ReviewerContext:
-    """What the panel hands every engine it builds. Every field is optional and read only by its engine kind."""
+    """What the panel hands every engine it builds. Every field is optional and read only by its engine kind.
+
+    ``repository`` is the checkout whose committed provider bindings a ``provider_binding`` engine reads, and
+    ``credential_resolver`` resolves an operator credential reference inside the calling process only; an
+    engine never stores, prints or records what it returns."""
 
     provider_adapters: "Mapping | None" = None
     model_listing: "Mapping | None" = None
     fixture_scripts: "Mapping | None" = None
+    repository: "object | None" = None
+    credential_resolver: "object | None" = None
 
 
 class ReviewerEngine(Protocol):

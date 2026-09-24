@@ -96,7 +96,8 @@ class CommandReportedFactsTest(unittest.TestCase):
 
     def test_codex_without_identity_reporting_is_unavailable_before_a_review_call(self):
         with tempfile.TemporaryDirectory() as directory:
-            engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SUCCESS))
+            engine = _command("codex.gpt-6-sol", _program(Path(directory), "codex", CODEX_SUCCESS),
+                              output_protocol="codex_exec_jsonl")
             available = engine.availability()
         self.assertFalse(available.available)
         self.assertEqual(available.reason_code, reviewers.MODEL_IDENTITY_MISMATCH)
