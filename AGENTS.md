@@ -281,7 +281,15 @@ connection would allow it:
   those drafts and add no other use of personal data. The same day the owner
   took on advertising spend: "I will manage adspend". Engineering prepares
   landing pages, measurement and written instructions, and spends nothing on
-  advertising itself;
+  advertising itself. Later the same day the owner authorized engineering to
+  carry out every item on the owner action pages it had prepared, in their
+  words "you have my explicit authorization to implement and deploy all":
+  the paid link wording, the referral programme, the plans above Baltor Pro,
+  competition entries, the partner mailbox, repository licences and the
+  newsletter and social drafts. What stays with the owner is only what
+  engineering cannot do: their own hardware, their personal sign-ins and
+  posts, identity, tax and bank details, and submitting the YC application
+  from the founder's account;
 - identity or bank verification with a provider, which only the owner can
   complete (September 20, 2026).
 
