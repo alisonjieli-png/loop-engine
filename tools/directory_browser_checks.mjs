@@ -103,7 +103,7 @@ async function views(page){
 export async function runDirectoryChecks({browser,base,check,mutants,errors,localOnly,screenshot}){
   const {page,context,requests,ready_ms}=await loadDirectory(browser,base,{errors,localOnly});
   const data=await servedData(page,base),manifest=data.manifest;
-  const manifestNotice=manifest.commercial_labels?.paid_link_notice||"";
+  const manifestNotice=manifest.commercial_labels?.paid_link_notice||"",manifestDisclosure=manifest.commercial_labels?.paid_links_disclosure||"";
   const state=await page.evaluate(()=>{let graph=[];try{graph=JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)["@graph"].map(item=>item["@type"]);}catch(_){graph=[];}
     return {title:document.title,canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",description:document.querySelector('meta[name="description"]')?.getAttribute("content")||"",
       h1:document.querySelectorAll("h1").length,graph,loaded:document.documentElement.dataset.directory,count:document.querySelector("#directory-count").textContent,
@@ -217,12 +217,15 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
           inBand:band.querySelectorAll("[data-commercial-link][rel='sponsored noopener']").length,labels:[...band.querySelectorAll("[data-disclosure-label]")].map(node=>node.textContent),
           inList:document.getElementById(second)?.querySelectorAll("[data-commercial-link]").length??0},
         notice:{shown:notice.checkVisibility(),text:notice.textContent,directlyAboveList:notice.nextElementSibling?.classList.contains("directory-columns")},
-        owned:{shown:Boolean(owned?.checkVisibility()),text:owned?.textContent||"",links:document.getElementById(third)?.querySelectorAll("[data-commercial-link]").length??0}};},ids);
+        owned:{shown:Boolean(owned?.checkVisibility()),text:owned?.textContent||"",links:document.getElementById(third)?.querySelectorAll("[data-commercial-link]").length??0},
+        section:{disclosure:document.getElementById("directory-paid-disclosure").hidden?"":document.getElementById("directory-paid-disclosure").textContent,
+          none:!document.getElementById("directory-no-paid-links").hidden}};},ids);
     await view.context.close();
     note("directory_commercial_link_shows_its_label_and_sponsored_rel",commercialLinkProblems(found.links).length===0,{links:found.links});
     note("directory_sponsored_placement_sits_in_its_own_band",sponsoredProblems(found.sponsored).length===0,found.sponsored);
     note("directory_paid_link_notice_sits_above_the_list_while_a_paid_link_is_active",noticeProblems({...found.notice,expected:manifestNotice},true).length===0,found.notice);
     note("directory_marks_baltors_own_service",found.owned.shown&&found.owned.text==="Baltor's own service"&&found.owned.links===0,found.owned);
+    note("directory_paid_links_section_says_what_is_true",found.section.disclosure===manifestDisclosure&&!found.section.none,found.section);
     return script?.state;
   };
   await withRelationships(null,check);
@@ -230,9 +233,10 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   const plain=async(mutation,note)=>{
     const script=mutation?scriptRoute(mutation):null;
     const view=await loadDirectory(browser,base,{errors,localOnly,routes:script?[script.route]:[]});
-    const found=await view.page.evaluate(()=>({shown:document.getElementById("directory-paid-notice").checkVisibility(),text:document.getElementById("directory-paid-notice").textContent}));
+    const found=await view.page.evaluate(()=>({shown:document.getElementById("directory-paid-notice").checkVisibility(),text:document.getElementById("directory-paid-notice").textContent,
+      disclosure:!document.getElementById("directory-paid-disclosure").hidden,none:!document.getElementById("directory-no-paid-links").hidden}));
     await view.context.close();
-    note("directory_paid_link_notice_is_hidden_while_no_paid_link_is_active",noticeProblems(found,false).length===0,found);
+    note("directory_paid_link_notice_is_hidden_while_no_paid_link_is_active",noticeProblems(found,false).length===0&&!found.disclosure&&found.none,found);
     return script?.state;
   };
   const goodLink={rel:"sponsored noopener",label:"Paid link",address:"a.example.org/p",expectedAddress:"a.example.org/p",ownLinks:true};

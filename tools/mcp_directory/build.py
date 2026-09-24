@@ -294,7 +294,8 @@ def encode(offerings, rules: CategoryRules, context: dict) -> "tuple[dict, list]
         "commercial_labels": {"kinds": list(commercial.KINDS), "labels": commercial.DISCLOSURE_LABELS,
                               "paid_link_rel": commercial.LINK_REL, "owned_link_rel": commercial.OWNED_LINK_REL,
                               "ad_band_heading": commercial.AD_BAND_HEADING, "maximum_ads": commercial.MAXIMUM_ADS,
-                              "paid_link_notice": commercial.PAID_LINK_NOTICE},
+                              "paid_link_notice": commercial.PAID_LINK_NOTICE,
+                              "paid_links_disclosure": commercial.PAID_LINKS_DISCLOSURE},
     }
     return manifest, files
 

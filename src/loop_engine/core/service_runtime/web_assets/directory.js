@@ -190,12 +190,16 @@
     band.hidden = placed.length === 0;
   }
 
-  /* The sentence above the list, shown exactly while at least one row carries an active paid link. */
+  /* The sentence above the list and the paid-links disclosure, shown exactly while at least one row carries an active
+     paid link; the sentence that says no link earns anything is shown exactly while none does. */
   function drawNotice() {
     const notice = $("directory-paid-notice");
     const paid = state.rows.some(row => showsCommercialLink(state.relationships[row.commercial]));
     notice.textContent = paid ? state.commercial.paid_link_notice : "";
     notice.hidden = !paid;
+    $("directory-paid-disclosure").textContent = paid ? state.commercial.paid_links_disclosure : "";
+    $("directory-paid-disclosure").hidden = !paid;
+    $("directory-no-paid-links").hidden = paid;
   }
 
   /* The sentence that says how the list is ordered, for the order the reader chose. */

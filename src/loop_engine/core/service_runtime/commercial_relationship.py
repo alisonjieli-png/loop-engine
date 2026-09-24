@@ -51,10 +51,16 @@ OWNED_LINK_REL = "noopener"
 #: The heading of the band that holds ads, and the most ads one page shows.
 AD_BAND_HEADING = "Ads"
 MAXIMUM_ADS = 3
-#: The sentence directly above a list that shows an active paid link. A draft that waits for the owner's approval;
-#: no page shows it until a paid link is active, and none is.
+#: The sentence directly above a list that shows an active paid link, and the short disclosure its page's paid-links
+#: section shows while one is active. The owner approved the drafted wording on September 24, 2026; no page shows
+#: either until a paid link is active, and none is.
 PAID_LINK_NOTICE = ("Links marked Paid link are ads: Baltor earns money when you sign up or buy through them. "
                     "They do not change which services we list or their order.")
+PAID_LINKS_DISCLOSURE = (
+    "Some links on this page are paid links. When you sign up or buy through a link marked Paid link, the company pays "
+    "Baltor, and it does not raise the price you pay. We add a paid link only to a service that is already on the list "
+    "for its own reasons, and the service's plain address is shown beside it. Paid links, ads and payments never decide "
+    "which services we list or their order.")
 #: The id of the disclosure section a directory page links to.
 DISCLOSURE_SECTION_ID = "paid-links"
 _SECURE_SCHEME = "https"
