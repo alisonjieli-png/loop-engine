@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
@@ -1510,7 +1510,7 @@ continuation:
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -3341,8 +3341,8 @@ steps:
       - "the work never delays the SaaS: it runs only when the launch packages have capacity"
     adversarial: "A package that calls an outside service during scoring, a model other than the allowed variant, and a submission made without the owner's go-ahead must each be refused."
     acceptance: "Baltor has a documented entry plan and a validated prototype package, and the public page offers entrants a starter kit only if the rules allow it."
-    evidence: "September 23, 2026, the owner asked how the project could be submitted to the Kaggle Gemma 4 Developer Agent Competition and Paper Track, then: \"Make sure that the kaggle research is a side project, our main project and goal is getting this fully working as a SaaS.\""
-    next_local_work: "Resume the paused research run and write the entry plan."
+    evidence: "September 23, 2026, the owner asked how the project could be submitted to the Kaggle Gemma 4 Developer Agent Competition and Paper Track, then: \"Make sure that the kaggle research is a side project, our main project and goal is getting this fully working as a SaaS.\" September 24, 2026: both tracks, their rules and the harness guide were read (docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md). The paper is due November 12; entry and team merger close November 25; final submissions close December 2, 2026, each at 11:59 p.m. UTC. Every agent must use gemma-4-31b-it-qat-w4a16-ct, the package is declarative, tasks run offline, public code sharing during the competition must happen on Kaggle, and a winner licenses the submission as open source. The owner's account is entered in both; nothing was submitted or posted."
+    next_local_work: "Download the competition data under the owner's accepted rules to a folder outside the repository, run the sample package on a frozen 20-task development subset, then add an Agent Development Kit submission profile to the Harness Working Directory Compiler."
   - id: S-6.91
     phase: 6
     title: "A step that lacks a tool reports a typed capability need, and search runs before any build"
@@ -3483,3 +3483,138 @@ steps:
     acceptance: "The owner can bring named people in from the Administration view without a second way in, and nobody who opens a sign-up link can press Confirm before the page can use it."
     evidence: "September 24, 2026, the owner asked, through the main session, to let a superadmin type email addresses and invite people to sign up, with the email naming who invited them and an optional free monthly Baltor Pro, and to keep Confirm disabled until the sign-in settings are ready. Built and checked locally the same day; see docs/verification/STAFF-SIGN-UP-LINKS-2026-09-24.md."
     next_local_work: "Release the committed revision, then send one live sign-up link to a fresh address with free monthly ticked, open it, choose a password and confirm that the account opens with free monthly Baltor Pro and leaves the pending list."
+  - id: S-6.110
+    phase: 6
+    title: "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger"
+    status: proposed
+    depends_on: [S-6.37, S-6.44]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/service_runtime/web_pages.py]
+    verify:
+      - "one showcase run record per run holds the frozen design and its digest, the population and selection rule, each arm's harness, model route and material, every step's working directory files with digests and library item identities, offered, fetched, loaded and used as separate facts, the independent check with its own record, failures, excluded attempts and limits"
+      - "a trajectory exporter engine behind the existing run_history_export slot writes one Agent Trajectory Interchange Format file per step, validated against Harbor's pinned models, with each step's harness as a sub-agent trajectory"
+      - "the default export carries no prompt text; a public showcase export is an explicit choice per run, allowed only for public or synthetic inputs after a secret scan, and never for safety runs"
+      - "a ledger per step and per run shows calls, input and output tokens, seconds and cost state, with unknown cost shown as unknown and subscription-covered calls labelled"
+      - "the step timeline, working directory viewer, replay, with and without table and before and after view render from the record only"
+    adversarial: "A number on a showcase page with no run record behind it, a with and without table whose arms differ in population, model or checker, an unknown cost shown as zero, a trajectory holding prompt text from a run not marked public, and a safety run exported with prompts must each fail a named check."
+    acceptance: "Every showcase page is generated from saved run records, every number links to its record, and a visitor can replay each step and see exactly which files that step's harness received."
+    evidence: "September 24, 2026, the owner asked for demonstrations of their publications on dedicated subdomains and for research on how to present them. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md. The run_history_export slot already names the trajectory_exporter engine kind with no engine; the Gemma 4 Developer Agent harness writes version 1.7 of Harbor's Agent Trajectory Interchange Format (Apache-2.0), whose viewer reads it."
+    next_local_work: "Declare the showcase run record, write the trajectory exporter against a saved overnight or data cleanup run, and render one page from it with its removed-guard controls."
+  - id: S-6.111
+    phase: 6
+    title: "The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page"
+    status: proposed
+    depends_on: [S-6.67, S-6.110]
+    boundary: [src/loop_engine/core/service_runtime/web_site_map.json, src/loop_engine/core/service_runtime/web_pages.py]
+    verify:
+      - "papers.baltor.ai lists each publication and repository with its source link, what Baltor shows for it and a run state of recorded, planned or not yet recorded"
+      - "the duecare, safety, recreate and media hostnames each serve their own page from the typed site map once their pilot record exists, and kaggle.baltor.ai serves the existing /demo/kaggle page, with domain name records, certificates and allowed hosts added by the releasing session"
+      - "each page states current behavior separately from planned runs and implies no award that its source does not show"
+      - "no page shows a harmful request, a response to one, attack content, competition data, private material, personal media or people"
+    adversarial: "A showcase hostname that serves the homepage or another page byte for byte, a card that claims a recorded run with no record, a page that implies a prize its source does not list, and a safety page holding a prompt from the red-team population must each fail a named check."
+    acceptance: "A visitor reaches each featured work of the owner on its own hostname and sees what Baltor did with it, or plainly that the run is not recorded yet."
+    evidence: "September 24, 2026, the owner: \"Dedicated subdomains for https://github.com/TaylorAmarelTech/gemma4_comp, https://github.com/TaylorAmarelTech/llm-safety-framework\" and the two Kaggle writeups, and later a dedicated subdomain for media work. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md. The Fly application holds eight certificates; the first ten single-hostname certificates are free and each further one costs 0.10 dollars a month."
+    next_local_work: "Add the papers index page and the showcase group to the typed site map with not-yet-recorded states, and hand the domain name records and certificates to the releasing session."
+  - id: S-6.112
+    phase: 6
+    title: "DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges"
+    status: proposed
+    depends_on: [S-6.110]
+    boundary: [case-studies, docs/research]
+    verify:
+      - "a design frozen before any counted call: the 25-item smoke set scored by DueCare's score_row, and 200 prompts sampled by category and difficulty from the 7,973 graded prompts, judged by the published three-judge panel on the published rubric"
+      - "arms: one call, DueCare's own pipeline and Baltor per step, where each step runs in a fresh harness with only its files, on the same model route"
+      - "every call counted against a declared ceiling, 900 for the moderation lane and 3,500 for the harness-lift lane, with a pilot first"
+      - "the page shows aggregate scores only for the harness-lift lane; prompt text and responses stay in the private run folder"
+    adversarial: "A comparison against the published July grades without re-grading every arm now, a judge from the subject model's family, a run past its ceiling, a mixed judge panel and a harness-lift prompt on a public page must each be refused by a named check."
+    acceptance: "duecare.baltor.ai shows a recorded per-step run with and without Baltor on DueCare's own scorer and judges, including a negative result if that is what the run shows."
+    evidence: "DueCare's CC BY 4.0 grades dataset holds 85,417 grade rows over 7,973 prompts, eight subject models, three judges and three arms. DueCare's benchmark scorer passed 8 of 8 tests on September 24, 2026 under Python 3.12. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Write and freeze the moderation lane design, then run its five-item pilot on Ollama Cloud after the weekly allowance resets."
+  - id: S-6.113
+    phase: 6
+    title: "The 2025 red-team finding tracked on current models, and the safety framework's checks repaired"
+    status: proposed
+    depends_on: [S-6.110]
+    boundary: [case-studies, docs/research]
+    verify:
+      - "the 55 published required elements of the five categories become a frozen checklist; current models are scored with and without a Baltor safety working directory by judges from other families, monthly"
+      - "the framework's continuous integration jobs are reproduced in containers, repaired by failure group in fresh harnesses and rerun, with no check weakened and no blanket ignore added"
+      - "the Python 3.11 syntax defect found on September 24, 2026 is fixed and the documented test counts are replaced by a measured count"
+      - "the page shows categories, required elements and pass, partial and fail counts only"
+    adversarial: "A repair that adds a blanket lint ignore or deletes a failing test, a prompt or response from the red-team population on the page, a required element judged by the subject model's family, and a pull request to the owner's repository without the owner's go-ahead must each be refused."
+    acceptance: "safety.baltor.ai shows whether the published failure patterns still occur on current models, what a served package changes, and the framework's checks before and after repair."
+    evidence: "The writeup received an Honorable Mention in the Overall Track (CC0, August 26, 2025); gpt-oss-20b failed 51 and partly met 4 of its 55 required elements. The framework's last three continuous integration runs failed on March 8, 12 and 13, 2026. On September 24, 2026 ruff 0.16.5 reported 3,230 findings, 2,540 automatically fixable, and two files needed Python 3.12 while the project declares 3.11. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Reproduce the framework's Linux jobs in containers on a local copy and group the failures, with no model call."
+  - id: S-6.114
+    phase: 6
+    title: "Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests"
+    status: proposed
+    depends_on: [S-6.110, S-6.44]
+    boundary: [case-studies, docs/research]
+    verify:
+      - "a frozen population of 24 MIT-licensed tools at pinned commits with 640 original tests, each test labelled as specified by the README or not before any model call"
+      - "arms: one harness session per tool and Baltor per step (plan, implement, own tests, repair) on gemma4:31b, with the Tactical server as a second route, and the original tests held out as the independent check"
+      - "a reuse population of ten downstream tasks compares rewriting a function with receiving the owner's package, measuring correctness, tokens, time and new lines of code"
+      - "calls counted against a 5,000-call ceiling with a three-tool pilot first"
+    adversarial: "A model that sees a hidden test, a tool created before the subject model was released, a pass rate that mixes specified and unspecified tests without saying so, and a reused package that has not passed independent admission must each be refused."
+    acceptance: "recreate.baltor.ai shows how much of each tool a small model rebuilds from its README with and without per-step material, and how much work reuse saves."
+    evidence: "On September 24, 2026 the 24 tools passed 640 of 640 original tests under Python 3.12; each carries an MIT licence file; each was created between June 23 and July 11, 2026, after Gemma 4 was released. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Pin the 24 commits, label the hidden tests, and run the three-tool pilot on the Tactical server."
+  - id: S-6.115
+    phase: 6
+    title: "Configuration search on the owner's entity resolution pipeline, scored by an exact metric"
+    status: proposed
+    depends_on: [S-6.110]
+    boundary: [case-studies, docs/research]
+    verify:
+      - "a labelled dataset with a recorded licence and a frozen split; bq-entity-resolution runs on its DuckDB backend with no cloud cost"
+      - "arms with the same 60-evaluation budget: the default quick configuration, random search and Baltor per-step proposals from a small model"
+      - "pairwise precision, recall and F1 on held-out pairs from a deterministic scorer"
+    adversarial: "A configuration tuned on the held-out pairs, an arm with more evaluations than the others and a dataset without a recorded licence must each be refused."
+    acceptance: "A page on the papers index shows each arm's search path and best configuration with its measured F1, and the limits of one dataset."
+    evidence: "The README describes a DuckDB backend for local testing and states 3,833 passing tests in its badge and 3,651 in its description; its dependency update runs succeeded through May 2026. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Choose the dataset, record its licence, then freeze the design."
+  - id: S-6.116
+    phase: 6
+    title: "media.baltor.ai: seeded short videos from the owner's media tools, made step by step"
+    status: proposed
+    depends_on: [S-6.110, S-6.111]
+    boundary: [case-studies, src/loop_engine/core/service_runtime/web_site_map.json]
+    verify:
+      - "the /media index lists the owner's MIT media tools, the media package family with each package's review state, and the reels and social posts pages"
+      - "/demo/reels shows a subject, a scene specification written by a small model, a deterministic render, a second render with the same seed that matches it, and the clip in each aspect ratio, with each step's working directory, time and calls"
+      - "every number in a clip comes from a saved record"
+      - "a weekly render of fixed seeds compares frame digests so that renders stay reproducible as Chromium, Playwright and ffmpeg change"
+      - "media pages use only public material or material these runs rendered; private files, client work, personal media and people never appear"
+    adversarial: "A clip whose number has no record, a second render that differs from the first without a recorded cause, and a page holding private, personal or third-party media must each fail a named check."
+    acceptance: "media.baltor.ai shows the owner's media tools making real clips step by step, each clip reproducible from its seed."
+    evidence: "September 24, 2026, the owner: \"I have some create content on this drive and external drives and historical projects related to image manipulation, video, media generation, social media, generation, etc that is often not covered by many public skills and harness files, we may want to have a dedicated subdomain to showcase some of this or dedicated pages\". Eighteen MIT media repositories passed 1,582 of 1,582 tests that day under Python 3.12. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Install a static ffmpeg in a folder under the home folder, freeze the M1 design, and render the two-clip pilot on the Tactical server."
+  - id: S-6.117
+    phase: 6
+    title: "Original first-party media packages from the owner's MIT tools, through the independent review"
+    status: proposed
+    depends_on: [S-6.40, S-6.63]
+    boundary: [tools/candidate_review, docs/research]
+    verify:
+      - "candidates drafted from MIT repositories only: a seeded explainer reel from a scene specification, recording a canvas or WebGL scene to MP4 with a fixed time step, a crop plan for social aspect ratios, a pan and zoom plan for a still image, a cut list to ffmpeg commands, a transcript to sectioned notes, posting cadence and duplicate checks for one account, and a media model chooser with commercial-use flags"
+      - "each candidate carries its source repository and commit, licence, declared effects (local files, a local browser and ffmpeg, no network), a test and digests, and stays a candidate until reviewers who did not write it approve it"
+      - "the posting package keeps only single-account cadence, duplicate and caption checks within each platform's rules"
+    adversarial: "A package derived from a repository without a licence, a package that posts or evades platform detection, a package that needs a network call it does not declare, and an approval by its own producer must each be refused."
+    acceptance: "The library serves reviewed media packages that the public collections scanned on September 24, 2026 did not offer."
+    evidence: "A keyword scan of github-radar's feed of 3,861 public agent extensions on September 24, 2026 found none for deterministic or seeded video rendering and none for still-image pan and zoom; Baltor's 43 served items included no media item. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Draft the eight candidates on the Tactical server and queue them for the review panel."
+  - id: S-6.118
+    phase: 6
+    title: "Baltor's own social posts, made step by step and approved by a person"
+    status: proposed
+    depends_on: [S-6.59, S-6.116]
+    boundary: [docs/guides/product-style-guide.md, case-studies]
+    verify:
+      - "each post comes from a saved record: script, scene specification, deterministic render, crop and caption, each a step with its own working directory"
+      - "checks before a person sees a draft: every fact traces to a record, the product style guide, a duplicate ledger and captions present"
+      - "a person approves and posts every item from the accounts the owner names in OWNER-19, and the post address is recorded"
+      - "engagement is recorded later as aggregate data only"
+    adversarial: "A post published without a person's approval, a number with no record, a repeat of an earlier post, and a clip with people, personal or third-party media must each be refused by a named check."
+    acceptance: "Baltor's first social posts are produced by its own steps and tools, each approved and posted by a person, and the case study shows how each one was made."
+    evidence: "September 24, 2026: the owner is opening social media profiles and asked whether the media work could power Baltor's own organic content. S-6.59 already requires a person to approve and post every reply. Research: docs/research/OWNER-PUBLICATIONS-AND-REPOSITORY-SHOWCASE-2026-09-24.md."
+    next_local_work: "Draft three posts from saved release and case study records once OWNER-19 names the accounts and the approving person."

@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24dcd95b62337d`.
+Source fingerprint: `sha256:f619835d83002092dbb5de663c53c61df17a5f82b3fe174698dbd3c38fb02c9f`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24
 |---|---:|
 | Being built now | 40 |
 | Can start next | 13 |
-| Waiting on earlier work | 78 |
+| Waiting on earlier work | 87 |
 | Blocked | 2 |
 | Done | 44 |
 
@@ -144,6 +144,15 @@ Source fingerprint: `sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24
 | S-6.96 | Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats | proposed | S-6.41 |
 | S-6.97 | The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator | proposed | S-6.41, S-6.58 |
 | S-6.98 | Consented run traces as training and evaluation examples | proposed | S-6.41 |
+| S-6.110 | Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger | proposed | S-6.37, S-6.44 |
+| S-6.111 | The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page | proposed | S-6.67, S-6.110 |
+| S-6.112 | DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges | proposed | S-6.110 |
+| S-6.113 | The 2025 red-team finding tracked on current models, and the safety framework's checks repaired | proposed | S-6.110 |
+| S-6.114 | Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests | proposed | S-6.110, S-6.44 |
+| S-6.115 | Configuration search on the owner's entity resolution pipeline, scored by an exact metric | proposed | S-6.110 |
+| S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
+| S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
+| S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

@@ -4,7 +4,7 @@
   "done": 44,
   "next": 13,
   "now": 40,
-  "waiting": 78
+  "waiting": 87
  },
  "lanes": {
   "blocked": [
@@ -2277,7 +2277,7 @@
      "S-6.44"
     ],
     "id": "S-6.90",
-    "next_local_work": "Resume the paused research run and write the entry plan.",
+    "next_local_work": "Download the competition data under the owner's accepted rules to a folder outside the repository, run the sample package on a frozen 20-task development subset, then add an Agent Development Kit submission profile to the Harness Working Directory Compiler.",
     "phase": 6,
     "status": "proposed",
     "title": "Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track",
@@ -2415,6 +2415,153 @@
     "title": "Consented run traces as training and evaluation examples",
     "waiting_on": [
      "S-6.41"
+    ]
+   },
+   {
+    "acceptance": "Every showcase page is generated from saved run records, every number links to its record, and a visitor can replay each step and see exactly which files that step's harness received.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.37",
+     "S-6.44"
+    ],
+    "id": "S-6.110",
+    "next_local_work": "Declare the showcase run record, write the trajectory exporter against a saved overnight or data cleanup run, and render one page from it with its removed-guard controls.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger",
+    "waiting_on": [
+     "S-6.37",
+     "S-6.44"
+    ]
+   },
+   {
+    "acceptance": "A visitor reaches each featured work of the owner on its own hostname and sees what Baltor did with it, or plainly that the run is not recorded yet.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67",
+     "S-6.110"
+    ],
+    "id": "S-6.111",
+    "next_local_work": "Add the papers index page and the showcase group to the typed site map with not-yet-recorded states, and hand the domain name records and certificates to the releasing session.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page",
+    "waiting_on": [
+     "S-6.67",
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "duecare.baltor.ai shows a recorded per-step run with and without Baltor on DueCare's own scorer and judges, including a negative result if that is what the run shows.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.112",
+    "next_local_work": "Write and freeze the moderation lane design, then run its five-item pilot on Ollama Cloud after the weekly allowance resets.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "safety.baltor.ai shows whether the published failure patterns still occur on current models, what a served package changes, and the framework's checks before and after repair.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.113",
+    "next_local_work": "Reproduce the framework's Linux jobs in containers on a local copy and group the failures, with no model call.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The 2025 red-team finding tracked on current models, and the safety framework's checks repaired",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "recreate.baltor.ai shows how much of each tool a small model rebuilds from its README with and without per-step material, and how much work reuse saves.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110",
+     "S-6.44"
+    ],
+    "id": "S-6.114",
+    "next_local_work": "Pin the 24 commits, label the hidden tests, and run the three-tool pilot on the Tactical server.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests",
+    "waiting_on": [
+     "S-6.110",
+     "S-6.44"
+    ]
+   },
+   {
+    "acceptance": "A page on the papers index shows each arm's search path and best configuration with its measured F1, and the limits of one dataset.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.115",
+    "next_local_work": "Choose the dataset, record its licence, then freeze the design.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Configuration search on the owner's entity resolution pipeline, scored by an exact metric",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "media.baltor.ai shows the owner's media tools making real clips step by step, each clip reproducible from its seed.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110",
+     "S-6.111"
+    ],
+    "id": "S-6.116",
+    "next_local_work": "Install a static ffmpeg in a folder under the home folder, freeze the M1 design, and render the two-clip pilot on the Tactical server.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "media.baltor.ai: seeded short videos from the owner's media tools, made step by step",
+    "waiting_on": [
+     "S-6.110",
+     "S-6.111"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed media packages that the public collections scanned on September 24, 2026 did not offer.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.63"
+    ],
+    "id": "S-6.117",
+    "next_local_work": "Draft the eight candidates on the Tactical server and queue them for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Original first-party media packages from the owner's MIT tools, through the independent review",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "Baltor's first social posts are produced by its own steps and tools, each approved and posted by a person, and the case study shows how each one was made.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.59",
+     "S-6.116"
+    ],
+    "id": "S-6.118",
+    "next_local_work": "Draft three posts from saved release and case study records once OWNER-19 names the accounts and the approving person.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Baltor's own social posts, made step by step and approved by a person",
+    "waiting_on": [
+     "S-6.59",
+     "S-6.116"
     ]
    },
    {
@@ -3900,5 +4047,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:dba1c9e4b2cb2f91581f6c6be4639a23768f54f14de06e3aaf24dcd95b62337d"
+ "source_fingerprint": "sha256:f619835d83002092dbb5de663c53c61df17a5f82b3fe174698dbd3c38fb02c9f"
 }
