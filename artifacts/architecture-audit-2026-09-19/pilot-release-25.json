@@ -1,0 +1,79 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 25,
+  "source_revision": "c93c201f7d7968380be5220f42e5c3edbbe7c104",
+  "continuous_integration_run": 36039453053,
+  "deployment_workflow_run": 36041898386,
+  "image_digest": "sha256:f129ea56bb45aa2eceea39b3e3b691299e87560fbd84c45e1226ed412e3e1d7b",
+  "deployed_at": "2026-09-24T18:34:32Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 24,
+  "rollback_image_digest": "sha256:e538318deef9ab06aeb34f591d2617aae7296879b0efdbaf72f54a69bdf1c7ab",
+  "rollback_note": "Release 24 reads the same host file. Remove any accounts.staff[].name field before a rollback, because release 24 refuses unknown staff fields; none was added.",
+  "changes": [
+    "superadmin sign-up links with optional free monthly Baltor Pro (S-6.99)",
+    "the confirmation page keeps Confirm disabled until its sign-in settings load",
+    "library inventory record and tool",
+    "persona journeys record"
+  ],
+  "failed_first_attempts": [
+    {
+      "run": 36037753573,
+      "file": "deploy-attempt-1-failed.json",
+      "why": "the runner timed out authenticating with registry.fly.io; nothing was pushed or deployed"
+    },
+    {
+      "run": 36038136103,
+      "why": "refused by the stale-revision guard after the inventory workflow pushed to main during the build; nothing was deployed"
+    },
+    {
+      "file": "browser-app.baltor.ai-attempt-1-timeout.json",
+      "why": "a 30-second page load timeout from this workstation to Fly's edge; the rerun passed 163 of 163"
+    }
+  ],
+  "host_file_changes": [
+    {
+      "backup": "/data/host.json.before-staff-add-20260924T221656Z",
+      "change": "added the checking account as a temporary superadmin for the live sign-up link and staff checks"
+    },
+    {
+      "backup": "/data/host.json.before-staff-remove-20260924T221932Z",
+      "change": "removed it again; two staff entries remain, both the owner's"
+    }
+  ],
+  "live_checks": {
+    "http_addresses_200": [
+      135,
+      135
+    ],
+    "hostnames": 9,
+    "same_capabilities": true,
+    "pi_extension_served_byte_for_byte": [
+      9,
+      9
+    ],
+    "hosted_browser_checks_per_hostname": [
+      163,
+      163
+    ],
+    "catalogue_with_homepage_digest_guard": [
+      7,
+      7
+    ],
+    "service": [
+      19,
+      19
+    ],
+    "live_sign_up_link_journey": [
+      14,
+      14
+    ],
+    "live_staff_dashboard": [
+      13,
+      13
+    ],
+    "physical_model_calls": 0
+  },
+  "founding_places": "0 of 10 used after the three persona test accounts and the checking accounts gave back their places and were switched off",
+  "evidence_folder": "artifacts/release-25-2026-09-24"
+}

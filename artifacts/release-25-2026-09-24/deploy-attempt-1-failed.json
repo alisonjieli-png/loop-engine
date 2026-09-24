@@ -1,0 +1,17 @@
+{
+  "record_type": "failed_deployment_attempt/v1",
+  "fly_release_target": 25,
+  "deployment_workflow_run": 36037753573,
+  "source_revision": "57ee086ab3e5c2eb821ce9cf367e7653242326da",
+  "continuous_integration_run": 36035311237,
+  "started_at": "2026-09-24T17:56:14Z",
+  "failed_step": "Publish and deploy the exact tested image",
+  "error": [
+    "2026-09-24T17:58:24.5495889Z Error: failed authenticating with registry.fly.io: Error response from daemon: Get \"https://registry.fly.io/v2/\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+    "2026-09-24T17:58:24.5526416Z ##[error]Process completed with exit code 1."
+  ],
+  "classification": "environment: the runner could not authenticate with registry.fly.io within its timeout; nothing was pushed or deployed, and release 24 kept serving",
+  "context": "Fly's status page reported a minor outage limited to its Sao Paulo region (state database issues, monitoring) at the time; the app runs in iad; the registry answered normally from this workstation minutes later",
+  "deploy_setting_after": false,
+  "successor_run": 36038136103
+}
