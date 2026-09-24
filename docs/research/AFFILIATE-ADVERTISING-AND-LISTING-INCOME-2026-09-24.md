@@ -808,3 +808,16 @@ GoDaddy affiliate programs (September 21, 2026), Spaceship affiliate program
 
 Related records: [business paths](BUSINESS-PATHS-2026-09-18.md) and
 [competitive landscape and monetization](COMPETITIVE-LANDSCAPE-AND-MONETIZATION-2026-09-18.md).
+
+## Later on September 24, 2026: the owner narrowed the question
+
+This section was added after the text above and changes none of it. The
+owner clarified that the question is only income that Baltor earns by
+referring its users to infrastructure and AI services, and that Baltor will
+not pay for downloads or pay affiliates of its own. The
+[successor record](INFRASTRUCTURE-AND-AI-SERVICE-REFERRAL-INCOME-2026-09-24.md)
+covers 64 named hosting, model serving, email, protocol server, database and
+observability services, ranks the programmes worth joining and names the
+directory rows each applies to. It withdraws this record's design for
+Baltor's own referral offer in favour of the free-month referral the owner
+approved.
