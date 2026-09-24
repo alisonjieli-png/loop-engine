@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:a5cc2fce5c5f660283699caddd21b781b7e377045730209168295fd21d635312`.
+Source fingerprint: `sha256:fdad924c5b2c7b9da71322c40120cbe42a60f0d3e96387501038904e4eb800a4`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 39 |
+| Being built now | 40 |
 | Can start next | 13 |
-| Waiting on earlier work | 67 |
+| Waiting on earlier work | 71 |
 | Blocked | 2 |
 | Done | 42 |
 
@@ -24,6 +24,7 @@ Source fingerprint: `sha256:a5cc2fce5c5f660283699caddd21b781b7e37704573020916829
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
 | S-6.67 | Serve every built page and hostname surface | building | S-6.33 |
 | S-6.65 | Open public registration with email-first sign-up | building | S-6.24, S-6.46 |
+| S-6.89 | Superadmin user management and the first 10 accounts free each month | building | S-6.85 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | building | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
@@ -132,6 +133,10 @@ Source fingerprint: `sha256:a5cc2fce5c5f660283699caddd21b781b7e37704573020916829
 | S-6.77 | Maintenance as Practitioner Loops that stage candidates for independent review | proposed | S-6.76, S-6.41 |
 | S-6.80 | Keep every Harness File Profile current with a verified weekly refresh | proposed | S-6.44, S-6.76 |
 | S-6.82 | News and release watchers that turn changes into component work | proposed | S-6.81 |
+| S-6.86 | Task decomposition as a functional component with several engines | proposed | S-6.30, S-6.74 |
+| S-6.87 | Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps | proposed | S-6.86 |
+| S-6.88 | Machine learning tools in the harness working directory, and when to use or train them | proposed | S-6.44, S-6.69 |
+| S-6.90 | Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track | proposed | S-6.44 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
@@ -195,12 +200,12 @@ Source fingerprint: `sha256:a5cc2fce5c5f660283699caddd21b781b7e37704573020916829
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 1 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
-| D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
+| D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 0 of 7 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 9 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 0 of 8 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
-| D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 7 |
+| D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |
 | D-30 | A release train for upgrades, features, packages and engines | public_launch | 0 of 4 |
 

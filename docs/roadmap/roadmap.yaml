@@ -900,7 +900,7 @@ continuation:
     - id: D-23
       title: Show, review, reach and scale
       stage: initial_service
-      steps: [S-6.55, S-6.56, S-6.57, S-6.59]
+      steps: [S-6.55, S-6.56, S-6.57, S-6.59, S-6.90]
       depends_on: [D-18]
       actions: [Run persona reviews from inside the company and from customer personas after every release., Build landing pages and demonstration pages by role with recorded runs., Measure today's machine and write the scale plan with triggers and costs., Find popular posts and draft replies that a person approves and posts.]
       acceptance: Every release has a persona review; visitors find a recorded demonstration for their role; the scale plan names the first split and its trigger; replies go out only with a person's approval.
@@ -960,7 +960,7 @@ continuation:
     - id: D-25
       title: "Go fully live: open registration and self-serve paid onboarding"
       stage: public_launch
-      steps: [S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46]
+      steps: [S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89]
       depends_on: [D-17, D-24]
       actions:
         - "Close the identity provider's back-door sign-up (OWNER-03, or the service-side guard), stage the sign-up secrets through standard input, and switch registration and email sign-up on."
@@ -982,7 +982,7 @@ continuation:
     - id: D-26
       title: "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day"
       stage: public_launch
-      steps: [S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.64]
+      steps: [S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.64, S-6.88]
       depends_on: [D-20, D-22]
       actions:
         - "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line."
@@ -1022,7 +1022,7 @@ continuation:
     - id: D-28
       title: "Selectable engines at every slot, with a Baltor-native engine beside every adopted project"
       stage: continued_improvement
-      steps: [S-6.74, S-6.75, S-6.30, S-6.31, S-6.32, S-6.44, S-6.52]
+      steps: [S-6.74, S-6.75, S-6.30, S-6.31, S-6.32, S-6.44, S-6.52, S-6.86, S-6.87]
       depends_on: [D-19, D-27]
       actions:
         - "Map pinned, preferred and automatic selection onto the slot fields and record every decision."
@@ -1387,8 +1387,8 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80]
@@ -1498,19 +1498,19 @@ continuation:
       continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -3273,3 +3273,73 @@ steps:
     acceptance: "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account."
     evidence: "September 23, 2026, the owner: \"We don't want weird orphaned ways of signing up, we want a complete fully working SaaS, we can have superadmin accounts, and developer accounts, and analytics accounts with various permissions that are hardcoded for internal staff but nothing else weird\"."
     next_local_work: "Inventory every current way in (provider sign-up, waiting list, invitations, operator-issued keys, operator entitlements, the pilot tenants), define the three staff roles and their permissions in code, and retire the rest behind the new sign-up."
+  - id: S-6.86
+    phase: 6
+    title: "Task decomposition as a functional component with several engines"
+    status: proposed
+    depends_on: [S-6.30, S-6.74]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/data/component_interactions.yaml]
+    verify:
+      - "one slot turns a task into a typed step graph: steps with inputs, outputs, acceptance, dependencies and the material each step asks for"
+      - "several engines sit behind that one contract: a model-led planner on a small model, a template engine that reuses a recorded solution graph, a rule engine for known task shapes, and a hierarchical planner, each passing the same contract test kit"
+      - "the engine that produced a graph, its inputs and its version are recorded, and graphs from different engines can be compared on the same task"
+    adversarial: "A graph with a cycle that has no declared loop condition, a step without acceptance, and an engine that answers outside the typed contract must each be refused by a named check."
+    acceptance: "Any task can be broken down by an engine chosen by pinned, preferred or automatic selection, and the breakdown is a typed graph that the executor can run."
+    evidence: "September 23, 2026, the owner: \"I think we need components that break a large task down into subcomponents and then components (functional components with numerous functional engines) that can add steps, or increase breadth and width and depth of the steps by adding more steps in ebtween steps, substeps, more advanced steps, etc, I feel like we haven't appropriately compartmentalized this as a fucntional component yet with multiple functional engines.\" None of the 45 engine slots covered it (state review of September 24)."
+    next_local_work: "Add the slot record, its request and result contract and the first two engines (model-led planner and recorded-graph template), with the contract test kit."
+  - id: S-6.87
+    phase: 6
+    title: "Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps"
+    status: proposed
+    depends_on: [S-6.86]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/data/component_interactions.yaml]
+    verify:
+      - "one slot takes a step graph and returns a larger graph: a step inserted between two steps, a step split into substeps, parallel alternatives that widen the graph, a nested graph that deepens a step, or an advanced step such as research, critique or verification"
+      - "several engines sit behind that contract (rule-based expanders, a model-led expander, and one that adds steps that earlier runs needed), and every expansion names what it added and why"
+      - "expansion never removes a step; a replaced step stays in the record as archived"
+    adversarial: "An expansion that drops a step, an added step without acceptance, and an expansion that exceeds the task's declared budget must each be refused."
+    acceptance: "A graph can grow in the ways the owner named, by an engine chosen at run time, and every growth is recorded and can be compared by outcome."
+    evidence: "September 23, 2026, the owner (quoted in S-6.86). The owner's rule of September 7 and 23: build out, never remove; archive instead of deleting."
+    next_local_work: "Add the slot record and two engines: insert-verification-steps and split-large-step, with the contract test kit."
+  - id: S-6.88
+    phase: 6
+    title: "Machine learning tools in the harness working directory, and when to use or train them"
+    status: proposed
+    depends_on: [S-6.44, S-6.69]
+    boundary: [src/loop_engine/data/engine_slots.yaml, tools/candidate_review]
+    verify:
+      - "the Harness Working Directory Compiler has one declared layout for machine learning tools: embeddings, classifiers, regression models and their data, with each file's placement per harness"
+      - "packages tell a step when to use or train a classifier, a typed-decision model, a regression model or another model instead of asking a large model, and when to generate synthetic data, each with a checklist and a test"
+      - "the typed decision slot and the model access slot remain the only way a step calls a model; a trained model is a candidate until an independent process qualifies it"
+    adversarial: "A package that trains a model without a held-out check, a trained model used before qualification, and synthetic data mixed into an evaluation set must each be refused by a named check."
+    acceptance: "A harness step can find, place and use the right small model or tool for a decision, or train one under a declared budget, from library packages."
+    evidence: "September 23, 2026, the owner: \"What about having dedicated folders in the harness for ML Tools, embeddings, classififers, regression models, etc as well as tools/files/harness components to inform the model under what situations it should use or train a classififer to make a decision, use or train something like jev, use or train other types of models, generate synthetic data, etc\"."
+    next_local_work: "Add the layout to the compiler's file profiles and a generation plan slice for decision-guidance packages in the next factory wave."
+  - id: S-6.89
+    phase: 6
+    title: "Superadmin user management and the first 10 accounts free each month"
+    status: building
+    depends_on: [S-6.85]
+    boundary: [src/loop_engine/core/service_runtime/http.py, src/loop_engine/core/service_runtime/web_assets/index.html]
+    verify:
+      - "the superadmin sees every account with its plan state and can grant or revoke free monthly Baltor Pro and disable or enable an account, each action recorded"
+      - "the first 10 accounts that complete Baltor's sign-up hold Baltor Pro free each month until revoked, and a race cannot exceed 10"
+      - "developer and analytics staff cannot change accounts or billing"
+    adversarial: "An eleventh free account, a grant by a non-superadmin, and an action without an audit record must each be refused by a named check."
+    acceptance: "The owner manages users from one dashboard, and the first 10 users can verify the product for free."
+    evidence: "September 23, 2026, the owner: \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status, etc\"."
+    next_local_work: "Merge the accounts release, apply its host configuration, release, and verify the dashboard and the founding offer live."
+  - id: S-6.90
+    phase: 6
+    title: "Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track"
+    status: proposed
+    depends_on: [S-6.44]
+    boundary: [docs/research]
+    verify:
+      - "the Harness Working Directory Compiler can emit a competition package (agent.yaml, prompts, sub-agents, skills) from library packages, validated against the competition's rules"
+      - "a paper-track plan names its research question, experiments and data, due November 12, 2026"
+      - "the work never delays the SaaS: it runs only when the launch packages have capacity"
+    adversarial: "A package that calls an outside service during scoring, a model other than the allowed variant, and a submission made without the owner's go-ahead must each be refused."
+    acceptance: "Baltor has a documented entry plan and a validated prototype package, and the public page offers entrants a starter kit only if the rules allow it."
+    evidence: "September 23, 2026, the owner asked how the project could be submitted to the Kaggle Gemma 4 Developer Agent Competition and Paper Track, then: \"Make sure that the kaggle research is a side project, our main project and goal is getting this fully working as a SaaS.\""
+    next_local_work: "Resume the paused research run and write the entry plan."

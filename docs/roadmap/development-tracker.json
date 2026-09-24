@@ -3,8 +3,8 @@
   "blocked": 2,
   "done": 42,
   "next": 13,
-  "now": 39,
-  "waiting": 67
+  "now": 40,
+  "waiting": 71
  },
  "lanes": {
   "blocked": [
@@ -842,6 +842,21 @@
     "waiting_on": [
      "S-6.24",
      "S-6.46"
+    ]
+   },
+   {
+    "acceptance": "The owner manages users from one dashboard, and the first 10 users can verify the product for free.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85"
+    ],
+    "id": "S-6.89",
+    "next_local_work": "Merge the accounts release, apply its host configuration, release, and verify the dashboard and the founding offer live.",
+    "phase": 6,
+    "status": "building",
+    "title": "Superadmin user management and the first 10 accounts free each month",
+    "waiting_on": [
+     "S-6.85"
     ]
    },
    {
@@ -2191,6 +2206,70 @@
     ]
    },
    {
+    "acceptance": "Any task can be broken down by an engine chosen by pinned, preferred or automatic selection, and the breakdown is a typed graph that the executor can run.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.74"
+    ],
+    "id": "S-6.86",
+    "next_local_work": "Add the slot record, its request and result contract and the first two engines (model-led planner and recorded-graph template), with the contract test kit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Task decomposition as a functional component with several engines",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.74"
+    ]
+   },
+   {
+    "acceptance": "A graph can grow in the ways the owner named, by an engine chosen at run time, and every growth is recorded and can be compared by outcome.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.86"
+    ],
+    "id": "S-6.87",
+    "next_local_work": "Add the slot record and two engines: insert-verification-steps and split-large-step, with the contract test kit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps",
+    "waiting_on": [
+     "S-6.86"
+    ]
+   },
+   {
+    "acceptance": "A harness step can find, place and use the right small model or tool for a decision, or train one under a declared budget, from library packages.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.69"
+    ],
+    "id": "S-6.88",
+    "next_local_work": "Add the layout to the compiler's file profiles and a generation plan slice for decision-guidance packages in the next factory wave.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Machine learning tools in the harness working directory, and when to use or train them",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.69"
+    ]
+   },
+   {
+    "acceptance": "Baltor has a documented entry plan and a validated prototype package, and the public page offers entrants a starter kit only if the rules allow it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44"
+    ],
+    "id": "S-6.90",
+    "next_local_work": "Resume the paused research run and write the entry plan.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track",
+    "waiting_on": [
+     "S-6.44"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -3440,16 +3519,17 @@
    "id": "D-23",
    "stage": "initial_service",
    "status_counts": {
-    "proposed": 4
+    "proposed": 5
    },
    "steps": [
     "S-6.55",
     "S-6.56",
     "S-6.57",
-    "S-6.59"
+    "S-6.59",
+    "S-6.90"
    ],
    "title": "Show, review, reach and scale",
-   "total_steps": 4
+   "total_steps": 5
   },
   {
    "acceptance": "A visitor leaves an address on a service that keeps a waiting list, an operator sees it, invites one entry with a discount the payment account holds, and can erase an address on request. A service without a waiting list makes no offer at all.",
@@ -3498,7 +3578,7 @@
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 2,
+    "building": 3,
     "proposed": 5
    },
    "steps": [
@@ -3508,10 +3588,11 @@
     "S-6.67",
     "S-6.68",
     "S-6.38",
-    "S-6.46"
+    "S-6.46",
+    "S-6.89"
    ],
    "title": "Go fully live: open registration and self-serve paid onboarding",
-   "total_steps": 7
+   "total_steps": 8
   },
   {
    "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
@@ -3531,7 +3612,7 @@
    "stage": "public_launch",
    "status_counts": {
     "building": 2,
-    "proposed": 7
+    "proposed": 8
    },
    "steps": [
     "S-6.69",
@@ -3542,10 +3623,11 @@
     "S-6.40",
     "S-6.62",
     "S-6.63",
-    "S-6.64"
+    "S-6.64",
+    "S-6.88"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 9
+   "total_steps": 10
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -3590,7 +3672,7 @@
    "stage": "continued_improvement",
    "status_counts": {
     "building": 2,
-    "proposed": 5
+    "proposed": 7
    },
    "steps": [
     "S-6.74",
@@ -3599,10 +3681,12 @@
     "S-6.31",
     "S-6.32",
     "S-6.44",
-    "S-6.52"
+    "S-6.52",
+    "S-6.86",
+    "S-6.87"
    ],
    "title": "Selectable engines at every slot, with a Baltor-native engine beside every adopted project",
-   "total_steps": 7
+   "total_steps": 9
   },
   {
    "acceptance": "The system is reviewed, researched, measured and grown on a schedule, and every change an agent proposes reaches main or the live service only through review.",
@@ -3665,5 +3749,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:a5cc2fce5c5f660283699caddd21b781b7e377045730209168295fd21d635312"
+ "source_fingerprint": "sha256:fdad924c5b2c7b9da71322c40120cbe42a60f0d3e96387501038904e4eb800a4"
 }
