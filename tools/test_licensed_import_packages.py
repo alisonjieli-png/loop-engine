@@ -156,6 +156,15 @@ class PackagingChecks(unittest.TestCase):
         built = _build({"skills/demo/SKILL.md": body}, {"LICENSE": support.MIT})
         self.assertIn("names_another_upstream_source", {row["rule"] for row in built.payload["findings"]})
 
+    def test_a_skill_named_differently_from_its_folder_is_reported_not_renamed(self):
+        body = support.skill("demo").decode().replace("name: demo", "name: another-name")
+        built = _build({"skills/demo/SKILL.md": body}, {"LICENSE": support.MIT})
+        self.assertIn("declared_name_differs_from_folder", {row["rule"] for row in built.payload["findings"]})
+        self.assertEqual((built.payload["name"], built.payload["declared_name"]), ("demo", "another-name"))
+        self.assertEqual(built.bodies[built.package.file("SKILL.md").digest].decode(), body)
+        same = _build({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": support.MIT})
+        self.assertNotIn("declared_name_differs_from_folder", {row["rule"] for row in same.payload["findings"]})
+
     def test_import_claims_only_the_evidence_states_it_establishes(self):
         built = _build({"skills/demo/SKILL.md": support.skill("demo")}, {"LICENSE": support.MIT})
         self.assertEqual(built.payload["evidence"], {"resolved": True, "materialized": True, "available": False,

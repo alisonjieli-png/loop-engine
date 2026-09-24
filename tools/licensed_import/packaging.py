@@ -32,8 +32,8 @@ from .checks import frontmatter_of
 from .harness_kinds import file_role, media_type, package_path, placements
 from .licensing import ATTRIBUTION_NAME, attribution_text, carried_placements
 from .records import (
-    ATTRIBUTION_FILE, CANDIDATE_LIFECYCLE, CANDIDATE_RECORD_TYPE, IMPORTED_VERBATIM, LICENCE_TEXT, UPSTREAM_FILE,
-    candidate_record_id, upstream_key)
+    ATTRIBUTION_FILE, CANDIDATE_LIFECYCLE, CANDIDATE_RECORD_TYPE, IMPORTED_VERBATIM, LICENCE_TEXT, SKILL,
+    UPSTREAM_FILE, candidate_record_id, upstream_key)
 
 _PACKAGE_CODES = {"package_path_invalid": "package_path_invalid", "package_path_duplicate": "package_path_invalid",
                   "package_file_too_large": "package_too_large", "package_too_large": "package_too_large",
@@ -133,6 +133,11 @@ def build_candidate(*, plan, repository: str, commit: str, fetched_at: str, memb
         raise PackageRefused("file_bytes_mismatch", error.code) from None
     front = frontmatter_of(primary_text)
     findings = list(findings) + another_source_cautions(front, repository, plan.primary)
+    declared = front.get("name")
+    if plan.kind == SKILL and isinstance(declared, str) and declared.strip() != plan.name:
+        # Reported, never renamed: the package keeps its upstream folder and bytes.
+        findings.append({"rule": "declared_name_differs_from_folder", "severity": "caution", "line": 0,
+                         "engine_id": "import_static_rules", "path": plan.primary})
     key = upstream_key(GITHUB_ORIGIN, repository, plan.root, plan.kind)
     record_id = candidate_record_id(plan.kind, key, package.package_digest)
     description = front.get("description") if isinstance(front.get("description"), str) else None

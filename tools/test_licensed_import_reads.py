@@ -54,6 +54,17 @@ class RequestShapeChecks(unittest.TestCase):
             with self.assertRaises(ReadRefused):
                 api.code_search("filename:SKILL.md", 11)
 
+    def test_a_repository_named_after_an_operation_word_is_read(self):
+        api = GitHubApi(ApiBudgets(RequestBudget(5), RequestBudget(5), RequestBudget(5)), RequestLog())
+        answer = b"HTTP/2.0 200 OK\nx-ratelimit-remaining: 4000\n\n{\"data\": {}}"
+        with mock.patch.object(github_api, "run", return_value=_result(answer)) as started:
+            api.graphql(metadata_query(["someone/subscription-tracker-mcp", "mutation-lab/skills"]))
+        self.assertEqual(started.call_count, 1)
+        for text in ('query { a } mutation { b }', 'query { r: repository(owner: "a", name: "b") } subscription { x }',
+                     'query { r: repository(owner: "a\\", name: "b") { x } }'):
+            with self.assertRaises(ReadRefused):
+                api.graphql(ReadQuery(text, "repository_metadata"))
+
     def test_templates_refuse_inexact_names_and_identities(self):
         self.assertEqual(metadata_query(["acme/tools"]).template, "repository_metadata")
         for names in (["acme"], ["a/b/c"], ["-bad/x"], [f"o/r{index}" for index in range(101)]):

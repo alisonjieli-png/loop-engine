@@ -56,6 +56,14 @@ def _append(path: Path, rows) -> None:
             stream.write(json.dumps(row, sort_keys=True) + "\n")
 
 
+def _rewrite(path: Path, rows) -> None:
+    temporary = path.with_name(path.name + ".partial")
+    with temporary.open("w", encoding="utf-8") as stream:
+        for row in rows:
+            stream.write(json.dumps(row, sort_keys=True) + "\n")
+    temporary.replace(path)
+
+
 def _read_jsonl(path: Path) -> list:
     if not path.is_file():
         return []
@@ -173,7 +181,7 @@ def sync(args) -> dict:
         plans = {plan.repository.lower(): plan for plan in keep[:args.max_repositories]}
     api = _api(run_folder, args.maximum_pause_seconds)
     started = time.monotonic()
-    metadata_refusals = resolve_metadata(plans, api)
+    metadata_refusals = resolve_metadata(plans, api, run_folder / "metadata.jsonl")
     metadata_seconds = round(time.monotonic() - started, 1)
     store = ImportStore(Path(args.store_root), writes_authorized=True)
     engines = [GitPartialClone(run_folder / "work", log_path=run_folder / "git-fetches.jsonl")]
@@ -202,15 +210,16 @@ def sync(args) -> dict:
     started_scan = time.monotonic()
     scan_refusals = round_.batch_scan(resolution, candidates)
     scan_seconds = round(time.monotonic() - started_scan, 1)
-    _append(run_folder / "batch-scan-refusals.jsonl", scan_refusals)
+    _rewrite(run_folder / "batch-scan-refusals.jsonl", scan_refusals)
     started_write = time.monotonic()
     written = round_.write(outcomes, resolution, candidates)
     write_seconds = round(time.monotonic() - started_write, 1)
-    _append(run_folder / "duplicates.jsonl", resolution.links)
-    _append(run_folder / "restricted-copies.jsonl", restricted_refusals(resolution, candidates))
-    _append(run_folder / "metadata-refusals.jsonl", metadata_refusals)
+    # Recomputed over every outcome of the round, so a restarted round rewrites them.
+    _rewrite(run_folder / "duplicates.jsonl", resolution.links)
+    _rewrite(run_folder / "restricted-copies.jsonl", restricted_refusals(resolution, candidates))
+    _rewrite(run_folder / "metadata-refusals.jsonl", metadata_refusals)
     summary = {"record_type": "licensed_import_sync_summary/v1", "finished_at": now_utc(),
-               "repositories_planned": len(plans), "metadata_seconds": metadata_seconds, "reading": reading,
+               "workers": args.workers, "repositories_planned": len(plans), "metadata_seconds": metadata_seconds, "reading": reading,
                "dedup_seconds": dedup_seconds, "batch_scan_seconds": scan_seconds,
                "batch_scan_refusals": len(scan_refusals), "write_seconds": write_seconds, "written": written,
                "kept": len(resolution.kept), "merged": len(resolution.merged_into),
@@ -227,7 +236,8 @@ def sync(args) -> dict:
 
 
 def report(args) -> dict:
-    result = build_report(Path(args.run_folder).resolve(), Path(args.store_root).resolve(), Path(args.output).resolve())
+    result = build_report(Path(args.run_folder).resolve(), Path(args.store_root).resolve(), Path(args.output).resolve(),
+                          workers=args.workers)
     print(json.dumps(result["headline"], indent=1, sort_keys=True))
     return result
 
@@ -269,6 +279,7 @@ def parser() -> argparse.ArgumentParser:
     three.add_argument("--run-folder", required=True)
     three.add_argument("--store-root", required=True)
     three.add_argument("--output", required=True)
+    three.add_argument("--workers", type=int, default=8, help="the parallel workers the sync ran with")
     return main
 
 

@@ -18,7 +18,7 @@ from pathlib import Path
 from loop_engine.catalog.query import IntelligenceQuery
 from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore
 
-from .records import CANDIDATE_LIFECYCLE, IDEA_LIFECYCLE, READ_STATE, REPORT_RECORD_TYPE, UPSTREAM_FILE
+from .records import CANDIDATE_LIFECYCLE, IDEA_LIFECYCLE, READ_STATE, REPORT_RECORD_TYPE, SKILL, UPSTREAM_FILE
 
 HOUR = 3600.0
 TARGET = 1_000_000
@@ -39,7 +39,56 @@ def _latest(folder: Path, prefix: str) -> list:
     return [json.loads(path.read_text(encoding="utf-8")) for path in sorted(folder.glob(f"{prefix}*.json"))]
 
 
-def build_report(run_folder: Path, store_root: Path, output: Path) -> dict:
+def per_source_rates(kept, outcomes, leads, discovery_reports, workers: int) -> dict:
+    """Yield and rate per source: each repository counts once, for its best source.
+
+    A repository found by several sources is credited to the one processed
+    first (the declared order of the discovery engines). Its reading time is
+    the sum of its jobs' elapsed seconds divided by the parallel workers, and
+    the source's discovery time is added, so the rate is licence-cleared,
+    deduplicated upstream files per hour of the round's own time.
+    """
+    from .discovery import SOURCE_PRIORITY
+    engines_of = defaultdict(set)
+    for row in leads:
+        engines_of[row["repository"].lower()].add(row["engine_id"])
+    first = {name: min(found, key=lambda engine: SOURCE_PRIORITY.get(engine, 99))
+             for name, found in engines_of.items()}
+    rows = defaultdict(lambda: {"repositories": 0, "repositories_read": 0, "candidates": 0, "upstream_files": 0,
+                                "reading_seconds": 0.0, "discovery_seconds": 0.0, "discovery_requests": 0})
+    for name, engine in first.items():
+        rows[engine]["repositories"] += 1
+    for outcome in outcomes:
+        engine = first.get(outcome["repository"].lower())
+        if engine is None:
+            continue
+        if outcome["state"] == READ_STATE:
+            rows[engine]["repositories_read"] += 1
+        rows[engine]["reading_seconds"] += float(outcome.get("elapsed_seconds") or 0.0)
+    seen = set()
+    for payload in kept:
+        engine = first.get(payload["provenance"]["repository"].lower())
+        if engine is None:
+            continue
+        rows[engine]["candidates"] += 1
+        for entry in payload["files"]:
+            if entry["origin"] == UPSTREAM_FILE and entry["digest"] not in seen:
+                seen.add(entry["digest"])
+                rows[engine]["upstream_files"] += 1
+    for report in discovery_reports:
+        for engine, facts in report["engines"].items():
+            rows[engine]["discovery_seconds"] += float(facts.get("seconds") or 0.0)
+            rows[engine]["discovery_requests"] += int(facts.get("requests") or 0)
+    result = {}
+    for engine, row in sorted(rows.items(), key=lambda item: SOURCE_PRIORITY.get(item[0], 99)):
+        hours = (row["discovery_seconds"] + row["reading_seconds"] / max(1, workers)) / HOUR
+        result[engine] = {**row, "reading_seconds": round(row["reading_seconds"], 1),
+                          "discovery_seconds": round(row["discovery_seconds"], 1),
+                          "files_per_hour": round(row["upstream_files"] / hours, 1) if hours else None}
+    return result
+
+
+def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: int = 8) -> dict:
     """Write the evidence files of one round and return the batch report."""
     output.mkdir(parents=True, exist_ok=True)
     store = SQLiteRecordStore(str(store_root / "records.db"), read_only=True)
@@ -66,7 +115,7 @@ def build_report(run_folder: Path, store_root: Path, output: Path) -> dict:
         lead_sources[row["repository"].lower()].add(row["engine_id"])
     by_engine = Counter()
     first_engine = Counter()
-    from .discovery import SOURCE_PRIORITY
+    from .discovery import SOURCE_PRIORITY  # noqa: F811
     for payload in kept:
         engines = lead_sources.get(payload["provenance"]["repository"].lower(), set())
         for engine in engines:
@@ -84,10 +133,14 @@ def build_report(run_folder: Path, store_root: Path, output: Path) -> dict:
     discovery_seconds = sum(engine.get("seconds", 0) for report in discovery_reports
                             for engine in report["engines"].values())
     sync_seconds = sum(summary.get("metadata_seconds", 0) + summary.get("dedup_seconds", 0)
-                       + summary.get("write_seconds", 0) for summary in sync_summaries) + reading_seconds
+                       + summary.get("batch_scan_seconds", 0) + summary.get("write_seconds", 0)
+                       for summary in sync_summaries) + reading_seconds
     elapsed = discovery_seconds + sync_seconds
     read_repositories = sum(1 for outcome in outcomes if outcome["state"] == READ_STATE)
     per_hour = len(kept) / (elapsed / HOUR) if elapsed else 0.0
+    unique_upstream = len({entry["digest"] for payload in kept for entry in payload["files"]
+                           if entry["origin"] == UPSTREAM_FILE})
+    files_per_hour = unique_upstream / (elapsed / HOUR) if elapsed else 0.0
     store_size = _store_size(store_root)
     bytes_per_file = store_size["bodies"]["bytes"] / store_size["bodies"]["files"] if store_size["bodies"]["files"] else 0
     headline = {
@@ -96,15 +149,21 @@ def build_report(run_folder: Path, store_root: Path, output: Path) -> dict:
         "idea_records": len(ideas), "refusals": len(refusals), "duplicates_removed": len(duplicates),
         "repositories_read": read_repositories, "repositories_with_candidates":
             len({payload["provenance"]["repository"].lower() for payload in kept}),
+        "unique_upstream_files": unique_upstream,
         "elapsed_seconds": round(elapsed, 1), "candidates_per_hour": round(per_hour, 1),
-        "hours_to_one_million_at_this_rate": round(TARGET / per_hour, 1) if per_hour else None}
+        "unique_upstream_files_per_hour": round(files_per_hour, 1),
+        "hours_to_one_million_files_at_this_rate": round(TARGET / files_per_hour, 1) if files_per_hour else None}
     report = {
         "record_type": REPORT_RECORD_TYPE, "run_folder": run_folder.name, "headline": headline,
         "kinds": dict(Counter(payload["kind"] for payload in kept).most_common()),
         "licences": dict(Counter(payload["licence"]["spdx_expression"] for payload in kept).most_common()),
         "declared_effects": dict(Counter(effect for payload in kept for effect in payload["declared_effects"])),
         "caution_findings": dict(Counter(finding["rule"] for payload in kept for finding in payload["findings"])),
+        "skills_whose_declared_name_differs_from_folder": sum(
+            1 for payload in kept if payload["kind"] == SKILL and isinstance(payload.get("declared_name"), str)
+            and payload["declared_name"].strip() != payload["name"]),
         "yield_by_first_source": dict(first_engine.most_common()),
+        "rates_by_source": per_source_rates(kept, outcomes, leads, discovery_reports, workers),
         "yield_found_by_source": dict(by_engine.most_common()),
         "leads_by_source": dict(Counter(row["engine_id"] for row in leads).most_common()),
         "repositories_by_source": {engine: len({row["repository"].lower() for row in leads

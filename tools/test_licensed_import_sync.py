@@ -165,6 +165,27 @@ class SyncChecks(unittest.TestCase):
         reasons = sorted(row["payload"]["reason"] for row in self._records("withdrawal"))
         self.assertEqual(reasons, ["licence_changed", "licence_changed", "upstream_deleted"])
 
+    def test_the_report_counts_the_store_and_keeps_no_third_party_text(self):
+        import json
+        from licensed_import.report import build_report
+        _engine, sync, *_rest = self._round("one", REPOSITORIES, LICENCES)
+        with (sync.run_folder / "leads.jsonl").open("w", encoding="utf-8") as stream:
+            for row in _leads():
+                stream.write(json.dumps(row) + "\n")
+        output = self.folder / "evidence"
+        report = build_report(sync.run_folder, self.store.root, output, workers=2)
+        self.assertEqual(report["headline"]["candidates_kept"], 2)
+        self.assertEqual(report["headline"]["idea_records"], 2)
+        self.assertEqual(report["kinds"], {"skill": 1, "subagent": 1})
+        self.assertEqual(set(report["rates_by_source"]), {"declared_repositories", "github_code_search",
+                                                          "awesome_lists"})
+        self.assertEqual(report["rates_by_source"]["declared_repositories"]["candidates"], 2)
+        index = (output / "candidate-index.jsonl").read_text(encoding="utf-8")
+        self.assertEqual(len(index.splitlines()), 2)
+        for fragment in ("Compare the row counts", "You review one change", "Permission is hereby granted"):
+            self.assertNotIn(fragment, index)
+            self.assertNotIn(fragment, (output / "batch-report.json").read_text(encoding="utf-8"))
+
     def test_a_failed_metadata_read_is_retried_and_split_never_refusing_the_whole_batch(self):
         class Flaky(support.FakeApi):
             def __init__(self, repositories, broken):
@@ -184,6 +205,19 @@ class SyncChecks(unittest.TestCase):
         refusals = resolve_metadata(plans, api)
         self.assertEqual([row["repository"] for row in refusals], ["o/r3"])
         self.assertTrue(all(plans[f"o/r{index}"].metadata.get("head") for index in (0, 1, 2, 4, 5)))
+
+    def test_resolved_metadata_is_cached_and_not_read_again(self):
+        repositories = {f"o/r{index}": {"commit": "1" * 40, "licence": "MIT"} for index in range(3)}
+        cache = self.folder / "metadata.jsonl"
+        first = support.FakeApi(repositories)
+        plans = plan_repositories([lead("x", DECLARED, name) for name in repositories], {})
+        resolve_metadata(plans, first, cache)
+        self.assertEqual(len(first.calls), 1)
+        again = support.FakeApi({})
+        plans = plan_repositories([lead("x", DECLARED, name) for name in repositories], {})
+        refusals = resolve_metadata(plans, again, cache)
+        self.assertEqual((again.calls, refusals), ([], []))
+        self.assertEqual({plan.metadata["head"] for plan in plans.values()}, {"1" * 40})
 
     def test_removed_guard_without_the_licence_gate_the_gpl_skill_would_be_copied(self):
         from unittest import mock

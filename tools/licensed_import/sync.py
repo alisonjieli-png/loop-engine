@@ -44,7 +44,7 @@ from loop_engine.core.library_ingestion.record_rules import now_utc
 from .checks import blocking_rules, package_cautions, package_effects
 from .dedup import BATCH, DuplicateIndex, Subject, owner_of
 from .discovery import SOURCE_PRIORITY
-from .github_api import MAXIMUM_BATCH, metadata_query
+from .github_api import MAXIMUM_BATCH, ReadRefused, metadata_query
 from .harness_kinds import BLOB_TYPE, SourceScope, ancestors_licence_paths, file_role, licence_paths, plan_packages
 from .licensing import decide_package
 from .packaging import PackageRefused, build_candidate, comparison_text, fetch_identity
@@ -160,18 +160,59 @@ def plan_repositories(leads, declared_scopes: dict, excluded=frozenset()) -> dic
     return plans
 
 
-def resolve_metadata(plans: dict, api) -> list:
-    """GraphQL metadata for every planned repository, 100 to a read; returns refusals for the missing."""
+def _facts(facts: dict, plan: RepositoryPlan) -> dict:
+    return {"declared_excluded": plan.metadata.get("declared_excluded", False),
+            "name": facts["nameWithOwner"], "fork": facts["isFork"], "archived": facts["isArchived"],
+            "private": facts["isPrivate"], "empty": facts["isEmpty"], "stars": facts["stargazerCount"],
+            "disk_kb": facts["diskUsage"], "pushed_at": facts["pushedAt"],
+            "licence": (facts.get("licenseInfo") or {}).get("spdxId"),
+            "head": (((facts.get("defaultBranchRef") or {}).get("target")) or {}).get("oid"),
+            "parent": (facts.get("parent") or {}).get("nameWithOwner")}
+
+
+def resolve_metadata(plans: dict, api, cache_path: "Path | None" = None) -> list:
+    """GraphQL metadata for every planned repository, 100 to a read; refusals for the missing.
+
+    Each resolved chunk is appended to the run's metadata cache, so a round
+    that stops restarts without reading those repositories' metadata again.
+    A whole read that fails is read again once, then in halves; a read the
+    request shapes refuse is split down to one repository, and only that
+    repository is refused.
+    """
     refusals = []
-    keys = sorted(plans)
+    cached = {}
+    if cache_path is not None and Path(cache_path).is_file():
+        for line in Path(cache_path).read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                row = json.loads(line)
+                cached[row["key"]] = row["facts"]
+    keys = sorted(key for key in plans if key not in cached)
+    for key, facts in cached.items():
+        if key in plans:
+            plans[key].metadata = ({**facts, "declared_excluded": plans[key].metadata.get("declared_excluded", False)}
+                                   if facts else {"unavailable": True,
+                                                  "declared_excluded": plans[key].metadata.get("declared_excluded", False)})
+            if facts:
+                plans[key].stars = max(plans[key].stars, facts.get("stars") or 0)
+            else:
+                refusals.append(refusal("repository", "repository_unavailable", repository=plans[key].repository,
+                                        source_ids=plans[key].sources))
     pending = [keys[start:start + MAXIMUM_BATCH] for start in range(0, len(keys), MAXIMUM_BATCH)]
     while pending:
         chunk = pending.pop(0)
-        answer = api.graphql(metadata_query([plans[key].repository for key in chunk]))
+        try:
+            answer = api.graphql(metadata_query([plans[key].repository for key in chunk]))
+        except ReadRefused:
+            if len(chunk) > 1:
+                middle = len(chunk) // 2
+                pending[:0] = [chunk[:middle], chunk[middle:]]
+                continue
+            answer = {"status": None, "body": None}
         if answer.get("status") != 200 or not isinstance((answer.get("body") or {}).get("data"), dict):
             # A whole read failed (a timeout or a server error): read it again once, then in halves,
             # so one bad read never marks a hundred repositories unavailable.
-            retried = api.graphql(metadata_query([plans[key].repository for key in chunk]))
+            retried = api.graphql(metadata_query([plans[key].repository for key in chunk])) \
+                if answer.get("status") is not None else answer
             if retried.get("status") == 200 and isinstance((retried.get("body") or {}).get("data"), dict):
                 answer = retried
             elif len(chunk) > 1:
@@ -179,6 +220,7 @@ def resolve_metadata(plans: dict, api) -> list:
                 pending[:0] = [chunk[:middle], chunk[middle:]]
                 continue
         data = ((answer.get("body") or {}).get("data")) or {}
+        rows = []
         for index, key in enumerate(chunk):
             facts = data.get(f"r{index}")
             if not facts:
@@ -186,16 +228,16 @@ def resolve_metadata(plans: dict, api) -> list:
                                        "declared_excluded": plans[key].metadata.get("declared_excluded", False)}
                 refusals.append(refusal("repository", "repository_unavailable", repository=plans[key].repository,
                                         source_ids=plans[key].sources))
+                rows.append({"key": key, "facts": None})
                 continue
-            plans[key].metadata = {
-                "declared_excluded": plans[key].metadata.get("declared_excluded", False),
-                "name": facts["nameWithOwner"], "fork": facts["isFork"], "archived": facts["isArchived"],
-                "private": facts["isPrivate"], "empty": facts["isEmpty"], "stars": facts["stargazerCount"],
-                "disk_kb": facts["diskUsage"], "pushed_at": facts["pushedAt"],
-                "licence": (facts.get("licenseInfo") or {}).get("spdxId"),
-                "head": (((facts.get("defaultBranchRef") or {}).get("target")) or {}).get("oid"),
-                "parent": (facts.get("parent") or {}).get("nameWithOwner")}
+            plans[key].metadata = _facts(facts, plans[key])
             plans[key].stars = max(plans[key].stars, facts["stargazerCount"] or 0)
+            rows.append({"key": key, "facts": {name: value for name, value in plans[key].metadata.items()
+                                               if name != "declared_excluded"}})
+        if cache_path is not None:
+            with Path(cache_path).open("a", encoding="utf-8") as stream:
+                for row in rows:
+                    stream.write(json.dumps(row, sort_keys=True) + "\n")
     return refusals
 
 

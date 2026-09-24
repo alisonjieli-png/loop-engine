@@ -49,6 +49,7 @@ PAGE_SIZE = 100
 MAXIMUM_BATCH = 100
 CODE_SEARCH, SEARCH, GRAPHQL = "code_search", "search", "graphql"
 _FORBIDDEN_OPERATIONS = re.compile(r"\b(?:mutation|subscription)\b", re.I)
+_QUOTED = re.compile(r'"[^"\\]*"')
 _METADATA_FIELDS = ("nameWithOwner isFork isArchived isPrivate isEmpty stargazerCount diskUsage pushedAt "
                     "licenseInfo { spdxId } defaultBranchRef { name target { oid } } parent { nameWithOwner }")
 _BLOB_FIELDS = "... on Blob { oid byteSize isBinary isTruncated text }"
@@ -112,7 +113,10 @@ def blob_query(repository: str, oids) -> ReadQuery:
 def _check_read_query(query) -> str:
     if not isinstance(query, ReadQuery) or query.template not in ("repository_metadata", "blob_text"):
         raise ReadRefused("GraphQL is read only through this module's templates")
-    if not query.text.startswith("query {") or _FORBIDDEN_OPERATIONS.search(query.text):
+    # Repository names and object identities sit inside quotes, and a name may contain the
+    # word "subscription"; the operation words are looked for only outside quoted strings.
+    unquoted = _QUOTED.sub('""', query.text)
+    if not query.text.startswith("query {") or _FORBIDDEN_OPERATIONS.search(unquoted) or '"' in _QUOTED.sub("", query.text):
         raise ReadRefused("a GraphQL read is a query and never a mutation or a subscription")
     return query.text
 
