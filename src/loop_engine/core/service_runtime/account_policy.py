@@ -14,8 +14,10 @@ role for a service key, and no request can grant one.
 ```text
 Staff roles
 ├── superadmin: every administration permission
-├── developer: service diagnostics only; no account or billing change
-└── analytics: account counts and usage counts only; no personal detail
+├── developer: service diagnostics, the activity record and the catalogue
+│   view only; no account, billing or catalogue change
+└── analytics: account, usage and activity counts and the catalogue view
+    only; no address and no other personal detail
 ```
 
 The same block holds the number of founding accounts: the first accounts
@@ -40,6 +42,19 @@ ACCOUNTS_LIST = "accounts.list"
 ACCOUNT_COUNTS = "accounts.counts"
 USAGE_COUNTS = "usage.counts"
 SERVICE_DIAGNOSTICS = "service.diagnostics"
+#: The staff tools, owner request of September 24, 2026: the protocol endpoint
+#: `/admin/mcp` and the routes under `/api/v1/admin/tools/` (`staff_tools.py`).
+#: Addresses need `accounts.search` or `accounts.read`; analytics reads counts.
+#: Sign-up links from the tools need `accounts.send_sign_up_links`, below.
+ACCOUNTS_SEARCH, ACCOUNTS_READ = "accounts.search", "accounts.read"
+CREDITS_GRANT, CREDITS_REVOKE, MESSAGES_SEND = "credits.grant", "credits.revoke", "messages.send"
+ACTIVITY_READ, ACTIVITY_COUNTS, CATALOGUE_READ = "activity.read", "activity.counts", "catalogue.read"
+CATALOGUE_PUBLISH, CATALOGUE_ROLLBACK, CATALOGUE_WITHDRAW = (
+    "catalogue.publish", "catalogue.rollback", "catalogue.withdraw")
+STAFF_KEYS_MANAGE = "staff_keys.manage"
+STAFF_TOOL_PERMISSIONS = (ACCOUNTS_SEARCH, ACCOUNTS_READ, CREDITS_GRANT, CREDITS_REVOKE,
+                          MESSAGES_SEND, ACTIVITY_READ, ACTIVITY_COUNTS, CATALOGUE_READ, CATALOGUE_PUBLISH,
+                          CATALOGUE_ROLLBACK, CATALOGUE_WITHDRAW, STAFF_KEYS_MANAGE)
 GRANT_FREE_MONTHLY = "accounts.grant_free_monthly"
 REVOKE_FREE_MONTHLY = "accounts.revoke_free_monthly"
 DISABLE_ACCOUNT = "accounts.disable"
@@ -50,9 +65,9 @@ PERMISSIONS = (ACCOUNTS_LIST, ACCOUNT_COUNTS, USAGE_COUNTS, SERVICE_DIAGNOSTICS,
                GRANT_FREE_MONTHLY, REVOKE_FREE_MONTHLY, DISABLE_ACCOUNT, ENABLE_ACCOUNT, SEND_SIGN_UP_LINKS)
 #: What each role may do. This table is the only source of a permission.
 ROLE_PERMISSIONS = MappingProxyType({
-    SUPERADMIN: frozenset(PERMISSIONS),
-    DEVELOPER: frozenset({SERVICE_DIAGNOSTICS}),
-    ANALYTICS: frozenset({ACCOUNT_COUNTS, USAGE_COUNTS}),
+    SUPERADMIN: frozenset(PERMISSIONS + STAFF_TOOL_PERMISSIONS),
+    DEVELOPER: frozenset({SERVICE_DIAGNOSTICS, ACTIVITY_READ, CATALOGUE_READ}),
+    ANALYTICS: frozenset({ACCOUNT_COUNTS, USAGE_COUNTS, ACTIVITY_COUNTS, CATALOGUE_READ}),
 })
 #: The operation a superadmin names on the wire, and the permission it needs.
 ACTION_PERMISSIONS = MappingProxyType({

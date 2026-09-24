@@ -19,8 +19,9 @@ from .account_administration import AUDIT, AccountAdministration, AccountAdminis
 from .account_email import ProviderAnswer
 from .account_origin import AccountOrigins, SupabaseIdentityAdministration, USERS_PATH
 from .account_origin_checks import mutated, signed_identity
-from .account_policy import (ACCOUNT_COUNTS, ANALYTICS, DEVELOPER, PERMISSIONS, ROLE_PERMISSIONS, SERVICE_DIAGNOSTICS,
-                             SUPERADMIN, USAGE_COUNTS, ServiceAccountPolicy, permissions_for)
+from .account_policy import (ACCOUNT_COUNTS, ACTIVITY_COUNTS, ACTIVITY_READ, ANALYTICS, CATALOGUE_READ, DEVELOPER,
+                             PERMISSIONS, ROLE_PERMISSIONS, SERVICE_DIAGNOSTICS, STAFF_TOOL_PERMISSIONS, SUPERADMIN,
+                             USAGE_COUNTS, ServiceAccountPolicy, permissions_for)
 from .free_monthly import (ACCESS_HELD, FOUNDING, FOUNDING_FREE_MONTHLY, GRANTED, LIMIT_REACHED,
                            consider_founding_offer, founding_holders, next_month, renew_free_monthly)
 from .records import ServiceRuntimeError
@@ -40,9 +41,9 @@ def _code(function):
 
 def _role_checks(check):
     check("staff_role_permissions_are_the_table_in_code",
-          ROLE_PERMISSIONS[SUPERADMIN] == frozenset(PERMISSIONS)
-          and ROLE_PERMISSIONS[DEVELOPER] == frozenset({SERVICE_DIAGNOSTICS})
-          and ROLE_PERMISSIONS[ANALYTICS] == frozenset({ACCOUNT_COUNTS, USAGE_COUNTS})
+          ROLE_PERMISSIONS[SUPERADMIN] == frozenset(PERMISSIONS + STAFF_TOOL_PERMISSIONS)
+          and ROLE_PERMISSIONS[DEVELOPER] == frozenset({SERVICE_DIAGNOSTICS, ACTIVITY_READ, CATALOGUE_READ})
+          and ROLE_PERMISSIONS[ANALYTICS] == frozenset({ACCOUNT_COUNTS, USAGE_COUNTS, ACTIVITY_COUNTS, CATALOGUE_READ})
           and set(ROLE_PERMISSIONS) == {SUPERADMIN, DEVELOPER, ANALYTICS}
           and permissions_for("owner") == frozenset() and permissions_for("") == frozenset())
     policy = ServiceAccountPolicy(staff=({"role": SUPERADMIN, "email": "Owner@Example.com"},))

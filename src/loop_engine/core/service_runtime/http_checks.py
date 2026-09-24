@@ -107,6 +107,13 @@ def _web_checks(check, root):
             answered = set(_re.findall(r'path == "(/[^"]+)"', source))
             for group in _re.findall(r'path in \(([^)]*)\)', source):
                 answered.update(_re.findall(r'"(/[^"]+)"', group))
+            # A route table the router names, such as the staff tool routes:
+            # `path in NAME` answers every address NAME holds. The table the
+            # router reads first can never count as its own branches.
+            for name in _re.findall(r'path in ([A-Z][A-Z_]+)\b', source):
+                table = getattr(_http, name, None)
+                if name != "API_ROUTES" and isinstance(table, (dict, tuple, frozenset)):
+                    answered.update(value for value in table if isinstance(value, str) and value.startswith("/api/"))
             for name, value in vars(_http).items():
                 if isinstance(value, str) and value.startswith("/api/") and name in source:
                     answered.add(value)
@@ -552,6 +559,13 @@ def self_test():
     from .catalogue_serving_checks import run_checks as catalogue_serving_checks
     with tempfile.TemporaryDirectory(prefix="service-catalogue-serving-") as directory:
         catalogue_serving_checks(check, Path(directory))
+    # The staff tools and their transports, owner request of September 24, 2026.
+    from .staff_tool_checks import run_checks as staff_tool_checks
+    with tempfile.TemporaryDirectory(prefix="service-staff-tools-") as directory:
+        staff_tool_checks(check, Path(directory))
+    from .admin_mcp_checks import run_checks as staff_transport_checks
+    with tempfile.TemporaryDirectory(prefix="service-staff-transport-") as directory:
+        staff_transport_checks(check, Path(directory))
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
     # Known-wrong case for the guard above: a merge can drop the call and keep
     # the import beside it. Nothing then runs the module, and the import alone

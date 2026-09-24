@@ -111,6 +111,11 @@ class DurableProvisioningBinding:
                            else grant for grant in grants)
         internal_key = secrets.token_urlsafe(32)
         held_digest = key_digest(internal_key)
+        # Download credits (credits.py), owner direction of September 24, 2026:
+        # an account without a plan that grants bodies reads them while it
+        # holds a usable credit, and each metered read draws one.
+        from .credits import credit_access
+        credit = credit_access(self.runtime, current, operation, fields.get("request_id"))
 
         def resolve_tenant(supplied):
             if not isinstance(supplied, str) or not hmac.compare_digest(supplied, internal_key):
@@ -121,7 +126,8 @@ class DurableProvisioningBinding:
             _grants, observed = self.runtime.grant_snapshot(latest)
             if observed != grant_guard:
                 raise ServiceRuntimeError("disclosure_grant_changed")
-            return ProvisioningTenant(latest.tenant_id, held_digest, latest.entitlement)
+            return ProvisioningTenant(latest.tenant_id, held_digest,
+                                      credit.entitlement(latest) if credit is not None else latest.entitlement)
 
         tenant = resolve_tenant(internal_key)
         def selected_qualification(binding):
@@ -132,8 +138,8 @@ class DurableProvisioningBinding:
         qualifier = ProvisioningQualificationResolver(
             view.qualification_resolver.resolver_id + ":selected", selected_qualification)
         policy = ProvisioningAccessPolicy(grants, qualifier)
-        server = ProvisioningServer(catalogue, (tenant,), view.body_reader,
-            lambda request: self.runtime.record_usage(request, current, guards=(grant_guard,)),
-            access_policy=policy,
+        meter = (credit.meter(current, grant_guard) if credit is not None
+                 else lambda request: self.runtime.record_usage(request, current, guards=(grant_guard,)))
+        server = ProvisioningServer(catalogue, (tenant,), view.body_reader, meter, access_policy=policy,
             tenant_resolver=ProvisioningTenantResolver("durable_service_tenant", resolve_tenant))
         return server.handle(ProvisioningRequest(operation, internal_key, **fields))

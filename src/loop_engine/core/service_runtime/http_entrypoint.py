@@ -379,7 +379,7 @@ def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
-               "retention", "accounts", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue"}
+               "retention", "accounts", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue", "staff_tools"}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
@@ -471,6 +471,10 @@ def load_host_application(path):
         from .catalogue_serving import refresher_for
         application.catalogue_refresher = refresher_for(application, catalogue_source, license_policy=license_policy,
                                                         family_policy=family_policy)
+    # Staff tools (staff_tools.py): the /admin/mcp endpoint and the staff routes, installed with staff
+    # administration; the optional staff_tools block sets the message allowance and the incoming folder.
+    from .staff_tools import install_staff_tools
+    install_staff_tools(application, configuration, license_policy=license_policy, family_policy=family_policy)
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))

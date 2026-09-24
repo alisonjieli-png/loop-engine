@@ -208,7 +208,8 @@
     "core/service_runtime/account_origin.py",
     "core/service_runtime/account_origin_checks.py",
     "core/service_runtime/account_administration_checks.py",
-    "core/service_runtime/staff_sign_up_link_checks.py"
+    "core/service_runtime/staff_sign_up_link_checks.py",
+    "core/service_runtime/admin_mcp_checks.py"
   ],
   "notes": [
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
@@ -876,6 +877,7 @@
     "core/service_runtime/account_origin.py": "Identity administration engine for the one way in. Fixed-origin requests to the identity provider's administration interface only, under the account email block's explicit network authority and server key: create a marked user, look one address up, delete a user, mark a user and read one page of users. Redirects are refused, no proxy is inherited and nothing is repeated.",
     "core/service_runtime/account_origin_checks.py": "Loopback-only checks of the one way in: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider is the in-process stand-in project; no provider, mailbox or external network is used.",
     "core/service_runtime/account_administration_checks.py": "Loopback-only checks of staff roles and account administration: an owned key set for signed browser tokens and the real service over an owned loopback socket. The provider user list is an injected stand-in; no provider or external network is used.",
-    "core/service_runtime/staff_sign_up_link_checks.py": "Loopback-only checks of staff sign-up links: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider and its outbox are the in-process stand-in project; no provider, mailbox or external network is used."
+    "core/service_runtime/staff_sign_up_link_checks.py": "Loopback-only checks of staff sign-up links: an owned key set for signed browser tokens and the real service over an owned loopback socket. The identity provider and its outbox are the in-process stand-in project; no provider, mailbox or external network is used.",
+    "core/service_runtime/admin_mcp_checks.py": "Loopback-only checks of the staff transports: the official protocol client and plain requests against the real service over an owned loopback socket, with an owned key set for signed browser tokens. The identity provider is the in-process stand-in project; no provider, mailbox or external network is used."
   }
 }
