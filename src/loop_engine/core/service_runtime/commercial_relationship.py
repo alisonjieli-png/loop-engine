@@ -3,18 +3,24 @@
 Kind: passive typed record with its strict reader. Every public directory the website publishes
 (the directory of Model Context Protocol servers and agent APIs, and the directory of models and
 endpoints) gives each row one `commercial_relationship` object with exactly the fields below. The
-object says whether a link to the listed product earns Baltor anything: an affiliate or referral
-commission, or a paid placement. Nothing here serves a page, joins a programme or makes a link.
+object says whether a link to the listed product earns Baltor anything (an affiliate or referral
+commission, or a paid placement) or whether the product is Baltor's own service. Nothing here serves
+a page, joins a programme or makes a link.
 
-Four rules hold for every directory that uses this record:
+The labels follow the research record docs/research/AFFILIATE-ADVERTISING-AND-LISTING-INCOME-2026-09-24.md:
+an affiliate or referral link is labelled "Paid link", a paid placement "Ad" in a band headed "Ads",
+and Baltor's own service "Baltor's own service". Five rules hold for every directory that uses it:
 
 1. Ranking, ordering, filtering, search and inclusion never read a commercial field. Each directory
    build has a check that changes every commercial field and requires the same rows in the same
    order, with a known-wrong mutant that reads the field and must be caught.
-2. A commercial link is shown only for an active relationship, always with its visible disclosure
-   label beside it and with `rel="sponsored noopener"`. The page links a short disclosure section.
-3. A sponsored placement sits in its own labelled band, never inside a ranked list.
-4. Joining a programme is the owner's legal and payout step, and the disclosure wording waits for the
+2. A paid link is shown only for an active relationship, with its visible label beside it, the plain
+   address of the product beside it and `rel="sponsored noopener"`. It never replaces a row's own
+   links. The page links a short disclosure section.
+3. One visible sentence, PAID_LINK_NOTICE, sits directly above any list that shows an active paid link,
+   and only then.
+4. An ad sits in its own band headed "Ads", at most MAXIMUM_ADS in a page, never inside a ranked list.
+5. Joining a programme is the owner's legal and payout step, and the disclosure wording waits for the
    owner's approval, so every row ships as `NONE` until the owner approves a programme.
 """
 from __future__ import annotations
@@ -31,15 +37,24 @@ NO_RELATIONSHIP = "none"
 AFFILIATE = "affiliate"
 REFERRAL = "referral"
 SPONSORED = "sponsored"
-KINDS = (NO_RELATIONSHIP, AFFILIATE, REFERRAL, SPONSORED)
+OWNED = "owned"
+KINDS = (NO_RELATIONSHIP, AFFILIATE, REFERRAL, SPONSORED, OWNED)
 NOT_STARTED = "none"
 PENDING_OWNER = "pending_owner"
 ACTIVE = "active"
 STATUSES = (NOT_STARTED, PENDING_OWNER, ACTIVE)
 #: The visible label a commercial link carries beside it, for each kind.
-DISCLOSURE_LABELS = {AFFILIATE: "Affiliate link", REFERRAL: "Affiliate link", SPONSORED: "Sponsored"}
-#: The rel attribute of every commercial link.
+DISCLOSURE_LABELS = {AFFILIATE: "Paid link", REFERRAL: "Paid link", SPONSORED: "Ad", OWNED: "Baltor's own service"}
+#: The rel attribute of every paid link and ad, and of a link to Baltor's own service.
 LINK_REL = "sponsored noopener"
+OWNED_LINK_REL = "noopener"
+#: The heading of the band that holds ads, and the most ads one page shows.
+AD_BAND_HEADING = "Ads"
+MAXIMUM_ADS = 3
+#: The sentence directly above a list that shows an active paid link. A draft that waits for the owner's approval;
+#: no page shows it until a paid link is active, and none is.
+PAID_LINK_NOTICE = ("Links marked Paid link are ads: Baltor earns money when you sign up or buy through them. "
+                    "They do not change which services we list or their order.")
 #: The id of the disclosure section a directory page links to.
 DISCLOSURE_SECTION_ID = "paid-links"
 _SECURE_SCHEME = "https"
@@ -72,13 +87,18 @@ class CommercialRelationship:
 
     @property
     def shows_commercial_link(self) -> bool:
-        """True only for an active affiliate or referral relationship: the one case a commercial link shows."""
+        """True only for an active affiliate or referral relationship: the one case a paid link shows."""
         return self.status == ACTIVE and self.kind in (AFFILIATE, REFERRAL)
 
     @property
     def is_sponsored_placement(self) -> bool:
-        """True only for an active sponsored relationship, which is shown in its own labelled band."""
+        """True only for an active sponsored relationship, which is shown as an ad in its own band."""
         return self.status == ACTIVE and self.kind == SPONSORED
+
+    @property
+    def is_owned_service(self) -> bool:
+        """True only for an active relationship that marks Baltor's own service."""
+        return self.status == ACTIVE and self.kind == OWNED
 
 
 def _secure_address(value: str) -> bool:
@@ -104,6 +124,8 @@ def _check(item: CommercialRelationship) -> None:
             raise CommercialRelationshipError(f"{name} must be an https address without user information")
     if item.disclosure_label != DISCLOSURE_LABELS[item.kind]:
         raise CommercialRelationshipError(f"a relationship of kind {item.kind} is labelled {DISCLOSURE_LABELS[item.kind]!r}")
+    if item.kind == OWNED and item.outbound_link != item.canonical_address:
+        raise CommercialRelationshipError("a link to Baltor's own service is its plain address, with nothing added")
     if item.reviewed_at and not _REVIEWED.match(item.reviewed_at):
         raise CommercialRelationshipError("reviewed_at is a date or a UTC time")
     if item.status == ACTIVE and not item.reviewed_at:
@@ -131,10 +153,22 @@ def to_record(relationship: CommercialRelationship) -> dict:
 
 
 def link_attributes(relationship: CommercialRelationship) -> "dict | None":
-    """The href, rel and visible label of a commercial link, or None when the row shows no such link."""
-    if not relationship.shows_commercial_link:
-        return None
-    return {"href": relationship.outbound_link, "rel": LINK_REL, "label": relationship.disclosure_label}
+    """The href, rel, visible label and plain address of a row's paid link or own-service link, or None.
+
+    An ad is not a row link: it is shown only in the band of ads, through is_sponsored_placement.
+    """
+    if relationship.shows_commercial_link:
+        return {"href": relationship.outbound_link, "rel": LINK_REL, "label": relationship.disclosure_label,
+                "plain_address": relationship.canonical_address}
+    if relationship.is_owned_service:
+        return {"href": relationship.canonical_address, "rel": OWNED_LINK_REL, "label": relationship.disclosure_label,
+                "plain_address": relationship.canonical_address}
+    return None
+
+
+def shows_paid_link_notice(relationships) -> bool:
+    """True exactly when at least one relationship of a list shows a paid link, so PAID_LINK_NOTICE sits above it."""
+    return any(item.shows_commercial_link for item in relationships)
 
 
 def invariance_variants(host: str) -> tuple:
@@ -144,11 +178,12 @@ def invariance_variants(host: str) -> tuple:
     real programme address is written here.
     """
     variants = [NONE]
-    for kind in (AFFILIATE, REFERRAL, SPONSORED):
+    for kind in (AFFILIATE, REFERRAL, SPONSORED, OWNED):
         for status in (PENDING_OWNER, ACTIVE):
             base = f"{_SECURE_SCHEME}://{kind}.{host}"
             variants.append(CommercialRelationship(
                 kind=kind, program_name=f"{kind} programme {status}", program_terms_address=f"{base}/terms/{status}",
-                disclosure_label=DISCLOSURE_LABELS[kind], outbound_link=f"{base}/go/{status}",
+                disclosure_label=DISCLOSURE_LABELS[kind],
+                outbound_link=f"{base}/product" if kind == OWNED else f"{base}/go/{status}",
                 canonical_address=f"{base}/product", status=status, reviewed_at="2026-09-24"))
     return tuple(variants)

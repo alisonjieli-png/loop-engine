@@ -252,6 +252,10 @@ class CommercialRelationshipRecord(unittest.TestCase):
             "an unknown kind": {**good, "kind": "partner"},
             "an affiliate link without its label": {**good, "disclosure_label": ""},
             "a label that hides the kind": {**good, "disclosure_label": "Recommended"},
+            "the retired label Affiliate link": {**good, "disclosure_label": "Affiliate link"},
+            "an ad labelled Sponsored": {**commercial.to_record(commercial.invariance_variants("example.org")[6]), "disclosure_label": "Sponsored"},
+            "an own service link with something added": {**commercial.to_record(commercial.invariance_variants("example.org")[8]),
+                                                         "outbound_link": "https://owned.example.org/product?ref=baltor"},
             "a plain http link": {**good, "outbound_link": "http://go.example.org/x"},
             "user information in the link": {**good, "outbound_link": "https://user@go.example.org/x"},
             "active without a review date": {**good, "reviewed_at": ""},
@@ -262,12 +266,40 @@ class CommercialRelationshipRecord(unittest.TestCase):
                 commercial.from_record(record)
         self.assertEqual(commercial.from_record(good).kind, commercial.AFFILIATE)
 
-    def test_only_an_active_affiliate_or_referral_shows_a_labelled_sponsored_link(self):
-        shown = [commercial.link_attributes(item) for item in commercial.invariance_variants("example.org")]
-        visible = [item for item in shown if item]
-        self.assertEqual(len(visible), 2)
-        self.assertTrue(all(item["rel"] == "sponsored noopener" and item["label"] == "Affiliate link" for item in visible))
-        self.assertEqual(sum(1 for item in commercial.invariance_variants("example.org") if item.is_sponsored_placement), 1)
+    def test_only_an_active_paid_link_or_own_service_shows_a_labelled_row_link(self):
+        variants = commercial.invariance_variants("example.org")
+        visible = [commercial.link_attributes(item) for item in variants if commercial.link_attributes(item)]
+        paid = [item for item in visible if item["rel"] == "sponsored noopener"]
+        self.assertEqual(len(paid), 2)
+        self.assertTrue(all(item["label"] == "Paid link" and item["plain_address"].endswith("/product") for item in paid))
+        owned = [item for item in visible if item["rel"] == "noopener"]
+        self.assertEqual([item["label"] for item in owned], ["Baltor's own service"])
+        self.assertEqual(owned[0]["href"], owned[0]["plain_address"])
+        self.assertEqual(sum(1 for item in variants if item.is_sponsored_placement), 1)
+        self.assertEqual(commercial.DISCLOSURE_LABELS[commercial.SPONSORED], "Ad")
+        self.assertEqual((commercial.AD_BAND_HEADING, commercial.MAXIMUM_ADS), ("Ads", 3))
+
+    def test_the_paid_link_sentence_shows_exactly_while_a_paid_link_is_active(self):
+        variants = commercial.invariance_variants("example.org")
+        self.assertFalse(commercial.shows_paid_link_notice([commercial.NONE]))
+        self.assertFalse(commercial.shows_paid_link_notice([item for item in variants if not item.shows_commercial_link]))
+        self.assertTrue(commercial.shows_paid_link_notice([commercial.NONE, variants[2]]))
+        self.assertTrue(commercial.PAID_LINK_NOTICE.startswith("Links marked Paid link are ads"))
+
+    def test_a_paid_link_goes_only_on_a_row_its_publisher_listed(self):
+        paid = commercial.invariance_variants("example.org")[2]
+        self.assertEqual(sources.listing_origin("io.github.carol", "github.com/stripe/agent-toolkit", []), records.ORIGIN_OTHER)
+        with self.assertRaises(build.CommercialPlacementError):
+            build_rows(FIXTURE, {"io.github.carol/stripe-helper": paid})
+        with self.assertRaises(build.CommercialPlacementError):
+            build_rows(FIXTURE, {"io.github.nobody/missing": paid})
+        self.assertEqual(len(build_rows(FIXTURE, {"io.github.bob/weather": paid})), len(FIXTURE))
+
+    def test_removing_the_placement_rule_lets_a_paid_link_onto_a_community_row(self):
+        paid = commercial.invariance_variants("example.org")[2]
+        with mock.patch.object(build, "ORIGIN_MAKER", records.ORIGIN_OTHER):
+            rows = build_rows(FIXTURE, {"io.github.carol/stripe-helper": paid})
+        self.assertEqual(next(item for item in rows if item.identity == "io.github.carol/stripe-helper").commercial_relationship, paid)
 
     def test_the_packaged_directory_ships_every_row_with_no_relationship(self):
         """Joining a programme is the owner's step; until the owner approves one, every row ships with none."""

@@ -6,16 +6,18 @@
    scroll without drawing them all.
 
    Ordering, filtering, search and inclusion read only the listing facts on the page. A row's commercial relationship
-   is read by drawRow and drawSponsored alone: an active affiliate or referral link shows its disclosure label beside
-   it and carries rel="sponsored noopener", and an active sponsored placement is drawn in its own labelled band, never
-   in the list. Third-party text is written with textContent and marked data-listing-text. */
+   is read by drawRow, drawSponsored and drawNotice alone, with the labels the manifest names: an active affiliate or
+   referral link is labelled Paid link, names its destination, shows the product's plain address beside it and carries
+   rel="sponsored noopener", and never replaces the row's own links; Baltor's own service is labelled as such; an
+   active ad is drawn in its own band headed Ads, at most three, never in the list; and one sentence sits above the
+   list exactly while a paid link is active. Third-party text is written with textContent and marked data-listing-text. */
 (() => {
   "use strict";
   const $ = id => document.getElementById(id);
   const MANIFEST = "/assets/directory/manifest.json", MANIFEST_VERSION = "mcp_directory_manifest/v1", ROWS_VERSION = "mcp_directory_rows/v1";
-  const COMMERCIAL_SCHEMA = "directory_commercial_relationship/v1", LINK_REL = "sponsored noopener", SECURE = "https://";
+  const COMMERCIAL_SCHEMA = "directory_commercial_relationship/v1", SECURE = "https://";
   const OVERSCAN = 6, ORIGIN_RANK = {maker: 0, unknown: 1, other: 2};
-  const state = {manifest: null, relationships: [], rows: [], shown: [], byId: new Map(), category: "", query: "",
+  const state = {manifest: null, relationships: [], commercial: null, rows: [], shown: [], byId: new Map(), category: "", query: "",
     filters: {offering: "", origin: "", transport: "", auth: ""}, order: "sources", rowHeight: 120, target: "", frame: 0};
   const list = $("directory-list"), pane = $("directory-scroll"), count = $("directory-count");
 
@@ -46,13 +48,16 @@
   /* A commercial relationship record of the one version this page was written for, or a refusal. */
   function readRelationship(record) {
     const fields = ["kind", "program_name", "program_terms_address", "disclosure_label", "outbound_link", "canonical_address", "status", "reviewed_at"];
-    if (!record || typeof record !== "object" || Object.keys(record).length !== fields.length || fields.some(name => typeof record[name] !== "string"))
+    if (!record || typeof record !== "object" || Object.keys(record).length !== fields.length || fields.some(name => typeof record[name] !== "string")
+      || !state.commercial.kinds.includes(record.kind) || (record.kind !== "none" && record.disclosure_label !== state.commercial.labels[record.kind]))
       throw new Error("A commercial relationship in the manifest is not the version this page reads.");
     return record;
   }
-  const showsCommercialLink = relation => relation.status === "active" && (relation.kind === "affiliate" || relation.kind === "referral")
-    && relation.outbound_link.startsWith(SECURE) && Boolean(relation.disclosure_label);
-  const isSponsoredPlacement = relation => relation.status === "active" && relation.kind === "sponsored" && relation.outbound_link.startsWith(SECURE);
+  const active = relation => Boolean(relation) && relation.status === "active" && relation.outbound_link.startsWith(SECURE) && relation.canonical_address.startsWith(SECURE);
+  const showsCommercialLink = relation => active(relation) && (relation.kind === "affiliate" || relation.kind === "referral");
+  const isSponsoredPlacement = relation => active(relation) && relation.kind === "sponsored";
+  const isOwnedService = relation => active(relation) && relation.kind === "owned";
+  const label = (text, extra = {}) => element("span", {class: "paid-label", "data-disclosure-label": true, ...extra}, text);
 
   function decode(manifest, positions, values) {
     const column = name => values[positions[name]];
@@ -98,6 +103,7 @@
     count.textContent = state.shown.length === total ? "Showing all " + plural(total, "listing") + "."
       : state.shown.length ? "Showing " + state.shown.length.toLocaleString("en-US") + " of " + plural(total, "listing") + "."
       : "No listing matches. Clear the search or choose All.";
+    $("directory-order-note").textContent = orderNotes[state.order] || orderNotes.sources;
     writeAddress();
     draw();
   }
@@ -137,11 +143,13 @@
     const docs = row.website || row.repository;
     if (docs) facts.append(element("a", {class: "row-docs", href: SECURE + docs, rel: "noopener", "data-row-docs": true}, "Documentation"));
     const relation = state.relationships[row.commercial];
-    if (relation && showsCommercialLink(relation)) {
+    if (showsCommercialLink(relation)) {
       const paid = element("p", {class: "row-paid"});
-      paid.append(element("a", {href: relation.outbound_link, rel: LINK_REL, "data-commercial-link": true}, "Go to the product"), " ",
-        element("span", {class: "paid-label", "data-disclosure-label": true}, relation.disclosure_label));
+      paid.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
+        label(relation.disclosure_label), " ", element("span", {class: "paid-address", "data-listing-text": true}, relation.canonical_address.slice(SECURE.length)));
       facts.append(paid);
+    } else if (isOwnedService(relation)) {
+      facts.append(label(relation.disclosure_label, {"data-owned-service": true}));
     }
     item.append(main, get, connect, facts);
     return item;
@@ -158,20 +166,33 @@
   }
   const schedule = () => { if (!state.frame) state.frame = requestAnimationFrame(draw); };
 
-  /* Sponsored placements, if any are active, in their own labelled band above the list. None is active today. */
+  /* Ads, if any are active, in their own band headed Ads above the list, at most the manifest's maximum. None is active today. */
   function drawSponsored() {
     const band = $("directory-sponsored"), holder = $("directory-sponsored-list"), placed = [];
     for (const row of state.rows) {
       const relation = state.relationships[row.commercial];
-      if (!relation || !isSponsoredPlacement(relation)) continue;
+      if (!isSponsoredPlacement(relation) || placed.length >= state.commercial.maximum_ads) continue;
       const item = element("li", {class: "sponsored-item"});
-      item.append(element("a", {href: relation.outbound_link, rel: LINK_REL, "data-commercial-link": true, "data-listing-text": true}, row.name), " ",
-        element("span", {class: "paid-label", "data-disclosure-label": true}, relation.disclosure_label));
+      item.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true, "data-listing-text": true}, row.name), " ",
+        label(relation.disclosure_label));
       placed.push(item);
     }
+    $("directory-sponsored-title").textContent = state.commercial.ad_band_heading;
     holder.replaceChildren(...placed);
     band.hidden = placed.length === 0;
   }
+
+  /* The sentence above the list, shown exactly while at least one row carries an active paid link. */
+  function drawNotice() {
+    const notice = $("directory-paid-notice");
+    const paid = state.rows.some(row => showsCommercialLink(state.relationships[row.commercial]));
+    notice.textContent = paid ? state.commercial.paid_link_notice : "";
+    notice.hidden = !paid;
+  }
+
+  /* The sentence that says how the list is ordered, for the order the reader chose. */
+  const orderNotes = {sources: "The list puts listings found in more sources first, then publisher listings before unmatched and community ones, then listings with a description, then names from A to Z.",
+    name: "The list is in order of name, from A to Z.", updated: "The list puts the listings most recently updated in the registry first."};
 
   function measure() {
     const value = parseFloat(getComputedStyle(list).getPropertyValue("--row-height"));
@@ -274,11 +295,13 @@
     if (row.aliases.length) detailRow(facts, "Also listed as", row.aliases.join(", "));
     if (row.updated) detailRow(facts, "Updated in the registry", new Date(Date.parse(manifest.day_zero) + row.updated * 86400000).toISOString().slice(0, 10));
     const relation = state.relationships[row.commercial];
-    if (relation && showsCommercialLink(relation)) {
+    if (showsCommercialLink(relation)) {
       const paid = element("span");
-      paid.append(element("a", {href: relation.outbound_link, rel: LINK_REL, "data-commercial-link": true}, "Go to the product"), " ",
-        element("span", {class: "paid-label", "data-disclosure-label": true}, relation.disclosure_label));
+      paid.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
+        label(relation.disclosure_label), " ", element("span", {class: "paid-address", "data-listing-text": true}, relation.canonical_address.slice(SECURE.length)));
       detailRow(facts, "Paid link", paid);
+    } else if (isOwnedService(relation)) {
+      detailRow(facts, "Listed by Baltor", label(relation.disclosure_label, {"data-owned-service": true}));
     }
     body.replaceChildren(facts);
     const dialog = $("directory-detail");
@@ -290,6 +313,7 @@
     if (manifest.record_type !== MANIFEST_VERSION || manifest.commercial_relationship_schema !== COMMERCIAL_SCHEMA || !Array.isArray(manifest.columns))
       throw new Error("The directory data is not the version this page reads.");
     state.manifest = manifest;
+    state.commercial = manifest.commercial_labels;
     state.relationships = manifest.commercial_relationships.map(readRelationship);
     /* Each row file is asked for by its own digest, so a browser never pairs a new manifest with an old cached file. */
     const parts = await Promise.all(manifest.parts.map(part => fetchJson(part.address + "?v=" + encodeURIComponent(part.sha256 || ""))));
@@ -312,6 +336,7 @@
     syncControls();
     for (const control of [$("directory-query"), $("filter-offering"), $("filter-origin"), $("filter-transport"), $("filter-auth"), $("filter-order")]) control.disabled = false;
     drawSponsored();
+    drawNotice();
     apply();
     const identity = decodeURIComponent(location.hash.slice(1));
     if (identity) showTarget(identity, false);

@@ -328,6 +328,26 @@
    "reviewed_at": ""
   }
  ],
+ "commercial_labels": {
+  "kinds": [
+   "none",
+   "affiliate",
+   "referral",
+   "sponsored",
+   "owned"
+  ],
+  "labels": {
+   "affiliate": "Paid link",
+   "referral": "Paid link",
+   "sponsored": "Ad",
+   "owned": "Baltor's own service"
+  },
+  "paid_link_rel": "sponsored noopener",
+  "owned_link_rel": "noopener",
+  "ad_band_heading": "Ads",
+  "maximum_ads": 3,
+  "paid_link_notice": "Links marked Paid link are ads: Baltor earns money when you sign up or buy through them. They do not change which services we list or their order."
+ },
  "labels": {
   "location_kinds": {
    "remote-http": "Remote endpoint",

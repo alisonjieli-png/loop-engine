@@ -291,6 +291,10 @@ def encode(offerings, rules: CategoryRules, context: dict) -> "tuple[dict, list]
                      "checked": context["checked"].get(name, "")} for name in SOURCE_ORDER],
         "commercial_relationship_schema": commercial.SCHEMA,
         "commercial_relationships": [commercial.to_record(item) for item in relationships],
+        "commercial_labels": {"kinds": list(commercial.KINDS), "labels": commercial.DISCLOSURE_LABELS,
+                              "paid_link_rel": commercial.LINK_REL, "owned_link_rel": commercial.OWNED_LINK_REL,
+                              "ad_band_heading": commercial.AD_BAND_HEADING, "maximum_ads": commercial.MAXIMUM_ADS,
+                              "paid_link_notice": commercial.PAID_LINK_NOTICE},
     }
     return manifest, files
 
@@ -307,6 +311,23 @@ def serialized_part(part: dict) -> str:
     return head + ', "rows": [\n' + body + ("\n" if rows else "") + "]}\n"
 
 
+class CommercialPlacementError(ValueError):
+    """A reviewed commercial relationship names a row it may not be attached to."""
+
+
 def with_relationships(offerings, relationships: dict) -> list:
-    """The same offerings, each with the reviewed commercial relationship named for its identity, or none."""
+    """The same offerings, each with the reviewed commercial relationship named for its identity, or none.
+
+    A relationship other than none goes only on a row whose publisher listed it (origin maker): a paid link on a
+    row someone else listed would send a reader somewhere other than the thing listed. A name that matches no row
+    is refused too, so a stale review cannot pass unnoticed.
+    """
+    known = {item.identity: item for item in offerings}
+    for identity, relationship in relationships.items():
+        if relationship == commercial.NONE:
+            continue
+        if identity not in known:
+            raise CommercialPlacementError(f"the reviewed relationship names {identity!r}, which is not a row")
+        if known[identity].origin != ORIGIN_MAKER:
+            raise CommercialPlacementError(f"{identity!r} is not listed by its publisher, so it carries no paid link")
     return [replace(item, commercial_relationship=relationships.get(item.identity, commercial.NONE)) for item in offerings]

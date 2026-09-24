@@ -5,10 +5,12 @@
    script is served with one guard removed, in memory only, and the named checks must fail. Nothing here changes a
    source file.
 
-   The commercial rules are held here because the page is where a reader meets them: ordering, filtering and inclusion
-   never read a commercial field (every field is changed and the order and membership stay the same); a commercial link
-   shows its disclosure label beside it and carries rel="sponsored noopener"; a sponsored placement sits in its own
-   labelled band, never in the list; and the served data ships no active commercial link. */
+   The commercial rules are held here because the page is where a reader meets them, with the labels of the research
+   record docs/research/AFFILIATE-ADVERTISING-AND-LISTING-INCOME-2026-09-24.md: ordering, filtering and inclusion never
+   read a commercial field (every field is changed and the order and membership stay the same); a paid link is labelled
+   Paid link, shows the plain address beside it, carries rel="sponsored noopener" and leaves the row's own links in
+   place; Baltor's own service is labelled as such; an ad sits in its own band headed Ads, never in the list; one
+   sentence sits above the list exactly while a paid link is active; and the served data ships no active commercial link. */
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 
@@ -20,11 +22,13 @@ const canonicalAddress=address=>"https://"+siteMapRecord.canonical_hostname+addr
 const MANIFEST="/assets/directory/manifest.json",ROWS=/^\/assets\/directory\/rows-(\d+)\.json$/;
 const RELATIONSHIP_FIELDS=["kind","program_name","program_terms_address","disclosure_label","outbound_link","canonical_address","status","reviewed_at"];
 const NONE=Object.fromEntries(RELATIONSHIP_FIELDS.map(name=>[name,name==="kind"||name==="status"?"none":""]));
-const LABELS={affiliate:"Affiliate link",referral:"Affiliate link",sponsored:"Sponsored"};
-/* The same seven relationships as commercial_relationship.invariance_variants("example.org"): none, then each kind pending and active. */
-const variants=[NONE,...["affiliate","referral","sponsored"].flatMap(kind=>["pending_owner","active"].map(status=>({kind,program_name:kind+" programme "+status,
-  program_terms_address:"https://"+kind+".example.org/terms/"+status,disclosure_label:LABELS[kind],outbound_link:"https://"+kind+".example.org/go/"+status,
+const LABELS={affiliate:"Paid link",referral:"Paid link",sponsored:"Ad",owned:"Baltor's own service"};
+/* The same nine relationships as commercial_relationship.invariance_variants("example.org"): none, then each kind pending and active. */
+const variants=[NONE,...["affiliate","referral","sponsored","owned"].flatMap(kind=>["pending_owner","active"].map(status=>({kind,program_name:kind+" programme "+status,
+  program_terms_address:"https://"+kind+".example.org/terms/"+status,disclosure_label:LABELS[kind],
+  outbound_link:kind==="owned"?"https://owned.example.org/product":"https://"+kind+".example.org/go/"+status,
   canonical_address:"https://"+kind+".example.org/product",status,reviewed_at:"2026-09-24"})))];
+const ACTIVE_AFFILIATE=2,ACTIVE_SPONSORED=6,ACTIVE_OWNED=8;
 
 /* Decisions, kept apart from the page so each can be given a known-wrong state. */
 export const metadataProblems=state=>[...(state.title==="Baltor | MCP server and agent API directory"?[]:["the title is "+JSON.stringify(state.title)]),
@@ -33,11 +37,17 @@ export const metadataProblems=state=>[...(state.title==="Baltor | MCP server and
   ...(state.h1===1?[]:[state.h1+" h1 headings"]),
   ...(state.graph.includes("CollectionPage")&&state.graph.includes("Dataset")?[]:["the structured data is "+JSON.stringify(state.graph)])];
 export const sameOrder=(first,second)=>JSON.stringify(first)===JSON.stringify(second);
-export const commercialLinkProblems=links=>links.length===0?["no commercial link is shown"]:links.flatMap(link=>[
-  ...(link.rel==="sponsored noopener"?[]:["a commercial link has rel "+JSON.stringify(link.rel)]),
-  ...(link.label==="Affiliate link"||link.label==="Sponsored"?[]:["a commercial link has no disclosure label beside it"])]);
-export const sponsoredProblems=state=>[...(state.band&&state.heading==="Sponsored"?[]:["no labelled sponsored band"]),
-  ...(state.inBand>0?[]:["the placement is not in the band"]),...(state.inList===0?[]:["a sponsored link sits inside the ranked list"])];
+export const commercialLinkProblems=links=>links.length===0?["no paid link is shown"]:links.flatMap(link=>[
+  ...(link.rel==="sponsored noopener"?[]:["a paid link has rel "+JSON.stringify(link.rel)]),
+  ...(link.label==="Paid link"?[]:["a paid link is labelled "+JSON.stringify(link.label)+", not Paid link"]),
+  ...(link.address&&link.address===link.expectedAddress?[]:["a paid link does not show the plain address beside it"]),
+  ...(link.ownLinks?[]:["a paid link replaced the row's own links"])]);
+export const sponsoredProblems=state=>[...(state.band&&state.heading==="Ads"?[]:["no band headed Ads"]),
+  ...(state.inBand>0&&state.inBand<=3&&state.labels.every(text=>text==="Ad")?[]:["the ads are not in the band, labelled Ad, three at most"]),
+  ...(state.inList===0?[]:["an ad sits inside the ranked list"])];
+export const noticeProblems=(state,paidLinkActive)=>paidLinkActive
+  ?(state.shown&&state.text===state.expected&&state.directlyAboveList?[]:["no sentence above the list while a paid link is active"])
+  :(state.shown?["the paid link sentence shows while no paid link is active"]:[]);
 
 async function loadDirectory(browser,base,{routes=[],viewport={width:1440,height:900},path="/directory",errors,localOnly}){
   const context=await browser.newContext({viewport,reducedMotion:"reduce"});
@@ -88,12 +98,15 @@ async function views(page){
 export async function runDirectoryChecks({browser,base,check,mutants,errors,localOnly,screenshot}){
   const {page,context,requests,ready_ms}=await loadDirectory(browser,base,{errors,localOnly});
   const manifest=await (await page.request.get(base+MANIFEST)).json();
+  const manifestNotice=manifest.commercial_labels?.paid_link_notice||"";
   const state=await page.evaluate(()=>{let graph=[];try{graph=JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)["@graph"].map(item=>item["@type"]);}catch(_){graph=[];}
     return {title:document.title,canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",description:document.querySelector('meta[name="description"]')?.getAttribute("content")||"",
       h1:document.querySelectorAll("h1").length,graph,loaded:document.documentElement.dataset.directory,count:document.querySelector("#directory-count").textContent,
       rows:document.querySelectorAll("#directory-list [data-row]").length,total:window.BaltorDirectory?.total()||0,
       paidLink:Boolean(document.querySelector('a[href="#paid-links"]')?.checkVisibility()),paidSection:Boolean(document.getElementById("paid-links")),
-      commercialLinks:document.querySelectorAll("[data-commercial-link]").length,sponsoredHidden:document.getElementById("directory-sponsored").hidden};});
+      commercialLinks:document.querySelectorAll("[data-commercial-link]").length,sponsoredHidden:document.getElementById("directory-sponsored").hidden,
+      notice:{shown:document.getElementById("directory-paid-notice").checkVisibility(),text:document.getElementById("directory-paid-notice").textContent},
+      orderNote:document.getElementById("directory-order-note")?.textContent||""};});
   check("directory_page_is_served_with_its_title_canonical_address_and_structured_data",metadataProblems(state).length===0,{problems:metadataProblems(state)});
   check("directory_metadata_check_rejects_a_page_without_structured_data_or_canonical",metadataProblems({...state,graph:[]}).length===1&&metadataProblems({...state,canonical:canonicalAddress("/mcp-directory")}).length===1);
   check("directory_loads_every_row_the_manifest_names",state.loaded==="ready"&&state.total===manifest.row_count&&state.count==="Showing all "+manifest.row_count.toLocaleString("en-US")+" listings.",
@@ -103,6 +116,10 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   check("directory_links_its_paid_links_section",state.paidLink&&state.paidSection);
   check("directory_ships_no_commercial_link_today",state.commercialLinks===0&&state.sponsoredHidden&&manifest.commercial_relationships.length===1
     &&JSON.stringify(manifest.commercial_relationships[0])===JSON.stringify(NONE),{relationships:manifest.commercial_relationships.length});
+  check("directory_paid_link_notice_is_hidden_while_no_paid_link_is_active",noticeProblems(state.notice,false).length===0,state.notice);
+  check("directory_says_how_the_list_is_ordered",/more sources first/.test(state.orderNote)&&/publisher listings/.test(state.orderNote)&&/description/.test(state.orderNote)&&/A to Z/.test(state.orderNote),{sentence:state.orderNote});
+  check("notice_check_rejects_a_sentence_without_a_paid_link_and_a_missing_one_with_it",noticeProblems({shown:true,text:"x",expected:"x",directlyAboveList:true},false).length===1
+    &&noticeProblems({shown:false,text:"",expected:"x",directlyAboveList:false},true).length===1&&noticeProblems({shown:true,text:"x",expected:"x",directlyAboveList:true},true).length===0);
   /* The served first rows and the rows the script draws are the same rows in the same order. */
   const served=await (await page.request.get(base+"/directory")).text();
   const servedIds=[...served.matchAll(/<div class="directory-row" role="listitem" id="([^"]+)" data-row>/g)].map(found=>found[1].replace(/&amp;/g,"&"));
@@ -166,38 +183,65 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   /* A commercial link, when a row carries an active affiliate relationship, and a sponsored placement, in its own band. */
   const withRelationships=async(mutation,note)=>{
     const probe=await loadDirectory(browser,base,{errors,localOnly});
-    const ids=await probe.page.evaluate(()=>window.BaltorDirectory.shown().slice(0,2));
-    const {routes}=await changedData(probe.page,base,identityValue=>identityValue===ids[0]?2:identityValue===ids[1]?6:0);
+    const ids=await probe.page.evaluate(()=>window.BaltorDirectory.shown().slice(0,3));
+    const {routes}=await changedData(probe.page,base,identityValue=>identityValue===ids[0]?ACTIVE_AFFILIATE:identityValue===ids[1]?ACTIVE_SPONSORED:identityValue===ids[2]?ACTIVE_OWNED:0);
     await probe.context.close();
     const script=mutation?scriptRoute(mutation):null;
     const view=await loadDirectory(browser,base,{errors,localOnly,routes:script?[...routes,script.route]:routes});
-    const found=await view.page.evaluate(([first,second])=>{
-      const inRow=[...document.getElementById(first)?.querySelectorAll("[data-commercial-link]")||[]].map(link=>({rel:link.getAttribute("rel")||"",
-        label:link.nextElementSibling?.matches("[data-disclosure-label]")&&link.nextElementSibling.checkVisibility()?link.nextElementSibling.textContent:""}));
-      const band=document.getElementById("directory-sponsored");
+    const found=await view.page.evaluate(([first,second,third])=>{
+      const row=document.getElementById(first);
+      const inRow=[...row?.querySelectorAll("[data-commercial-link]")||[]].map(link=>{const labelNode=link.nextElementSibling,address=labelNode?.nextElementSibling;
+        return {rel:link.getAttribute("rel")||"",label:labelNode?.matches("[data-disclosure-label]")&&labelNode.checkVisibility()?labelNode.textContent:"",
+          address:address?.matches(".paid-address")&&address.checkVisibility()?address.textContent:"",expectedAddress:"affiliate.example.org/product",
+          ownLinks:Boolean(row.querySelector("[data-row-docs]"))&&!row.querySelector("[data-row-docs]").hasAttribute("data-commercial-link")};});
+      const band=document.getElementById("directory-sponsored"),notice=document.getElementById("directory-paid-notice");
+      const owned=document.getElementById(third)?.querySelector("[data-owned-service]");
       return {links:inRow,sponsored:{band:!band.hidden&&band.checkVisibility(),heading:band.querySelector("h2")?.textContent||"",
-        inBand:band.querySelectorAll("[data-commercial-link][rel='sponsored noopener']").length,
-        inList:document.getElementById(second)?.querySelectorAll("[data-commercial-link]").length??0}};},ids);
+          inBand:band.querySelectorAll("[data-commercial-link][rel='sponsored noopener']").length,labels:[...band.querySelectorAll("[data-disclosure-label]")].map(node=>node.textContent),
+          inList:document.getElementById(second)?.querySelectorAll("[data-commercial-link]").length??0},
+        notice:{shown:notice.checkVisibility(),text:notice.textContent,directlyAboveList:notice.nextElementSibling?.classList.contains("directory-columns")},
+        owned:{shown:Boolean(owned?.checkVisibility()),text:owned?.textContent||"",links:document.getElementById(third)?.querySelectorAll("[data-commercial-link]").length??0}};},ids);
     await view.context.close();
     note("directory_commercial_link_shows_its_label_and_sponsored_rel",commercialLinkProblems(found.links).length===0,{links:found.links});
     note("directory_sponsored_placement_sits_in_its_own_band",sponsoredProblems(found.sponsored).length===0,found.sponsored);
+    note("directory_paid_link_notice_sits_above_the_list_while_a_paid_link_is_active",noticeProblems({...found.notice,expected:manifestNotice},true).length===0,found.notice);
+    note("directory_marks_baltors_own_service",found.owned.shown&&found.owned.text==="Baltor's own service"&&found.owned.links===0,found.owned);
     return script?.state;
   };
   await withRelationships(null,check);
-  check("commercial_link_check_rejects_a_missing_label_and_a_plain_rel",commercialLinkProblems([{rel:"sponsored noopener",label:""}]).length===1
-    &&commercialLinkProblems([{rel:"noopener",label:"Affiliate link"}]).length===1&&commercialLinkProblems([]).length===1);
-  check("sponsored_check_rejects_a_placement_inside_the_list",sponsoredProblems({band:true,heading:"Sponsored",inBand:1,inList:1}).length===1
-    &&sponsoredProblems({band:false,heading:"",inBand:0,inList:0}).length===2);
+  /* The served data as it is, for a control that shows the paid link sentence without a paid link. */
+  const plain=async(mutation,note)=>{
+    const script=mutation?scriptRoute(mutation):null;
+    const view=await loadDirectory(browser,base,{errors,localOnly,routes:script?[script.route]:[]});
+    const found=await view.page.evaluate(()=>({shown:document.getElementById("directory-paid-notice").checkVisibility(),text:document.getElementById("directory-paid-notice").textContent}));
+    await view.context.close();
+    note("directory_paid_link_notice_is_hidden_while_no_paid_link_is_active",noticeProblems(found,false).length===0,found);
+    return script?.state;
+  };
+  const goodLink={rel:"sponsored noopener",label:"Paid link",address:"a.example.org/p",expectedAddress:"a.example.org/p",ownLinks:true};
+  check("commercial_link_check_rejects_a_missing_label_an_old_label_a_plain_rel_a_missing_address_and_a_replaced_link",
+    commercialLinkProblems([goodLink]).length===0&&commercialLinkProblems([{...goodLink,label:""}]).length===1&&commercialLinkProblems([{...goodLink,label:"Affiliate link"}]).length===1
+    &&commercialLinkProblems([{...goodLink,rel:"noopener"}]).length===1&&commercialLinkProblems([{...goodLink,address:""}]).length===1
+    &&commercialLinkProblems([{...goodLink,ownLinks:false}]).length===1&&commercialLinkProblems([]).length===1);
+  check("sponsored_check_rejects_an_ad_inside_the_list_the_old_heading_and_a_fourth_ad",sponsoredProblems({band:true,heading:"Ads",inBand:1,labels:["Ad"],inList:1}).length===1
+    &&sponsoredProblems({band:true,heading:"Sponsored",inBand:1,labels:["Ad"],inList:0}).length===1&&sponsoredProblems({band:true,heading:"Ads",inBand:4,labels:["Ad","Ad","Ad","Ad"],inList:0}).length===1
+    &&sponsoredProblems({band:false,heading:"",inBand:0,labels:[],inList:0}).length===2);
   /* Removed-guard controls: the page script with one rule removed, served in memory for one scenario. */
   const controls=[
     {name:"directory_ranking_reads_the_commercial_field",scenario:invariance,find:"return b.sourceCount - a.sourceCount",replacement:"return (b.commercial - a.commercial) || b.sourceCount - a.sourceCount",
      expected:["directory_order_and_membership_ignore_every_commercial_field"]},
     {name:"directory_inclusion_reads_the_commercial_field",scenario:invariance,find:"    return tokens.every(token => row.haystack.includes(token));",
      replacement:"    if (row.commercial) return false;\n    return tokens.every(token => row.haystack.includes(token));",expected:["directory_order_and_membership_ignore_every_commercial_field"]},
-    {name:"directory_commercial_link_without_its_label",scenario:withRelationships,find:'"Go to the product"), " ",\n        element("span", {class: "paid-label", "data-disclosure-label": true}, relation.disclosure_label));\n      facts.append(paid);',
-     replacement:'"Go to the product"));\n      facts.append(paid);',expected:["directory_commercial_link_shows_its_label_and_sponsored_rel"]},
-    {name:"directory_sponsored_link_inside_the_list",scenario:withRelationships,find:"if (relation && showsCommercialLink(relation)) {\n      const paid = element(\"p\"",
-     replacement:"if (relation && (showsCommercialLink(relation) || isSponsoredPlacement(relation))) {\n      const paid = element(\"p\"",expected:["directory_sponsored_placement_sits_in_its_own_band"]}];
+    {name:"directory_paid_link_without_its_label",scenario:withRelationships,find:'"Sign up at " + row.name), " ",\n        label(relation.disclosure_label), " ",',
+     replacement:'"Sign up at " + row.name), " ",',expected:["directory_commercial_link_shows_its_label_and_sponsored_rel"]},
+    {name:"directory_ad_inside_the_list",scenario:withRelationships,find:"    if (showsCommercialLink(relation)) {\n      const paid = element(\"p\"",
+     replacement:"    if (showsCommercialLink(relation) || isSponsoredPlacement(relation)) {\n      const paid = element(\"p\"",expected:["directory_sponsored_placement_sits_in_its_own_band"]},
+    {name:"directory_paid_link_notice_never_shown",scenario:withRelationships,find:"    notice.hidden = !paid;",replacement:"    notice.hidden = true;",
+     expected:["directory_paid_link_notice_sits_above_the_list_while_a_paid_link_is_active"]},
+    {name:"directory_paid_link_notice_always_shown",scenario:plain,find:"    notice.textContent = paid ? state.commercial.paid_link_notice : \"\";\n    notice.hidden = !paid;",
+     replacement:"    notice.textContent = state.commercial.paid_link_notice;\n    notice.hidden = false;",expected:["directory_paid_link_notice_is_hidden_while_no_paid_link_is_active"]},
+    {name:"directory_own_service_unmarked",scenario:withRelationships,find:"      facts.append(label(relation.disclosure_label, {\"data-owned-service\": true}));",replacement:"",
+     expected:["directory_marks_baltors_own_service"]}];
   for(const control of controls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
