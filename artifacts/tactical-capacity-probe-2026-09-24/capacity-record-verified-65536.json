@@ -1,0 +1,106 @@
+{
+ "record_type": "endpoint_output_capacity/v1",
+ "provider_id": "tactical",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "maximum_output_tokens": 65536,
+ "observed_at": "2026-09-24",
+ "basis": "verified_completed_length",
+ "supersedes": {
+  "path": "artifacts/tactical-generation-binding-2026-09-23/capacity-record.json",
+  "sha256": "7acd787ac2327431c57e330ab3b1f056711deda6f11e74f7028b0007a13997ce"
+ },
+ "method": "The server states no limit: it accepts max_tokens 10,000,000 without refusing, and no read-only route (models, server_info, metrics, OpenAPI, tokenizer, KV cache events) names max_seq_len, max_num_tokens or a cache size. The declared maximum is therefore the largest output this endpoint was observed to complete: one streamed completion asked for exactly 65,536 tokens on a counting continuation that greedy decoding never ends by itself, and the server ended it with finish_reason length at exactly 65,536 completion tokens, with usage and [DONE].",
+ "probe_ceiling": 5,
+ "probe_calls_used": 4,
+ "model_calls_used": 2,
+ "calls": [
+  {
+   "record": "call-1-chat-max-tokens-10000000.json",
+   "sha256": "e8ac2616e2a38b2df241bcff786c262a83b9071a829d0016022216b327ffef2e",
+   "operation": "chat",
+   "model_calls": 1,
+   "max_tokens_requested": 10000000,
+   "http_status": 200,
+   "finish_reason": "stop",
+   "usage": {
+    "prompt_tokens": 19,
+    "total_tokens": 20,
+    "completion_tokens": 1,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "text": "READY"
+  },
+  {
+   "record": "call-2-tokenize.json",
+   "sha256": "6e243a3bc8478d2039c1c5e1c42cc876a258e1a99a5ec1092016e5ad9b3e870d",
+   "operation": "tokenize",
+   "model_calls": 0,
+   "http_status": 200,
+   "response": {
+    "count": 6,
+    "tokens": [
+     40654,
+     607,
+     886,
+     3658,
+     236787,
+     145930
+    ]
+   }
+  },
+  {
+   "record": "call-3-kv-cache-events.json",
+   "sha256": "544166909bff20c622c0a85f83a34c1c1d392aa0b7006c24c254dfd5e8d9a0bc",
+   "operation": "kv_cache_events",
+   "model_calls": 0,
+   "http_status": 200,
+   "response": []
+  },
+  {
+   "record": "call-4-completion-to-65536.json",
+   "sha256": "ade313b032740fc5219ab151d351f367ffa3f8868b6bd3fa3134fc93c947ddfa",
+   "operation": "completion_to_requested_ceiling",
+   "model_calls": 1,
+   "max_tokens_requested": 65536,
+   "http_status": 200,
+   "finish_reason": "length",
+   "usage": {
+    "prompt_tokens": 292,
+    "total_tokens": 65828,
+    "completion_tokens": 65536,
+    "prompt_tokens_details": {
+     "cached_tokens": 0
+    }
+   },
+   "saw_done": true,
+   "model_identities": [
+    "gemma-4-coding-abliterated"
+   ],
+   "elapsed_seconds": 467.133,
+   "clean_stop_at_requested_ceiling": true
+  }
+ ],
+ "metadata_read": {
+  "record": "metadata-read-1.json",
+  "sha256": "86cd6b126dbc44374cb3cfa42f54a9ce065c598ef847d734091a53b2b6e202ef"
+ },
+ "observed": [
+  "Before any probe the server answered metadata routes and a one-token chat in 0.44 seconds, so it was not held by the stalled request of September 23.",
+  "max_tokens 10,000,000 was accepted again without a refusal or a stated limit.",
+  "The tokenizer route returns only a count and token ids; the KV cache event route returns an empty list.",
+  "A completion requested at exactly 65,536 tokens ended with finish_reason length at 65,536 completion tokens after a 292-token prompt: 65,828 tokens in 467 seconds, about 140 a second.",
+  "The September 23 call 3, with the same 292-token prompt and max_tokens 10,000,000, streamed 105,574 tokens and then stalled with no stop reason, at 105,866 total tokens."
+ ],
+ "not_observed": [
+  "The server's max_seq_len, max_input_len, max_num_tokens or KV cache size.",
+  "Any completed response longer than 65,536 output tokens."
+ ],
+ "decision": "Declare 65,536 output tokens: measured, completed cleanly at the requested ceiling, and far enough below the observed stall that a generation prompt of several thousand tokens plus the full allowance stays under it. It is a verified maximum for this binding, not the server's stated limit; a larger value needs a new completed measurement or a stated limit and a successor record.",
+ "limitations": [
+  "A longer prompt leaves the same output allowance only while prompt plus output stays below the stall point, which is not a stated limit either.",
+  "The measurement used the completions route; the generator uses the chat route of the same server and model."
+ ]
+}

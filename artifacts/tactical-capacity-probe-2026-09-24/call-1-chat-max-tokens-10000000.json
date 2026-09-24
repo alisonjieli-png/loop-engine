@@ -1,0 +1,52 @@
+{
+ "record_type": "tactical_capacity_probe/v1",
+ "at": "2026-09-24T11:00:00.541263+00:00",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "binding_sha256": "9fd0a56e51581501bf23b2d807099d6ee6b3c49fd6546f78ff0fc4997229722a",
+ "tls": {
+  "server_name": "ai.iamretarded.net",
+  "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901",
+  "anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae"
+ },
+ "credential_reference": "operator:tactical-model-generation",
+ "operation": "chat",
+ "model_calls": 1,
+ "request": {
+  "model": "gemma-4-coding-abliterated",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Reply with one word: READY"
+   }
+  ],
+  "max_tokens": 10000000,
+  "temperature": 0.0,
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  }
+ },
+ "stop_after_chunks": 32,
+ "stop_after_seconds": 20.0,
+ "http_status": 200,
+ "saw_done": true,
+ "chunks": 4,
+ "text": "READY",
+ "finish_reason": "stop",
+ "stop_reason": 106,
+ "usage": {
+  "prompt_tokens": 19,
+  "total_tokens": 20,
+  "completion_tokens": 1,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "model_identities": [
+  "gemma-4-coding-abliterated"
+ ],
+ "time_to_first_content_seconds": 0.44,
+ "elapsed_seconds": 0.447
+}

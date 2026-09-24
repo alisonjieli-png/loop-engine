@@ -1,0 +1,39 @@
+{
+ "record_type": "tactical_capacity_probe/v1",
+ "at": "2026-09-24T11:00:08.293966+00:00",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "binding_sha256": "9fd0a56e51581501bf23b2d807099d6ee6b3c49fd6546f78ff0fc4997229722a",
+ "tls": {
+  "server_name": "ai.iamretarded.net",
+  "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901",
+  "anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae"
+ },
+ "credential_reference": "operator:tactical-model-generation",
+ "operation": "tokenize",
+ "model_calls": 0,
+ "tokenizer_calls": 1,
+ "request": {
+  "prompt": "Reply with one word: READY"
+ },
+ "response": {
+  "url": "https://ai.tacticalengineering.net:6969/_internal/tokenize",
+  "method": "POST",
+  "status": 200,
+  "bytes": 55,
+  "sha256": "1a5339eade4c8b1ecc9b92ffb44e4b8a678980c6add50a32c1716eb394c51a20",
+  "elapsed_seconds": 0.317,
+  "json": {
+   "count": 6,
+   "tokens": [
+    40654,
+    607,
+    886,
+    3658,
+    236787,
+    145930
+   ]
+  }
+ }
+}

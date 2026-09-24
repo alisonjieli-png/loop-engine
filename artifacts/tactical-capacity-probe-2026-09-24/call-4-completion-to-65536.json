@@ -1,0 +1,50 @@
+{
+ "record_type": "tactical_capacity_probe/v1",
+ "at": "2026-09-24T11:02:22.132417+00:00",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "binding_sha256": "9fd0a56e51581501bf23b2d807099d6ee6b3c49fd6546f78ff0fc4997229722a",
+ "tls": {
+  "server_name": "ai.iamretarded.net",
+  "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901",
+  "anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae"
+ },
+ "credential_reference": "operator:tactical-model-generation",
+ "operation": "completion_to_requested_ceiling",
+ "model_calls": 1,
+ "request": {
+  "model": "gemma-4-coding-abliterated",
+  "prompt": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100\n",
+  "max_tokens": 65536,
+  "temperature": 0.0,
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  }
+ },
+ "prompt_sha256": "93d4e5c77838e0aa5cb6647c385c810a7c2782bf769029e6c420052048ab22bb",
+ "deadline_seconds": 1500.0,
+ "http_status": 200,
+ "saw_done": true,
+ "chunks": 65537,
+ "content_bytes": 65536,
+ "content_sha256": "f6615df2f90138d0ac73bdaf10ebe4bad75e778398f787eabc0aa1b74eb841d3",
+ "content_tail": "6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n6666\n",
+ "finish_reason": "length",
+ "stop_reason": null,
+ "usage": {
+  "prompt_tokens": 292,
+  "total_tokens": 65828,
+  "completion_tokens": 65536,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "model_identities": [
+  "gemma-4-coding-abliterated"
+ ],
+ "time_to_first_content_seconds": 0.458,
+ "elapsed_seconds": 467.133,
+ "clean_stop_at_requested_ceiling": true
+}

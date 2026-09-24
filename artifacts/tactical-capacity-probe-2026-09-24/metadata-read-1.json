@@ -1,0 +1,178 @@
+{
+ "record_type": "tactical_capacity_probe/v1",
+ "at": "2026-09-24T10:59:45.447632+00:00",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "binding_sha256": "9fd0a56e51581501bf23b2d807099d6ee6b3c49fd6546f78ff0fc4997229722a",
+ "tls": {
+  "server_name": "ai.iamretarded.net",
+  "pinned_leaf_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901",
+  "anchor_sha256": "91a8a5567efa6bf941162aa806b3ba476aaddf7867640e53053b35fb225a5dae"
+ },
+ "credential_reference": "operator:tactical-model-generation",
+ "operation": "metadata",
+ "model_calls": 0,
+ "reads": [
+  {
+   "url": "https://ai.tacticalengineering.net:6969/v1/models",
+   "method": "GET",
+   "status": 200,
+   "bytes": 126,
+   "sha256": "ed441b8573873d0b4a46ae72d16da06b6b7c2bc0ff682fc04c56ad6a5cc013fd",
+   "elapsed_seconds": 0.308,
+   "text": "{\"object\":\"list\",\"data\":[{\"id\":\"gemma-4-coding-abliterated\",\"object\":\"model\",\"created\":1790247585,\"owned_by\":\"tensorrt_llm\"}]}"
+  },
+  {
+   "url": "https://ai.tacticalengineering.net:6969/server_info",
+   "method": "GET",
+   "status": 200,
+   "bytes": 327,
+   "sha256": "691146b39f114dff90e8bfeae43df7db167922cc1d71e5a626ef562c7436bb1c",
+   "elapsed_seconds": 0.33,
+   "text": "{\"disaggregated_params\":{},\"max_batch_size\":1,\"kv_cache_hash_algo\":\"v1_block_key\",\"tokens_per_block\":32,\"startup_metrics\":{\"model_loader\":{\"checkpoint_preparation_seconds\":14.47262104699999,\"weight_population_seconds\":23.382872327,\"post_load_processing_seconds\":0.37122180400001525,\"total_model_loading_seconds\":66.128072849}}}"
+  },
+  {
+   "url": "https://ai.tacticalengineering.net:6969/metrics",
+   "method": "GET",
+   "status": 200,
+   "bytes": 2,
+   "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "elapsed_seconds": 4.317,
+   "text": "[]"
+  },
+  {
+   "url": "https://ai.tacticalengineering.net:6969/health",
+   "method": "GET",
+   "status": 200,
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "elapsed_seconds": 0.304,
+   "text": ""
+  },
+  {
+   "url": "https://ai.tacticalengineering.net:6969/version",
+   "method": "GET",
+   "status": 200,
+   "bytes": 23,
+   "sha256": "db636a9ddc42b8a889e0dec6a2566acdbc467ef3815f7d921e7f3d64b24c5901",
+   "elapsed_seconds": 0.304,
+   "text": "{\"version\":\"1.3.0rc25\"}"
+  },
+  {
+   "url": "https://ai.tacticalengineering.net:6969/openapi.json",
+   "method": "GET",
+   "status": 200,
+   "bytes": 172328,
+   "sha256": "f1409140550864c923af91e9573038de3882ffdd19b93c81ff88914d5322bec6",
+   "elapsed_seconds": 0.518
+  }
+ ],
+ "openapi": {
+  "routes": [
+   "/_internal/tokenize",
+   "/energy_metrics",
+   "/health",
+   "/health_generate",
+   "/kv_cache_events",
+   "/metrics",
+   "/release_memory",
+   "/resume_memory",
+   "/server_info",
+   "/steady_clock_offset",
+   "/update_weights",
+   "/v1/chat/completions",
+   "/v1/completions",
+   "/v1/data_transceiver_state",
+   "/v1/models",
+   "/v1/responses",
+   "/v1/responses/{response_id}",
+   "/version"
+  ],
+  "tokenize": {
+   "post": {
+    "summary": "Tokenize",
+    "operationId": "tokenize__internal_tokenize_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "TokenizeRequest",
+        "properties": {
+         "model": {
+          "anyOf": [
+           {
+            "type": "string"
+           },
+           {
+            "type": "null"
+           }
+          ],
+          "title": "Model"
+         },
+         "prompt": {
+          "type": "string",
+          "title": "Prompt"
+         }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+         "prompt"
+        ],
+        "title": "TokenizeRequest",
+        "description": "Request body for the ``POST /_internal/tokenize`` endpoint.\n\nAsks the server to encode some text into the token-id sequence its\nloaded tokenizer would produce, without running any generation.\n\nOnly plain-text ``prompt`` tokenization is supported. A ``messages``\npath was intentionally left out: to be meaningful it must reuse the full\n``/v1/chat/completions`` preprocessing (server chat template, tools,\ndocuments, template kwargs, model-type resolution, multimodal handling),\notherwise the returned token ids would silently diverge from the actual\ninference prompt. It can be added once that path is shared.\n\nFields:\n    model: Target model name. Accepted for compatibility with\n        multi-model routers but ignored -- the server always tokenizes\n        against its own loaded model.\n    prompt: Plain text to tokenize directly via ``tokenizer.encode``."
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "HTTPValidationError",
+         "properties": {
+          "detail": {
+           "items": {
+            "$ref": "#/components/schemas/ValidationError"
+           },
+           "type": "array",
+           "title": "Detail"
+          }
+         },
+         "type": "object",
+         "title": "HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "schemas_naming_limits": [
+   "ChatCompletionRequest.max_tokens",
+   "CodeInterpreterContainerCodeInterpreterToolAuto.memory_limit",
+   "CompletionRequest.max_tokens",
+   "CompletionRequest.return_context_logits",
+   "ContainerAuto.memory_limit",
+   "ContainerAutoParam.memory_limit",
+   "Reasoning.context",
+   "WebSearchPreviewTool.search_context_size",
+   "WebSearchPreviewToolParam.search_context_size",
+   "WebSearchTool.search_context_size",
+   "WebSearchToolParam.search_context_size",
+   "openai__types__responses__tool_param__CodeInterpreterContainerCodeInterpreterToolAuto.memory_limit"
+  ]
+ }
+}

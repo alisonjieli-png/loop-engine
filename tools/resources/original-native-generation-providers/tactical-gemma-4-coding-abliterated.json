@@ -26,8 +26,8 @@
   "sha256": "0d216e16f1055e3f4e0dc44209c9e52f76cbe7fc086e0ed09380a210c729f710"
  },
  "capacity": {
-  "path": "artifacts/tactical-generation-binding-2026-09-23/capacity-record.json",
-  "sha256": "7acd787ac2327431c57e330ab3b1f056711deda6f11e74f7028b0007a13997ce"
+  "path": "artifacts/tactical-capacity-probe-2026-09-24/capacity-record-verified-65536.json",
+  "sha256": "f0b71ce3764e1eb6018060676a2ff8102f427b82c71b36e8515246f6ff01825e"
  },
  "credential_reference": "tactical-model-generation"
 }
