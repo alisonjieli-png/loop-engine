@@ -59,6 +59,69 @@
       "license_state": "unknown"
     },
     {
+      "id": "openai_plugins",
+      "name": "OpenAI plugin examples (supersedes the deprecated openai/skills)",
+      "kind": "github_repository",
+      "url": "https://github.com/openai/plugins",
+      "roadmap_step": "S-6.40",
+      "license_state": "mixed; each plugin's own licence is authoritative",
+      "note": "Curated Codex plugin examples: .codex-plugin/plugin.json plus companion skills/, agents/, commands/, hooks.json, assets. Verified 2026-09-24: 7.1k stars, 306 commits."
+    },
+    {
+      "id": "agent_plugins_spec",
+      "name": "Agent Plugins packaging specification",
+      "kind": "web_page",
+      "url": "https://agentplugins.io",
+      "roadmap_step": "S-6.44",
+      "license_state": "unknown",
+      "note": "Portable plugin contract; a client may conform while supporting only one component type (skills or MCP servers), so package-level badges cannot replace per-feature compatibility records."
+    },
+    {
+      "id": "microsoft_apm",
+      "name": "Microsoft Agent Package Manager",
+      "kind": "github_repository",
+      "url": "https://github.com/microsoft/apm",
+      "roadmap_step": "S-6.40",
+      "license_state": "MIT",
+      "note": "Dependency-resolution candidate behind the material-install edge: apm.yml manifest, apm.lock.yaml integrity hashes, install policy separate from run policy, CycloneDX/SPDX SBOM export, drift audit, MCP trust prompts. Verified 2026-09-24: 3.9k stars, 1,989 commits."
+    },
+    {
+      "id": "skills_sh_api",
+      "name": "skills.sh directory, leaderboard and audit pages",
+      "kind": "web_page",
+      "url": "https://skills.sh/docs",
+      "roadmap_step": "S-6.40",
+      "license_state": "site content unverified for reuse; the referenced skills keep their own licences",
+      "note": "Ingestion-surface candidate: catalog, search, curated, detail (content hash when snapshotted) and audit endpoints; authentication via Vercel OIDC tokens, so an importer must not assume anonymous access. Audit states are per scanner (Gen, Socket, Snyk) and can disagree or stay pending: keep scanner, date, digest, severity and coverage as separate fields."
+    },
+    {
+      "id": "clawhub",
+      "name": "ClawHub skill and plugin registry",
+      "kind": "github_repository",
+      "url": "https://github.com/openclaw/clawhub",
+      "roadmap_step": "S-6.40",
+      "license_state": "registry code and listed artifacts differ; per-artifact review required",
+      "note": "Versioned skills, search and CLI. Distinguishes code plugins, bundle plugins and whole-agent packages: not every artifact is a portable Markdown skill."
+    },
+    {
+      "id": "mcp_registry",
+      "name": "Official MCP Registry (metadata service)",
+      "kind": "github_repository",
+      "url": "https://github.com/modelcontextprotocol/registry",
+      "roadmap_step": "S-6.40",
+      "license_state": "registry code not designed or supported for self-hosting; interface is published",
+      "note": "Stores standardized server.json metadata, not packages. Namespace verification is not code-security approval. Preview service: breaking changes and data resets possible."
+    },
+    {
+      "id": "jfrog_agent_skills",
+      "name": "JFrog Artifactory agent-skills repository type (open beta)",
+      "kind": "web_page",
+      "url": "https://jfrog.com/help/r/jfrog-artifactory-documentation/skills-repositories",
+      "roadmap_step": "S-6.62",
+      "license_state": "JFrog product documentation; no artifact licence implied",
+      "note": "Actual private package storage with SKILL.md indexing and a ClawHub-compatible API (jf agent skills). Scanning depends on Xray configuration: presence in the registry never means scanned or approved."
+    },
+    {
       "id": "acp_specification",
       "name": "Agent Client Protocol specification",
       "kind": "github_repository",

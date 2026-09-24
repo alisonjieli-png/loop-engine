@@ -30,7 +30,9 @@ HOST_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\Z")
 REPO_PATH = re.compile(r"/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?\Z")
 MAX_MANIFEST_SOURCES = 50
 MAX_ONLINE_SOURCES = 20
-ALLOWED_PAGE_HOSTS = frozenset({"arxiv.org", "modelcontextprotocol.io"})
+ALLOWED_PAGE_HOSTS = frozenset({"arxiv.org", "modelcontextprotocol.io",
+                                 "agentplugins.io", "skills.sh",
+                                 "jfrog.com"})
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -66,8 +68,11 @@ def _validate_url(value: Any, kind: str) -> None:
         if any(part in (".", "..") for part in parsed.path.split("/")):
             raise ValueError(f"unsupported GitHub repository URL: {value}")
     elif kind == "web_page":
-        if (host not in ALLOWED_PAGE_HOSTS or not parsed.path.startswith("/")
-                or ".." in parsed.path.split("/")):
+        # A bare domain such as https://agentplugins.io has no path; treat
+        # the empty path as the site root, which still starts with "/".
+        page_path = parsed.path or "/"
+        if (host not in ALLOWED_PAGE_HOSTS or not page_path.startswith("/")
+                or ".." in page_path.split("/")):
             raise ValueError(f"unsupported web page URL: {value}")
     else:
         raise ValueError(f"unsupported source kind: {kind}")
@@ -85,7 +90,10 @@ def validate_manifest(value: Any) -> list[dict[str, Any]]:
     seen_urls: set[str] = set()
     for row in sources:
         required = {"id", "name", "kind", "url", "roadmap_step", "license_state"}
-        if not isinstance(row, dict) or not required <= set(row) or set(row) - required - {"baseline_revision"}:
+        if not isinstance(row, dict) or not required <= set(row) or set(row) - required - {"baseline_revision", "note"}:
+            raise ValueError("source fields are invalid")
+        if "note" in row and (not isinstance(row["note"], str)
+                              or not 1 <= len(row["note"].strip()) <= 1000):
             raise ValueError("source fields are invalid")
         if (not isinstance(row["id"], str) or not ID_PATTERN.fullmatch(row["id"])
                 or not isinstance(row["name"], str) or not 1 <= len(row["name"].strip()) <= 160

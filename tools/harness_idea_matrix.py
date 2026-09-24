@@ -67,6 +67,13 @@ FACET_DIMENSIONS = ("job_title", "seniority", "location", "language",
                     "company_archetype", "project_stage", "harness",
                     "model")
 
+#: File kinds an idea can ask for. The default is the Agent Skills
+#: shape; the others come from the registry survey of September 24,
+#: 2026 (plugin manifests, routing files, rules, workflows, hooks,
+#: subagent definitions) and match the lane runner's declared kinds.
+FILE_KINDS = ("skill", "plugin_manifest", "harness_routing", "rules",
+              "workflow", "hook", "subagent")
+
 #: The pinned O*NET selection of occupations with task statements.
 DEFAULT_OPPORTUNITIES = Path(__file__).resolve().parents[1] / (
     "artifacts/occupation-grid-research-2026-09-22/task-opportunities.json")
@@ -285,6 +292,31 @@ def _identity_for(datatype: str, operation: str, use_case: str) -> str:
     return slug
 
 
+def _file_kind_for(operation: str, use_case: str) -> str:
+    """Choose one best-fit file kind per method hypothesis.
+
+    One method identity yields one file, so kinds multiply coverage
+    without multiplying methods (the S-6.40 dedup rule). The mapping
+    is deterministic: enforcement-shaped work becomes rules or hooks,
+    repeated multi-step work becomes workflows or routing files,
+    manifest-shaped work becomes plugin manifests, focused single-role
+    work becomes subagents, and everything else stays a skill.
+    """
+    if operation in ("monitoring", "detection") and use_case in ("devops", "security_review", "quality_assurance"):
+        return "hook"
+    if operation in ("routing", "planning") or use_case == "project_management":
+        return "harness_routing"
+    if use_case == "agent_coordination":
+        return "subagent"
+    if operation in ("reviewing", "explanation") and use_case in ("compliance_audit", "financial_reconciliation"):
+        return "rules"
+    if operation in ("verification", "planning", "measurement", "comparison") and use_case in ("agentic_task", "agentic_benchmark", "software_development", "machine_learning", "benchmarking"):
+        return "workflow"
+    if operation in ("linking", "enrichment") and use_case in ("software_development", "devops"):
+        return "plugin_manifest"
+    return "skill"
+
+
 def render_batch(ideas: list[Idea], sources: list[MatrixSource]) -> dict:
     """Emit the typed batch record with provenance and digests."""
     source_records = []
@@ -302,6 +334,7 @@ def render_batch(ideas: list[Idea], sources: list[MatrixSource]) -> dict:
         records.append({
             "record_type": IDEA_RECORD_TYPE,
             "id": identity,
+            "file_kind": _file_kind_for(idea.operation, idea.use_case),
             "datatype": idea.datatype,
             "operation": idea.operation,
             "use_case": idea.use_case,
@@ -333,6 +366,8 @@ def render_batch(ideas: list[Idea], sources: list[MatrixSource]) -> dict:
         "ideas": records,
         "idea_count": len(records),
         "unique_method_signatures": len({r["method_signature"] for r in records}),
+        "unique_ids": len({r["id"] for r in records}),
+        "file_kinds": len(FILE_KINDS),
         "batch_sha256": batch_digest,
     }
 
@@ -365,8 +400,10 @@ def main(argv: list[str] | None = None) -> int:
     batch = render_batch(ideas, sources)
     payload = json.dumps(batch, indent=2, ensure_ascii=False) + "\n"
     output.write_text(payload, encoding="utf-8")
-    print(f"wrote {batch['idea_count']} ideas, "
-          f"{batch['unique_method_signatures']} unique method signatures, to {output}")
+    print(f"wrote {batch['idea_count']} ideas "
+          f"({batch['file_kinds']} file kinds), "
+          f"{batch['unique_method_signatures']} unique method signatures, "
+          f"{batch['unique_ids']} unique identities, to {output}")
     return 0
 
 

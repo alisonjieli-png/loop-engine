@@ -150,6 +150,60 @@ class IdeaAndPromptChecks(unittest.TestCase):
         from tools.opencode_generation_lanes import _strip_code_fence
         self.assertTrue(_looks_like_candidate(_strip_code_fence(fenced), idea))
 
+    def test_plugin_manifest_shape_check(self):
+        idea = {**_idea(), "file_kind": "plugin_manifest"}
+        good = json.dumps({
+            "name": idea["id"], "version": "1.0.0", "description": "d",
+            "schema": "https://agentplugins.io/schema/v1",
+            "skills": [{"name": idea["id"], "description": "d"}],
+            "mcpServers": {"one": {"command": "run"}}})
+        bad_name = json.dumps({
+            "name": "other-id", "description": "d",
+            "schema": "https://agentplugins.io/schema/v1",
+            "skills": [{"name": "x", "description": "d"}], "mcpServers": {}})
+        bad_json = "{not json"
+        self.assertTrue(_looks_like_candidate(good, idea))
+        self.assertFalse(_looks_like_candidate(bad_name, idea))
+        self.assertFalse(_looks_like_candidate(bad_json, idea))
+
+    def test_hook_shape_check(self):
+        idea = {**_idea(), "file_kind": "hook"}
+        good = json.dumps({"hooks": {"Stop": [{"matcher": "*",
+            "hooks": [{"type": "command", "command": "true"}]}]}})
+        self.assertTrue(_looks_like_candidate(good, idea))
+        self.assertFalse(_looks_like_candidate(json.dumps({"hooks": {}}), idea))
+        self.assertFalse(_looks_like_candidate("no json", idea))
+
+    def test_rules_shape_check(self):
+        idea = {**_idea(), "file_kind": "rules"}
+        good = f"# {idea['id']}\n\n## Must never do\n- a\n\n## Must do\n- b\n\n## When unsure\n- c\n"
+        self.assertTrue(_looks_like_candidate(good, idea))
+        self.assertFalse(_looks_like_candidate("## Must never do\n- a\n", idea))
+
+    def test_workflow_and_subagent_shape_checks(self):
+        idea = {**_idea(), "file_kind": "workflow"}
+        workflow = (f"---\nname: {idea['id']}\ndescription: d\n---\n"
+                    "## Goal\ng\n## Steps\n1. s\n## Success criteria\nc\n")
+        self.assertTrue(_looks_like_candidate(workflow, idea))
+        self.assertFalse(_looks_like_candidate(f"---\nname: {idea['id']}\n---\nbody", idea))
+        subagent_idea = {**_idea(), "file_kind": "subagent"}
+        subagent = (f"---\nname: {subagent_idea['id']}\ndescription: d\ntools: [Read]\n---\n"
+                    "## How you work\nh\n## What you never do\nn\n")
+        self.assertTrue(_looks_like_candidate(subagent, subagent_idea))
+
+    def test_undeclared_file_kind_is_refused(self):
+        from tools.opencode_generation_lanes import LaneError, _idea_file_kind
+        with self.assertRaises(LaneError):
+            _idea_file_kind({"file_kind": "telepathy"})
+        self.assertEqual(_idea_file_kind({}), "skill")
+
+    def test_prompt_names_the_file_kind_contract(self):
+        manifest_idea = {**_idea(), "file_kind": "plugin_manifest"}
+        prompt = _render_prompt(manifest_idea)
+        self.assertIn("Agent Plugins manifest", prompt)
+        self.assertIn('"mcpServers"', prompt)
+        self.assertIn("no secrets", prompt)
+
     def test_extract_message_text_takes_last_message_event(self):
         events = "\n".join([
             '{"type":"text","part":{"type":"text","text":"first"}}',

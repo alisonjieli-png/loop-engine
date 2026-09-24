@@ -196,19 +196,95 @@ class Lane:
         return environment
 
 
-def _render_prompt(idea: dict) -> str:
-    applicability = idea["applicability"]
-    return (
+#: File kinds a lane can generate. The default is the Agent Skills shape;
+#: the others come from the registry survey of September 24, 2026 and
+#: the harness file kinds research, and each has its own shape check.
+FILE_KINDS = ("skill", "plugin_manifest", "harness_routing", "rules",
+              "workflow", "hook", "subagent")
+
+_KIND_PROMPTS = {
+    "skill": (
         "Write one original harness method as a Markdown file with YAML "
-        "frontmatter, following the Agent Skills specification. The method "
-        f"identity is {idea['id']}: input datatype {idea['datatype']}, "
-        f"operation {idea['operation']}, use case {idea['use_case']}. "
-        f"Ground it in this real task statement: {applicability['task_reference']}. "
+        "frontmatter, following the Agent Skills specification. "
         "The frontmatter must name: name (the identity), description (when to "
         "use it), and license (MIT). The body must state: trigger, typed input, "
-        "typed output, effects, stop condition, the known-wrong case it must "
-        f"catch (it must catch this: {idea['known_wrong']}), and an acceptance "
-        "check. Write only the file content, no commentary. Never claim an "
+        "typed output, effects, stop condition, the known-wrong case, and an "
+        "acceptance check."
+    ),
+    "plugin_manifest": (
+        "Write one original portable Agent Plugins manifest as a single JSON "
+        "object (no Markdown, no code fences). It must have: name (the "
+        "identity), version (\"1.0.0\"), description, schema "
+        "(\"https://agentplugins.io/schema/v1\"), and one \"skills\" array "
+        "holding exactly one skill entry with a name and description, and one "
+        "\"mcpServers\" object holding exactly one server entry with a command "
+        "and no secrets (environment variable references only)."
+    ),
+    "harness_routing": (
+        "Write one original harness routing file as a Markdown file with YAML "
+        "frontmatter naming: name (the identity), description, license (MIT). "
+        "The body is a progressive-disclosure routing table: three task "
+        "patterns, and for each the subdirectory or subpackage a step should "
+        "open, with one line of reason. No links to files that are not named."
+    ),
+    "rules": (
+        "Write one original rules file as a Markdown file, no frontmatter, "
+        "titled with a single # heading equal to the identity. Exactly three "
+        "sections: '## Must never do', '## Must do', '## When unsure', each "
+        "with two to four imperative rules for this one task domain."
+    ),
+    "workflow": (
+        "Write one original reusable workflow recipe as a Markdown file with "
+        "YAML frontmatter naming: name (the identity), description, license "
+        "(MIT). The body must have '## Goal', '## When to run', '## Steps' "
+        "(numbered), '## Success criteria', '## Failure controls'."
+    ),
+    "hook": (
+        "Write one original Claude Code settings hook as a single JSON object "
+        "(no Markdown, no code fences) with a top-level \"hooks\" key. Each "
+        "event value is an array of objects with \"matcher\" and \"hooks\", "
+        "where each hook names \"type\": \"command\" and a \"command\" that "
+        "reads only files in the current project and never sends network "
+        "traffic or writes outside the working directory."
+    ),
+    "subagent": (
+        "Write one original subagent definition as a Markdown file with YAML "
+        "frontmatter naming: name (the identity), description (when to use "
+        "this subagent), tools (a list), model. The body must have "
+        "'## How you work' and '## What you never do' sections."
+    ),
+}
+
+_KIND_FILE_NAMES = {
+    "skill": "SKILL.md",
+    "plugin_manifest": "plugin.json",
+    "harness_routing": "HARNESS.md",
+    "rules": "rules.md",
+    "workflow": "WORKFLOW.md",
+    "hook": "hook.json",
+    "subagent": "AGENT.md",
+}
+
+
+def _idea_file_kind(idea: dict) -> str:
+    """The declared file kind of an idea, defaulting to the skill shape."""
+    kind = idea.get("file_kind", "skill")
+    if kind not in FILE_KINDS:
+        refuse("file_kind_not_declared")
+    return kind
+
+
+def _render_prompt(idea: dict) -> str:
+    applicability = idea["applicability"]
+    kind = _idea_file_kind(idea)
+    return (
+        f"{_KIND_PROMPTS[kind]} "
+        f"The identity is {idea['id']}: input datatype {idea['datatype']}, "
+        f"operation {idea['operation']}, use case {idea['use_case']}. "
+        f"Ground it in this real task statement: {applicability['task_reference']}. "
+        "The known-wrong case it must catch is: "
+        f"{idea['known_wrong']}. "
+        "Write only the file content, no commentary. Never claim an "
         "effect the file cannot perform by itself."
     )
 
@@ -296,11 +372,14 @@ def _artifact_files(workspace: Path, idea: dict) -> dict:
     """Map written candidate paths the harness itself produced, if any.
 
     Some models answer by writing a file in the workspace instead of
-    replying with text. A file at the Agent Skills path for this idea,
-    or at the flat idea-named Markdown path, counts; nothing else does.
+    replying with text. A file at the idea's native path for its declared
+    file kind, or at the flat idea-named Markdown path, counts; nothing
+    else does.
     """
     markers = {}
+    file_name = _KIND_FILE_NAMES[_idea_file_kind(idea)]
     candidates = (
+        workspace / idea["id"] / file_name,
         workspace / idea["id"] / "SKILL.md",
         workspace / f"{idea['id']}.md",
     )
@@ -331,22 +410,47 @@ def _extract_message_text(stdout: str) -> str:
 
 
 def _looks_like_candidate(body: str, idea: dict) -> bool:
-    """Deterministic shape check: frontmatter, identity, known-wrong case.
+    """Deterministic shape check per declared file kind.
 
     Some models wrap the file in a fenced code block. A single such wrapper
     is stripped before the shape check; the recorded candidate keeps the
-    stripped body so the file is a native SKILL.md-shaped document.
+    stripped body so the file is a native document of its kind.
     """
     stripped = _strip_code_fence(body)
-    if not stripped.startswith("---"):
-        return False
-    end = stripped.find("\n---", 3)
-    if end < 0:
-        return False
-    frontmatter = stripped[3:end]
-    return (f"name: {idea['id']}" in frontmatter
-            and "description:" in frontmatter
-            and "license:" in frontmatter)
+    kind = _idea_file_kind(idea)
+    if kind == "plugin_manifest" or kind == "hook":
+        try:
+            value = json.loads(stripped)
+        except ValueError:
+            return False
+        if not isinstance(value, dict):
+            return False
+        if kind == "plugin_manifest":
+            return (value.get("name") == idea["id"]
+                    and isinstance(value.get("description"), str) and value["description"]
+                    and value.get("schema") == "https://agentplugins.io/schema/v1"
+                    and isinstance(value.get("skills"), list) and len(value["skills"]) == 1
+                    and isinstance(value.get("mcpServers"), dict))
+        return ("hooks" in value and isinstance(value["hooks"], dict) and value["hooks"])
+    if kind == "rules":
+        return stripped.startswith(f"# {idea['id']}\n") and "## Must never do" in stripped
+    if kind == "skill" or kind == "harness_routing" or kind == "workflow" or kind == "subagent":
+        if not stripped.startswith("---"):
+            return False
+        end = stripped.find("\n---", 3)
+        if end < 0:
+            return False
+        frontmatter = stripped[3:end]
+        if f"name: {idea['id']}" not in frontmatter or "description:" not in frontmatter:
+            return False
+        if kind == "subagent":
+            return "## How you work" in stripped and "## What you never do" in stripped
+        if kind == "workflow":
+            return "## Steps" in stripped and "## Success criteria" in stripped
+        if kind == "harness_routing":
+            return "## " in stripped[stripped.find("\n---", 3) + 4:]
+        return "license:" in frontmatter
+    refuse("file_kind_not_declared")
 
 
 def _strip_code_fence(body: str) -> str:
