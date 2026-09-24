@@ -150,8 +150,10 @@ GENERATED_WEB_FILES = {
     "/sitemap.xml": "application/xml",
 }
 #: Addresses a crawler is asked to leave alone besides the unlisted pages: the
-#: interface routes, the protocol endpoint and its authorization metadata.
-ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/")
+#: interface routes, the protocol endpoint and its authorization metadata, and
+#: the counted links of the public lists at /out/ (public_links.py), which only
+#: redirect to other sites.
+ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/", "/out/")
 # Only declared non-page files, packaged or generated, are public cache
 # entries. Browser account pages and every API response retain the transport's
 # no-store rule.

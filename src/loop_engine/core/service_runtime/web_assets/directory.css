@@ -52,6 +52,8 @@ main:has(> [data-view="directory"]:not([hidden])){max-width:none;padding:0}
 .directory-row .row-offering{font-weight:600;color:var(--ink)}
 .directory-row .row-origin{font-weight:600;color:var(--ink)}
 .directory-row .row-sources{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-link-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem}
+.row-host{font-size:.8125rem;color:var(--subtle);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:12rem}
 .row-docs{font-size:.875rem;font-weight:600;text-decoration:none;align-self:flex-start}
 .row-docs:hover{text-decoration:underline}
 .row-paid{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}

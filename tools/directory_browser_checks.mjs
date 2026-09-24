@@ -26,7 +26,7 @@ const LABELS={affiliate:"Paid link",referral:"Paid link",sponsored:"Ad",owned:"B
 /* The same nine relationships as commercial_relationship.invariance_variants("example.org"): none, then each kind pending and active. */
 const variants=[NONE,...["affiliate","referral","sponsored","owned"].flatMap(kind=>["pending_owner","active"].map(status=>({kind,program_name:kind+" programme "+status,
   program_terms_address:"https://"+kind+".example.org/terms/"+status,disclosure_label:LABELS[kind],
-  outbound_link:kind==="owned"?"https://owned.example.org/product":"https://"+kind+".example.org/go/"+status,
+  outbound_link:"https://"+kind+".example.org/"+(kind==="owned"?"product":"go/"+status),
   canonical_address:"https://"+kind+".example.org/product",status,reviewed_at:"2026-09-24"})))];
 const ACTIVE_AFFILIATE=2,ACTIVE_SPONSORED=6,ACTIVE_OWNED=8;
 
@@ -147,6 +147,20 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   await direct.context.close();
   check("directory_row_link_opens_the_listing_and_names_it_in_the_address",opened.open&&opened.hash===identity&&opened.title.length>0,opened);
   check("directory_address_with_a_row_shows_that_row",target.shown&&target.target,target);
+  /* Every row link goes through the counted redirect, which answers with the address the row shows beside the link. */
+  const counted=await page.evaluate(()=>[...document.querySelectorAll("#directory-list [data-row] a[href]")].map(link=>({href:link.getAttribute("href"),
+    host:link.closest(".row-link-line")?.querySelector(".row-host")?.textContent||"",docs:link.hasAttribute("data-row-docs")})));
+  const docsLinks=counted.filter(link=>link.docs),outbound=counted.filter(link=>!link.href.startsWith("#"));
+  const followedAnswer=docsLinks[0]?await page.request.get(base+docsLinks[0].href,{maxRedirects:0}):null;
+  const followed={status:followedAnswer?.status()??null,location:followedAnswer?.headers()["location"]||"",cache:followedAnswer?.headers()["cache-control"]||"",
+    robotsTag:followedAnswer?.headers()["x-robots-tag"]||"",host:docsLinks[0]?.host||""};
+  const unknown=await page.request.get(base+"/out/directory/site/io.github.nobody/no-such-row",{maxRedirects:0});
+  const robots=await (await page.request.get(base+"/robots.txt")).text();
+  check("directory_row_links_go_through_the_counted_redirect",outbound.length>0&&outbound.every(link=>link.href.startsWith("/out/directory/")),{links:outbound.slice(0,4)});
+  check("directory_counted_redirect_answers_with_the_address_shown_beside_the_link",followed.status===302&&followed.location.startsWith("https://"+followed.host)
+    &&followed.cache==="no-store"&&followed.robotsTag.includes("noindex"),followed);
+  check("directory_counted_redirect_refuses_a_row_the_list_does_not_hold",unknown.status()===404,{status:unknown.status()});
+  check("robots_file_asks_search_engines_not_to_follow_counted_links",/^Disallow: \/out\/$/m.test(robots),{robots});
   /* The second address serves the same page. */
   const second=await page.request.get(base+"/mcp-directory");
   check("directory_second_address_serves_the_same_page",second.status()===200&&(await second.text())===served);

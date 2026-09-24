@@ -54,6 +54,9 @@ RESEARCH_EXTRACT = ROOT / "tools/resources/mcp-directory-codex-research.json"
 PUBLISHER_FILE = ROOT / "tools/resources/mcp-directory-publisher-documentation.json"
 COMMERCIAL_FILE = ROOT / "tools/resources/mcp-directory-commercial-relationships.json"
 SITE_MAP = ROOT / "src/loop_engine/core/service_runtime/web_site_map.json"
+#: The directory's link table for the service's counted redirects (public_links.py).
+LINK_TABLE = ROOT / "src/loop_engine/core/service_runtime/public_lists/directory.json"
+LIST_PAGES = ["/directory", "/mcp-directory"]
 RESEARCH_RECORD_TYPE = "mcp_directory_research_extract/v1"
 PUBLISHER_RECORD_TYPE = "mcp_directory_publisher_documentation/v1"
 COMMERCIAL_RECORD_TYPE = "mcp_directory_commercial_relationships/v1"
@@ -185,6 +188,13 @@ def write_packaged(offerings, rules, checked: dict, generated_at: str) -> dict:
         manifest["parts"][index]["sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
         manifest["parts"][index]["bytes"] = len(text.encode("utf-8"))
     (DATA_FOLDER / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    decoded = [directory_page.decode_row(row, manifest) for part in parts for row in part["rows"]]
+    table = directory_page.link_table(decoded, LIST_PAGES, manifest["commercial_relationships"])
+    LINK_TABLE.parent.mkdir(parents=True, exist_ok=True)
+    head = json.dumps({key: value for key, value in table.items() if key != "rows"}, ensure_ascii=False)[:-1]
+    lines = ",\n".join(json.dumps(identity, ensure_ascii=False) + ": " + json.dumps(links, ensure_ascii=False, separators=(",", ":"))
+                        for identity, links in table["rows"].items())
+    LINK_TABLE.write_text(head + ', "rows": {\n' + lines + "\n}}\n", encoding="utf-8")
     first = [directory_page.decode_row(row, manifest) for row in _first_rows(offerings, manifest, parts)]
     canonical = directory_page.SECURE + json.loads(SITE_MAP.read_text(encoding="utf-8"))["canonical_hostname"] + PAGE_ADDRESS
     html = PAGE.read_text(encoding="utf-8")
@@ -323,6 +333,15 @@ def check_packaged() -> list:
     html = PAGE.read_text(encoding="utf-8")
     for name in ("header", "footer", "facts", "chips", "rows", "structured-data"):
         directory_page.region(html, name)
+    from loop_engine.core.service_runtime.public_links import read_link_table
+    table = read_link_table(json.loads(LINK_TABLE.read_text(encoding="utf-8")))
+    rows = [directory_page.decode_row(row, manifest) for index in range(directory_build.PART_COUNT)
+            for row in json.loads((DATA_FOLDER / f"rows-{index}.json").read_text(encoding="utf-8"))["rows"]]
+    expected = directory_page.link_table(rows, LIST_PAGES, manifest["commercial_relationships"])["rows"]
+    secure = directory_page.SECURE
+    if {key: {link: address if address.startswith(secure) else secure + address for link, address in links.items()}
+            for key, links in expected.items()} != table["rows"] or list(table["pages"]) != LIST_PAGES:
+        problems.append("the link table does not hold exactly the rows' links and the directory's pages")
     return problems
 
 

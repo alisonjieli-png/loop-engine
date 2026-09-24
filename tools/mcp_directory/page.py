@@ -15,6 +15,7 @@ import json
 import re
 from datetime import date, timedelta
 from html import escape
+from urllib.parse import quote
 
 from loop_engine.core.service_runtime.commercial_relationship import DISCLOSURE_SECTION_ID
 
@@ -43,11 +44,39 @@ LABELS = {
     "package_pages": {"npm": "www.npmjs.com/package/", "pypi": "pypi.org/project/", "nuget": "www.nuget.org/packages/",
                       "cargo": "crates.io/crates/"},
 }
+#: The list's name in its counted links, /out/directory/<link>/<row>, and in its link table.
+LIST_NAME = "directory"
+SITE_LINK, CODE_LINK, PAID_LINK = "site", "code", "paid"
 _REGION = "<!-- generated:{name} -->"
 _REGION_END = "<!-- /generated:{name} -->"
 SECURE_SCHEME = "https"
 SECURE = SECURE_SCHEME + "://"
 SCHEMA_ORG = SECURE + "schema.org"
+
+
+def out_address(list_name: str, link: str, identity: str) -> str:
+    """The counted link of one row: the service redirects it to the address the list's link table holds."""
+    return "/out/" + list_name + "/" + link + "/" + quote(identity, safe="/")
+
+
+def link_table(rows: list, pages: list, relationships: list) -> dict:
+    """The list's link table for the service: each row's documentation, code and active paid link addresses."""
+    from loop_engine.core.service_runtime.commercial_relationship import from_record
+    table = {}
+    for row in rows:
+        links = {}
+        docs = row["website"] or row["repository"]
+        if docs:
+            links[SITE_LINK] = docs
+        if row["repository"] and row["repository"] != docs:
+            links[CODE_LINK] = row["repository"]
+        relation = from_record(relationships[row["commercial"]])
+        if relation.shows_commercial_link or relation.is_sponsored_placement:
+            links[PAID_LINK] = relation.outbound_link
+        if links:
+            table[row["id"]] = links
+    return {"record_type": "public_list_links/v1", "list": LIST_NAME, "pages": pages,
+            "rows": {identity: table[identity] for identity in sorted(table)}}
 
 
 def replace_region(html: str, name: str, content: str) -> str:
@@ -96,8 +125,9 @@ def row_html(row: dict, manifest: dict) -> str:
     more = len(row["locations"]) - 1 if row["locations"] else 0
     licence = manifest["licences"][row["licence"]] or "Licence not known"
     docs = row["website"] or row["repository"]
-    docs_link = (f'<a class="row-docs" href="{escape(SECURE + docs, quote=True)}" rel="noopener" '
-                 f'data-row-docs>Documentation</a>') if docs else ""
+    docs_link = (f'<p class="row-link-line"><a class="row-docs" href="{escape(out_address(LIST_NAME, SITE_LINK, row["id"]), quote=True)}" '
+                 f'rel="noopener" data-row-docs>Documentation</a> <span class="row-host" data-listing-text>{escape(docs.split("/", 1)[0])}</span></p>'
+                 ) if docs else ""
     sources = [entry["id"] for entry in manifest["sources"] if row["sources"] & entry["bit"]]
     return (
         f'<div class="directory-row" role="listitem" id="{identity}" data-row>'

@@ -619,6 +619,9 @@ class ServiceHttpApplication:
         # lifespan. It writes nothing unless a grant is due.
         from .free_monthly import FreeMonthlyRenewalSchedule
         self.renewal_schedule = FreeMonthlyRenewalSchedule(self.runtime)
+        # The counted links of the public lists: one count per link per day, read from the path alone.
+        from .public_links import PublicListLinks
+        self.public_links = PublicListLinks(self.runtime)
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -1228,12 +1231,14 @@ class ServiceHttpApplication:
             schedule, renewal = self.retention_schedule, self.renewal_schedule
             schedule.start()
             renewal.start()
+            self.public_links.start()
             try:
                 async with manager.run(), self._catalogue_refresh():
                     yield
             finally:
                 await schedule.stop()
                 await renewal.stop()
+                await self.public_links.stop()
             self._workers.shutdown(wait=False, cancel_futures=False)
 
         async def transport(scope, receive, send):
@@ -1402,7 +1407,15 @@ class ServiceHttpApplication:
                     return Response(status_code=304, headers=headers)
             if method == "HEAD":
                 headers["Content-Length"] = str(len(body))
+            elif media_type == HTML_MEDIA_TYPE:
+                self.public_links.viewed(path)
             return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
+        if path.startswith("/out/") and method in ("GET", "HEAD"):
+            # A counted link from a public list. The counter is given the path and nothing else.
+            answer = self.public_links.redirect(path, method, Response)
+            if answer is None:
+                raise ServiceHttpError("route_unavailable", 404)
+            return answer
         # Decide whether this service serves the address before asking who is
         # calling. An unknown address that is authenticated first answers 401
         # unauthorized, which sends the reader looking for a credential fault

@@ -154,7 +154,8 @@ class Addresses(unittest.TestCase):
     def test_only_public_https_addresses_are_kept_without_their_scheme(self):
         self.assertEqual(records.without_scheme("https://mcp.example.com/mcp/"), "mcp.example.com/mcp/")
         for refused in ("http://example.com", "https://user:pw@example.com", "https://localhost/mcp", "https://10.0.0.8/mcp",
-                        "https://printer.local/mcp", "ftp://example.com", "https://example", "not an address"):
+                        "https://printer.local/mcp", "ftp://example.com", "https://example", "not an address",
+                        "https://81.166.197.155/mcp"):
             with self.subTest(address=refused):
                 self.assertEqual(records.without_scheme(refused), "")
 

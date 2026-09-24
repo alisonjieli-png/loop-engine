@@ -17,6 +17,9 @@
   const MANIFEST = "/assets/directory/manifest.json", MANIFEST_VERSION = "mcp_directory_manifest/v1", ROWS_VERSION = "mcp_directory_rows/v1";
   const COMMERCIAL_SCHEMA = "directory_commercial_relationship/v1", SECURE = "https://";
   const OVERSCAN = 6, ORIGIN_RANK = {maker: 0, unknown: 1, other: 2};
+  /* Every outbound link of a row goes through the service's counted redirect, /out/directory/<link>/<row>, which
+     answers with the address the list's link table holds and keeps one count per link per day, from the path alone. */
+  const out = (link, identity) => "/out/directory/" + link + "/" + identity.split("/").map(encodeURIComponent).join("/");
   const state = {manifest: null, relationships: [], commercial: null, rows: [], shown: [], byId: new Map(), category: "", query: "",
     filters: {offering: "", origin: "", transport: "", auth: ""}, order: "sources", rowHeight: 120, target: "", frame: 0};
   const list = $("directory-list"), pane = $("directory-scroll"), count = $("directory-count");
@@ -141,11 +144,16 @@
       element("p", {class: "row-licence"}, row.licence || "Licence not known"),
       element("p", {class: "row-sources"}, manifest.sources.filter(source => row.sources & source.bit).map(source => labels.sources[source.id]).join(", ")));
     const docs = row.website || row.repository;
-    if (docs) facts.append(element("a", {class: "row-docs", href: SECURE + docs, rel: "noopener", "data-row-docs": true}, "Documentation"));
+    if (docs) {
+      const line = element("p", {class: "row-link-line"});
+      line.append(element("a", {class: "row-docs", href: out("site", row.id), rel: "noopener", "data-row-docs": true}, "Documentation"), " ",
+        element("span", {class: "row-host", "data-listing-text": true}, docs.split("/")[0]));
+      facts.append(line);
+    }
     const relation = state.relationships[row.commercial];
     if (showsCommercialLink(relation)) {
       const paid = element("p", {class: "row-paid"});
-      paid.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
+      paid.append(element("a", {href: out("paid", row.id), rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
         label(relation.disclosure_label), " ", element("span", {class: "paid-address", "data-listing-text": true}, relation.canonical_address.slice(SECURE.length)));
       facts.append(paid);
     } else if (isOwnedService(relation)) {
@@ -173,7 +181,7 @@
       const relation = state.relationships[row.commercial];
       if (!isSponsoredPlacement(relation) || placed.length >= state.commercial.maximum_ads) continue;
       const item = element("li", {class: "sponsored-item"});
-      item.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true, "data-listing-text": true}, row.name), " ",
+      item.append(element("a", {href: out("paid", row.id), rel: state.commercial.paid_link_rel, "data-commercial-link": true, "data-listing-text": true}, row.name), " ",
         label(relation.disclosure_label));
       placed.push(item);
     }
@@ -253,13 +261,6 @@
     list.append(cell);
   }
 
-  function locationLink(location) {
-    const pages = state.manifest.labels.package_pages;
-    if (pages[location.kind]) return SECURE + pages[location.kind] + location.value;
-    if (location.kind === "mcpb" || location.kind === "api") return SECURE + location.value;
-    return "";
-  }
-
   function detail(row) {
     const manifest = state.manifest, labels = manifest.labels, body = $("detail-body");
     $("detail-title").textContent = row.name;
@@ -272,20 +273,19 @@
     detailRow(facts, "What it is", bits(row.offering, manifest.offering_bits).map(name => labels.offering[name]).join(", "));
     const places = element("ul", {class: "detail-places"});
     for (const location of row.locations) {
-      const item = element("li"), address = locationLink(location);
-      item.append(element("span", {}, labels.location_kinds[location.kind] + ": "));
-      if (address) item.append(element("a", {href: address, rel: "noopener", "data-listing-text": true}, location.value));
-      else item.append(element("code", {"data-listing-text": true}, location.value));
+      const item = element("li");
+      item.append(element("span", {}, labels.location_kinds[location.kind] + ": "), element("code", {"data-listing-text": true}, location.value));
       places.append(item);
     }
     if (row.locations.length) detailRow(facts, "Where to get it", places);
+    const docs = row.website || row.repository;
+    if (docs) detailRow(facts, "Documentation", element("a", {href: out("site", row.id), rel: "noopener", "data-listing-text": true}, docs));
     if (row.repository) {
       const code = element("span");
-      code.append(element("a", {href: SECURE + row.repository, rel: "noopener", "data-listing-text": true}, row.repository));
+      code.append(element("a", {href: out(row.repository === docs ? "site" : "code", row.id), rel: "noopener", "data-listing-text": true}, row.repository));
       if (labels.repository_states[row.repositoryState]) code.append(", " + labels.repository_states[row.repositoryState]);
       detailRow(facts, "Code repository", code);
     }
-    if (row.website) detailRow(facts, "Documentation", element("a", {href: SECURE + row.website, rel: "noopener", "data-listing-text": true}, row.website));
     detailRow(facts, "Connects over", bits(row.transports, manifest.transport_bits).map(name => labels.transports[name]).join(", ") || "Not declared");
     detailRow(facts, "Signs in with", bits(row.auth, manifest.auth_bits).map(name => labels.auth[name]).join(", "));
     detailRow(facts, "Listed by", labels.origins[row.origin]);
@@ -297,7 +297,7 @@
     const relation = state.relationships[row.commercial];
     if (showsCommercialLink(relation)) {
       const paid = element("span");
-      paid.append(element("a", {href: relation.outbound_link, rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
+      paid.append(element("a", {href: out("paid", row.id), rel: state.commercial.paid_link_rel, "data-commercial-link": true}, "Sign up at " + row.name), " ",
         label(relation.disclosure_label), " ", element("span", {class: "paid-address", "data-listing-text": true}, relation.canonical_address.slice(SECURE.length)));
       detailRow(facts, "Paid link", paid);
     } else if (isOwnedService(relation)) {

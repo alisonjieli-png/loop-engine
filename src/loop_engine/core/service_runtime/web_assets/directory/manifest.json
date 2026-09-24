@@ -1,7 +1,7 @@
 {
  "record_type": "mcp_directory_manifest/v1",
  "generated_at": "2026-09-24T17:58:23Z",
- "row_count": 35279,
+ "row_count": 35278,
  "columns": [
   "id",
   "name",
@@ -34,9 +34,9 @@
   },
   {
    "address": "/assets/directory/rows-1.json",
-   "rows": 4372,
-   "sha256": "5f21e143da9cdaa83dd6cb772d288e57dfd895696621127f31db22f81761ac02",
-   "bytes": 1191372
+   "rows": 4371,
+   "sha256": "e242be3b41e21ae2a3a10809abd18970e994f3e9848dfa71ac585006768b882a",
+   "bytes": 1191168
   },
   {
    "address": "/assets/directory/rows-2.json",
@@ -179,7 +179,7 @@
   {
    "id": "science-health",
    "label": "Science, health and education",
-   "rows": 700
+   "rows": 699
   },
   {
    "id": "legal-public",
@@ -287,7 +287,7 @@
   {
    "id": "registry",
    "bit": 1,
-   "rows": 35016,
+   "rows": 35015,
    "checked": "2026-09-24"
   },
   {

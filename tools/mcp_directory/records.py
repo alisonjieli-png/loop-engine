@@ -158,15 +158,15 @@ def without_scheme(address: str) -> str:
 
 
 def public_host(host: str) -> bool:
-    """True for a dotted host name or address that a stranger on the internet can reach."""
+    """True for a dotted public host name. A bare network address is refused: a public list names places by name."""
     if not host or host in LOOPBACK_NAMES or any(host.endswith(suffix) for suffix in PRIVATE_SUFFIXES):
         return False
     try:
-        address = ipaddress.ip_address(host.strip("[]"))
+        ipaddress.ip_address(host.strip("[]"))
     except ValueError:
         labels = host.split(".")
         return len(labels) >= 2 and all(_HOST_LABEL.match(label) for label in labels) and not labels[-1].isdigit()
-    return address.is_global
+    return False
 
 
 def starts_with_address(text: str) -> bool:

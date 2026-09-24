@@ -1119,19 +1119,6 @@ try {
   /* approved: the words the terms are compared with; a known-wrong case below passes another approved text. */
   const retiredIn=(path,text,approved=approvedTermsWords)=>{const read=withoutApprovedTerms(withoutListingText(path,text),approved);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
   const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
-  /* The listing text rule leaves out only what a directory registered: the listing fields of a row file and the marked elements of
-     the directory page. A word in a row file's envelope, in an unregistered file, in a row file that does not parse, or in an
-     unmarked part of the page is still read. */
-  const plantedRows=(envelope,listing)=>JSON.stringify({record_type:"mcp_directory_rows/v1"+envelope,part:0,rows:[["io.github.x/tool",listing,"x",1,listing,0,1,0,[],0,1,0,0,"","",0,1,[],0,0]]});
-  check("listing_text_rule_reads_everything_but_registered_listing_fields",
-    retiredIn("/assets/directory/rows-0.json",plantedRows("","Private beta tools")).length===0
-    &&retiredIn("/assets/directory/rows-0.json",plantedRows(" beta","Tools")).length===1
-    &&retiredIn("/assets/unregistered-rows.json",plantedRows("","Private beta tools")).length===1
-    &&retiredIn("/assets/directory/rows-0.json",'{"rows":["Private beta"').length===1
-    &&retiredIn("/directory",'<li data-row><span data-listing-text>Private beta tools</span></li>').length===0
-    &&retiredIn("/directory",'<h2>Private beta</h2><li data-row><span data-listing-text>Tools</span></li>').length===1
-    &&invitationIn("/assets/directory/rows-0.json",plantedRows("","Invite your team")).length===0
-    &&invitationIn("/assets/directory/manifest.json",'{"labels":{"x":"Invite your team"}}').length===1);
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
   /* The words of an invitation-only service in the served files as well: the text of the served page and of every documentation
@@ -1154,6 +1141,19 @@ try {
   /* A sentence written inside a legal text, just after the article's own opening tag, so the case depends on no word of the text. */
   const writtenInside=(block,sentence)=>block.replace(/^(<article[^>]*>)/,"$1<p>"+sentence+"</p>");
   const invitationFileProblems=servedTexts.flatMap(([path,text])=>invitationIn(path,text));
+  /* The listing text rule leaves out only what a directory registered: the listing fields of a row file and the marked elements of
+     the directory page. A word in a row file's envelope, in an unregistered file, in a row file that does not parse, or in an
+     unmarked part of the page is still read. */
+  const plantedRows=(envelope,listing)=>JSON.stringify({record_type:"mcp_directory_rows/v1"+envelope,part:0,rows:[["io.github.x/tool",listing,"x",1,listing,0,1,0,[],0,1,0,0,"","",0,1,[],0,0]]});
+  check("listing_text_rule_reads_everything_but_registered_listing_fields",
+    retiredIn("/assets/directory/rows-0.json",plantedRows("","Private beta tools")).length===0
+    &&retiredIn("/assets/directory/rows-0.json",plantedRows(" beta","Tools")).length===1
+    &&retiredIn("/assets/unregistered-rows.json",plantedRows("","Private beta tools")).length===1
+    &&retiredIn("/assets/directory/rows-0.json",'{"rows":["Private beta"').length===1
+    &&retiredIn("/directory",'<li data-row><span data-listing-text>Private beta tools</span></li>').length===0
+    &&retiredIn("/directory",'<h2>Private beta</h2><li data-row><span data-listing-text>Tools</span></li>').length===1
+    &&invitationIn("/assets/directory/rows-0.json",plantedRows("","Invite your team")).length===0
+    &&invitationIn("/assets/directory/manifest.json",'{"labels":{"x":"Invite your team"}}').length===1);
   check("no_customer_page_uses_the_words_of_an_invitation_only_service",vocabularyProblems.filter(item=>item.rule==="invitation word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="invitation word")});
   check("no_served_file_carries_the_words_of_an_invitation_only_service",servedTexts.length===servedFiles.length&&invitationFileProblems.length===0,{files:servedTexts.length,problems:invitationFileProblems});
   check("every_served_asset_route_is_read_for_invitation_words_or_named_with_its_reason",assetRoutes.length>0&&assetRoutes.every(path=>servedFiles.includes(path))&&Object.keys(notOurText).every(path=>assetRoutes.includes(path)),{excluded:notOurText});
