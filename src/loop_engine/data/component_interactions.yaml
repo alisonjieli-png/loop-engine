@@ -1118,3 +1118,87 @@ interactions:
     verification: listed_tools_match_the_step_grant
     run_history: gateway_entry_and_tool_loops
     implementation_state: candidate
+  - interaction_id: core.interaction.library.validate_format
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: validate_library_package_format
+    request_contract: library_rendered_package/v1
+    result_contract: library_candidate_refusal/v1
+    relationship: spawned_by
+    delivery: every_applicable_engine_once_per_package
+    scheduling: declared_engine_order
+    retry: none_refuse_and_report
+    timeout: ingestion_budget
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: rendered_package_only
+    authority_transfer: none
+    privacy: public_material_with_provenance
+    failure: typed_engine_failure_kind
+    repair: none_refuse_and_report
+    verification: independent_review_before_approval
+    run_history: ingestion_loop_and_candidate_digests
+    implementation_state: candidate
+  - interaction_id: core.interaction.library.scan_packages
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: scan_library_packages
+    request_contract: library_rendered_package/v1
+    result_contract: library_candidate_refusal/v1
+    relationship: spawned_by
+    delivery: every_eligible_engine_once_per_package_set
+    scheduling: declared_engine_order
+    retry: none_refuse_and_report
+    timeout: declared_scanner_timeout
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: rendered_package_files_only
+    authority_transfer: none
+    privacy: findings_name_rule_and_line_never_text
+    failure: typed_engine_failure_kind
+    repair: none_refuse_and_report
+    verification: independent_review_before_approval
+    run_history: ingestion_loop_and_candidate_digests
+    implementation_state: candidate
+  - interaction_id: core.interaction.library.find_near_duplicates
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: find_near_duplicate_library_items
+    request_contract: library_source_candidate/v1
+    result_contract: library_duplicate_link/v1
+    relationship: spawned_by
+    delivery: one_engine_for_the_whole_run
+    scheduling: serial
+    retry: declared_fallback_before_dispatch_only
+    timeout: local_deterministic
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: comparison_text_shingles_only
+    authority_transfer: none
+    privacy: public_material_with_provenance
+    failure: typed_engine_failure_kind
+    repair: declared_fallback_before_dispatch
+    verification: merged_sources_listed_in_provenance
+    run_history: ingestion_loop_and_duplicate_links
+    implementation_state: candidate
+  - interaction_id: core.interaction.library.write_outline
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: write_library_outline
+    request_contract: library_source_candidate/v1
+    result_contract: library_candidate_outline/v1
+    relationship: spawned_by
+    delivery: one_engine_per_outline_then_the_declared_fallback
+    scheduling: serial
+    retry: declared_fallback_after_failure
+    timeout: model_call_ceiling_and_pause_bound
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: candidate_and_source_text_only
+    authority_transfer: model_grant_of_the_ingestion_loop_only
+    privacy: abstract_purpose_never_source_text
+    failure: typed_engine_failure_kind
+    repair: declared_fallback_to_the_deterministic_outline
+    verification: outline_refused_when_it_repeats_its_source
+    run_history: ingestion_loop_and_model_call_records
+    implementation_state: candidate

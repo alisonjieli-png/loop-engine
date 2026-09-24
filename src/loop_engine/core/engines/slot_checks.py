@@ -22,8 +22,8 @@ from ..component_contracts import (
 from ..configuration_capabilities import digest
 from . import slots as slot_module
 from .slot_index import (
-    SLOT_RULES, current_join_sources, slot_edge_contracts, slot_index_report,
-    validate_slot_catalog)
+    FACTORY_TABLE_DRIFT_BASELINE, SLOT_RULES, current_join_sources, declared_factory_slots,
+    slot_edge_contracts, slot_index_report, validate_slot_catalog)
 from .slots import EngineSlot, EngineSlotCatalog, EngineSlotError, load_engine_slot_catalog
 
 #: The slot identifiers of the design's three tables (sections 5.2, 5.3 and
@@ -57,6 +57,15 @@ DESIGN_RELEASE_SLOTS = (
 ORIGINAL_INTERACTION_ROW_COUNT = 7
 ORIGINAL_INTERACTION_ROWS_DIGEST = (
     "19882c2722e368e46dd4475c2d2f91fd3f63725ec04964a6aff652c028e747d9")
+#: The factory table that declares its own slots in source, and the slots it
+#: declares. Library ingestion keeps EngineSlot declarations ahead of the
+#: shared records; the four after the first were missing from the catalogue
+#: until roadmap step S-6.84 catalogued them, which is the known-wrong case
+#: of the factory table check.
+LIBRARY_INGESTION_FACTORY_TABLE = "core.library_ingestion.engines"
+LIBRARY_INGESTION_SLOTS = (
+    "library_ingestion_source", "library_format_validation", "library_safety_scan",
+    "library_near_duplicate", "library_outline")
 #: A suite that forbidden_paths.json keeps out of the main self-test, used as
 #: the real-data case of the collected-suite check and as proof that the
 #: parked list was read. It is core.ollama_client because its exception is
@@ -104,6 +113,32 @@ def _boundary_join_holds(base, sources, rules) -> bool:
     return (("fixture_misspelled", "boundary_not_registered") in codes
             and ("fixture_unbound", "run_time_slot_without_boundary") in codes
             and ("fixture_stale_boundary", "planned_boundary_already_registered") in codes)
+
+
+def _factory_table_rule_holds(catalog, sources, rules) -> bool:
+    """The condition of the factory table check, for one rule set.
+
+    Each fixture breaks one guard: a declared slot left out of the catalogue,
+    a catalogued slot with other engine kinds, one with another selection
+    mode, and a baselined slot that matches its declaration again."""
+    by_id = {slot.slot_id: slot for slot in catalog.slots}
+    others = tuple(slot for slot in catalog.slots if slot.slot_id != "library_near_duplicate")
+    missing = tuple(slot for slot in catalog.slots if slot.slot_id != "library_format_validation")
+    near = by_id["library_near_duplicate"]
+    other_kinds = _with(near, engine_kinds=[*near.engine_kinds, "exact_duplicate_detector"])
+    other_mode = _with(near, selection_mode="set_of", dispatch_key="candidate_kind")
+    source = by_id["library_ingestion_source"]
+    corrected = _with(source, engine_kinds=["pinned_repository_reader", "registry_link_reader"])
+    without_source = tuple(slot for slot in catalog.slots
+                           if slot.slot_id != "library_ingestion_source")
+    return (("library_format_validation", "factory_table_slot_not_catalogued")
+            in _codes(missing, sources, rules)
+            and ("library_near_duplicate", "factory_table_slot_differs")
+            in _codes((*others, other_kinds), sources, rules)
+            and ("library_near_duplicate", "factory_table_slot_differs")
+            in _codes((*others, other_mode), sources, rules)
+            and ("library_ingestion_source", "factory_table_drift_baseline_is_stale")
+            in _codes((*without_source, corrected), sources, rules))
 
 
 def _suite_rule_holds(base, sources, rules) -> bool:
@@ -547,6 +582,29 @@ def self_test() -> dict:
           and _refused(lambda: replace(step, engine_kind_groups=[("delegation", ())]))
           and "weaker_isolation" in delivery.engine_kind_groups,
           "a kind group edited after validation, or a list field, is refused")
+
+    # 22. Every slot a factory table declares in source is catalogued with its
+    # engine kinds and selection mode (functional component standard,
+    # LE-SLOT-001). The declarations are read from source, never imported.
+    declared = declared_factory_slots(LIBRARY_INGESTION_FACTORY_TABLE, sources.package_root)
+    uncatalogued = [name for name in LIBRARY_INGESTION_SLOTS if name not in by_id]
+    table_findings = [(item.slot_id, item.code) for item in findings
+                      if item.rule == "factory_table_slots"]
+    check("every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode",
+          not uncatalogued and not table_findings
+          and tuple(item["slot_id"] for item in declared) == LIBRARY_INGESTION_SLOTS
+          and all(by_id[name].factory_table == LIBRARY_INGESTION_FACTORY_TABLE
+                  for name in LIBRARY_INGESTION_SLOTS)
+          and _factory_table_rule_holds(catalog, sources, SLOT_RULES)
+          and set(FACTORY_TABLE_DRIFT_BASELINE) <= set(LIBRARY_INGESTION_SLOTS),
+          f"declared {[item['slot_id'] for item in declared]}; not catalogued {uncatalogued}; "
+          f"findings {table_findings}; baseline {sorted(FACTORY_TABLE_DRIFT_BASELINE)}")
+    check("removed_factory_table_slot_join_is_detected",
+          not uncatalogued
+          and _factory_table_rule_holds(catalog, sources, SLOT_RULES)
+          and not _factory_table_rule_holds(catalog, sources,
+                                            _rules_without("factory_table_slots")),
+          "without the join a declared slot left out of the catalogue is accepted")
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "engine_slot_checks/v1", "tests": tests, "passed": passed,

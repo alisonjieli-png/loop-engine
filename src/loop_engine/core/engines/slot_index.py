@@ -15,7 +15,11 @@ every disagreement as a named finding instead of trusting the catalogue:
   symbol must not exist yet, so the catalogue never hides a missing piece
   and never keeps a stale plan;
 - nesting names only catalogued slots, has no cycle, and joined slots name
-  each other.
+  each other;
+- every slot that a factory table declares in source (a component that keeps
+  its own ``EngineSlot`` declarations, such as library ingestion) is
+  catalogued with the same engine kinds and selection mode, except a slot on
+  the shrinking drift baseline.
 
 Each join is one named rule in ``SLOT_RULES``, so a check can remove one and
 show that the named check then fails. Discovery is effect-free: files are
@@ -38,6 +42,19 @@ from .slots import (
 SLOT_INDEX_REPORT_RECORD_TYPE = "engine_slot_index_report/v1"
 #: Interaction states: a new row stays a candidate until its slot is active.
 _ACTIVE_ROW, _CANDIDATE_ROW = "active", "candidate"
+#: The call a component's factory table uses to declare one of its own slots,
+#: and the order of that call's positional arguments.
+_SLOT_DECLARATION = "EngineSlot"
+_DECLARED_ARGUMENTS = ("slot_id", "slot_version", "protocol", "kinds", "selection_mode",
+                       "declared_order")
+#: Catalogued slots known to differ from the slot their factory table
+#: declares, each with its reason. The list only shrinks: an entry whose slot
+#: matches again is reported, so the entry is removed in the same change.
+FACTORY_TABLE_DRIFT_BASELINE = MappingProxyType({
+    "library_ingestion_source": (
+        "catalogued as planned before the component existed, with engine kinds the code "
+        "does not have; step 2 of the functional component standard corrects the record"),
+})
 
 
 @dataclass(frozen=True)
@@ -295,13 +312,121 @@ def _construction_sites(catalog, sources):
             if not os.path.isfile(os.path.join(sources.package_root, site.path))]
 
 
+def _module_file(package_root: str, module: str) -> str:
+    return os.path.join(package_root, *module.split(".")) + ".py"
+
+
+def _factory_module(reference: str, sources) -> "str | None":
+    """The module that a factory table field names, when it exists in source."""
+    if not reference or not sources.resolve_symbol(reference):
+        return None
+    for module in (reference, reference.rsplit(".", 1)[0]):
+        if os.path.isfile(_module_file(sources.package_root, module)):
+            return module
+    return None
+
+
+def _string_constants(body) -> dict:
+    """Module-level names bound to literal text, including tuple unpacking."""
+    values = {}
+    for node in body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            pairs = ((target, node.value),)
+            if isinstance(target, ast.Tuple) and isinstance(node.value, ast.Tuple):
+                pairs = tuple(zip(target.elts, node.value.elts))
+            for name, value in pairs:
+                if (isinstance(name, ast.Name) and isinstance(value, ast.Constant)
+                        and isinstance(value.value, str)):
+                    values[name.id] = value.value
+    return values
+
+
+def declared_factory_slots(module: str, package_root: str) -> tuple:
+    """Each slot a factory table module declares with ``EngineSlot(...)``.
+
+    Read from source text, never imported: the slot identifier, engine kinds
+    and selection mode of each declaration, with a name bound to literal text
+    in the module or imported from a sibling module resolved to that text.
+    A part that cannot be read this way is returned as None."""
+    path = _module_file(package_root, module)
+    tree = _source_tree(path)
+    if tree is None:
+        return ()
+    constants = {}
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom) and node.level == 1 and node.module:
+            sibling = _source_tree(os.path.join(os.path.dirname(path),
+                                                *node.module.split(".")) + ".py")
+            found = _string_constants(sibling.body) if sibling else {}
+            constants.update({alias.asname or alias.name: found[alias.name]
+                              for alias in node.names if alias.name in found})
+    constants.update(_string_constants(tree.body))
+
+    def text(value):
+        if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            return value.value
+        return constants.get(value.id) if isinstance(value, ast.Name) else None
+    declared = []
+    for node in tree.body:
+        call = node.value if isinstance(node, ast.Assign) else None
+        if not (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                and call.func.id == _SLOT_DECLARATION):
+            continue
+        arguments = dict(zip(_DECLARED_ARGUMENTS, call.args))
+        arguments.update({item.arg: item.value for item in call.keywords if item.arg})
+        kinds = arguments.get("kinds")
+        declared.append({
+            "slot_id": text(arguments.get("slot_id")),
+            "kinds": (tuple(text(item) for item in kinds.elts)
+                      if isinstance(kinds, (ast.Tuple, ast.List)) else None),
+            "selection_mode": text(arguments.get("selection_mode"))})
+    return tuple(declared)
+
+
+def _factory_table_slots(catalog, sources):
+    """Every slot a factory table declares is catalogued with its kinds and mode."""
+    known = {slot.slot_id: slot for slot in catalog.slots}
+    modules = []
+    for slot in catalog.slots:
+        module = _factory_module(slot.factory_table, sources)
+        if module and module not in modules:
+            modules.append(module)
+    found = []
+    for module in modules:
+        for item in declared_factory_slots(module, sources.package_root):
+            slot_id, kinds, mode = item["slot_id"], item["kinds"], item["selection_mode"]
+            if not slot_id or kinds is None or None in kinds or not mode:
+                found.append(SlotFinding("factory_table_slots", slot_id or "",
+                                         "factory_table_slot_unreadable", module))
+                continue
+            record = known.get(slot_id)
+            if record is None:
+                found.append(SlotFinding("factory_table_slots", slot_id,
+                                         "factory_table_slot_not_catalogued", module))
+                continue
+            differs = [name for name, same in (
+                ("engine_kinds", set(record.engine_kinds) == set(kinds)),
+                ("selection_mode", record.selection_mode == mode)) if not same]
+            if slot_id in FACTORY_TABLE_DRIFT_BASELINE:
+                if not differs:
+                    found.append(SlotFinding("factory_table_slots", slot_id,
+                                             "factory_table_drift_baseline_is_stale", module))
+            elif differs:
+                found.append(SlotFinding("factory_table_slots", slot_id,
+                                         "factory_table_slot_differs", ",".join(differs)))
+    return found
+
+
 #: Every join, by name. A control removes one rule and shows that its named
 #: check then fails; the catalogue is valid only when no rule finds anything.
 SLOT_RULES = (
     ("boundary_join", _boundary_join), ("interaction_join", _interaction_join),
     ("folder_join", _folder_join), ("suite_collection", _suite_collection),
     ("symbol_resolution", _symbol_resolution), ("nesting", _nesting),
-    ("existing_checks", _existing_checks), ("construction_sites", _construction_sites))
+    ("existing_checks", _existing_checks), ("construction_sites", _construction_sites),
+    ("factory_table_slots", _factory_table_slots))
 
 
 def _ancestors(slot_id: str, known: dict) -> set:
