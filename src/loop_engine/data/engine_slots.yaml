@@ -33,14 +33,13 @@ slots:
     inventory_records: [E5, E6, E10, E11, E24, E25]
     roadmap_steps: [S-6.31, S-6.42]
     implementation_state: candidate
-    work_boundaries: [external harness execution, assignment harness selection]
-    planned_work_boundaries:
-      - {boundary: delegated step execution, added_by: X3}
+    work_boundaries: [external harness execution, assignment harness selection, delegated step execution]
+    planned_work_boundaries: []
     release_reason: ""
     release_edge: ""
     interactions: [core.interaction.step.execute, core.interaction.step.run_external_harness]
     unavailable_result: {form: result_status, value: unavailable, answer_exists: true}
-    conformance_suite: core.external_harness
+    conformance_suite: core.step_execution.engines_checks
     component_folder: src/loop_engine/core/step_execution
     folder_move_package: ""
     nested_under: []
@@ -58,9 +57,9 @@ slots:
     native_registry: core.external_harness.HarnessRegistry
     native_declaration: core.external_harness.HarnessAdapterInfo
     requirement_comparison: core.harness_execution_contracts.unmet_harness_requirements
-    descriptor_projection: core.external_harness.HarnessRegistry.descriptors
+    descriptor_projection: core.step_execution.engines.project_descriptors
     factory_table: core.step_execution.engines
-    planned_symbols: [core.external_harness.HarnessRegistry.descriptors, core.step_execution.engines]
+    planned_symbols: []
     selection_mode: one_of
     dispatch_key: ""
     derived_from: ""
@@ -86,10 +85,11 @@ slots:
     existing_checks:
       - core.external_harness_checks:adapter_completion_does_not_claim_task_acceptance
       - core.harness_fallback_checks:fallback_never_resets_call_allowance
-    planned_checks: [a_delegation_claim_cannot_be_met_by_an_in_process_engine,
-                     a_harness_without_a_proven_fresh_instance_is_ineligible_for_one_harness_per_step,
-                     a_semantic_step_without_a_bound_step_executor_is_refused,
-                     a_session_process_never_outlives_its_step_attempt]
+      - core.step_execution.engines_checks:a_delegation_claim_cannot_be_met_by_an_in_process_engine
+      - core.step_execution.engines_checks:a_harness_without_a_proven_fresh_instance_is_ineligible_for_one_harness_per_step
+      - core.step_execution.engines_checks:a_semantic_step_without_a_bound_step_executor_is_refused
+      - core.step_execution.launch_checks:a_session_process_never_outlives_its_step_attempt
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: harness_instruction_files
     slot_version: 1.0.0

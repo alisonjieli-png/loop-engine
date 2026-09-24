@@ -45,6 +45,12 @@ components:
       The shared engine framework: the engine records, the slot catalogue,
       engine selection for every slot, attempt assessment and fallback, and
       the evidence that may order engines.
+  core/step_execution:
+    guide: docs/components/core-architecture/STEP-EXECUTION.md
+    covers: >-
+      The step executor slot: the step edge records, the envelope that selects
+      and runs an engine, the declared harness engine and its manifest, the
+      custom Loop engine and the qualification of a registered harness.
   core/decisions:
     guide: docs/components/typed-decisions/README.md
     covers: >-
@@ -83,6 +89,8 @@ guides:
     Durable approval decisions bound to one exact requested effect.
   docs/components/core-architecture/ENGINE-SELECTION.md:
     Engine selection for every engine slot, fallback and evidence ranking.
+  docs/components/core-architecture/STEP-EXECUTION.md:
+    One step on any engine, custom harness declarations and the custom Loop engine.
   docs/components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md:
     Registered external harness adapters and their declared capabilities.
   docs/components/core-architecture/HARNESS-FALLBACK.md:

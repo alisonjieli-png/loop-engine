@@ -199,6 +199,7 @@ BOUNDARIES = (
     {"boundary": "provider-neutral model routing", "crosses": "one typed model request is attempted across configured routes", "binding": "practitioner_loop", "envelope": "core.model_gateway.invoke_model_gateway", "test": "model_gateway.self_test"},
     {"boundary": "model response admission", "crosses": "untrusted provider text becomes a typed admitted candidate or rejection", "binding": "native_loop", "envelope": "core.model_response_admission.admit_model_response_as_loop", "test": "model_response_admission.self_test"},
     {"boundary": "assignment harness selection", "crosses": "an exact assignment contract selects eligible registered harnesses using reviewed evidence", "binding": "native_loop", "envelope": "core.harness_selection.select_harness_as_loop", "test": "harness_selection.self_test"},
+    {"boundary": "delegated step execution", "crosses": "one step's typed assignment runs as one physical attempt on the engine a recorded selection bound, and returns one typed result", "binding": "native_loop", "envelope": "core.step_execution.envelope.run_step_attempt", "test": "engines_checks:a_step_runs_on_the_loop_runtime_or_an_outside_harness_with_no_caller_change"},
     {"boundary": "component engine selection", "crosses": "a slot's host policy, installed engines and one exact scope become one recorded engine selection decision before any dispatch", "binding": "native_loop", "envelope": "core.engines.selection.select_engine_as_loop", "test": "selection_checks:selection_runs_inside_a_deterministic_practitioner_loop"},
     {"boundary": "harness response evaluation", "crosses": "an admitted response is checked against an independently registered obligation", "binding": "native_loop", "envelope": "core.harness_response_evaluation.evaluate_response_as_loop", "test": "harness_response_evaluation.self_test"},
     {"boundary": "task similarity resolution", "crosses": "a task fingerprint and its facet observations become ranked prior-work evidence", "binding": "native_loop", "envelope": "core.task_similarity_engine.find_similar_as_loop", "test": "task_similarity_engine.self_test"},
@@ -471,6 +472,9 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "model response admission": _exact("solution", "solution.validator@1.0.0", "starting", "spawned_by"),
     "assignment harness selection": _exact("practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
     "component engine selection": _exact("practitioner", "practitioner.code_execution@1.0.0", "starting", "spawned_by"),
+    "delegated step execution": _dynamic_spawned(
+        "core.step_execution.records.StepRunRequest.owning_profile_ref",
+        "core.step_execution.records.StepRunRequest.__post_init__"),
     "harness response evaluation": _exact("practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "recovery learning capture": _exact("practitioner", "practitioner.self_improvement@1.0.0", "spawned_by"),
     "self-improvement history review": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting"),

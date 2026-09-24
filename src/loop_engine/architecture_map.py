@@ -81,7 +81,11 @@ MODULE_MAP = {
         "slots", "slot_index", "slot_checks",
         "selection", "fallback", "selection_checks", "evidence", "evidence_checks",
     ),
-    "core.step_execution": ("__init__",),
+    "core.step_execution": (
+        "__init__", "records", "harness_manifest", "harness_manifest_checks", "harness_launch",
+        "harness_endpoint", "declared_harness", "procedures", "loop_runtime", "loop_harness_process",
+        "engines", "envelope", "qualification", "fixture_harness", "engines_checks", "launch_checks",
+    ),
     "ontology": (
         "artifacts", "catalog", "folders", "loop_definition_record",
         "loop_node", "node", "ontology_checks", "records",
