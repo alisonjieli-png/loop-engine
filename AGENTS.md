@@ -274,7 +274,14 @@ connection would allow it:
   notice, with Baltor.AI as the operator and the postal contact address
   1428 Bryn Mawr St, Saxton, PA 16678. On September 23, 2026 the owner
   approved the terms of service, in their words "I have approved the terms",
-  and the terms are published at `/terms`;
+  and the terms are published at `/terms`. On September 24, 2026 the owner
+  approved the privacy notice changes drafted that day for support messages,
+  chat, replies drafted with a model provider and aggregate link counting, in
+  their words "I approve the privacy notice"; the published notice must match
+  those drafts and add no other use of personal data. The same day the owner
+  took on advertising spend: "I will manage adspend". Engineering prepares
+  landing pages, measurement and written instructions, and spends nothing on
+  advertising itself;
 - identity or bank verification with a provider, which only the owner can
   complete (September 20, 2026).
 
