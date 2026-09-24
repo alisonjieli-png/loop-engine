@@ -605,3 +605,68 @@ main:has(> [data-view="waitlist"]:not([hidden])){max-width:none;padding:0}
 .use-case-steps strong{color:var(--ink)}
 .use-case-grid.is-page .use-case{padding:1.75rem}
 @media(max-width:860px){.use-case-body{grid-template-columns:minmax(0,1fr)}.use-case-body>section{padding:1.25rem}}
+/* The homepage of September 24, 2026. The owner: the hero shows no worked example, only the working directory one step gets,
+   built on demand, with no manual search and no manual setup; three demonstrations follow, each start to finish. The hero holds
+   the copy and the directory side by side on a wide screen, the bands keep 48 pixels of padding on a desktop and 40 on a phone,
+   and the page stays within its scroll budget of 4,000 pixels at 1440 wide. */
+[data-view="home"]>.home-band{padding-top:2.5rem;padding-bottom:2.5rem}
+.band-hero .hero.product-hero h1{font-size:clamp(2.25rem,3.4vw,3.25rem);line-height:1.06}
+.band-hero .hero.product-hero>.hero-directory{grid-column:1/-1;margin:0}
+@media(min-width:1100px){.band-hero .hero.product-hero>.hero-directory{grid-column:auto;align-self:center}}
+.hero-directory{display:flex;flex-direction:column;gap:.875rem;min-width:0;padding:1.25rem 1.375rem;background:var(--night);border-radius:var(--radius-panel);box-shadow:var(--panel-shadow)}
+.hero-directory-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem .75rem}
+.hero-directory-title{margin:0;color:var(--night-ink);font-size:.9375rem;font-weight:650}
+.hero-directory .status-tag{color:var(--night-building);background:var(--night-building-soft)}
+.hero-tree{margin:0;padding:0;max-height:none;border:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.8125rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+.hero-tree [data-hero-part]{color:var(--night-accent)}
+.hero-tree-note{color:var(--night-muted)}
+@media(max-width:600px){.hero-tree-note{display:none}}
+.hero-directory-note{margin:0;padding-top:.875rem;border-top:1px solid var(--night-rule);color:var(--night-muted);font-size:.875rem;line-height:1.55}
+/* The three demonstrations under the hero. */
+.demos{display:flex;flex-direction:column;gap:1.5rem}
+.demos .section-title h2{margin:0}
+.demo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.demo-card{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:1.375rem 1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.demo-card>*{margin:0}
+.demo-card-kind{color:var(--accent);font-size:.8125rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.demo-card h3{font-size:1.1875rem;line-height:1.3;letter-spacing:-.01em}
+.demo-card p:not(.demo-card-kind){color:var(--muted);line-height:1.55}
+.demo-card .text-link{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:980px){.demo-grid{grid-template-columns:minmax(0,1fr)}.demo-card{padding:1.25rem}}
+/* Compact bands, so the homepage holds its nine bands within 4,000 pixels at 1440 wide and 7,502 at 390. Only spacing, columns and
+   the one open question change; every card, link and sentence stays. */
+[data-view="home"] .section-title{gap:.75rem}
+[data-view="home"] .section-title h2{font-size:var(--text-h2-small)}
+[data-view="home"] .library-main{gap:1.75rem}
+[data-view="home"] .kind{padding:1rem 1.125rem;gap:.375rem}
+[data-view="home"] .library-facts{padding:1.5rem;gap:1rem}
+[data-view="home"] .library-count{padding-bottom:1rem}
+[data-view="home"] .use-cases{gap:1.5rem}
+[data-view="home"] .use-case{padding:1.25rem 1.5rem}
+[data-view="home"] .trust{gap:2rem}
+[data-view="home"] .trust-grid li{gap:.5rem;padding-top:1rem}
+[data-view="home"] .plan-summary{padding:1.5rem 1.75rem;gap:1rem}
+[data-view="home"] .plan-summary .check-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.625rem 1.25rem;font-size:.9375rem}
+[data-view="home"] .faq{gap:3rem}
+[data-view="home"] .faq-item summary{padding:1.125rem 1.5rem;font-size:1.0625rem}
+[data-view="home"] .faq-item p{padding:0 1.5rem 1.125rem}
+@media(max-width:700px){[data-view="home"] .plan-summary .check-list{grid-template-columns:minmax(0,1fr)}
+  [data-view="home"] .kind-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.site-footer{padding-top:3rem;padding-bottom:2rem}
+.footer-bottom{margin-top:2rem}
+@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+[data-view="home"]>.home-band.band-hero{padding-top:clamp(2.5rem,3.34vw,3rem);padding-bottom:2.5rem}
+@media(min-width:1100px){[data-view="home"] .pricing-teaser{grid-template-columns:minmax(0,1fr) minmax(0,38rem);gap:3.5rem}}
+[data-view="home"] .demos .section-title h2{font-size:clamp(1.625rem,2.4vw,2.125rem)}
+[data-view="home"] .demo-card{gap:.375rem;padding:1.25rem 1.375rem}
+@media(min-width:901px){.site-footer .footer-links{gap:.5rem}}
+@media(max-width:700px){[data-view="home"] .use-case{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem .75rem;align-items:center}
+  [data-view="home"] .use-case>:not(.use-case-icon){grid-column:1/-1}
+  [data-view="home"] .use-case>.use-case-icon+h3{grid-column:2}
+  [data-view="home"] .hero-subhead{font-size:1.0625rem}
+  [data-view="home"] .demo-card{padding:1.125rem 1.25rem}}
+/* The use-case band's heading, its line about accounts and its cards stand closer together, so the homepage keeps its budget. */
+[data-view="home"] .use-cases .section-title{gap:.5rem}
+[data-view="home"] .use-cases .section-title>p:not(.eyebrow){font-size:1rem}
+[data-view="home"] .use-case{gap:.5rem}
+[data-view="home"] .use-case p{line-height:1.55}

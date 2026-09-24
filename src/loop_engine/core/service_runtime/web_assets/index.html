@@ -32,42 +32,37 @@
       <div class="home-band band-hero" data-band="hero">
       <div class="hero product-hero">
         <div class="hero-copy">
-          <h1>The perfect harness setup for every task.</h1>
-          <p class="hero-subhead">Your coding agent works best with the right skills, instructions, tools and plugins in its working folder. Baltor finds them, vets them and puts each file where your harness reads it, so nobody has to search, sort or copy them by hand.</p>
+          <h1>The perfect harness working directory for each task or subtask.</h1>
+          <p class="hero-subhead">Your agent searches a <a href="/security" data-page="security">vetted</a> library, and Baltor places the instructions, skills, tools and settings it chose where your harness reads them. No manual search, no manual setup, nothing copied by hand.</p>
           <div class="actions hero-actions"><a class="button primary" id="hero-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a><a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a></div>
           <div class="hero-meta">
             <p class="hero-price"><strong>Baltor Pro</strong> <span class="hero-price-amount">$29 a month</span> <span class="hero-price-note" id="hero-access-note">for the whole library</span></p>
             <ul class="hero-harnesses" aria-label="Harnesses Baltor sets up"><li>Claude Code</li><li>Codex</li><li>OpenCode</li><li>Pi</li><li>Baltor Harness</li></ul>
           </div>
         </div>
-<section class="step-demo is-compact" id="step-demo" aria-labelledby="step-demo-title" data-step-demo>
-<div class="step-demo-head"><div><p class="step-demo-eyebrow">What your agent gets at one step</p><h2 id="step-demo-title">Split the address lines in a customer file</h2></div><p class="status-tag is-recorded" data-demo-label="recorded">Real results from the library</p></div>
-<ol class="step-demo-parts">
-<li class="step-demo-part" data-demo-stage="search" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">1</span><div class="step-demo-body">
-<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-demo-query>split address lines in a customer file</code></p>
-<ol class="step-demo-results" aria-label="References the search returned">
-<li data-demo-item="split_address_lines_into_components" class="is-chosen"><span class="step-demo-name">split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">3.0 KB</span> · sha256 <span data-fact="digest">53dc74e3</span>…</span><span class="step-demo-chosen">Chosen</span></li>
-<li data-demo-item="find_duplicate_records_with_blocking_keys"><span class="step-demo-name">find_<wbr>duplicate_<wbr>records_<wbr>with_<wbr>blocking_<wbr>keys</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">34da79f4</span>…</span></li>
-</ol></div></li>
-<li class="step-demo-part" data-demo-stage="download" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">2</span><div class="step-demo-body">
-<p class="step-demo-download"><code data-demo-download="split_address_lines_into_components">download split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</code></p></div></li>
-<li class="step-demo-part" data-demo-stage="folder" data-demo-evidence="illustration"><span class="step-demo-number is-dark" aria-hidden="true">3</span><div class="step-demo-body step-demo-harness">
-<div class="step-demo-harness-head"><p>Placed where the harness reads it</p><p class="status-tag is-building" data-demo-label="illustration">Example layout</p></div>
-<pre class="step-demo-tree" tabindex="0" aria-label="The working folder for this step">working-folder/
-├── <span data-demo-path="AGENTS.md">AGENTS.md</span><span class="step-demo-note-inline"></span>
-├── <span data-demo-path="CLAUDE.md">CLAUDE.md</span><span class="step-demo-note-inline">                  imports @AGENTS.md</span>
-├── <span data-demo-folder=".agents/skills/split-address-lines-into-components/">.agents/skills/split-address-lines-into-components/</span><span class="step-demo-note-inline"></span>
-│   ├── <span data-demo-path=".agents/skills/split-address-lines-into-components/SKILL.md">SKILL.md</span><span class="step-demo-note-inline"></span>
-│   └── <span data-demo-path=".agents/skills/split-address-lines-into-components/scripts/split_address_lines.py">scripts/split_address_lines.py</span><span class="step-demo-note-inline"></span>
-├── <span data-demo-path=".mcp.json">.mcp.json</span><span class="step-demo-note-inline">                  this step's tools only</span>
-└── <span data-demo-path=".baltor/step.lock.json">.baltor/step.lock.json</span><span class="step-demo-note-inline">     item, version, digest</span></pre>
-</div></li>
-</ol>
-</section>
+<figure class="hero-directory" id="hero-directory" aria-labelledby="hero-directory-title" data-hero-directory>
+<div class="hero-directory-head"><p class="hero-directory-title" id="hero-directory-title">The working directory for one step</p><p class="status-tag is-building" data-hero-label="illustration">Example layout</p></div>
+<pre class="hero-tree" tabindex="0" aria-label="The working directory of one step">step-3-find-duplicates/
+├── <span data-hero-part="instructions">AGENTS.md</span><span class="hero-tree-note">                   only this step's context</span>
+├── <span data-hero-part="skills">.claude/skills/</span>
+│   └── find-duplicate-records-with-blocking-keys/
+│       └── SKILL.md<span class="hero-tree-note">                the skill it needs</span>
+├── <span data-hero-part="tools">.mcp.json</span><span class="hero-tree-note">                   its tools, nothing more</span>
+└── <span data-hero-part="code">lib/blocking_keys.py</span><span class="hero-tree-note">        reused code, digest checked</span></pre>
+<p class="hero-directory-note" data-hero-note>Placed with no manual search and no manual setup of these files. The local engine is built to assemble a directory like this on demand for every step of a task.</p>
+</figure>
       </div>
       </div>
-      <div class="home-band band-plain" data-band="library">
-      <section class="library" id="library" aria-labelledby="library-title"><div class="library-main"><div class="section-title"><p class="eyebrow">The library</p><h2 id="library-title">Anything a harness can pick up, in one place.</h2><p>Skills with their scripts, instruction files, tools and code, subagents and commands, hooks and protocol server settings. Your agent searches it from inside its harness, and new vetted additions keep arriving.</p></div>
+      <div class="home-band band-plain" data-band="demos">
+      <section class="demos" id="demos" aria-labelledby="demos-title"><div class="section-title"><p class="eyebrow">See it work</p><h2 id="demos-title">Start to finish, for three kinds of work.</h2></div>
+      <ul class="demo-grid">
+<li class="demo-card" data-demo-card="simple"><p class="demo-card-kind">A simple task</p><h3>Clean a customer file</h3><p>Five small steps. Each one searches the library, downloads only the file it chose and shows where the harness reads it.</p><a class="text-link" href="/demo" data-page="demo">Watch the five steps</a></li>
+<li class="demo-card" data-demo-card="overnight"><p class="demo-card-kind">A long task, overnight</p><h3>Run a long job while you sleep</h3><p>The local engine is built to run a big job in small steps, each started with only its own files and checked before the next builds on it.</p><a class="text-link" href="/overnight" data-page="overnight">How a night of work runs</a></li>
+<li class="demo-card" data-demo-card="kaggle"><p class="demo-card-kind">A Kaggle solution</p><h3>From the metric to the submission</h3><p>Six steps of a tabular competition, from fixing the metric to writing the submission.</p><a class="text-link" href="/demo/kaggle" data-page="demo-kaggle">Follow the competition</a></li>
+      </ul></section>
+      </div>
+      <div class="home-band" data-band="library">
+      <section class="library" id="library" aria-labelledby="library-title"><div class="library-main"><div class="section-title"><p class="eyebrow">The library</p><h2 id="library-title">Anything a harness can pick up, in one place.</h2><p>Skills with their scripts, instruction files, tools and code, subagents and commands, hooks and protocol server settings, searched from inside your harness. New vetted additions keep arriving.</p></div>
       <ul class="kind-grid">
 <li class="kind" data-kind="skills"><h3>Skills</h3><p class="kind-files">SKILL.md · scripts/ · assets/</p></li>
 <li class="kind" data-kind="instructions"><h3>Instruction files</h3><p class="kind-files">AGENTS.md · CLAUDE.md</p></li>
@@ -78,35 +73,16 @@
       </ul></div>
       <aside class="library-facts" aria-label="The library today"><p class="library-count"><span class="library-number" data-library-count>43</span><span>vetted packages in this release, with more on the way</span></p><ul class="check-list"><li>Every file carries its source, licence and exact version</li><li>A step gets only the files it asks for</li><li>Items that need file, network or process access go only to a step that declares it</li></ul><a class="text-link" href="/app" data-page="workspace">Browse the library</a></aside></section>
       </div>
-      <div class="home-band" data-band="use-cases">
-      <section class="use-cases" id="use-cases" aria-labelledby="use-cases-title"><div class="section-title"><p class="eyebrow">What it makes possible</p><h2 id="use-cases-title">Three things teams do with Baltor.</h2></div>
+      <div class="home-band band-plain" data-band="use-cases">
+      <section class="use-cases" id="use-cases" aria-labelledby="use-cases-title"><div class="section-title"><p class="eyebrow">What it makes possible</p><h2 id="use-cases-title">Three things teams do with Baltor.</h2><p>One account holds one person's keys, so each person on a team holds their own account.</p></div>
       <ul class="use-case-grid">
 <li class="use-case" data-use-case="overnight"><svg class="use-case-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><h3>Solve complex problems overnight</h3><p>Hand a big job to a small or local model before you log off. The Baltor Harness breaks it into small steps and gives each one only the files it needs, so the work keeps moving while you sleep.</p><a class="text-link" href="/overnight" data-page="overnight">How overnight work runs</a></li>
 <li class="use-case" data-use-case="efficiency"><svg class="use-case-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><h3>More efficient operation</h3><p>Built so each step carries only the context it needs, reuses proven code instead of writing it again, and runs on the smallest model that does the job well.</p><a class="text-link" href="/efficiency" data-page="efficiency">Where the savings come from</a></li>
 <li class="use-case" data-use-case="learning"><svg class="use-case-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></svg><h3>Learning and optimization, built in</h3><p>Every run leaves a record of what worked, what failed and which setup was fastest. Baltor is designed to use those records to set up the next task better.</p><a class="text-link" href="/learning" data-page="learning">How it keeps improving</a></li>
       </ul></section>
       </div>
-      <div class="home-band band-plain" data-band="how">
-      <section class="how-band" id="how" aria-labelledby="how-title"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="how-title">Ask, get, place.</h2><p>Your harness asks for what a step needs. Baltor answers with the exact files and puts them where the harness reads them.</p></div>
-      <ol class="how-steps">
-<li class="how-step" data-how-step="ask"><span class="how-index">01</span><h3>Ask</h3><p>Your agent searches the library from inside Claude Code, Codex, OpenCode, Pi or the Baltor Harness.</p></li>
-<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3><p>Baltor returns the exact version, checked against its digest and counted in your usage.</p></li>
-<li class="how-step" data-how-step="place"><span class="how-index">03</span><h3>Place</h3><p>Each file lands where your harness reads it: skills, instructions, tools and settings.</p></li>
-      </ol>
-      <div class="how-connect"><div class="how-connect-copy"><h3>Connect in one entry</h3><p>Your harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.</p><p class="how-connect-where">Claude Code, in <code>.mcp.json</code></p><div class="how-option"><h3>One harness per step, when you want it</h3><p>For long jobs, the Baltor Harness can start a fresh harness for every small step, so each step holds only its own files. Turn it on for long runs and off for quick ones.</p></div><a class="text-link" id="how-explore" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><pre class="how-code" data-home-recipe="claude-code" tabindex="0" aria-label="The Claude Code entry">{
-  "mcpServers": {
-    "baltor": {
-      "type": "http",
-      "url": "https://baltor.ai/mcp",
-      "headers": {
-        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"
-      }
-    }
-  }
-}</pre></div></section>
-      </div>
       <div class="home-band" data-band="trust">
-      <section class="trust" aria-labelledby="trust-title"><h2 id="trust-title">Built for teams that check the details.</h2><ul class="trust-grid"><li><h3>Your keys stay yours</h3><p>Baltor never asks for a model key. Your harness calls your models through the connection you control.</p></li><li><h3>Exact versions, verified</h3><p>Every download names its version and digest, and your access is checked again before the bytes are read.</p></li><li><h3>Nothing runs on your computer</h3><p>Connecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.</p></li></ul></section>
+      <section class="trust" aria-labelledby="trust-title"><h2 id="trust-title">Built for teams that check the details.</h2><ul class="trust-grid"><li><h3>Your keys stay yours</h3><p>Baltor never asks for a model key. Your harness calls your models through the connection you control. One account holds one person's keys.</p></li><li><h3>Exact versions, verified</h3><p>Every download names its version and digest, and your access is checked again before the bytes are read.</p></li><li><h3>Nothing runs on your computer</h3><p>Connecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.</p></li></ul></section>
       </div>
       <div class="home-band band-plain" data-band="pricing">
       <section class="pricing-teaser" id="pricing-summary" aria-labelledby="pricing-teaser-heading"><div class="section-title"><p class="eyebrow">Pricing</p><h2 id="pricing-teaser-heading">One plan. The whole library.</h2><p>Baltor Pro is $29 a month. You bring your own model access, so model costs stay with your own provider, and there is no overage billing.</p></div>
@@ -114,7 +90,7 @@
       </div>
       <div class="home-band" data-band="faq">
       <section class="faq" id="faq" aria-labelledby="faq-title"><div class="faq-intro"><h2 id="faq-title">Questions, answered.</h2><p>Anything else, write to the operator at the contact address in the <a href="/privacy" data-page="privacy">privacy notice</a>.</p></div><div class="faq-list">
-<details class="faq-item" open><summary>Which harnesses does it work with?</summary><p>Claude Code, Codex, OpenCode, Pi and the Baltor Harness. <a href="/setup" data-page="setup">Get set up</a> shows the exact steps for each. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.</p></details>
+<details class="faq-item"><summary>Which harnesses does it work with?</summary><p>Claude Code, Codex, OpenCode, Pi and the Baltor Harness. <a href="/setup" data-page="setup">Get set up</a> shows the exact steps for each. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.</p></details>
 <details class="faq-item"><summary>Do I need to run a model myself?</summary><p>No. Bring the model access you already have: a provider key, a model on your own computer, Ollama Cloud, or a machine on your network. Baltor never asks for a model key.</p></details>
 <details class="faq-item"><summary>What counts as a download?</summary><p>One item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.</p></details>
 <details class="faq-item"><summary>What does Baltor keep about my work?</summary><p>For each item your agent downloads, one usage record: the item's name, its digest and the time. Your tasks, files, prompts and model keys stay on your computer. The <a href="/privacy" data-page="privacy">privacy notice</a> lists everything the service stores and for how long.</p></details>
@@ -144,7 +120,7 @@
 <li><strong>Checked results.</strong> An independent check accepts each result before the next step builds on it.</li>
         </ol></section>
         <section aria-labelledby="overnight-need"><h2 id="overnight-need">What you need</h2><ul class="check-list"><li>A model you can reach: a model on your computer, Ollama Cloud, a machine on your network or a provider key</li><li>The Baltor Harness on the machine that runs the job</li><li>A Baltor Pro account for the library</li></ul></section>
-        <section aria-labelledby="overnight-choice"><h2 id="overnight-choice">One harness per step, your choice</h2><p>Starting a fresh harness for every step keeps each step small and focused, which is what lets a small model go the distance. For a quick task, turn it off and run in one session.</p></section>
+        <section aria-labelledby="overnight-choice"><h2 id="overnight-choice">One harness per step, your choice</h2><p>Starting a fresh harness for every step keeps each step small and focused, which is what lets a small model go the distance. Turn it on for long runs, and off for a quick task that runs in one session.</p></section>
       </div>
     </section>
     <section data-view="efficiency" hidden class="use-case-page" aria-labelledby="efficiency-title">
@@ -326,6 +302,156 @@
           <section aria-labelledby="demo-recorded-title"><h2 id="demo-recorded-title">What is recorded</h2><p>The five searches, the references each returned in that order, and their kinds, licences, sizes and digests come from this release's library. A check runs every search again against the library this release carries and fails when one fact differs.</p></section>
           <section aria-labelledby="demo-example-title"><h2 id="demo-example-title">What is an example</h2><p>Here each step takes the first reference its search returned; in a real run your agent reads the references and chooses. Each folder shows where that harness reads a project skill, and how one step's output feeds the next. It is an example, not a recorded run.</p></section>
           <section aria-labelledby="demo-measured-title"><h2 id="demo-measured-title">What a measured run found</h2><p>When we measured items like these in real steps, they did not make a cheap model better at data cleanup, and one made it worse. <a href="/case-studies/data-cleanup" data-page="case-studies-data-cleanup">Read the case study</a> or see <a href="/examples" data-page="examples">more examples</a>.</p></section>
+        </div>
+      </div>
+    </section>
+    <section data-view="demo-kaggle" hidden class="showcase-page" aria-labelledby="kaggle-title">
+      <div class="showcase-intro" data-band="kaggle-intro"><p class="eyebrow">Demonstration</p><h1 id="kaggle-title">A Kaggle competition, start to finish.</h1><p class="lede">A tabular competition, broken into six steps from the metric to the submission. Each step searches the library, downloads only the file it chose, checks its bytes against the published digest and puts it where the harness reads it.</p><div class="actions"><a class="button primary" href="/get-started" data-page="get-started">Get started</a><a class="button secondary" href="/demo" data-page="demo">See a data cleanup task</a></div></div>
+      <div class="showcase-band" data-band="kaggle-steps">
+        <div class="task-layout" data-task-demo="kaggle">
+          <div class="task-top">
+            <div class="task-brief"><p class="task-brief-label">The task</p><p class="task-brief-text">Predict the target of a tabular competition from <code>train.csv</code>, check that the score holds, and write <code>submission.csv</code> for <code>test.csv</code>.</p></div>
+            <ol class="task-steps" aria-label="The six steps">
+<li><a href="#kaggle-step-1" data-task-go="1"><span class="task-steps-number" aria-hidden="true">1</span><span class="task-steps-text">Fix the metric</span></a></li>
+<li><a href="#kaggle-step-2" data-task-go="2"><span class="task-steps-number" aria-hidden="true">2</span><span class="task-steps-text">Audit the splits</span></a></li>
+<li><a href="#kaggle-step-3" data-task-go="3"><span class="task-steps-number" aria-hidden="true">3</span><span class="task-steps-text">Train a baseline</span></a></li>
+<li><a href="#kaggle-step-4" data-task-go="4"><span class="task-steps-number" aria-hidden="true">4</span><span class="task-steps-text">Find where it fails</span></a></li>
+<li><a href="#kaggle-step-5" data-task-go="5"><span class="task-steps-number" aria-hidden="true">5</span><span class="task-steps-text">Check the score holds</span></a></li>
+<li><a href="#kaggle-step-6" data-task-go="6"><span class="task-steps-number" aria-hidden="true">6</span><span class="task-steps-text">Write the submission</span></a></li>
+            </ol>
+            <div class="task-controls" data-task-controls hidden><div class="task-harness" role="group" aria-labelledby="kaggle-harness-label"><p id="kaggle-harness-label">Show the folders for</p><div class="task-harness-options"><button type="button" data-task-harness="claude-code" aria-pressed="true">Claude Code</button><button type="button" data-task-harness="codex" aria-pressed="false">Codex</button><button type="button" data-task-harness="opencode" aria-pressed="false">OpenCode</button><button type="button" data-task-harness="pi" aria-pressed="false">Pi</button></div></div><div class="task-moves"><button type="button" class="quiet" data-task-move="previous">Previous</button><button type="button" class="quiet" data-task-move="next">Next</button><button type="button" class="quiet" data-task-play aria-pressed="false">Play the steps</button></div></div>
+          </div>
+          <div class="task-panels" aria-live="polite">
+<article class="task-step" id="kaggle-step-1" data-task-step="kaggle-metric" aria-labelledby="kaggle-step-1-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 1 of 6</p><h3 id="kaggle-step-1-title">Fix the metric</h3><p class="task-step-goal">Write down the competition&#x27;s metric and the validation plan before any model runs.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>freeze the success metric before measuring</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="freeze_the_success_metric_before_measuring" class="is-chosen"><span class="step-demo-name">freeze_<wbr>the_<wbr>success_<wbr>metric_<wbr>before_<wbr>measuring</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.8 KB</span> · sha256 <span data-fact="digest">8bb77dda</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="orient_on_a_task_and_write_its_contracts"><span class="step-demo-name">orient_<wbr>on_<wbr>a_<wbr>task_<wbr>and_<wbr>write_<wbr>its_<wbr>contracts</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.9 KB</span> · sha256 <span data-fact="digest">13c13dbc</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="freeze_the_success_metric_before_measuring">download freeze_<wbr>the_<wbr>success_<wbr>metric_<wbr>before_<wbr>measuring</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 1">step-1-metric/
+├── competition.md<span class="task-tree-note">            the task&#x27;s file</span>
+├── train.csv<span class="task-tree-note">                 the task&#x27;s file</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>freeze-the-success-metric-before-measuring</span>/
+        └── SKILL.md<span class="task-tree-note">          2.8 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>validation-plan.json</code> for the next steps.</p></li>
+</ol>
+</article>
+<article class="task-step" id="kaggle-step-2" data-task-step="kaggle-splits" aria-labelledby="kaggle-step-2-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 2 of 6</p><h3 id="kaggle-step-2-title">Audit the splits</h3><p class="task-step-goal">Check the training and test files for leakage, duplicates and label errors.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>audit data splits for errors and leakage</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="audit_data_splits_for_errors_and_leakage" class="is-chosen"><span class="step-demo-name">audit_<wbr>data_<wbr>splits_<wbr>for_<wbr>errors_<wbr>and_<wbr>leakage</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">9c2133a4</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="analyse_errors_by_segment_and_cluster"><span class="step-demo-name">analyse_<wbr>errors_<wbr>by_<wbr>segment_<wbr>and_<wbr>cluster</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.6 KB</span> · sha256 <span data-fact="digest">d08d4555</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="audit_data_splits_for_errors_and_leakage">download audit_<wbr>data_<wbr>splits_<wbr>for_<wbr>errors_<wbr>and_<wbr>leakage</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 2">step-2-splits/
+├── train.csv<span class="task-tree-note">                 the task&#x27;s file</span>
+├── test.csv<span class="task-tree-note">                  the task&#x27;s file</span>
+├── validation-plan.json<span class="task-tree-note">      from step 1</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>audit-data-splits-for-errors-and-leakage</span>/
+        └── SKILL.md<span class="task-tree-note">          2.7 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>folds.csv</code> for the next steps.</p></li>
+</ol>
+</article>
+<article class="task-step" id="kaggle-step-3" data-task-step="kaggle-baseline" aria-labelledby="kaggle-step-3-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 3 of 6</p><h3 id="kaggle-step-3-title">Train a baseline</h3><p class="task-step-goal">Fit a first model and read the gap between training and validation scores.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>read the train validation gap</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="read_the_train_validation_gap" class="is-chosen"><span class="step-demo-name">read_<wbr>the_<wbr>train_<wbr>validation_<wbr>gap</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.8 KB</span> · sha256 <span data-fact="digest">5decc107</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="audit_data_splits_for_errors_and_leakage"><span class="step-demo-name">audit_<wbr>data_<wbr>splits_<wbr>for_<wbr>errors_<wbr>and_<wbr>leakage</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">9c2133a4</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="read_the_train_validation_gap">download read_<wbr>the_<wbr>train_<wbr>validation_<wbr>gap</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 3">step-3-baseline/
+├── train.csv<span class="task-tree-note">                 the task&#x27;s file</span>
+├── folds.csv<span class="task-tree-note">                 from step 2</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>read-the-train-validation-gap</span>/
+        └── SKILL.md<span class="task-tree-note">          2.8 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>baseline-scores.json</code> for the next steps.</p></li>
+</ol>
+</article>
+<article class="task-step" id="kaggle-step-4" data-task-step="kaggle-errors" aria-labelledby="kaggle-step-4-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 4 of 6</p><h3 id="kaggle-step-4-title">Find where it fails</h3><p class="task-step-goal">Group the validation errors by segment and look for repeated failures.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>analyse errors by segment</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="analyse_errors_by_segment_and_cluster" class="is-chosen"><span class="step-demo-name">analyse_<wbr>errors_<wbr>by_<wbr>segment_<wbr>and_<wbr>cluster</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.6 KB</span> · sha256 <span data-fact="digest">d08d4555</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="audit_data_splits_for_errors_and_leakage"><span class="step-demo-name">audit_<wbr>data_<wbr>splits_<wbr>for_<wbr>errors_<wbr>and_<wbr>leakage</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">9c2133a4</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="analyse_errors_by_segment_and_cluster">download analyse_<wbr>errors_<wbr>by_<wbr>segment_<wbr>and_<wbr>cluster</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 4">step-4-errors/
+├── baseline-scores.json<span class="task-tree-note">      from step 3</span>
+├── folds.csv<span class="task-tree-note">                 from step 2</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>analyse-errors-by-segment-and-cluster</span>/
+        └── SKILL.md<span class="task-tree-note">          2.6 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>error-report.md</code> for the next steps.</p></li>
+</ol>
+</article>
+<article class="task-step" id="kaggle-step-5" data-task-step="kaggle-stability" aria-labelledby="kaggle-step-5-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 5 of 6</p><h3 id="kaggle-step-5-title">Check the score holds</h3><p class="task-step-goal">Rerun across seeds and folds, and keep only a result that holds.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>check that a result is stable and generalizes</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="check_that_a_result_is_stable_and_generalizes" class="is-chosen"><span class="step-demo-name">check_<wbr>that_<wbr>a_<wbr>result_<wbr>is_<wbr>stable_<wbr>and_<wbr>generalizes</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">6ba31af0</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="deliver_the_best_available_result_when_blocked"><span class="step-demo-name">deliver_<wbr>the_<wbr>best_<wbr>available_<wbr>result_<wbr>when_<wbr>blocked</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.6 KB</span> · sha256 <span data-fact="digest">e5ab3973</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="check_that_a_result_is_stable_and_generalizes">download check_<wbr>that_<wbr>a_<wbr>result_<wbr>is_<wbr>stable_<wbr>and_<wbr>generalizes</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 5">step-5-stability/
+├── train.csv<span class="task-tree-note">                 the task&#x27;s file</span>
+├── folds.csv<span class="task-tree-note">                 from step 2</span>
+├── error-report.md<span class="task-tree-note">           from step 4</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>check-that-a-result-is-stable-and-generalizes</span>/
+        └── SKILL.md<span class="task-tree-note">          2.7 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>stability.json</code> for the next steps.</p></li>
+</ol>
+</article>
+<article class="task-step" id="kaggle-step-6" data-task-step="kaggle-submission" aria-labelledby="kaggle-step-6-title">
+<div class="task-step-head"><div><p class="task-step-count">Step 6 of 6</p><h3 id="kaggle-step-6-title">Write the submission</h3><p class="task-step-goal">Predict the test file and write the submission with a short report.</p></div><p class="status-tag is-recorded" data-task-label="recorded">Recorded from this release's library</p></div>
+<ol class="task-step-parts">
+<li class="task-part" data-task-stage="search" data-task-evidence="recorded"><p class="task-part-name">Search</p>
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-task-query>hand over a result its consumer can use</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="hand_over_a_result_its_consumer_can_use" class="is-chosen"><span class="step-demo-name">hand_<wbr>over_<wbr>a_<wbr>result_<wbr>its_<wbr>consumer_<wbr>can_<wbr>use</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">ddef271b</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="check_that_a_result_is_stable_and_generalizes"><span class="step-demo-name">check_<wbr>that_<wbr>a_<wbr>result_<wbr>is_<wbr>stable_<wbr>and_<wbr>generalizes</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">6ba31af0</span>…</span></li>
+</ol></li>
+<li class="task-part" data-task-stage="download" data-task-evidence="recorded"><p class="task-part-name">Download</p><p class="step-demo-download"><code data-demo-download="hand_over_a_result_its_consumer_can_use">download hand_<wbr>over_<wbr>a_<wbr>result_<wbr>its_<wbr>consumer_<wbr>can_<wbr>use</code><span class="step-demo-ok">Bytes match the digest</span></p></li>
+<li class="task-part" data-task-stage="folder" data-task-evidence="illustration"><div class="task-folder-head"><p class="task-part-name">Placed where the harness reads it</p><p class="status-tag is-building" data-task-label="illustration">Example layout</p></div>
+<pre class="task-tree" tabindex="0" aria-label="The folder of step 6">step-6-submission/
+├── test.csv<span class="task-tree-note">                  the task&#x27;s file</span>
+├── stability.json<span class="task-tree-note">            from step 5</span>
+└── <span data-task-skill-root>.claude/skills/</span>
+    └── <span data-task-skill-name>hand-over-a-result-its-consumer-can-use</span>/
+        └── SKILL.md<span class="task-tree-note">          2.7 KB, digest checked</span></pre>
+<p class="task-output">Writes <code>submission.csv</code>, the result of the task.</p></li>
+</ol>
+</article>
+          </div>
+        </div>
+      </div>
+      <div class="showcase-band is-plain" data-band="kaggle-evidence">
+        <div class="evidence-grid">
+          <section aria-labelledby="kaggle-recorded-title"><h2 id="kaggle-recorded-title">What is recorded</h2><p>The six searches, the references each returned in that order, and their kinds, licences, sizes and digests come from this release's library. A check runs every search again against the library this release carries.</p></section>
+          <section aria-labelledby="kaggle-example-title"><h2 id="kaggle-example-title">What is an example</h2><p>Each step takes the first reference its search returned, and each folder shows where the harness reads a project skill. The page shows no competition score, because no scored run stands behind it.</p></section>
+          <section aria-labelledby="kaggle-more-title"><h2 id="kaggle-more-title">More demonstrations</h2><p>See a <a href="/demo" data-page="demo">data cleanup task</a> step by step, or how a <a href="/overnight" data-page="overnight">long task runs overnight</a>.</p></section>
         </div>
       </div>
     </section>

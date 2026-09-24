@@ -408,8 +408,8 @@ surfaces:
   public_website_pages:
     definition: >-
       The homepage, the How it works view, the shared footer and the public
-      pages of September 24, 2026 of the served website: the demonstration,
-      the service status, the examples gallery, the three case studies and the
+      pages of September 24, 2026 of the served website: the two
+      demonstrations, the service status, the examples gallery, the three case studies and the
       four audience pages. A customer reads these without any technical
       background.
     enforcement: checked
@@ -418,6 +418,7 @@ surfaces:
     - view:home
     - view:about
     - view:demo
+    - view:demo-kaggle
     - view:status
     - view:examples
     - view:case-studies-data-cleanup

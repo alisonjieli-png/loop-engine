@@ -8,7 +8,7 @@
    answer are said as such; no value is guessed, no history is kept and no uptime figure is shown. The health route answers 503 with
    the same record when the service is not ready, so that answer is read too, and it must agree with the record's own ready field.
 
-   The demonstration shows every step when this script does not run. When it runs, it shows one step at a time, moves between them
+   Each demonstration shows every step when this script does not run. When it runs, it shows one step at a time, moves between them
    by the list of steps, by Previous and Next or by Play, and shows each step's folder for the harness the reader picks. The folder
    roots below are the project skill locations of tools/install_selected_material.py; tools/test_showcase_pages.py compares them. */
 (() => {
@@ -144,10 +144,9 @@
     if (versions.length) document.querySelectorAll("[data-protocol-versions]").forEach(node => { node.textContent = versions.join(" and "); });
   }
 
-  /* The demonstration: one step at a time, a folder for the chosen harness, and a player that stops at the last step. */
-  const demo = document.querySelector("[data-task-demo]");
-  let stopPlaying = () => {};
-  if (demo) {
+  /* Each demonstration: one step at a time, moved by its list, by Previous and Next or by Play, which stops at the last step; the
+     folder follows the harness the reader picks. The page holds several demonstrations, each set up on its own. */
+  const players = [...document.querySelectorAll("[data-task-demo]")].map(demo => {
     const panels = [...demo.querySelectorAll("[data-task-step]")], links = [...demo.querySelectorAll("[data-task-go]")];
     const previous = demo.querySelector('[data-task-move="previous"]'), next = demo.querySelector('[data-task-move="next"]'), play = demo.querySelector("[data-task-play]");
     const harnesses = [...demo.querySelectorAll("[data-task-harness]")];
@@ -159,15 +158,15 @@
       previous.disabled = current === 0; next.disabled = current === panels.length - 1;
       if (moveFocus) { const heading = panels[current].querySelector("h3"); heading.tabIndex = -1; heading.focus({preventScroll: true}); }
     };
-    stopPlaying = () => { if (timer) clearInterval(timer); timer = null; play.setAttribute("aria-pressed", "false"); play.textContent = "Play the steps"; };
-    links.forEach((link, place) => link.addEventListener("click", event => { event.preventDefault(); stopPlaying(); select(place, true); }));
-    previous.addEventListener("click", () => { stopPlaying(); select(current - 1, true); });
-    next.addEventListener("click", () => { stopPlaying(); select(current + 1, true); });
+    const stop = () => { if (timer) clearInterval(timer); timer = null; play.setAttribute("aria-pressed", "false"); play.textContent = "Play the steps"; };
+    links.forEach((link, place) => link.addEventListener("click", event => { event.preventDefault(); stop(); select(place, true); }));
+    previous.addEventListener("click", () => { stop(); select(current - 1, true); });
+    next.addEventListener("click", () => { stop(); select(current + 1, true); });
     play.addEventListener("click", () => {
-      if (timer) { stopPlaying(); return; }
+      if (timer) { stop(); return; }
       if (current === panels.length - 1) select(0, false);
       play.setAttribute("aria-pressed", "true"); play.textContent = "Pause";
-      timer = setInterval(() => { if (current >= panels.length - 1) stopPlaying(); else select(current + 1, false); }, 3500);
+      timer = setInterval(() => { if (current >= panels.length - 1) stop(); else select(current + 1, false); }, 3500);
     });
     harnesses.forEach(button => button.addEventListener("click", () => {
       const root = SKILL_ROOTS[button.dataset.taskHarness];
@@ -177,14 +176,16 @@
     }));
     demo.querySelector("[data-task-controls]").hidden = false;
     select(0, false);
-  }
+    return stop;
+  });
+  const stopPlaying = () => players.forEach(stop => stop());
 
   /* Each view acts when it opens: service.js marks the open view on the body. */
   let opened = "";
   const onView = () => {
     const page = document.body.dataset.page || "";
     if (page === opened) return;
-    if (opened === "demo") stopPlaying();
+    stopPlaying();
     opened = page;
     if (page === "status") readStatus();
     if (page === "for-protocol-and-client") readProtocol();

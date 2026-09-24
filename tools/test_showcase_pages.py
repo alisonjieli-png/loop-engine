@@ -6,8 +6,9 @@ demonstration shows through the same host loader and retrieval route the service
 `tools/install_selected_material.py`, and reads the evidence files each case study names. Nothing here
 reaches the network; the searches run on loopback over a temporary database.
 
-The demonstration at `/demo` breaks one data cleanup task into five steps. Each step shows a search, the
-references it returned, a download of the one it chose and the folder where the harness reads it. The
+The demonstration at `/demo` breaks one data cleanup task into five steps, and the one at `/demo/kaggle` breaks a
+Kaggle competition into six, from the metric to the submission. Each step shows a search, the references it returned,
+a download of the one it chose and the folder where the harness reads it. The
 search and the download are recorded from this release's library and say so; the folder is an example and
 says so. Each rule below refuses one way the page could stop being true, and each has known-wrong pages
 beside it that the rule must report:
@@ -44,8 +45,9 @@ SCRIPT = ASSETS / "public-pages.js"
 HARNESSES = ("claude-code", "codex", "opencode", "pi")
 #: The harness whose folder the page shows before its script runs.
 DEFAULT_HARNESS = "claude-code"
-#: The fewest steps the task is broken into, and the references each step shows.
-STEP_COUNT, SHOWN_RESULTS = 5, 2
+#: Each demonstration's view and the steps its task is broken into, and the references each step shows.
+DEMONSTRATIONS = {"demo": 5, "demo-kaggle": 6}
+SHOWN_RESULTS = 2
 #: A number as a reader sees it: digits, with the dots, commas and colons inside it.
 NUMBER = re.compile(r"\d+(?:[.,:]\d+)*")
 CASE_STUDY_VIEW = re.compile(r'^\s{4}<section data-view="(case-studies-[a-z0-9-]+)"[^>]*\bdata-evidence="([^"]+)"', re.M)
@@ -65,8 +67,17 @@ class Step:
     skill_name: str
 
 
+def view_markup(page, view):
+    """The markup of one view of the one page, from its opening tag to the next view."""
+    found = re.search(r'^\s{4}<section data-view="' + re.escape(view) + r'"', page, re.M)
+    if not found:
+        return ""
+    following = VIEW_LINE.search(page, found.end())
+    return page[found.start():following.start() if following else len(page)]
+
+
 def read_steps(page):
-    """The steps of the demonstration, read from the served page source."""
+    """The steps of one demonstration, read from the markup of its view."""
     found = read_marked(page, "data-task-demo")
 
     def nearest(element, name):
@@ -103,9 +114,9 @@ def read_steps(page):
     return steps
 
 
-def search_problems(steps, searches):
+def search_problems(steps, searches, count):
     """Each step shows what a real search of this release's library returns, in order, and downloads the chosen one."""
-    problems = [] if len(steps) >= STEP_COUNT else [f"the demonstration shows {len(steps)} steps"]
+    problems = [] if len(steps) == count else [f"the demonstration shows {len(steps)} steps, and its task has {count}"]
     for step in steps:
         hits = searches.get(step.query, [])
         if len(step.results) != SHOWN_RESULTS:
@@ -218,42 +229,51 @@ class DemonstrationPage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.page = PAGE.read_text(encoding="utf-8")
-        cls.steps = read_steps(cls.page)
-        cls.searches = {step.query: release_search(step.query) for step in cls.steps if step.query}
+        cls.steps = {view: read_steps(view_markup(cls.page, view)) for view in DEMONSTRATIONS}
+        cls.searches = {step.query: release_search(step.query) for steps in cls.steps.values() for step in steps if step.query}
         cls.items, _count = released_items()
 
     def test_each_step_shows_what_this_release_library_returns(self):
-        self.assertEqual(search_problems(self.steps, self.searches), [])
-        self.assertGreaterEqual(len(self.steps), STEP_COUNT)
-        first = self.steps[0]
-        # KNOWN_WRONG: a digest changed by one character, two references swapped, and a download of the second reference.
+        for view, count in DEMONSTRATIONS.items():
+            with self.subTest(demonstration=view):
+                self.assertEqual(search_problems(self.steps[view], self.searches, count), [])
+        steps = self.steps["demo"]
+        first = steps[0]
+        # KNOWN_WRONG: a digest changed by one character, two references swapped, a download of the second reference,
+        # and a demonstration that lost a step.
         digest = first.results[0]["digest"]
         changed = [Step(first.name, first.query, [{**first.results[0], "digest": digest[:-1] + ("0" if digest[-1] != "0" else "1")},
                                                   first.results[1]], first.download, first.labels, first.skill_root, first.skill_name)]
         swapped = [Step(first.name, first.query, list(reversed(first.results)), first.download, first.labels, first.skill_root, first.skill_name)]
         other = [Step(first.name, first.query, first.results, first.results[1]["identity"], first.labels, first.skill_root, first.skill_name)]
         for wrong in (changed, swapped, other):
-            self.assertTrue(search_problems(wrong + self.steps[1:], self.searches))
+            self.assertTrue(search_problems(wrong + steps[1:], self.searches, DEMONSTRATIONS["demo"]))
+        self.assertEqual(len(search_problems(steps[1:], self.searches, DEMONSTRATIONS["demo"])), 1)
         # PLANTED: a digest changed in the page source itself, the way a stale page would serve it.
         planted = self.page.replace('data-fact="digest">' + digest + "<", 'data-fact="digest">' + digest[:-1] + ("0" if digest[-1] != "0" else "1") + "<", 1)
         self.assertNotEqual(planted, self.page)
-        self.assertTrue(search_problems(read_steps(planted), self.searches))
+        self.assertTrue(search_problems(read_steps(view_markup(planted, "demo")), self.searches, DEMONSTRATIONS["demo"]))
 
     def test_each_part_says_whether_it_is_recorded_or_an_example(self):
-        self.assertEqual(label_problems(self.steps), [])
+        for view in DEMONSTRATIONS:
+            with self.subTest(demonstration=view):
+                self.assertEqual(label_problems(self.steps[view]), [])
         # PLANTED: a folder called recorded, and a folder label that carries a retired status word.
         called = self.page.replace('data-task-label="illustration">Example layout<', 'data-task-label="recorded">Recorded from this release\'s library<', 1)
         building = self.page.replace('data-task-label="illustration">Example layout<', 'data-task-label="illustration">Example layout, being built<', 1)
         for planted in (called, building):
             self.assertNotEqual(planted, self.page)
-            self.assertEqual(len(label_problems(read_steps(planted))), 1)
+            self.assertEqual(len(label_problems(read_steps(view_markup(planted, "demo")))), 1)
 
     def test_each_folder_uses_the_placement_tool_roots_and_names(self):
         roots = script_roots(SCRIPT.read_text(encoding="utf-8"))
-        self.assertEqual(placement_problems(self.steps, roots), [])
+        for view in DEMONSTRATIONS:
+            with self.subTest(demonstration=view):
+                self.assertEqual(placement_problems(self.steps[view], roots), [])
         # KNOWN_WRONG: a root the placement tool does not use, and a folder named for another item.
-        self.assertEqual(len(placement_problems(self.steps, {**roots, "codex": ".codex/skills/"})), 1)
-        first = self.steps[0]
+        steps = self.steps["demo"]
+        self.assertEqual(len(placement_problems(steps, {**roots, "codex": ".codex/skills/"})), 1)
+        first = steps[0]
         renamed = [Step(first.name, first.query, first.results, first.download, first.labels, first.skill_root,
                         native_name(first.results[1]["identity"]))]
         self.assertEqual(len(placement_problems(renamed, roots)), 1)
@@ -261,9 +281,11 @@ class DemonstrationPage(unittest.TestCase):
     def test_no_step_chooses_an_item_a_measurement_found_harmful(self):
         harmful = recorded_harm()
         self.assertTrue(harmful)
-        self.assertEqual(harm_problems(self.steps, harmful), [])
+        for view in DEMONSTRATIONS:
+            with self.subTest(demonstration=view):
+                self.assertEqual(harm_problems(self.steps[view], harmful), [])
         # KNOWN_WRONG: a step that downloads the item the data cleanup study found harmful.
-        first = self.steps[0]
+        first = self.steps["demo"][0]
         chose = [Step(first.name, first.query, first.results, sorted(harmful)[0], first.labels, first.skill_root, first.skill_name)]
         self.assertEqual(len(harm_problems(chose, harmful)), 1)
 

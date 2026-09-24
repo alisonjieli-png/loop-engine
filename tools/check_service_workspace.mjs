@@ -386,52 +386,56 @@ const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("
   .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",header:Boolean(node.closest("header"))})));
 const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:["no primary action is shown"]),
   ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
-/* The demonstration of one step, as the design draws it: the search and the download are recorded from this release's library
-   under one label in the panel's head, and the step's working folder below them carries a label of its own, "Example layout",
-   because it shows where the files go rather than a recorded run. The owner removed the status words on September 23, 2026, so
-   no part says "Being built" any longer. The names, kinds, licences, sizes and digests are compared with this release's packaged
-   manifest, read from the source tree, and the order of the search is compared with a real search of that library by
-   tools/test_homepage_demonstration.py. */
-const demoStages=[["search","recorded"],["download","recorded"],["folder","illustration"]];
-const demoLabelWords={recorded:"Real results from the library",illustration:"Example layout"};
-const demoState=target=>target.evaluate(()=>{
-  const demo=document.getElementById("step-demo"),visible=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
-  const panels=demo?[...demo.querySelectorAll("[data-demo-stage]")]:[],head=demo?.querySelector(".step-demo-head [data-demo-label]");
-  const label=node=>node?[node.dataset.demoLabel,node.textContent.replace(/\s+/g," ").trim(),visible(node)]:["","",false];
-  return {stages:panels.map(panel=>[panel.dataset.demoStage,panel.dataset.demoEvidence||""]),shown:panels.filter(visible).map(panel=>panel.dataset.demoStage),
-    labels:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,label(panel.querySelector("[data-demo-label]")||head)])),
-    text:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,panel.textContent.replace(/\s+/g," ")]))};
-});
-const demoLabelProblems=state=>[...(JSON.stringify(state.stages)!==JSON.stringify(demoStages)?["the parts are "+JSON.stringify(state.stages)]:[]),
-  ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])||invitationWords.test(state.labels[stage][1])||!state.labels[stage][2]).map(([stage,evidence])=>"the "+stage+" part is not labelled "+JSON.stringify(demoLabelWords[evidence]))];
-const livePathProblems=state=>[
-  ...(/\bsearch\b/.test(state.text.search||"")&&/sha256/.test(state.text.search||"")?[]:["the search part shows no search with digests"]),
-  ...(/\bdownload\b/.test(state.text.download||"")?[]:["the download part shows no checked download"]),
-  ...["search","download"].filter(stage=>/illustration|example layout|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" part carries illustrated or planned words")];
-const demoFacts=target=>target.evaluate(()=>{
-  const demo=document.getElementById("step-demo"),fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
-  return {items:demo?[...demo.querySelectorAll("[data-demo-item]")].map(node=>({identity:node.dataset.demoItem,kind:fact(node,"kind"),licence:fact(node,"licence"),size:fact(node,"size"),digest:fact(node,"digest"),chosen:node.classList.contains("is-chosen")})):[],
-    download:demo?.querySelector("[data-demo-download]")?.dataset.demoDownload||""};
-});
+/* The hero since September 24, 2026: no worked example, only the working directory one step gets. The owner: "instead of
+   showing a simple example, we should show the directory structure emphasize that it is built on demand efficiently, no manual
+   searches, no manual setup". The figure names the four parts a step's directory holds, the instruction file with only that step's
+   context, the skill it needs, its protocol server settings and reused code, says it is an example layout, and says the files were
+   placed with no manual search and no manual setup. What works today stays apart from what is built but not shipped: a person's
+   agent searches and Baltor places the chosen files, while assembling a directory for every step is what the local engine is built
+   to do, so a sentence about assembling or building for each step says "built to". A worked example anywhere in the hero, a
+   search, its references, its digests or a download, is the known-wrong page; the demonstrations show those. */
+const heroDirectoryParts=["instructions","skills","tools","code"];
+/* A sentence that assembles or builds something for each or every step, or for this step, without saying the engine is built to. */
+const perStepClaim=text=>text.split(/(?<=[.!?])\s+/).filter(sentence=>/\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b/i.test(sentence)&&!/\bbuilt to\b/i.test(sentence));
+const heroDirectory=target=>target.evaluate(()=>{
+  const band=document.querySelector('[data-view="home"] [data-band="hero"]'),figure=band?.querySelector("[data-hero-directory]"),shown=node=>Boolean(node&&node.getClientRects().length>0);
+  return {shown:shown(figure),parts:figure?[...figure.querySelectorAll("[data-hero-part]")].map(node=>node.dataset.heroPart):[],
+    label:figure?.querySelector("[data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",
+    note:figure?.querySelector("[data-hero-note]")?.textContent.replace(/\s+/g," ").trim()||"",
+    example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-demo-stage], [data-task-demo]").length:0,
+    text:band?.textContent.replace(/\s+/g," ")||""};});
+const heroDirectoryProblems=state=>[...(state.shown?[]:["the hero shows no working directory"]),
+  ...(JSON.stringify(state.parts)===JSON.stringify(heroDirectoryParts)?[]:["the directory holds the parts "+JSON.stringify(state.parts)]),
+  ...(state.label==="Example layout"&&!invitationWords.test(state.label)?[]:["the directory is labelled "+JSON.stringify(state.label)]),
+  ...(/no manual search/i.test(state.note)&&/no manual setup/i.test(state.note)?[]:["the directory does not say it was placed with no manual search and no manual setup"]),
+  ...(perStepClaim(state.text).length===0&&/\bbuilt to\b/i.test(state.note)?[]:["the hero states assembly for each step as a current capability: "+JSON.stringify(perStepClaim(state.text))]),
+  ...(state.example===0&&!/\bsearch:|\bsha256\b|Bytes match the digest|Recorded from this release/i.test(state.text)?[]:["the hero shows a worked example again"])];
+/* The demonstration pages show each step's search and download, recorded from this release's library: the names, kinds, licences,
+   sizes and digests are compared with this release's packaged manifest, read from the source tree, and each step downloads the
+   reference its search chose. tools/test_showcase_pages.py compares the order of each search with a real search of that library. */
+const demoFacts=(target,view)=>target.evaluate(view=>{
+  const fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
+  return [...document.querySelectorAll('[data-view="'+view+'"] [data-task-step]')].map(step=>({items:[...step.querySelectorAll("[data-demo-item]")].map(node=>({identity:node.dataset.demoItem,
+    kind:fact(node,"kind"),licence:fact(node,"licence"),size:fact(node,"size"),digest:fact(node,"digest"),chosen:node.classList.contains("is-chosen")})),
+    download:step.querySelector("[data-demo-download]")?.dataset.demoDownload||""}));},view);
 const releasedManifest=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8"));
 const releasedReferences=Object.fromEntries(releasedManifest.items.map(item=>[item.reference.identity,item.reference])),releasedItemCount=releasedManifest.items.length;
 const kilobytes=size=>(size/1000).toFixed(1)+" KB";
 const shownDigestProblem=(place,shown,expected)=>/^[0-9a-f]{8,64}$/.test(shown)&&typeof expected==="string"&&expected.startsWith(shown)?"":place+" shows sha256 "+(shown||"(nothing)")+" and this release has "+(expected||"no such item");
-const demoFactProblems=facts=>[
-  ...(facts.items.length?[]:["the demonstration shows no search result"]),
-  ...facts.items.flatMap((item,index)=>{const released=releasedReferences[item.identity],place="search result "+(index+1)+" ("+item.identity+")";
+const demoFactProblems=steps=>[...(steps.length?[]:["the demonstration shows no step"]),...steps.flatMap((facts,step)=>[
+  ...(facts.items.length?[]:["step "+(step+1)+" shows no search result"]),
+  ...facts.items.flatMap((item,index)=>{const released=releasedReferences[item.identity],place="step "+(step+1)+", search result "+(index+1)+" ("+item.identity+")";
     if(!released)return [place+" is not an item of this release's library"];
     return [...(item.kind!==released.kind?[place+" shows the kind "+item.kind]:[]),...(item.licence!==released.license?[place+" shows the licence "+item.licence]:[]),
       ...(item.size!==kilobytes(released.size_bytes)?[place+" shows "+item.size+" and this release has "+kilobytes(released.size_bytes)]:[]),shownDigestProblem(place,item.digest,released.digest)].filter(Boolean);}),
-  ...(facts.download&&facts.items[0]?.identity===facts.download&&facts.items[0]?.chosen?[]:["the download does not name the reference the search chose"])];
-const folderPaths=target=>target.evaluate(()=>[...document.querySelectorAll("#step-demo [data-demo-path]")].map(node=>node.dataset.demoPath));
-const folderProblems=paths=>paths.some(path=>!/\.md$/i.test(path))?[]:["the step folder shows only Markdown files"];
-/* The homepage cards since September 23, 2026: the six kinds of harness material, the three steps of How it works and the three
-   use cases the owner named, each in the design's order and each under its own heading. The owner removed the status words from
+  ...(facts.download&&facts.items[0]?.identity===facts.download&&facts.items[0]?.chosen?[]:["step "+(step+1)+" does not download the reference its search chose"])])];
+/* The homepage cards since September 23, 2026: the six kinds of harness material and the three use cases the owner named, and
+   since September 24 the three demonstrations, each in the design's order and each under its own heading. The owner removed the status words from
    them the same day, so no card carries a status tag and no card says Available now, Being built, Planned, Coming soon or that
    packages are coming. The two labels of the demonstration are the only tags the homepage keeps. A card that claims or disclaims
    a state is the known-wrong case. Each use case links to its own page. */
-const kindOrder=["skills","instructions","tools","agents","hooks","servers"],howOrder=["ask","get","place"],useCaseOrder=["overnight","efficiency","learning"];
+const kindOrder=["skills","instructions","tools","agents","hooks","servers"],useCaseOrder=["overnight","efficiency","learning"],demoCardOrder=["simple","overnight","kaggle"];
+const demoCardPages={simple:"/demo",overnight:"/overnight",kaggle:"/demo/kaggle"};
 const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
 const homeCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>({name:node.dataset[key]||"",
   title:node.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim(),tags:node.querySelectorAll(".status-tag, [data-status]").length,
@@ -445,7 +449,7 @@ const useCaseProblems=cards=>[...cardProblems(cards,useCaseOrder),
 /* No layout shift from late script. The first screen is measured as served, with the page script held back, and again once
    the script has run and the service has answered. Nothing measured here may move by more than one pixel. The fonts are
    waited for in both pages, so a font that arrives late is not mistaken for the script. */
-const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-setup","#hero-access-note",".hero-price",".hero-harnesses","#step-demo",'[data-band="library"]'].map(selector=>{
+const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-setup","#hero-access-note",".hero-price",".hero-harnesses","#hero-directory",'[data-band="demos"]'].map(selector=>{
   const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
   return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];}));});
 /* Text contrast, as WCAG AA sets it: 4.5 to 1 for body text and 3 to 1 for large text, measured against the solid grounds
@@ -730,7 +734,7 @@ try {
   check("typeface_check_rejects_a_page_without_the_code_face",!bothFaces(typefaces.filter(family=>family!=="Geist Mono"))&&!bothFaces([]));
   /* The hero, as the owner decided on September 23, 2026: it says what Baltor is, the library of everything a harness can use,
      placed where the harness reads it, and the pain it removes, the searching, sorting and copying done by hand. "One harness per
-     step" left the hero the same day; it is a runtime option that How it works describes. Each rule has its own known-wrong case
+     step" left the hero the same day; it is a runtime option that the overnight page describes. Each rule has its own known-wrong case
      beside it: the owner's earlier lines, a hero that names only one of the two, and a hero that promises a fresh harness again. */
   const heroCopy=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
     subhead:node.querySelector(".hero-subhead")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim()}));
@@ -822,74 +826,79 @@ try {
   const homePrimaries=await primaryActions(page);
   check("homepage_primary_actions_all_carry_the_one_label",primaryProblems(homePrimaries).length===0&&homePrimaries.filter(action=>action.header).length===1&&homePrimaries.length>=4,{actions:homePrimaries,problems:primaryProblems(homePrimaries)});
   check("primary_action_check_rejects_a_second_label_and_a_second_address",primaryProblems([...homePrimaries,{id:"planted",text:"Join the waiting list",href:accessPaths.closed,header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:accessLabels.closed,href:"/signup#waiting-list",header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:"Request an invitation",href:"/waitlist",header:false}]).length===1&&primaryProblems([]).length===1);
-  /* The design's order since September 23, 2026: the hero with the demonstration beside the copy, the library, the three use
-     cases, how it works, trust, pricing, questions and the closing band. The harness strip and the six problems left the homepage
-     that day; their content moved to the use-case pages. Each is a band of its own, directly under the homepage view. */
-  const bandOrder=["hero","library","use-cases","how","trust","pricing","faq","closing"];
-  const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>({bands:[...home.children].map(node=>node.dataset.band||node.tagName.toLowerCase()),demoIn:document.getElementById("step-demo")?.closest("[data-band]")?.dataset.band||""}));
-  const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.demoIn==="hero";
+  /* The design's order since September 24, 2026: the hero with the working directory beside the copy, the three demonstrations,
+     the library, the three use cases, trust, pricing, questions and the closing band. The Ask, get, place band left the homepage
+     that day with a dated removal row: the hero shows the directory and the demonstrations show each run start to finish. */
+  const bandOrder=["hero","demos","library","use-cases","trust","pricing","faq","closing"];
+  const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>({bands:[...home.children].map(node=>node.dataset.band||node.tagName.toLowerCase()),directoryIn:document.getElementById("hero-directory")?.closest("[data-band]")?.dataset.band||""}));
+  const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.directoryIn==="hero";
   check("homepage_bands_follow_the_design_order",followsTheDesign(homeFlow),homeFlow);
-  check("band_order_check_rejects_a_moved_band_a_returned_band_and_a_demonstration_outside_the_hero",!followsTheDesign({...homeFlow,bands:[bandOrder[0],bandOrder[2],bandOrder[1],...bandOrder.slice(3)]})
-    &&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,bands:[bandOrder[0],"harnesses","problems",...bandOrder.slice(1)]})&&!followsTheDesign({...homeFlow,demoIn:"how"}));
-  /* The demonstration of one step sits beside the copy in the hero on a wide screen, as the owner decided on September 23, 2026,
-     so the first look shows what an agent gets at one step. The known-wrong layouts put it below the copy, as the review of the
-     same morning had it, and leave it out. */
+  check("band_order_check_rejects_a_moved_band_a_returned_band_and_a_directory_outside_the_hero",!followsTheDesign({...homeFlow,bands:[bandOrder[0],bandOrder[2],bandOrder[1],...bandOrder.slice(3)]})
+    &&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,bands:[bandOrder[0],"how",...bandOrder.slice(1)]})&&!followsTheDesign({...homeFlow,directoryIn:"demos"}));
+  /* The working directory of one step sits beside the copy in the hero on a wide screen, as the owner decided on September 24,
+     2026, so the first look shows what a step gets. The known-wrong layouts put it below the copy and leave it out. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".step-demo");
+    const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".hero-directory");
     const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
     return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),
       exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};
   });
-  const demoBesideTheCopy=m=>m.hasExample&&m.hasCopy&&m.viewport>=1100&&m.exampleLeft>=m.copyRight-1&&m.exampleTop<m.copyBottom&&m.exampleBottom>m.copyTop;
-  check("homepage_demonstration_sits_beside_the_copy_in_the_hero",demoBesideTheCopy(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_demonstration_below_the_copy_or_missing",!demoBesideTheCopy({...heroLayout,exampleTop:heroLayout.copyBottom+24,exampleBottom:heroLayout.copyBottom+624,exampleLeft:heroLayout.copyRight-600})
-    &&!demoBesideTheCopy({...heroLayout,hasExample:false}));
-  /* One harness per step is a runtime option since September 23, 2026: the homepage's How it works band says it can be turned on
-     for long runs and off for quick ones, and the hero no longer promises it. */
-  const howText=await page.locator('[data-band="how"]').innerText();
+  const directoryBesideTheCopy=m=>m.hasExample&&m.hasCopy&&m.viewport>=1100&&m.exampleLeft>=m.copyRight-1&&m.exampleTop<m.copyBottom&&m.exampleBottom>m.copyTop;
+  check("homepage_directory_sits_beside_the_copy_in_the_hero",directoryBesideTheCopy(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_directory_below_the_copy_or_missing",!directoryBesideTheCopy({...heroLayout,exampleTop:heroLayout.copyBottom+24,exampleBottom:heroLayout.copyBottom+624,exampleLeft:heroLayout.copyRight-600})
+    &&!directoryBesideTheCopy({...heroLayout,hasExample:false}));
+  /* One harness per step is a runtime option since September 23, 2026: the overnight page says it can be turned on for long runs and
+     off for quick ones, since the homepage's How it works band left on September 24, and the hero does not promise it. */
+  const optionText=await page.locator('[data-view="overnight"]').evaluate(node=>node.textContent.replace(/\s+/g," "));
   const describesTheOption=text=>/one harness per step/i.test(text)&&/turn it on/i.test(text)&&/\boff\b/i.test(text);
-  check("how_it_works_describes_one_harness_per_step_as_an_option",describesTheOption(howText)&&keepsThePerStepOptionOut(heroCopy),{how:howText.slice(0,600)});
-  check("per_step_option_check_rejects_a_band_without_the_option_and_a_promise_in_its_place",!describesTheOption("Ask, get, place.")&&!describesTheOption("Every step runs in one harness per step.")&&describesTheOption(howText));
+  check("overnight_page_describes_one_harness_per_step_as_an_option",describesTheOption(optionText)&&keepsThePerStepOptionOut(heroCopy),{text:optionText.slice(0,600)});
+  check("per_step_option_check_rejects_a_band_without_the_option_and_a_promise_in_its_place",!describesTheOption("Ask, get, place.")&&!describesTheOption("Every step runs in one harness per step.")&&describesTheOption(optionText));
   /* The hero's secondary action opens the guide, Get set up, a page of its own. */
   await page.locator("#hero-setup").click();
   const heroGuide=await page.evaluate(()=>({path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title}));
   check("hero_get_set_up_opens_the_guide",heroGuide.path==="/setup"&&JSON.stringify(heroGuide.views)===JSON.stringify(["setup"])&&heroGuide.title.endsWith("| Get set up"),heroGuide);
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
-  /* The demonstration of one step, read from the page as served: the search and the download, recorded from this release's
-     library under one label, and the step's working folder, an example layout, under a label of its own. */
-  const demo=await demoState(page);
-  check("demo_shows_the_search_the_download_and_the_step_folder",JSON.stringify(demo.stages.map(([stage])=>stage))===JSON.stringify(demoStages.map(([stage])=>stage))&&JSON.stringify(demo.shown)===JSON.stringify(demoStages.map(([stage])=>stage)),{stages:demo.stages,shown:demo.shown});
-  check("demo_labels_each_part_as_recorded_or_as_an_example_layout",demoLabelProblems(demo).length===0,{problems:demoLabelProblems(demo)});
-  /* The known-wrong labels: none on the folder, the folder called recorded, a hidden label on the search, and the folder still
-     called "Being built", the status word the owner removed on September 23, 2026. */
-  check("demo_label_check_rejects_a_missing_label_a_folder_called_recorded_and_a_status_word",demoLabelProblems({...demo,labels:{...demo.labels,folder:["","",false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["recorded",demoLabelWords.recorded,true]}}).length===1
-    &&demoLabelProblems({...demo,labels:{...demo.labels,search:["recorded",demoLabelWords.recorded,false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["illustration","Being built",true]}}).length===1
-    &&demoLabelProblems({...demo,labels:{...demo.labels,folder:["illustration",demoLabelWords.illustration+", being built",true]}}).length===1);
-  check("demo_recorded_parts_show_only_the_live_search_and_download_path",livePathProblems(demo).length===0,{problems:livePathProblems(demo)});
-  check("demo_live_path_check_rejects_an_illustration_in_a_recorded_part",livePathProblems({...demo,text:{...demo.text,search:(demo.text.search||"")+" An illustration of a workflow."}}).length===1&&livePathProblems({...demo,text:{...demo.text,download:""}}).length===1
-    &&livePathProblems({...demo,text:{...demo.text,download:(demo.text.download||"")+" Example layout"}}).length===1);
-  /* The names, kinds, licences, sizes and digests the demonstration shows are this release's, read from the packaged manifest.
-     A catalogue release rewrites every body and so every digest, and the page must follow it. The download names the reference
-     the search chose. */
-  const shownFacts=await demoFacts(page);
-  check("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(shownFacts).length===0,{problems:demoFactProblems(shownFacts)});
-  const oneDigestChanged=structuredClone(shownFacts);
-  if(oneDigestChanged.items[1])oneDigestChanged.items[1].digest=oneDigestChanged.items[1].digest.replace(/.$/,last=>last==="0"?"1":"0");
-  /* The compact demonstration of September 23, 2026 shows the first two references the search returns; the known-wrong cases
-     change the second one, so at least two are needed. */
-  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",shownFacts.items.length>=2&&demoFactProblems(oneDigestChanged).length===1&&demoFactProblems({...shownFacts,download:shownFacts.items[1]?.identity||""}).length===1,{problems:demoFactProblems(oneDigestChanged)});
+  /* The hero shows the working directory one step gets and no worked example, as the owner decided on September 24, 2026. The
+     known-wrong heroes: the one-step demonstration back in it, a search with its digests, a directory without its protocol server
+     settings, and a directory that no longer says it was built without manual search or setup. */
+  const hero=await heroDirectory(page);
+  check("homepage_hero_shows_a_directory_not_a_worked_example",heroDirectoryProblems(hero).length===0,{parts:hero.parts,label:hero.label,note:hero.note,example:hero.example,problems:heroDirectoryProblems(hero)});
+  check("hero_directory_check_rejects_a_worked_example_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,example:1}).length===1
+    &&heroDirectoryProblems({...hero,text:hero.text+" search: split address lines, sha256 53dc74e3"}).length===1
+    &&heroDirectoryProblems({...hero,parts:hero.parts.filter(part=>part!=="tools")}).length===1
+    &&heroDirectoryProblems({...hero,note:hero.note.replace(/no manual setup/i,"")}).length===1);
+  /* The known-wrong heroes of the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today,
+     as a label and as a sentence, and a note that no longer says the engine is built to do it. */
+  check("per_step_assembly_check_rejects_a_current_capability_claim",["Assembled for this step.","Baltor assembles a directory like this for every step.","Built on demand for each step."].every(claim=>heroDirectoryProblems({...hero,text:hero.text+" "+claim}).length===1)
+    &&heroDirectoryProblems({...hero,note:hero.note.replace("is built to assemble","assembles")}).length>=1&&perStepClaim("The local engine is built to assemble a directory like this for every step.").length===0);
+  /* The three demonstrations under the hero, as the owner asked on September 24, 2026: a simple task, a long task that runs
+     overnight and a Kaggle solution, each linking to the page that shows it start to finish. */
+  const demoCards=await homeCards(page,'[data-view="home"] [data-demo-card]',"demoCard");
+  const demoCardProblems=cards=>[...cardProblems(cards,demoCardOrder),...cards.filter(card=>JSON.stringify(card.links)!==JSON.stringify([demoCardPages[card.name]])).map(card=>card.name+" links "+JSON.stringify(card.links))];
+  check("homepage_links_three_demonstrations_start_to_finish",demoCardProblems(demoCards).length===0,{problems:demoCardProblems(demoCards)});
+  check("demonstration_card_check_rejects_a_missing_card_and_another_address",demoCardProblems(demoCards.slice(1)).length>=1
+    &&demoCardProblems(demoCards.map(card=>card.name==="kaggle"?{...card,links:["/examples"]}:card)).length===1);
+  /* The demonstration pages print each step's search and download, recorded from this release's library. */
+  const demoPages=[["/demo","demo"],["/demo/kaggle","demo-kaggle"]],shownFacts={};
+  for(const [address,view] of demoPages){await page.goto(fixture.base+address);shownFacts[view]=await demoFacts(page,view);}
+  check("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoPages.every(([,view])=>demoFactProblems(shownFacts[view]).length===0),
+    {problems:Object.fromEntries(demoPages.map(([,view])=>[view,demoFactProblems(shownFacts[view])]))});
+  const firstStep=shownFacts.demo[0]||{items:[],download:""},oneDigestChanged=structuredClone(shownFacts.demo);
+  if(oneDigestChanged[0]?.items[1])oneDigestChanged[0].items[1].digest=oneDigestChanged[0].items[1].digest.replace(/.$/,last=>last==="0"?"1":"0");
+  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",firstStep.items.length>=2&&demoFactProblems(oneDigestChanged).length===1
+    &&demoFactProblems([{...firstStep,download:firstStep.items[1]?.identity||""},...shownFacts.demo.slice(1)]).length===1,{problems:demoFactProblems(oneDigestChanged)});
   const releasedIdentities=Object.keys(releasedReferences);
   const namesOnlyReleasedItems=names=>names.length>0&&names.every(name=>releasedIdentities.includes(name));
-  check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownFacts.items.map(item=>item.identity)),{items:shownFacts.items.map(item=>item.identity)});
-  check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownFacts.items.map(item=>item.identity),"invented_item_nobody_approved"]));
-  /* The step folder. Harness material is any file a harness reads, so the folder shows files that are not Markdown, and the
-     library band says so in words: it names the scripts, the tools and code, the hooks and the protocol server settings beside the
-     instruction files. */
-  const shownPaths=await folderPaths(page),libraryText=await page.locator('[data-band="library"]').innerText();
+  const shownIdentities=Object.values(shownFacts).flat().flatMap(step=>step.items.map(item=>item.identity));
+  check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownIdentities),{items:shownIdentities});
+  check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownIdentities,"invented_item_nobody_approved"]));
+  /* Harness material is any file a harness reads: the library band names the scripts, the tools and code, the hooks and the protocol
+     server settings beside the instruction files, and the hero's directory holds protocol server settings and reused code. */
+  await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
+  const libraryText=await page.locator('[data-band="library"]').innerText();
   const namesFilesBeyondMarkdown=text=>/\bscripts\b/i.test(text)&&/tools and code/i.test(text)&&/\bhooks\b/i.test(text)&&/protocol server/i.test(text);
-  check("demo_folder_holds_a_file_that_is_not_markdown",folderProblems(shownPaths).length===0&&namesFilesBeyondMarkdown(libraryText),{paths:shownPaths});
+  check("library_names_files_beyond_markdown",namesFilesBeyondMarkdown(libraryText)&&hero.parts.includes("tools")&&hero.parts.includes("code"));
   check("library_word_check_rejects_a_band_that_names_only_instruction_files",!namesFilesBeyondMarkdown("Instruction files such as AGENTS.md and CLAUDE.md.")&&namesFilesBeyondMarkdown(libraryText));
-  check("folder_check_rejects_a_folder_of_markdown_files_only",folderProblems(shownPaths.filter(path=>/\.md$/i.test(path))).length===1&&folderProblems(["AGENTS.md","scripts/run.py"]).length===0);
   /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
   const moving=await page.evaluate(()=>[...document.querySelectorAll('[data-view="home"], [data-view="home"] *')].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);
   check("homepage_has_no_motion_of_its_own",moving===0,{moving});
@@ -898,15 +907,12 @@ try {
   const countAgrees=shown=>shown.trim()===String(releasedItemCount);
   check("library_count_agrees_with_this_release_manifest",countAgrees(shownCount),{shown:shownCount,released:releasedItemCount});
   check("library_count_check_rejects_a_count_this_release_does_not_hold",!countAgrees(String(releasedItemCount+1))&&!countAgrees("10,000")&&countAgrees(String(releasedItemCount)));
-  /* The six kinds of harness material, the three steps of How it works and the three use cases, in the design's order, each under
-     its own heading and none with a status word, as the owner decided on September 23, 2026. */
-  const kindCards=await homeCards(page,"[data-kind]","kind"),stepCards=await homeCards(page,"[data-how-step]","howStep"),useCaseCards=await homeCards(page,'[data-view="home"] [data-use-case]',"useCase");
+  /* The six kinds of harness material and the three use cases, in the design's order, each under its own heading and none with a
+     status word, as the owner decided on September 23, 2026. */
+  const kindCards=await homeCards(page,"[data-kind]","kind"),useCaseCards=await homeCards(page,'[data-view="home"] [data-use-case]',"useCase");
   check("library_names_the_six_kinds_without_a_status_word",cardProblems(kindCards,kindOrder).length===0,{problems:cardProblems(kindCards,kindOrder)});
   check("kind_check_rejects_a_kind_called_available_a_missing_kind_and_a_new_order",cardProblems(kindCards.map(card=>card.name==="instructions"?{...card,tags:1,text:card.text+" Available now"}:card),kindOrder).length===1
     &&cardProblems(kindCards.filter(card=>card.name!=="hooks"),kindOrder).length===1&&cardProblems([...kindCards].reverse(),kindOrder).length===1);
-  check("how_it_works_band_names_ask_get_and_place_without_a_status_word",cardProblems(stepCards,howOrder).length===0,{problems:cardProblems(stepCards,howOrder)});
-  check("step_check_rejects_a_step_called_live_or_being_built",cardProblems(stepCards.map(card=>card.name==="get"?{...card,tags:1,text:card.text+" Live"}:card),howOrder).length===1
-    &&cardProblems(stepCards.map(card=>card.name==="place"?{...card,text:card.text+" Being built"}:card),howOrder).length===1);
   check("homepage_links_the_three_use_cases_the_owner_named",useCaseProblems(useCaseCards).length===0,{problems:useCaseProblems(useCaseCards),cards:useCaseCards.map(({text,...rest})=>rest)});
   check("use_case_check_rejects_a_missing_case_another_page_another_title_and_a_status",useCaseProblems(useCaseCards.filter(card=>card.name!=="learning")).length===1
     &&useCaseProblems(useCaseCards.map(card=>card.name==="overnight"?{...card,links:["/context"]}:card)).length===1&&useCaseProblems(useCaseCards.map(card=>card.name==="efficiency"?{...card,title:"Less in each request"}:card)).length===1
@@ -921,13 +927,6 @@ try {
   const apologies=[["home",claimText],...Object.entries(useCaseText)].flatMap(([view,text])=>apologyProblems(text).map(problem=>view+": "+problem));
   check("homepage_and_use_cases_carry_no_measurement_apology_and_no_percentage",apologies.length===0&&Object.values(useCaseText).every(text=>text.length>0),{problems:apologies});
   check("apology_check_rejects_a_returned_apology_and_a_percentage",measurementApologies.every(sentence=>apologyProblems(claimText+" "+sentence).length===1)&&apologyProblems(claimText+" Saves 40% of tokens.").length===1);
-  /* The entry the how-it-works band shows is the reviewed Claude Code recipe. Once the page script has checked the record, it is
-     written with this service's own address, as the Get started page gives it; the served text, with the public address, is
-     compared with the record by tools/test_homepage_demonstration.py. */
-  const shownEntry=await page.locator("[data-home-recipe]").evaluate(node=>({id:node.dataset.homeRecipe,text:node.textContent}));
-  const isReviewedEntry=(entry,endpoint)=>{const recipe=recipeRecord.recipes.find(item=>item.id===entry.id);try{return Boolean(recipe)&&recipe.format==="json"&&entry.text===JSON.stringify(withEndpoint(recipe.configuration,endpoint),null,2);}catch(_){return false;}};
-  check("homepage_connection_entry_is_the_reviewed_recipe_with_this_address",isReviewedEntry(shownEntry,fixture.base+"/mcp"),{id:shownEntry.id});
-  check("homepage_entry_check_rejects_a_changed_variable_and_another_address",!isReviewedEntry({...shownEntry,text:shownEntry.text.replace(variable,"BALTOR_KEY")},fixture.base+"/mcp")&&!isReviewedEntry(shownEntry,otherOrigin)&&!isReviewedEntry({...shownEntry,id:"codex"},fixture.base+"/mcp"));
   /* The bands. The page ground is an off-white, and each band is set off from the next by a change of ground and by a rule. The
      known-wrong pages paint two neighbouring bands alike, take their rules away, and paint the ground white, each on its own,
      through the style object, which the page policy allows, and then put everything back. */
@@ -1003,8 +1002,8 @@ try {
   const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;})+" "+Object.values(useCaseText).join(" ");
   check("homepage_and_use_cases_make_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
-  /* The page reads without its script: a browser that never receives the script shows the hero with its price, its two actions
-     and the harnesses, the three use cases, the three parts of the demonstration and the reviewed entry with the public address. */
+  /* The page reads without its script: a browser that never receives the script shows the hero with its price, its two actions,
+     the harnesses and the working directory, the three demonstrations and the three use cases. */
   const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
   await withoutScript.route("**/*",localOnly);
   await withoutScript.route(assetRoute("/assets/service.js",fixture.base),route=>route.abort());
@@ -1017,13 +1016,8 @@ try {
   const plainProblems=[...(statesThePlanAndPrice(plainHome.price)?[]:["the hero shows no price"]),...(plainHome.actions.length===2?[]:["the hero shows the actions "+JSON.stringify(plainHome.actions)]),
     ...(JSON.stringify(plainHome.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(plainHome.harnesses)]),...useCaseProblems(await homeCards(plain,'[data-view="home"] [data-use-case]',"useCase"))];
   check("homepage_reads_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});
-  const plainDemo=await demoState(plain);
-  check("demo_reads_when_the_script_has_not_run",JSON.stringify(plainDemo.shown)===JSON.stringify(demoStages.map(([stage])=>stage))&&demoLabelProblems(plainDemo).length===0&&demoStages.every(([stage])=>(plainDemo.text[stage]||"").trim().length>40),{shown:plainDemo.shown});
-  const servedEntry=await plain.locator("[data-home-recipe]").evaluate(node=>({id:node.dataset.homeRecipe,text:node.textContent}));
-  /* The served entry carries the public address, which tools/test_homepage_demonstration.py holds exactly. Here the address is
-     read from the entry, and everything else in the entry must be the reviewed recipe. */
-  const servedAddress=(()=>{try{const found=textLeaves(JSON.parse(servedEntry.text)).filter(([key])=>key==="url");return found.length===1?found[0][1]:"";}catch(_){return "";}})();
-  check("served_connection_entry_is_the_reviewed_recipe_with_a_public_address",/^https:\/\/[a-z0-9.-]+\/mcp$/.test(servedAddress)&&servedAddress!==fixture.base+"/mcp"&&isReviewedEntry(servedEntry,servedAddress),{id:servedEntry.id,address:servedAddress});
+  const plainHero=await heroDirectory(plain),plainDemos=await homeCards(plain,'[data-view="home"] [data-demo-card]',"demoCard");
+  check("hero_directory_and_demonstrations_read_when_the_script_has_not_run",heroDirectoryProblems(plainHero).length===0&&demoCardProblems(plainDemos).length===0,{problems:[...heroDirectoryProblems(plainHero),...demoCardProblems(plainDemos)]});
   /* No layout shift from late script. The first screen is measured without the page script, then on a page whose script has
      run and whose service has answered, at the desktop and the phone width. */
   const steadiness=[];
@@ -1547,7 +1541,7 @@ try {
   const homeFits=[];
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
-  /* The demonstration and every band of the homepage fit a phone screen, at normal and at doubled text, with no sideways page
+  /* The working directory and every band of the homepage fit a phone screen, at normal and at doubled text, with no sideways page
      scroll. A code block may scroll inside itself; the page may not. */
   const demoFits=[];
   for(const width of [390,320]){
@@ -1559,7 +1553,7 @@ try {
     }
     await page.evaluate(()=>document.documentElement.style.fontSize="");
   }
-  check("homepage_and_demo_fit_small_screens_and_enlarged_text",demoFits.length===4&&demoFits.every(item=>!item.overflow&&item.wide.length===0),{problems:demoFits.filter(item=>item.overflow||item.wide.length)});
+  check("homepage_and_hero_directory_fit_small_screens_and_enlarged_text",demoFits.length===4&&demoFits.every(item=>!item.overflow&&item.wide.length===0),{problems:demoFits.filter(item=>item.overflow||item.wide.length)});
   await page.setViewportSize({width:1440,height:1000});
   /* The capabilities the service can report, for account creation, for a request list, for payment and for personal keys, each
      read from a real service, with the removed-guard controls for both directions and for the record version the page was
@@ -1803,7 +1797,7 @@ try {
      away, a card with a status word again, the owner's decisions of September 23, 2026 undone one at a time, a note that grows
      after the script runs, a second primary action in the header, and the pricing heading centred beside the plan card again.
      Each serves changed bytes of one or more files in memory, never a source file, and must fail its own named check. */
-  const openChanged=async changes=>{
+  const openChanged=async (changes,address="/")=>{
     const opened=await context.newPage(),found=new Set();
     opened.on("pageerror",()=>{});
     const paths=[...new Set(changes.map(change=>change.path))];
@@ -1811,17 +1805,22 @@ try {
       const response=await route.fetch(),source=await response.text();let body=source;
       for(const change of changes.filter(change=>change.path===path)){if(body.includes(change.find))found.add(change);body=body.split(change.find).join(change.replacement);}
       await route.fulfill({response,body});});
-    await opened.goto(fixture.base+"/");
+    await opened.goto(fixture.base+address);
     await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
     return {page:opened,applied:()=>changes.every(change=>found.has(change))};
   };
-  /* The first digest the demonstration shows, read from the manifest for the item the page names first, so the control follows
-     the demonstrated step when it changes. */
-  const firstShown=releasedReferences[shownFacts.items[0]?.identity]?.digest.slice(0,8)||"(none)";
+  /* The first digest the demonstration page shows, read from the manifest for the item its first step names first, so the control
+     follows the demonstrated step when it changes. */
+  const firstShown=releasedReferences[shownFacts.demo[0]?.items[0]?.identity]?.digest.slice(0,8)||"(none)";
   const homepageControls=[
-    {name:"change_one_digest_in_the_demonstration",changes:[{path:"/",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
-     run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened)).length===0),
+    {name:"change_one_digest_in_the_demonstration",address:"/demo",changes:[{path:"/demo",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
+     run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened,"demo")).length===0),
      expected:["demo_names_sizes_and_digests_agree_with_this_release_manifest"]},
+    /* The owner's decision of September 24, 2026 undone: a worked example back in the hero, beside the working directory. */
+    {name:"bring_a_worked_example_back_into_the_hero",changes:[{path:"/",find:'<figure class="hero-directory"',
+      replacement:'<section class="step-demo" data-step-demo><p class="step-demo-query">search: <code data-demo-query>split address lines in a customer file</code></p><ol class="step-demo-results"><li data-demo-item="split_address_lines_into_components">sha256 <span data-fact="digest">53dc74e3</span></li></ol></section><figure class="hero-directory"'}],
+     run:async (opened,note)=>note("homepage_hero_shows_a_directory_not_a_worked_example",heroDirectoryProblems(await heroDirectory(opened)).length===0),
+     expected:["homepage_hero_shows_a_directory_not_a_worked_example"]},
     {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/service.css",find:"--band:#FFFFFF;",replacement:"--band:#F5F6F8;"},{path:"/assets/service.css",find:"--rule:#E2E6EC;",replacement:"--rule:transparent;"}],
      run:async (opened,note)=>note("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(await homeBands(opened)).length===0),
      expected:["homepage_sets_every_band_apart_on_an_off_white_ground"]},
@@ -1831,9 +1830,6 @@ try {
     {name:"call_a_library_kind_available",changes:[{path:"/",find:'<li class="kind" data-kind="tools"><h3>Tools and code</h3>',replacement:'<li class="kind" data-kind="tools"><h3>Tools and code</h3><p class="status-tag is-available" data-status="available">Available now</p>'}],
      run:async (opened,note)=>note("library_names_the_six_kinds_without_a_status_word",cardProblems(await homeCards(opened,"[data-kind]","kind"),kindOrder).length===0),
      expected:["library_names_the_six_kinds_without_a_status_word"]},
-    {name:"call_a_how_step_live",changes:[{path:"/",find:'<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3>',replacement:'<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3><p class="status-tag is-live" data-status="live">Live</p>'}],
-     run:async (opened,note)=>note("how_it_works_band_names_ask_get_and_place_without_a_status_word",cardProblems(await homeCards(opened,"[data-how-step]","howStep"),howOrder).length===0),
-     expected:["how_it_works_band_names_ask_get_and_place_without_a_status_word"]},
     {name:"take_the_price_out_of_the_hero",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
      run:async (opened,note)=>note("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||""))),
      expected:["homepage_hero_states_the_plan_and_the_price"]},
@@ -1843,11 +1839,11 @@ try {
     {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a> <span>Invitation only while we open in small groups. Search is free.</span>'}],
      run:async (opened,note)=>note("homepage_carries_no_invitation_word_while_registration_is_closed",(await homepageWordProblems(opened)).length===0),
      expected:["homepage_carries_no_invitation_word_while_registration_is_closed"]},
-    {name:"move_the_demonstration_below_the_copy",changes:[{path:"/assets/architecture.css",find:".band-hero .hero.product-hero>.step-demo{grid-column:auto;margin-top:0}",replacement:".band-hero .hero.product-hero>.step-demo{grid-column:1/-1;margin-top:0}"}],
-     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_demonstration_sits_beside_the_copy_in_the_hero",demoBesideTheCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
-       const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".step-demo");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
+    {name:"move_the_directory_below_the_copy",changes:[{path:"/assets/architecture.css",find:"@media(min-width:1100px){.band-hero .hero.product-hero>.hero-directory{grid-column:auto;align-self:center}}",replacement:"@media(min-width:1100px){.band-hero .hero.product-hero>.hero-directory{grid-column:1/-1;align-self:center}}"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_directory_sits_beside_the_copy_in_the_hero",directoryBesideTheCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
+       const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".hero-directory");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
        return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};})));},
-     expected:["homepage_demonstration_sits_beside_the_copy_in_the_hero"]},
+     expected:["homepage_directory_sits_beside_the_copy_in_the_hero"]},
     {name:"hide_the_learning_use_case",changes:[{path:"/",find:'<li class="use-case" data-use-case="learning">',replacement:'<li class="use-case" data-use-case="learning" hidden>'}],
      run:async (opened,note)=>note("homepage_links_the_three_use_cases_the_owner_named",useCaseProblems(await homeCards(opened,'[data-view="home"] [data-use-case]',"useCase")).length===0),
      expected:["homepage_links_the_three_use_cases_the_owner_named"]},
@@ -1889,7 +1885,7 @@ try {
   for(const control of homepageControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
-    try{const {page:changed,applied:wasApplied}=await openChanged(control.changes);await control.run(changed,note);applied=wasApplied();await changed.close();}catch(error){problem=safeError(error);}
+    try{const {page:changed,applied:wasApplied}=await openChanged(control.changes,control.address);await control.run(changed,note);applied=wasApplied();await changed.close();}catch(error){problem=safeError(error);}
     const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
@@ -2004,8 +2000,7 @@ try {
   check("both_public_page_checks_use_one_unpublished_terms_rule",workspaceUnpublished!==""&&workspaceUnpublished===hostedUnpublished&&workspaceUnpublished===String(unpublishedTerms),{workspace:workspaceUnpublished,hosted:hostedUnpublished});
   const droppedDraft=workspaceUnpublished.replace("|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)","");
   check("unpublished_terms_rule_comparison_rejects_a_drifted_copy",droppedDraft!==workspaceUnpublished&&!new RegExp(droppedDraft.slice(1,-2),"i").test("The terms are still a draft.")&&unpublishedTerms.test("The terms are still a draft."),{dropped:droppedDraft});
-  await page.goto(fixture.base+"/");
-  await page.locator("#how-explore").click();
+  await page.goto(fixture.base+"/how-it-works#task-breakdown");
   /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,
      which explains. Both are still shown to a customer, and both are checked where they now live. */
   check("all_four_persistent_intelligence_layers_are_visible",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4&&await page.getByRole("heading",{name:"Context Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Code Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Runtime History and Solution Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"User Feedback Intelligence",exact:true}).isVisible());

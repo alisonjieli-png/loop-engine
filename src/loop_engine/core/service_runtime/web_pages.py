@@ -69,6 +69,8 @@ WEB_ASSETS = {
     # The showcase of September 24, 2026: one task shown step by step, three case studies written from saved
     # evidence, and the service status read live. demo.baltor.ai and status.baltor.ai open two of them at their root.
     "/demo": ("index.html", HTML_MEDIA_TYPE), "/status": ("index.html", HTML_MEDIA_TYPE),
+    # The second demonstration, a Kaggle competition from the metric to the submission, one of the three the homepage links.
+    "/demo/kaggle": ("index.html", HTML_MEDIA_TYPE),
     "/case-studies/data-cleanup": ("index.html", HTML_MEDIA_TYPE),
     "/case-studies/pi-and-gemma-4": ("index.html", HTML_MEDIA_TYPE),
     "/case-studies/sign-up-protection": ("index.html", HTML_MEDIA_TYPE),

@@ -58,6 +58,15 @@ class ViewDigestTests(unittest.TestCase):
     def test_known_wrong_an_item_of_the_next_view_is_not_read_as_the_demonstration(self):
         self.assertNotIn("invented_item", demonstration_page_digests(ONE_PAGE, "demo"))
 
+    def test_every_demonstration_page_is_checked_on_its_own(self):
+        from check_hosted_catalogue import DEMONSTRATION_PAGES, PLANNED_CHECKS
+        self.assertEqual([view for _address, view in DEMONSTRATION_PAGES], ["demo", "demo-kaggle"])
+        self.assertEqual(PLANNED_CHECKS, 8)
+        kaggle = ONE_PAGE.replace('data-view="demo" hidden', 'data-view="demo-kaggle" hidden')
+        self.assertEqual(demonstration_page_digests(kaggle, "demo-kaggle"), {"profile_text_column_before_cleaning": "3274cbf5"})
+        # KNOWN_WRONG: the view of the other demonstration is not read as this one.
+        self.assertEqual(demonstration_page_digests(kaggle, "demo"), {})
+
 
 if __name__ == "__main__":
     unittest.main()

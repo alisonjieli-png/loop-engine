@@ -1,26 +1,25 @@
-"""The one-step demonstration on the homepage shows this release's library, and every fact it shows is what it says.
+"""The homepage hero shows the working directory one step gets, and the homepage's facts are this release's.
 
-The homepage shows one step of a task in three parts. Two parts are recorded: the search and the download.
-Their item names, kinds, licences, sizes and digests must be what a real search of this release's packaged
-library returns, run here through the same host loader and the same retrieval route the service uses. A
-catalogue release rewrites each body and so each digest, and the page then fails here until it shows the new
-values; the failure names them. The download names the reference the search marked as chosen, and the packaged
-bytes of that reference have the digest it names. The third part, the working folder of the step, shows where each
-file goes rather than a recorded run, and says so under a label of its own, "Example layout". The owner removed the
-status words on September 23, 2026, so the folder no longer says "Being built", and a label that still carries one of
-the retired words is refused. Its folder places the downloaded skill and holds files that are not Markdown, because
-harness material is any file a harness reads.
+Since September 24, 2026 the hero shows no worked example. The owner: "instead of showing a simple example, we
+should show the directory structure emphasize that it is built on demand efficiently, no manual searches, no manual
+setup, etc. Then we can have 3 links to specific demos". The hero's figure is the working directory of one step: an
+instruction file with only that step's context, the skill it needs, its protocol server settings and reused code,
+under the label "Example layout", with the words that it was assembled for this step with no manual search and no
+manual setup. Three demonstrations follow, each linking to a page that shows its run start to finish. A search, a
+reference, a digest or a download anywhere in the hero is the known-wrong page. The one-step demonstration that stood
+beside the hero until then, splitting the address lines of a customer file, is step 2 of the demonstration at /demo,
+whose every search is rerun by tools/test_showcase_pages.py; its markup is archived in
+artifacts/website-archive-2026-09-24.
 
-Two more facts on the homepage come from the same release: the count of items in the library is the number of
-items in the packaged manifest, and the connection entry is the reviewed Claude Code recipe with the public
-address written in. Each rule has a known-wrong page beside it that the rule must report.
+This module also keeps what the demonstration pages share with it: the reader of marked page elements, a real search
+of this release's packaged library through the host loader and the retrieval route the service uses, and the reader of
+recorded measurements that refuses an item a study found harmful. The data cleanup study of September 22, 2026 found
+that normalize_phone_numbers made a cheap model clearly worse on its population; the study's own design and results
+records are read, so a later study that finds another item harmful is covered without a change here.
 
-The step the homepage shows chooses an item that no recorded measurement found harmful. The data cleanup study
-of September 22, 2026 found that normalize_phone_numbers made a cheap model clearly worse on its population, and
-the homepage featured that item until then. The study's own design and results records are read, so a later
-study that finds another item harmful is covered without a change here.
-
-Nothing here reaches the network. The service runs on loopback over a temporary database.
+The count of items in the library on the homepage is the number of items in the packaged manifest. Each rule has a
+known-wrong page beside it that the rule must report. Nothing here reaches the network. The service runs on loopback
+over a temporary database.
 """
 from __future__ import annotations
 
@@ -318,14 +317,68 @@ def _planted(page, old, new):
     return changed
 
 
+#: The parts of one step's working directory the hero shows, in order.
+HERO_PARTS = ("instructions", "skills", "tools", "code")
+#: A sentence that assembles or builds something for each step. What works today stays apart from what is built but not
+#: shipped: a person's agent searches and Baltor places the chosen files, while assembling a directory for every step is what
+#: the local engine is built to do. Such a sentence must say "built to".
+PER_STEP = re.compile(r"\b(?:assembl|build|built)\w*\b[^.!?]*\b(?:each|every|this|one)\s+(?:step|subtask)\b", re.IGNORECASE)
+#: The three demonstrations under the hero, in order, with the page each one opens.
+DEMONSTRATIONS = (("simple", "/demo"), ("overnight", "/overnight"), ("kaggle", "/demo/kaggle"))
+#: What a worked example leaves in the hero: a demonstration panel, a search, its references, their facts or a download.
+WORKED_EXAMPLE = ("data-step-demo", "data-demo-item", "data-demo-query", "data-demo-download", "data-demo-stage",
+                  "data-task-demo", "data-fact=")
+WORKED_EXAMPLE_WORDS = re.compile(r"\bsearch:|\bsha256\b|Bytes match the digest|Recorded from this release", re.IGNORECASE)
+
+
+def hero_markup(page):
+    """The markup of the hero band of the homepage, from its opening tag to the next band."""
+    found = re.search(r'<div class="home-band[^"]*" data-band="hero">(.*?)(?=\n\s*<div class="home-band)', page, re.S)
+    return found.group(1) if found else ""
+
+
+def hero_problems(page):
+    """The hero shows the working directory of one step, labelled as an example, and no worked example."""
+    hero = hero_markup(page)
+    if not hero:
+        return ["the homepage has no hero band"]
+    problems = []
+    parts = re.findall(r'data-hero-part="([a-z]+)"', hero)
+    if tuple(parts) != HERO_PARTS:
+        problems.append(f"the hero directory shows the parts {parts}, and it shows {list(HERO_PARTS)}")
+    label = re.search(r'data-hero-label="illustration">([^<]*)<', hero)
+    if not label or label.group(1).strip() != LABEL_WORDS["illustration"] or RETIRED_STATUS.search(label.group(1)):
+        problems.append("the hero directory is not labelled as an example layout")
+    note = re.search(r"<p [^>]*data-hero-note[^>]*>([^<]*)</p>", hero)
+    note = note.group(1) if note else ""
+    if not re.search(r"no manual search", note, re.IGNORECASE) or not re.search(r"no manual setup", note, re.IGNORECASE):
+        problems.append("the hero directory does not say it was placed with no manual search and no manual setup")
+    words = " ".join(re.sub(r"<[^>]+>", " ", hero).split())
+    claims = [sentence for sentence in re.split(r"(?<=[.!?])\s+", words) if PER_STEP.search(sentence) and "built to" not in sentence.lower()]
+    if claims or "built to" not in note.lower():
+        problems.append(f"the hero states assembly for each step as a current capability: {claims}")
+    if any(marker in hero for marker in WORKED_EXAMPLE) or WORKED_EXAMPLE_WORDS.search(re.sub(r"<[^>]+>", " ", hero)):
+        problems.append("the hero shows a worked example again")
+    return problems
+
+
+def demonstration_problems(page, served):
+    """The homepage links the three demonstrations in order, each to a page this service serves."""
+    cards = re.findall(r'data-demo-card="([a-z]+)">.*?<a [^>]*href="([^"]+)"', page, re.S)
+    problems = [] if tuple(cards) == DEMONSTRATIONS else [f"the homepage links the demonstrations {cards}, and it links {list(DEMONSTRATIONS)}"]
+    return problems + [f"the {name} demonstration links {address}, which this service does not serve"
+                       for name, address in cards if address not in served]
+
+
 def opening_claim_problems(page):
     """Refuse an unconditional drift outcome in the homepage's design promise."""
-    opening = re.search(r'<p class="hero-subhead">([^<]*)</p>', page)
+    # The opening may hold an inline link, such as the one to how review works; its words are read without the tags.
+    opening = re.search(r'<p class="hero-subhead">(.*?)</p>', page, re.S)
     if opening is None:
         return ["opening message missing or not readable"]
     guarantee = re.search(
         r"\bnothing\s+drifts\b|\bnever\s+drifts?\b|\beliminates?\s+(?:all\s+)?context\s+drift\b",
-        opening.group(1), re.IGNORECASE)
+        re.sub(r"<[^>]+>", "", opening.group(1)), re.IGNORECASE)
     return ["opening promises unmeasured elimination of drift"] if guarantee else []
 
 
@@ -339,86 +392,57 @@ class HomepageOpeningClaimTest(unittest.TestCase):
                     '<p class="hero-subhead">' + text + '</p>')), 1)
         self.assertEqual(opening_claim_problems(
             '<p class="hero-subhead">The design aims to reduce context drift.</p>'), [])
+        # KNOWN_WRONG: the promise written around an inline link is still read.
+        self.assertEqual(len(opening_claim_problems('<p class="hero-subhead">The context <a href="/security">never</a> drifts.</p>')), 1)
 
 
-class HomepageDemonstrationTest(unittest.TestCase):
+class HomepageHeroTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from loop_engine.core.service_runtime.web_pages import WEB_ASSETS
         cls.page = PAGE.read_text(encoding="utf-8")
-        cls.demonstration = read_demonstration(cls.page)
         cls.items, cls.item_count = released_items()
-        cls.recipes = json.loads(RECIPES.read_text(encoding="utf-8"))
-        cls.hits = release_search(cls.demonstration["query"]) if cls.demonstration["query"] else []
+        cls.served = set(WEB_ASSETS)
+        cls.archived = (ROOT / "artifacts" / "website-archive-2026-09-24" / "homepage-before-2026-09-24-hero.html").read_text(encoding="utf-8")
 
-    def test_each_part_says_whether_it_is_recorded_or_an_example_layout(self):
-        self.assertEqual(label_problems(self.demonstration), [])
-        # KNOWN_WRONG: the folder without a label of its own falls under the recorded label of the head.
-        unlabelled = _changed(self.demonstration, lambda copy: copy["labels"].pop("folder"))
-        self.assertEqual(len(label_problems(unlabelled)), 1)
-        # KNOWN_WRONG: a head that calls the recorded search and download an example layout.
-        relabelled = _changed(self.demonstration, lambda copy: copy["labels"].update({"": ["illustration", LABEL_WORDS["illustration"]]}))
-        self.assertEqual(len(label_problems(relabelled)), 2)
-        # KNOWN_WRONG: the folder still called "Being built", and a label that keeps a retired word beside the new one.
-        building = _changed(self.demonstration, lambda copy: copy["labels"].update({"folder": ["illustration", "Being built"]}))
-        self.assertEqual(len(label_problems(building)), 1)
-        both = _changed(self.demonstration, lambda copy: copy["labels"].update({"folder": ["illustration", "Example layout, being built"]}))
-        self.assertEqual(len(label_problems(both)), 1)
-        # PLANTED: the served folder label changed back in the page source itself, the way a stale page would serve it.
-        planted = _planted(self.page, 'data-demo-label="illustration">Example layout<', 'data-demo-label="illustration">Being built<')
-        self.assertEqual(len(label_problems(read_demonstration(planted))), 1)
+    def test_the_hero_shows_a_working_directory_and_no_worked_example(self):
+        self.assertEqual(hero_problems(self.page), [])
+        hero = hero_markup(self.page)
+        # KNOWN_WRONG: the one-step demonstration of September 23, as archived, back beside the hero copy.
+        demonstration = self.archived.split("<!-- The Ask, get, place band")[0].split("-->", 2)[-1]
+        planted = _planted(self.page, '<figure class="hero-directory"', demonstration + '<figure class="hero-directory"')
+        self.assertIn("the hero shows a worked example again", hero_problems(planted))
+        # KNOWN_WRONG: a search and its digest written as words, a directory without its protocol server settings, and a
+        # directory that no longer says it was built without manual setup.
+        self.assertEqual(len(hero_problems(_planted(self.page, '<p class="hero-directory-note"', '<p>search: split address lines, sha256 53dc74e3</p><p class="hero-directory-note"'))), 1)
+        self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools">', "<span>"))), 1)
+        self.assertEqual(len(hero_problems(_planted(self.page, "no manual setup of these files", "no setup of these files"))), 1)
+        self.assertTrue(hero)
 
-    def test_the_search_shows_what_this_release_library_returns(self):
-        self.assertEqual(self.demonstration["query"], "split address lines in a customer file")
-        self.assertEqual(search_problems(self.demonstration, self.hits), [])
-        # The compact demonstration of September 23, 2026 shows the first two references the search returns; the known-wrong
-        # cases below change the second and the last, so at least two are needed.
-        self.assertGreaterEqual(len(self.demonstration["items"]), 2)
-        # KNOWN_WRONG: one digest changed by one character, one size changed, and two places swapped.
-        wrong_digest = _changed(self.demonstration, lambda copy: copy["items"][1].update(
-            digest=copy["items"][1]["digest"][:-1] + ("0" if copy["items"][1]["digest"][-1] != "0" else "1")))
-        wrong_size = _changed(self.demonstration, lambda copy: copy["items"][-1].update(size="9.9 KB"))
-        swapped = _changed(self.demonstration, lambda copy: copy["items"].reverse())
-        self.assertEqual(len(search_problems(wrong_digest, self.hits)), 1)
-        self.assertEqual(len(search_problems(wrong_size, self.hits)), 1)
-        self.assertGreaterEqual(len(search_problems(swapped, self.hits)), 2)
-        # PLANTED: one digest changed in the page source itself, the way a stale page would serve it.
-        first = self.demonstration["items"][0]["digest"]
-        planted = _planted(self.page, 'data-fact="digest">' + first + "<",
-                           'data-fact="digest">' + first[:-1] + ("0" if first[-1] != "0" else "1") + "<")
-        self.assertEqual(len(search_problems(read_demonstration(planted), self.hits)), 1)
+    def test_the_hero_keeps_assembly_for_each_step_to_built_to_wording(self):
+        # KNOWN_WRONG, the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today, as a
+        # label beside the directory, as a sentence of the introduction, and as a note that no longer says the engine is built to.
+        for planted in (_planted(self.page, '<p class="hero-directory-note"', '<p>Assembled for this step.</p><p class="hero-directory-note"'),
+                        _planted(self.page, "No manual search, no manual setup, nothing copied by hand.</p>",
+                                 "No manual search, no manual setup, nothing copied by hand. Baltor assembles one for every step.</p>"),
+                        _planted(self.page, "The local engine is built to assemble a directory", "The local engine assembles a directory")):
+            with self.subTest(planted=len(planted)):
+                self.assertTrue(any("current capability" in problem for problem in hero_problems(planted)))
 
-    def test_the_download_is_the_chosen_reference_with_its_digest(self):
-        self.assertEqual(download_problems(self.demonstration, self.items), [])
-        second = self.demonstration["items"][1]["identity"]
-        # KNOWN_WRONG: a download of another reference, of an item this release does not hold, and a moved choice.
-        other = _changed(self.demonstration, lambda copy: copy.update(download=second))
-        invented = _changed(self.demonstration, lambda copy: copy.update(download="invented_item_nobody_approved"))
-        moved = _changed(self.demonstration, lambda copy: [item.update(chosen=item["identity"] == second) for item in copy["items"]])
-        self.assertEqual(len(download_problems(other, self.items)), 1)
-        self.assertEqual(len(download_problems(invented, self.items)), 1)
-        self.assertEqual(len(download_problems(moved, self.items)), 1)
+    def test_the_homepage_links_three_demonstrations_start_to_finish(self):
+        self.assertEqual(demonstration_problems(self.page, self.served), [])
+        # KNOWN_WRONG: a demonstration that opens a page this service does not serve, and a missing demonstration.
+        unserved = demonstration_problems(_planted(self.page, 'href="/demo/kaggle" data-page="demo-kaggle"', 'href="/demo/kaggle-2026" data-page="demo-kaggle"'), self.served)
+        self.assertIn("the kaggle demonstration links /demo/kaggle-2026, which this service does not serve", unserved)
+        self.assertEqual(len(demonstration_problems(_planted(self.page, 'data-demo-card="overnight"', 'data-demo-card="retired"'), self.served)), 1)
 
-    def test_the_folder_places_the_download_and_holds_files_that_are_not_markdown(self):
-        self.assertEqual(folder_problems(self.demonstration), [])
-        # KNOWN_WRONG: a folder of Markdown files only, and a folder that places a skill the step did not download.
-        only_markdown = _changed(self.demonstration, lambda copy: copy.update(paths=[path for path in copy["paths"] if path.endswith(".md")]))
-        placed = self.demonstration["download"].replace("_", "-")
-        another = next(identity for identity in sorted(self.items) if identity != self.demonstration["download"]).replace("_", "-")
-        other_skill = _changed(self.demonstration, lambda copy: copy.update(
-            paths=[path.replace(placed, another) for path in copy["paths"]]))
-        self.assertEqual(len(folder_problems(only_markdown)), 1)
-        self.assertEqual(len(folder_problems(other_skill)), 1)
-
-    def test_the_step_chooses_no_item_a_recorded_measurement_found_harmful(self):
+    def test_the_study_reader_finds_the_harmful_item_and_nothing_else(self):
         harmful = recorded_harm()
         # The committed study records one clearly worse family, so a reader that finds nothing is itself broken.
         self.assertTrue(harmful)
-        self.assertEqual(harmful_choice_problems(self.demonstration, harmful), [])
-        # KNOWN_WRONG: the step chooses an item a recorded measurement found harmful, as the homepage did until September 23.
-        chose_harm = _changed(self.demonstration, lambda copy: copy["items"][0].update(identity=sorted(harmful)[0], chosen=True))
-        self.assertEqual(len(harmful_choice_problems(chose_harm, harmful)), 1)
-        # KNOWN_WRONG: the reader is given a study whose material arm is clearly lower than the same model without it,
-        # once in each order of the comparison; and a clearly lower arm of another model, which says nothing of the item.
+        self.assertIn("normalize_phone_numbers", harmful)
+        # KNOWN_WRONG: a study whose material arm is clearly lower than the same model without it, once in each order of the
+        # comparison; and a clearly lower arm of another model, which says nothing of the item.
         design = {"arms": {"cheap-none": {"model": "cheap", "material": "none"}, "cheap-file": {"model": "cheap", "material": "agents_file"},
                            "large-none": {"model": "large", "material": "none"}},
                   "material": {"family": ["planted_item"]}}
@@ -435,15 +459,6 @@ class HomepageDemonstrationTest(unittest.TestCase):
         # PLANTED: a count this release does not hold, written into the page source.
         planted = _planted(self.page, "data-library-count>" + str(self.item_count) + "<", "data-library-count>" + str(self.item_count + 1) + "<")
         self.assertEqual(len(library_count_problems(planted, self.item_count)), 1)
-
-    def test_the_connection_entry_is_the_reviewed_recipe_with_the_public_address(self):
-        self.assertEqual(entry_problems(self.page, self.recipes), [])
-        variable = self.recipes["credential_variable"]
-        # PLANTED: another variable name, another address and another recipe, each written into the page source.
-        for old, new in ((variable, "BALTOR_KEY"), (PUBLIC_ENDPOINT, "https://example.com/mcp"),
-                         ('data-home-recipe="claude-code"', 'data-home-recipe="codex"')):
-            with self.subTest(planted=new):
-                self.assertEqual(len(entry_problems(_planted(self.page, old, new), self.recipes)), 1)
 
 
 if __name__ == "__main__":

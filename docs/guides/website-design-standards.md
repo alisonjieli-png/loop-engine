@@ -57,8 +57,8 @@ The owner asked for fewer black spaces. A page has at most one dark band: a
 block as wide as the window, at least 120 pixels tall, on `--night`. It holds
 the closing action of the page and nothing else. A code panel, a terminal
 sample and the folder of one step may use `--code-bg` or `--night` inside a
-light band. Today the homepage has two dark bands, How it works and the
-closing action, so it fails `dark_bands_stay_within_the_limit`.
+light band. Since September 24, 2026 the homepage has one dark band, the
+closing action; the hero's working directory is a panel inside a light band.
 
 ## Type scale and line length
 

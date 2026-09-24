@@ -162,46 +162,44 @@ the page was written for, and an account without downloads sees a sentence
 instead of an empty table. The raw record stays under a disclosure for
 developers.
 
-## The homepage demonstration
+## The homepage hero and its demonstrations
 
-The opening message says why a fresh harness for each step helps, and the
-words beside it say what works today and what is being built. Below them, at
-the full width of the page, the homepage shows one step of a task in three
-parts.
+Since September 24, 2026 the hero shows no worked example. The owner asked for
+the working directory of each task or subtask, built on demand, with no manual
+search and no manual setup, and for links to demonstrations that show a run
+start to finish. The hero's figure is the directory of one step: an
+instruction file with only that step's context, the skill it needs, its
+protocol server settings and reused code, labelled "Example layout", with the
+words that the files were placed with no manual search and no manual setup.
+What works today stays apart from what is built but not shipped: a person's
+agent searches and Baltor places the chosen files, and assembling a directory
+for every step is written only as what the local engine is built to do; a
+named check refuses a sentence that states it as a current capability. Three
+cards follow it: a simple
+task at `/demo`, a long task that runs overnight at `/overnight`, and a Kaggle
+competition at `/demo/kaggle`.
 
-- Recorded parts: the search and the download, under the label "Recorded from
-  this release's library". Their item names, kinds, licences, sizes and
-  digests must be what a real search of this release's packaged catalogue
-  returns, in
-  `examples/29_intelligence_service/starter-catalogue/host-release/manifest.json`.
-  Moving the catalogue anchor rewrites every body and so every digest. After
-  such a release `tools/test_homepage_demonstration.py` fails and names each
-  value to change in `index.html`. The browser checks compare the same values
-  with the manifest.
-- The folder of the step, under its own label "Being built": a fresh harness
-  that holds only the files of the step. It places the downloaded skill and
-  shows files that are not Markdown, because harness material is any file a
-  harness reads.
+`tools/test_homepage_demonstration.py` refuses a hero that shows a search, a
+reference, a digest or a download again, and a demonstration card that opens a
+page this service does not serve. The one-step demonstration that stood beside
+the hero until then, splitting the address lines of a customer file, is step 2
+of the demonstration at `/demo`; its markup is archived in
+`artifacts/website-archive-2026-09-24`. The same test holds the library count
+on the homepage to the number of items in
+`examples/29_intelligence_service/starter-catalogue/host-release/manifest.json`.
 
-The step splits the address lines of a customer file with
-`split_address_lines_into_components`. It showed `normalize_phone_numbers`
-until September 23, 2026, which the
-[data cleanup study](../../../../../case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md)
-found made a cheap model clearly worse on its population. The same test fails
-when the step chooses an item that a recorded study found harmful; it reads the
-design and results records of each study under `case-studies`.
+Each step of the two demonstration pages shows its search and its download
+under the label "Recorded from this release's library". Their item names,
+kinds, licences, sizes and digests must be what a real search of this
+release's packaged catalogue returns; moving the catalogue anchor rewrites
+every body and so every digest, and `tools/test_showcase_pages.py` then names
+each value to change. No step may choose an item that a recorded study found
+harmful: the [data cleanup study](../../../../../case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md)
+found that `normalize_phone_numbers` made a cheap model clearly worse, and the
+test reads the design and results records of each study under `case-studies`.
 
-The same test holds the library count on the homepage to the number of items
-in the manifest, and the connection entry to the reviewed Claude Code recipe in
-`client-recipes.json`. The page is served with the public address in that
-entry. Once the page script has checked the recipe record, it writes the entry
-again with the address of the service that serves the page, as the guide
-page shows it.
-
-The six problems, the five steps of how it works and the six kinds of file
-each carry a status tag. Only the parts that work on the live service today
-say Available now or Live: a narrow context and reviewed expertise, search and
-download, and skills. The browser checks fail when any other card says so.
+The six kinds of file, the three use cases and the three demonstrations carry
+no status tag.
 
 ## Design standards and the site map
 

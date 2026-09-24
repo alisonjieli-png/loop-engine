@@ -13,7 +13,7 @@ import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 
 /* Every page this module opens, in the order of the site map. */
-export const showcasePaths=["/demo","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection",
+export const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection",
   "/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const slug=path=>path.slice(1).replace(/\//g,"-");
 /* The screenshots this module writes beside the report, one for each page at 1440 and at 390 pixels. */
@@ -68,7 +68,7 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
 
   /* The demonstration: one step at a time, moved by its list, by Previous and Next and by Play, which stops at the last step; the
      folder follows the harness the reader picks; every step reads when the script has not run. */
-  const demoState=target=>target.evaluate(()=>{const demo=document.querySelector("[data-task-demo]");
+  const demoState=target=>target.evaluate(()=>{const demo=document.querySelector("[data-view]:not([hidden]) [data-task-demo]");
     return {shown:[...(demo?.querySelectorAll("[data-task-step]")||[])].filter(node=>node.getClientRects().length>0).map(node=>node.dataset.taskStep),
       current:[...(demo?.querySelectorAll("[data-task-go]")||[])].findIndex(node=>node.getAttribute("aria-current")==="step")+1,
       roots:[...new Set([...(demo?.querySelectorAll("[data-task-skill-root]")||[])].map(node=>node.textContent))],
@@ -90,18 +90,18 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   const demoScenario=async (target,note)=>{
     const names=await stepNames(target);
     const first=await demoState(target);
-    await target.locator('[data-task-go="3"]').click();const third=await demoState(target);
-    await target.locator('[data-task-move="next"]').click();const fourth=await demoState(target);
-    await target.locator('[data-task-move="previous"]').click();const back=await demoState(target);
+    await target.locator('[data-view="demo"] [data-task-go="3"]').click();const third=await demoState(target);
+    await target.locator('[data-view="demo"] [data-task-move="next"]').click();const fourth=await demoState(target);
+    await target.locator('[data-view="demo"] [data-task-move="previous"]').click();const back=await demoState(target);
     note("demo_shows_one_step_at_a_time_and_moves_by_its_list",names.length===5&&first.controls&&oneAtATime(first,names[0])&&first.current===1&&oneAtATime(third,names[2])
       &&third.current===3&&oneAtATime(fourth,names[3])&&oneAtATime(back,names[2]),{first,third,fourth,back});
-    await target.locator('[data-task-go="1"]').click();await target.locator("[data-task-play]").click();
+    await target.locator('[data-view="demo"] [data-task-go="1"]').click();await target.locator('[data-view="demo"] [data-task-play]').click();
     await target.clock.runFor(3600);const played=await demoState(target);
     await target.clock.runFor(3600*6);const ended=await demoState(target);
-    note("demo_play_moves_through_the_steps_and_stops_at_the_last",oneAtATime(played,names[1])&&oneAtATime(ended,names[4])&&await target.locator("[data-task-play]").getAttribute("aria-pressed")==="false",
+    note("demo_play_moves_through_the_steps_and_stops_at_the_last",oneAtATime(played,names[1])&&oneAtATime(ended,names[4])&&await target.locator('[data-view="demo"] [data-task-play]').getAttribute("aria-pressed")==="false",
       {played:played.shown,ended:ended.shown});
-    await target.locator('[data-task-harness="pi"]').click();const pi=await demoState(target);
-    await target.locator('[data-task-harness="codex"]').click();const codex=await demoState(target);
+    await target.locator('[data-view="demo"] [data-task-harness="pi"]').click();const pi=await demoState(target);
+    await target.locator('[data-view="demo"] [data-task-harness="codex"]').click();const codex=await demoState(target);
     note("demo_folder_follows_the_chosen_harness",JSON.stringify(pi.roots)===JSON.stringify([skillRoots.pi])&&JSON.stringify(codex.roots)===JSON.stringify([skillRoots.codex])
       &&first.roots.length===1&&first.roots[0]===skillRoots["claude-code"],{first:first.roots,pi:pi.roots,codex:codex.roots});
     note("demo_labels_each_step_recorded_and_its_folder_an_example",first.labels.length===1&&first.labels.every(([head,folder])=>head==="Recorded from this release's library"&&folder==="Example layout")
@@ -109,15 +109,16 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   };
   {const {opened,target}=await openDemo();await demoScenario(target,check);await opened.close();}
   {const plain=await browser.newContext({viewport:{width:1440,height:1000},javaScriptEnabled:false}),target=await plain.newPage();await plain.route("**/*",localOnly);
-    await target.goto(base+"/demo");const state=await demoState(target);
-    check("demo_reads_every_step_when_the_script_has_not_run",state.shown.length===5&&!state.controls&&state.labels.length===5
-      &&state.labels.every(([head,folder])=>head==="Recorded from this release's library"&&folder==="Example layout"),{shown:state.shown,controls:state.controls});
+    const read={};
+    for(const [address,steps] of [["/demo",5],["/demo/kaggle",6]]){await target.goto(base+address);const state=await demoState(target);
+      read[address]={steps,shown:state.shown.length,controls:state.controls,labelled:state.labels.length===steps&&state.labels.every(([head,folder])=>head==="Recorded from this release's library"&&folder==="Example layout")};}
+    check("demo_reads_every_step_when_the_script_has_not_run",Object.values(read).every(item=>item.shown===item.steps&&!item.controls&&item.labelled),read);
     await plain.close();}
   const demoControls=[
     {name:"show_every_demonstration_step_at_once",path:"/assets/public-pages.js",find:"panels.forEach((panel, place) => { panel.hidden = place !== current; });",replacement:"panels.forEach(panel => { panel.hidden = false; });",
       expected:["demo_shows_one_step_at_a_time_and_moves_by_its_list"]},
     {name:"send_the_pi_folder_to_another_root",path:"/assets/public-pages.js",find:'"pi": ".pi/skills/"',replacement:'"pi": ".pi/extensions/"',expected:["demo_folder_follows_the_chosen_harness"]},
-    {name:"let_the_player_run_past_the_last_step",path:"/assets/public-pages.js",find:"if (current >= panels.length - 1) stopPlaying(); else select(current + 1, false);",
+    {name:"let_the_player_run_past_the_last_step",path:"/assets/public-pages.js",find:"if (current >= panels.length - 1) stop(); else select(current + 1, false);",
       replacement:"select((current + 1) % panels.length, false);",expected:["demo_play_moves_through_the_steps_and_stops_at_the_last"]}];
   for(const control of demoControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};let applied=false,problem="";

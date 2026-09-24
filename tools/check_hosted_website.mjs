@@ -60,7 +60,7 @@ const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===
 const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
   canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",brand:document.querySelector("header a.brand")?.getAttribute("href")||""}));
 /* The pages of September 24, 2026, checked on every hostname at their own addresses. */
-const showcasePaths=["/demo","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
+const showcasePaths=["/demo","/demo/kaggle","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
@@ -115,23 +115,32 @@ try{
   /* The bands of the design, in order, each set off from the next by a change of ground and a rule. */
   const liveBands=await page.locator('[data-view="home"]').evaluate(home=>{const bands=[...home.children],ground=node=>getComputedStyle(node).backgroundColor;
     return {names:bands.map(node=>node.dataset.band||""),apart:bands.slice(1).every((node,index)=>ground(node)!==ground(bands[index])&&parseFloat(getComputedStyle(node).borderTopWidth)>0)};});
-  /* The design's order since September 23, 2026: the harness strip and the six problems left the homepage, and the three use cases
-     joined it. The demonstration sits in the hero. */
-  check("live_homepage_bands_follow_the_design_and_are_set_apart",JSON.stringify(liveBands.names)===JSON.stringify(["hero","library","use-cases","how","trust","pricing","faq","closing"])&&liveBands.apart
-    &&await page.locator('[data-band="hero"] #step-demo').count()===1);
+  /* The design's order since September 24, 2026: the hero with the working directory one step gets, the three demonstrations, the
+     library, the three use cases, trust, pricing, questions and the closing band. The Ask, get, place band left that day. */
+  check("live_homepage_bands_follow_the_design_and_are_set_apart",JSON.stringify(liveBands.names)===JSON.stringify(["hero","demos","library","use-cases","trust","pricing","faq","closing"])&&liveBands.apart
+    &&await page.locator('[data-band="hero"] #hero-directory').count()===1);
   check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","keys","library","usage"]));
-  /* No card on the homepage carries a status word since September 23, 2026: the six kinds, the three steps of How it works and the
-     three use cases, each in the design's order. The two labels of the demonstration are the only tags, and the folder's says
-     "Example layout". Each use case links its own page. */
+  /* No card on the homepage carries a status word since September 23, 2026: the six kinds, the three use cases and, since
+     September 24, the three demonstrations, each in the design's order. The hero's directory carries the one tag, "Example
+     layout". Each use case and each demonstration links its own page. */
   const liveCards=(selector,key)=>page.locator(selector).evaluateAll((items,key)=>items.map(item=>({name:item.dataset[key]||"",title:item.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",
     text:item.textContent.replace(/\s+/g," ").trim(),tags:item.querySelectorAll(".status-tag, [data-status]").length,links:[...item.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:item.getClientRects().length>0})),key);
-  const liveCardProblems=[...cardProblems(await liveCards("[data-kind]","kind"),["skills","instructions","tools","agents","hooks","servers"]),...cardProblems(await liveCards("[data-how-step]","howStep"),["ask","get","place"]),
+  const demoCardPages={simple:"/demo",overnight:"/overnight",kaggle:"/demo/kaggle"};
+  const demoCardProblems=cards=>[...cardProblems(cards,Object.keys(demoCardPages)),...cards.filter(card=>JSON.stringify(card.links)!==JSON.stringify([demoCardPages[card.name]])).map(card=>card.name+" links another page")];
+  const liveCardProblems=[...cardProblems(await liveCards("[data-kind]","kind"),["skills","instructions","tools","agents","hooks","servers"]),...demoCardProblems(await liveCards('[data-view="home"] [data-demo-card]',"demoCard")),
     ...useCaseProblems(await liveCards('[data-view="home"] [data-use-case]',"useCase"))];
   check("live_homepage_cards_carry_no_status_word_and_link_the_three_use_cases",liveCardProblems.length===0);
   check("card_check_rejects_a_status_word_and_a_missing_use_case",cardProblems([{name:"skills",title:"Skills",text:"Skills Available now",tags:1,links:[],shown:true}],["skills"]).length===1
     &&useCaseProblems([{name:"overnight",title:"Solve complex problems overnight",text:"",tags:0,links:["/overnight"],shown:true}]).length===1);
-  const liveFolderLabel=await page.evaluate(()=>document.querySelector('#step-demo [data-demo-stage="folder"] [data-demo-label]')?.textContent.replace(/\s+/g," ").trim()||"");
-  check("live_demonstration_folder_is_labelled_as_an_example_layout",liveFolderLabel==="Example layout");
+  /* The hero shows the working directory one step gets and no worked example, as the owner asked on September 24, 2026: no
+     search, no reference, no digest and no download in the hero band. */
+  const liveHeroDirectory=await page.evaluate(()=>{const band=document.querySelector('[data-view="home"] [data-band="hero"]');
+    return {label:band?.querySelector("[data-hero-directory] [data-hero-label]")?.textContent.replace(/\s+/g," ").trim()||"",parts:[...(band?.querySelectorAll("[data-hero-part]")||[])].map(node=>node.dataset.heroPart),
+      example:band?band.querySelectorAll("[data-step-demo], [data-demo-item], [data-demo-query], [data-demo-download], [data-task-demo]").length:0,text:band?.textContent.replace(/\s+/g," ")||""};});
+  const showsNoWorkedExample=state=>state.label==="Example layout"&&JSON.stringify(state.parts)===JSON.stringify(["instructions","skills","tools","code"])&&state.example===0
+    &&!/\bsearch:|\bsha256\b|Bytes match the digest/i.test(state.text);
+  check("live_hero_shows_a_working_directory_and_no_worked_example",showsNoWorkedExample(liveHeroDirectory));
+  check("hero_directory_check_rejects_a_worked_example_again",!showsNoWorkedExample({...liveHeroDirectory,example:1})&&!showsNoWorkedExample({...liveHeroDirectory,text:liveHeroDirectory.text+" search: split address lines sha256 53dc74e3"}));
   /* Two actions in the hero: Get started, the one primary action, and Get set up, the guide, with one line that says how they differ. */
   const liveHeroActions=await page.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
     return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),secondary:[...hero.querySelectorAll(".button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
@@ -172,7 +181,8 @@ try{
   check("live_footer_links_get_started_get_set_up_and_the_use_cases_and_not_the_waitlist",footerHolds(liveFooter));
   check("footer_check_rejects_a_waitlist_link_and_a_missing_use_case",!footerHolds({...liveFooter,all:[...liveFooter.all,"/waitlist"]})&&!footerHolds({...liveFooter,useCases:liveFooter.useCases.filter(href=>href!=="/learning")}));
   /* The connection entry on the homepage is written by the page script with the deployed address. */
-  if(rootIsHome)check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));
+  /* The homepage's connection entry left with its How it works band on September 24, 2026; Get set up writes each harness's entry
+     with the deployed address, which guided_setup_uses_deployed_origin checks below. */
   await page.locator('header a[data-page="pricing"]').click();
   /* Read as a person reads it: the amount and "a month" stand on two lines of the plan card. */
   const livePricing=(await page.locator('[data-view="pricing"]').innerText()).replace(/\s+/g," ");
@@ -276,7 +286,7 @@ try{
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));
   }
-  if(rootIsHome)await page.locator("#how-explore").click();else await page.goto(origin+"/how-it-works#task-breakdown");
+  await page.goto(origin+"/how-it-works#task-breakdown");
   check("how_it_works_separates_client_and_server",await page.locator('[data-view="about"] .service-zone').isVisible()&&await page.locator('[data-view="about"] .client-zone').isVisible());
   const providerCopy=await page.locator('[data-view="about"] .provider-lane').innerText();
   const explainsProviderBoundary=text=>text.includes("Model keys stay in your environment")&&text.includes("A remote model may receive the information you allow");

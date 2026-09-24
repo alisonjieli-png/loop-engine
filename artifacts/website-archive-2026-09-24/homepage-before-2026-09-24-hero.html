@@ -1,0 +1,46 @@
+<!-- Archived September 24, 2026. The hero demonstration of one step and the Ask, get, place band of the homepage, as they stood in src/loop_engine/core/service_runtime/web_assets/index.html. Nothing serves this file. -->
+<!-- The one-step demonstration that stood beside the hero copy (section heading:step-demo-title). -->
+<section class="step-demo is-compact" id="step-demo" aria-labelledby="step-demo-title" data-step-demo>
+<div class="step-demo-head"><div><p class="step-demo-eyebrow">What your agent gets at one step</p><h2 id="step-demo-title">Split the address lines in a customer file</h2></div><p class="status-tag is-recorded" data-demo-label="recorded">Recorded from this release's library</p></div>
+<ol class="step-demo-parts">
+<li class="step-demo-part" data-demo-stage="search" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">1</span><div class="step-demo-body">
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-demo-query>split address lines in a customer file</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="split_address_lines_into_components" class="is-chosen"><span class="step-demo-name">split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">3.0 KB</span> · sha256 <span data-fact="digest">53dc74e3</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="find_duplicate_records_with_blocking_keys"><span class="step-demo-name">find_<wbr>duplicate_<wbr>records_<wbr>with_<wbr>blocking_<wbr>keys</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">34da79f4</span>…</span></li>
+</ol></div></li>
+<li class="step-demo-part" data-demo-stage="download" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">2</span><div class="step-demo-body">
+<p class="step-demo-download"><code data-demo-download="split_address_lines_into_components">download split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</code><span class="step-demo-ok">Bytes match the digest</span></p></div></li>
+<li class="step-demo-part" data-demo-stage="folder" data-demo-evidence="illustration"><span class="step-demo-number is-dark" aria-hidden="true">3</span><div class="step-demo-body step-demo-harness">
+<div class="step-demo-harness-head"><p>Placed where the harness reads it</p><p class="status-tag is-building" data-demo-label="illustration">Example layout</p></div>
+<pre class="step-demo-tree" tabindex="0" aria-label="The working folder for this step">working-folder/
+├── <span data-demo-path="AGENTS.md">AGENTS.md</span><span class="step-demo-note-inline"></span>
+├── <span data-demo-path="CLAUDE.md">CLAUDE.md</span><span class="step-demo-note-inline">                  imports @AGENTS.md</span>
+├── <span data-demo-folder=".agents/skills/split-address-lines-into-components/">.agents/skills/split-address-lines-into-components/</span><span class="step-demo-note-inline"></span>
+│   ├── <span data-demo-path=".agents/skills/split-address-lines-into-components/SKILL.md">SKILL.md</span><span class="step-demo-note-inline"></span>
+│   └── <span data-demo-path=".agents/skills/split-address-lines-into-components/scripts/split_address_lines.py">scripts/split_address_lines.py</span><span class="step-demo-note-inline"></span>
+├── <span data-demo-path=".mcp.json">.mcp.json</span><span class="step-demo-note-inline">                  this step's tools only</span>
+└── <span data-demo-path=".baltor/step.lock.json">.baltor/step.lock.json</span><span class="step-demo-note-inline">     item, version, digest</span></pre>
+</div></li>
+</ol>
+</section>
+<!-- The Ask, get, place band (band:how, heading:how-title), with the Claude Code entry and the choice of one harness per step. -->
+      <div class="home-band band-plain" data-band="how">
+      <section class="how-band" id="how" aria-labelledby="how-title"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="how-title">Ask, get, place.</h2><p>Your harness asks for what a step needs. Baltor answers with the exact files and puts them where the harness reads them.</p></div>
+      <ol class="how-steps">
+<li class="how-step" data-how-step="ask"><span class="how-index">01</span><h3>Ask</h3><p>Your agent searches the library from inside Claude Code, Codex, OpenCode, Pi or the Baltor Harness.</p></li>
+<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3><p>Baltor returns the exact version, checked against its digest and counted in your usage.</p></li>
+<li class="how-step" data-how-step="place"><span class="how-index">03</span><h3>Place</h3><p>Each file lands where your harness reads it: skills, instructions, tools and settings.</p></li>
+      </ol>
+      <div class="how-connect"><div class="how-connect-copy"><h3>Connect in one entry</h3><p>Your harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.</p><p class="how-connect-where">Claude Code, in <code>.mcp.json</code></p><div class="how-option"><h3>One harness per step, when you want it</h3><p>For long jobs, the Baltor Harness can start a fresh harness for every small step, so each step holds only its own files. Turn it on for long runs and off for quick ones.</p></div><a class="text-link" id="how-explore" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><pre class="how-code" data-home-recipe="claude-code" tabindex="0" aria-label="The Claude Code entry">{
+  "mcpServers": {
+    "baltor": {
+      "type": "http",
+      "url": "https://baltor.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"
+      }
+    }
+  }
+}</pre></div></section>
+      </div>

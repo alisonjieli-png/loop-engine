@@ -15,8 +15,8 @@
     {
       "address": "/",
       "view": "home",
-      "title": "The perfect harness setup for every task",
-      "description": "A library of skills, instructions and tools your harness searches and downloads from, with each file placed where the harness reads it.",
+      "title": "The perfect harness working directory for each task",
+      "description": "The working directory each step of your task needs, built on demand from a vetted library and placed where your harness reads it.",
       "group": "Product",
       "linked_from": [
         "header",
@@ -520,6 +520,20 @@
       "group": "Product",
       "linked_from": [
         "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/demo/kaggle",
+      "view": "demo-kaggle",
+      "title": "A Kaggle competition, start to finish",
+      "description": "Six steps of a tabular competition, from fixing the metric to writing the submission, each with the skill it needs from the library.",
+      "group": "Product",
+      "linked_from": [
         "page"
       ],
       "unlinked_reason": "",
@@ -1048,6 +1062,30 @@
       "subject": "heading:problems-title",
       "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. The use-case band and the three use-case pages carry what this band said. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.",
       "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-24",
+      "kind": "section",
+      "state": "",
+      "subject": "heading:step-demo-title",
+      "reason": "The owner asked on September 24, 2026 for a hero without a worked example: it shows the working directory one step gets, built on demand, and three demonstrations follow it. The same step, splitting the address lines of a customer file, is step 2 of the demonstration at /demo, where its search, download and digest are recorded from this release's library. The markup is kept in artifacts/website-archive-2026-09-24/homepage-before-2026-09-24-hero.html.",
+      "decided_by": "owner, September 24, 2026"
+    },
+    {
+      "date": "2026-09-24",
+      "kind": "section",
+      "state": "",
+      "subject": "band:how",
+      "reason": "The owner said on September 24, 2026 that the homepage is too complicated. The hero now shows the directory a step gets and the demonstrations show each run start to finish, so the Ask, get, place band repeated them. Get set up holds the connection entry for each harness, How it works explains the steps, and the overnight page states the choice of one harness per step. The markup is kept in artifacts/website-archive-2026-09-24/homepage-before-2026-09-24-hero.html.",
+      "decided_by": "owner, September 24, 2026"
+    },
+    {
+      "date": "2026-09-24",
+      "kind": "section",
+      "state": "",
+      "subject": "heading:how-title",
+      "reason": "The owner said on September 24, 2026 that the homepage is too complicated. The hero now shows the directory a step gets and the demonstrations show each run start to finish, so the Ask, get, place band repeated them. Get set up holds the connection entry for each harness, How it works explains the steps, and the overnight page states the choice of one harness per step. The markup is kept in artifacts/website-archive-2026-09-24/homepage-before-2026-09-24-hero.html.",
+      "decided_by": "owner, September 24, 2026"
     }
   ],
   "social_image": "/assets/favicon-192.png"
