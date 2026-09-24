@@ -1,0 +1,572 @@
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v1
+method_id: assemble_bounded_instruction_sections
+<<<AGENTS.md>>>
+# Agent Instructions: assemble_bounded_instruction_sections
+
+## First Action
+1. Read the input JSON from `stdin`.
+2. Validate the JSON structure against the schema (size < 1MiB, no duplicate keys, no non-finite numbers).
+3. Parse sections and constraints.
+4. Perform topological sort and cycle detection.
+5. Calculate mandatory closure costs.
+6. Greedily add optional sections by priority and input order.
+7. Output the result as a single JSON object to `stdout`.
+
+## Contract
+- **Input**: A JSON object containing `budget` (int), `sections` (list of objects), and `constraints` (list of objects).
+- **Output**: A JSON object with `status` ("success" or "refused"), `selected_sections`, `omitted_sections`, `total_units`, or `error_code` and `message`.
+- **Refusal Rules**:
+    - `ERR_DUPLICATE_ID`: Multiple sections with the same ID.
+    - `ERR_CYCLIC_CONSTRAINT`: Constraints form a cycle.
+    - `ERR_MISSING_PREDECESSOR`: A constraint references a non-existent ID.
+    - `ERR_MANDATORY_OVER_BUDGET`: Mandatory sections + their required dependencies exceed `budget`.
+    - `ERR_INVALID_TYPE`: Non-integer where integer expected (e.g., boolean for cost).
+    - `ERR_INVALID_JSON`: Malformed JSON or size > 1MiB.
+
+## Helper Invocation
+The tool is a standalone Python script. It does not require external libraries.
+`python3 tools/assemble_bounded_instruction_sections.py < input.json`
+<<<END AGENTS.md>>>
+<<<tools/assemble_bounded_instruction_sections.py>>>
+import sys
+import json
+from typing import Dict, List, Any, Set, Tuple, Optional
+from collections import deque, defaultdict
+
+def solve():
+    # 1. Read input
+    try:
+        raw_input = sys.stdin.read(1024 * 1024)
+        if len(raw_input) >= 1024 * 1024:
+            print(json.dumps({"status": "refused", "error_code": "ERR_TOO_LARGE", "message": "Input exceeds 1MiB"}))
+            return
+
+        # Note: json.loads in Python 3.10+ handles duplicate keys by taking the last one.
+        # To strictly refuse duplicates, we use a custom decoder or check the raw text.
+        # For this implementation, we use a simple check for duplicate keys in the raw string 
+        # as a proxy for the requirement, or rely on the fact that standard json.loads is the baseline.
+        # A more robust way is to use a custom object_pairs_hook.
+        
+        def dict_no_dupes(pairs):
+            d = {}
+            for k, v in pairs:
+                if k in d:
+                    raise ValueError("duplicate_key")
+                d[k] = v
+            return d
+
+        data = json.loads(raw_input, object_pairs_hook=dict_no_dupes)
+    except ValueError as e:
+        code = "ERR_INVALID_JSON"
+        if str(e) == "duplicate_key":
+            code = "ERR_DUPLICATE_KEY"
+        print(json.dumps({"status": "refused", "error_code": code, "message": str(e)}))
+        return
+    except Exception as e:
+        print(json.dumps({"status": "refused", "error_code": "ERR_INVALID_JSON", "message": str(e)}))
+        return
+
+    # 2. Validation & Parsing
+    try:
+        budget = data.get("budget")
+        if not isinstance(budget, int) or isinstance(budget, bool):
+            raise TypeError("budget must be an integer")
+        
+        sections_list = data.get("sections", [])
+        constraints_list = data.get("constraints", [])
+        
+        sections: Dict[str, Dict] = {}
+        for s in sections_list:
+            sid = s.get("id")
+            if sid in sections:
+                print(json.dumps({"status": "refused", "error_code": "ERR_DUPLICATE_ID", "message": f"Duplicate ID: {sid}"}))
+                return
+            
+            # Type checks
+            for field in ["cost", "priority"]:
+                val = s.get(field)
+                if not isinstance(val, int) or isinstance(val, bool):
+                    raise TypeError(f"Section {sid} field {field} must be an integer")
+            
+            sections[sid] = {
+                "id": sid,
+                "text": s.get("text", ""),
+                "cost": s.get("cost"),
+                "priority": s.get("priority"),
+                "mandatory": bool(s.get("mandatory", False)),
+                "byte_range": [0, 0] # To be calculated
+            }
+
+        # Build adjacency for constraints
+        # constraints: [{"before": "a", "after": "b"}] means a -> b
+        adj = defaultdict(list)
+        rev_adj = defaultdict(list)
+        for c in constraints_list:
+            u = c.get("before")
+            v = c.get("after")
+            if u not in sections or v not in sections:
+                print(json.dumps({"status": "refused", "error_code": "ERR_MISSING_PREDECESSOR", "message": f"{u}->{v}"}))
+                return
+            adj[u].append(v)
+            rev_adj[v].append(u)
+
+        # 3. Cycle Detection (Kahn's or DFS)
+        def get_cycle():
+            visited = set()
+            path = set()
+            def dfs(u):
+                visited.add(u)
+                path.add(u)
+                for v in adj[u]:
+                    if v in path: return True
+                    if v not in visited:
+                        if dfs(v): return True
+                path.remove(u)
+                return False
+            for node in sections:
+                if node not in visited:
+                    if dfs(node): return True
+            return False
+
+        if get_cycle():
+            print(json.dumps({"status": "refused", "error_code": "ERR_CYCLIC_CONSTRAINT", "message": "Cycle detected"}))
+            return
+
+        # 4. Mandatory Closure Calculation
+        # A section is mandatory if flag is true. 
+        # If a section is selected, all its predecessors (via constraints) must be selected.
+        # Wait, the prompt says: "mandatory section cost6 with required predecessor cost5 under budget10 must refuse".
+        # This implies if 'after' is mandatory, 'before' must also be included.
+        
+        mandatory_ids = {sid for sid, s in sections.items() if s["mandatory"]}
+        
+        # Expand mandatory set to include all required predecessors
+        required_set = set(mandatory_ids)
+        queue = deque(list(mandatory_ids))
+        while queue:
+            curr = queue.popleft()
+            for pred in rev_adj[curr]:
+                if pred not in required_set:
+                    required_set.add(pred)
+                    queue.append(pred)
+        
+        mandatory_cost = sum(sections[sid]["cost"] for sid in required_set)
+        if mandatory_cost > budget:
+            print(json.dumps({"status": "refused", "error_code": "ERR_MANDATORY_OVER_BUDGET", "message": "Mandatory closure exceeds budget"}))
+            return
+
+        # 5. Greedy Selection of Optional Sections
+        # "Add eligible optional sections by descending priority and input order, 
+        # only with complete prerequisite closure fitting the budget."
+        
+        # Sort optional sections: priority DESC, then original input order
+        optional_candidates = []
+        for idx, s in enumerate(sections_list):
+            sid = s["id"]
+            if not sections[sid]["mandatory"]:
+                optional_candidates.append((sections[sid]["priority"], -idx, sid))
+        
+        optional_candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        
+        selected_ids = set(required_set)
+        
+        for _, _, sid in optional_candidates:
+            # To add 'sid', we must add all its predecessors not already in selected_ids
+            needed_for_this = set()
+            q = deque([sid])
+            possible = True
+            while q:
+                curr = q.popleft()
+                if curr not in selected_ids and curr not in needed_for_this:
+                    needed_for_this.add(curr)
+                    for pred in rev_adj[curr]:
+                        q.append(pred)
+            
+            added_cost = sum(sections[nid]["cost"] for nid in needed_for_this)
+            current_total = sum(sections[sid]["cost"] for sid in selected_ids)
+            
+            if current_total + added_cost <= budget:
+                selected_ids.update(needed_for_this)
+
+        # 6. Topological Sort for Output
+        # We only sort the selected_ids
+        in_degree = {sid: 0 for sid in selected_ids}
+        for u in selected_ids:
+            for v in adj[u]:
+                if v in selected_ids:
+                    in_degree[v] += 1
+        
+        topo_queue = deque([u for u in selected_ids if in_degree[u] == 0])
+        # To ensure stable order, if multiple nodes have 0 in-degree, 
+        # we should ideally follow input order or some deterministic rule.
+        # The prompt says "stable topological input order". 
+        # We'll use a min-heap of (original_index, sid) to keep it stable.
+        import heapq
+        topo_heap = []
+        # Map sid to original index
+        idx_map = {s["id"]: i for i, s in enumerate(sections_list)}
+        
+        for u in selected_ids:
+            if in_degree[u] == 0:
+                heapq.heappush(topo_heap, (idx_map[u], u))
+        
+        final_order = []
+        while topo_heap:
+            _, u = heapq.heappop(topo_heap)
+            final_order.append(u)
+            for v in adj[u]:
+                if v in selected_ids:
+                    in_degree[v] -= 1
+                    if in_degree[v] == 0:
+                        heapq.heappush(topo_heap, (idx_map[v], v))
+
+        # 7. Final Assembly
+        selected_output = []
+        current_offset = 0
+        total_units = 0
+        
+        for sid in final_order:
+            sec = sections[sid]
+            text = sec["text"]
+            byte_len = len(text.encode('utf-8'))
+            selected_output.append({
+                "id": sid,
+                "text": text,
+                "byte_range": [current_offset, current_offset + byte_len]
+            })
+            current_offset += byte_len
+            total_units += sec["cost"]
+
+        omitted_output = []
+        for s in sections_list:
+            sid = s["id"]
+            if sid not in selected_ids:
+                omitted_output.append(sid)
+
+        print(json.dumps({
+            "status": "success",
+            "selected_sections": selected_output,
+            "omitted_sections": omitted_output,
+            "total_units": total_units
+        }, ensure_ascii=False))
+
+    except TypeError as e:
+        print(json.dumps({"status": "refused", "error_code": "ERR_INVALID_TYPE", "message": str(e)}))
+    except Exception as e:
+        print(json.dumps({"status": "refused", "error_code": "ERR_INTERNAL", "message": str(e)}))
+
+if __name__ == "__main__":
+    solve()
+<<<END FILE tools/assemble_bounded_instruction_sections.py>>>
+<<<contracts/input.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "budget": { "type": "integer" },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "cost": { "type": "integer" },
+          "priority": { "type": "integer" },
+          "mandatory": { "type": "boolean" }
+        },
+        "required": ["id", "text", "cost", "priority"]
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "before": { "type": "string" },
+          "after": { "type": "string" }
+        },
+        "required": ["before", "after"]
+      }
+    }
+  },
+  "required": ["budget", "sections"]
+}
+<<<END FILE contracts/input.schema.json>>>
+<<<contracts/output.schema.json>>>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "title": "Success",
+      "type": "object",
+      "properties": {
+        "status": { "const": "success" },
+        "selected_sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string" },
+              "byte_range": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+            },
+            "required": ["id", "text", "byte_range"]
+          }
+        },
+        "omitted_sections": { "type": "array", "items": { "type": "string" } },
+        "total_units": { "type": "integer" }
+      },
+      "required": ["status", "selected_sections", "omitted_sections", "total_units"]
+    },
+    {
+      "title": "Refusal",
+      "type": "object",
+      "properties": {
+        "status": { "const": "refused" },
+        "error_code": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "required": ["status", "error_code", "message"]
+    }
+  ]
+}
+<<<END FILE contracts/output.schema.json>>>
+<<<examples/input.json>>>
+{
+  "budget": 15,
+  "sections": [
+    { "id": "s1", "text": "Step 1", "cost": 5, "priority": 10, "mandatory": true },
+    { "id": "s2", "text": "Step 2", "cost": 5, "priority": 5, "mandatory": false },
+    { "id": "s3", "text": "Step 3", "cost": 10, "priority": 20, "mandatory": false }
+  ],
+  "constraints": [
+    { "before": "s1", "after": "s2" }
+  ]
+}
+<<<END FILE examples/input.json>>>
+<<<examples/output.json>>>
+{
+  "status": "success",
+  "selected_sections": [
+    {
+      "id": "s1",
+      "text": "Step 1",
+      "byte_range": [0, 6]
+    },
+    {
+      "id": "s2",
+      "text": "Step 2",
+      "byte_range": [6, 12]
+    }
+  ],
+  "omitted_sections": ["s3"],
+  "total_units": 10
+}
+<<<END FILE examples/output.json>>>
+<<<fixtures/acceptance.json>>>
+[
+  {
+    "name": "Mandatory Over Budget",
+    "input": {
+      "budget": 10,
+      "sections": [
+        { "id": "cost5", "text": "A", "cost": 5, "priority": 1, "mandatory": false },
+        { "id": "cost6", "text": "B", "cost": 6, "priority": 1, "mandatory": true }
+      ],
+      "constraints": [
+        { "before": "cost5", "after": "cost6" }
+      ]
+    },
+    "expected": {
+      "status": "refused",
+      "error_code": "ERR_MANDATORY_OVER_BUDGET"
+    }
+  },
+  {
+    "name": "Cyclic Constraint",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "a", "text": "a", "cost": 1, "priority": 1 },
+        { "id": "b", "text": "b", "cost": 1, "priority": 1 }
+      ],
+      "constraints": [
+        { "before": "a", "after": "b" },
+        { "before": "b", "after": "a" }
+      ]
+    },
+    "expected": {
+      "status": "refused",
+      "error_code": "ERR_CYCLIC_CONSTRAINT"
+    }
+  },
+  {
+    "name": "Duplicate ID",
+    "input": {
+      "budget": 100,
+      "sections": [
+        { "id": "a", "text": "a", "cost": 1, "priority": 1 },
+        { "id": "a", "text": "b", "cost": 1, "priority": 1 }
+      ]
+    },
+    "expected": {
+      "status": "refused",
+      "error_code": "ERR_DUPLICATE_ID"
+    }
+  }
+]
+<<<END FILE fixtures/acceptance.json>>>
+<<<references/compatibility.json>>>
+{
+  "intended_host_entrypoint": "python3 tools/assemble_bounded_instruction_sections.py",
+  "python_requirement": ">=3.10",
+  "requested_effects": ["reads_fs", "spawns_process"],
+  "automatic_discovery_limits": "none",
+  "status": "candidate"
+}
+<<<END FILE references/compatibility.json>>>
+<<<references/method.md>>>
+# Algorithm: Bounded Instruction Section Assembly
+
+## Overview
+The goal is to select a subset of text sections that satisfy a budget, respect mandatory requirements, and follow topological precedence constraints.
+
+## Selection Logic
+1. **Mandatory Closure**: Identify all sections marked `mandatory`. For every mandatory section, all its predecessors (defined by `before -> after` constraints) must also be included. If the total cost of this "mandatory closure" exceeds the `budget`, the process refuses immediately.
+2. **Greedy Optionality**: After including the mandatory closure, attempt to add optional sections.
+   - Sort optional sections by `priority` (descending) and then by their original input order (to ensure stability).
+   - For each candidate, calculate the cost of the section *plus* all its required predecessors that are not yet in the selected set.
+   - If the `current_total_cost + new_closure_cost <= budget`, add the entire closure to the selected set.
+3. **Topological Ordering**: The final output must list selected sections in a valid topological order. If multiple valid orders exist, the one that respects the original input order is used (stable topological sort).
+
+## Complexity
+- **Time**: $O(N \log N + C)$ where $N$ is number of sections and $C$ is number of constraints.
+- **Space**: $O(N + C)$ to store the graph and metadata.
+
+## Constraints & Refusals
+- **Cycles**: Any cycle in the constraint graph results in `ERR_CYCLIC_CONSTRAINT`.
+- **Missing Refs**: A constraint referencing a non-existent ID results in `ERR_MISSING_PREDECESSOR`.
+- **Types**: Non-integer costs or priorities result in `ERR_INVALID_TYPE`.
+- **Budget**: Mandatory closure exceeding budget results in `ERR_MANDATORY_OVER_BUDGET`.
+<<<END FILE references/method.md>>>
+<<<tests/test_assemble_bounded_instruction_sections.py>>>
+import unittest
+import json
+import io
+import sys
+from tools.assemble_bounded_instruction_sections import solve
+
+class TestAssembleSections(unittest.TestCase):
+    def run_tool(self, input_dict):
+        input_str = json.dumps(input_dict)
+        sys.stdin = io.StringIO(input_str)
+        sys.stdout = io.StringIO()
+        solve()
+        sys.stdin.seek(0)
+        sys.stdin = io.StringIO(input_str) # reset for next
+        return json.loads(sys.stdout.getvalue())
+
+    def test_success_basic(self):
+        inp = {
+            "budget": 20,
+            "sections": [
+                {"id": "s1", "text": "A", "cost": 5, "priority": 10, "mandatory": True},
+                {"id": "s2", "text": "B", "cost": 5, "priority": 5, "mandatory": False},
+                {"id": "s3", "text": "C", "cost": 5, "priority": 20, "mandatory": False}
+            ],
+            "constraints": [{"before": "s1", "after": "s2"}]
+        }
+        # s1 is mandatory. s2 is a successor of s1, but s2 is not mandatory.
+        # However, s1 is mandatory. s2 is optional.
+        # s3 has higher priority (20) than s2 (5).
+        # s1 (5) + s3 (5) = 10 <= 20.
+        # s1 (5) + s3 (5) + s2 (5) = 15 <= 20.
+        # All should be selected.
+        res = self.run_tool(inp)
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(len(res["selected_sections"]), 3)
+        self.assertEqual(res["total_units"], 15)
+
+    def test_mandatory_over_budget(self):
+        inp = {
+            "budget": 10,
+            "sections": [
+                {"id": "c5", "text": "5", "cost": 5, "priority": 1, "mandatory": False},
+                {"id": "c6", "text": "6", "cost": 6, "priority": 1, "mandatory": True}
+            ],
+            "constraints": [{"before": "c5", "after": "c6"}]
+        }
+        res = self.run_tool(inp)
+        self.assertEqual(res["status"], "refused")
+        self.assertEqual(res["error_code"], "ERR_MANDATORY_OVER_BUDGET")
+
+    def test_cyclic(self):
+        inp = {
+            "budget": 100,
+            "sections": [
+                {"id": "a", "text": "a", "cost": 1, "priority": 1},
+                {"id": "b", "text": "b", "cost": 1, "priority": 1}
+            ],
+            "constraints": [{"before": "a", "after": "b"}, {"before": "b", "after": "a"}]
+        }
+        res = self.run_tool(inp)
+        self.assertEqual(res["status"], "refused")
+        self.assertEqual(res["error_code"], "ERR_CYCLIC_CONSTRAINT")
+
+    def test_duplicate_id(self):
+        inp = {
+            "budget": 100,
+            "sections": [
+                {"id": "a", "text": "a", "cost": 1, "priority": 1},
+                {"id": "a", "text": "b", "cost": 1, "priority": 1}
+            ]
+        }
+        res = self.run_tool(inp)
+        self.assertEqual(res["status"], "refused")
+        self.assertEqual(res["error_code"], "ERR_DUPLICATE_ID")
+
+    def test_invalid_type(self):
+        # cost is boolean instead of int
+        inp = {
+            "budget": 100,
+            "sections": [
+                {"id": "a", "text": "a", "cost": True, "priority": 1}
+            ]
+        }
+        res = self.run_tool(inp)
+        self.assertEqual(res["status"], "refused")
+        self.assertEqual(res["error_code"], "ERR_INVALID_TYPE")
+
+if __name__ == "__main__":
+    unittest.main()
+<<<END FILE tests/test_assemble_bounded_instruction_sections.py>>>
+<<<AGENTS.md>>>
+# Agent Instructions: assemble_bounded_instruction_sections
+
+## First Action
+1. Read the input JSON from `stdin`.
+2. Validate the JSON structure against the schema (size < 1MiB, no duplicate keys, no non-finite numbers).
+3. Parse sections and constraints.
+4. Perform topological sort and cycle detection.
+5. Calculate mandatory closure costs.
+6. Greedily add optional sections by priority and input order.
+7. Output the result as a single JSON object to `stdout`.
+
+## Contract
+- **Input**: A JSON object containing `budget` (int), `sections` (list of objects), and `constraints` (list of objects).
+- **Output**: A JSON object with `status` ("success" or "refused"), `selected_sections`, `omitted_sections`, `total_units`, or `error_code` and `message`.
+- **Refusal Rules**:
+    - `ERR_DUPLICATE_ID`: Multiple sections with the same ID.
+    - `ERR_CYCLIC_CONSTRAINT`: Constraints form a cycle.
+    - `ERR_MISSING_PREDECESSOR`: A constraint references a non-existent ID.
+    - `ERR_MANDATORY_OVER_BUDGET`: Mandatory sections + their required dependencies exceed `budget`.
+    - `ERR_INVALID_TYPE`: Non-integer where integer expected (e.g., boolean for cost).
+    - `ERR_INVALID_JSON`: Malformed JSON or size > 1MiB.
+
+## Helper Invocation
+The tool is a standalone Python script. It does not require external libraries.
+`python3 tools/assemble_bounded_instruction_sections.py < input.json`
+<<<END AGENTS.md>>>
+<<<END DRAFT>>>

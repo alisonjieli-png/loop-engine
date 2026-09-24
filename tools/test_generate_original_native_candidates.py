@@ -68,17 +68,36 @@ def blocks_answer(method, files=None):
     return "\n".join(lines + ["<<<END DRAFT>>>"]) + "\n"
 
 
+def blocks2_answer(method, files=None, natural=True):
+    """One original_native_file_blocks/v2 answer.
+
+    The natural spelling is the one the Tactical model wrote: bare FILE lines,
+    the first END line without FILE, and no END line before END DRAFT.
+    """
+    rows = files if files is not None else [(f["path"], FIXTURE_CONTENT[f["path"]]) for f in method["files"]]
+    lines = ["<<<DRAFT>>>", "record_type: " + generation.BLOCKS2_TYPE, "method_id: " + method["id"]]
+    for number, (path, content) in enumerate(rows):
+        lines += [("<<<" if natural else "<<<FILE ") + path + ">>>", *content.split("\n")]
+        if not natural:
+            lines.append("<<<END FILE " + path + ">>>")
+        elif number < len(rows) - 1:
+            lines.append(("<<<END " if number == 0 else "<<<END FILE ") + path + ">>>")
+        lines.append("")
+    return "\n".join(lines + ["<<<END DRAFT>>>"]) + "\n"
+
+
 class BlocksGateway(FakeGateway):
     """The fixture gateway answering in the delimited-block format."""
 
-    def __init__(self, change=None):
+    def __init__(self, change=None, answer=blocks_answer):
         super().__init__()
         self.text_change = change
+        self.answer = answer
 
     def invoke(self, request):
         result = super().invoke(request)
         method = json.loads(request.prompt)["method"]
-        answer = blocks_answer(method)
+        answer = self.answer(method)
         result.text = self.text_change(answer, method) if self.text_change else answer
         return result
 
@@ -554,6 +573,63 @@ class GenerationTest(unittest.TestCase):
             self.run_generation(BlocksGateway(),draft_format='blocks')
         with self.assertRaisesRegex(ValueError,'draft_format_unsupported'):
             self.run_generation(gateway,draft_format='yaml',output=self.root/'other')
+        self.assertEqual(len(gateway.calls),1)
+
+    def test_blocks2_natural_spellings_are_admitted_and_omitted_ends_are_recorded(self):
+        gateway=BlocksGateway(answer=blocks2_answer)
+        result=self.run_generation(gateway,draft_format='blocks2')
+        self.assertEqual(result['candidate_count'],1)
+        run=json.loads((self.root/'run/run.json').read_text())
+        self.assertEqual(run['draft_format'],{'name':'blocks2','record_type':generation.BLOCKS2_TYPE})
+        self.assertEqual(run['draft_admission']['contract'],generation.BLOCKS2_ADMISSION)
+        self.assertEqual(run['prompt_resource']['path'],'tools/resources/original-native-generation-blocks-prompt-v2.json')
+        self.assertIn('<<<END DRAFT>>>',gateway.calls[0].system)
+        admission=self.blocks_completion(self.root/'run')['response_admission']
+        self.assertEqual((admission['strategy'],admission['transformation_trace']),
+                         ('strict_blocks',['block_end_omitted:reference.md']))
+        written=(self.root/'run/inspect_fixture.attempt-1/candidates/packages/inspect_fixture/AGENTS.md').read_text()
+        self.assertTrue(written.endswith('stay verbatim.\n'))
+
+    def test_blocks2_explicit_file_spellings_are_admitted(self):
+        gateway=BlocksGateway(answer=lambda m:blocks2_answer(m,natural=False))
+        self.assertEqual(self.run_generation(gateway,draft_format='blocks2')['candidate_count'],1)
+        self.assertEqual(self.blocks_completion(self.root/'run')['response_admission']['transformation_trace'],[])
+
+    def test_blocks2_known_wrong_answers_are_refused_with_their_reason(self):
+        def rows(m):
+            return [(f['path'],FIXTURE_CONTENT[f['path']]) for f in m['files']]
+        cases=[('unterminated_block',lambda t,m:t.replace('<<<END DRAFT>>>\n',''),'draft_block_unterminated'),
+               ('duplicate_path',lambda t,m:blocks2_answer(m,rows(m)+[('AGENTS.md','# Again')]),'draft_path_duplicate'),
+               ('path_escaping_the_package',lambda t,m:blocks2_answer(m,rows(m)[:1]+[('../escape.md','# Out')]+rows(m)[1:],natural=False),
+                'draft_path_unsafe'),
+               ('content_outside_blocks',lambda t,m:t.replace('<<<reference.md>>>','Next file:\n<<<reference.md>>>'),
+                'draft_content_outside_blocks'),
+               ('missing_required_file',lambda t,m:blocks2_answer(m,rows(m)[:1]),'draft_missing_planned_files'),
+               ('unplanned_marker_inside_a_file',lambda t,m:blocks2_answer(m,[('AGENTS.md','# A\n<<<notes.md>>>\n# N'),
+                                                                       ('reference.md','# R')]),'draft_marker_misplaced'),
+               ('another_files_end_inside_a_file',lambda t,m:blocks2_answer(m,[('AGENTS.md','# A\n<<<END reference.md>>>'),
+                                                                         ('reference.md','# R')]),'draft_marker_misplaced'),
+               ('unplanned_file_outside',lambda t,m:blocks2_answer(m,rows(m)+[('notes.md','# N')],natural=False),'draft_path_not_planned'),
+               ('content_after_the_end',lambda t,m:t+'Done.\n','draft_content_after_end'),
+               ('missing_end_line',lambda t,m:blocks2_answer(m,natural=False).replace('<<<END DRAFT>>>\n',''),'draft_blocks_end_missing'),
+               ('version_one_header',lambda t,m:t.replace(generation.BLOCKS2_TYPE,generation.BLOCKS_TYPE),'draft_blocks_header_invalid'),
+               ('empty_file',lambda t,m:blocks2_answer(m,[('AGENTS.md','  '),('reference.md','# R')]),'draft_file_empty')]
+        for number,(name,change,code) in enumerate(cases):
+            with self.subTest(case=name):
+                output=self.root/f'blocks2-{number}'
+                result=self.run_generation(BlocksGateway(change,answer=blocks2_answer),draft_format='blocks2',output=output)
+                self.assertEqual(result['candidate_count'],0)
+                data=self.blocks_completion(output)
+                self.assertEqual(data['error_code'],'draft_blocks_not_admitted')
+                self.assertEqual((data['response_admission']['admitted'],data['response_admission']['failure_code']),(False,code))
+
+    def test_a_spent_allowance_stops_the_run_after_one_call(self):
+        second=deepcopy(self.method);second['id']='second_fixture'
+        self.plan['methods'].append(second);self.write_plan()
+        def spent(result):
+            result.ok=False;result.text='';result.error_code='usage_limit_reached';return result
+        gateway=FakeGateway(spent);result=self.run_generation(gateway)
+        self.assertEqual(result['stop_reason'],'usage_limit_reached')
         self.assertEqual(len(gateway.calls),1)
 
 if __name__ == "__main__":
