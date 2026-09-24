@@ -7038,6 +7038,18 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-24
     expires_on: 2027-09-24
+  - finding_id: hardcoding.0d488f8529279a79b7699e1b
+    owner: tools.resources.original-native-generation-blocks-prompt-v1.json:system
+    rationale: >-
+      Versioned generation instruction resource for the delimited-block draft
+      format, bundle original_native_generation_blocks 1.0.0, rendered through
+      the existing PromptResourceBundle like the JSON draft prompt. The run
+      record binds its resource bytes and rendered text digest; a change
+      refuses resume before a model call. These are governed instructions, not
+      an inline hidden prompt or a task-specific shortcut.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-24
+    expires_on: 2027-09-24
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23

@@ -66,7 +66,7 @@ from tools import prepare_harness_candidates as factory
 
 PLAN_TYPE = "original_native_generation_plan/v1"
 DRAFT_TYPE = "original_native_file_draft/v1"
-RUN_TYPE = "original_native_generation_run/v6"
+RUN_TYPE = "original_native_generation_run/v7"
 EVENT_TYPE = "original_native_generation_event/v3"
 BINDING_TYPE = "original_native_generation_provider_binding/v1"
 CAPACITY_TYPE = "endpoint_output_capacity/v1"
@@ -97,6 +97,23 @@ DRAFT_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["r
 DRAFT_ADMISSION = ModelResponseContract(
     DRAFT_TYPE, json.dumps(DRAFT_SCHEMA),
     ModelResponseAdmissionPolicy(allowed_strategies=("strict_json", "json_markdown_fence_removed")))
+#: The delimited-block draft format: each planned file travels in its own
+#: block with its path and no escaping, after a two-line header. The run
+#: chooses the format; run.json names it.
+BLOCKS_TYPE = "original_native_file_blocks/v1"
+BLOCKS_PROMPT_RESOURCE_PATH = Path(__file__).resolve().parent / "resources/original-native-generation-blocks-prompt-v1.json"
+DRAFT_FORMATS = {
+    "json": {"record_type": DRAFT_TYPE, "prompt": PROMPT_RESOURCE_PATH, "bundle_id": "original_native_generation"},
+    "blocks": {"record_type": BLOCKS_TYPE, "prompt": BLOCKS_PROMPT_RESOURCE_PATH,
+               "bundle_id": "original_native_generation_blocks"},
+}
+BLOCKS_ADMISSION = {"record_type": BLOCKS_TYPE, "parser": "strict_line_blocks/v1",
+                    "repair": "one exact enclosing Markdown fence may be removed, and is recorded",
+                    "outside_blocks": "blank lines only"}
+DRAFT_BEGIN, DRAFT_END = "<<<DRAFT>>>", "<<<END DRAFT>>>"
+FILE_BEGIN = re.compile(r"<<<FILE (?P<path>[^<>\n]+)>>>")
+HEADER_KEYS = ("record_type", "method_id")
+BLOCKS_FENCE = re.compile(r"\s*```(?P<info>[A-Za-z0-9_+-]*)[ \t]*\n(?P<body>.*)\n```[ \t]*\s*", re.DOTALL)
 
 
 class GenerationError(ValueError):
@@ -180,14 +197,15 @@ def read_file(path, maximum):
         os.close(fd)
 
 
-def load_prompt_resource():
+def load_prompt_resource(draft_format="json"):
     """Read exact operator-owned semantics through the existing prompt bundle owner."""
-    raw = read_file(PROMPT_RESOURCE_PATH, MAX_PROMPT_RESOURCE_BYTES)
+    form = DRAFT_FORMATS[draft_format]
+    raw = read_file(form["prompt"], MAX_PROMPT_RESOURCE_BYTES)
     value = strict_json(raw)
     exact(value, {"record_type", "bundle_id", "version", "system"}, "prompt_resource_fields_invalid")
     if value["record_type"] != PROMPT_RESOURCE_TYPE:
         refuse("prompt_resource_version_unsupported")
-    if value["bundle_id"] != "original_native_generation" or value["version"] != "1.0.0":
+    if value["bundle_id"] != form["bundle_id"] or value["version"] != "1.0.0":
         refuse("prompt_resource_identity_unsupported")
     system = text(value["system"], MAX_PROMPT_RESOURCE_BYTES)
     if secret_present(system):
@@ -196,13 +214,13 @@ def load_prompt_resource():
         bundle = PromptResourceBundle(
             bundle_id=value["bundle_id"], version=value["version"],
             components=(PromptResourceComponent("system", system, ()),), slots=(),
-            output_schema_ref=DRAFT_TYPE, interpreter_profile_ref="original_native_generation/v1",
+            output_schema_ref=form["record_type"], interpreter_profile_ref="original_native_generation/v1",
             policy_ref=PLAN_TYPE)
         rendered = bundle.render({}, provenance={})
     except (ValueError, KeyError, TypeError):
         refuse("prompt_resource_invalid")
     return rendered.text, {"record_type": PROMPT_RESOURCE_TYPE,
-        "path": PROMPT_RESOURCE_PATH.relative_to(Path(__file__).resolve().parents[1]).as_posix(),
+        "path": form["prompt"].relative_to(Path(__file__).resolve().parents[1]).as_posix(),
         "sha256": digest(raw), "render": rendered.to_dict()}
 
 
@@ -396,6 +414,95 @@ def admit_draft(text):
                     "schema_errors": list(result.schema_errors)}
 
 
+def parse_blocks(body, method):
+    """Read one original_native_file_blocks/v1 answer strictly.
+
+    Returns the canonical draft value that the exact draft parser reads. Only
+    blank lines may stand outside the header and the FILE blocks. Inside a
+    block every line is content, verbatim, until that block's own END line.
+    """
+    planned = {row["path"] for row in method["files"]}
+    lines = body.split("\n")
+    index, header, files, found = 0, {}, [], set()
+    while index < len(lines) and not lines[index].strip():
+        index += 1
+    if index == len(lines) or lines[index] != DRAFT_BEGIN:
+        refuse("draft_blocks_header_invalid")
+    index += 1
+    ended = False
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line.strip():
+            continue
+        if line == DRAFT_END:
+            ended = True
+            break
+        opening = FILE_BEGIN.fullmatch(line)
+        if opening is None:
+            key, separator, value = line.partition(": ")
+            if not files and separator and key in HEADER_KEYS and key not in header:
+                header[key] = value
+                continue
+            refuse("draft_content_outside_blocks")
+        path = opening.group("path")
+        try:
+            placement_path(path)
+        except ValueError:
+            refuse("draft_path_unsafe")
+        if path in found:
+            refuse("draft_path_duplicate")
+        if path not in planned:
+            refuse("draft_path_not_planned")
+        closing, content = f"<<<END FILE {path}>>>", []
+        while True:
+            if index == len(lines):
+                refuse("draft_block_unterminated")
+            line = lines[index]
+            index += 1
+            if line == closing:
+                break
+            content.append(line)
+        if not "".join(content).strip():
+            refuse("draft_file_empty")
+        found.add(path)
+        files.append({"path": path, "content": "\n".join(content) + "\n"})
+    if not ended:
+        refuse("draft_blocks_end_missing")
+    if any(line.strip() for line in lines[index:]):
+        refuse("draft_content_after_end")
+    if header != {"record_type": BLOCKS_TYPE, "method_id": method["id"]}:
+        refuse("draft_blocks_header_invalid")
+    if found != planned:
+        refuse("draft_missing_planned_files")
+    return {"record_type": DRAFT_TYPE, "method_id": method["id"], "files": files}
+
+
+@dataclass(frozen=True)
+class BlocksAdmission:
+    admitted: bool
+    value: dict | None = None
+
+
+def admit_blocks(text_value, method):
+    """Admit one block-format answer: strict first, then one recorded fence removal."""
+    strategy, trace, body = "strict_blocks", [], text_value
+    fenced = BLOCKS_FENCE.fullmatch(text_value)
+    if fenced is not None:
+        strategy, body = "blocks_markdown_fence_removed", fenced.group("body")
+        trace = ["removed_exact_markdown_fence" + (":" + fenced.group("info") if fenced.group("info") else "")]
+    try:
+        if len(text_value.encode("utf-8")) > MAX_DRAFT_BYTES or secret_present(text_value):
+            refuse("draft_too_large_or_secret_shaped")
+        value = parse_blocks(body, method)
+    except GenerationError as refusal:
+        return BlocksAdmission(False), {"admitted": False, "strategy": strategy, "failure_code": str(refusal),
+                                        "transformation_trace": trace, "normalized_sha256": "", "schema_errors": []}
+    return BlocksAdmission(True, value), {"admitted": True, "strategy": strategy, "failure_code": "",
+                                          "transformation_trace": trace,
+                                          "normalized_sha256": digest(canonical(value)), "schema_errors": []}
+
+
 def write_new(path, raw):
     path = plain_path(path)
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -482,6 +589,8 @@ class GenerationRequest:
     #: both absent selects the reviewed Ollama Cloud path.
     provider_binding: str | None = None
     provider_binding_sha256: str | None = None
+    #: The draft format the model answers in: "json" or "blocks".
+    draft_format: str = "json"
 
 
 class ExactRequestBounds:
@@ -545,7 +654,9 @@ def read_journal(path, method_ids):
                 exact(admission, {"admitted", "strategy", "failure_code", "transformation_trace", "normalized_sha256",
                                   "schema_errors"}, "completion_admission_invalid")
                 if (type(admission["admitted"]) is not bool
-                        or admission["strategy"] not in ("strict_json", "json_markdown_fence_removed", "unparsed")
+                        or admission["strategy"] not in ("strict_json", "json_markdown_fence_removed", "strict_blocks",
+                                                         "blocks_markdown_fence_removed", "unparsed")
+                        or type(admission["failure_code"]) is not str
                         or type(admission["transformation_trace"]) is not list
                         or type(admission["schema_errors"]) is not list):
                     refuse("completion_admission_invalid")
@@ -693,6 +804,9 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
         refuse("provider_binding_excludes_injected_provider")
     if fixture_run and (gateway is None or (provider_spec is None and not bound)):
         refuse("fixture_requires_injected_gateway_and_provider")
+    if request.draft_format not in DRAFT_FORMATS:
+        refuse("draft_format_unsupported")
+    form = DRAFT_FORMATS[request.draft_format]
     text(request.model, 128)
     if secret_present(request.model):
         refuse("model_identity_contains_secret")
@@ -722,7 +836,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
         spec = provider_spec or next(p for p in builtin_provider_specs() if p.provider_id == "ollama_cloud")
         if not fixture_run:
             require_provider_credential(spec)
-    system, prompt_binding = load_prompt_resource()
+    system, prompt_binding = load_prompt_resource(request.draft_format)
     if binding is not None:
         # The credential is resolved in this process immediately before the
         # provider is built, and only after every committed input was checked.
@@ -763,7 +877,10 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                   "token_bounds_source": getattr(token_bound_resolver, "source_sha256", "host-injected")
                       if token_bound_resolver is not None else None,
                   "provider_binding": binding.summary() if binding is not None else None,
-                  "draft_admission": {"contract": DRAFT_ADMISSION.to_dict(), "sha256": DRAFT_ADMISSION.content_digest},
+                  "draft_format": {"name": request.draft_format, "record_type": form["record_type"]},
+                  "draft_admission": ({"contract": DRAFT_ADMISSION.to_dict(), "sha256": DRAFT_ADMISSION.content_digest}
+                                      if request.draft_format == "json" else
+                                      {"contract": BLOCKS_ADMISSION, "sha256": digest(canonical(BLOCKS_ADMISSION))}),
                   "implementations": implementation_digests(spec, (
                       Path(runtime_settings.__file__), Path(settings_loader.__file__)) if binding is not None else ()),
                   "prompt_resource": prompt_binding}
@@ -807,12 +924,12 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
             load_plan(repository, request.plan, request.plan_sha256)
             attempt = 1 + max([key[1] for key in completed if key[0] == identity], default=0)
             prompt = canonical({"method": method, "source_revision": plan["source_revision"],
-                                "draft_record_type": DRAFT_TYPE}).decode()
+                                "draft_record_type": form["record_type"]}).decode()
             call = ModelGatewayRequest(prompt, ModelGatewayConfig(
                 purpose="generation", route_names=(route.name,), allowed_models=(request.model,),
                 allow_failover=False, max_route_attempts=1, output_allocation=allocation,
                 max_total_tokens=remaining, timeout_seconds=request.timeout_seconds),
-                system=system, temperature=0.0, output_contract=DRAFT_TYPE)
+                system=system, temperature=0.0, output_contract=form["record_type"])
             attempt_folder = output / f"{identity}.attempt-{attempt}"
             attempt_folder.mkdir(mode=0o700)
             append_event(journal, rows, "dispatch", identity, attempt,
@@ -861,10 +978,14 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                 elif remaining is not None and charge is not None and charge > remaining:
                     error_code = "token_bound_exceeded"
                 elif result.ok:
-                    admitted, admission_record = admit_draft(raw.decode("utf-8"))
+                    if request.draft_format == "blocks":
+                        admitted, admission_record = admit_blocks(raw.decode("utf-8"), method)
+                    else:
+                        admitted, admission_record = admit_draft(raw.decode("utf-8"))
                     try:
                         if not admitted.admitted:
-                            refuse("draft_json_not_admitted")
+                            refuse("draft_json_not_admitted" if request.draft_format == "json"
+                                   else "draft_blocks_not_admitted")
                         proposal = parse_draft(canonical(admitted.value), method, plan, producer)
                         package, _bodies = native._files(proposal["proposals"][0]["files"], method["declared_effects"])
                         package_digest = package.package_digest
@@ -880,7 +1001,7 @@ def generate(request, *, gateway=None, provider_spec=None, token_bound_resolver=
                         proposal_digest = digest(proposal_raw)
                         status = "candidate_prepared"
                     except (GenerationError, factory.PreparationError, ValueError, KeyError, TypeError, UnicodeError) as refusal:
-                        error_code = ("draft_json_not_admitted" if str(refusal) == "draft_json_not_admitted"
+                        error_code = (str(refusal) if str(refusal) in ("draft_json_not_admitted", "draft_blocks_not_admitted")
                                       else "candidate_draft_or_factory_refused")
             data = {"status": status, "error_code": "" if status == "candidate_prepared" else error_code or "provider_failed", "physical_model_calls": physical,
                     "input_tokens": input_tokens, "output_tokens": output_tokens, "charged_tokens": charge,
@@ -939,14 +1060,20 @@ def main(argv=None):
     parser.add_argument("--provider-binding",
                         help="repository-relative path of a committed provider binding")
     parser.add_argument("--provider-binding-sha256")
+    parser.add_argument("--draft-format", choices=sorted(DRAFT_FORMATS), default="json",
+                        help="the answer format: json drafts or delimited file blocks")
+    parser.add_argument("--timeout-seconds", type=float, default=180.0,
+                        help="per-request timeout; bound in run.json")
     args = parser.parse_args(argv)
     try:
         resolver = ExactRequestBounds(args.token_bounds, args.token_bounds_sha256) if args.token_bounds else None
         request = GenerationRequest(args.repository, args.plan, args.plan_sha256, args.output, args.model,
                                     args.family, args.max_calls, args.output_tokens, args.token_ceiling,
                                     args.allow_unbounded_total, args.authorize_model_calls, args.authorize_writes,
-                                    args.retry_failed, provider_binding=args.provider_binding,
-                                    provider_binding_sha256=args.provider_binding_sha256)
+                                    args.retry_failed, timeout_seconds=args.timeout_seconds,
+                                    provider_binding=args.provider_binding,
+                                    provider_binding_sha256=args.provider_binding_sha256,
+                                    draft_format=args.draft_format)
         print(json.dumps(generate(request, token_bound_resolver=resolver), indent=2))
         return 0
     except (GenerationError, factory.PreparationError, ValueError, OSError) as error:

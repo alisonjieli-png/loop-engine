@@ -54,6 +54,35 @@ class FakeGateway:
         return self.change(result) if self.change else result
 
 
+FIXTURE_CONTENT = {"AGENTS.md": '# Original fixture instructions\nRead reference.md.\n'
+                                'A "quoted" word, a back\\slash and {"json": [1, 2]} stay verbatim.',
+                   "reference.md": "# Reference\nA bounded fixture with no execution."}
+
+
+def blocks_answer(method, files=None):
+    """One original_native_file_blocks/v1 answer for the method's planned files."""
+    lines = ["<<<DRAFT>>>", "record_type: " + generation.BLOCKS_TYPE, "method_id: " + method["id"]]
+    for path, content in (files if files is not None else [(f["path"], FIXTURE_CONTENT[f["path"]])
+                                                           for f in method["files"]]):
+        lines += ["<<<FILE " + path + ">>>", *content.split("\n"), "<<<END FILE " + path + ">>>", ""]
+    return "\n".join(lines + ["<<<END DRAFT>>>"]) + "\n"
+
+
+class BlocksGateway(FakeGateway):
+    """The fixture gateway answering in the delimited-block format."""
+
+    def __init__(self, change=None):
+        super().__init__()
+        self.text_change = change
+
+    def invoke(self, request):
+        result = super().invoke(request)
+        method = json.loads(request.prompt)["method"]
+        answer = blocks_answer(method)
+        result.text = self.text_change(answer, method) if self.text_change else answer
+        return result
+
+
 class GenerationTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -364,12 +393,13 @@ class GenerationTest(unittest.TestCase):
     def test_old_run_contract_is_refused_without_reinterpretation(self):
         gateway=FakeGateway();self.run_generation(gateway)
         p=self.root/'run/run.json';value=json.loads(p.read_text())
-        self.assertEqual(value['record_type'],'original_native_generation_run/v6')
+        self.assertEqual(value['record_type'],'original_native_generation_run/v7')
         self.assertEqual(value['journal_record_type'],'original_native_generation_event/v3')
         self.assertIsNone(value['provider_binding'])
         self.assertEqual(value['draft_admission']['contract']['normalization']['allowed_strategies'],
                          ['strict_json','json_markdown_fence_removed'])
-        value['record_type']='original_native_generation_run/v5';p.write_text(json.dumps(value))
+        self.assertEqual(value['draft_format'],{'name':'json','record_type':generation.DRAFT_TYPE})
+        value['record_type']='original_native_generation_run/v6';p.write_text(json.dumps(value))
         with self.assertRaisesRegex(ValueError,'resume_binding_changed'):self.run_generation(gateway)
         self.assertEqual(len(gateway.calls),1)
 
@@ -458,6 +488,73 @@ class GenerationTest(unittest.TestCase):
                 data=json.loads((output/'journal.jsonl').read_text().splitlines()[-1])['data']
                 self.assertEqual(data['error_code'],'draft_json_not_admitted')
                 self.assertFalse(data['response_admission']['admitted'])
+
+    def blocks_completion(self, output):
+        return json.loads((output/'journal.jsonl').read_text().splitlines()[-1])['data']
+
+    def test_blocks_draft_prepares_a_candidate_and_the_run_names_its_format(self):
+        gateway=BlocksGateway();result=self.run_generation(gateway,draft_format='blocks')
+        self.assertEqual(result['candidate_count'],1)
+        run=json.loads((self.root/'run/run.json').read_text())
+        self.assertEqual(run['draft_format'],{'name':'blocks','record_type':generation.BLOCKS_TYPE})
+        self.assertEqual(run['prompt_resource']['path'],'tools/resources/original-native-generation-blocks-prompt-v1.json')
+        self.assertIn('original_native_generation_blocks',run['prompt_resource']['render']['bundle_ref'])
+        self.assertEqual(run['draft_admission']['contract'],generation.BLOCKS_ADMISSION)
+        self.assertIn('<<<DRAFT>>>',gateway.calls[0].system)
+        self.assertEqual(gateway.calls[0].output_contract,generation.BLOCKS_TYPE)
+        self.assertEqual(json.loads(gateway.calls[0].prompt)['draft_record_type'],generation.BLOCKS_TYPE)
+        data=self.blocks_completion(self.root/'run')
+        self.assertEqual((data['response_admission']['strategy'],data['response_admission']['transformation_trace']),
+                         ('strict_blocks',[]))
+        written=(self.root/'run/inspect_fixture.attempt-1/candidates/packages/inspect_fixture/AGENTS.md').read_text()
+        self.assertIn('A "quoted" word, a back\\slash and {"json": [1, 2]} stay verbatim.',written)
+
+    def test_one_enclosing_fence_around_blocks_is_removed_and_recorded(self):
+        result=self.run_generation(BlocksGateway(lambda text,_m:'```text\n'+text+'```\n'),draft_format='blocks')
+        self.assertEqual(result['candidate_count'],1)
+        admission=self.blocks_completion(self.root/'run')['response_admission']
+        self.assertEqual((admission['strategy'],admission['transformation_trace']),
+                         ('blocks_markdown_fence_removed',['removed_exact_markdown_fence:text']))
+
+    def test_marker_like_lines_inside_a_block_are_content(self):
+        def inner(_text,method):
+            content=dict(FIXTURE_CONTENT);content['AGENTS.md']+='\n<<<FILE reference.md>>>\n<<<END DRAFT>>>'
+            return blocks_answer(method,[(f['path'],content[f['path']]) for f in method['files']])
+        self.assertEqual(self.run_generation(BlocksGateway(inner),draft_format='blocks')['candidate_count'],1)
+
+    def test_known_wrong_block_answers_are_refused_with_their_reason(self):
+        def files(method,**replace_with):
+            return [(f['path'],FIXTURE_CONTENT[f['path']]) for f in method['files']]
+        cases=[('unterminated_block',lambda t,m:t.replace('<<<END FILE reference.md>>>\n',''),'draft_block_unterminated'),
+               ('duplicate_path',lambda t,m:blocks_answer(m,files(m)+[('AGENTS.md','# Again')]),'draft_path_duplicate'),
+               ('path_escaping_the_package',lambda t,m:blocks_answer(m,files(m)+[('../escape.md','# Out')]),'draft_path_unsafe'),
+               ('absolute_path',lambda t,m:blocks_answer(m,files(m)+[('/etc/escape.md','# Out')]),'draft_path_unsafe'),
+               ('content_between_blocks',lambda t,m:t.replace('<<<FILE reference.md>>>','Next, the reference:\n<<<FILE reference.md>>>'),
+                'draft_content_outside_blocks'),
+               ('content_before_the_header',lambda t,m:'Here is the package.\n'+t,'draft_blocks_header_invalid'),
+               ('content_after_the_end',lambda t,m:t+'I hope this helps.\n','draft_content_after_end'),
+               ('missing_required_file',lambda t,m:blocks_answer(m,files(m)[:1]),'draft_missing_planned_files'),
+               ('unplanned_path',lambda t,m:blocks_answer(m,files(m)+[('notes.md','# Notes')]),'draft_path_not_planned'),
+               ('missing_end_line',lambda t,m:t.replace('<<<END DRAFT>>>\n',''),'draft_blocks_end_missing'),
+               ('another_method',lambda t,m:t.replace('method_id: '+m['id'],'method_id: other_method'),'draft_blocks_header_invalid'),
+               ('empty_file',lambda t,m:blocks_answer(m,[('AGENTS.md','   '),('reference.md','# R')]),'draft_file_empty'),
+               ('prose_outside_a_fence',lambda t,m:'Package:\n```\n'+t+'```\n','draft_blocks_header_invalid')]
+        for number,(name,change,code) in enumerate(cases):
+            with self.subTest(case=name):
+                output=self.root/f'blocks-{number}'
+                result=self.run_generation(BlocksGateway(change),draft_format='blocks',output=output)
+                self.assertEqual(result['candidate_count'],0)
+                data=self.blocks_completion(output)
+                self.assertEqual(data['error_code'],'draft_blocks_not_admitted')
+                self.assertEqual((data['response_admission']['admitted'],data['response_admission']['failure_code']),(False,code))
+
+    def test_changing_the_draft_format_refuses_resume(self):
+        gateway=FakeGateway();self.run_generation(gateway)
+        with self.assertRaisesRegex(ValueError,'resume_binding_changed'):
+            self.run_generation(BlocksGateway(),draft_format='blocks')
+        with self.assertRaisesRegex(ValueError,'draft_format_unsupported'):
+            self.run_generation(gateway,draft_format='yaml',output=self.root/'other')
+        self.assertEqual(len(gateway.calls),1)
 
 if __name__ == "__main__":
     unittest.main()

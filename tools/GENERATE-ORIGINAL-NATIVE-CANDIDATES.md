@@ -85,6 +85,42 @@ invalid JSON inside a fence and any key beyond `path` and `content` stay
 refusals, reported as `draft_json_not_admitted`. The saved response keeps the
 model's original bytes and digest.
 
+### Delimited-block drafts
+
+`--draft-format blocks` asks for `original_native_file_blocks/v1` instead,
+with its own prompt resource,
+[`original_native_generation_blocks` 1.0.0](resources/original-native-generation-blocks-prompt-v1.json).
+Each file travels in its own block with its path and no JSON escaping, after a
+two-line header:
+
+```text
+<<<DRAFT>>>
+record_type: original_native_file_blocks/v1
+method_id: the_planned_identity
+<<<FILE AGENTS.md>>>
+Complete original instructions, written exactly as the file reads.
+<<<END FILE AGENTS.md>>>
+<<<END DRAFT>>>
+```
+
+The strict reader accepts only blank lines outside the header and the blocks.
+Inside a block every line is content, verbatim, until that block's own END
+line. It refuses, each with its own code:
+
+- an unterminated block;
+- a duplicate path;
+- a path that escapes the package;
+- a path that is not planned;
+- content outside blocks or after the END line;
+- a missing header or END line;
+- an empty file;
+- a missing planned file.
+
+One exact enclosing Markdown fence may be removed, and the completion records
+the removal. The admitted draft then passes the same exact draft parser as
+JSON. `--draft-format json` stays the default. The run chooses the format, and
+`run.json` names it in `draft_format`. Changing the format refuses resume.
+
 The controller constructs `harness_candidate_batch_proposals/v2`. The factory
 then produces `starter_catalogue_candidate_items/v3`, full package trees and
 `candidate_intelligence_specifications/v3`. Exact duplicate package digests
@@ -193,10 +229,12 @@ Run the same command with the same plan, implementation, model, family,
 capacity, timeout and budget. The command verifies existing successful package
 bytes and skips their model calls. The exact run configuration is immutable;
 a different budget or source revision needs a deliberately new campaign.
-The run contract is version six and the journal contract is version three.
-Version six adds the draft admission contract to the provider binding
-summary of version five, which is empty for the Ollama Cloud path. Journal
-version three adds each completion's `response_admission` record. The run
+The run contract is version seven and the journal contract is version three.
+Version seven names the draft format and its admission contract. Version six
+added the draft admission contract to the provider binding summary of version
+five, which is empty for the Ollama Cloud path. Journal version three adds each
+completion's `response_admission` record. `--timeout-seconds` sets the
+per-request timeout, which the run record binds. The run
 binds the controller, native factory, preparer, ModelGateway, response
 admission and selected provider adapter's direct source digests, plus the
 shared prompt-bundle implementation. A bound run also binds the settings
