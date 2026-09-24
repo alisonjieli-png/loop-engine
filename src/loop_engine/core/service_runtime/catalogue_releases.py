@@ -12,7 +12,7 @@ Catalogue state in the service store
 ├── catalogue_state/v1              one marker; its state version gates every image at start
 ├── catalogue_attribute_schema/v1   one record for each schema digest
 ├── catalogue_item_version/v1       one immutable record for each verified item version digest
-├── catalogue_item_version/v2       the same for a community item version, with its admission
+├── catalogue_item_version/v2       the same for a community item version, naming its library tier
 ├── catalogue_release/v1            one record for each release digest
 ├── catalogue_release_pointer/v1    the active release, moved only under an expected-version guard
 └── catalogue_withdrawal/v1         one durable record for each withdrawn identity and body digest

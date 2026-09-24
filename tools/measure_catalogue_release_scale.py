@@ -79,7 +79,7 @@ def _item(index, rng, words, sources, version=1):
                                      effects)
     item = replace(item_from_body(draft, "x"), digest=package.served_digest, size_bytes=package.served_size)
     line = {"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": item.reference(), "package": package.to_dict(),
-            "approval": {"tier": "baltor_verified", "approval_ref": f"synthetic-review:{identity}",
+            "approval": {"tier": "verified", "approval_ref": f"synthetic-review:{identity}",
                          "approved_digest": package.served_digest},
             "attributes": {"cited_source": rng.choice(sources),
                            "origin_layer": rng.choice(["context_intelligence", "code_intelligence"]),

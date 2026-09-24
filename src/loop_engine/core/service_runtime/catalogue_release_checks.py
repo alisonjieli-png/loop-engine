@@ -63,7 +63,7 @@ def bundle_line(identity, files, *, effects=(), attributes=None, approved_digest
                                      "harness_local", "fixture:" + identity, "MIT", tuple(effects))
     item = replace(item_from_body(draft, "placeholder"), digest=package.served_digest, size_bytes=package.served_size)
     return {"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": item.reference(), "package": package.to_dict(),
-            "approval": {"tier": "baltor_verified",
+            "approval": {"tier": "verified",
                          "approval_ref": "review:" + identity if approval_ref is None else approval_ref,
                          "approved_digest": package.served_digest if approved_digest is None else approved_digest},
             "attributes": attributes or {}}

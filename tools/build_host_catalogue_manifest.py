@@ -116,10 +116,34 @@ def _grant(value: str) -> dict:
     return {"tenant_id": parts[0], "body_allowed": GRANT_BODY_CHOICES[parts[1]], "metering": parts[2]}
 
 
+#: The library tiers a reviewed row can name (AGENTS.md, decision "Library tiers"). A row
+#: that names none was judged by every named reviewer, the rule of the verified tier.
+LIBRARY_TIERS = ("verified", "community")
+
+
+def row_tier(identity: str, row: dict) -> str:
+    """The library tier of one reviewed row; a row that names none is a panel approval, so verified."""
+    tier = row.get("tier", "verified")
+    if tier not in LIBRARY_TIERS:
+        raise ManifestBuildError("library_tier_invalid",
+            f"item {identity!r} names the tier {tier!r}; a reviewed row names one of {list(LIBRARY_TIERS)}")
+    return tier
+
+
 def _judged(identity: str, row: dict, known: set) -> None:
-    """Refuse unless every named reviewer decided this item and every objection has a reason."""
+    """Refuse unless the reviewers the row's tier requires decided this item and every objection has a reason.
+
+    A verified row, or a row that names no tier, needs a decision from every
+    named reviewer: the panel rule, unchanged. A community row needs one or more
+    decisions, each from a named reviewer; the reviewers' independence from the
+    producer is the review process's rule, recorded with each reviewer.
+    """
     decided = {decision["reviewer_id"] for decision in row["decisions"]}
-    if decided != known:
+    if row_tier(identity, row) == "community":
+        if not decided or not decided <= known or len(decided) != len(row["decisions"]):
+            raise ManifestBuildError("review_record_inconsistent",
+                f"community item {identity!r} names no decision, or a reviewer the record does not name")
+    elif decided != known:
         raise ManifestBuildError("review_record_inconsistent",
             f"item {identity!r} was not judged by every named reviewer")
     objections = [decision for decision in row["decisions"] if decision["decision"] != "approve"]
@@ -261,8 +285,17 @@ def build(folder: Path, *, artifact_root: str, accepted_licenses, grants, includ
         raise ManifestBuildError("review_does_not_cover_catalogue",
             f"reviewed but absent: {sorted(set(reviewed) - set(rows))}; "
             f"present but unreviewed: {sorted(set(rows) - set(reviewed))}")
+    # The packaged manifest has no tier field, and the image serves it to readers that treat
+    # every item as reviewed by the panel, so a community item travels only in a catalogue
+    # release bundle, whose records name the tier.
+    community = sorted(identity for identity in rows if reviewed[identity]["outcome"] == APPROVED
+                       and row_tier(identity, reviewed[identity]) == "community")
+    if set(include) & set(community):
+        raise ManifestBuildError("community_item_not_packaged",
+            f"items {sorted(set(include) & set(community))} are community items; publish them in a catalogue "
+            "release bundle, whose records name the tier")
     selected = sorted(include) if include else sorted(
-        identity for identity in rows if reviewed[identity]["outcome"] == APPROVED)
+        identity for identity in rows if reviewed[identity]["outcome"] == APPROVED and identity not in community)
     if not selected:
         raise ManifestBuildError("no_approved_items", "no item is approved, so there is nothing to serve")
     root = Path(artifact_root)

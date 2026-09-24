@@ -1,10 +1,11 @@
 """Build a catalogue release bundle from a reviewed catalogue folder.
 
 The independent review record decides what may be served, with the same rules
-`tools/build_host_catalogue_manifest.py` applies to the host manifest: every
-named reviewer judged the item, no reviewer objected, the approval names the
-exact digest of the bytes it covers, and the declared licence is one the host
-accepts. This command then writes one release bundle: a small header, one
+`tools/build_host_catalogue_manifest.py` applies to the host manifest: the
+reviewers the row's library tier requires judged the item (every named reviewer
+for a verified row, one or more for a community row), no reviewer objected, the
+approval names the exact digest of the bytes it covers, and the declared
+licence is one the host accepts. Each bundle line names the tier of its row. This command then writes one release bundle: a small header, one
 item per line, and every file stored under its own SHA-256 digest. The service
 publishes it with `loop-engine service publish-catalogue`, without a new image.
 
@@ -32,7 +33,7 @@ import json
 from pathlib import Path
 
 from build_host_catalogue_manifest import (
-    APPROVED, ITEMS_FILE, ITEMS_RECORD_TYPE, REVIEW_FILE, ManifestBuildError, _read_json, _review_index,
+    APPROVED, ITEMS_FILE, ITEMS_RECORD_TYPE, REVIEW_FILE, ManifestBuildError, _read_json, _review_index, row_tier,
 )
 from loop_engine.core.practitioner_runtime.provisioning import _item
 from loop_engine.core.service_runtime.catalogue_bundle import BUNDLE_ITEM_RECORD_TYPE, read_bundle, write_bundle
@@ -40,7 +41,6 @@ from loop_engine.core.service_runtime.catalogue_packages import (
     FILE_BODY, PACKAGE_BODY, CataloguePackage, CataloguePackageFile, sha256_hex,
 )
 from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
-from loop_engine.core.service_runtime.catalogue_tiers import VERIFIED_TIER
 from loop_engine.core.service_runtime.http_entrypoint import HostFamilyPolicy, HostLicensePolicy
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
@@ -132,8 +132,8 @@ def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="sta
         exact = replace(item, digest=package.served_digest, size_bytes=package.served_size)
         lines.append({"record_type": BUNDLE_ITEM_RECORD_TYPE, "reference": exact.reference(),
                       "package": package.to_dict(),
-                      # The independent review record approved these bytes, so the item is verified.
-                      "approval": {"tier": VERIFIED_TIER, "approval_ref": review["approval_ref"],
+                      # The review record approved these bytes under the tier its row names.
+                      "approval": {"tier": row_tier(identity, review), "approval_ref": review["approval_ref"],
                                    "approved_digest": review["body_digest"]},
                       "attributes": schema.validate_values(_attributes(row, review, recorded_at, batch))})
         payloads.extend(files)

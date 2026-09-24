@@ -101,7 +101,7 @@ class IndexEntry:
     identity: str
     text: str
     values: dict
-    #: The trust tier of the item's approval, and whether it declares the
+    #: The library tier of the item's approval, and whether it declares the
     #: process effect; search orders verified items first and a library
     #: setting can leave out community items that run a file.
     tier: str = VERIFIED_TIER
@@ -226,7 +226,7 @@ def fuse(pools, allowed, policy, top_n):
 
     Verified items come before community items; within a tier the fused score
     orders them. `allowed` maps each authorized identity to its provisioning
-    row, whose trust tier the provisioning authority stated.
+    row, whose library tier the provisioning authority stated.
     """
     fused = {}
     for name, rows in pools.items():
@@ -241,7 +241,7 @@ def fuse(pools, allowed, policy, top_n):
 
     def tier_rank(identity):
         row = allowed[identity]
-        return TIER_ORDER[row["trust_tier"]] if isinstance(row, dict) and "trust_tier" in row else 0
+        return TIER_ORDER[row["library_tier"]] if isinstance(row, dict) and "library_tier" in row else 0
     ordered = sorted(fused.items(), key=lambda row: (tier_rank(row[0]), -row[1][0], row[0]))[:top_n]
     return [(identity, round(score, 5), sorted(modes)) for identity, (score, modes) in ordered]
 

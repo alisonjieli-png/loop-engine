@@ -132,3 +132,84 @@ class StarterBundleTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LibraryTierRowTest(unittest.TestCase):
+    """The reviewed catalogue names the library tier of every row (AGENTS.md, decision "Library tiers")."""
+
+    def _community(self, folder, identity, *, decisions=1, reviewer=None, tier="community"):
+        def change(value):
+            names = [row["reviewer_id"] for row in value["reviewers"]]
+            for row in value["rows"]:
+                if row["identity"] == identity:
+                    row["tier"] = tier
+                    kept = row["decisions"][:decisions]
+                    if reviewer is not None:
+                        kept = [{**kept[0], "reviewer_id": reviewer}]
+                    row["decisions"] = kept
+            self.assertTrue(names)
+        _rewrite(folder, "reviews.json", change)
+
+    def test_a_community_row_reviewed_once_becomes_a_community_bundle_line_the_service_publishes(self):
+        from loop_engine.core.service_runtime.catalogue_release_checks import Fixture
+        from loop_engine.core.service_runtime.catalogue_releases import publish
+        chosen = _approved()[0]
+        with tempfile.TemporaryDirectory(prefix="bundle-tier-") as directory:
+            folder = _copy(directory)
+            self._community(folder, chosen)
+            schema, lines, payloads = tool.build(folder, accepted_licenses=("MIT",))
+            tiers = {line["reference"]["identity"]: line["approval"]["tier"] for line in lines}
+            self.assertEqual(tiers[chosen], "community")
+            self.assertEqual({tier for identity, tier in tiers.items() if identity != chosen}, {"verified"})
+            write_bundle(Path(directory).resolve() / "bundle", schema=schema, lines=lines, payloads=payloads)
+            bundle = read_bundle(Path(directory).resolve() / "bundle", license_policy=DEFAULT_LICENSE_POLICY,
+                                 family_policy=DEFAULT_FAMILY_POLICY)
+            case = Fixture(Path(directory) / "service")
+            self.assertEqual(publish(case.context, bundle)["state"], "published")
+            decision = case.view().qualification_resolver.resolve(
+                __import__("loop_engine.core.provisioning_server", fromlist=["x"]).ProvisioningItemBinding.from_item(
+                    case.view().catalogue.items[chosen]))
+            self.assertEqual(decision.library_tier, "community")
+
+    def test_known_wrong_a_verified_row_still_needs_every_named_reviewer(self):
+        chosen = _approved()[0]
+        with tempfile.TemporaryDirectory(prefix="bundle-tier-") as directory:
+            folder = _copy(directory)
+            self._community(folder, chosen, tier="verified")
+            with self.assertRaises(ManifestBuildError) as raised:
+                tool.build(folder, accepted_licenses=("MIT",))
+            self.assertEqual(raised.exception.code, "review_record_inconsistent")
+
+    def test_known_wrong_a_community_decision_from_an_unnamed_reviewer_is_refused(self):
+        chosen = _approved()[0]
+        with tempfile.TemporaryDirectory(prefix="bundle-tier-") as directory:
+            folder = _copy(directory)
+            self._community(folder, chosen, reviewer="reviewer_nobody_named")
+            with self.assertRaises(ManifestBuildError) as raised:
+                tool.build(folder, accepted_licenses=("MIT",))
+            self.assertEqual(raised.exception.code, "review_record_inconsistent")
+
+    def test_known_wrong_an_unknown_tier_is_refused(self):
+        chosen = _approved()[0]
+        with tempfile.TemporaryDirectory(prefix="bundle-tier-") as directory:
+            folder = _copy(directory)
+            self._community(folder, chosen, tier="reviewed_by_a_friend", decisions=3)
+            with self.assertRaises(ManifestBuildError) as raised:
+                tool.build(folder, accepted_licenses=("MIT",))
+            self.assertEqual(raised.exception.code, "library_tier_invalid")
+
+    def test_the_packaged_image_manifest_leaves_community_items_out_and_refuses_to_include_one(self):
+        import build_host_catalogue_manifest as host
+        chosen = _approved()[0]
+        with tempfile.TemporaryDirectory(prefix="bundle-tier-") as directory:
+            folder = _copy(directory)
+            self._community(folder, chosen)
+            manifest, _bodies = host.build(folder, artifact_root="/opt/baltor/catalogue", accepted_licenses=("MIT",),
+                                           grants=())
+            identities = {row["reference"]["identity"] for row in manifest["items"]}
+            self.assertNotIn(chosen, identities)
+            self.assertEqual(len(identities), len(_approved()) - 1)
+            with self.assertRaises(ManifestBuildError) as raised:
+                host.build(folder, artifact_root="/opt/baltor/catalogue", accepted_licenses=("MIT",), grants=(),
+                           include=(chosen,))
+            self.assertEqual(raised.exception.code, "community_item_not_packaged")

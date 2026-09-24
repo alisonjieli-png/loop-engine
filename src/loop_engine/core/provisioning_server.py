@@ -10,20 +10,24 @@ acknowledgment. Unknown commitment never becomes success. The reference meter
 is volatile and idempotent within its lifetime. Durable billing and all-layer
 admission remain host integrations, not new stores in this module.
 
-Every approval names its trust tier, and every list row, manifest and body
-carries it, so a caller always knows which admission path an item passed:
+Every approval names its library tier, and every list row, manifest and body
+carries the tier and its exact label, so a caller always knows which admission
+path an item passed. The tiers are the owner's decision of September 24, 2026,
+recorded as "Library tiers" in the decision table of AGENTS.md:
 
 ```text
-Trust tier of an approved item
-├── baltor_verified   the independent review panel approved these exact bytes
-└── community         written automated criteria, applied by a process that is
-                      not the producer, admitted these exact bytes; no person at
-                      Baltor reviewed them and Baltor never ran them
+Library tier of an approved item   label
+├── verified                       Verified    approved by independent reviewers of at
+│                                              least two model families that did not
+│                                              produce it, every automated check passing
+└── community                      Community   every automated check passing and one
+                                               independent review by a family that did
+                                               not produce it
 ```
 
 A request states which community items it may be offered. The default offers
-none, so a caller that says nothing receives verified items only. Verified
-items are listed before community items.
+none, so a caller that says nothing, or reads a record version without tiers,
+receives verified items only. Verified items are listed before community items.
 """
 from __future__ import annotations
 
@@ -42,16 +46,16 @@ from .harness_intelligence import (KINDS, SOURCE_LAYERS, HarnessIntelligenceCata
 from .service_api import ServiceError, key_digest
 
 SERVER_RECORD_TYPE = "provisioning_server/v2"
-#: Version 3 adds the community item choice. Version 2 had no trust tier, so a
+#: Version 3 adds the community item choice. Version 2 had no library tier, so a
 #: reader of it must not receive a community item it cannot tell apart.
 REQUEST_RECORD_TYPE = "provisioning_request/v3"
-#: The answers a reader that predates trust tiers reads: verified items only,
+#: The answers a reader that predates library tiers reads: verified items only,
 #: with no tier field. `tierless_answer` produces them from the tiered answers.
 DISCOVER_RECORD_TYPE = "provisioning_discover/v2"
 LIST_RECORD_TYPE = "provisioning_list/v2"
 MANIFEST_RECORD_TYPE = "provisioning_manifest/v2"
 BODY_RECORD_TYPE = "provisioning_body/v2"
-#: Version 3 of each answer names the trust tier of every item it describes.
+#: Version 3 of each answer names the library tier of every item it describes.
 TIERED_DISCOVER_RECORD_TYPE = "provisioning_discover/v3"
 TIERED_LIST_RECORD_TYPE = "provisioning_list/v3"
 TIERED_MANIFEST_RECORD_TYPE = "provisioning_manifest/v3"
@@ -60,7 +64,7 @@ REFUSAL_RECORD_TYPE = "provisioning_refusal/v2"
 BINDING_RECORD_TYPE = "provisioning_item_binding/v1"
 POLICY_RECORD_TYPE = "provisioning_access_policy/v1"
 GRANT_RECORD_TYPE = "provisioning_grant/v1"
-#: Version 2 adds the trust tier, which every approval must state.
+#: Version 2 adds the library tier of every approval.
 QUALIFICATION_RECORD_TYPE = "provisioning_qualification/v2"
 RESOLVER_RECORD_TYPE = "provisioning_qualification_resolver/v1"
 METER_REQUEST_RECORD_TYPE = "provisioning_meter_request/v1"
@@ -73,8 +77,10 @@ QUALIFICATION_STATUSES = ("approved", "refused", "unknown")
 QUALIFICATION_APPROVED, QUALIFICATION_REFUSED, QUALIFICATION_UNKNOWN = QUALIFICATION_STATUSES
 QUALIFICATION_BASES = ("host_attested", "authoritative")
 #: The two admission paths an approved item can have passed. See the module text.
-TRUST_TIERS = ("baltor_verified", "community")
-VERIFIED_TIER, COMMUNITY_TIER = TRUST_TIERS
+LIBRARY_TIERS = ("verified", "community")
+VERIFIED_TIER, COMMUNITY_TIER = LIBRARY_TIERS
+#: The exact label every surface shows for a tier, and nothing shorter or longer.
+TIER_LABELS = {VERIFIED_TIER: "Verified", COMMUNITY_TIER: "Community"}
 #: Verified items are listed and ranked before community items.
 TIER_ORDER = {VERIFIED_TIER: 0, COMMUNITY_TIER: 1}
 #: Which community items a request may be offered. A file a harness may run is
@@ -149,19 +155,18 @@ class ProvisioningItemBinding:
 class ProvisioningQualification:
     """Exact resolver decision, never approval inferred from catalogue tags.
 
-    Every approval has a trust tier. An approval that names none came through
-    the independent review panel, the only approval path before the community
-    tier existed, so it is `baltor_verified`. A community approval always
+    Every approval has a library tier. An approval that names none came
+    through the independent review panel, the only approval path before the
+    community tier existed, so it is `verified`. A community approval always
     names its tier: only a release whose item version records the community
-    tier with its admission produces one. A decision that is not an approval
-    has no tier.
+    tier produces one. A decision that is not an approval has no tier.
     """
 
     binding: ProvisioningItemBinding
     status: str
     basis: str
     approval_ref: str = ""
-    trust_tier: str = ""
+    library_tier: str = ""
     record_type: str = QUALIFICATION_RECORD_TYPE
 
     def __post_init__(self) -> None:
@@ -172,12 +177,12 @@ class ProvisioningQualification:
             raise ProvisioningError("qualification status or basis is unsupported")
         if self.status == QUALIFICATION_APPROVED:
             _name(self.approval_ref, "approval evidence reference")
-            if not self.trust_tier:
-                object.__setattr__(self, "trust_tier", VERIFIED_TIER)
-            if self.trust_tier not in TRUST_TIERS:
-                raise ProvisioningError("an approval names a known trust tier", "trust_tier_invalid")
-        elif self.trust_tier:
-            raise ProvisioningError("only an approval has a trust tier", "trust_tier_invalid")
+            if not self.library_tier:
+                object.__setattr__(self, "library_tier", VERIFIED_TIER)
+            if self.library_tier not in LIBRARY_TIERS:
+                raise ProvisioningError("an approval names a known library tier", "library_tier_invalid")
+        elif self.library_tier:
+            raise ProvisioningError("only an approval has a library tier", "library_tier_invalid")
 
 
 @dataclass(frozen=True)
@@ -468,11 +473,11 @@ class ProvisioningServer:
                 withheld.append({"identity": item.identity, "reason": reason})
             else:
                 offered.append({**item.reference(), "qualification_basis": decision.basis,
-                                "trust_tier": decision.trust_tier,
+                                **tier_fields(decision),
                                 "metering_policy": grant.metering,
                                 "body_allowed": grant.body_allowed
                                 and tenant.entitlement == ENTITLEMENTS[1]})
-        offered.sort(key=lambda row: (TIER_ORDER[row["trust_tier"]], row["identity"]))
+        offered.sort(key=lambda row: (TIER_ORDER[row["library_tier"]], row["identity"]))
         withheld.sort(key=lambda row: row["identity"])
         return offered, withheld
 
@@ -483,8 +488,8 @@ class ProvisioningServer:
                 "kinds": [kind for kind in KINDS if any(item["kind"] == kind for item in offered)],
                 "tenant_id": tenant.tenant_id, "entitlement": tenant.entitlement,
                 "items_held": len(offered),
-                "items_by_trust_tier": {tier: sum(1 for item in offered if item["trust_tier"] == tier)
-                                        for tier in TRUST_TIERS},
+                "items_by_library_tier": {tier: sum(1 for item in offered if item["library_tier"] == tier)
+                                          for tier in LIBRARY_TIERS},
                 "community_items": request.community_items, "metered_unit": METERED_UNIT,
                 "metered": False, "never_metered": list(NEVER_METERED),
                 "bodies_available": callable(self.body_reader) and any(
@@ -514,7 +519,7 @@ class ProvisioningServer:
         item, grant, decision = self._item(tenant, request)
         return {"record_type": TIERED_MANIFEST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 **{key: value for key, value in item.reference().items() if key != "record_type"},
-                "qualification_basis": decision.basis, "trust_tier": decision.trust_tier,
+                "qualification_basis": decision.basis, **tier_fields(decision),
                 "metering_policy": grant.metering,
                 "body_allowed": grant.body_allowed and tenant.entitlement == ENTITLEMENTS[1],
                 "verify_before_use": True, "metered": False}
@@ -568,7 +573,7 @@ class ProvisioningServer:
         return {"record_type": TIERED_BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 "identity": item.identity, "digest": item.digest,
                 "size_bytes": item.size_bytes, "body": body,
-                "qualification_basis": decision.basis, "trust_tier": decision.trust_tier,
+                "qualification_basis": decision.basis, **tier_fields(decision),
                 "metered": acknowledgment is not None,
                 "metered_unit": METERED_UNIT if acknowledgment is not None else None,
                 "metering_acknowledgment": asdict(acknowledgment) if acknowledgment else None}
@@ -579,7 +584,7 @@ class ProvisioningServer:
 #: items only.
 TIERLESS_RECORD_TYPES = {TIERED_DISCOVER_RECORD_TYPE: DISCOVER_RECORD_TYPE, TIERED_LIST_RECORD_TYPE: LIST_RECORD_TYPE,
                          TIERED_MANIFEST_RECORD_TYPE: MANIFEST_RECORD_TYPE, TIERED_BODY_RECORD_TYPE: BODY_RECORD_TYPE}
-_TIER_FIELDS = ("trust_tier", "items_by_trust_tier", "community_items")
+_TIER_FIELDS = ("library_tier", "library_tier_label", "items_by_library_tier", "community_items")
 
 
 def tierless_answer(result: dict) -> dict:
@@ -595,8 +600,8 @@ def tierless_answer(result: dict) -> dict:
         raise ProvisioningError("this answer has no version 2 shape", "unsupported_version")
     rows = result.get("items", ()) if record_type == TIERED_LIST_RECORD_TYPE else (result,)
     if (result.get("community_items", COMMUNITY_EXCLUDED) != COMMUNITY_EXCLUDED
-            or any(row.get("trust_tier", VERIFIED_TIER) != VERIFIED_TIER for row in rows)
-            or any(count for tier, count in result.get("items_by_trust_tier", {}).items() if tier != VERIFIED_TIER)):
+            or any(row.get("library_tier", VERIFIED_TIER) != VERIFIED_TIER for row in rows)
+            or any(count for tier, count in result.get("items_by_library_tier", {}).items() if tier != VERIFIED_TIER)):
         raise ProvisioningError("a version 2 reader cannot receive a community item", "tier_required_by_answer")
     answer = {key: value for key, value in result.items() if key not in _TIER_FIELDS}
     if record_type == TIERED_LIST_RECORD_TYPE:
@@ -606,6 +611,11 @@ def tierless_answer(result: dict) -> dict:
     return answer
 
 
+def tier_fields(decision: ProvisioningQualification) -> dict:
+    """The typed library tier of one approval and its exact label, as every answer carries them."""
+    return {"library_tier": decision.library_tier, "library_tier_label": TIER_LABELS[decision.library_tier]}
+
+
 def in_library(item: HarnessIntelligenceItem, decision: ProvisioningQualification, community_items: str) -> bool:
     """Whether an approved item belongs to what a request with this community choice may be offered.
 
@@ -613,9 +623,9 @@ def in_library(item: HarnessIntelligenceItem, decision: ProvisioningQualificatio
     includes it: `without_runnable_files` leaves out every community item that
     declares RUNNABLE_EFFECT, and `excluded` leaves out every community item.
     """
-    if decision.trust_tier == VERIFIED_TIER:
+    if decision.library_tier == VERIFIED_TIER:
         return True
-    if decision.trust_tier != COMMUNITY_TIER or community_items not in COMMUNITY_ITEM_CHOICES:
+    if decision.library_tier != COMMUNITY_TIER or community_items not in COMMUNITY_ITEM_CHOICES:
         return False
     if community_items == COMMUNITY_INCLUDED:
         return True
