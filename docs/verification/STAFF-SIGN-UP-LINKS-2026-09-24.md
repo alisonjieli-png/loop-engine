@@ -140,7 +140,39 @@ holds the rule list and the guard table.
 Evidence is under
 [`artifacts/staff-sign-up-links-2026-09-24`](../../artifacts/staff-sign-up-links-2026-09-24/).
 
-The check results are added with the evidence files, in the commit after the change.
+The full runs are on the change commit `06a1f8b9`, rebased onto main at
+`3d48a36c`, with this record and its evidence in the commit on top, using the
+qualified Python 3.10 interpreter. The rebase changed none of the files this
+change touches, and none of the starter catalogue's cited sources, so no
+catalogue anchor was needed.
+
+| Check | Result | Record |
+|---|---|---|
+| Staff sign-up links, `staff_sign_up_link_checks.py` | 14 of 14 passed | `owning-checks.json` |
+| The one way in, `account_origin_checks.py` | 22 of 22 passed | `owning-checks.json` |
+| Staff roles and administration, `account_administration_checks.py` | 30 of 30 passed | `owning-checks.json` |
+| Sign-up and recovery email, `account_email_checks.py` | 87 of 87 passed | `owning-checks.json` |
+| Browser identity, `browser_identity_checks.py` | 37 of 37 passed | `owning-checks.json` |
+| Service smoke, every service check module | 654 of 654 passed | `service-smoke.json` |
+| Workspace browser suite, `tools/check_service_workspace.mjs` | 684 of 684 passed; 126 of 126 removed-guard controls detected | `browser-suite-summary.json` |
+| Full self-test | 3452 of 3452 passed | `suite-results.json` |
+| Conformance | all 32 gates pass | `suite-results.json` |
+| Tools suite, run with an empty environment and no provider key | 1396 tests OK, 2 skipped | `suite-results.json` |
+| Hardcoding delta gate, failing on new high findings | no new high finding | `suite-results.json` |
+| Markdown lint of the changed documents | no issue | |
+
+Earlier attempts are kept here. The first version of the batch control was
+not detected: its scenario counted one address more than the limit in force,
+so under the raised limit it still sent a batch the limit allowed. The batch
+size is now fixed when the check module loads. The first full self-test and
+conformance run on the rebased tree failed on one secret-shaped literal: the
+new check module passed the person's password as a default argument written
+`password="…"`. It became an upper-case constant, the convention the other
+account checks use for fixture passwords, and the self-test, conformance and
+tools suite were run again. During the same run the screenshot of the staff
+form showed the free monthly box in the monospace font of the scope names; one
+stylesheet rule gives it the page font, and the browser suite was run again on
+the final page. The hardcoding gate ran once, after both repairs.
 
 Every known-wrong case has a removed-guard control that must fail the named
 check; the table in the source guide lists them. The Python controls rebuild

@@ -1,0 +1,799 @@
+{
+ "limits": [
+  "Loopback listeners and in-process stand-ins only; no provider was contacted."
+ ],
+ "modules": {
+  "account_administration_checks": {
+   "checks": [
+    {
+     "check": "staff_role_permissions_are_the_table_in_code",
+     "passed": true
+    },
+    {
+     "check": "a_staff_role_is_named_only_by_the_host_list_and_matched_in_lower_case",
+     "passed": true
+    },
+    {
+     "check": "developer_and_analytics_roles_cannot_grant_revoke_disable_enable_or_list",
+     "passed": true
+    },
+    {
+     "check": "removed_role_permission_table_is_detected",
+     "passed": true
+    },
+    {
+     "check": "revoking_free_monthly_removes_access_at_the_next_check",
+     "passed": true
+    },
+    {
+     "check": "removed_revocation_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_customer_account_holds_no_staff_role",
+     "passed": true
+    },
+    {
+     "check": "every_admin_action_writes_one_audit_record_with_its_actor_and_target",
+     "passed": true
+    },
+    {
+     "check": "a_repeated_request_identity_replays_and_a_changed_one_is_refused",
+     "passed": true
+    },
+    {
+     "check": "an_expired_staff_session_changes_nothing",
+     "passed": true
+    },
+    {
+     "check": "a_signed_out_staff_session_changes_nothing",
+     "passed": true
+    },
+    {
+     "check": "a_superadmin_cannot_switch_off_their_own_account_and_a_host_tenant_is_not_an_account",
+     "passed": true
+    },
+    {
+     "check": "disabling_an_account_stops_its_sign_in_and_enabling_restores_it",
+     "passed": true
+    },
+    {
+     "check": "the_superadmin_list_shows_address_creation_confirmation_plan_and_last_use",
+     "passed": true
+    },
+    {
+     "check": "the_first_ten_accounts_hold_the_founding_offer_and_the_eleventh_does_not",
+     "passed": true
+    },
+    {
+     "check": "a_wrong_founding_decision_still_cannot_pass_the_limit",
+     "passed": true
+    },
+    {
+     "check": "removed_founding_limit_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_race_for_the_last_founding_place_yields_exactly_ten",
+     "passed": true
+    },
+    {
+     "check": "removed_counter_guard_lets_the_race_pass_ten_and_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_founding_count_comes_from_the_host_file",
+     "passed": true
+    },
+    {
+     "check": "a_founding_offer_is_visible_and_revocable_and_its_place_goes_to_the_next_sign_up",
+     "passed": true
+    },
+    {
+     "check": "an_account_that_already_holds_free_monthly_is_not_granted_twice_or_given_a_founding_place",
+     "passed": true
+    },
+    {
+     "check": "free_monthly_renews_each_month_until_revoked",
+     "passed": true
+    },
+    {
+     "check": "removed_renewal_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_monthly_period_follows_the_calendar",
+     "passed": true
+    },
+    {
+     "check": "a_non_staff_account_or_a_host_key_cannot_reach_the_staff_administration",
+     "passed": true
+    },
+    {
+     "check": "a_foreign_browser_origin_cannot_reach_the_staff_administration",
+     "passed": true
+    },
+    {
+     "check": "analytics_reads_counts_without_any_address_and_developer_reads_diagnostics_only",
+     "passed": true
+    },
+    {
+     "check": "a_superadmin_lists_accounts_and_acts_over_http_through_a_governed_operation",
+     "passed": true
+    },
+    {
+     "check": "the_session_names_the_staff_role_and_the_free_monthly_plan",
+     "passed": true
+    }
+   ],
+   "passed": 30,
+   "total": 30
+  },
+  "account_email_checks": {
+   "checks": [
+    {
+     "check": "account_email_settings_are_an_immutable_versioned_record",
+     "passed": true
+    },
+    {
+     "check": "sign_up_recovery_and_network_are_closed_until_the_host_opens_them",
+     "passed": true
+    },
+    {
+     "check": "account_email_settings_refuse_unsafe_values",
+     "passed": true
+    },
+    {
+     "check": "a_loopback_identity_origin_needs_explicit_loopback_authority",
+     "passed": true
+    },
+    {
+     "check": "a_host_block_with_unknown_keys_or_another_version_is_refused",
+     "passed": true
+    },
+    {
+     "check": "the_address_table_follows_the_stated_source_and_the_email_table_is_always_active",
+     "passed": true
+    },
+    {
+     "check": "one_address_is_read_in_one_form",
+     "passed": true
+    },
+    {
+     "check": "an_address_this_service_cannot_read_is_refused_before_any_provider_request",
+     "passed": true
+    },
+    {
+     "check": "a_generated_password_meets_any_character_rule_and_the_length_ceiling",
+     "passed": true
+    },
+    {
+     "check": "the_counted_email_key_keeps_no_address",
+     "passed": true
+    },
+    {
+     "check": "sign_up_answers_the_same_record_for_a_new_and_an_existing_address",
+     "passed": true
+    },
+    {
+     "check": "the_message_carries_this_service_link_and_never_the_provider_link",
+     "passed": true
+    },
+    {
+     "check": "each_provider_request_is_bound_to_its_own_fixed_origin_key_and_fields",
+     "passed": true
+    },
+    {
+     "check": "recovery_answers_the_same_record_for_a_known_and_an_unknown_address",
+     "passed": true
+    },
+    {
+     "check": "the_answer_is_the_same_length_of_work_for_both_addresses",
+     "passed": true
+    },
+    {
+     "check": "a_refusal_body_this_release_does_not_read_gives_the_same_answer_as_an_eligible_address",
+     "passed": true
+    },
+    {
+     "check": "a_refusal_of_this_service_itself_is_reported_and_no_message_is_sent",
+     "passed": true
+    },
+    {
+     "check": "a_link_that_names_another_address_or_another_action_is_never_put_in_a_message",
+     "passed": true
+    },
+    {
+     "check": "an_outage_a_refusal_and_an_unusable_link_are_reported_without_a_second_request",
+     "passed": true
+    },
+    {
+     "check": "a_mail_refusal_and_a_mail_deadline_are_separate_and_neither_sends_twice",
+     "passed": true
+    },
+    {
+     "check": "every_unknown_outcome_answers_503_so_the_caller_is_never_told_it_was_sent",
+     "passed": true
+    },
+    {
+     "check": "a_closed_operation_refuses_with_a_stable_code_and_makes_no_provider_request",
+     "passed": true
+    },
+    {
+     "check": "a_key_of_the_wrong_kind_or_no_key_stops_the_request_before_it_leaves",
+     "passed": true
+    },
+    {
+     "check": "a_request_this_release_does_not_understand_is_refused_before_any_provider_request",
+     "passed": true
+    },
+    {
+     "check": "a_recovery_request_carries_no_password_and_an_unknown_route_is_refused",
+     "passed": true
+    },
+    {
+     "check": "no_address_password_token_or_key_appears_in_the_printed_form_of_a_record",
+     "passed": true
+    },
+    {
+     "check": "a_refusal_carries_a_code_and_never_the_provider_message_or_a_secret",
+     "passed": true
+    },
+    {
+     "check": "the_client_address_allowance_refuses_the_fourth_attempt_and_asks_it_to_wait",
+     "passed": true
+    },
+    {
+     "check": "the_refusal_carries_the_typed_record_and_the_seconds_to_wait",
+     "passed": true
+    },
+    {
+     "check": "one_email_address_cannot_be_flooded_from_many_client_addresses",
+     "passed": true
+    },
+    {
+     "check": "the_table_of_attempts_holds_digests_and_no_address",
+     "passed": true
+    },
+    {
+     "check": "an_open_operation_with_no_stated_client_address_source_is_refused_before_it_serves",
+     "passed": true
+    },
+    {
+     "check": "the_allowance_returns_when_the_window_has_passed",
+     "passed": true
+    },
+    {
+     "check": "the_real_route_answers_202_with_the_same_bytes_for_a_new_and_an_existing_address",
+     "passed": true
+    },
+    {
+     "check": "the_answer_carries_no_address_password_token_or_link",
+     "passed": true
+    },
+    {
+     "check": "the_identity_route_reports_whether_sign_up_and_recovery_are_available",
+     "passed": true
+    },
+    {
+     "check": "the_real_route_refuses_a_sign_up_that_carries_a_password_and_asks_no_provider",
+     "passed": true
+    },
+    {
+     "check": "a_malformed_request_is_400_another_method_reaches_no_provider_and_the_page_is_served",
+     "passed": true
+    },
+    {
+     "check": "the_real_route_refuses_an_address_over_its_allowance_with_429_and_Retry_After",
+     "passed": true
+    },
+    {
+     "check": "a_closed_or_absent_operation_answers_a_stable_code_and_reaches_no_provider",
+     "passed": true
+    },
+    {
+     "check": "an_adapter_that_speaks_another_account_email_boundary_is_refused_before_the_routes_are_served",
+     "passed": true
+    },
+    {
+     "check": "removed_account_email_boundary_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_identity_request_carries_the_documented_fields_and_the_server_key",
+     "passed": true
+    },
+    {
+     "check": "the_mail_request_carries_the_documented_fields_and_one_recipient",
+     "passed": true
+    },
+    {
+     "check": "the_client_is_built_with_no_redirects_and_no_inherited_proxy_settings",
+     "passed": true
+    },
+    {
+     "check": "an_oversized_an_unreadable_and_an_ambiguous_answer_are_refused",
+     "passed": true
+    },
+    {
+     "check": "a_silent_provider_passes_the_read_deadline_and_nothing_is_sent_again",
+     "passed": true
+    },
+    {
+     "check": "a_provider_that_sends_a_few_bytes_at_a_time_cannot_hold_a_worker_past_the_deadline",
+     "passed": true
+    },
+    {
+     "check": "removed_total_body_deadline_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_request_ignores_the_proxy_settings_of_its_environment",
+     "passed": true
+    },
+    {
+     "check": "a_wire_record_refuses_another_path_a_query_and_the_wrong_action",
+     "passed": true
+    },
+    {
+     "check": "the_documented_host_block_installs_the_adapter_through_the_real_host_loader",
+     "passed": true
+    },
+    {
+     "check": "account_email_needs_the_browser_identity_of_the_same_project",
+     "passed": true
+    },
+    {
+     "check": "a_host_file_with_an_unknown_account_email_key_stops_the_loader_before_it_serves",
+     "passed": true
+    },
+    {
+     "check": "open_sign_up_against_closed_account_creation_stops_the_loader_before_it_serves",
+     "passed": true
+    },
+    {
+     "check": "removed_open_registration_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_host_file_that_opens_an_operation_without_a_stated_address_source_stops_the_loader",
+     "passed": true
+    },
+    {
+     "check": "an_unusable_token_hash_is_refused_before_a_message_is_sent",
+     "passed": true
+    },
+    {
+     "check": "removed_token_hash_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_same_answer_rule_holds",
+     "passed": true
+    },
+    {
+     "check": "removed_unexpected_refusal_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_link_is_bound_to_the_address_and_the_action_asked_for",
+     "passed": true
+    },
+    {
+     "check": "the_binding_rule_is_not_the_token_hash_rule",
+     "passed": true
+    },
+    {
+     "check": "removed_names_the_same_address_is_detected",
+     "passed": true
+    },
+    {
+     "check": "removed_names_the_same_action_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_stated_address_source_rule_holds",
+     "passed": true
+    },
+    {
+     "check": "one_client_address_cannot_send_to_any_number_of_recipients",
+     "passed": true
+    },
+    {
+     "check": "removed_stated_address_source_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_email_allowance_rule_holds",
+     "passed": true
+    },
+    {
+     "check": "removed_attempt_allowance_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_key_kind_rule_holds",
+     "passed": true
+    },
+    {
+     "check": "removed_key_kind_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_redirect_answer_is_refused_and_the_address_it_names_is_never_asked",
+     "passed": true
+    },
+    {
+     "check": "removed_redirect_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_sign_up_request_carrying_a_password_is_refused_before_anything_is_counted",
+     "passed": true
+    },
+    {
+     "check": "removed_no_password_field_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "each_sign_up_gets_a_new_password_that_no_caller_sent",
+     "passed": true
+    },
+    {
+     "check": "removed_random_password_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "an_address_registered_first_through_this_service_never_opens_with_a_password_the_registrant_knows",
+     "passed": true
+    },
+    {
+     "check": "removed_unguessable_password_rule_lets_the_first_registrant_in",
+     "passed": true
+    },
+    {
+     "check": "with_the_provider_public_sign_up_open_a_password_chosen_first_lasts_until_the_owner_chooses_one",
+     "passed": true
+    },
+    {
+     "check": "a_recovery_link_opens_the_same_page_and_ends_at_a_password_the_owner_chooses",
+     "passed": true
+    },
+    {
+     "check": "the_generated_password_is_never_answered_stored_printed_or_logged",
+     "passed": true
+    },
+    {
+     "check": "a_generated_password_written_to_a_log_is_found",
+     "passed": true
+    },
+    {
+     "check": "a_generated_password_put_in_the_answer_is_found",
+     "passed": true
+    },
+    {
+     "check": "registration_is_reported_open_only_when_this_service_can_send_the_sign_up_link",
+     "passed": true
+    },
+    {
+     "check": "removed_sign_up_link_rule_for_registration_is_detected",
+     "passed": true
+    }
+   ],
+   "passed": 87,
+   "total": 87
+  },
+  "account_origin_checks": {
+   "checks": [
+    {
+     "check": "an_unmarked_provider_identity_is_refused_and_only_both_marks_admit",
+     "passed": true
+    },
+    {
+     "check": "removed_provider_mark_requirement_is_detected",
+     "passed": true
+    },
+    {
+     "check": "removed_service_record_requirement_is_detected",
+     "passed": true
+    },
+    {
+     "check": "removed_one_way_in_guard_is_detected",
+     "passed": true
+    },
+    {
+     "check": "an_unmarked_sign_in_is_refused_over_http_with_its_own_code",
+     "passed": true
+    },
+    {
+     "check": "the_replacement_flow_leaves_no_old_session_refresh_token_or_password_usable",
+     "passed": true
+    },
+    {
+     "check": "the_replaced_account_is_archived_with_its_provider_identity_times_and_confirmation_but_no_address",
+     "passed": true
+    },
+    {
+     "check": "removed_replacement_keeps_the_first_registrant_in_and_is_detected",
+     "passed": true
+    },
+    {
+     "check": "removed_deletion_at_the_provider_is_detected",
+     "passed": true
+    },
+    {
+     "check": "removed_archive_before_replacement_is_detected",
+     "passed": true
+    },
+    {
+     "check": "an_account_the_service_already_holds_a_sign_in_for_is_never_deleted_by_a_public_sign_up",
+     "passed": true
+    },
+    {
+     "check": "removed_bound_account_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_archive_is_kept_before_the_provider_deletes_anything",
+     "passed": true
+    },
+    {
+     "check": "the_sign_up_answer_is_the_same_for_a_new_a_known_and_a_replaced_address",
+     "passed": true
+    },
+    {
+     "check": "a_sign_up_link_for_another_account_is_refused_before_any_message",
+     "passed": true
+    },
+    {
+     "check": "removed_link_to_prepared_account_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_marking_command_lists_before_changing_applies_only_the_listed_plan_and_is_idempotent",
+     "passed": true
+    },
+    {
+     "check": "removed_plan_digest_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "an_account_that_predates_the_guard_is_refused_until_marked_then_admitted",
+     "passed": true
+    },
+    {
+     "check": "the_host_loader_installs_the_one_way_in_the_staff_list_and_the_founding_count",
+     "passed": true
+    },
+    {
+     "check": "a_host_file_cannot_name_a_permission_a_fourth_role_or_a_field_of_its_own",
+     "passed": true
+    },
+    {
+     "check": "the_marking_command_lists_then_applies_through_the_service_entry_point_over_a_real_socket",
+     "passed": true
+    }
+   ],
+   "passed": 22,
+   "total": 22
+  },
+  "browser_identity_checks": {
+   "checks": [
+    {
+     "check": "browser_identity_public_configuration_exposes_only_the_publishable_key",
+     "passed": true
+    },
+    {
+     "check": "valid_identity_does_not_silently_create_a_customer_during_a_read",
+     "passed": true
+    },
+    {
+     "check": "activation_rejects_client_supplied_tenant_and_authority",
+     "passed": true
+    },
+    {
+     "check": "HTTP_activation_creates_exactly_one_server_bound_customer",
+     "passed": true
+    },
+    {
+     "check": "browser_identity_maps_to_the_durable_subject_not_editable_user_metadata",
+     "passed": true
+    },
+    {
+     "check": "new_account_sees_only_host_selected_starter_metadata_without_free_body_access",
+     "passed": true
+    },
+    {
+     "check": "generic_browser_audience_never_becomes_protocol_resource_authority",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_access_uses_the_verified_account_only",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_access_refuses_unknown_query_fields",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_cannot_select_a_tenant",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_token_is_committed_in_a_governed_operation",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_token_authenticates_its_own_tenant",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_token_cannot_mint_more_tokens",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_list_contains_no_credential_or_digest",
+     "passed": true
+    },
+    {
+     "check": "HTTP_other_customer_has_an_empty_personal_token_list",
+     "passed": true
+    },
+    {
+     "check": "HTTP_other_customer_cannot_revoke_a_foreign_token",
+     "passed": true
+    },
+    {
+     "check": "HTTP_foreign_origin_cannot_mint_customer_tokens",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_issue_retry_has_no_second_secret",
+     "passed": true
+    },
+    {
+     "check": "HTTP_customer_revocation_is_immediate",
+     "passed": true
+    },
+    {
+     "check": "browser_account_refuses_audience",
+     "passed": true
+    },
+    {
+     "check": "browser_account_refuses_issuer",
+     "passed": true
+    },
+    {
+     "check": "browser_account_refuses_expired",
+     "passed": true
+    },
+    {
+     "check": "browser_account_refuses_anonymous",
+     "passed": true
+    },
+    {
+     "check": "browser_account_refuses_service_role",
+     "passed": true
+    },
+    {
+     "check": "editable_email_verified_claim_cannot_replace_provider_confirmation",
+     "passed": true
+    },
+    {
+     "check": "provider_user_and_signed_subject_must_match",
+     "passed": true
+    },
+    {
+     "check": "browser_logout_durably_refuses_the_same_signed_access_token",
+     "passed": true
+    },
+    {
+     "check": "browser_session_revocation_survives_service_restart",
+     "passed": true
+    },
+    {
+     "check": "a_revocation_outlives_every_moment_its_token_can_still_be_accepted",
+     "passed": true
+    },
+    {
+     "check": "a_session_whose_revocation_is_removed_while_it_is_checked_is_still_refused",
+     "passed": true
+    },
+    {
+     "check": "KNOWN_WRONG_a_revocation_rounded_down_is_removed_while_its_token_is_accepted",
+     "passed": true
+    },
+    {
+     "check": "KNOWN_WRONG_without_the_second_expiry_read_a_removed_revocation_lets_the_session_in",
+     "passed": true
+    },
+    {
+     "check": "disabled_identity_network_resolves_no_key_and_calls_no_provider",
+     "passed": true
+    },
+    {
+     "check": "closed_account_creation_is_reported_as_unavailable_not_as_a_bad_request",
+     "passed": true
+    },
+    {
+     "check": "server_secret_cannot_be_serialized_as_a_publishable_key",
+     "passed": true
+    },
+    {
+     "check": "identity_key_outage_is_retryable_not_invalid_credentials",
+     "passed": true
+    },
+    {
+     "check": "identity_user_outage_is_retryable_not_a_sign_out",
+     "passed": true
+    }
+   ],
+   "passed": 37,
+   "total": 37
+  },
+  "staff_sign_up_link_checks": {
+   "checks": [
+    {
+     "check": "a_superadmin_starts_baltor_sign_up_for_each_address_with_both_marks_and_one_message_naming_the_sender",
+     "passed": true
+    },
+    {
+     "check": "developer_analytics_and_customers_cannot_send_sign_up_links",
+     "passed": true
+    },
+    {
+     "check": "removed_sign_up_link_permission_is_detected",
+     "passed": true
+    },
+    {
+     "check": "an_address_that_already_has_an_account_is_refused_without_a_second_message",
+     "passed": true
+    },
+    {
+     "check": "removed_existing_account_rule_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_batch_over_the_limit_is_refused_before_any_provider_request",
+     "passed": true
+    },
+    {
+     "check": "removed_batch_limit_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_repeat_within_the_allowance_sign_up_keeps_for_one_address_is_refused_without_a_message",
+     "passed": true
+    },
+    {
+     "check": "removed_allowance_for_one_address_is_detected",
+     "passed": true
+    },
+    {
+     "check": "a_batch_and_its_audit_record_share_one_request_identity_and_hold_no_address",
+     "passed": true
+    },
+    {
+     "check": "an_interrupted_batch_is_not_sent_twice_under_its_request_identity",
+     "passed": true
+    },
+    {
+     "check": "free_monthly_is_granted_when_the_account_opens_and_the_link_leaves_the_pending_list",
+     "passed": true
+    },
+    {
+     "check": "removed_free_monthly_on_activation_is_detected",
+     "passed": true
+    },
+    {
+     "check": "the_sign_up_link_route_serves_a_superadmin_and_refuses_everyone_else_over_http",
+     "passed": true
+    }
+   ],
+   "passed": 14,
+   "total": 14
+  }
+ },
+ "record_type": "staff_sign_up_links_owning_checks/v1",
+ "revision": "06a1f8b9"
+}

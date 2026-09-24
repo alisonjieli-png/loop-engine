@@ -1,0 +1,3383 @@
+{
+ "all_passed": true,
+ "checks": [
+  {
+   "name": "reviewed_recipe_record_contains_no_key",
+   "passed": true
+  },
+  {
+   "name": "reviewed_recipe_record_uses_only_the_address_placeholder",
+   "passed": true
+  },
+  {
+   "name": "reviewed_recipe_record_gives_plain_check_commands",
+   "passed": true
+  },
+  {
+   "name": "reviewed_recipe_record_keeps_schema_addresses_on_its_cited_source_host",
+   "passed": true
+  },
+  {
+   "name": "no_key_check_of_the_record_fails_for_every_known_wrong_record",
+   "passed": true
+  },
+  {
+   "name": "address_check_of_the_record_fails_for_every_known_wrong_record",
+   "passed": true
+  },
+  {
+   "name": "command_check_of_the_record_fails_for_every_known_wrong_record",
+   "passed": true
+  },
+  {
+   "name": "schema_check_of_the_record_fails_for_every_known_wrong_record",
+   "passed": true
+  },
+  {
+   "name": "no_key_check_does_not_mistake_a_record_type_or_an_address_for_a_key",
+   "passed": true
+  },
+  {
+   "name": "public_landing_has_real_routes_and_configured_brand",
+   "passed": true
+  },
+  {
+   "name": "brand_mark_is_shown_named_and_served",
+   "passed": true
+  },
+  {
+   "name": "mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",
+   "passed": true
+  },
+  {
+   "name": "asset_identity_check_rejects_stale_versions_foreign_origins_and_extra_query_fields",
+   "passed": true
+  },
+  {
+   "name": "brand_mark_and_icons_show_nothing_outside_the_rounded_tile",
+   "passed": true
+  },
+  {
+   "name": "tile_corner_check_rejects_a_mark_with_a_white_corner",
+   "passed": true
+  },
+  {
+   "name": "website_typefaces_load_from_this_service",
+   "passed": true
+  },
+  {
+   "name": "typeface_check_rejects_a_page_without_the_code_face",
+   "passed": true
+  },
+  {
+   "name": "homepage_hero_says_what_baltor_is_and_the_pain_it_removes",
+   "passed": true
+  },
+  {
+   "name": "hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",
+   "passed": true
+  },
+  {
+   "name": "homepage_says_the_model_keys_stay_with_the_customer",
+   "passed": true
+  },
+  {
+   "name": "model_key_check_rejects_a_page_that_drops_the_promise",
+   "passed": true
+  },
+  {
+   "name": "light_is_default_even_when_operating_system_is_dark",
+   "passed": true
+  },
+  {
+   "name": "operating_system_does_not_override_explicit_light_default",
+   "passed": true
+  },
+  {
+   "name": "light_ground_check_rejects_a_dark_ground",
+   "passed": true
+  },
+  {
+   "name": "benefit_limits_do_not_guarantee_daily_improvement",
+   "passed": true
+  },
+  {
+   "name": "benefit_limit_check_rejects_a_caption_that_promises_a_gain",
+   "passed": true
+  },
+  {
+   "name": "homepage_opens_with_headline_without_category_badge",
+   "passed": true
+  },
+  {
+   "name": "category_badge_check_rejects_the_removed_pill",
+   "passed": true
+  },
+  {
+   "name": "the_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",
+   "passed": true
+  },
+  {
+   "name": "category_line_check_rejects_a_shortened_line_a_missing_harness_a_status_and_a_new_order",
+   "passed": true
+  },
+  {
+   "name": "homepage_hero_states_the_plan_and_the_price",
+   "passed": true
+  },
+  {
+   "name": "hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",
+   "passed": true
+  },
+  {
+   "name": "homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",
+   "passed": true
+  },
+  {
+   "name": "hero_action_check_rejects_a_second_primary_a_missing_guide_and_a_missing_explanation",
+   "passed": true
+  },
+  {
+   "name": "homepage_primary_actions_all_carry_the_one_label",
+   "passed": true
+  },
+  {
+   "name": "primary_action_check_rejects_a_second_label_and_a_second_address",
+   "passed": true
+  },
+  {
+   "name": "homepage_bands_follow_the_design_order",
+   "passed": true
+  },
+  {
+   "name": "band_order_check_rejects_a_moved_band_a_returned_band_and_a_demonstration_outside_the_hero",
+   "passed": true
+  },
+  {
+   "name": "homepage_demonstration_sits_beside_the_copy_in_the_hero",
+   "passed": true
+  },
+  {
+   "name": "hero_layout_check_rejects_a_demonstration_below_the_copy_or_missing",
+   "passed": true
+  },
+  {
+   "name": "how_it_works_describes_one_harness_per_step_as_an_option",
+   "passed": true
+  },
+  {
+   "name": "per_step_option_check_rejects_a_band_without_the_option_and_a_promise_in_its_place",
+   "passed": true
+  },
+  {
+   "name": "hero_get_set_up_opens_the_guide",
+   "passed": true
+  },
+  {
+   "name": "demo_shows_the_search_the_download_and_the_step_folder",
+   "passed": true
+  },
+  {
+   "name": "demo_labels_each_part_as_recorded_or_as_an_example_layout",
+   "passed": true
+  },
+  {
+   "name": "demo_label_check_rejects_a_missing_label_a_folder_called_recorded_and_a_status_word",
+   "passed": true
+  },
+  {
+   "name": "demo_recorded_parts_show_only_the_live_search_and_download_path",
+   "passed": true
+  },
+  {
+   "name": "demo_live_path_check_rejects_an_illustration_in_a_recorded_part",
+   "passed": true
+  },
+  {
+   "name": "demo_names_sizes_and_digests_agree_with_this_release_manifest",
+   "passed": true
+  },
+  {
+   "name": "demo_digest_check_rejects_a_digest_this_release_does_not_serve",
+   "passed": true
+  },
+  {
+   "name": "demo_names_only_released_catalogue_items",
+   "passed": true
+  },
+  {
+   "name": "demo_item_check_rejects_an_item_the_library_does_not_serve",
+   "passed": true
+  },
+  {
+   "name": "demo_folder_holds_a_file_that_is_not_markdown",
+   "passed": true
+  },
+  {
+   "name": "library_word_check_rejects_a_band_that_names_only_instruction_files",
+   "passed": true
+  },
+  {
+   "name": "folder_check_rejects_a_folder_of_markdown_files_only",
+   "passed": true
+  },
+  {
+   "name": "homepage_has_no_motion_of_its_own",
+   "passed": true
+  },
+  {
+   "name": "library_count_agrees_with_this_release_manifest",
+   "passed": true
+  },
+  {
+   "name": "library_count_check_rejects_a_count_this_release_does_not_hold",
+   "passed": true
+  },
+  {
+   "name": "library_names_the_six_kinds_without_a_status_word",
+   "passed": true
+  },
+  {
+   "name": "kind_check_rejects_a_kind_called_available_a_missing_kind_and_a_new_order",
+   "passed": true
+  },
+  {
+   "name": "how_it_works_band_names_ask_get_and_place_without_a_status_word",
+   "passed": true
+  },
+  {
+   "name": "step_check_rejects_a_step_called_live_or_being_built",
+   "passed": true
+  },
+  {
+   "name": "homepage_links_the_three_use_cases_the_owner_named",
+   "passed": true
+  },
+  {
+   "name": "use_case_check_rejects_a_missing_case_another_page_another_title_and_a_status",
+   "passed": true
+  },
+  {
+   "name": "homepage_and_use_cases_carry_no_measurement_apology_and_no_percentage",
+   "passed": true
+  },
+  {
+   "name": "apology_check_rejects_a_returned_apology_and_a_percentage",
+   "passed": true
+  },
+  {
+   "name": "homepage_connection_entry_is_the_reviewed_recipe_with_this_address",
+   "passed": true
+  },
+  {
+   "name": "homepage_entry_check_rejects_a_changed_variable_and_another_address",
+   "passed": true
+  },
+  {
+   "name": "homepage_sets_every_band_apart_on_an_off_white_ground",
+   "passed": true
+  },
+  {
+   "name": "band_check_rejects_one_ground_for_two_bands_a_missing_rule_and_a_white_ground",
+   "passed": true
+  },
+  {
+   "name": "pricing_heading_lines_up_with_the_top_of_the_plan_card",
+   "passed": true
+  },
+  {
+   "name": "pricing_alignment_check_rejects_a_centred_heading_a_stacked_card_and_a_missing_card",
+   "passed": true
+  },
+  {
+   "name": "public_text_meets_AA_contrast_in_both_appearances",
+   "passed": true
+  },
+  {
+   "name": "contrast_check_rejects_a_grey_line_on_white",
+   "passed": true
+  },
+  {
+   "name": "keyboard_focus_is_visible_in_both_appearances",
+   "passed": true
+  },
+  {
+   "name": "focus_check_rejects_a_stop_without_a_mark",
+   "passed": true
+  },
+  {
+   "name": "hero_names_every_client_the_reviewed_recipes_set_up",
+   "passed": true
+  },
+  {
+   "name": "recipe_client_check_rejects_a_hero_list_without_a_reviewed_client",
+   "passed": true
+  },
+  {
+   "name": "homepage_says_what_an_account_gives_you",
+   "passed": true
+  },
+  {
+   "name": "offer_check_rejects_a_summary_without_the_usage_record",
+   "passed": true
+  },
+  {
+   "name": "homepage_states_the_plan_price_and_the_measured_unit",
+   "passed": true
+  },
+  {
+   "name": "teaser_check_rejects_another_price_phrase_a_missing_unit_and_free_invited_accounts",
+   "passed": true
+  },
+  {
+   "name": "homepage_closes_with_one_action_and_the_guide",
+   "passed": true
+  },
+  {
+   "name": "closing_check_rejects_a_second_primary_and_a_second_way_in",
+   "passed": true
+  },
+  {
+   "name": "homepage_and_use_cases_make_no_unmeasured_promise",
+   "passed": true
+  },
+  {
+   "name": "promise_check_rejects_a_known_wrong_claim",
+   "passed": true
+  },
+  {
+   "name": "homepage_reads_when_the_script_has_not_run",
+   "passed": true
+  },
+  {
+   "name": "demo_reads_when_the_script_has_not_run",
+   "passed": true
+  },
+  {
+   "name": "served_connection_entry_is_the_reviewed_recipe_with_a_public_address",
+   "passed": true
+  },
+  {
+   "name": "homepage_first_screen_does_not_move_when_the_script_runs",
+   "passed": true
+  },
+  {
+   "name": "steadiness_check_rejects_a_first_screen_that_moves",
+   "passed": true
+  },
+  {
+   "name": "phone_menu_opens_when_the_script_has_not_run",
+   "passed": true
+  },
+  {
+   "name": "every_served_asset_route_is_scanned_for_retired_words",
+   "passed": true
+  },
+  {
+   "name": "served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",
+   "passed": true
+  },
+  {
+   "name": "no_customer_page_describes_the_product_as_a_trial",
+   "passed": true
+  },
+  {
+   "name": "no_customer_page_uses_the_runtime_vocabulary",
+   "passed": true
+  },
+  {
+   "name": "no_customer_page_uses_the_words_of_an_invitation_only_service",
+   "passed": true
+  },
+  {
+   "name": "no_served_file_carries_the_words_of_an_invitation_only_service",
+   "passed": true
+  },
+  {
+   "name": "every_served_asset_route_is_read_for_invitation_words_or_named_with_its_reason",
+   "passed": true
+  },
+  {
+   "name": "invitation_word_check_rejects_a_known_wrong_page",
+   "passed": true
+  },
+  {
+   "name": "served_file_invitation_scan_rejects_a_planted_message_and_leaves_names_comments_and_approved_texts_alone",
+   "passed": true
+  },
+  {
+   "name": "no_public_page_says_the_terms_are_unpublished",
+   "passed": true
+  },
+  {
+   "name": "unpublished_terms_check_rejects_a_known_wrong_page",
+   "passed": true
+  },
+  {
+   "name": "retired_word_exemption_leaves_out_only_the_unchanged_approved_terms",
+   "passed": true
+  },
+  {
+   "name": "retired_word_check_rejects_a_known_wrong_page",
+   "passed": true
+  },
+  {
+   "name": "no_served_file_carries_a_retired_word",
+   "passed": true
+  },
+  {
+   "name": "served_file_scan_rejects_a_file_that_carries_a_retired_word",
+   "passed": true
+  },
+  {
+   "name": "runtime_word_check_rejects_a_known_wrong_page",
+   "passed": true
+  },
+  {
+   "name": "header_offers_one_primary_action_and_the_guide_beside_the_navigation",
+   "passed": true
+  },
+  {
+   "name": "header_check_rejects_a_second_way_in_a_missing_action_a_missing_guide_and_an_invitation",
+   "passed": true
+  },
+  {
+   "name": "top_bar_lists_the_pages_and_the_get_started_action",
+   "passed": true
+  },
+  {
+   "name": "top_bar_check_rejects_a_missing_page_a_new_order_a_missing_guide_and_a_missing_action",
+   "passed": true
+  },
+  {
+   "name": "top_bar_stays_one_compact_row",
+   "passed": true
+  },
+  {
+   "name": "top_bar_row_check_rejects_a_second_row",
+   "passed": true
+  },
+  {
+   "name": "footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",
+   "passed": true
+  },
+  {
+   "name": "footer_check_rejects_a_lost_link_a_missing_group_an_empty_group_on_show_and_the_waitlist",
+   "passed": true
+  },
+  {
+   "name": "phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",
+   "passed": true
+  },
+  {
+   "name": "header_stays_in_view_while_the_page_scrolls",
+   "passed": true
+  },
+  {
+   "name": "sticky_check_rejects_a_bar_that_scrolls_away_or_crowds_a_short_screen",
+   "passed": true
+  },
+  {
+   "name": "phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",
+   "passed": true
+  },
+  {
+   "name": "narrow_phone_has_no_sideways_scroll",
+   "passed": true
+  },
+  {
+   "name": "first_screen_check_rejects_an_action_below_the_fold_and_a_tall_header",
+   "passed": true
+  },
+  {
+   "name": "phone_menu_check_rejects_a_menu_that_stays_open_or_shows_nothing",
+   "passed": true
+  },
+  {
+   "name": "get_started_page_names_the_three_steps_in_order",
+   "passed": true
+  },
+  {
+   "name": "get_started_step_check_rejects_a_wrong_order_or_a_missing_step",
+   "passed": true
+  },
+  {
+   "name": "get_started_page_carries_the_copyable_connection_settings",
+   "passed": true
+  },
+  {
+   "name": "every_harness_the_hero_names_has_steps_on_the_guide",
+   "passed": true
+  },
+  {
+   "name": "named_harness_check_rejects_a_harness_the_guide_does_not_set_up",
+   "passed": true
+  },
+  {
+   "name": "guide_alias_and_funnel_open_distinct_views",
+   "passed": true
+  },
+  {
+   "name": "waitlist_address_opens_the_get_started_funnel",
+   "passed": true
+  },
+  {
+   "name": "guide_and_funnel_addresses_are_served_setup",
+   "passed": true
+  },
+  {
+   "name": "guide_and_funnel_addresses_are_served_get-started",
+   "passed": true
+  },
+  {
+   "name": "guide_and_funnel_addresses_are_served_connect",
+   "passed": true
+  },
+  {
+   "name": "guide_and_funnel_addresses_are_served_waitlist",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_opens_from_the_navigation",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_states_every_published_fact",
+   "passed": true
+  },
+  {
+   "name": "pricing_fact_check_fails_when_one_fact_is_missing_or_a_retired_offer_returns",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_offers_exactly_one_plan",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_offers_no_purchase_control_while_checkout_is_closed",
+   "passed": true
+  },
+  {
+   "name": "purchase_control_check_rejects_a_pricing_view_that_offers_one",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_uses_plain_words",
+   "passed": true
+  },
+  {
+   "name": "program_name_exception_still_refuses_loop_engine_in_words",
+   "passed": true
+  },
+  {
+   "name": "plain_word_check_rejects_a_page_that_names_the_runtime",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_fits_small_screens_and_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "pricing_address_is_served_on_a_direct_visit",
+   "passed": true
+  },
+  {
+   "name": "pricing_address_opens_the_pricing_view_after_a_reload",
+   "passed": true
+  },
+  {
+   "name": "privacy_notice_is_served_on_a_direct_visit",
+   "passed": true
+  },
+  {
+   "name": "privacy_notice_opens_at_its_own_address",
+   "passed": true
+  },
+  {
+   "name": "privacy_notice_names_the_operator_and_the_postal_contact_address",
+   "passed": true
+  },
+  {
+   "name": "privacy_notice_says_the_same_words_as_the_approved_text",
+   "passed": true
+  },
+  {
+   "name": "the_footer_links_to_the_privacy_notice_from_the_homepage",
+   "passed": true
+  },
+  {
+   "name": "privacy_checks_reject_a_page_without_the_operator_or_with_a_changed_word",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_remove_the_privacy_link_from_the_footer",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_change_one_fact_in_the_served_privacy_notice",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_the_postal_address_from_the_served_privacy_notice",
+   "passed": true
+  },
+  {
+   "name": "terms_of_service_are_served_on_a_direct_visit",
+   "passed": true
+  },
+  {
+   "name": "terms_of_service_open_at_their_own_address",
+   "passed": true
+  },
+  {
+   "name": "terms_of_service_name_the_operator_and_the_date_of_the_last_change",
+   "passed": true
+  },
+  {
+   "name": "terms_of_service_says_the_same_words_as_the_approved_text",
+   "passed": true
+  },
+  {
+   "name": "terms_of_service_link_the_privacy_notice",
+   "passed": true
+  },
+  {
+   "name": "terms_page_carries_no_retired_word_outside_the_approved_text",
+   "passed": true
+  },
+  {
+   "name": "terms_page_carries_no_invitation_word_outside_the_approved_text",
+   "passed": true
+  },
+  {
+   "name": "homepage_does_not_say_the_terms_are_unpublished",
+   "passed": true
+  },
+  {
+   "name": "the_footer_links_to_the_terms_of_service_from_the_homepage",
+   "passed": true
+  },
+  {
+   "name": "terms_checks_reject_a_page_without_the_operator_or_the_date_or_with_a_changed_word",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_remove_the_terms_link_from_the_footer",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_say_again_in_the_footer_that_the_terms_are_not_published",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_change_one_word_in_the_served_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_the_date_of_the_last_change_from_the_served_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_the_operator_from_the_served_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_the_privacy_link_from_the_served_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_write_a_retired_word_beside_the_approved_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_write_a_retired_word_inside_the_approved_terms",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_write_free_search_back_into_the_served_terms",
+   "passed": true
+  },
+  {
+   "name": "account_form_names_and_links_the_terms_and_the_privacy_notice",
+   "passed": true
+  },
+  {
+   "name": "consent_check_rejects_a_missing_link_a_changed_sentence_and_a_sentence_below_the_button",
+   "passed": true
+  },
+  {
+   "name": "consent_link_opens_the_terms_of_service",
+   "passed": true
+  },
+  {
+   "name": "consent_sentence_is_not_shown_while_account_creation_is_closed",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_remove_the_consent_sentence_from_the_account_form",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_the_terms_link_from_the_consent_sentence",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_move_the_consent_sentence_below_the_create_button",
+   "passed": true
+  },
+  {
+   "name": "homepage_fits_a_360_pixel_screen",
+   "passed": true
+  },
+  {
+   "name": "homepage_and_demo_fit_small_screens_and_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "the_public_states_are_reported_by_real_services",
+   "passed": true
+  },
+  {
+   "name": "public_actions_say_get_started_while_registration_is_closed",
+   "passed": true
+  },
+  {
+   "name": "homepage_carries_no_invitation_word_while_registration_is_closed",
+   "passed": true
+  },
+  {
+   "name": "personal_key_claim_is_held_back_when_the_service_reports_no_client_access",
+   "passed": true
+  },
+  {
+   "name": "no_public_action_offers_a_second_label_or_account_creation_while_the_service_takes_no_accounts",
+   "passed": true
+  },
+  {
+   "name": "guide_leads_with_the_operator_when_the_service_offers_neither",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_asks_for_the_account_first_while_account_creation_is_closed",
+   "passed": true
+  },
+  {
+   "name": "account_status_page_offers_no_get_started_button_while_the_service_keeps_no_list",
+   "passed": true
+  },
+  {
+   "name": "homepage_carries_no_invitation_word_while_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "no_public_action_offers_a_second_label_or_account_creation_outside_the_journey_while_a_list_is_kept",
+   "passed": true
+  },
+  {
+   "name": "guide_leads_with_the_get_started_link_when_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "account_status_page_offers_get_started_once_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "landing_check_for_the_funnel_email_field_in_the_first_screen_where_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "landing_check_for_the_funnel_email_field_in_the_first_screen_where_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",
+   "passed": true
+  },
+  {
+   "name": "public_actions_say_get_started_while_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "homepage_carries_no_invitation_word_while_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "no_public_action_offers_account_creation_outside_the_get_started_and_account_pages",
+   "passed": true
+  },
+  {
+   "name": "guide_leads_with_account_creation_when_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_offers_no_payment_when_account_creation_is_open_without_checkout",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_asks_for_the_account_first_when_checkout_is_open_and_account_creation_is_closed",
+   "passed": true
+  },
+  {
+   "name": "pricing_view_says_to_subscribe_when_account_creation_and_checkout_are_open",
+   "passed": true
+  },
+  {
+   "name": "personal_key_claim_appears_when_the_service_reports_client_access",
+   "passed": true
+  },
+  {
+   "name": "unsupported_capabilities_version_keeps_the_careful_state_over_registration",
+   "passed": true
+  },
+  {
+   "name": "unsupported_capabilities_version_keeps_the_careful_state_over_checkout",
+   "passed": true
+  },
+  {
+   "name": "unsupported_capabilities_version_keeps_the_careful_state_over_client_access",
+   "passed": true
+  },
+  {
+   "name": "every_public_page_offers_one_call_to_action_and_nothing_the_service_cannot_honour",
+   "passed": true
+  },
+  {
+   "name": "no_public_page_uses_the_words_of_an_invitation_only_service_in_any_reported_state",
+   "passed": true
+  },
+  {
+   "name": "access_action_check_rejects_a_second_label_account_creation_and_an_invitation",
+   "passed": true
+  },
+  {
+   "name": "invitation_word_reading_rejects_a_planted_note_a_sentence_beside_the_privacy_notice_and_a_changed_notice",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_offer_sign_up",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_offer_sign_up",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_bring_back_the_waiting_list_label",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_bring_back_the_invitation_note",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_bring_back_free_search_in_the_closing_note",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_lead_with_account_creation",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_lead_with_account_creation",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_send_the_primary_action_to_the_account_status_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_send_the_open_primary_action_to_the_account_status_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_lead_with_the_get_started_link",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_say_payment_is_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_say_payment_is_open_once_checkout_is_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_account_creation_when_checkout_is_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_checkout_when_account_creation_is_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_say_payment_is_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_ask_for_the_account_first",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_claim_personal_keys",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_claim_personal_keys",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_capabilities_record_version",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_record_version_over_payment",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_record_version_over_personal_keys",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_record_version_over_the_waiting_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_the_pointer_note_once_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_offer_get_started_on_the_account_status_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_the_pointer_note_before_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_change_one_digest_in_the_demonstration",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_paint_every_band_alike_without_rules",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_call_a_library_kind_available",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_call_a_how_step_live",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_take_the_price_out_of_the_hero",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_bring_back_see_one_step_in_place_of_the_guide",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_write_the_retired_words_beside_the_hero_actions",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_move_the_demonstration_below_the_copy",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_the_learning_use_case",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_get_set_up_from_the_signed_out_header",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_link_the_waiting_list_again_from_the_footer",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_unfold_the_phone_menu_into_the_header",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_take_the_focus_mark_away",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_let_the_header_scroll_away",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_pricing_from_the_top_bar",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_drop_get_set_up_from_the_footer",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_leave_the_phone_menu_open_after_a_choice",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_add_a_second_primary_action_to_the_header",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_lengthen_the_hero_note_after_the_script_runs",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_centre_the_pricing_heading_beside_the_plan_card",
+   "passed": true
+  },
+  {
+   "name": "header_offers_the_pages_the_guide_sign_in_and_get_started_to_a_visitor_who_is_not_signed_in",
+   "passed": true
+  },
+  {
+   "name": "header_offers_the_account_entry_and_sign_out_to_a_signed_in_person",
+   "passed": true
+  },
+  {
+   "name": "header_sign_out_ends_the_sign_in_and_restores_the_signed_out_header",
+   "passed": true
+  },
+  {
+   "name": "header_state_check_rejects_a_leftover_sign_in_or_get_started_a_missing_sign_out_a_missing_guide_and_a_misplaced_menu_button",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_sign_in_and_get_started_after_sign_in",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_the_account_entry_and_sign_out_after_sign_out",
+   "passed": true
+  },
+  {
+   "name": "served_page_defaults_to_the_careful_public_state",
+   "passed": true
+  },
+  {
+   "name": "careful_default_check_rejects_a_served_page_that_never_settles",
+   "passed": true
+  },
+  {
+   "name": "both_public_page_checks_use_one_plain_word_rule",
+   "passed": true
+  },
+  {
+   "name": "plain_word_rule_comparison_rejects_a_drifted_copy",
+   "passed": true
+  },
+  {
+   "name": "both_public_page_checks_use_one_retired_word_rule",
+   "passed": true
+  },
+  {
+   "name": "retired_word_rule_comparison_rejects_a_drifted_copy",
+   "passed": true
+  },
+  {
+   "name": "both_public_page_checks_use_one_invitation_word_rule",
+   "passed": true
+  },
+  {
+   "name": "invitation_word_rule_comparison_rejects_a_drifted_copy",
+   "passed": true
+  },
+  {
+   "name": "both_public_page_checks_use_one_unpublished_terms_rule",
+   "passed": true
+  },
+  {
+   "name": "unpublished_terms_rule_comparison_rejects_a_drifted_copy",
+   "passed": true
+  },
+  {
+   "name": "all_four_persistent_intelligence_layers_are_visible",
+   "passed": true
+  },
+  {
+   "name": "all_five_owner_pain_points_are_present",
+   "passed": true
+  },
+  {
+   "name": "the_homepage_no_longer_carries_the_explanation_sections",
+   "passed": true
+  },
+  {
+   "name": "technical_layer_definitions_remain_in_documentation",
+   "passed": true
+  },
+  {
+   "name": "hosted_service_and_local_execution_have_distinct_responsibilities",
+   "passed": true
+  },
+  {
+   "name": "client_server_exchange_names_sent_and_returned_data",
+   "passed": true
+  },
+  {
+   "name": "external_model_connection_is_separate_from_intelligence_service",
+   "passed": true
+  },
+  {
+   "name": "benefits_are_explicit_without_invented_benchmark_numbers",
+   "passed": true
+  },
+  {
+   "name": "homepage_deep_link_opens_task_explorer",
+   "passed": true
+  },
+  {
+   "name": "assignment_selects_its_own_context_inspect",
+   "passed": true
+  },
+  {
+   "name": "public_step_avoids_internal_runtime_terms_inspect",
+   "passed": true
+  },
+  {
+   "name": "assignment_selects_its_own_context_decide",
+   "passed": true
+  },
+  {
+   "name": "public_step_avoids_internal_runtime_terms_decide",
+   "passed": true
+  },
+  {
+   "name": "assignment_selects_its_own_context_build",
+   "passed": true
+  },
+  {
+   "name": "public_step_avoids_internal_runtime_terms_build",
+   "passed": true
+  },
+  {
+   "name": "assignment_selects_its_own_context_verify",
+   "passed": true
+  },
+  {
+   "name": "public_step_avoids_internal_runtime_terms_verify",
+   "passed": true
+  },
+  {
+   "name": "public_footer_has_no_engine_branding",
+   "passed": true
+  },
+  {
+   "name": "complete_runtime_definition_preserved_in_technical_docs",
+   "passed": true
+  },
+  {
+   "name": "verifier_does_not_receive_builders_entire_context",
+   "passed": true
+  },
+  {
+   "name": "assignment_tabs_support_keyboard_home",
+   "passed": true
+  },
+  {
+   "name": "assignment_tabs_support_keyboard_arrows",
+   "passed": true
+  },
+  {
+   "name": "assignment_tabs_support_keyboard_end",
+   "passed": true
+  },
+  {
+   "name": "illustrative_step_selection_launches_no_network_or_model_work",
+   "passed": true
+  },
+  {
+   "name": "architecture_keeps_live_evidence_separate_from_illustration",
+   "passed": true
+  },
+  {
+   "name": "selected_assignment_has_no_mobile_overflow",
+   "passed": true
+  },
+  {
+   "name": "unfinished_signup_is_explicit_and_collects_no_email",
+   "passed": true
+  },
+  {
+   "name": "anonymous_workspace_has_real_setup_and_no_active_search",
+   "passed": true
+  },
+  {
+   "name": "reviewed_recipe_record_is_accepted_by_the_page",
+   "passed": true
+  },
+  {
+   "name": "guided_setup_uses_current_origin_and_no_embedded_token",
+   "passed": true
+  },
+  {
+   "name": "anonymous_protocol_test_is_disabled",
+   "passed": true
+  },
+  {
+   "name": "client_selection_changes_real_secret_free_configuration",
+   "passed": true
+  },
+  {
+   "name": "no_key_check_separates_keys_from_variable_references",
+   "passed": true
+  },
+  {
+   "name": "known_wrong_addresses_reach_another_host_in_a_client_address_parser",
+   "passed": true
+  },
+  {
+   "name": "connect_view_offers_the_five_reviewed_recipes",
+   "passed": true
+  },
+  {
+   "name": "recipe_tabs_follow_the_arrow_keys_home_and_end",
+   "passed": true
+  },
+  {
+   "name": "recipe_tab_check_rejects_a_tab_that_keeps_the_focus_elsewhere",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_arrow_keys_on_the_recipe_tabs",
+   "passed": true
+  },
+  {
+   "name": "recipe_renders_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_contains_no_key_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_uses_current_origin_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_copy_matches_displayed_text_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_states_how_to_check_and_revoke_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_cites_its_source_codex",
+   "passed": true
+  },
+  {
+   "name": "connect_view_uses_plain_words_codex",
+   "passed": true
+  },
+  {
+   "name": "recipe_renders_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_contains_no_key_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_uses_current_origin_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_copy_matches_displayed_text_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_states_how_to_check_and_revoke_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_cites_its_source_opencode",
+   "passed": true
+  },
+  {
+   "name": "connect_view_uses_plain_words_opencode",
+   "passed": true
+  },
+  {
+   "name": "recipe_renders_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_contains_no_key_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_uses_current_origin_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_copy_matches_displayed_text_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_states_how_to_check_and_revoke_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_cites_its_source_claude-code",
+   "passed": true
+  },
+  {
+   "name": "connect_view_uses_plain_words_claude-code",
+   "passed": true
+  },
+  {
+   "name": "recipe_renders_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_contains_no_key_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_uses_current_origin_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_copy_matches_displayed_text_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_states_how_to_check_and_revoke_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_cites_its_source_pi",
+   "passed": true
+  },
+  {
+   "name": "connect_view_uses_plain_words_pi",
+   "passed": true
+  },
+  {
+   "name": "recipe_renders_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "recipe_contains_no_key_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "recipe_uses_current_origin_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "recipe_copy_matches_displayed_text_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "recipe_states_how_to_check_and_revoke_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "recipe_cites_its_source_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "connect_view_uses_plain_words_baltor-harness",
+   "passed": true
+  },
+  {
+   "name": "every_recipe_and_the_token_instructions_name_one_variable",
+   "passed": true
+  },
+  {
+   "name": "every_recipe_names_the_same_server_entry",
+   "passed": true
+  },
+  {
+   "name": "claude_code_recipe_is_a_project_file_with_an_environment_reference",
+   "passed": true
+  },
+  {
+   "name": "codex_recipe_is_a_table_that_names_the_variable",
+   "passed": true
+  },
+  {
+   "name": "copying_a_recipe_stores_nothing_in_the_browser",
+   "passed": true
+  },
+  {
+   "name": "connect_page_keeps_inline_code_forbidden",
+   "passed": true
+  },
+  {
+   "name": "every_recipe_fits_a_small_screen_and_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "homepage_and_footer_use_plain_words",
+   "passed": true
+  },
+  {
+   "name": "known_wrong_records_have_distinct_names",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_embedded_key_is_refused_before_display",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_in_place_of_the_variable_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_as_a_default_value_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_in_a_command_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_in_a_note_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_short_literal_bearer_value_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_literal_in_a_second_header_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_short_literal_under_a_credential_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_number_under_a_credential_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_literal_in_an_environment_table_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_in_the_standard_alphabet_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_key_shaped_variable_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+   "passed": true
+  },
+  {
+   "name": "record_with_key_in_an_unknown_field_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_fixed_address_is_refused_before_display",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_unknown_placeholder_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_second_server_entry_at_a_scheme_only_address_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_placeholder_moved_off_the_url_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_second_server_entry_at_a_backslash_address_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_scheme_only_address_under_another_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_plain_host_name_as_its_address_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_the_placeholder_under_a_second_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_schema_address_inside_the_server_entry_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_user_information_in_its_schema_address_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_schema_address_on_another_host_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_schema_address_on_a_second_host_of_the_cited_vendor_is_refused",
+   "passed": true
+  },
+  {
+   "name": "older_recipe_record_version_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_without_revocation_steps_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_that_cannot_be_written_as_a_table_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_list_of_command_arguments_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_an_address_as_its_entry_name_is_refused",
+   "passed": true
+  },
+  {
+   "name": "recipe_with_user_information_in_its_source_address_is_refused",
+   "passed": true
+  },
+  {
+   "name": "no_key_check_fails_for_a_recipe_with_an_embedded_key",
+   "passed": true
+  },
+  {
+   "name": "recipes_follow_the_origin_that_serves_the_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_remove_recipe_credential_rule",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_remove_recipe_address_rule",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_unsupported_recipe_records",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_copy_other_text_than_shown",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_scan_only_the_displayed_fields_for_keys",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_key_shaped_variable_name",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_look_for_keys_in_one_alphabet_only",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_treat_header_values_as_ordinary_text",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_literal_under_a_credential_name",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_an_address_that_is_not_the_placeholder",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_the_placeholder_under_a_second_name",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_table_inside_the_server_entry",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_list_in_a_configuration",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_command_line",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_more_than_one_server_entry",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_text_beside_the_address",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_schema_address_anywhere",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_schema_address",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_schema_address_on_another_host",
+   "passed": true
+  },
+  {
+   "name": "wrong_key_does_not_enter_the_workspace",
+   "passed": true
+  },
+  {
+   "name": "real_durable_tenant_authentication_reaches_the_workspace",
+   "passed": true
+  },
+  {
+   "name": "credentials_are_not_persisted_in_browser_storage",
+   "passed": true
+  },
+  {
+   "name": "sign_in_returns_to_requested_setup_page",
+   "passed": true
+  },
+  {
+   "name": "protocol_connection_check_reports_actual_success",
+   "passed": true
+  },
+  {
+   "name": "browser_runs_real_initialize_notification_and_tools_list",
+   "passed": true
+  },
+  {
+   "name": "browser_check_does_not_claim_native_harness_qualification",
+   "passed": true
+  },
+  {
+   "name": "mismatched_protocol_response_never_becomes_success",
+   "passed": true
+  },
+  {
+   "name": "first_example_prepares_query_without_submitting",
+   "passed": true
+  },
+  {
+   "name": "browser_search_reaches_the_real_authorized_retriever",
+   "passed": true
+  },
+  {
+   "name": "browser_download_checks_actual_bytes_against_the_selected_digest",
+   "passed": true
+  },
+  {
+   "name": "account_route_retains_same_in_memory_connection",
+   "passed": true
+  },
+  {
+   "name": "usage_is_read_from_durable_service_state",
+   "passed": true
+  },
+  {
+   "name": "usage_table_check_rejects_raw_text_a_wrong_count_a_missing_or_moved_row_and_an_open_record",
+   "passed": true
+  },
+  {
+   "name": "usage_panel_shows_each_item_with_its_count_and_last_use",
+   "passed": true
+  },
+  {
+   "name": "usage_table_fits_small_screens_and_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "usage_panel_refuses_a_record_version_it_was_not_written_for",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_show_the_usage_record_as_raw_text_again",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_draw_a_table_from_a_usage_record_version_the_page_was_not_written_for",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_three_usage_columns_on_a_narrow_card",
+   "passed": true
+  },
+  {
+   "name": "unconfigured_billing_is_not_a_fake_purchase_flow",
+   "passed": true
+  },
+  {
+   "name": "retrieved_metadata_is_text_not_executable_HTML",
+   "passed": true
+  },
+  {
+   "name": "changed_download_is_refused_by_the_browser",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/overnight",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/learning",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/get-started",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/login",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/signup",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/pricing",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/account",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/admin",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/app",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/docs",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/connect",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/examples",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/security",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/privacy",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/terms",
+   "passed": true
+  },
+  {
+   "name": "responsive_1440_/waitlist",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/overnight",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/learning",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/get-started",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/login",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/signup",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/pricing",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/account",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/admin",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/app",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/docs",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/connect",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/examples",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/security",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/privacy",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/terms",
+   "passed": true
+  },
+  {
+   "name": "responsive_820_/waitlist",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/overnight",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/learning",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/get-started",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/login",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/signup",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/pricing",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/account",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/admin",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/app",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/docs",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/connect",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/examples",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/security",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/privacy",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/terms",
+   "passed": true
+  },
+  {
+   "name": "responsive_390_/waitlist",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/overnight",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/learning",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/get-started",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/login",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/signup",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/pricing",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/account",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/admin",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/app",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/docs",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/connect",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/examples",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/security",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/privacy",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/terms",
+   "passed": true
+  },
+  {
+   "name": "responsive_320_/waitlist",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/overnight",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/learning",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/get-started",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/pricing",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/connect",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/examples",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/security",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/privacy",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_1440_/terms",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/use-cases",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/overnight",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/efficiency",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/learning",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/get-started",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/how-it-works",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/pricing",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/connect",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/examples",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/security",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/privacy",
+   "passed": true
+  },
+  {
+   "name": "enlarged_text_320_/terms",
+   "passed": true
+  },
+  {
+   "name": "disconnect_clears_identity_results_and_controls",
+   "passed": true
+  },
+  {
+   "name": "usage_panel_says_plainly_when_nothing_is_recorded",
+   "passed": true
+  },
+  {
+   "name": "configured_billing_offers_only_host_defined_plans",
+   "passed": true
+  },
+  {
+   "name": "checkout_uses_the_real_domain_with_a_local_provider_fixture",
+   "passed": true
+  },
+  {
+   "name": "portal_uses_the_real_domain_without_navigating_to_a_provider",
+   "passed": true
+  },
+  {
+   "name": "email_free_administrator_login_reaches_dashboard",
+   "passed": true
+  },
+  {
+   "name": "dashboard_creates_real_usable_test_token",
+   "passed": true
+  },
+  {
+   "name": "generated_secret_not_in_page_text_or_browser_storage",
+   "passed": true
+  },
+  {
+   "name": "one_time_token_clear_removes_secret",
+   "passed": true
+  },
+  {
+   "name": "dashboard_revocation_refuses_next_service_call",
+   "passed": true
+  },
+  {
+   "name": "sign_in_during_public_configuration_loading_preserves_setup",
+   "passed": true
+  },
+  {
+   "name": "sign_out_still_aborts_credential_bound_protocol_requests",
+   "passed": true
+  },
+  {
+   "name": "verified_customer_can_open_personal_token_controls",
+   "passed": true
+  },
+  {
+   "name": "customer_dashboard_creates_real_personal_access",
+   "passed": true
+  },
+  {
+   "name": "customer_token_secret_stays_out_of_text_and_browser_storage",
+   "passed": true
+  },
+  {
+   "name": "customer_token_cannot_manage_more_credentials",
+   "passed": true
+  },
+  {
+   "name": "customer_can_clear_the_one_time_secret",
+   "passed": true
+  },
+  {
+   "name": "customer_dashboard_revokes_real_client_access",
+   "passed": true
+  },
+  {
+   "name": "account_page_carries_the_dashboard_navigation",
+   "passed": true
+  },
+  {
+   "name": "dashboard_navigation_check_rejects_a_link_to_a_missing_section",
+   "passed": true
+  },
+  {
+   "name": "customer_controls_fit_1440",
+   "passed": true
+  },
+  {
+   "name": "customer_controls_fit_390",
+   "passed": true
+  },
+  {
+   "name": "customer_controls_fit_320",
+   "passed": true
+  },
+  {
+   "name": "customer_controls_support_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "customer_sign_out_clears_tokens_before_delayed_reply",
+   "passed": true
+  },
+  {
+   "name": "sign_up_sends_the_address_alone_to_this_service_and_never_calls_the_provider_sign_up",
+   "passed": true
+  },
+  {
+   "name": "the_confirmation_page_clears_the_token_from_the_address_and_asks_for_a_password_first",
+   "passed": true
+  },
+  {
+   "name": "the_new_password_is_set_before_the_account_opens",
+   "passed": true
+  },
+  {
+   "name": "a_password_chosen_first_by_someone_else_no_longer_opens_the_account",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_offers_no_payment_while_checkout_is_closed",
+   "passed": true
+  },
+  {
+   "name": "a_used_link_says_so_plainly_and_offers_a_new_one",
+   "passed": true
+  },
+  {
+   "name": "recovery_reaches_the_same_choose_a_password_page",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_offers_account_creation_while_registration_is_open",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_open_1440",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_open_390",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_closed_1440",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_closed_390",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_list_1440",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_first_step_fits_the_first_screen_list_390",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_tells_a_second_request_from_the_same_address_that_it_is_registered",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_offers_checkout_to_an_account_without_paid_access",
+   "passed": true
+  },
+  {
+   "name": "get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro",
+   "passed": true
+  },
+  {
+   "name": "a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view",
+   "passed": true
+  },
+  {
+   "name": "a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting",
+   "passed": true
+  },
+  {
+   "name": "the_confirm_button_waits_for_the_sign_in_settings",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_call_the_provider_sign_up_from_the_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_the_token_in_the_address",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_open_the_account_without_a_new_password",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_offer_payment_while_checkout_is_closed",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_take_a_used_link_for_a_sign_in",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_refuse_recovery_links",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_never_offer_account_creation_on_the_funnel",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_always_offer_account_creation_on_the_funnel",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_request_list_on_the_funnel",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_bring_back_free_search_in_the_funnel_price_line",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_send_no_address_to_the_request_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_take_no_request_on_the_funnel",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_push_the_first_step_below_the_first_screen_open",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_push_the_first_step_below_the_first_screen_closed",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_push_the_first_step_below_the_first_screen_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_where_paid_access_comes_from",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_use_another_title_for_a_free_monthly_account",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_the_included_plan_on_the_account_page",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_the_staff_accounts_view",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_the_sign_up_link_form",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_let_confirm_run_before_the_sign_in_settings_load",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_offer_no_checkout_to_an_account_without_paid_access",
+   "passed": true
+  },
+  {
+   "name": "a_verified_pending_confirmation_can_be_held_without_activating",
+   "passed": true
+  },
+  {
+   "name": "a_stale_confirmation_never_changes_the_new_sessions_password",
+   "passed": true
+  },
+  {
+   "name": "disconnect_during_verify_never_reactivates_the_page",
+   "passed": true
+  },
+  {
+   "name": "disconnect_during_password_never_reactivates_the_page",
+   "passed": true
+  },
+  {
+   "name": "closed_registration_without_waitlist_offers_no_missing_form",
+   "passed": true
+  },
+  {
+   "name": "no_external_requests",
+   "passed": true
+  },
+  {
+   "name": "signup_session_guard_removal_detected_omit_invalidation",
+   "passed": true
+  },
+  {
+   "name": "signup_session_guard_removal_detected_omit_async_guards",
+   "passed": true
+  },
+  {
+   "name": "a_service_without_a_request_list_takes_no_address_at_the_older_address",
+   "passed": true
+  },
+  {
+   "name": "a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",
+   "passed": true
+  },
+  {
+   "name": "a_service_with_a_request_list_opens_the_account_form_from_the_header",
+   "passed": true
+  },
+  {
+   "name": "the_guide_links_to_get_started_when_the_service_keeps_a_list",
+   "passed": true
+  },
+  {
+   "name": "the_waiting_list_address_opens_the_get_started_funnel_with_its_form",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_send_the_waiting_list_address_back_to_its_old_page",
+   "passed": true
+  },
+  {
+   "name": "older_address_check_rejects_the_old_page_the_guide_and_a_funnel_without_its_form",
+   "passed": true
+  },
+  {
+   "name": "the_discount_is_named_only_where_checkout_takes_a_code",
+   "passed": true
+  },
+  {
+   "name": "catalogue_browser_asset_is_served",
+   "passed": true
+  },
+  {
+   "name": "served_page_asset_versions_bind_to_exact_packaged_bytes",
+   "passed": true
+  },
+  {
+   "name": "every_address_the_page_names_is_answered_by_the_service",
+   "passed": true
+  },
+  {
+   "name": "an_address_the_page_names_but_the_service_refuses_is_found",
+   "passed": true
+  },
+  {
+   "name": "browse_shows_the_four_groups_with_plain_names",
+   "passed": true
+  },
+  {
+   "name": "browse_counts_and_membership_match_the_service_reply",
+   "passed": true
+  },
+  {
+   "name": "browse_says_plainly_when_a_group_holds_nothing",
+   "passed": true
+  },
+  {
+   "name": "browse_names_every_reason_material_is_not_offered",
+   "passed": true
+  },
+  {
+   "name": "browse_detail_states_purpose_licence_size_digest_and_effects",
+   "passed": true
+  },
+  {
+   "name": "browse_download_matches_the_selected_digest",
+   "passed": true
+  },
+  {
+   "name": "browse_detail_says_when_the_file_is_not_granted",
+   "passed": true
+  },
+  {
+   "name": "browse_detail_states_an_unstated_licence_honestly",
+   "passed": true
+  },
+  {
+   "name": "browse_view_uses_plain_words",
+   "passed": true
+  },
+  {
+   "name": "browse_shows_descriptions_and_no_file_body",
+   "passed": true
+  },
+  {
+   "name": "browse_stores_nothing_in_the_browser",
+   "passed": true
+  },
+  {
+   "name": "browse_opens_an_item_with_the_keyboard",
+   "passed": true
+  },
+  {
+   "name": "browse_fits_small_screens_and_enlarged_text",
+   "passed": true
+  },
+  {
+   "name": "browse_filters_by_kind_through_the_service",
+   "passed": true
+  },
+  {
+   "name": "browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished",
+   "passed": true
+  },
+  {
+   "name": "browse_names_the_filters_among_the_reasons_when_one_is_set",
+   "passed": true
+  },
+  {
+   "name": "browse_refresh_shows_the_request_it_actually_sent",
+   "passed": true
+  },
+  {
+   "name": "browse_refresh_offers_every_filter_choice_again",
+   "passed": true
+  },
+  {
+   "name": "browse_states_a_service_refusal_in_plain_words",
+   "passed": true
+  },
+  {
+   "name": "browse_filters_by_development_tool_through_the_service",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_changed_download_bytes_and_saves_nothing",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_a_download_whose_reported_digest_disagrees",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_an_item_that_changed_since_the_list",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_an_item_record_version_it_was_not_written_for",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_a_catalogue_record_version_it_was_not_written_for",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_a_catalogue_that_names_a_group_it_does_not_know",
+   "passed": true
+  },
+  {
+   "name": "browse_names_the_reason_it_refused_a_catalogue",
+   "passed": true
+  },
+  {
+   "name": "browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way",
+   "passed": true
+  },
+  {
+   "name": "browse_sign_out_stops_a_download_that_finishes_afterwards",
+   "passed": true
+  },
+  {
+   "name": "browse_sign_out_clears_a_delayed_catalogue_reply",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_catalogue_record_version",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_a_group_the_page_does_not_know",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_trust_the_downloaded_bytes",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_trust_the_reported_download_digest",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_an_item_that_changed_since_the_list",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_accept_any_item_record_version",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_keep_a_delayed_catalogue_reply_after_sign_out",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_save_a_download_that_finished_after_sign_out",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_show_a_filter_the_service_was_not_asked_to_apply",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_show_a_service_refusal_as_its_code",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_count_held_back_material_from_a_shape_the_page_was_not_written_for",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_blame_the_filters_when_no_filter_was_set",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_leave_the_declared_effect_out_of_the_filtered_reason",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_hide_a_group_that_holds_nothing",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_kind_filter",
+   "passed": true
+  },
+  {
+   "name": "removed_guard_is_detected_ignore_the_development_tool_filter",
+   "passed": true
+  },
+  {
+   "name": "dark_appearance_remains_an_explicit_option",
+   "passed": true
+  },
+  {
+   "name": "no_browser_runtime_errors",
+   "passed": true
+  },
+  {
+   "name": "no_external_provider_requests",
+   "passed": true
+  }
+ ],
+ "limits": [
+  "Every service is a loopback fixture and the identity project is the in-process stand-in.",
+  "Check details and screenshots stay in the scratch folder of the session."
+ ],
+ "mutant_controls": [
+  {
+   "applied": true,
+   "detected": true,
+   "name": "remove_the_privacy_link_from_the_footer"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "change_one_fact_in_the_served_privacy_notice"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_the_postal_address_from_the_served_privacy_notice"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "remove_the_terms_link_from_the_footer"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "say_again_in_the_footer_that_the_terms_are_not_published"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "change_one_word_in_the_served_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_the_date_of_the_last_change_from_the_served_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_the_operator_from_the_served_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_the_privacy_link_from_the_served_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "write_a_retired_word_beside_the_approved_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "write_a_retired_word_inside_the_approved_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "write_free_search_back_into_the_served_terms"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "remove_the_consent_sentence_from_the_account_form"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_the_terms_link_from_the_consent_sentence"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "move_the_consent_sentence_below_the_create_button"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_offer_sign_up"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_offer_sign_up"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "bring_back_the_waiting_list_label"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "bring_back_the_invitation_note"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "bring_back_free_search_in_the_closing_note"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_lead_with_account_creation"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_lead_with_account_creation"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "send_the_primary_action_to_the_account_status_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "send_the_open_primary_action_to_the_account_status_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_lead_with_the_get_started_link"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_say_payment_is_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_say_payment_is_open_once_checkout_is_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_account_creation_when_checkout_is_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_checkout_when_account_creation_is_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_say_payment_is_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_ask_for_the_account_first"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_claim_personal_keys"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_claim_personal_keys"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_capabilities_record_version"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_record_version_over_payment"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_record_version_over_personal_keys"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_record_version_over_the_waiting_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_the_pointer_note_once_the_service_keeps_a_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_offer_get_started_on_the_account_status_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_the_pointer_note_before_the_service_keeps_a_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "change_one_digest_in_the_demonstration"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "paint_every_band_alike_without_rules"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "call_a_library_kind_available"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "call_a_how_step_live"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "take_the_price_out_of_the_hero"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "bring_back_see_one_step_in_place_of_the_guide"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "write_the_retired_words_beside_the_hero_actions"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "move_the_demonstration_below_the_copy"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_the_learning_use_case"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_get_set_up_from_the_signed_out_header"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "link_the_waiting_list_again_from_the_footer"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "unfold_the_phone_menu_into_the_header"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "take_the_focus_mark_away"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "let_the_header_scroll_away"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_pricing_from_the_top_bar"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "drop_get_set_up_from_the_footer"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "leave_the_phone_menu_open_after_a_choice"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "add_a_second_primary_action_to_the_header"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "lengthen_the_hero_note_after_the_script_runs"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "centre_the_pricing_heading_beside_the_plan_card"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_sign_in_and_get_started_after_sign_in"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_the_account_entry_and_sign_out_after_sign_out"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_arrow_keys_on_the_recipe_tabs"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "remove_recipe_credential_rule"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "remove_recipe_address_rule"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_unsupported_recipe_records"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "copy_other_text_than_shown"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "scan_only_the_displayed_fields_for_keys"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_key_shaped_variable_name"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "look_for_keys_in_one_alphabet_only"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "treat_header_values_as_ordinary_text"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_literal_under_a_credential_name"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_an_address_that_is_not_the_placeholder"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_the_placeholder_under_a_second_name"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_table_inside_the_server_entry"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_list_in_a_configuration"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_command_line"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_more_than_one_server_entry"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_text_beside_the_address"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_schema_address_anywhere"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_schema_address"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_schema_address_on_another_host"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "show_the_usage_record_as_raw_text_again"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "draw_a_table_from_a_usage_record_version_the_page_was_not_written_for"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_three_usage_columns_on_a_narrow_card"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "call_the_provider_sign_up_from_the_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_the_token_in_the_address"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "open_the_account_without_a_new_password"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "offer_payment_while_checkout_is_closed"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "take_a_used_link_for_a_sign_in"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "refuse_recovery_links"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "never_offer_account_creation_on_the_funnel"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "always_offer_account_creation_on_the_funnel"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_request_list_on_the_funnel"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "bring_back_free_search_in_the_funnel_price_line"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "send_no_address_to_the_request_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "take_no_request_on_the_funnel"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "push_the_first_step_below_the_first_screen_open"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "push_the_first_step_below_the_first_screen_closed"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "push_the_first_step_below_the_first_screen_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_where_paid_access_comes_from"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "use_another_title_for_a_free_monthly_account"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_the_included_plan_on_the_account_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_the_staff_accounts_view"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_the_sign_up_link_form"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "let_confirm_run_before_the_sign_in_settings_load"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "offer_no_checkout_to_an_account_without_paid_access"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "signup_session_omit_invalidation"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "signup_session_omit_async_guards"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "send_the_waiting_list_address_back_to_its_old_page"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_catalogue_record_version"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_a_group_the_page_does_not_know"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "trust_the_downloaded_bytes"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "trust_the_reported_download_digest"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_an_item_that_changed_since_the_list"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "accept_any_item_record_version"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "keep_a_delayed_catalogue_reply_after_sign_out"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "save_a_download_that_finished_after_sign_out"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "show_a_filter_the_service_was_not_asked_to_apply"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "show_a_service_refusal_as_its_code"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "count_held_back_material_from_a_shape_the_page_was_not_written_for"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "blame_the_filters_when_no_filter_was_set"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "leave_the_declared_effect_out_of_the_filtered_reason"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "hide_a_group_that_holds_nothing"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_kind_filter"
+  },
+  {
+   "applied": true,
+   "detected": true,
+   "name": "ignore_the_development_tool_filter"
+  }
+ ],
+ "mutants": 126,
+ "mutants_detected": 126,
+ "passed": 684,
+ "record_type": "staff_sign_up_links_browser_summary/v1",
+ "revision": "06a1f8b9",
+ "total": 684
+}
