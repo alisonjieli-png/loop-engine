@@ -1044,8 +1044,7 @@ slots:
       - core.library_ingestion.optional_engine_checks:the_schema_validator_accepts_rendered_files_and_refuses_an_unknown_key
       - core.library_ingestion.optional_engine_checks:a_missing_schema_or_a_changed_digest_makes_the_schema_validator_ineligible
       - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
-    planned_checks: [an_all_of_slot_declares_a_merge_rule_and_records_every_member,
-                     product_code_selects_engines_only_through_the_shared_records]
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: library_safety_scan
     slot_version: 1.0.0
@@ -1112,8 +1111,7 @@ slots:
       - core.library_ingestion.scan_checks:a_finding_names_its_rule_severity_and_line_and_never_copies_the_text
       - core.library_ingestion.optional_engine_checks:the_scanner_sandbox_has_no_network_and_no_inherited_environment
       - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
-    planned_checks: [an_all_of_slot_declares_a_merge_rule_and_records_every_member,
-                     product_code_selects_engines_only_through_the_shared_records]
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: library_near_duplicate
     slot_version: 1.0.0
@@ -1177,7 +1175,7 @@ slots:
       - core.library_ingestion.pipeline_checks:a_similarity_threshold_of_zero_is_refused
       - core.library_ingestion.pipeline_checks:selection_is_recorded_before_use_names_why_an_engine_is_ineligible_and_grants_no_authority
       - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
-    planned_checks: [product_code_selects_engines_only_through_the_shared_records]
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: library_outline
     slot_version: 1.0.0
@@ -1243,7 +1241,7 @@ slots:
       - core.library_ingestion.pipeline_checks:a_template_outline_that_would_repeat_its_source_is_refused
       - core.library_ingestion.pipeline_checks:an_outline_only_source_leaves_an_outline_without_source_text
       - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
-    planned_checks: [product_code_selects_engines_only_through_the_shared_records]
+    planned_checks: []
   - record_type: engine_slot/v1
     slot_id: tool_protocol_transport
     slot_version: 1.0.0
