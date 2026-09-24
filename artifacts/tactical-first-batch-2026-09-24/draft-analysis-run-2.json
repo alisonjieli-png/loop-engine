@@ -1,0 +1,204 @@
+{
+ "record_type": "tactical_first_batch_draft_analysis/v1",
+ "run": "generation-run-2",
+ "method_count": 10,
+ "input_tokens": 15369,
+ "output_tokens": 61195,
+ "elapsed_seconds": 431.6,
+ "rows": [
+  {
+   "method_id": "plan_workspace_file_transitions",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1525,
+   "output_tokens": 5354,
+   "elapsed_seconds": 37.464453,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "schema_validation_failed",
+    "normalized_sha256": "6bdd27350a66438d16233bea58fb4beb07362d87227de39f82ef244005762b43",
+    "schema_errors": [
+     "schema_constraint_failed:additionalProperties"
+    ],
+    "strategy": "json_markdown_fence_removed",
+    "transformation_trace": [
+     "removed_exact_markdown_json_fence"
+    ]
+   },
+   "response_sha256": "93bc0d1dac26a5539163fac4d02eebee62154d3ccf4539628a92fc4f85bb4299"
+  },
+  {
+   "method_id": "assemble_bounded_instruction_sections",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1491,
+   "output_tokens": 5501,
+   "elapsed_seconds": 38.315412,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "b608075dcfadf6349a82b47b2d61046956d76bb132d1330635629d10cebcc87a"
+  },
+  {
+   "method_id": "resolve_exact_package_dependency_closure",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1469,
+   "output_tokens": 4828,
+   "elapsed_seconds": 33.688887,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "a36b97995c3631c6915d65e13f7654e176627679c56bab2766a776b81a18bb7b"
+  },
+  {
+   "method_id": "query_codegraph_change_impact",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1526,
+   "output_tokens": 5421,
+   "elapsed_seconds": 37.761795,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "5c8eb18003807398716ac70ea448e88a245d36ff6edae5c533ac245f6489c8cd"
+  },
+  {
+   "method_id": "build_permission_scoped_lexical_index",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1551,
+   "output_tokens": 5644,
+   "elapsed_seconds": 39.389908,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "0b59de17810f558cbb65f01372c0add2d01bbb2549221392836f6aa3aeaf57d4"
+  },
+  {
+   "method_id": "validate_focused_attempt_handoff",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1510,
+   "output_tokens": 5113,
+   "elapsed_seconds": 37.009777,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "ae1fca2e9c3a6f8b721451d00acd4008de12bee2661655fb0ad444a537c5a6b2"
+  },
+  {
+   "method_id": "render_secret_reference_connections",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1554,
+   "output_tokens": 3924,
+   "elapsed_seconds": 29.437076,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "8aeb84c5c5f13e763ab58473af3a3ce158a0e98df3a0ee7a712f783f3e02f815"
+  },
+  {
+   "method_id": "check_tabular_transformation_invariants",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1498,
+   "output_tokens": 4328,
+   "elapsed_seconds": 31.54634,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "571926c6bdb515ac982d57d4c8a2ed8d29c6c5b9e93631364ccc2bb33a523467"
+  },
+  {
+   "method_id": "select_traceable_context_evidence",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1565,
+   "output_tokens": 5275,
+   "elapsed_seconds": 36.789157,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "9fe1c9ebd06effdb18346b94f72f9fceecb5f1f3da9808e2d0bebf0b400e5be1"
+  },
+  {
+   "method_id": "review_json_with_native_claude_plugin",
+   "status": "failed",
+   "error_code": "draft_json_not_admitted",
+   "input_tokens": 1680,
+   "output_tokens": 15807,
+   "elapsed_seconds": 110.245287,
+   "reported_model": "gemma-4-coding-abliterated",
+   "wrapped_in_markdown_fence": true,
+   "response_admission": {
+    "admitted": false,
+    "failure_code": "invalid_json",
+    "normalized_sha256": "",
+    "schema_errors": [],
+    "strategy": "unparsed",
+    "transformation_trace": []
+   },
+   "response_sha256": "69201344093c2a93b07de83d250734407712dd00a7b1cb0052c545cd026e5641"
+  }
+ ]
+}

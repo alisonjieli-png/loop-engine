@@ -1,0 +1,106 @@
+{
+ "record_type": "tactical_structured_output_probe/v1",
+ "at": "2026-09-24T11:38:30.920477+00:00",
+ "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+ "model": "gemma-4-coding-abliterated",
+ "binding_id": "tactical_gemma_4_coding_abliterated",
+ "model_calls": 1,
+ "request": {
+  "model": "gemma-4-coding-abliterated",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Return one JSON object with record_type original_native_file_draft/v1, method_id probe_pair, and files holding exactly one file: path data.json, whose content is a JSON document listing the numbers 1 and 2."
+   }
+  ],
+  "max_tokens": 512,
+  "temperature": 0.0,
+  "response_format": {
+   "type": "json_schema",
+   "json_schema": {
+    "name": "original_native_file_draft",
+    "schema": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "record_type",
+      "method_id",
+      "files"
+     ],
+     "properties": {
+      "record_type": {
+       "const": "original_native_file_draft/v1"
+      },
+      "method_id": {
+       "type": "string"
+      },
+      "files": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+         "path",
+         "content"
+        ],
+        "properties": {
+         "path": {
+          "type": "string"
+         },
+         "content": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     }
+    },
+    "strict": true
+   }
+  }
+ },
+ "response": {
+  "url": "https://ai.tacticalengineering.net:6969/v1/chat/completions",
+  "method": "POST",
+  "status": 200,
+  "bytes": 774,
+  "sha256": "1dcf53ce55c7c05e4053d6f462ca1703f7a0352d162c041b06be26e305a68490",
+  "elapsed_seconds": 1.051
+ },
+ "response_json": {
+  "id": "chatcmpl-ae24ab27d56b46a8a751fd96c038a4d8",
+  "object": "chat.completion",
+  "created": 1790249910,
+  "model": "gemma-4-coding-abliterated",
+  "choices": [
+   {
+    "index": 0,
+    "message": {
+     "role": "assistant",
+     "content": "```json\n{\n  \"record_type\": \"original_native_file_draft/v1\",\n  \"method_id\": \"probe_pair\",\n  \"files\": [\n    {\n      \"path\": \"data.json\",\n      \"data\": \"[1, 2]\"\n    }\n  ]\n}\n```",
+     "reasoning_content": "",
+     "reasoning": null,
+     "tool_calls": []
+    },
+    "logprobs": null,
+    "finish_reason": "stop",
+    "stop_reason": 106,
+    "mm_embedding_handle": null,
+    "disaggregated_params": null,
+    "avg_decoded_tokens_per_iter": 1.0
+   }
+  ],
+  "usage": {
+   "prompt_tokens": 66,
+   "total_tokens": 141,
+   "completion_tokens": 75,
+   "prompt_tokens_details": {
+    "cached_tokens": 4
+   }
+  },
+  "prompt_token_ids": null,
+  "prompt_token_ids_b64": null
+ },
+ "answer": "```json\n{\n  \"record_type\": \"original_native_file_draft/v1\",\n  \"method_id\": \"probe_pair\",\n  \"files\": [\n    {\n      \"path\": \"data.json\",\n      \"data\": \"[1, 2]\"\n    }\n  ]\n}\n```",
+ "answer_is_json": false
+}
