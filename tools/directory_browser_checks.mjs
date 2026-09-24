@@ -62,11 +62,16 @@ async function loadDirectory(browser,base,{routes=[],viewport={width:1440,height
   return {context,page,requests,ready_ms:Date.now()-started};
 }
 
-/* Routes that answer the manifest and the row files with every row's commercial relationship changed. */
-async function changedData(page,base,assign){
+/* The served manifest and row files, read once for the whole run. */
+async function servedData(page,base){
   const manifest=await (await page.request.get(base+MANIFEST)).json();
   const parts={};
   for(const part of manifest.parts)parts[part.address]=await (await page.request.get(base+part.address)).json();
+  return {manifest,parts};
+}
+
+/* Routes that answer the manifest and the row files with every row's commercial relationship changed. */
+function changedData({manifest,parts},assign){
   const position=manifest.columns.indexOf("commercial");
   const changedManifest={...manifest,commercial_relationships:variants};
   const routes=[[url=>new URL(url).pathname===MANIFEST,route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(changedManifest)})]];
@@ -97,7 +102,7 @@ async function views(page){
 
 export async function runDirectoryChecks({browser,base,check,mutants,errors,localOnly,screenshot}){
   const {page,context,requests,ready_ms}=await loadDirectory(browser,base,{errors,localOnly});
-  const manifest=await (await page.request.get(base+MANIFEST)).json();
+  const data=await servedData(page,base),manifest=data.manifest;
   const manifestNotice=manifest.commercial_labels?.paid_link_notice||"";
   const state=await page.evaluate(()=>{let graph=[];try{graph=JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)["@graph"].map(item=>item["@type"]);}catch(_){graph=[];}
     return {title:document.title,canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",description:document.querySelector('meta[name="description"]')?.getAttribute("content")||"",
@@ -143,6 +148,7 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   const opened=await page.evaluate(()=>({open:document.getElementById("directory-detail").open,title:document.getElementById("detail-title").textContent,hash:decodeURIComponent(location.hash.slice(1))}));
   await page.locator("#detail-close").click();
   const direct=await loadDirectory(browser,base,{errors,localOnly,path:"/directory#"+encodeURIComponent(identity)});
+  await direct.page.waitForFunction(id=>document.getElementById(id)?.classList.contains("is-target"),identity,{timeout:5000}).catch(()=>{});
   const target=await direct.page.evaluate(id=>{const row=document.getElementById(id);return {shown:Boolean(row?.checkVisibility()),target:row?.classList.contains("is-target")};},identity);
   await direct.context.close();
   check("directory_row_link_opens_the_listing_and_names_it_in_the_address",opened.open&&opened.hash===identity&&opened.title.length>0,opened);
@@ -183,9 +189,7 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   /* Commercial fields never change the order or the membership. */
   const baseline=await (async()=>{const view=await loadDirectory(browser,base,{errors,localOnly});const found=await views(view.page);await view.context.close();return found;})();
   const invariance=async(mutation,note)=>{
-    const probe=await loadDirectory(browser,base,{errors,localOnly});
-    const {routes}=await changedData(probe.page,base,identityValue=>{let sum=0;for(const character of identityValue)sum=(sum*31+character.charCodeAt(0))%9973;return sum%variants.length;});
-    await probe.context.close();
+    const {routes}=changedData(data,identityValue=>{let sum=0;for(const character of identityValue)sum=(sum*31+character.charCodeAt(0))%9973;return sum%variants.length;});
     const script=mutation?scriptRoute(mutation):null;
     const view=await loadDirectory(browser,base,{errors,localOnly,routes:script?[...routes,script.route]:routes});
     const seen=await views(view.page);await view.context.close();
@@ -196,10 +200,9 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
   await invariance(null,check);
   /* A commercial link, when a row carries an active affiliate relationship, and a sponsored placement, in its own band. */
   const withRelationships=async(mutation,note)=>{
-    const probe=await loadDirectory(browser,base,{errors,localOnly});
-    const ids=await probe.page.evaluate(()=>window.BaltorDirectory.shown().slice(0,3));
-    const {routes}=await changedData(probe.page,base,identityValue=>identityValue===ids[0]?ACTIVE_AFFILIATE:identityValue===ids[1]?ACTIVE_SPONSORED:identityValue===ids[2]?ACTIVE_OWNED:0);
-    await probe.context.close();
+    /* The first three rows of the default order, which the served page holds and a check above compares with the script's order. */
+    const ids=servedIds.slice(0,3);
+    const {routes}=changedData(data,identityValue=>identityValue===ids[0]?ACTIVE_AFFILIATE:identityValue===ids[1]?ACTIVE_SPONSORED:identityValue===ids[2]?ACTIVE_OWNED:0);
     const script=mutation?scriptRoute(mutation):null;
     const view=await loadDirectory(browser,base,{errors,localOnly,routes:script?[...routes,script.route]:routes});
     const found=await view.page.evaluate(([first,second,third])=>{

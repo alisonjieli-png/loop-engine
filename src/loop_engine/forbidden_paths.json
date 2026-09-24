@@ -207,6 +207,7 @@
     "core/service_runtime/staff_sign_up_link_checks.py"
   ],
   "notes": [
+    "The public directory's row files and link table (core/service_runtime/web_assets/directory and core/service_runtime/public_lists) hold names, descriptions and addresses written by the publishers of other products, rebuilt daily by tools/build_mcp_directory.py. They are left out of the retired nomenclature scan, as the upstream runtime copies are; the directory page, its script and every other served file stay scanned, and the browser checks read the page's own words through tools/listing_text.mjs.",
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
     "The pure harness recipe helpers listed in network_allowed_modules use urllib.parse solely to refuse non-loopback configuration addresses or translate protocol fields. They do not open connections. Actual transport is confined to harness_process_relay and the canonical gateway provider adapters.",
     "harness_process and harness_process_relay are declared internal CLI adapters: the only socket paths are private Unix IPC and sandbox-local HTTP. External model requests remain with the supplied canonical gateway broker. Pinned software, private configuration, request limits, process-tree cancellation and denial of native tools are tested separately from model quality; no public solve realization is enabled by listing these mechanics.",
@@ -451,6 +452,8 @@
       "artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/swe_agent/installed-files.json"
     ],
     "excluded_path_prefixes": [
+      "core/service_runtime/web_assets/directory",
+      "core/service_runtime/public_lists",
       "artifacts/harness-expansion-20260909-DNMQ3Y/remaining-recipes/crush/source",
       "embodiments/aider/runtime",
       "embodiments/cline/runtime",

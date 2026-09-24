@@ -79,7 +79,7 @@ main:has(> [data-view="directory"]:not([hidden])){max-width:none;padding:0}
 @media(max-width:1000px){.directory-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){
   .directory-columns{display:none}
-  .directory-list{--row-height:264px}
+  .directory-list{--row-height:280px}
   .directory-chip{min-height:44px;padding:.5rem .9rem}
   .row-connect{flex-direction:row!important;flex-wrap:wrap;column-gap:.5rem}
   .row-connect .row-transport::after{content:" \00b7"}
@@ -88,7 +88,9 @@ main:has(> [data-view="directory"]:not([hidden])){max-width:none;padding:0}
   .row-link{min-height:44px;display:flex;align-items:center}
   .directory-row .row-where{-webkit-line-clamp:1;line-clamp:1}
   .row-facts{flex-direction:row!important;flex-wrap:wrap;align-items:center;column-gap:.75rem!important}
-  .row-docs{display:inline-flex;align-items:center;min-height:44px;padding:0 .9rem;border:1px solid var(--line-strong);border-radius:var(--radius-field);margin-left:auto}
+  .row-link-line{margin-left:auto;align-items:center;flex-wrap:nowrap;min-width:0}
+  .row-docs{display:inline-flex;align-items:center;min-height:44px;padding:0 .9rem;border:1px solid var(--line-strong);border-radius:var(--radius-field)}
+  .row-host{max-width:7rem}
   .directory-row .row-sources{display:none}
   .directory-about{grid-template-columns:minmax(0,1fr);gap:1.5rem;padding-top:40px;padding-bottom:40px}
   .directory-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
