@@ -937,14 +937,17 @@ class InstallChecks(ServiceCase):
 
     def test_client_kinds_come_from_the_recipes_registry(self):
         self.assertLessEqual(set(tool.CLIENT_LAYOUT_PROFILES), set(tool.registered_client_kinds()))
+        # Every recipe client kind now carries a layout profile; a kind the
+        # recipes registry does not name is refused before anything else.
+        self.assertEqual(set(tool.CLIENT_LAYOUT_PROFILES), set(tool.registered_client_kinds()))
         with running_http(self.fixture) as (base, _service):
-            for kind, expected in (("codex", "client_has_no_layout_profile"), ("unheard-of", "unknown_client_kind")):
+            for kind in ("unheard-of", "gemini-cli", "pi"):
                 with self.subTest(kind=kind):
                     with self.assertRaises(tool.InstallRefusal) as refused:
                         tool.InstallRequest(origin=base, key_variable=KEY_VARIABLE, client_kind=kind,
                                             target=self.project, report=self.folder / "r.json",
                                             identities=("skill.alpha",), authorized=True, allow_loopback_http=True)
-                    self.assertEqual(refused.exception.code, expected)
+                    self.assertEqual(refused.exception.code, "unknown_client_kind")
 
     def test_same_request_prefix_repeats_the_same_read_without_new_usage(self):
         second = self.folder / "second-project"

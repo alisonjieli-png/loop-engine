@@ -1083,12 +1083,57 @@ OPENCODE_PROFILE = ClientLayoutProfile(
     listing=ListingCommand(
         arguments=("debug", "skill", "--pure"),
         process_settings=(("OPENCODE_CONFIG_CONTENT",
-                           json.dumps({"autoupdate": False, "plugin": [], "share": "disabled"})),)),
+                           json.dumps({"autoupdate": False, "plugin": [], "share": "disabled"})),),
+    ),
     version_arguments=("--version",),
     model_turn_subcommands=("run",),
     observed_client_versions=("1.17.9", "1.18.31"),
 )
-CLIENT_LAYOUT_PROFILES = {OPENCODE_PROFILE.client_kind: OPENCODE_PROFILE}
+
+# The verified native skill roots, from the placement research of
+# September 22, 2026 (docs/research/NATIVE-HARNESS-INTELLIGENCE-PLACEMENT-2026-09-22.md)
+# and the harness file standards record of September 23, 2026: Claude Code
+# reads project skills at .claude/skills/<name>/SKILL.md; Codex 0.155.1 reads
+# repository skills at .agents/skills/<name>/SKILL.md (with user skills at
+# ~/.agents/skills/, which is outside the project and therefore not this
+# tool's placement). Neither client offers a no-model listing command that
+# this tool can run, so their listing is None and discovery is proved by a
+# separate native instance probe, not by this tool.
+CLAUDE_CODE_PROFILE = ClientLayoutProfile(
+    client_kind="claude-code",
+    executable_name="claude",
+    locations=(NativeLocation(SKILL_KIND, (".claude", "skills"), "SKILL.md", SKILL_FILE_RENDERING),),
+    unplaced_kinds=(
+        ("instruction_file", "client_reads_instruction_files_only_through_files_the_project_owns"),
+        ("reusable_code", "code_needs_independent_admission_before_local_use"),
+        ("tool", "code_needs_independent_admission_before_local_use"),
+    ),
+    listing=None,
+    version_arguments=("--version",),
+    model_turn_subcommands=(),
+    observed_client_versions=("2.1.280",),
+)
+
+CODEX_PROFILE = ClientLayoutProfile(
+    client_kind="codex",
+    executable_name="codex",
+    locations=(NativeLocation(SKILL_KIND, (".agents", "skills"), "SKILL.md", SKILL_FILE_RENDERING),),
+    unplaced_kinds=(
+        ("instruction_file", "client_reads_instruction_files_only_through_files_the_project_owns"),
+        ("reusable_code", "code_needs_independent_admission_before_local_use"),
+        ("tool", "code_needs_independent_admission_before_local_use"),
+    ),
+    listing=None,
+    version_arguments=("--version",),
+    model_turn_subcommands=("exec",),
+    observed_client_versions=("0.155.1",),
+)
+
+CLIENT_LAYOUT_PROFILES = {
+    OPENCODE_PROFILE.client_kind: OPENCODE_PROFILE,
+    CLAUDE_CODE_PROFILE.client_kind: CLAUDE_CODE_PROFILE,
+    CODEX_PROFILE.client_kind: CODEX_PROFILE,
+}
 
 
 def layout_profile_for(client_kind: str) -> ClientLayoutProfile:
