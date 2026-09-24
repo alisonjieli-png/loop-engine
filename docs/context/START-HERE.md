@@ -25,8 +25,18 @@ the private beta definition. Its live-state table describes September 20.
 For the current 100,000-package service research, candidate files and live
 interface findings, read the [component research artifacts](../research/BALTOR-COMPONENT-RESEARCH-ARTIFACTS-2026-09-23.md)
 and [Codex side research handoff](CODEX-SIDE-RESEARCH-HANDOFF-2026-09-22.md).
-They link the exact new reports, manifests and saved failed attempts. The
-roadmap remains the task authority.
+They link the exact new reports, manifests and saved failed attempts. Some
+newer files may be uncommitted in `/home/username/loop-engine`; a separate
+Git worktree does not receive those changes automatically. Read that shared
+checkout path directly before taking up these items. The roadmap remains
+the task authority.
+
+The supervised 1,000-candidate overnight batch of September 24, 2026 is
+recorded in the [overnight batch handoff](SESSION-HANDOFF-2026-09-24-OVERNIGHT-BATCH.md):
+where the batch, lanes, journal and watchdog live on this machine, how to
+check progress, how recovery and restart work, and what the next session
+must do when it completes. Candidates remain candidate material until the
+independent admission process approves them.
 
 The [September 21 handoff](SESSION-HANDOFF-2026-09-21.md), its
 [evening addendum](SESSION-HANDOFF-2026-09-21-EVENING.md), the
