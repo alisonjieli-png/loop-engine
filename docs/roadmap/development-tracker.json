@@ -4,7 +4,7 @@
   "done": 43,
   "next": 13,
   "now": 40,
-  "waiting": 70
+  "waiting": 78
  },
  "lanes": {
   "blocked": [
@@ -2270,6 +2270,138 @@
     ]
    },
    {
+    "acceptance": "A step that cannot continue for want of a tool produces one typed need that is searched first and becomes a bounded build step only when nothing eligible exists, under the same or narrower authority.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31",
+     "S-6.32"
+    ],
+    "id": "S-6.91",
+    "next_local_work": "Add the capability_gap field to the typed step result of S-6.31 and a fixture that turns it into a need, then the search-first check with its removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A step that lacks a tool reports a typed capability need, and search runs before any build",
+    "waiting_on": [
+     "S-6.31",
+     "S-6.32"
+    ]
+   },
+   {
+    "acceptance": "A tool made during a run helps that run only after independent held-out checks, reaches other customers only through review and release, and never floods the step with repair chatter.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.91",
+     "S-6.63"
+    ],
+    "id": "S-6.92",
+    "next_local_work": "Declare the capability_candidate/v1 and tool_repair_summary/v1 records and a fixture that proves the held-out requirement with its removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The tool authoring step: a candidate tool with its own tests, held-out tests from another Loop, and a typed repair summary",
+    "waiting_on": [
+     "S-6.91",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "Every step's harness starts with a small, stable, permitted and relevant tool menu and one recorded way to ask for more, and menu quality is measured on held-out phrasings.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.32",
+     "S-6.44",
+     "S-6.61"
+    ],
+    "id": "S-6.93",
+    "next_local_work": "Define step_tool_menu/v1 over the existing offer() record and write the held-out phrasing set before any engine comparison.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The step tool menu: a small, stable, permitted and relevant tool set for each step, with an abstention answer",
+    "waiting_on": [
+     "S-6.32",
+     "S-6.44",
+     "S-6.61"
+    ]
+   },
+   {
+    "acceptance": "Long tool work never blocks a step beyond its declared contract, and every long call can be started, observed and stopped with a record.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.61"
+    ],
+    "id": "S-6.94",
+    "next_local_work": "Add the run contract record with a fixture per duration class, then the non-idempotent retry refusal with its removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Tool run contracts: duration class, timeout, heartbeat, polling, cancellation and idempotency, with task handles for long tools",
+    "waiting_on": [
+     "S-6.61"
+    ]
+   },
+   {
+    "acceptance": "Every tool version shows reliability computed from its own recorded outcomes, and a degraded version stops being offered on evidence while its history remains.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.41",
+     "S-6.83"
+    ],
+    "id": "S-6.95",
+    "next_local_work": "Define the projection over the S-6.41 run records and the quarantine transition with its minimum-sample check.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Tool reliability and quarantine from recorded outcomes, with history kept",
+    "waiting_on": [
+     "S-6.41",
+     "S-6.83"
+    ]
+   },
+   {
+    "acceptance": "A failure seen before gets its qualified fix on the first attempt, and a repeating failure changes the approach instead of repeating it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.41"
+    ],
+    "id": "S-6.96",
+    "next_local_work": "Write the normalizer with fixtures for volatile values, and the known-fix candidate record reusing the applicability and contraindication fields of recovery learning.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats",
+    "waiting_on": [
+     "S-6.41"
+    ]
+   },
+   {
+    "acceptance": "For each tool, a reader can see how it was made, how it was chosen and what happened afterwards, scored by an evaluator other than its author.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.41",
+     "S-6.58"
+    ],
+    "id": "S-6.97",
+    "next_local_work": "Review the parked decision outcome module, bring its checks back into the self-test if it fits the harness path, then add the tool decision kinds with fixtures.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator",
+    "waiting_on": [
+     "S-6.41",
+     "S-6.58"
+    ]
+   },
+   {
+    "acceptance": "Logs become training and evaluation data only with consent and independent labels, and the first model trained from them is measured on held-out data before any use.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.41"
+    ],
+    "id": "S-6.98",
+    "next_local_work": "Wait for the S-6.41 consent record, then define the export record and its refusal fixtures.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Consented run traces as training and evaluation examples",
+    "waiting_on": [
+     "S-6.41"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -3750,5 +3882,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba209f1be5dabbeb"
+ "source_fingerprint": "sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393"
 }

@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1486,16 +1486,16 @@ continuation:
   workstreams:
     - title: Reusable capabilities and detection
       legacy_steps: [S-0.5, S-1.10]
-      continuation_steps: [S-6.10, S-6.20, S-6.11]
+      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87]
@@ -3343,3 +3343,126 @@ steps:
     acceptance: "Baltor has a documented entry plan and a validated prototype package, and the public page offers entrants a starter kit only if the rules allow it."
     evidence: "September 23, 2026, the owner asked how the project could be submitted to the Kaggle Gemma 4 Developer Agent Competition and Paper Track, then: \"Make sure that the kaggle research is a side project, our main project and goal is getting this fully working as a SaaS.\""
     next_local_work: "Resume the paused research run and write the entry plan."
+  - id: S-6.91
+    phase: 6
+    title: "A step that lacks a tool reports a typed capability need, and search runs before any build"
+    status: proposed
+    depends_on: [S-6.31, S-6.32]
+    boundary: [src/loop_engine/core/capability_needs.py, src/loop_engine/core/external_harness.py]
+    verify:
+      - "the typed step result carries an optional capability_gap field (operation, input and output contract references, effects needed, observed failure class and evidence digest); prose in a harness output never becomes a gap"
+      - "the owning Loop turns a gap into the existing capability_need/v1 with origin failed_step and records the gap and the need in Run History"
+      - "hosted search runs before any build; an eligible approved item above the relevance floor is offered instead of a build, and the offer is recorded"
+      - "only a need with no eligible item becomes a build assignment through assignment_for(), carrying its acceptance and no effect the originating step did not hold"
+    adversarial: "A need without acceptance, a build assignment with an effect the originating step did not hold, a build started although search returned an eligible approved item above the relevance floor, and a gap parsed from free text must each be refused by a named check; removing the search-first check must make its named check fail."
+    acceptance: "A step that cannot continue for want of a tool produces one typed need that is searched first and becomes a bounded build step only when nothing eligible exists, under the same or narrower authority."
+    evidence: "September 24, 2026, the owner: \"Been messing around with Laya and tool-calling. I believe this doc has some real insight! What about these comments and document, they deserve more research\". Research, rows 1 and 3: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. core/capability_needs.py already defines capability_need/v1 with the origin failed_step and the satisfier tool, with no live caller."
+    next_local_work: "Add the capability_gap field to the typed step result of S-6.31 and a fixture that turns it into a need, then the search-first check with its removed-guard control."
+  - id: S-6.92
+    phase: 6
+    title: "The tool authoring step: a candidate tool with its own tests, held-out tests from another Loop, and a typed repair summary"
+    status: proposed
+    depends_on: [S-6.91, S-6.63]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/capability_needs.py, tools/candidate_review]
+    verify:
+      - "a tool authoring role profile under Practitioner runs through the step_executor slot in its own harness instance; its engines are harness recipes and a Baltor-native template engine, and no runtime type is added"
+      - "the output is capability_candidate/v1: input and output schemas, declared effects, a tool run contract, the builder's tests, provenance (producing step, harness and model) and a digest"
+      - "a different Loop on a different model route writes held-out tests; use inside the run requires them to pass in the declared sandbox, with no network by default"
+      - "use by other customers requires the review panel of S-6.63 and a catalogue release; a repair creates a new version and a new digest"
+      - "only a typed tool_repair_summary/v1 under a declared byte ceiling returns to the owning step; the full authoring transcript stays in Run History"
+      - "a frozen tool authoring population scores interface compliance, functional correctness on held-out tests and downstream utility separately"
+    adversarial: "A candidate that passes its builder's tests but fails held-out tests must not be reused, and removing that requirement must make its named check fail (LE-SOLVE-003); a candidate whose sandbox trace shows an undeclared effect, a held-out test writer on the builder's model route, a repair that reuses an old digest and a repair summary over its ceiling must each be refused."
+    acceptance: "A tool made during a run helps that run only after independent held-out checks, reaches other customers only through review and release, and never floods the step with repair chatter."
+    evidence: "Research, rows 1, 3, 4, 6, 16 and 17: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. Tool-Genesis (arXiv 2603.05578) reports weak one-shot tool creation; the persistent solving decision record makes a tool written during a run a candidate."
+    next_local_work: "Declare the capability_candidate/v1 and tool_repair_summary/v1 records and a fixture that proves the held-out requirement with its removed-guard control."
+  - id: S-6.93
+    phase: 6
+    title: "The step tool menu: a small, stable, permitted and relevant tool set for each step, with an abstention answer"
+    status: proposed
+    depends_on: [S-6.32, S-6.44, S-6.61]
+    boundary: [src/loop_engine/core/node_provisioning.py, src/loop_engine/core/harness_intelligence.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a step_tool_menu/v1 record is written at step start: the eligible set from offer(), ranked by the bound search engine and cut to a declared tool count and schema size, with each withheld tool named with its reason"
+      - "an explicit none-applies answer when nothing passes the relevance floor, instead of the best poor match"
+      - "a sufficient lower-privilege tool is ordered before a higher-privilege tool, and the order is deterministic for identical inputs"
+      - "the menu is fixed for the step; a later need goes through one stable search tool whose answers are recorded"
+      - "engines behind one contract: lexical purpose match, hybrid search, a typed-decision reranker over a shortlist through the typed_decision slot (Laya, Jev or Circuit), and pass-through to a harness's own tool search"
+      - "a frozen set of held-out step phrasings measures recall within the budget, abstention accuracy, wrong-tool rate and risky-tool exposure; an engine is selected only when it beats the lexical engine on that set"
+    adversarial: "A menu over its budget, a higher-privilege tool listed before a sufficient lower-privilege one, tools returned for an unrelated objective, a menu changed during a step, a reranker that returns a tool outside its shortlist and a menu entry whose effects exceed the step's grant must each be refused by a named check."
+    acceptance: "Every step's harness starts with a small, stable, permitted and relevant tool menu and one recorded way to ask for more, and menu quality is measured on held-out phrasings."
+    evidence: "Research, rows 2, 5, 11 and 14: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. ToolMenuBench (arXiv 2606.15508) reports task success rising from 32.1 to 85.7 percent with menu filtering; the Model Context Protocol client guidance says that changing tools mid-conversation breaks prompt caching; Laya serves the /v1/systemone wire that the system_one engine accepts."
+    next_local_work: "Define step_tool_menu/v1 over the existing offer() record and write the held-out phrasing set before any engine comparison."
+  - id: S-6.94
+    phase: 6
+    title: "Tool run contracts: duration class, timeout, heartbeat, polling, cancellation and idempotency, with task handles for long tools"
+    status: proposed
+    depends_on: [S-6.61]
+    boundary: [src/loop_engine/core/mcp_adapter.py, src/loop_engine/data/component_interactions.yaml]
+    verify:
+      - "every served or candidate tool declares tool_run_contract/v1: duration class (instant, bounded or long running), start-to-close timeout, heartbeat interval, poll interval, cancellation kind and idempotency"
+      - "a long-running tool returns a durable handle; the Model Context Protocol tasks extension io.modelcontextprotocol/tasks is used only when both sides declare it, otherwise a Baltor wrapper supervised by core/local_resources.py gives start, status, log and stop"
+      - "a stalled tool is detected by heartbeat age and stopped with a record; cancellation is recorded as cooperative or forced"
+      - "a timed-out call whose effect is unknown ends as effects_uncertain and is never repeated without a postcondition check"
+    adversarial: "A tool served without a run contract, a synchronous handler that claims an enforced timeout, a retry of a non-idempotent tool after an uncertain reply, polling faster than the declared interval, a task handle from another tenant and a silent downgrade from the tasks extension must each be refused."
+    acceptance: "Long tool work never blocks a step beyond its declared contract, and every long call can be started, observed and stopped with a record."
+    evidence: "Research, rows 7 and 8: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. Model Context Protocol revision 2026-07-28 moved tasks into the official extension io.modelcontextprotocol/tasks (SEP-2663); McpCallRequest uses a fixed 60 second default today."
+    next_local_work: "Add the run contract record with a fixture per duration class, then the non-idempotent retry refusal with its removed-guard control."
+  - id: S-6.95
+    phase: 6
+    title: "Tool reliability and quarantine from recorded outcomes, with history kept"
+    status: proposed
+    depends_on: [S-6.41, S-6.83]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_releases.py, tools/candidate_review]
+    verify:
+      - "a tool_outcome_summary/v1 projection per tool version and exact scope counts offered, fetched, loaded, invoked, postcondition passed, failed by class and accepted steps as separate facts, with repeated-trial consistency where trials repeat; unknown stays unknown"
+      - "quarantine is a reversible hold with a reason, the evidence references and a declared minimum sample; it removes the version from new step menus and opens a repair need"
+      - "an unused version is ranked down or archived after a declared window with its reason; withdrawal stays durable and nothing is deleted"
+    adversarial: "A quarantine below the minimum sample, a success rate raised by download counts, a rating taken from model confidence or a vendor score, a quarantine that deletes history and a repaired version that reuses an old digest must each be refused by a named check."
+    acceptance: "Every tool version shows reliability computed from its own recorded outcomes, and a degraded version stops being offered on evidence while its history remains."
+    evidence: "Research, rows 9 and 10: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. Durable catalogue withdrawals are live since Fly release 17; quarantine exists only in the parked code asset lifecycle. The owner's rule of September 7 and 23: build out, never remove."
+    next_local_work: "Define the projection over the S-6.41 run records and the quarantine transition with its minimum-sample check."
+  - id: S-6.96
+    phase: 6
+    title: "Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats"
+    status: proposed
+    depends_on: [S-6.41]
+    boundary: [src/loop_engine/core/task_fingerprint.py, src/loop_engine/core/provider_failure_classes.py]
+    verify:
+      - "failure_fingerprint/v1 normalizes a failure from the tool identity and version, a closed failure class, the error type, a message template without volatile values and the contract references, and holds no secret or customer text"
+      - "known_fix/v1 is a candidate with a fix kind, applicability, contraindications and evidence; an independent process qualifies it"
+      - "a qualified fix is offered only on an exact fingerprint match, and each use records its outcome"
+      - "a repeated identical fingerprint within one step makes the next attempt change a declared dimension (engine, tool menu, decomposition or model strategy) or end with a recorded reason"
+    adversarial: "Two failures that differ only in a path and a time must share one fingerprint; a known fix without contraindications, a fix approved by the process that proposed it, a fuzzy fingerprint match before heuristic adoption and a third identical attempt with no changed dimension must each be refused."
+    acceptance: "A failure seen before gets its qualified fix on the first attempt, and a repeating failure changes the approach instead of repeating it."
+    evidence: "Research, rows 13 and 15: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. Boundary-aware skill memory (arXiv 2608.22339) reports that lessons without applicability raise wrong-tool confidence; core/heuristic_adoption.py allows an exact fingerprint at the atomic level."
+    next_local_work: "Write the normalizer with fixtures for volatile values, and the known-fix candidate record reusing the applicability and contraindication fields of recovery learning."
+  - id: S-6.97
+    phase: 6
+    title: "The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator"
+    status: proposed
+    depends_on: [S-6.41, S-6.58]
+    boundary: [src/loop_engine/core/decision_outcome.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "decision_outcome/v1 joins cover tool decisions (build, reuse or abstain; menu composition; known-fix use), each joined forward to the executed, observed, verified and contributed stages"
+      - "an evaluator on a different model family and route than the author scores separate axes: interface compliance, correctness on held-out tests, downstream utility and cost"
+      - "scores enter the exact-scope evidence rule of the engine design only above the minimum sample, and never as acceptance"
+      - "feedback text reaches the self-improvement Practitioner task only as staged candidates for independent review"
+    adversarial: "A score recorded as acceptance, a scorer from the author's model family, an outcome joined to the wrong decision digest, an unresolved join reported as success and a score that reorders engines below the minimum sample must each be refused."
+    acceptance: "For each tool, a reader can see how it was made, how it was chosen and what happened afterwards, scored by an evaluator other than its author."
+    evidence: "Research, rows 11, 12 and 17: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. core/decision_outcome.py already joins a decision through the proposed, admitted, executed, observed, verified and contributed stages, with its checks parked."
+    next_local_work: "Review the parked decision outcome module, bring its checks back into the self-test if it fits the harness path, then add the tool decision kinds with fixtures."
+  - id: S-6.98
+    phase: 6
+    title: "Consented run traces as training and evaluation examples"
+    status: proposed
+    depends_on: [S-6.41]
+    boundary: [src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a training_example_export/v1 engine of the run_history_export slot exports only runs whose consent record allows it; the default is none, metadata only"
+      - "labels come only from independent evaluators, never from the model that produced the step"
+      - "a frozen held-out split stays apart, and no secret, authorization header or raw prompt leaves without explicit opt-in"
+      - "the first use evaluates, and later fine-tunes, a small typed-decision model for step tool menu decisions, measured on the held-out split"
+    adversarial: "An export without consent, an example labeled by its producing model, a held-out example found in training data and an export that contains a secret must each be refused by a named check."
+    acceptance: "Logs become training and evaluation data only with consent and independent labels, and the first model trained from them is measured on held-out data before any use."
+    evidence: "Research, row 18: docs/research/TOOLSMITH-ROUTER-COACH-PATTERNS-2026-09-24.md. ASTRA.md records metadata only by default and raw inputs only by explicit opt-in; the Laya fine-tuning notebook reports typed decisions rising from 0.36 to 0.766 after fine-tuning."
+    next_local_work: "Wait for the S-6.41 consent record, then define the export record and its refusal fixtures."

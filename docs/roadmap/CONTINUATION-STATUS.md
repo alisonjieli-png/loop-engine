@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba209f1be5dabbeb`.
+Plan fingerprint: `07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -1155,6 +1155,14 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.87 | Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps | proposed | S-6.86 |
 | S-6.88 | Machine learning tools in the harness working directory, and when to use or train them | proposed | S-6.44, S-6.69 |
 | S-6.90 | Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track | proposed | S-6.44 |
+| S-6.91 | A step that lacks a tool reports a typed capability need, and search runs before any build | proposed | S-6.31, S-6.32 |
+| S-6.92 | The tool authoring step: a candidate tool with its own tests, held-out tests from another Loop, and a typed repair summary | proposed | S-6.91, S-6.63 |
+| S-6.93 | The step tool menu: a small, stable, permitted and relevant tool set for each step, with an abstention answer | proposed | S-6.32, S-6.44, S-6.61 |
+| S-6.94 | Tool run contracts: duration class, timeout, heartbeat, polling, cancellation and idempotency, with task handles for long tools | proposed | S-6.61 |
+| S-6.95 | Tool reliability and quarantine from recorded outcomes, with history kept | proposed | S-6.41, S-6.83 |
+| S-6.96 | Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats | proposed | S-6.41 |
+| S-6.97 | The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator | proposed | S-6.41, S-6.58 |
+| S-6.98 | Consented run traces as training and evaluation examples | proposed | S-6.41 |
 
 ## Every retained initiative
 
@@ -1162,10 +1170,10 @@ Legacy statuses remain historical component claims until current integration evi
 
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
-| Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80 |
-| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60 |
+| Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94 |
+| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13, S-6.57 |
 | Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89 |

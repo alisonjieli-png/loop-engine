@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba209f1be5dabbeb`.
+Source fingerprint: `sha256:07c98281ac32f83cf239e61eaa488c16c19897bf461c7be305de4df4859fe393`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba20
 |---|---:|
 | Being built now | 40 |
 | Can start next | 13 |
-| Waiting on earlier work | 70 |
+| Waiting on earlier work | 78 |
 | Blocked | 2 |
 | Done | 43 |
 
@@ -136,6 +136,14 @@ Source fingerprint: `sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba20
 | S-6.87 | Step graph expansion: steps between steps, substeps, breadth, depth and advanced steps | proposed | S-6.86 |
 | S-6.88 | Machine learning tools in the harness working directory, and when to use or train them | proposed | S-6.44, S-6.69 |
 | S-6.90 | Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track | proposed | S-6.44 |
+| S-6.91 | A step that lacks a tool reports a typed capability need, and search runs before any build | proposed | S-6.31, S-6.32 |
+| S-6.92 | The tool authoring step: a candidate tool with its own tests, held-out tests from another Loop, and a typed repair summary | proposed | S-6.91, S-6.63 |
+| S-6.93 | The step tool menu: a small, stable, permitted and relevant tool set for each step, with an abstention answer | proposed | S-6.32, S-6.44, S-6.61 |
+| S-6.94 | Tool run contracts: duration class, timeout, heartbeat, polling, cancellation and idempotency, with task handles for long tools | proposed | S-6.61 |
+| S-6.95 | Tool reliability and quarantine from recorded outcomes, with history kept | proposed | S-6.41, S-6.83 |
+| S-6.96 | Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats | proposed | S-6.41 |
+| S-6.97 | The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator | proposed | S-6.41, S-6.58 |
+| S-6.98 | Consented run traces as training and evaluation examples | proposed | S-6.41 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
