@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "35-1012.00",
+  "occupation_title": "First-Line Supervisors of Food Preparation and Serving Workers",
+  "task_reference": "Supervise and participate in kitchen and dining area cleaning activities."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a string_column; the method performs classification; the use case is agentic_task. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "string_column",
+ "file_kind": "skill",
+ "id": "string-column-classification-agentic-task",
+ "known_wrong": "A plausible but wrong classification of a string_column is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "string_column|classification|agentic_task",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "agentic_task"
+}

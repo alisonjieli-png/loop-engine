@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "53-2021.00",
+  "occupation_title": "Air Traffic Controllers",
+  "task_reference": "Direct pilots to runways when space is available or direct them to maintain a traffic pattern until there is space for them to land."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a toml_config; the method performs classification; the use case is matrix_mathematics. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "toml_config",
+ "file_kind": "skill",
+ "id": "toml-config-classification-matrix-mathematics",
+ "known_wrong": "A plausible but wrong classification of a toml_config is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "toml_config|classification|matrix_mathematics",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "matrix_mathematics"
+}

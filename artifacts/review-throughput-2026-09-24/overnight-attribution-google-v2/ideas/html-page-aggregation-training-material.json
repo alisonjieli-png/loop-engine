@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "47-2041.00",
+  "occupation_title": "Carpet Installers",
+  "task_reference": "Stretch carpet to align with walls and ensure a smooth surface, and press carpet in place over tack strips or use staples, tape, tacks or glue to hold carpet in place."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a html_page; the method performs aggregation; the use case is training_material. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "html_page",
+ "file_kind": "skill",
+ "id": "html-page-aggregation-training-material",
+ "known_wrong": "A plausible but wrong aggregation of a html_page is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "html_page|aggregation|training_material",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "training_material"
+}

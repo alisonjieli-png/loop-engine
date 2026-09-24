@@ -1,0 +1,27 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "27-3042.00",
+  "occupation_title": "Technical Writers",
+  "task_reference": "Observe production, developmental, and experimental activities to determine operating procedure and detail."
+ },
+ "brief": "Propose one original harness method for a Logisticians whose task is: Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.. The method's input is a postal_address; the method performs aggregation; the use case is data_engineering. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "postal_address",
+ "id": "postal-address-aggregation-data-engineering",
+ "known_wrong": "A plausible but wrong aggregation of a postal_address is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "postal_address|aggregation|data_engineering",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "data_engineering"
+}

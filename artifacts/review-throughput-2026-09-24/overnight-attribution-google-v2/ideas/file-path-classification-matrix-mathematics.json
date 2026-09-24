@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "49-1011.00",
+  "occupation_title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+  "task_reference": "Requisition materials and supplies, such as tools, equipment, or replacement parts."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a file_path; the method performs classification; the use case is matrix_mathematics. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "file_path",
+ "file_kind": "skill",
+ "id": "file-path-classification-matrix-mathematics",
+ "known_wrong": "A plausible but wrong classification of a file_path is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "file_path|classification|matrix_mathematics",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "matrix_mathematics"
+}

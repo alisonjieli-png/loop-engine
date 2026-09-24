@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "35-2013.00",
+  "occupation_title": "Cooks, Private Household",
+  "task_reference": "Shop for or order food and kitchen supplies and equipment."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a tree_structure; the method performs aggregation; the use case is record_linkage. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "tree_structure",
+ "file_kind": "skill",
+ "id": "tree-structure-aggregation-record-linkage",
+ "known_wrong": "A plausible but wrong aggregation of a tree_structure is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "tree_structure|aggregation|record_linkage",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "record_linkage"
+}

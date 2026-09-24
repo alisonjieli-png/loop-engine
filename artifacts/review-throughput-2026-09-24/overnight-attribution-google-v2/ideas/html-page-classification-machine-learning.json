@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "39-3021.00",
+  "occupation_title": "Motion Picture Projectionists",
+  "task_reference": "Perform minor repairs, such as replacing worn sprockets, or notify maintenance personnel of the need for major repairs."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a html_page; the method performs classification; the use case is machine_learning. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "html_page",
+ "file_kind": "skill",
+ "id": "html-page-classification-machine-learning",
+ "known_wrong": "A plausible but wrong classification of a html_page is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "html_page|classification|machine_learning",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "machine_learning"
+}

@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "29-1051.00",
+  "occupation_title": "Pharmacists",
+  "task_reference": "Prepare sterile solutions or infusions for use in surgical procedures, emergency rooms, or patients' homes."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a date_and_time; the method performs classification; the use case is financial_reconciliation. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "date_and_time",
+ "file_kind": "skill",
+ "id": "date-and-time-classification-financial-reconciliation",
+ "known_wrong": "A plausible but wrong classification of a date_and_time is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "date_and_time|classification|financial_reconciliation",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "financial_reconciliation"
+}

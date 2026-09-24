@@ -1,0 +1,27 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "15-1211.00",
+  "occupation_title": "Computer Systems Analysts",
+  "task_reference": "Test, maintain, and monitor computer programs and systems, including coordinating the installation of computer programs and systems."
+ },
+ "brief": "Propose one original harness method for a Logisticians whose task is: Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.. The method's input is a sql_query_log; the method performs aggregation; the use case is documentation. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "sql_query_log",
+ "id": "sql-query-log-aggregation-documentation",
+ "known_wrong": "A plausible but wrong aggregation of a sql_query_log is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "sql_query_log|aggregation|documentation",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "documentation"
+}

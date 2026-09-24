@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "47-2011.00",
+  "occupation_title": "Boilermakers",
+  "task_reference": "Inspect assembled vessels or individual components, such as tubes, fittings, valves, controls, or auxiliary mechanisms, to locate any defects."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a email_address; the method performs aggregation; the use case is research_analysis. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "email_address",
+ "file_kind": "skill",
+ "id": "email-address-aggregation-research-analysis",
+ "known_wrong": "A plausible but wrong aggregation of a email_address is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "email_address|aggregation|research_analysis",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "research_analysis"
+}

@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "23-1022.00",
+  "occupation_title": "Arbitrators, Mediators, and Conciliators",
+  "task_reference": "Conduct initial meetings with disputants to outline the arbitration process, settle procedural matters, such as fees, or determine details, such as witness numbers or time requirements."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a json_array; the method performs classification; the use case is entity_resolution. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "json_array",
+ "file_kind": "skill",
+ "id": "json-array-classification-entity-resolution",
+ "known_wrong": "A plausible but wrong classification of a json_array is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "json_array|classification|entity_resolution",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "entity_resolution"
+}

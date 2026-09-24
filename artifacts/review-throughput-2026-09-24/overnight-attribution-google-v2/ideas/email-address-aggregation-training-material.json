@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "47-2011.00",
+  "occupation_title": "Boilermakers",
+  "task_reference": "Lay out plate, sheet steel, or other heavy metal and locate and mark bending and cutting lines, using protractors, compasses, and drawing instruments or templates."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a email_address; the method performs aggregation; the use case is training_material. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "email_address",
+ "file_kind": "skill",
+ "id": "email-address-aggregation-training-material",
+ "known_wrong": "A plausible but wrong aggregation of a email_address is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "email_address|aggregation|training_material",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "training_material"
+}

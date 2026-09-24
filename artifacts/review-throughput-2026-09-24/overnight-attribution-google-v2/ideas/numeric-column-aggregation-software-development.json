@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "23-2011.00",
+  "occupation_title": "Paralegals and Legal Assistants",
+  "task_reference": "Meet with clients and other professionals to discuss details of cases."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a numeric_column; the method performs aggregation; the use case is software_development. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "numeric_column",
+ "file_kind": "skill",
+ "id": "numeric-column-aggregation-software-development",
+ "known_wrong": "A plausible but wrong aggregation of a numeric_column is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "numeric_column|aggregation|software_development",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "software_development"
+}

@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "35-2021.00",
+  "occupation_title": "Food Preparation Workers",
+  "task_reference": "Carry food supplies, equipment, and utensils to and from storage and work areas."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a vector; the method performs aggregation; the use case is record_linkage. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "vector",
+ "file_kind": "skill",
+ "id": "vector-aggregation-record-linkage",
+ "known_wrong": "A plausible but wrong aggregation of a vector is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "vector|aggregation|record_linkage",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "record_linkage"
+}

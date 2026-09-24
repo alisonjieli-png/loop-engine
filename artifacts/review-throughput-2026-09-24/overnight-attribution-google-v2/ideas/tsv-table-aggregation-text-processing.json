@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "45-1011.00",
+  "occupation_title": "First-Line Supervisors of Farming, Fishing, and Forestry Workers",
+  "task_reference": "Observe fish and beds or ponds to detect diseases, monitor fish growth, determine quality of fish, or determine completeness of harvesting."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a tsv_table; the method performs aggregation; the use case is text_processing. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "tsv_table",
+ "file_kind": "skill",
+ "id": "tsv-table-aggregation-text-processing",
+ "known_wrong": "A plausible but wrong aggregation of a tsv_table is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "tsv_table|aggregation|text_processing",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "text_processing"
+}

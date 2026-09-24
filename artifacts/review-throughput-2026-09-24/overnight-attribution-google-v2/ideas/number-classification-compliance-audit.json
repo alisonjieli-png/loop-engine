@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "49-2094.00",
+  "occupation_title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment",
+  "task_reference": "Operate equipment to demonstrate proper use or to analyze malfunctions."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a number; the method performs classification; the use case is compliance_audit. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "number",
+ "file_kind": "skill",
+ "id": "number-classification-compliance-audit",
+ "known_wrong": "A plausible but wrong classification of a number is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "number|classification|compliance_audit",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "compliance_audit"
+}

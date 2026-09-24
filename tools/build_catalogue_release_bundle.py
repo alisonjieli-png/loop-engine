@@ -91,8 +91,13 @@ def _package(folder, row, kind):
 
 
 def _attributes(row, review, recorded_at, batch):
-    return {"cited_source": row["reference"]["source_ref"].split("@", 1)[0], "origin_layer": review["source_layer"],
-            "catalogued_on": recorded_at, "batch": batch}
+    values = {"cited_source": row["reference"]["source_ref"].split("@", 1)[0], "origin_layer": review["source_layer"],
+              "catalogued_on": recorded_at, "batch": batch}
+    if "tier" in review:
+        # The library tier of the decision table (Verified or Community) travels with every served item, so it is
+        # shown and can be filtered on; a schema that does not declare it refuses the item.
+        values["tier"] = review["tier"]
+    return values
 
 
 def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="starter-catalogue"):

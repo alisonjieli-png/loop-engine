@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "51-2031.00",
+  "occupation_title": "Engine and Other Machine Assemblers",
+  "task_reference": "Fasten or install piping, fixtures, or wiring and electrical components to form assemblies or subassemblies, using hand tools, rivet guns, or welding equipment."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a sql_query_log; the method performs classification; the use case is compliance_audit. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "sql_query_log",
+ "file_kind": "skill",
+ "id": "sql-query-log-classification-compliance-audit",
+ "known_wrong": "A plausible but wrong classification of a sql_query_log is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "sql_query_log|classification|compliance_audit",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "compliance_audit"
+}

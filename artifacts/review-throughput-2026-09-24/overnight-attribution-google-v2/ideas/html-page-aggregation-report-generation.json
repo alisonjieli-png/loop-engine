@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "39-2011.00",
+  "occupation_title": "Animal Trainers",
+  "task_reference": "Feed or exercise animals or provide other general care, such as cleaning or maintaining holding or performance areas."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a html_page; the method performs aggregation; the use case is report_generation. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "html_page",
+ "file_kind": "skill",
+ "id": "html-page-aggregation-report-generation",
+ "known_wrong": "A plausible but wrong aggregation of a html_page is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "html_page|aggregation|report_generation",
+ "operation": "aggregation",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "report_generation"
+}

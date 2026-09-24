@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "13-1041.00",
+  "occupation_title": "Compliance Officers",
+  "task_reference": "Collect fees for licenses."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a identifier; the method performs classification; the use case is documentation. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "identifier",
+ "file_kind": "skill",
+ "id": "identifier-classification-documentation",
+ "known_wrong": "A plausible but wrong classification of a identifier is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "identifier|classification|documentation",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "documentation"
+}

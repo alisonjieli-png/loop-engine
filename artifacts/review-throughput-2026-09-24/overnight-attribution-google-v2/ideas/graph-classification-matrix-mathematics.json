@@ -1,0 +1,28 @@
+{
+ "applicability": {
+  "facet": "job_title",
+  "facet_dimensions": [
+   "job_title",
+   "seniority",
+   "location",
+   "language",
+   "company_archetype",
+   "project_stage",
+   "harness",
+   "model"
+  ],
+  "occupation_code": "49-2021.00",
+  "occupation_title": "Radio, Cellular, and Tower Equipment Installers and Repairers",
+  "task_reference": "Install, connect, or test underground or aboveground grounding systems."
+ },
+ "brief": "Propose one original harness method for a Chief Executives whose task is: Direct or coordinate an organization's financial or budget activities to fund operations, maximize investments, or increase efficiency.. The method's input is a graph; the method performs classification; the use case is matrix_mathematics. The method must name its trigger, typed input, typed output, effects, stop condition, and the known-wrong case it must catch.",
+ "datatype": "graph",
+ "file_kind": "skill",
+ "id": "graph-classification-matrix-mathematics",
+ "known_wrong": "A plausible but wrong classification of a graph is accepted as correct.",
+ "lifecycle": "candidate",
+ "method_signature": "graph|classification|matrix_mathematics",
+ "operation": "classification",
+ "record_type": "harness_idea_record/v1",
+ "use_case": "matrix_mathematics"
+}
