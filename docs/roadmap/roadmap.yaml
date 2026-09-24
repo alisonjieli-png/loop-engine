@@ -1056,6 +1056,7 @@ continuation:
       verification_cases:
         - {id: D-29-T01, proof_level: operational_drill, scenario: "Run the daily state review on two consecutive days.", pass_condition: "Both reports exist, name their inputs and differ only where the state changed.", negative_control: "A run that edits a repository must be refused by its effect policy."}
         - {id: D-29-T02, proof_level: local_contract, scenario: "Change one harness's documented instruction file name in a fixture.", pass_condition: "The profile refresh proposes a candidate profile change with evidence.", negative_control: "A silent profile edit must fail the check."}
+        - {id: D-29-T03, proof_level: local_contract, scenario: "Give a recurring job the effect policy of reports only and let its workflow attempt a push to main.", pass_condition: "The push is refused before it leaves the machine and the refusal is recorded with the job and its policy.", negative_control: "With the effect policy check removed, a mutant must let the push through and fail a named test."}
       rollback: "Pause a recurring job through its scheduling state; its past reports stay."
     - id: D-30
       title: "A release train for upgrades, features, packages and engines"

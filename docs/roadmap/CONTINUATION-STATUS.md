@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `142e277f8dafa74eccf934041cd20a412a755f95c49797fa4c5331e5e1d03d28`.
+Plan fingerprint: `a5cc2fce5c5f660283699caddd21b781b7e377045730209168295fd21d635312`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -982,6 +982,7 @@ Verification cases are required evidence, not recorded passes.
 |---|---|---|---|---|
 | D-29-T01 | operational_drill | Run the daily state review on two consecutive days. | Both reports exist, name their inputs and differ only where the state changed. | A run that edits a repository must be refused by its effect policy. |
 | D-29-T02 | local_contract | Change one harness's documented instruction file name in a fixture. | The profile refresh proposes a candidate profile change with evidence. | A silent profile edit must fail the check. |
+| D-29-T03 | local_contract | Give a recurring job the effect policy of reports only and let its workflow attempt a push to main. | The push is refused before it leaves the machine and the refusal is recorded with the job and its policy. | With the effect policy check removed, a mutant must let the push through and fail a named test. |
 
 ### D-30: A release train for upgrades, features, packages and engines
 
