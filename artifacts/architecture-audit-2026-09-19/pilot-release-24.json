@@ -1,0 +1,99 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 24,
+  "source_revision": "961dc906a452995a0cf1db0a2ca4e33b9cf24736",
+  "continuous_integration_run": 35998911942,
+  "deployment_workflow_run": 36001057951,
+  "image_digest": "sha256:e538318deef9ab06aeb34f591d2617aae7296879b0efdbaf72f54a69bdf1c7ab",
+  "deployed_at": "2026-09-24T12:47:19Z",
+  "deploy_setting_after": "false",
+  "rollback_fly_release": 23,
+  "rollback_image_digest": "sha256:5fc60a3ded5522b0a6e8b4b3dc96e007f7bb39d5786d8c87993cb18662d6a10b",
+  "rollback_note": "Release 23 predates the account origin guard and the account policy block; rolling back needs the two host blocks removed first and would reopen the provider's public sign-up as a way in, so close registration before any rollback.",
+  "secrets_staged_then_applied": [
+    "BALTOR_IDENTITY_SERVICE_KEY",
+    "BALTOR_MAIL_API_KEY"
+  ],
+  "host_file_changes": [
+    {
+      "at": "2026-09-24T12:48:02Z",
+      "backup": "/data/host.json.before-release-24-accounts-20260924T124802Z",
+      "change": "added account_email (sign-up closed, recovery open) and accounts (two superadmin entries for the owner's addresses)"
+    },
+    {
+      "at": "2026-09-24T12:59:56Z",
+      "backup": "/data/host.json.before-open-registration-20260924T125956Z",
+      "change": "opened registration: account_email.signup_enabled, browser_identity.registration_enabled and browser_identity.email_signup_enabled set to true"
+    },
+    {
+      "at": "2026-09-24T13:04:09Z",
+      "backup": "/data/host.json.before-staff-add-20260924T130409Z",
+      "change": "added one checking account as a temporary superadmin for the live dashboard check"
+    },
+    {
+      "at": "2026-09-24T13:10:20Z",
+      "backup": "/data/host.json.before-staff-remove-20260924T131020Z",
+      "change": "removed the temporary superadmin; staff is the owner's two entries again"
+    }
+  ],
+  "account_marking": {
+    "plan_digest": "ca3ea5f77542efd3b140fe4b6620a1391a912450e55c362d89bb68b37cf6f57c",
+    "provider_users": 2,
+    "changes": 0,
+    "left_unmarked": 2
+  },
+  "catalogue_release_published": {
+    "release_id": "69da7ead21f928d27aab083f9185cd119f343f67fd22f6eb7f443c6cd0a13765",
+    "previous_release_id": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75",
+    "bundle_digest": "df669af5d1a29d65160d43a5cd05d4d97d21ed6fda13129d1826e41166ca27ac",
+    "items": 43,
+    "changed": 43,
+    "reason": "the accounts release re-anchored the starter catalogue to db188909, which changes every body digest; the homepage printed the new digests while the store still served the previous release"
+  },
+  "live_checks": {
+    "http_addresses_200": [
+      120,
+      120
+    ],
+    "same_capabilities": true,
+    "pi_extension_served_byte_for_byte": [
+      8,
+      8
+    ],
+    "hosted_browser_checks_per_hostname_before_opening": [
+      163,
+      163
+    ],
+    "catalogue_with_homepage_digest_guard": [
+      7,
+      7
+    ],
+    "service": [
+      19,
+      19
+    ],
+    "live_account_journeys": [
+      11,
+      11
+    ],
+    "live_staff_dashboard": [
+      10,
+      12
+    ],
+    "live_staff_dashboard_failures": "two checks of the checking script itself: unconfirmed checking accounts have no Baltor account to switch off, and each action's message replaces the list summary; the list read afterwards showed 0 of 10 founding places used and every activated checking account without a free plan",
+    "physical_model_calls": 0,
+    "hosted_browser_checks_per_hostname_registration_open": [
+      163,
+      163
+    ]
+  },
+  "failed_first_attempts_preserved": [
+    "service-check.json: the digest lookup read the wrong manifest field, so the check ran with no digest; the successor passed 19 of 19",
+    "live-account-journeys.json and -diagnostic-2.json: the script clicked Confirm before the page had loaded its sign-in settings, and the page refused with the link unused; -diagnostic-3 retried the click and passed",
+    "live-staff-journey.json and -2.json: loading /admin by address signs the in-memory session out, then a slow handshake stopped the run; -3 opened Administration inside the page"
+  ],
+  "observed_network_limit": "From this workstation, TLS handshakes to Fly's edge stalled for 3 to 7 seconds or failed on about a third of requests at about 13:15 UTC, including fly.io itself, while GitHub and the inbox service connected normally and Fly reported all systems operational. Inferred: the path from this workstation to Fly's edge, not the service.",
+  "checking_accounts": "five accounts with baltor-check- addresses at a disposable inbox service: two never confirmed, two switched off, and the one that served as the temporary superadmin left on with no plan; none holds a founding place",
+  "new_registration_open": true,
+  "evidence_folder": "artifacts/release-24-2026-09-24"
+}

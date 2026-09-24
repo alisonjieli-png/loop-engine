@@ -3,17 +3,17 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec028695207ffdf`.
+Source fingerprint: `sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba209f1be5dabbeb`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 41 |
+| Being built now | 40 |
 | Can start next | 13 |
 | Waiting on earlier work | 70 |
 | Blocked | 2 |
-| Done | 42 |
+| Done | 43 |
 
 ## Being built now
 
@@ -25,7 +25,6 @@ Source fingerprint: `sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec0
 | S-6.67 | Serve every built page and hostname surface | building | S-6.33 |
 | S-6.65 | Open public registration with email-first sign-up | building | S-6.24, S-6.46 |
 | S-6.85 | One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code | building | S-6.65 |
-| S-6.89 | Superadmin user management and the first 10 accounts free each month | building | S-6.85 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | building | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
@@ -202,7 +201,7 @@ Source fingerprint: `sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec0
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 0 of 8 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 1 of 8 |
 | D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
@@ -233,9 +232,10 @@ Source fingerprint: `sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec0
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (42 steps)
+## Done (43 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
+- S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)

@@ -3271,7 +3271,7 @@ steps:
       - "every page, email and command that named an old way in is changed in the same release"
     adversarial: "An account created through the provider's raw endpoint, a customer key issued by hand, a staff role granted through configuration instead of code, and a waiting-list entry that opens an account must each be refused by a named check."
     acceptance: "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account."
-    evidence: "September 23, 2026, the owner: \"We don't want weird orphaned ways of signing up, we want a complete fully working SaaS, we can have superadmin accounts, and developer accounts, and analytics accounts with various permissions that are hardcoded for internal staff but nothing else weird\", and \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status\". September 24, 2026: the one way in, the three staff roles with permissions in code, superadmin account administration with audit records, free monthly Baltor Pro with monthly renewal and the race-safe founding offer are built and checked locally; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md."
+    evidence: "September 23, 2026, the owner: \"We don't want weird orphaned ways of signing up, we want a complete fully working SaaS, we can have superadmin accounts, and developer accounts, and analytics accounts with various permissions that are hardcoded for internal staff but nothing else weird\", and \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status\". September 24, 2026: the one way in, the three staff roles with permissions in code, superadmin account administration with audit records, free monthly Baltor Pro with monthly renewal and the race-safe founding offer are built and checked locally; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md. Fly release 24 on September 24, 2026 made Baltor's own sign-up the only way to an account that can sign in, and registration opened that day. Live: an address first registered through the identity provider's own public sign-up was taken over by Baltor's sign-up, and afterwards the provider refused that first password (artifacts/release-24-2026-09-24/live-account-journeys-4.json). The provider's own sign-up is still open at the provider, because its authorization could not be renewed from engineering's side."
     next_local_work: "After the release and the marking command, retire the remaining ways in as history: the invitation command, operator-issued customer keys and the waiting list routes as a way to open an account; page the superadmin account list before it passes a few thousand accounts."
   - id: S-6.86
     phase: 6
@@ -3318,7 +3318,7 @@ steps:
   - id: S-6.89
     phase: 6
     title: "Superadmin user management and the first 10 accounts free each month"
-    status: building
+    status: live_qualified
     depends_on: [S-6.85]
     boundary: [src/loop_engine/core/service_runtime/http.py, src/loop_engine/core/service_runtime/web_assets/index.html]
     verify:
@@ -3327,8 +3327,8 @@ steps:
       - "developer and analytics staff cannot change accounts or billing"
     adversarial: "An eleventh free account, a grant by a non-superadmin, and an action without an audit record must each be refused by a named check."
     acceptance: "The owner manages users from one dashboard, and the first 10 users can verify the product for free."
-    evidence: "September 23, 2026, the owner: \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status, etc\". September 24, 2026: built and checked locally with the accounts release; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md."
-    next_local_work: "Merge the accounts release, apply its host configuration, release, and verify the dashboard and the founding offer live."
+    evidence: "September 23, 2026, the owner: \"for testing and verification can you make the first 10 users be free (they get monthly for free) and also allow me to manage users in a superadmin dashboard and grant some of them free monthly status, etc\". September 24, 2026: built and checked locally with the accounts release; see docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md. Live on September 24, 2026 (Fly release 24, main 961dc906, artifacts/architecture-audit-2026-09-19/pilot-release-24.json): the first account from Baltor's sign-up landed on \"Your account includes Baltor Pro\"; a superadmin saw the account list and the founding count, revoked and granted free monthly Baltor Pro, switched an account off and on, and a switched-off account was refused at sign-in (artifacts/release-24-2026-09-24/live-staff-journey-3.json). Verified offline, not live: the race that cannot exceed ten founding accounts, the developer and analytics refusals, and the audit record written with each action (docs/verification/ACCOUNTS-ONE-WAY-IN-2026-09-24.md)."
+    next_local_work: "The owner signs up with one of the two superadmin addresses named in the host file; page the account list before it passes a few thousand accounts."
   - id: S-6.90
     phase: 6
     title: "Side project: an entry to the Kaggle Gemma 4 Developer Agent competition and paper track"

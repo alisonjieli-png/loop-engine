@@ -310,6 +310,18 @@ sign-up request for an unconfirmed address keeps the first password and
 cancels the first link, so whoever registers an address first would set its
 password and the real owner of the address would activate that account by
 confirming it. Until both changes are live, registration stays closed.
+On September 24, 2026 engineering could not close the provider's own sign-up:
+the provider authorization's refresh was refused, and a refused refresh needs
+the provider's sign-in again. The owner had said on September 23, 2026: "You do
+not need my input to fix these remaining 'needs you' items, you can use your
+judgement to fix these". Release 24 closes that way in at the service instead.
+An account that Baltor's own sign-up did not create cannot sign in or activate,
+and it is archived and replaced when the owner of its address signs up through
+Baltor. A live check that day registered an address through the provider's own
+sign-up first, and after Baltor's sign-up the provider refused that first
+password. Engineering therefore counted the second change as live and opened
+registration on September 24, 2026. Closing the provider's own sign-up is still
+worth doing once its authorization is renewed.
 Intelligence is published only after
 the independent review process in the decision table approves it, and a
 producer never approves its own work. Everything else that engineering can
@@ -344,12 +356,13 @@ direction. Each stands until the owner changes it.
 | Decision | Choice and reason |
 |---|---|
 | Approval of intelligence items | Delegated to an independent review process. Reviewers who did not write an item approve or reject it against written criteria, and the approval record names them. A producer still never approves its own work. The owner can withdraw any item. |
-| Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. Invited beta users are free through an operator entitlement. |
+| Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. The first 10 accounts from Baltor's own sign-up hold Baltor Pro free each month, and a superadmin can grant or revoke free monthly Baltor Pro for any account (the owner, September 23, 2026). |
 | Payments | Live since September 21, 2026. The first call was to build and qualify everything in Stripe test mode and to wait for the owner's identity and bank verification. The owner activated the live account and supplied its key that morning. The live account `acct_1UHZ972IF9bCskLc` is separate from the sandbox `acct_1UHZ9KCCxLfArYED`, with charges and payouts enabled and nothing outstanding. Checkout and the customer portal were proven against the deployed service and nobody was charged, as the [live payments record](artifacts/architecture-audit-2026-09-19/live-payments-enabled-1.json) shows. The key is in the system keyring under `stripe-live` and reaches a command only through `tools/operator_credentials.py`. |
 | Sign-up email | The service creates the confirmation link through the identity provider's administration interface and sends its own email, so the whole journey stays on the baltor.ai domain and needs no change to provider settings that engineering cannot reach. |
 | Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. It reached `main` and the live service in release 13 on September 22, 2026. |
 | Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
 | Hosting plans | Stay on the free Supabase and Resend plans. The owner, September 22, 2026: "Why do we need supabase and resend paid plans? I thought we don't need that?" The free limits (a project pauses after a week without activity; 100 emails a day) fit an invited beta; engineering keeps the identity project active and watches the email cap, and asks again only when usage nears a limit. |
+| Public registration | Open since September 24, 2026, release 24. There is one way in: Baltor's own sign-up, with the address first, then the emailed link, then the password. Staff roles are fixed in code (superadmin, developer and analytics), and the host file only names who holds one. The reason and the live evidence are in the authority text above and in the [release 24 record](artifacts/architecture-audit-2026-09-19/pilot-release-24.json). |
 | Operator and contact | Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States, as the owner gave on September 22, 2026. The privacy notice names it. |
 | A library of 100,000 harness files | The owner, September 22, 2026: 10,000 fully searchable, retrievable, indexed harness intelligence files; material without a licence that allows direct copying is used only as inspiration for an original rewrite; reviews by Claude Code, Kimi, GLM, other Ollama models and Codex models; managed releases of new files; user settings with good defaults. Later the same evening: "we need to move towards a fully working SaaS, better UI/UX, and 100K harness files". So 10,000 is the first milestone and 100,000 the target, counted as distinct approved packages of any file type a harness reads, as the Intelligence rules define harness intelligence. Engineering's plan is roadmap step S-6.40 and the steps it names. |
 

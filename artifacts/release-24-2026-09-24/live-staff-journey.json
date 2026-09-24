@@ -1,0 +1,32 @@
+{
+  "record_type": "live_account_journeys/v1",
+  "origin": "https://baltor.ai",
+  "observed_at": "2026-09-24T13:05:05.886Z",
+  "staff_step": true,
+  "passed": 2,
+  "total": 3,
+  "all_passed": false,
+  "steps": [
+    {
+      "journey": "setup",
+      "name": "registration_is_open",
+      "passed": true,
+      "registration_available": true,
+      "signup_available": true
+    },
+    {
+      "journey": "staff",
+      "name": "the_superadmin_signs_in",
+      "passed": true,
+      "path": "/app",
+      "message": "Signed in. Your account permissions come from the service."
+    },
+    {
+      "journey": "run",
+      "name": "journey_completed",
+      "passed": false,
+      "error": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#staff-admin') to be visible\u001b[22m\n\u001b[2m    64 × locator resolved to hidden <section hidden=\"\" class=\"panel\" id=\"staff-admin\">…</section>\u001b[22m\n"
+    }
+  ],
+  "limits": "Disposable inboxes at a public service; real accounts are created. No password, token or message body is recorded."
+}

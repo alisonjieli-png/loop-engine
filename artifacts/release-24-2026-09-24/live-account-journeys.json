@@ -1,0 +1,38 @@
+{
+  "record_type": "live_account_journeys/v1",
+  "origin": "https://baltor.ai",
+  "observed_at": "2026-09-24T13:01:24.326Z",
+  "staff_step": false,
+  "passed": 3,
+  "total": 4,
+  "all_passed": false,
+  "steps": [
+    {
+      "journey": "setup",
+      "name": "registration_is_open",
+      "passed": true,
+      "registration_available": true,
+      "signup_available": true
+    },
+    {
+      "journey": "fresh",
+      "name": "get_started_takes_the_address",
+      "passed": true
+    },
+    {
+      "journey": "fresh",
+      "name": "the_message_comes_from_baltor_and_links_to_auth_confirm",
+      "passed": true,
+      "from": "accounts@mail.baltor.ai",
+      "subject": "Confirm your Baltor account",
+      "link_host": "baltor-pilot.fly.dev"
+    },
+    {
+      "journey": "run",
+      "name": "journey_completed",
+      "passed": false,
+      "error": "TimeoutError: page.waitForFunction: Timeout 60000ms exceeded."
+    }
+  ],
+  "limits": "Disposable inboxes at a public service; real accounts are created. No password, token or message body is recorded."
+}

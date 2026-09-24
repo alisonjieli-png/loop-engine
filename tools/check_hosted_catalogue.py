@@ -4,7 +4,10 @@ The review record decides what may be served, the generated manifest is what
 the release carries, and this command asks the running service what it actually
 answers with. It reads only: it lists the items one account may see, searches
 for them, and asks for each rejected item by its exact identity to confirm the
-service refuses. It makes no body read and adds no usage record.
+service refuses. It makes no body read and adds no usage record. It also reads
+the public homepage and asks the service for the manifest of each item the
+homepage demonstration names, because the page prints each item's digest as a
+recorded fact from the served library.
 
 The account credential resolves from this workstation's system keyring. It is
 looked up by the origin's hostname, or by --credential-host when one deployment
@@ -20,6 +23,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -27,6 +31,31 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 REVIEW_RECORD = "examples/29_intelligence_service/starter-catalogue/reviews.json"
 RELEASE_MANIFEST = "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"
+
+
+#: Six catalogue disclosure checks and the homepage demonstration digest check.
+PLANNED_CHECKS = 7
+#: One item of the homepage demonstration: its identity and the digest prefix it prints.
+DEMONSTRATION_ITEM = re.compile(r'data-demo-item="([a-z0-9_]+)"[^>]*>.*?data-fact="digest">([0-9a-f]{8})<', re.S)
+
+
+def demonstration_digests(page):
+    """Each item the homepage demonstration names, with the digest prefix it prints."""
+    return dict(DEMONSTRATION_ITEM.findall(page))
+
+
+def demonstration_mismatches(shown, served):
+    """Every item whose printed digest is not the start of the digest the service serves for it.
+
+    On September 24, 2026 release 24 re-anchored the starter catalogue, which changes
+    every body digest, and the homepage printed the new digests while the service
+    still served the previous catalogue release. The browser checks passed, because
+    they compare the page with the manifest packaged in the image, not with the
+    running service.
+    """
+    return {identity: {"shown": prefix, "served": (served.get(identity) or "")[:8]}
+            for identity, prefix in sorted(shown.items())
+            if not (served.get(identity) or "").startswith(prefix)}
 
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -128,6 +157,20 @@ def main():
         check("every_rejected_item_is_refused_by_direct_address",
               all(row["status"] in (403, 404) for row in refusals.values()),
               json.dumps(sorted({row["code"] for row in refusals.values()})))
+        # The public homepage is read without the account key.
+        calls += 1
+        with opener.open(urllib.request.Request(args.origin.rstrip("/") + "/", None,
+                                                {"Accept": "text/html"}), timeout=30) as response:
+            shown = demonstration_digests(response.read(4_000_000).decode("utf-8", "replace"))
+        served_digests = {}
+        for identity in shown:
+            status, manifest = request("/api/v1/provisioning",
+                {"record_type": "service_provisioning_request/v1", "operation": "manifest",
+                 "identity": identity})
+            served_digests[identity] = str(manifest.get("result", {}).get("digest", "")) if status == 200 else ""
+        mismatched = demonstration_mismatches(shown, served_digests)
+        check("the_homepage_demonstration_prints_the_digests_the_service_serves",
+              bool(shown) and not mismatched, json.dumps(mismatched or sorted(shown)))
     except Exception as error:  # noqa: BLE001 - an interrupted check is reported, not hidden
         checks.append({"name": "remaining_checks_interrupted", "passed": False,
                        "error_type": type(error).__name__, "detail": str(error)[:300]})
@@ -142,8 +185,8 @@ def main():
               "checker_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               "review_record": REVIEW_RECORD, "release_manifest": RELEASE_MANIFEST,
               "checks": checks, "passed": sum(row["passed"] for row in checks),
-              "executed": len(checks), "planned_checks": 6,
-              "all_passed": len(checks) == 6 and all(row["passed"] for row in checks),
+              "executed": len(checks), "planned_checks": PLANNED_CHECKS,
+              "all_passed": len(checks) == PLANNED_CHECKS and all(row["passed"] for row in checks),
               "http_calls": calls, "body_reads": 0, "usage_records_added": 0,
               "physical_model_calls": 0, "credential_printed": False}
     with args.output.open("x") as stream:

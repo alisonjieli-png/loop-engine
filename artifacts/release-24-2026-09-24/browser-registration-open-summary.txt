@@ -1,0 +1,9 @@
+baltor.ai exit 0 "passed":163,"total":163
+www.baltor.ai exit 0 "passed":163,"total":163
+app.baltor.ai exit 0 "passed":163,"total":163
+baltor-pilot.fly.dev exit 0 "passed":163,"total":163
+demo.baltor.ai exit 0 "passed":163,"total":163
+examples.baltor.ai exit 0 "passed":163,"total":163
+docs.baltor.ai exit 0 "passed":163,"total":163
+status.baltor.ai exit 0 "passed":163,"total":163
+done

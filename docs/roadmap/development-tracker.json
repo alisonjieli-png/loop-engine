@@ -1,9 +1,9 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 42,
+  "done": 43,
   "next": 13,
-  "now": 41,
+  "now": 40,
   "waiting": 70
  },
  "lanes": {
@@ -51,6 +51,21 @@
     "title": "Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25",
     "waiting_on": [
      "S-6.29"
+    ]
+   },
+   {
+    "acceptance": "The owner manages users from one dashboard, and the first 10 users can verify the product for free.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85"
+    ],
+    "id": "S-6.89",
+    "next_local_work": "The owner signs up with one of the two superadmin addresses named in the host file; page the account list before it passes a few thousand accounts.",
+    "phase": 6,
+    "status": "live_qualified",
+    "title": "Superadmin user management and the first 10 accounts free each month",
+    "waiting_on": [
+     "S-6.85"
     ]
    },
    {
@@ -857,21 +872,6 @@
     "title": "One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code",
     "waiting_on": [
      "S-6.65"
-    ]
-   },
-   {
-    "acceptance": "The owner manages users from one dashboard, and the first 10 users can verify the product for free.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.85"
-    ],
-    "id": "S-6.89",
-    "next_local_work": "Merge the accounts release, apply its host configuration, release, and verify the dashboard and the founding offer live.",
-    "phase": 6,
-    "status": "building",
-    "title": "Superadmin user management and the first 10 accounts free each month",
-    "waiting_on": [
-     "S-6.85"
     ]
    },
    {
@@ -3574,11 +3574,12 @@
     "D-17",
     "D-24"
    ],
-   "done_steps": 0,
+   "done_steps": 1,
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 4,
+    "building": 3,
+    "live_qualified": 1,
     "proposed": 4
    },
    "steps": [
@@ -3749,5 +3750,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:53dfbbeadbebe749262f13ae01e823615e81ce04be5d9d514ec028695207ffdf"
+ "source_fingerprint": "sha256:5e93f98602311d6d9c037b92c44c01d27caa374792da5e6dba209f1be5dabbeb"
 }

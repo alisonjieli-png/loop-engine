@@ -7062,6 +7062,18 @@ entries:
     classification: RESOURCE_OR_TEMPLATE
     created_on: 2026-09-24
     expires_on: 2027-09-24
+  - finding_id: hardcoding.c21036e4c588601c5e8c4505
+    owner: tools.check_live_account_journeys.mjs:usage
+    rationale: "The origin in the usage line of the live account journey check. The check takes the origin as its first argument and refuses anything but an exact HTTPS origin; the address in the comment only shows how to call it."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.038317dd10e5f697f67ff2ba
+    owner: tools.check_live_account_journeys.mjs:url
+    rationale: "The public disposable inbox service the live account journey check uses to receive Baltor's confirmation messages. It is the checker's test mailbox, not a runtime route of the service, and no credential of Baltor is sent to it."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
