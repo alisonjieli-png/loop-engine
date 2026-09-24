@@ -480,3 +480,6 @@ def run_checks(check, root):
         _runbook_checks(check, folder / "runbook")
     except Exception:  # noqa: BLE001 - a group that stops part way is a failure with a name
         check("the_runbook_checks_ran_to_completion", False)
+    (folder / "follow").mkdir()
+    from .catalogue_follow_checks import run_checks as follow_runbook_checks
+    follow_runbook_checks(check, folder / "follow")

@@ -107,5 +107,50 @@ class CatalogueReleaseRunbook(unittest.TestCase):
         self.assertIn("--isolated-account pilot-boundary", self.text)
 
 
+FOLLOW_SECTION = "### Let new accounts follow the catalogue release"
+DIAGNOSTIC_ACCOUNTS = ("pilot-boundary", "billing-check", "billing-check-2", "billing-check-3", "baltor-admin")
+
+
+def follow_section(text):
+    start = text.index(FOLLOW_SECTION)
+    following = re.search(r"^#{2,3} ", text[start + len(FOLLOW_SECTION):], flags=re.MULTILINE)
+    return text[start:start + len(FOLLOW_SECTION) + following.start()] if following else text[start:]
+
+
+def follow_findings(text):
+    """What is wrong with the follow section; empty when it runs exactly the replayed steps in order."""
+    from loop_engine.core.service_runtime.catalogue_follow_checks import FOLLOW_CUSTOMERS_STEP, FOLLOW_PREVIEW_STEP
+    findings = []
+    commands = service_commands(text)
+    if commands != [FOLLOW_PREVIEW_STEP, FOLLOW_CUSTOMERS_STEP]:
+        findings.append("the section runs other commands than the replay: " + repr(commands))
+    for needed in ('"new_accounts_follow_release": true', '"starter_identities": []', "invalid_starter_identities",
+                   "not_granted_every_item", "already_following", *DIAGNOSTIC_ACCOUNTS):
+        if needed not in text:
+            findings.append("the section does not name " + needed)
+    return findings
+
+
+class FollowReleaseRunbook(unittest.TestCase):
+    def setUp(self):
+        self.text = follow_section(RUNBOOK.read_text(encoding="utf-8"))
+
+    def test_the_section_runs_exactly_the_replayed_steps(self):
+        self.assertEqual(follow_findings(self.text), [])
+
+    def test_a_step_that_names_a_diagnostic_account_is_refused(self):
+        changed = self.text.replace("--all-tenants\"", "--tenant pilot-boundary\"")
+        self.assertNotEqual(changed, self.text)
+        self.assertTrue(follow_findings(changed))
+
+    def test_a_section_without_the_preview_is_refused(self):
+        changed = self.text.replace("loop-engine service catalogue-status --config /data/host.json", "true")
+        self.assertNotEqual(changed, self.text)
+        self.assertTrue(follow_findings(changed))
+
+    def test_the_first_release_section_still_ends_before_this_one(self):
+        self.assertNotIn(FOLLOW_SECTION, section(RUNBOOK.read_text(encoding="utf-8")))
+
+
 if __name__ == "__main__":
     unittest.main()

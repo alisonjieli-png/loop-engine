@@ -219,6 +219,13 @@ class BrowserIdentityAdapter:
         email = result.get("email") if isinstance(result.get("email"), str) else ""
         return claims, VerifiedIdentity(claims["sub"], email.strip().lower(), origin["origin"])
 
+    def registration_for(self, subject):
+        """The account a verified identity of this provider gets: the starter list, or grants that follow the release."""
+        return SubjectTenantRegistration(
+            self._verifier.configuration.issuer, subject, self.configuration.namespace_prefix,
+            self.configuration.allowed_scopes, self._starter_bindings,
+            follows_active_release=self._follows_active_release)
+
     def activate(self, credential):
         """Create or find the account of a verified identity that this service created.
 
@@ -229,10 +236,7 @@ class BrowserIdentityAdapter:
         if self.configuration.registration_enabled is not True:
             raise ServiceRuntimeError("account_registration_unavailable")
         claims, identity = self._identity(credential)
-        activation = self.runtime.ensure_subject_tenant(SubjectTenantRegistration(
-            self._verifier.configuration.issuer, claims["sub"], self.configuration.namespace_prefix,
-            self.configuration.allowed_scopes, self._starter_bindings,
-            follows_active_release=self._follows_active_release))
+        activation = self.runtime.ensure_subject_tenant(self.registration_for(claims["sub"]))
         # A sign-up link a superadmin sent is completed first, so free monthly
         # Baltor Pro it asked for is held before the founding offer is weighed,
         # and a founding place is kept for someone who came on their own.

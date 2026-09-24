@@ -14,7 +14,8 @@ Moving accounts between the two engines
 ├── follow_active_release            the named accounts follow, with the denials given
 ├── follow_accounts_already_granted  every account that already receives every item the
 │                                    served view offers, and no other; an account that
-│                                    follows already keeps its denials
+│                                    follows already keeps its denials; named accounts
+│                                    can be kept fixed, and a preview writes nothing
 └── stop_following_release           one account returns to a version 1 snapshot of
                                      exactly what it receives from the served view now
 ```
@@ -188,7 +189,7 @@ def follow_active_release(runtime, tenant_ids, *, denials=(), clock=time.time):
             "tenants": list(tenants), "denials": len(tuple(denials)), "committed": True, "tenants_registered": 0}
 
 
-def follow_accounts_already_granted(runtime, view, *, denials=(), clock=time.time):
+def follow_accounts_already_granted(runtime, view, *, denials=(), keep_fixed=(), preview=False, clock=time.time):
     """Move every account that already receives every item `view` offers, and leave every other one alone.
 
     This is `--all-tenants`. Following then adds only what is published later,
@@ -198,13 +199,24 @@ def follow_accounts_already_granted(runtime, view, *, denials=(), clock=time.tim
     every record the decision moves, so a release, rollback or grant change
     committed meanwhile refuses it. The result names every account left alone
     and the reason.
+
+    `keep_fixed` names accounts that must keep their fixed list, such as the
+    diagnostic account that proves isolation; when the decision would move one
+    of them, the whole command is refused and nothing is written. `preview`
+    takes the same decision on a read-only store and writes nothing, so an
+    operator reads exactly which accounts would move before any does.
     """
     from .catalogue_releases import read_state
     from .runtime import GRANTS, TENANT
     denials = checked_denials(denials)
+    keep_fixed = tuple(dict.fromkeys(keep_fixed))
+    for tenant in keep_fixed:
+        identifier(tenant, "tenant identity")
+    if type(preview) is not bool:
+        raise ServiceRuntimeError("invalid_request", "preview is an explicit Boolean")
     catalog = runtime._catalog
     chosen, left_out = [], []
-    with catalog.store(write=True) as store:
+    with catalog.store(write=not preview) as store:
         state_row, state = read_state(catalog, store)
         require_served_state(state, view)
         for row in catalog.rows_all(store, TENANT):
@@ -217,12 +229,18 @@ def follow_accounts_already_granted(runtime, view, *, denials=(), clock=time.tim
             else:
                 chosen.append((tenant, tenant_row, previous))
         chosen.sort(key=lambda account: account[0])
-        if chosen:
+        protected = sorted(tenant for tenant, _row, _previous in chosen if tenant in keep_fixed)
+        if protected:
+            raise ServiceRuntimeError("kept_account_would_move",
+                                      "an account named with --keep-fixed holds every served item and would follow "
+                                      "the release; nothing was written: " + ", ".join(protected))
+        if chosen and not preview:
             _follow(runtime, store, state_row, chosen, denials, clock)
     return {"record_type": GRANT_ENGINE_RESULT_VERSION, "engine": FOLLOW_ACTIVE_RELEASE,
             "selection": ACCOUNTS_ALREADY_GRANTED, "tenants": [account[0] for account in chosen],
             "left_out": sorted(left_out, key=lambda row: row["tenant_id"]), "denials": len(denials),
-            "release_id": view.release_id or None, "committed": bool(chosen), "tenants_registered": 0}
+            "kept_fixed": list(keep_fixed), "preview": preview,
+            "release_id": view.release_id or None, "committed": bool(chosen) and not preview, "tenants_registered": 0}
 
 
 def stop_following_release(runtime, tenant_id, view, *, clock=time.time):

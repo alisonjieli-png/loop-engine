@@ -538,6 +538,63 @@ a fixed list with the command above; each answer must report `"grants": 0`.
 Leave `pilot-owner` following, run the isolation check, and only then publish
 the next release.
 
+### Let new accounts follow the catalogue release
+
+Found on September 24, 2026: the live host file sets
+`"new_accounts_follow_release": false` in its `catalogue` section and names the
+43 starter items under `browser_identity.starter_identities`. Every account
+that Baltor's sign-up creates is therefore given a fixed list of those 43 items
+and never receives an item published later. This procedure changes that.
+`catalogue_follow_checks.py` replays it step by step against a real service
+store, and `tools/test_catalogue_release_runbook.py` holds this section to the
+replayed commands.
+
+Before you start, check that the running release reports
+`follow_all_tenants_preview` in the answer of `catalogue-status`. A release
+without that field predates this procedure. `MACHINE` and `AS_SERVICE` are as
+in the section above.
+
+1. Fetch the host file and keep a copy on the volume:
+   `python3 tools/fly_operator.py --account ACCOUNT -- ssh sftp get /data/host.json host.json --app baltor-pilot`,
+   then `flyctl machine exec MACHINE "AS_SERVICE cp /data/host.json /data/host.json.before-follow-DATE" --app baltor-pilot`.
+2. In one edit, set `"new_accounts_follow_release": true` in the `catalogue`
+   section and `"starter_identities": []` in the `browser_identity` section.
+   The service refuses a host file that sets both, with
+   `invalid_starter_identities`, so the two changes go together. Put the file
+   back with `ssh sftp put`, restart the Machine and check that
+   `/api/v1/health` answers ready. From this moment a new account follows the
+   release.
+3. Read what the move would do, without writing anything:
+   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service catalogue-status --config /data/host.json" --app baltor-pilot --json`.
+   Under `follow_all_tenants_preview`, `would_follow` must name customer
+   accounts only, and `left_out` must name `pilot-boundary`, `billing-check`,
+   `billing-check-2`, `billing-check-3` and `baltor-admin` with the reason
+   `not_granted_every_item`, and `pilot-owner` with `already_following`. If
+   `would_follow` names any of those six accounts, stop: that account holds
+   every item, which the isolation check forbids, and it must first return to
+   an empty list.
+4. Move the customer accounts:
+   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --all-tenants" --app baltor-pilot --json`.
+   Its `tenants` must equal `would_follow` from step 3. An account created
+   between steps 3 and 4 follows already and appears under `left_out` as
+   `already_following`. A customer whose fixed list lacks an item, for example
+   one created before a catalogue release changed an item, appears under
+   `left_out` as `not_granted_every_item`; move it by name with
+   `follow-catalogue-release --tenant` only after checking that it is a
+   customer account.
+5. Run the isolation check of the section above, which must pass all 19 of
+   its checks, among them `isolated_tenant_has_no_owner_grants`, then
+   `tools/check_hosted_catalogue.py`.
+
+The replay checks these known-wrong cases. A host file that follows the release
+and still names starter identities is refused at start. With the live settings,
+a customer account never receives a later item. Without step 4, the customers
+that signed up before step 2 never receive a later item. Under the rule of Fly
+release 17, which moved every account, the preview names `pilot-boundary` and
+the next release reaches it; the current rule leaves it out. And the grant
+engine refuses the whole move, writing nothing, when an account it is told to
+keep fixed would move.
+
 ## 2. Create the Supabase account, then connect it
 
 Account creation comes before the authorization link. The owner has completed

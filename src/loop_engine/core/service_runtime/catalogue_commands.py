@@ -12,7 +12,8 @@ loop-engine service
 ├── publish-catalogue                  validate a bundle, write bodies and records, move the pointer
 ├── rollback-catalogue                 move the pointer to an earlier, fully verified release
 ├── withdraw-catalogue-item            record a durable withdrawal that every release and rollback honours
-├── catalogue-status                   report the state version, the active release and every release
+├── catalogue-status                   report the state version, the active release, every release and
+│                                      which accounts follow-catalogue-release --all-tenants would move
 ├── follow-catalogue-release           move named accounts, or with --all-tenants only the accounts
 │                                      already granted every served item, to grants that follow the release
 └── stop-following-catalogue-release   return one account to a fixed list of what it receives now
@@ -87,6 +88,22 @@ def publish_catalogue(path, bundle_folder, *, expected_bundle_digest, expected_r
     return publish(context, bundle, expected_release=expected_release)
 
 
+def follow_all_tenants_preview(path):
+    """What `follow-catalogue-release --all-tenants` would do now, decided on a read-only store; it writes nothing.
+
+    An operator reads it before the move: the accounts that would follow the
+    release, and every account left alone with its reason. A host that serves
+    the packaged manifest has no release to follow, so it answers with none.
+    """
+    from .catalogue_grants import follow_accounts_already_granted
+    runtime, view = served_view(path)
+    if not view.release_id:
+        return {"available": False, "reason": "the host serves no catalogue release from the store"}
+    decision = follow_accounts_already_granted(runtime, view, preview=True)
+    return {"available": True, "would_follow": decision["tenants"], "left_out": decision["left_out"],
+            "release_id": decision["release_id"]}
+
+
 def _grant_command(command, arguments):
     """Follow or stop following, for the accounts one command names."""
     from .catalogue_grants import follow_accounts_already_granted, follow_active_release, stop_following_release
@@ -129,7 +146,7 @@ def run_catalogue_command(arguments):
                         item_version=arguments.item_version, all_versions=arguments.all_versions)
     if command == "catalogue-status":
         context, *_rest = operator_context(path)
-        return status(context)
+        return {**status(context), "follow_all_tenants_preview": follow_all_tenants_preview(path)}
     if command in ("follow-catalogue-release", "stop-following-catalogue-release"):
         return _grant_command(command, arguments)
     _refuse("invalid_request", "not a catalogue command")
