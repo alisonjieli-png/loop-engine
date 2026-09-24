@@ -910,7 +910,7 @@
      "S-6.28"
     ],
     "id": "S-6.30",
-    "next_local_work": "Adopt the selector in the step executor slot with the step edge records, the custom harness declaration and the custom Loop engine (S-6.31, S-6.42); then the service slots through the host engine table; build the paired efficiency method and the evidence compiler; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md.",
+    "next_local_work": "Adopt the selector in the service slots through the host engine table; build the paired efficiency method and the evidence compiler; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md.",
     "phase": 6,
     "status": "building",
     "title": "Engines behind fixed edges: the shared engine framework",
@@ -925,7 +925,7 @@
      "S-6.30"
     ],
     "id": "S-6.31",
-    "next_local_work": "Implement the records and the first adapter after the framework package.",
+    "next_local_work": "Build the model relay inside the custom Loop harness process, protocol server placement for a step, and the Agent Client Protocol engine with OpenCode first; then the end_to_end run of D-19-T03 once model-call authority covers it.",
     "phase": 6,
     "status": "building",
     "title": "The harness executor slot: delegate each step to a standard harness",
@@ -940,7 +940,7 @@
      "S-6.31"
     ],
     "id": "S-6.42",
-    "next_local_work": "Research the forks and run the independent-instance tests without model calls where possible.",
+    "next_local_work": "Declare manifests for Codex, Claude Code and OpenCode in a no-model or fixture mode and qualify each; qualify a warm placement only with a check that keeps context, permissions, mutable state and credentials separated.",
     "phase": 6,
     "status": "building",
     "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
@@ -4047,5 +4047,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:d27a2f72fb319f0e7f3610674ef9d2d2b05f9d438d96bcf4d7914be0f85ed6fb"
+ "source_fingerprint": "sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc4ecdb509fe0a"
 }

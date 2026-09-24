@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 758,
+ "files_scanned": 773,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
@@ -44,13 +44,13 @@
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {
    "record_type": "operational_boundary_report/v2",
-   "total": 88,
-   "bound": 88,
+   "total": 89,
+   "bound": 89,
    "unbound": 0,
-   "ontology_conforming": 88,
+   "ontology_conforming": 89,
    "coverage": 1.0,
    "by_binding_kind": {
-    "native_loop": 40,
+    "native_loop": 41,
     "stage_loop_tree": 1,
     "practitioner_loop": 37,
     "api_dispatch": 1,
@@ -84,18 +84,19 @@
    },
    "by_relationship_kind": {
     "starting": 46,
-    "spawned_by": 58,
+    "spawned_by": 59,
     "queried_by": 7,
     "retrieved_by": 10,
     "connected_from": 5
    },
    "dynamic_profile_sources": {
+    "practitioner|intelligence|solution:core.step_execution.records.StepRunRequest.owning_profile_ref": 1,
     "practitioner:core.external_harness.HarnessRunRequest.profile_id": 1,
     "practitioner|intelligence|solution:loop.spawned_task_checkpoint.SpawnedTaskCheckpoint.spec": 2,
     "practitioner|intelligence|solution:loop.delegation_runtime.DelegationSpec.profile": 4
    },
    "exact_profile_boundaries": 81,
-   "dynamic_profile_boundaries": 7,
+   "dynamic_profile_boundaries": 8,
    "invalid_rows": [],
    "invalid_relationship_rows": [],
    "unclassified_rows": [],

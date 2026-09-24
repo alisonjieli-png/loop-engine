@@ -726,6 +726,6 @@ def unmet_step_requirements(request: StepRunRequest, profile: ExecutorProfile) -
 
 
 def self_test():
-    """Run the step edge checks."""
-    from .records_checks import self_test as run_records_checks
-    return run_records_checks()
+    """Run the step edge checks, which live with the manifest checks."""
+    from .harness_manifest_checks import self_test as run_manifest_checks
+    return run_manifest_checks()
