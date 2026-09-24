@@ -222,3 +222,22 @@ page navigation and contents list using the website's design tokens.
 Use [the documentation maintenance guide](../../../../../docs/guides/website-documentation-view.md)
 for source ownership, rebuilding, route checks and browser acceptance. The
 bodies and index are public static files; they contain no account credentials.
+
+## The deck
+
+`deck.html` is the deck the owner asked for on September 24, 2026, served at
+`/deck` with `deck.css`, `deck.js` and the shared-link picture
+`deck-card.png`, which `tools/render_deck_card.mjs` draws. The site map lists
+the page and opens it at the root of `deck.baltor.ai` once the service routes
+that hostname. It carries a copy of the shared header and footer, so a change
+to either is a change to this page too; the site map checks name any
+difference.
+
+Every number on a slide sits in an element marked `data-fact`, whose
+`data-evidence` names the saved records the number comes from and whose source
+note links them. `tools/test_deck_page.py` fails when a number stands outside a
+fact, when no named record contains it, or when the page names a retired word,
+a word of an invitation-only service or a runtime word. The browser checks in
+`tools/deck_checks.mjs` read the rendered page the same way and drive the deck
+with the keyboard, a swipe and the overview. Without the page script every
+slide shows one after another.

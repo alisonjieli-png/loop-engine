@@ -1,0 +1,219 @@
+/* The deck at /deck. It reads the design tokens of service.css and the header, footer and buttons of architecture.css,
+   and styles only what is inside [data-view=deck]. Section padding stays on the values web_layout_standard.json allows:
+   0, 32, 40, 48 or 64 pixels on a desktop and 0, 16, 24, 32 or 40 on a phone. Text sizes are in rem, so a presentation
+   in full screen scales them together. Without the page script every slide is shown one after another. */
+:root{--deck-header:72px}
+html{scroll-padding-top:var(--deck-header)}
+main.deck-main{max-width:none;margin:0;padding:0}
+.deck{background:var(--paper);color:var(--ink)}
+.deck-frame{position:relative;display:flex;flex-direction:column}
+.deck-stage{display:flex;flex-direction:column}
+.deck-slide{display:flex;flex-direction:column;padding:40px var(--band-gutter);border-bottom:1px solid var(--border);scroll-margin-top:var(--deck-header);touch-action:pan-y}
+.deck-slide:last-child{border-bottom:0}
+.deck-slide-inner{display:flex;flex-direction:column;gap:1.75rem;width:100%;max-width:var(--content-max);margin:auto;min-width:0}
+.deck-slide p,.deck-slide h1,.deck-slide h2,.deck-slide h3,.deck-slide ul,.deck-slide ol,.deck-slide dl,.deck-slide figure{margin:0}
+.deck-slide ul,.deck-slide ol{padding:0;list-style:none}
+.deck-slide code{font-family:var(--font-mono);font-size:.9em}
+.deck-head{display:flex;flex-direction:column;gap:.75rem;max-width:56rem}
+.deck-eyebrow{color:var(--accent);font-size:.8125rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.deck-slide h1{font-size:var(--text-hero);line-height:1.04;letter-spacing:-.035em;font-weight:700;max-width:15ch;text-wrap:balance}
+.deck-slide h2{font-size:var(--text-h2);line-height:1.1;letter-spacing:-.03em;font-weight:650;max-width:26ch;text-wrap:balance}
+.deck-slide h3{font-size:1.0625rem;line-height:1.3;font-weight:650;letter-spacing:-.01em}
+.deck-lead{font-size:var(--text-lead);line-height:1.5;color:var(--muted);max-width:44rem}
+.deck-source{font-size:.8125rem;line-height:1.45;color:var(--subtle);overflow-wrap:anywhere}
+.deck-source a{color:var(--subtle);text-decoration-color:var(--line-strong)}
+.deck-source a:hover{color:var(--accent)}
+.deck-slide-source{margin-top:auto}
+
+/* One slide at a time once the page script runs. The script sets --deck-header to the height of the header. */
+.deck-on .deck-frame{min-height:calc(100vh - var(--deck-header));min-height:calc(100svh - var(--deck-header))}
+.deck-on .deck-stage{flex:1}
+.deck-on .deck-slide{flex:1;border-bottom:0}
+.deck-on .deck-slide.is-entering{animation:deck-in .22s ease-out}
+@keyframes deck-in{from{opacity:0;transform:translateX(var(--deck-shift,24px))}to{opacity:1;transform:none}}
+
+/* The cover. */
+.deck-cover .deck-slide-inner{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:center;gap:4rem}
+.deck-cover-copy{display:flex;flex-direction:column;gap:1.25rem}
+.deck-cover .deck-lead{color:var(--ink);font-size:1.25rem;line-height:1.5;max-width:38rem}
+.deck-cover-note{color:var(--muted);max-width:38rem;line-height:1.6}
+.deck-cover-folder{display:flex;flex-direction:column;gap:.875rem;padding:1.5rem;background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius-panel);box-shadow:var(--panel-shadow)}
+.deck-cover-folder figcaption{color:#FFFFFF;font-weight:650;font-size:.9375rem}
+.deck-slide pre.deck-tree{margin:0;padding:0;border:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.9375rem;line-height:1.7;white-space:pre;overflow-x:auto;max-height:none}
+.deck-tree-dim{color:#A3AEC2}
+.deck-cover-check{display:flex;align-items:center;gap:.5rem;color:var(--night-live);font-size:.9375rem;font-weight:600}
+.deck-cover-check svg{flex:none;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* Cards, tiles and lists. */
+.deck-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.deck-cards li,.deck-tile,.deck-kinds li{display:flex;flex-direction:column;gap:.5rem;min-width:0;padding:1.5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-card)}
+.deck-cards p,.deck-kinds p,.deck-tile p,.deck-principles p,.deck-steps p{color:var(--muted);line-height:1.55}
+.deck-problems li{border-top:3px solid var(--accent)}
+.deck-kinds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.deck-kinds li{padding:1.125rem 1.25rem}
+.deck-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.deck-principles div{display:flex;flex-direction:column;gap:.375rem}
+.deck-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.deck-tile{gap:.625rem}
+.deck-tile .deck-source{margin-top:auto;padding-top:.5rem}
+.deck-tile.is-warning{border-left:4px solid var(--error)}
+.deck-stat{color:var(--ink)!important;font-size:1.875rem;line-height:1.1;font-weight:700;letter-spacing:-.03em}
+.deck-checks{display:grid;gap:.375rem}
+.deck-checks div{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-bottom:.375rem;border-bottom:1px solid var(--border)}
+.deck-checks dt{margin:0;color:var(--muted)}
+.deck-checks dd{margin:0;font-family:var(--font-mono);font-weight:600;white-space:nowrap}
+.deck-tile-note{font-size:.875rem}
+/* Two slides carry a long headline and six or more facts, so their headline stays on one line on a wide screen. */
+#live h2,#plan h2,#live .deck-head,#plan .deck-head{max-width:none}
+#live .deck-tile{padding:1.125rem 1.25rem;gap:.5rem}
+#live .deck-stat{font-size:1.5rem}
+#live .deck-tile p:not(.deck-stat):not(.deck-source){font-size:.9375rem}
+#live .deck-checks{gap:.25rem}
+#live .deck-checks div{padding-bottom:.25rem;font-size:.9375rem}
+
+/* How it works: the steps beside the diagram. */
+.deck-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:4rem}
+.deck-split-text{display:flex;flex-direction:column;gap:1.5rem;min-width:0}
+.deck-steps{display:grid;gap:1rem;counter-reset:deck-step}
+.deck-steps li{display:grid;grid-template-columns:2.25rem minmax(0,1fr);column-gap:1rem;row-gap:.25rem;counter-increment:deck-step}
+.deck-steps li::before{content:counter(deck-step);grid-row:span 2;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700}
+.deck-diagram{display:flex;justify-content:center;min-width:0}
+.deck-diagram svg{display:block;width:100%;max-width:26rem;height:auto;max-height:calc(100svh - var(--deck-header) - 12rem)}
+.deck-svg-box{fill:var(--paper);stroke:var(--line-strong);stroke-width:1.5}
+.deck-svg-box.is-library{fill:var(--soft);stroke:var(--accent)}
+.deck-svg-strong{fill:var(--ink);font:650 17px var(--font-ui)}
+.deck-svg-muted{fill:var(--muted);font:500 14px var(--font-ui)}
+.deck-svg-life{stroke:var(--line-strong);stroke-width:1.5;stroke-dasharray:4 6}
+.deck-svg-message{stroke:var(--accent);stroke-width:2}
+.deck-svg-arrow-head{fill:var(--accent)}
+.deck-svg-label{fill:var(--ink);font:600 16px var(--font-ui)}
+.deck-svg-small{fill:var(--muted);font:500 14px var(--font-ui)}
+.deck-svg-note{fill:var(--bg);stroke:var(--border);stroke-width:1.5}
+.deck-svg-note-text{fill:var(--ink);font:600 14px var(--font-ui)}
+.deck-svg-check{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+.deck-svg-tick{fill:none;stroke:var(--ok);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.deck-svg-check-text{fill:var(--ok);font:650 15px var(--font-ui)}
+.deck-svg-folder{fill:var(--code-bg)}
+.deck-svg-folder-text{fill:#FFFFFF;font:600 14px var(--font-ui)}
+.deck-svg-folder-path{fill:var(--code-ink);font:500 14px var(--font-mono)}
+
+/* The library plan. */
+.deck-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
+.deck-ladder li{position:relative;display:flex;flex-direction:column;gap:.375rem;padding:1.25rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--paper)}
+.deck-ladder li.is-live{background:var(--ok-soft);border-color:var(--ok)}
+.deck-ladder li.is-aim{border-style:dashed}
+.deck-ladder li+li::before{content:"";position:absolute;left:-.9rem;top:50%;width:.8rem;height:2px;background:var(--line-strong)}
+.deck-ladder p{color:var(--muted)}
+.deck-ladder .deck-source{margin-top:auto;padding-top:.375rem}
+.deck-ladder-count{color:var(--ink)!important;font-size:2rem;line-height:1.1;font-weight:700;letter-spacing:-.03em}
+.deck-tag{align-self:flex-start;padding:.125rem .5rem;border-radius:999px;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.deck-tag.is-live{color:var(--ok);background:var(--paper)}
+.deck-tag.is-plan{color:var(--info);background:var(--info-soft)}
+.deck-tag.is-aim{color:var(--planned);background:var(--planned-soft)}
+.deck-subhead{font-size:1rem!important;color:var(--muted)}
+.deck-rates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem 2rem}
+.deck-rates li{display:flex;flex-direction:column;gap:.25rem;padding-left:1rem;border-left:3px solid var(--line-strong)}
+.deck-rates li p{color:var(--muted);line-height:1.5}
+.deck-rates strong{color:var(--ink)}
+
+/* The business model. */
+.deck-points{display:grid;gap:1rem}
+.deck-points li{display:flex;flex-direction:column;gap:.25rem;padding-left:1rem;border-left:3px solid var(--accent)}
+.deck-points li p{color:var(--muted);line-height:1.55}
+.deck-points strong{color:var(--ink)}
+.deck-price{display:flex;flex-direction:column;gap:1rem;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);box-shadow:var(--card-shadow)}
+.deck-price-name{font-weight:650;font-size:1.125rem}
+.deck-price-amount{font-size:3rem;line-height:1;font-weight:700;letter-spacing:-.04em}
+.deck-price-list{display:grid;gap:.625rem}
+.deck-price-list li{position:relative;padding-left:1.5rem;color:var(--muted)}
+.deck-price-list li::before{content:"";position:absolute;left:.25rem;top:.45rem;width:.5rem;height:.28rem;border-left:2px solid var(--ok);border-bottom:2px solid var(--ok);transform:rotate(-45deg)}
+.deck-action{align-self:flex-start;text-decoration:none}
+.deck-next{padding:1rem 1.25rem;border-radius:var(--radius-card);background:var(--soft);color:var(--ink);line-height:1.55;max-width:60rem}
+
+/* Contact. */
+.deck-contact{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:2rem 4rem;align-items:start}
+.deck-contact .deck-head{grid-column:1/-1}
+.deck-address{display:flex;flex-direction:column;gap:.25rem;padding:1.5rem;font-style:normal;font-size:1.125rem;line-height:1.5;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-card)}
+.deck-address-name{font-weight:700}
+.deck-address .deck-source{margin-top:.75rem}
+.deck-contact-actions{display:flex;flex-wrap:wrap;align-items:center;gap:1rem}
+.deck-contact-actions .deck-action{align-self:auto}
+.deck-site-link{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+
+/* The controls, which stay in view at the foot of the window while a long slide scrolls. */
+.deck-controls{position:sticky;bottom:0;z-index:30;display:flex;align-items:center;gap:.75rem;min-height:64px;padding:0 var(--band-gutter);background:var(--paper);border-top:1px solid var(--border)}
+.deck-controls[hidden]{display:none}
+.deck-progress{position:absolute;left:0;right:0;top:-1px;height:3px;background:transparent}
+.deck-progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s ease-out}
+.deck-controls .deck-control{display:inline-grid;place-items:center;min-width:44px;min-height:44px;padding:0;border-radius:var(--radius-field);background:var(--paper);color:var(--ink)}
+.deck-control svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.deck-controls .deck-control-text{display:inline-flex;gap:.5rem;padding:0 .875rem;font-size:.9375rem}
+.deck-position{margin:0;min-width:4.5rem;text-align:center;font-family:var(--font-mono);font-size:.9375rem;color:var(--ink)}
+.deck-hint{margin:0 auto 0 .5rem;color:var(--subtle);font-size:.875rem}
+.deck-visually-hidden{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.deck-control:disabled{opacity:.45}
+
+/* The overview of every slide. */
+.deck-overview{position:fixed;left:0;right:0;top:var(--deck-header);bottom:0;z-index:35;display:block;overflow:auto;padding:40px var(--band-gutter);background:var(--paper);border-top:1px solid var(--border)}
+.deck-overview-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;max-width:var(--content-max);margin:0 auto 1.5rem}
+.deck-overview-head h2{margin:0;font-size:1.5rem;letter-spacing:-.02em}
+.deck-overview-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1rem;max-width:var(--content-max);margin:0 auto;padding:0;list-style:none}
+.deck-overview-list a{display:flex;flex-direction:column;gap:.375rem;min-height:8.5rem;padding:1.25rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--bg);color:var(--ink);text-decoration:none}
+.deck-overview-list a:hover{border-color:var(--accent)}
+.deck-overview-list a[aria-current=true]{border:2px solid var(--accent);background:var(--soft)}
+.deck-overview-number{font-family:var(--font-mono);color:var(--subtle);font-size:.8125rem}
+.deck-overview-eyebrow{color:var(--accent);font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.deck-overview-title{font-weight:650;line-height:1.3}
+
+/* A presentation in full screen: the deck fills the screen and its text grows with it. */
+.deck:fullscreen{overflow:auto;--deck-header:0px}
+:root:has(.deck:fullscreen){font-size:clamp(16px,1.25vw,26px)}
+.deck:fullscreen .deck-frame{min-height:100vh}
+.deck:fullscreen .deck-overview{top:0}
+
+/* Wide screens that are short, such as a laptop: tighter slides so each still fits. */
+@media (min-width:761px) and (max-height:820px){
+  .deck-slide-inner{gap:1.25rem}
+  .deck-cards li,.deck-tile,.deck-kinds li{padding:1.125rem 1.25rem}
+  .deck-slide h2{font-size:clamp(1.75rem,2.6vw,2.25rem)}
+}
+@media (max-width:1100px){
+  .deck-cover .deck-slide-inner,.deck-split,.deck-contact{gap:2.5rem}
+  .deck-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .deck-ladder li:nth-child(3)::before{display:none}
+}
+@media (max-width:900px){
+  .deck-cards,.deck-kinds,.deck-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .deck-cover .deck-slide-inner,.deck-split,.deck-contact{grid-template-columns:1fr}
+  .deck-principles{grid-template-columns:1fr;gap:1rem}
+  .deck-hint{display:none}
+  .deck-controls .deck-position{margin-right:auto}
+}
+@media (max-width:760px){
+  .deck-slide{padding:24px var(--band-gutter)}
+  .deck-slide-inner{gap:1.25rem}
+  .deck-slide h1{font-size:2.25rem}
+  .deck-slide h2{font-size:1.75rem}
+  .deck-lead,.deck-cover .deck-lead{font-size:1.0625rem}
+  .deck-cards,.deck-kinds,.deck-tiles,.deck-ladder,.deck-rates{grid-template-columns:1fr}
+  .deck-ladder li+li::before{display:none}
+  .deck-cards li,.deck-tile,.deck-kinds li{padding:1rem 1.125rem}
+  .deck-stat{font-size:1.5rem}
+  .deck-ladder-count{font-size:1.625rem}
+  .deck-price{padding:1.5rem}
+  .deck-price-amount{font-size:2.5rem}
+  .deck-slide pre.deck-tree{font-size:.8125rem}
+  .deck-controls{gap:.5rem}
+  .deck-controls .deck-control-text{padding:0;min-width:44px}
+  .deck-controls .deck-control-text span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .deck-overview{padding:24px var(--band-gutter)}
+}
+@media (prefers-reduced-motion:reduce){
+  .deck-on .deck-slide.is-entering{animation:none}
+  .deck-progress span{transition:none}
+}
+@media print{
+  .header,.site-footer,.deck-controls,.deck-overview,.skip{display:none!important}
+  .deck-slide{display:flex!important;min-height:0;break-after:page;border:0}
+  .deck-slide[hidden]{display:flex!important}
+}

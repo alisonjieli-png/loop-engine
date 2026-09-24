@@ -2660,8 +2660,8 @@ steps:
     verify: [application answers, a ten slide deck outline, a demo script on the live site, an adversarial fact check of every claim, 'market research on how competitors connect and are used, so Baltor feels familiar']
     adversarial: A number, comparison or customer claim without saved evidence must be caught by the fact check before the application is sent.
     acceptance: The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.
-    evidence: 'September 22: market analysis with dated competitor prices and a fact-checked draft in progress.'
-    next_local_work: Finish the draft and the fact check; the owner adds personal background, contact details and equity facts.
+    evidence: 'September 22: market analysis with dated competitor prices and a fact-checked draft in progress. September 24: the public deck at /deck, which deck.baltor.ai opens once the hostname routing lands: ten slides whose every number sits in a fact that names its saved record, with a source note linking it. tools/test_deck_page.py fails when a number stands outside a fact or appears in none of its named records, and on retired, invitation or runtime words; tools/deck_checks.mjs reads the rendered page the same way, with removed-guard controls. The fact check found that the README says the 43 served skills were approved by reviewers from three model families, while reviews.json names only reviewer one''s model, so the deck says three independent reviewers. Evidence in artifacts/deck-2026-09-24.'
+    next_local_work: Finish the draft and the fact check; the owner adds personal background, contact details and equity facts, and approves any team, funding or contact email slide for the deck.
   - id: S-6.37
     phase: 6
     title: Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain

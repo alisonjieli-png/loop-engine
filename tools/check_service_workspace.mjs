@@ -7,6 +7,7 @@ import {createInterface} from "node:readline";
 import {existsSync,readFileSync,writeFileSync} from "node:fs";
 import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
+import {runDeckChecks} from "./deck_checks.mjs";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 /* Version queries are exact content identities, not permission to match arbitrary queries or origins. */
@@ -1052,6 +1053,8 @@ try {
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
+  /* The deck, a page with a file of its own, is read with the other pages a customer can open. */
+  servedRoutes.push("/deck");
   /* A page without the shared header or footer, such as the page for an address the service does not serve, is read
      as far as it goes, so an unserved address fails its own named checks instead of stopping the whole journey. */
   const readShownText=target=>target.evaluate(()=>[document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n"));
@@ -1088,6 +1091,8 @@ try {
   const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_pages.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
+  /* The deck's own files are read like every other served file. */
+  servedFiles.push("/assets/deck.css","/assets/deck.js","/assets/deck-card.png");
   check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
   check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];
@@ -1105,6 +1110,7 @@ try {
      left out of the served page only while each holds exactly the approved words. */
   const notOurText={"/assets/supabase-client.js":"the identity provider's own library","/assets/third-party-notices.txt":"the licence texts of other projects",
     "/assets/geist.woff2":"a typeface","/assets/geist-mono.woff2":"a typeface","/assets/baltor-mark.svg":"a picture","/assets/favicon-32.png":"a picture","/assets/favicon-192.png":"a picture","/assets/apple-touch-icon.png":"a picture"};
+  notOurText["/assets/deck-card.png"]="a picture";
   const withoutComments=source=>source.replace(/\/\*[\s\S]*?\*\//g," ").replace(/(^|[\s;{}()\[\],])\/\/[^\n]*/g,"$1");
   const customerStrings=source=>[...withoutComments(source).matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)].map(found=>found[1]??found[2]??found[3]??"")
     .filter(value=>!/^[a-z][a-z0-9]*(?:[-_.:/][a-z0-9]+)*$/.test(value));
@@ -1165,6 +1171,9 @@ try {
   check("retired_word_check_rejects_a_known_wrong_page",retiredKnownWrong.every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."),{pages:retiredKnownWrong.length});
   check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
   check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
+  /* The deck at /deck, a page with a file of its own: its source notes, its words, its keys, swipe and overview, and a phone
+     and a desktop window, in tools/deck_checks.mjs. Its removed-guard controls join the others in this report. */
+  await runDeckChecks({root,browser,base:fixture.base,localOnly,check,mutants,output,safeError,errors,words:{retiredAccessWords,invitationWords,publicVocabulary}});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
   /* The header, signed out, as the owner decided on September 23, 2026: How it works first, then Use cases, Library, Pricing,
      Docs, the guide and Sign in in the navigation, and one primary action beside it, "Get started", which opens the sign-up

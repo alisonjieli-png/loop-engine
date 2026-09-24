@@ -42,6 +42,9 @@ WEB_ASSETS = {
     # The terms of service the owner approved on September 23, 2026. Their words
     # are docs/legal/TERMS-OF-SERVICE.md, and a browser check compares the two.
     "/terms": ("index.html", HTML_MEDIA_TYPE),
+    # The deck the owner asked for on September 24, 2026, a page with a file of its own. deck.baltor.ai opens it at its
+    # root once the hostname table routes that name; tools/test_deck_page.py holds every number on it to a saved record.
+    "/deck": ("deck.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
@@ -92,6 +95,10 @@ WEB_ASSETS = {
     "/assets/favicon-32.png": ("favicon-32.png", "image/png"),
     "/assets/favicon-192.png": ("favicon-192.png", "image/png"),
     "/assets/apple-touch-icon.png": ("apple-touch-icon.png", "image/png"),
+    # The deck's stylesheet, script and the picture a shared link to it shows. tools/render_deck_card.mjs draws the picture.
+    "/assets/deck.css": ("deck.css", "text/css"),
+    "/assets/deck.js": ("deck.js", "text/javascript"),
+    "/assets/deck-card.png": ("deck-card.png", "image/png"),
     # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{SERVICE_NAME}} | Deck</title>
+  <meta name="description" content="Baltor in a short deck: the problem, the library, how a step gets its files, what is live today, the library plan, the business model and why now. Every number carries its source.">
+  <link rel="canonical" href="https://baltor.ai/deck">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{SERVICE_NAME}}">
+  <meta property="og:title" content="Baltor: the right setup for every step your agent takes">
+  <meta property="og:description" content="A short deck on Baltor, the library that puts reviewed skills, instructions, tools and plugins in each harness's working folder. Every number carries its source.">
+  <meta property="og:url" content="https://baltor.ai/deck">
+  <meta property="og:image" content="https://baltor.ai/assets/deck-card.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Baltor. The right setup for every step your agent takes.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Baltor: the right setup for every step your agent takes">
+  <meta name="twitter:description" content="A short deck on Baltor. Every number carries its source.">
+  <meta name="twitter:image" content="https://baltor.ai/assets/deck-card.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/baltor-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/service.css">
+  <link rel="stylesheet" href="/assets/architecture.css">
+  <link rel="stylesheet" href="/assets/deck.css">
+  <script defer src="/assets/deck.js"></script>
+</head>
+<body class="deck-page">
+  <a class="skip" href="#main">Skip to content</a>
+  <!-- The shared header, word for word as the site map lists it. The deck page runs no sign-in, so the signed-in
+       entries stay hidden; they are here so that every page of the site carries the same header. -->
+  <header class="header">
+    <a class="brand" href="/" data-page="home" aria-label="{{SERVICE_NAME}} home"><img class="brand-mark" src="/assets/baltor-mark.svg" width="32" height="32" alt=""><span class="brand-name">{{SERVICE_NAME}}</span></a>
+    <input type="checkbox" id="menu-toggle" class="menu-toggle" autocomplete="off" aria-label="Show the menu" aria-controls="main-nav"><label for="menu-toggle" class="menu-button" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg></label>
+    <nav id="main-nav" aria-label="Main navigation"><a href="/app" data-page="workspace" data-signed-in hidden>Workspace</a><a href="/setup" data-page="setup" data-nav="get-set-up" data-signed-in hidden>Get set up</a><a href="/how-it-works" data-page="about" data-signed-out>How it works</a><a href="/use-cases" data-page="use-cases" data-signed-out>Use cases</a><a href="/#library" data-page="home">Library</a><a href="/pricing" data-page="pricing" data-signed-out>Pricing</a><a href="/docs" data-page="docs">Docs</a><a href="/setup" data-page="setup" data-nav="get-set-up-guide" data-signed-out>Get set up</a><a class="nav-sign-in" href="/login" data-page="login" data-signed-out>Sign in</a><a class="nav-account" id="header-account" href="/account" data-page="account" data-signed-in hidden><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Account</span></a><a href="/admin" data-page="admin" id="admin-nav" hidden>Administration</a><button class="nav-sign-out" id="header-sign-out" type="button" data-signed-in hidden>Sign out</button></nav>
+    <a class="button primary header-primary" id="header-primary" href="/get-started" data-page="get-started" data-signed-out><span id="header-primary-label">Get started</span></a>
+  </header>
+  <main id="main" tabindex="-1" class="deck-main">
+    <!-- Every number on a slide sits inside an element marked data-fact. That element holds its own source line
+         (class deck-source) linking each record named in data-evidence, and tools/test_deck_page.py checks the number
+         against that record. The copy follows docs/guides/product-style-guide.md and humanizer-context.md. -->
+    <section data-view="deck" class="deck" id="deck" aria-label="The Baltor deck">
+      <div class="deck-frame" id="deck-frame">
+        <div class="deck-stage" id="deck-stage" role="region" aria-roledescription="slide deck" aria-label="Slides">
+
+          <section class="deck-slide deck-cover" id="cover" data-slide aria-roledescription="slide" aria-labelledby="cover-title">
+            <div class="deck-slide-inner">
+              <div class="deck-cover-copy">
+                <p class="deck-eyebrow">Harness and agent optimized operation</p>
+                <h1 id="cover-title">The right setup for every step your agent takes.</h1>
+                <p class="deck-lead">Baltor is a library of reviewed skills, instructions, tools and plugins. Your harness searches it, downloads only what a step needs, and checks every file before it lands in the working folder.</p>
+                <p class="deck-cover-note">A harness is the program that runs a coding agent. Baltor sets up <strong>Claude Code</strong>, <strong>Codex</strong>, <strong>OpenCode</strong>, <strong>Pi</strong> and the <strong>Baltor Harness</strong>.</p>
+              </div>
+              <figure class="deck-cover-folder" aria-label="An example working folder for one step">
+                <figcaption>An example working folder for one step</figcaption>
+                <pre class="deck-tree"><span class="deck-tree-dim">working-folder/</span>
+├── AGENTS.md
+├── .agents/skills/split-address-lines/
+│   ├── SKILL.md
+│   └── scripts/split_address_lines.py
+└── .mcp.json</pre>
+                <p class="deck-cover-check"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Each file is checked against its digest</p>
+              </figure>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="problem" data-slide aria-roledescription="slide" aria-labelledby="problem-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">The problem</p>
+                <h2 id="problem-title">Is your AI spending effort in the wrong places?</h2>
+                <p class="deck-lead">Coding harnesses and agent systems lose effort in the same ways, whatever the task.</p>
+              </div>
+              <ul class="deck-cards deck-problems">
+                <li><h3>Too much context for a small task</h3><p>Steps carry the whole history, so a small step gets slow and confused.</p></li>
+                <li><h3>An expensive model for every decision</h3><p>Simple transformations go to the largest model because nothing picks a smaller one.</p></li>
+                <li><h3>Missing domain expertise</h3><p>The agent guesses at methods a specialist already knows.</p></li>
+                <li><h3>Rewriting code that already exists</h3><p>Tested code gets written again, and paid for again as output.</p></li>
+                <li><h3>The same mistakes, again</h3><p>A correction made in one run does not reach the next one.</p></li>
+                <li><h3>Long work small models cannot finish alone</h3><p>Large, multi-step problems stall without the right material at each step.</p></li>
+              </ul>
+              <p class="deck-source deck-slide-source">Source: the customer problems in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#north-star-and-current-initiatives">AGENTS.md</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#the-problems-it-answers">README.md</a>.</p>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="what" data-slide aria-roledescription="slide" aria-labelledby="what-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">What Baltor is</p>
+                <h2 id="what-title">One library for everything a harness reads.</h2>
+                <p class="deck-lead">Baltor puts the right skills, instructions, tools and plugins in each harness's working folder, so every step starts with the material it needs and nothing else.</p>
+              </div>
+              <ul class="deck-kinds" aria-label="What the library holds">
+                <li><h3>Instruction files</h3><p><code>AGENTS.md</code>, <code>CLAUDE.md</code> and other context files</p></li>
+                <li><h3>Skills</h3><p><code>SKILL.md</code> with its scripts, references and assets</p></li>
+                <li><h3>Tools and reusable code</h3><p>Tested scripts and packages a step can run</p></li>
+                <li><h3>Subagents and commands</h3><p>Agent and command definitions</p></li>
+                <li><h3>Hooks</h3><p>Checks the harness runs by itself</p></li>
+                <li><h3>Protocol servers and plugins</h3><p>The tools a step may call</p></li>
+              </ul>
+              <div class="deck-principles">
+                <div><h3>Your models, your keys</h3><p>Baltor never asks for a model key and never calls a model for you.</p></div>
+                <div><h3>Reviewed before it is served</h3><p>Every item starts as a candidate. Independent reviewers approve it before anyone can download it.</p></div>
+                <div><h3>A fresh harness for each step</h3><p>The Baltor Harness already runs a task on your model in small steps. Starting a fresh standard harness for each step is not open yet.</p></div>
+              </div>
+              <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#what-baltor-gives-your-harness">README.md</a>, what Baltor gives your harness, one harness for each step, and what is not open yet; the harness file definition in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#intelligence-rules">AGENTS.md</a>.</p>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="how" data-slide aria-roledescription="slide" aria-labelledby="how-title">
+            <div class="deck-slide-inner deck-split">
+              <div class="deck-split-text">
+                <div class="deck-head">
+                  <p class="deck-eyebrow">How it works</p>
+                  <h2 id="how-title">Search returns references. A step downloads only what it chose.</h2>
+                </div>
+                <ol class="deck-steps">
+                  <li><h3>Search</h3><p>The harness asks the library for what a step needs. The answer is a short list of references: name, purpose, source, licence, exact version and digest. No file bodies.</p></li>
+                  <li><h3>Choose</h3><p>The step picks one reference. An item that needs file, network or process access is offered only to a step that declares that access.</p></li>
+                  <li><h3>Download and check</h3><p>Access is checked again at download. The bytes must match the digest, and the download is recorded in your usage.</p></li>
+                  <li><h3>Place</h3><p>The file goes where the harness reads it: a skill folder, <code>AGENTS.md</code> or a protocol server entry.</p></li>
+                </ol>
+                <p class="deck-source deck-slide-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#what-baltor-gives-your-harness">README.md</a>, <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/service-searching-and-retrieving.md">searching and retrieving</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/service-usage-and-what-you-pay-for.md">usage and what you pay for</a>.</p>
+              </div>
+              <figure class="deck-diagram">
+                <svg viewBox="0 0 400 560" role="img" aria-labelledby="how-diagram-title how-diagram-description" focusable="false">
+                  <title id="how-diagram-title">One step getting one file from the Baltor library</title>
+                  <desc id="how-diagram-description">The harness searches the library and gets back references only. The step chooses one and downloads it. The library checks access again and returns the exact bytes. The harness checks the bytes against the digest and places the file in the step's working folder.</desc>
+                  <defs>
+                    <marker id="deck-arrow-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="deck-svg-arrow-head" d="M0 0L10 5L0 10z"/></marker>
+                  </defs>
+                  <rect class="deck-svg-box" x="8" y="8" width="176" height="60" rx="12"/>
+                  <text class="deck-svg-strong" x="96" y="34" text-anchor="middle">Your harness</text>
+                  <text class="deck-svg-muted" x="96" y="55" text-anchor="middle">at one step</text>
+                  <rect class="deck-svg-box is-library" x="216" y="8" width="176" height="60" rx="12"/>
+                  <text class="deck-svg-strong" x="304" y="34" text-anchor="middle">Baltor library</text>
+                  <text class="deck-svg-muted" x="304" y="55" text-anchor="middle">reviewed items</text>
+                  <line class="deck-svg-life" x1="96" y1="68" x2="96" y2="452"/>
+                  <line class="deck-svg-life" x1="304" y1="68" x2="304" y2="372"/>
+                  <text class="deck-svg-label" x="200" y="104" text-anchor="middle">search the library</text>
+                  <line class="deck-svg-message" x1="96" y1="116" x2="302" y2="116" marker-end="url(#deck-arrow-head)"/>
+                  <text class="deck-svg-label" x="200" y="158" text-anchor="middle">references only</text>
+                  <line class="deck-svg-message" x1="304" y1="170" x2="98" y2="170" marker-end="url(#deck-arrow-head)"/>
+                  <text class="deck-svg-small" x="200" y="192" text-anchor="middle">name · licence · version · digest</text>
+                  <rect class="deck-svg-note" x="30" y="214" width="132" height="36" rx="10"/>
+                  <text class="deck-svg-note-text" x="96" y="237" text-anchor="middle">chooses one</text>
+                  <text class="deck-svg-label" x="200" y="286" text-anchor="middle">download that item</text>
+                  <line class="deck-svg-message" x1="96" y1="298" x2="302" y2="298" marker-end="url(#deck-arrow-head)"/>
+                  <rect class="deck-svg-note" x="218" y="314" width="172" height="36" rx="10"/>
+                  <text class="deck-svg-note-text" x="304" y="337" text-anchor="middle">access checked again</text>
+                  <text class="deck-svg-label" x="200" y="382" text-anchor="middle">the exact bytes</text>
+                  <line class="deck-svg-message" x1="304" y1="394" x2="98" y2="394" marker-end="url(#deck-arrow-head)"/>
+                  <text class="deck-svg-small" x="200" y="416" text-anchor="middle">recorded in your usage</text>
+                  <rect class="deck-svg-check" x="8" y="436" width="236" height="36" rx="10"/>
+                  <path class="deck-svg-tick" d="M22 454l5 5 10-11"/>
+                  <text class="deck-svg-check-text" x="46" y="459">bytes match the digest</text>
+                  <rect class="deck-svg-folder" x="8" y="484" width="384" height="68" rx="10"/>
+                  <text class="deck-svg-folder-text" x="24" y="510">placed where the harness reads it:</text>
+                  <text class="deck-svg-folder-path" x="18" y="536">.agents/skills/split-address-lines/SKILL.md</text>
+                </svg>
+              </figure>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="live" data-slide aria-roledescription="slide" aria-labelledby="live-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">Live today</p>
+                <h2 id="live-title">Running at baltor.ai, with every check on the record.</h2>
+              </div>
+              <div class="deck-tiles">
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/fly_release artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/deployed_at artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/rollback_fly_release">
+                  <p class="deck-stat">Release 24</p>
+                  <p>Deployed on September 24, 2026 by image digest, from a commit whose continuous integration run passed. Release 23 is kept for rollback.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a></p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="docs/architecture/MVP-CLIENT-SERVER.md">
+                  <p class="deck-stat">Public sign-up</p>
+                  <p>Open since September 24, 2026: your email address, then the link we send, then a password you choose. No other way in.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/architecture/MVP-CLIENT-SERVER.md#current-deployment">MVP-CLIENT-SERVER.md</a>, the current deployment</p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="src/loop_engine/core/service_runtime/web_assets/client-recipes.json#/recipes src/loop_engine/core/service_runtime/web_assets/client-recipes.json#/recipes/3/version_note">
+                  <p class="deck-stat">5 harnesses</p>
+                  <p>Connection entries for Claude Code, Codex, OpenCode, Pi and the Baltor Harness. Pi, running Gemma 4 on Ollama Cloud, found, installed and used a skill end to end on September 23, 2026.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/web_assets/client-recipes.json">client-recipes.json</a>, the reviewed connection entries</p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/catalogue_release_published/items examples/29_intelligence_service/starter-catalogue/reviews.json#/reviewers">
+                  <p class="deck-stat">43 reviewed skills</p>
+                  <p>Each approved by three independent reviewers, none of them its author. One written objection withholds approval.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/reviews.json">reviews.json</a></p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/catalogue_with_homepage_digest_guard/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/catalogue_with_homepage_digest_guard/1">
+                  <p class="deck-stat">Licence and digest</p>
+                  <p>Every served item names its licence and its digest. After the release, the catalogue check compared the published digests with the served bytes: 7 of 7 passed.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a> and the served <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json">manifest.json</a></p>
+                </article>
+                <article class="deck-tile deck-tile-checks" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/hosted_browser_checks_per_hostname_registration_open/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/http_addresses_200/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/service/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_account_journeys/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_staff_dashboard/0 artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/live_checks/live_staff_dashboard/1">
+                  <p class="deck-stat">Checked live</p>
+                  <dl class="deck-checks">
+                    <div><dt>Browser checks, each hostname</dt><dd>163 of 163</dd></div>
+                    <div><dt>Public addresses answering</dt><dd>120 of 120</dd></div>
+                    <div><dt>Service checks</dt><dd>19 of 19</dd></div>
+                    <div><dt>Sign-up journeys</dt><dd>11 of 11</dd></div>
+                    <div><dt>Staff dashboard</dt><dd>10 of 12</dd></div>
+                  </dl>
+                  <p class="deck-tile-note">Both staff dashboard failures were mistakes in the checking script; the failed runs are kept.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a>, its live checks</p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="measured" data-slide aria-roledescription="slide" aria-labelledby="measured-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">Measured in the open</p>
+                <h2 id="measured-title">We test our own library, and publish the result when it says no.</h2>
+                <p class="deck-lead">A data cleanup study compared library items with no item, on a design frozen before the first model call and scored by an independent checker. Each step ran in a fresh, isolated harness process that held only its own material.</p>
+              </div>
+              <div class="deck-tiles deck-tiles-three">
+                <article class="deck-tile" data-fact data-evidence="case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">
+                  <p class="deck-stat">225 of 400</p>
+                  <p>Requests used of the declared ceiling, across 72 counted steps. Every request reported its token usage.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">REPORT-2026-09-22.md</a></p>
+                </article>
+                <article class="deck-tile is-warning" data-fact data-evidence="case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">
+                  <p class="deck-stat">0.842 against 0.991</p>
+                  <p>An approved phone number item made a cheap model clearly worse: 0.842 in all three repetitions, against a mean of 0.991 without it. The item's method was incomplete, and the report names the rows it lost.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">REPORT-2026-09-22.md</a></p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">
+                  <p class="deck-stat">0 of 4</p>
+                  <p>Task families where the material was clearly better; it was clearly worse in 1. The material cost 45 to 446 percent more prompt tokens per step.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md">REPORT-2026-09-22.md</a></p>
+                </article>
+              </div>
+              <p class="deck-next"><strong>Next:</strong> a harder population, where the model fails without help, reusing the same frozen design, scorer and isolation recipe. The report asks for the measured harm to go into the item's review record; a revised item needs a new review and a new measurement.</p>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="plan" data-slide aria-roledescription="slide" aria-labelledby="plan-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">The library plan</p>
+                <h2 id="plan-title">Where the library goes, and the rates measured so far.</h2>
+                <p class="deck-lead">Only the first step is live. The rest is the plan, and a candidate counts only after an independent review approves it.</p>
+              </div>
+              <ol class="deck-ladder">
+                <li class="is-live" data-fact data-evidence="artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/catalogue_release_published/items artifacts/architecture-audit-2026-09-19/pilot-release-24.json#/fly_release">
+                  <span class="deck-tag is-live">Live</span>
+                  <p class="deck-ladder-count">43</p>
+                  <p>reviewed skills in release 24</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/architecture-audit-2026-09-19/pilot-release-24.json">the release 24 record</a></p>
+                </li>
+                <li class="is-plan" data-fact data-evidence="AGENTS.md">
+                  <span class="deck-tag is-plan">Plan</span>
+                  <p class="deck-ladder-count">10,000</p>
+                  <p>approved packages, the first milestone</p>
+                  <p class="deck-source">Source: the decisions in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#decisions-that-stand-until-the-owner-changes-them">AGENTS.md</a></p>
+                </li>
+                <li class="is-plan" data-fact data-evidence="docs/roadmap/roadmap.yaml">
+                  <span class="deck-tag is-plan">Plan</span>
+                  <p class="deck-ladder-count">100,000</p>
+                  <p>approved packages, then 100 to 1,000 more each day</p>
+                  <p class="deck-source">Source: roadmap step S-6.69 in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/roadmap.yaml">roadmap.yaml</a></p>
+                </li>
+                <li class="is-aim" data-fact data-evidence="docs/research/MILLION-HARNESS-SUPPLY-NEXT-STEPS-2026-09-23.md docs/roadmap/roadmap.yaml">
+                  <span class="deck-tag is-aim">Aim</span>
+                  <p class="deck-ladder-count">Millions</p>
+                  <p>of licence-cleared files, continuously updated</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/MILLION-HARNESS-SUPPLY-NEXT-STEPS-2026-09-23.md">MILLION-HARNESS-SUPPLY-NEXT-STEPS</a> and S-6.40 in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/roadmap/roadmap.yaml">roadmap.yaml</a></p>
+                </li>
+              </ol>
+              <h3 class="deck-subhead" id="plan-measured">Measured so far</h3>
+              <ul class="deck-rates">
+                <li data-fact data-evidence="examples/29_intelligence_service/starter-catalogue/reviews.json#/totals/approved examples/29_intelligence_service/starter-catalogue/reviews.json#/totals/items_reviewed examples/29_intelligence_service/starter-catalogue/reviews.json#/reviewers">
+                  <p><strong>43 of 49</strong> candidates approved by all three reviewers in the first review round.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/examples/29_intelligence_service/starter-catalogue/reviews.json">reviews.json</a></p>
+                </li>
+                <li data-fact data-evidence="artifacts/candidate-review-pilot-2026-09-22/README.md">
+                  <p><strong>0 of 30</strong> approved in the first pass of the multi-family review panel, each rejection written down with its reasons. The whole run, calibration included, took 658.5 seconds.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/candidate-review-pilot-2026-09-22/README.md">the first review panel run</a></p>
+                </li>
+                <li data-fact data-evidence="artifacts/first-party-harness-candidates-2026-09-24-wave-5/README.md">
+                  <p><strong>56 of 75</strong> original multi-file packages passed the deterministic pre-checks in wave 5.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/first-party-harness-candidates-2026-09-24-wave-5/README.md">the wave 5 record</a></p>
+                </li>
+                <li data-fact data-evidence="artifacts/library-ingestion-2026-09-23/README.md">
+                  <p><strong>3,251</strong> outside candidates staged for review in one import run, from 4,790 discovered; 187 kept as outlines only, because their licence permits no copy.</p>
+                  <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/library-ingestion-2026-09-23/README.md">the ingestion record</a></p>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="business" data-slide aria-roledescription="slide" aria-labelledby="business-title">
+            <div class="deck-slide-inner deck-split">
+              <div class="deck-split-text">
+                <div class="deck-head">
+                  <p class="deck-eyebrow">Business model</p>
+                  <h2 id="business-title">One plan. The whole library.</h2>
+                  <p class="deck-lead">Customers bring their own model access, so model costs stay with their own provider. Baltor sells reviewed material and its delivery, never model calls.</p>
+                </div>
+                <ul class="deck-points">
+                  <li data-fact data-evidence="artifacts/release-24-2026-09-24/README.md src/loop_engine/core/service_runtime/account_policy.py">
+                    <p><strong>The first 10 accounts</strong> from Baltor's sign-up hold Baltor Pro free each month.</p>
+                    <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/artifacts/release-24-2026-09-24/README.md">the release 24 record</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/src/loop_engine/core/service_runtime/account_policy.py">account_policy.py</a></p>
+                  </li>
+                  <li data-fact data-evidence="AGENTS.md">
+                    <p><strong>Live payments</strong> through Stripe checkout and the customer portal since September 21, 2026.</p>
+                    <p class="deck-source">Source: the payments decision in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#decisions-that-stand-until-the-owner-changes-them">AGENTS.md</a></p>
+                  </li>
+                  <li data-fact data-evidence="AGENTS.md">
+                    <p><strong>Comparable entry plans</strong> cost $19 to $29 a month.</p>
+                    <p class="deck-source">Source: the price decision in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/AGENTS.md#decisions-that-stand-until-the-owner-changes-them">AGENTS.md</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/billing-setup-and-pricing.md">billing-setup-and-pricing.md</a></p>
+                  </li>
+                </ul>
+              </div>
+              <article class="deck-price" data-fact data-evidence="README.md">
+                <p class="deck-price-name">Baltor Pro</p>
+                <p class="deck-price-amount">$29 a month</p>
+                <ul class="deck-price-list">
+                  <li>The whole library, searchable from your harness</li>
+                  <li>One downloaded item is the measured unit, with no overage billing</li>
+                  <li>A personal key for each client you connect</li>
+                  <li>Cancel any time from your account page</li>
+                </ul>
+                <a class="button primary deck-action" href="/get-started">Get started</a>
+                <p class="deck-source">Source: <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/README.md#status-on-september-24-2026">README.md</a>, status on the day of release 24</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="why-now" data-slide aria-roledescription="slide" aria-labelledby="why-now-title">
+            <div class="deck-slide-inner">
+              <div class="deck-head">
+                <p class="deck-eyebrow">Why now</p>
+                <h2 id="why-now-title">The formats became standards. Choosing and trusting the right file did not.</h2>
+              </div>
+              <div class="deck-tiles deck-tiles-three">
+                <article class="deck-tile" data-fact data-evidence="docs/research/AGENT-HARNESS-RUNTIME-PROTOCOL-ONTOLOGY-LANDSCAPE-2026-09-14.md docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md docs/research/HARNESS-WORKING-DIRECTORY-SYSTEMS-PRIOR-ART-2026-09-24.md">
+                  <p class="deck-stat">December 2025</p>
+                  <p>Agent Skills became an open standard on December 18, 2025, and its client showcase lists more than 40 products that read it. AGENTS.md and the Model Context Protocol now sit with the Agentic AI Foundation under the Linux Foundation.</p>
+                  <p class="deck-source">Sources: <a href="https://agentskills.io/specification">agentskills.io</a> and <a href="https://agents.md/">agents.md</a>, as recorded in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/AGENT-HARNESS-RUNTIME-PROTOCOL-ONTOLOGY-LANDSCAPE-2026-09-14.md">the protocol landscape</a>, <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md">the provisioning standards</a> and <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/HARNESS-WORKING-DIRECTORY-SYSTEMS-PRIOR-ART-2026-09-24.md">the working folder prior art</a></p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="docs/research/FIRST-PARTY-TEN-THOUSAND-HARNESS-PACKAGES-2026-09-22.md">
+                  <p class="deck-stat">33.9 to 50.5 percent</p>
+                  <p>Curated skills raised the mean pass rate from 33.9 to 50.5 percent on 87 tasks in SkillsBench, June 2026. Skills an agent wrote for itself scored 8.1 to 11.5 percentage points below no skills at all.</p>
+                  <p class="deck-source">Sources: <a href="https://arxiv.org/html/2602.12670v4">SkillsBench on arXiv</a>, as recorded in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/FIRST-PARTY-TEN-THOUSAND-HARNESS-PACKAGES-2026-09-22.md">the first-party package research</a></p>
+                </article>
+                <article class="deck-tile" data-fact data-evidence="docs/research/HARNESS-AND-LIBRARY-PLAN-2026-09-22.md">
+                  <p class="deck-stat">157 of 98,380</p>
+                  <p>Skills confirmed malicious in a February 2026 study of 98,380 skills from two registries. Supply is plentiful; a reason to trust a file is not.</p>
+                  <p class="deck-source">Sources: <a href="https://arxiv.org/abs/2602.06547">the study on arXiv</a>, as recorded in <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/research/HARNESS-AND-LIBRARY-PLAN-2026-09-22.md">the harness and library plan</a></p>
+                </article>
+              </div>
+              <p class="deck-next"><strong>Baltor's answer:</strong> a reviewed library, delivered one step at a time, with the licence and the digest checked before a file is used.</p>
+            </div>
+          </section>
+
+          <section class="deck-slide" id="contact" data-slide aria-roledescription="slide" aria-labelledby="contact-title">
+            <div class="deck-slide-inner deck-contact">
+              <div class="deck-head">
+                <p class="deck-eyebrow">Contact</p>
+                <h2 id="contact-title">Talk to us.</h2>
+                <p class="deck-lead">Create an account at baltor.ai and connect your harness, or write to the operator at the postal address in the privacy notice.</p>
+              </div>
+              <address class="deck-address" data-fact data-evidence="docs/legal/PRIVACY-NOTICE.md">
+                <span class="deck-address-name">Baltor.AI</span>
+                <span>1428 Bryn Mawr St</span>
+                <span>Saxton, PA 16678</span>
+                <span>United States</span>
+                <span class="deck-source">Source: the <a href="/privacy">privacy notice</a>, <a href="https://github.com/alisonjieli-png/loop-engine/blob/main/docs/legal/PRIVACY-NOTICE.md">PRIVACY-NOTICE.md</a></span>
+              </address>
+              <div class="deck-contact-actions">
+                <a class="button primary deck-action" href="/get-started">Get started</a>
+                <a class="button secondary deck-action" href="/setup">Get set up</a>
+                <a class="deck-site-link" href="https://baltor.ai/">baltor.ai</a>
+              </div>
+            </div>
+          </section>
+
+        </div>
+        <div class="deck-controls" id="deck-controls" role="group" aria-label="Slide controls" hidden>
+          <div class="deck-progress" aria-hidden="true"><span id="deck-progress-bar"></span></div>
+          <button class="deck-control" id="deck-previous" type="button" aria-label="Previous slide"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <p class="deck-position" id="deck-position" aria-hidden="true"></p><p class="deck-visually-hidden" id="deck-status" aria-live="polite"></p>
+          <button class="deck-control" id="deck-next" type="button" aria-label="Next slide"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg></button>
+          <p class="deck-hint" id="deck-hint">Arrow keys or swipe to move. O for all slides.</p>
+          <button class="deck-control deck-control-text" id="deck-overview-button" type="button" aria-expanded="false" aria-controls="deck-overview"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>All slides</span></button>
+          <button class="deck-control deck-control-text" id="deck-present" type="button"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Present</span></button>
+        </div>
+        <nav class="deck-overview" id="deck-overview" aria-label="All slides" hidden>
+          <div class="deck-overview-head"><h2 id="deck-overview-title">All slides</h2><button class="deck-control deck-control-text" id="deck-overview-close" type="button">Close</button></div>
+          <ol class="deck-overview-list" id="deck-overview-list"></ol>
+        </nav>
+      </div>
+    </section>
+  </main>
+  <!-- The shared footer, as the site map lists it. -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-brand"><a class="brand" href="/" data-page="home" aria-label="{{SERVICE_NAME}} home"><img class="brand-mark" src="/assets/baltor-mark.svg" width="32" height="32" alt=""><span class="brand-name">{{SERVICE_NAME}}</span></a><p>Harness and agent optimized operation.</p></div>
+      <nav class="footer-links" id="footer-product" aria-label="Product"><p class="footer-heading">Product</p><a id="footer-access" href="/get-started" data-page="get-started"><span>Get started</span></a><a href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a><a href="/how-it-works" data-page="about">How it works</a><a href="/#library" data-page="home">Library</a><a href="/pricing" data-page="pricing">Pricing</a><a href="/examples" data-page="examples">First example</a></nav>
+      <nav class="footer-links" id="footer-use-cases" aria-label="Use cases"><p class="footer-heading">Use cases</p><a href="/use-cases" data-page="use-cases">Use cases</a><a href="/overnight" data-page="overnight">Solve problems overnight</a><a href="/efficiency" data-page="efficiency">Efficient operation</a><a href="/learning" data-page="learning">Learning built in</a></nav>
+      <nav class="footer-links" id="footer-documentation" aria-label="Documentation"><p class="footer-heading">Documentation</p><a href="/docs" data-page="docs">Docs</a><a href="/security" data-page="security">Access and data</a></nav>
+      <nav class="footer-links" id="footer-company" aria-label="Company"><p class="footer-heading">Company</p><a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a><a href="/terms" data-page="terms">Terms of service</a><a href="/assets/third-party-notices.txt">Open-source notices</a><span>Contact: by post, at the address below</span></nav>
+    </div>
+    <div class="footer-bottom"><p class="footer-base"><img class="brand-mark" src="/assets/baltor-mark.svg" width="20" height="20" alt="">© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678</p><p>Your model keys stay with you.</p><button id="theme" class="quiet theme-toggle" type="button" aria-label="Change appearance">Appearance: light</button></div>
+  </footer>
+</body>
+</html>
