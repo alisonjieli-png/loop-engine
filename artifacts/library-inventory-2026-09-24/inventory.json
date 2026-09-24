@@ -1,0 +1,4147 @@
+{
+ "additional_sources_not_in_the_requested_list": [
+  {
+   "all_files": 656,
+   "all_files_by_extension": {
+    "(none)": 72,
+    ".json": 428,
+    ".md": 74,
+    ".py": 80,
+    ".txt": 2
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "proposal family: deterministic_native_method -> tool or script": 12
+   },
+   "details": {},
+   "distinct_identities": 12,
+   "files": 96,
+   "identities": [
+    "audit_boolean_rule_coverage",
+    "audit_functional_dependency_rows",
+    "compare_primitive_object_contracts",
+    "cover_pairwise_configuration_values",
+    "decode_u16_length_prefixed_frames",
+    "evaluate_bounded_rational_expression",
+    "find_strongly_connected_components",
+    "pack_first_fit_decreasing_batches",
+    "project_json_pointer_values",
+    "resolve_literal_named_template",
+    "schedule_dag_earliest_times",
+    "simulate_exact_token_bucket"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in the cohort's proposals file",
+   "kinds": {
+    "tool or script": 12
+   },
+   "label": "artifacts/mixed-native-originals-2026-09-23 and artifacts/mixed-native-originals-contract-v2-2026-09-23",
+   "name": "mixed native originals",
+   "notes": [],
+   "package_versions": 36,
+   "part_of_the_library": true,
+   "producer_families": {
+    "openai": 12
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-2026-09-23/prepared-final/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-2026-09-23/prepared/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-2026-09-23/proposals-final.json",
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-2026-09-23/proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-contract-v2-2026-09-23/prepared/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-contract-v2-2026-09-23/proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-package-review-2026-09-23/mixed-native-originals-after-passive-path-repair.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-package-review-2026-09-23/mixed-native-originals-prechecks-after-profile-repair.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-package-review-2026-09-23/mixed-native-originals-prechecks-first.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 435,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-2026-09-23"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 221,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/mixed-native-originals-contract-v2-2026-09-23"
+    }
+   ],
+   "scope": "additional",
+   "state_basis": "native pre-check records in artifacts/native-package-review-2026-09-23, matched to package bytes by digest",
+   "state_details": {
+    "candidate: no pre-check record for these bytes; an earlier version passed (mixed-native-originals-after-passive-path-repair.json)": 12
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 12,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one method identity; the current version is the contract successor, earlier prepared trees are version history",
+   "unit_file_bytes": 131897,
+   "unit_files_by_extension": {
+    "(none)": 12,
+    ".json": 60,
+    ".md": 12,
+    ".py": 12
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 85,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 12,
+   "version_history": [
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "audit_boolean_rule_coverage",
+     "package_digest": "bf7a09edd3c5c581a318812ecaf5e42e1bdd73549fb11ee08cc15e0a2f273458",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "audit_boolean_rule_coverage",
+     "package_digest": "e15774569b995286404c81f2e55c2ecb839fd5ebc8a9525f6b7049a3e04162b9",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "audit_boolean_rule_coverage",
+     "package_digest": "40435845ac4fbd44f900e1ca510e6f52586820efdefbd8a43773f78b3f92c6c1",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "audit_functional_dependency_rows",
+     "package_digest": "b88994186f756712c0b88bbc8983cba3499b9c92ec57a6f1c6de84626a4c0f0f",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "audit_functional_dependency_rows",
+     "package_digest": "0120acc6744d56b69447e2dc40f740e8b248ee5c2a631f46b654eab9f254063f",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "audit_functional_dependency_rows",
+     "package_digest": "92ba637a50df7401643057c77559f40a251dc16bb3d2c6cbabca0e9c6cb7b1e8",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "compare_primitive_object_contracts",
+     "package_digest": "51155a009f297cc6981df1574bf4ebf3b8d2d21f5b78734e5bf4f13bbf545fe5",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "compare_primitive_object_contracts",
+     "package_digest": "7181cdf967db138e7f50f20cb2590bb34a8c90c5aef5362fe73f55874f147380",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "compare_primitive_object_contracts",
+     "package_digest": "134844ff557b925036ae89e4aeeb1130cc4dbad470047d5043d0187917d5924d",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "cover_pairwise_configuration_values",
+     "package_digest": "88e9c94b2f8c332c65f606f8c48d406a435ed48cc8fc5bd14b9cda673f3b8f37",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "cover_pairwise_configuration_values",
+     "package_digest": "29dd6f93a9cf962b36aca0f171e474e7e8860b676f2ec7bbff2412577ce91abc",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "cover_pairwise_configuration_values",
+     "package_digest": "ea822e9358f6ea955eefefb00a3c8bce946a9661a61224e5937d4ae9e42446fb",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "decode_u16_length_prefixed_frames",
+     "package_digest": "b8c251d513cf1634a633c319c8a519ef3ab73945570e2ec6e2c32a329f6cceb6",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "decode_u16_length_prefixed_frames",
+     "package_digest": "4dda3bfacd5440295ac5cb56ffb537cffdbd826ef877ce7ee2b1b2597222bbc6",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "decode_u16_length_prefixed_frames",
+     "package_digest": "f3be7548acee44c337172edb71fc7e9a0b01f234b6d8cf652903ff5747a5b915",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "evaluate_bounded_rational_expression",
+     "package_digest": "62ec3571145b1445b68b85a2461f6ac685fd68c7e792843aa2a5618baf292bba",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "evaluate_bounded_rational_expression",
+     "package_digest": "d8793e1f11a24a99807e636e4d909984573201adda323182d1c7bbe4dc36b5c0",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "evaluate_bounded_rational_expression",
+     "package_digest": "ed342d8ed805c097f3c7048b800d2a51d2148bf6d75d672edccbf391c620b25f",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "find_strongly_connected_components",
+     "package_digest": "60f993920c0e09b756da352445d491dbf22086127ace41e68f6396801a1a8bbb",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "find_strongly_connected_components",
+     "package_digest": "94ba49ea3fd8d276bd5610003fd3a2c170714826c2ecef63118aa470f97fdb99",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "find_strongly_connected_components",
+     "package_digest": "23612e33fba8bfb43fb64a3c2a668ca7642e9cfa9bcbf480d71b10adad00ecd1",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "pack_first_fit_decreasing_batches",
+     "package_digest": "330717765ee5c81141e6c1b6dae7ef8c8070c56ff30ae528281a3882a5a55ab7",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "pack_first_fit_decreasing_batches",
+     "package_digest": "fdb931f908c53467f270d024699d04992b941cd35cb89441d6c4bfff1e10797f",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "pack_first_fit_decreasing_batches",
+     "package_digest": "a0831262c6cae1b2bd0cc2b97a4e5e868bd18ef5b21085d88f3965dd822c4406",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "project_json_pointer_values",
+     "package_digest": "409143d1afb43733e6f45c4655659ff78cbe532bb242ee5c063c2a3ed30363f3",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "project_json_pointer_values",
+     "package_digest": "939b4b57e86d635f32042270485863245231213d0cfc05a3a28b93e5a74802ef",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "project_json_pointer_values",
+     "package_digest": "6f3ad636002b1eab767e7690be8b68b1398fed1dc009dd6a2a5f1299fe57a087",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "resolve_literal_named_template",
+     "package_digest": "2cb642bfe85bac878080e9a623b3b29238619131a13d36c26127e0eac1e68054",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "resolve_literal_named_template",
+     "package_digest": "31c2d135a962bb0acd7ee8b0b164ec3fc465d9b8aace8745ef47ba66699cf2b7",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "resolve_literal_named_template",
+     "package_digest": "0167e74e7d178f4b6fe1d21bb2b8750e996d19236507268941c443c5d4e2f61f",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "schedule_dag_earliest_times",
+     "package_digest": "2992f843a295cf403fd770b1df6a36c5c12de00f3d4f2b0cf4839446d7caf896",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "schedule_dag_earliest_times",
+     "package_digest": "03ea8b8016d6352eb36453c6e53455c0d691988bb559c006a5f7c10246d8484c",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "schedule_dag_earliest_times",
+     "package_digest": "8aef9a5ec06c3e79a7b5a95eb354ff039084fe99cf9f513292f9483c350fad86",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared"
+     ],
+     "current": false,
+     "identity": "simulate_exact_token_bucket",
+     "package_digest": "89f1ec74d67cd5c2ed7c57f7c9ec6f131af2b40dbfb295ef49791edda8a5f97d",
+     "state": "no pre-check record"
+    },
+    {
+     "batches": [
+      "prepared-final"
+     ],
+     "current": false,
+     "identity": "simulate_exact_token_bucket",
+     "package_digest": "2a5ea1551bb2506236816334110ac5094ca5a2ea2c39e9f1630b48c45b5ab76e",
+     "state": "passed"
+    },
+    {
+     "batches": [
+      "contract-v2"
+     ],
+     "current": true,
+     "identity": "simulate_exact_token_bucket",
+     "package_digest": "13262ec6716013a2ceaa2536796b556f634b73628758a57b4e2e21f9e1716a88",
+     "state": "no pre-check record"
+    }
+   ]
+  },
+  {
+   "all_files": 59,
+   "all_files_by_extension": {
+    ".json": 32,
+    ".jsonl": 3,
+    ".md": 7,
+    ".py": 4,
+    ".txt": 13
+   },
+   "attempts_without_a_unit": {
+    "live-minimax-20260923T153828: output_limit_reached": 2,
+    "live-minimax32-20260923T154757: candidate_draft_or_factory_refused": 1,
+    "live-smoke-20260923T153131: timeout": 1
+   },
+   "declared_kind_values": {
+    "proposal family: original_native_tool -> tool or script": 1
+   },
+   "details": {},
+   "distinct_identities": 1,
+   "files": 7,
+   "identities": [
+    "apportion_integer_quotas"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in the attempt's proposals.json",
+   "kinds": {
+    "tool or script": 1
+   },
+   "label": "artifacts/original-native-generation-2026-09-23",
+   "name": "original native generation live runs",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "minimax": 1
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23/live-minimax-20260923T153828/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23/live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/candidates/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23/live-minimax32-20260923T154757/apportion_integer_quotas.attempt-1/proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23/live-minimax32-20260923T154757/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23/live-smoke-20260923T153131/journal.jsonl"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 59,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/original-native-generation-2026-09-23"
+    }
+   ],
+   "scope": "additional",
+   "state_basis": "run journal and run record; no review pre-check",
+   "state_details": {
+    "candidate: prepared by the generator; no review pre-check": 1
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 1,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one prepared candidate in a live run attempt folder",
+   "unit_file_bytes": 31190,
+   "unit_files_by_extension": {
+    ".json": 2,
+    ".md": 3,
+    ".py": 2
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 7,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 1,
+   "version_history": null
+  },
+  {
+   "all_files": 35,
+   "all_files_by_extension": {
+    "(none)": 1,
+    ".json": 22,
+    ".md": 4,
+    ".py": 5,
+    ".txt": 3
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "plugin inventory record type: native_plugin_candidate_inventory/v1 -> plugin manifest": 1
+   },
+   "details": {},
+   "distinct_identities": 1,
+   "files": 13,
+   "identities": [
+    "baltor-focused-brief-candidate"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "candidate-manifest.json record_type",
+   "kinds": {
+    "plugin manifest": 1
+   },
+   "label": "artifacts/harness-plugin-context-2026-09-23",
+   "name": "harness plugin context",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "openai": 1
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/harness-plugin-context-2026-09-23/candidate-manifest.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 35,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/harness-plugin-context-2026-09-23"
+    }
+   ],
+   "scope": "additional",
+   "state_basis": "candidate-manifest.json status and independently_approved",
+   "state_details": {
+    "candidate: status candidate_only, not independently approved": 1
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 1,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one plugin package in candidate-manifest.json",
+   "unit_file_bytes": 21601,
+   "unit_files_by_extension": {
+    "(none)": 1,
+    ".json": 7,
+    ".md": 2,
+    ".py": 3
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 13,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 1,
+   "version_history": null
+  }
+ ],
+ "excluded_folders": [
+  {
+   "folder": "artifacts/intelligence-layer-coverage-2026-09-21/pack",
+   "reason": "24 candidate items of the loop_native family (Runtime History and User Feedback layers), not harness intelligence"
+  },
+  {
+   "folder": "artifacts/focused-step-packet-2026-09-23",
+   "reason": "two example step packets; its README records zero persistent library items"
+  },
+  {
+   "folder": "/home/username/baltor-private/generation-2026-09-23/<plan folders>",
+   "reason": "plan-building work for the Ollama wave (plans, builders and checks), not drafts"
+  }
+ ],
+ "generated_by": "tools/inventory_harness_library.py",
+ "inventory_worktree_revision": "2658b7bbd2ef00d2704dafe97222affebd95a80a",
+ "method": {
+  "canonical_kinds": [
+   "skill",
+   "instruction file or fragment",
+   "subagent definition",
+   "command or workflow recipe",
+   "hook",
+   "rules file",
+   "plugin manifest",
+   "protocol server configuration or server",
+   "permission settings",
+   "step packet",
+   "tool or script",
+   "verifier",
+   "other",
+   "unknown"
+  ],
+  "deduplication": "identities are grouped by identity key and declared aliases; a group counts once, with the kind and state of its most advanced record (approved and served, then passed a precheck, then candidate, then refused, then unknown)",
+  "identity_key": "lowercase; remove baltor.<context|tool|connection>. and codex.component.supply.<digits>. prefixes and a trailing .v<digits>; replace each run of other characters with '_'",
+  "kind_vocabularies": {
+   "catalogue reference kind": {
+    "instruction_file": "instruction file or fragment",
+    "skill": "skill",
+    "tool": "tool or script"
+   },
+   "format pilot kind": {
+    "local_protocol_server_connection": "protocol server configuration or server",
+    "native_step_instructions": "instruction file or fragment",
+    "skill_with_python_tool": "skill"
+   },
+   "generation guide declaration": {
+    "Agent Skills package with SKILL.md entry": "skill"
+   },
+   "idea file kind": {
+    "harness_routing": "instruction file or fragment",
+    "hook": "hook",
+    "plugin_manifest": "plugin manifest",
+    "rules": "rules file",
+    "skill": "skill",
+    "subagent": "subagent definition",
+    "workflow": "command or workflow recipe"
+   },
+   "package tree role": {
+    "skill_entry": "skill"
+   },
+   "plugin inventory record type": {
+    "native_plugin_candidate_inventory/v1": "plugin manifest"
+   },
+   "proposal family": {
+    "deterministic_native_method": "tool or script",
+    "harness_plugin": "plugin manifest",
+    "original_native_command": "command or workflow recipe",
+    "original_native_hook": "hook",
+    "original_native_packet": "step packet",
+    "original_native_skill": "skill",
+    "original_native_subagent": "subagent definition",
+    "original_native_task_packet": "step packet",
+    "original_native_tool": "tool or script"
+   },
+   "research category": {
+    "contract": "other",
+    "plugin": "plugin manifest",
+    "skill": "skill",
+    "tool": "protocol server configuration or server"
+   },
+   "wave 5 file class": {
+    "command_file": "command or workflow recipe",
+    "hook_with_script": "hook",
+    "plugin_bundle": "plugin manifest",
+    "protocol_server_config_local": "protocol server configuration or server",
+    "root_instruction_fragment": "instruction file or fragment",
+    "rules_file": "rules file",
+    "settings_fragment": "permission settings",
+    "skill_with_scripts_and_tests": "skill",
+    "subagent_definition": "subagent definition",
+    "task_packet": "step packet",
+    "verifier_package": "verifier"
+   }
+  },
+  "model_calls": 0,
+  "network_requests": 0,
+  "passed_a_precheck_means": "a recorded review pre-check passed: wave 5 check_package.py check-all or the candidate review native pre-checks; not a generation-time shape check",
+  "reads_only": true,
+  "states": [
+   "approved and served",
+   "candidate",
+   "refused by a precheck",
+   "passed a precheck",
+   "unknown"
+  ]
+ },
+ "record_type": "harness_library_inventory/v1",
+ "sources": [
+  {
+   "all_files": 178,
+   "all_files_by_extension": {
+    ".json": 10,
+    ".md": 167,
+    ".py": 1
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "catalogue reference kind: skill -> skill": 123
+   },
+   "details": {
+    "host_release_manifest": {
+     "host_release_bodies_identical_to_the_bodies_folder": 43,
+     "host_release_bodies_matching_their_digest": 43,
+     "items": 43,
+     "items_missing_from_items_json": [],
+     "note": "identical host-release/bodies copies are counted in all files, not as more unit files"
+    },
+    "live_release_record": {
+     "catalogue_release_id": "69da7ead21f928d27aab083f9185cd119f343f67fd22f6eb7f443c6cd0a13765",
+     "fly_release": 24,
+     "items": 43,
+     "note": "read from the committed release record; the live service was not queried",
+     "path": "/home/username/.le-inventory-20260924/artifacts/architecture-audit-2026-09-19/pilot-release-24.json",
+     "reason": "the accounts release re-anchored the starter catalogue to db188909, which changes every body digest; the homepage printed the new digests while the store still served the previous release"
+    },
+    "review_outcomes": {
+     "approved": 43,
+     "not_reviewed": 74,
+     "rejected": 6
+    }
+   },
+   "distinct_identities": 123,
+   "files": 123,
+   "identities": [
+    "analyse_errors_by_segment_and_cluster",
+    "apply_hold_or_escalate_each_correction",
+    "ask_a_model_with_a_declared_answer_shape",
+    "assemble_the_context_for_one_step",
+    "audit_data_splits_for_errors_and_leakage",
+    "backfill_a_large_table_in_bounded_batches",
+    "bisect_a_failure_across_inputs_and_settings",
+    "bisect_a_regression_across_revisions",
+    "bound_a_list_endpoint_with_paging_and_limits",
+    "build_a_repeatable_performance_test",
+    "build_an_incident_timeline_from_evidence",
+    "canonicalize_company_legal_suffixes",
+    "carry_competing_readings_of_a_request",
+    "carry_earlier_decisions_forward_without_the_whole_transcript",
+    "carry_one_correlation_identifier_across_services",
+    "check_a_table_join_before_trusting_it",
+    "check_for_existing_work_before_building",
+    "check_generated_code_against_the_request",
+    "check_that_a_result_is_stable_and_generalizes",
+    "choose_a_smaller_model_for_a_bounded_decision",
+    "choose_log_levels_and_what_belongs_in_each",
+    "choose_metrics_by_task_type_and_industry",
+    "choose_one_next_action",
+    "choose_review_perspectives",
+    "choose_test_cases_from_boundaries_and_classes",
+    "classify_a_failure_before_deciding_to_retry",
+    "compare_a_smaller_model_against_the_larger_one",
+    "copy_a_table_with_corrections_never_in_place",
+    "decide_what_to_leave_out_of_a_prompt",
+    "decide_whether_a_step_needs_a_model",
+    "deliver_the_best_available_result_when_blocked",
+    "design_a_request_and_response_contract",
+    "detect_malformed_values_by_dominant_pattern",
+    "diagnose_a_stall_and_change_strategy",
+    "escalate_uncertain_values_with_candidates",
+    "export_a_standalone_python_package",
+    "find_duplicate_records_with_blocking_keys",
+    "forecast_an_action_then_compare",
+    "freeze_the_success_metric_before_measuring",
+    "hand_over_a_result_its_consumer_can_use",
+    "handle_missing_values_without_inventing_them",
+    "isolate_a_flaky_test_before_trusting_it",
+    "keep_instructions_and_supplied_text_apart",
+    "keep_partial_work_when_a_long_job_is_interrupted",
+    "keep_secrets_out_of_source_and_settings",
+    "layer_exception_catalogs_with_precedence",
+    "look_for_structure_the_model_missed",
+    "make_a_data_pipeline_safe_to_run_again",
+    "make_a_write_safe_to_repeat_with_an_idempotency_key",
+    "measure_before_optimising",
+    "measure_the_environment_before_relying_on_it",
+    "negotiate_a_supported_version_at_connection_time",
+    "normalize_and_recover_email_addresses",
+    "normalize_phone_numbers",
+    "normalize_website_addresses",
+    "normalize_whitespace_and_unicode_text",
+    "orient_on_a_task_and_write_its_contracts",
+    "package_one_skill_for_two_coding_harnesses",
+    "pin_dependency_versions_and_verify_them",
+    "plan_a_schema_change_in_compatible_steps",
+    "plan_and_split_work_with_explicit_joins",
+    "profile_text_column_before_cleaning",
+    "propose_a_dedupe_without_deleting_rows",
+    "prove_a_check_can_fail_when_the_behaviour_is_removed",
+    "questions_to_ask_before_starting_work",
+    "read_a_failure_report_and_name_the_first_wrong_value",
+    "read_a_profile_and_find_the_dominant_cost",
+    "read_the_train_validation_gap",
+    "record_the_licence_of_every_bundled_component",
+    "reduce_a_failure_to_a_minimal_reproduction",
+    "refuse_secrets_and_unsafe_paths_in_generated_files",
+    "rehearse_a_migration_on_a_copy_of_real_data",
+    "release_behind_a_switch_that_can_be_turned_off",
+    "remove_personal_data_before_it_reaches_a_log",
+    "report_observed_derived_assumed_and_unknown",
+    "reproduce_the_evidence_a_report_claims",
+    "resolve_missing_information",
+    "respond_to_a_leaked_credential",
+    "respond_to_a_vulnerable_dependency_report",
+    "restore_capitalisation_of_names",
+    "retry_with_backoff_inside_a_declared_budget",
+    "return_errors_a_caller_can_act_on",
+    "review_a_change_for_correctness",
+    "review_a_change_for_what_is_missing",
+    "review_a_failed_check_before_repairing_the_work",
+    "review_a_new_dependency_before_adding_it",
+    "review_an_accepted_solution_adversarially",
+    "review_authorisation_on_every_path",
+    "review_error_paths_and_partial_failure",
+    "review_file_paths_for_traversal_and_link_escape",
+    "review_generated_output_before_it_is_executed",
+    "review_shared_state_for_ordering_defects",
+    "review_untrusted_input_for_injection",
+    "rotate_a_credential_without_an_outage",
+    "run_a_release_check_list_before_deploying",
+    "run_an_incident_review_without_blame",
+    "scope_a_credential_to_the_smallest_permission",
+    "score_duplicate_pairs_by_weakest_signal",
+    "separate_required_from_optional_in_a_request",
+    "set_an_output_size_from_a_known_limit",
+    "set_timeouts_and_cancel_an_outbound_call",
+    "split_a_large_request_into_assignable_parts",
+    "split_address_lines_into_components",
+    "state_the_permissions_and_limits_of_an_assignment",
+    "supply_the_files_and_facts_an_assignment_needs",
+    "test_driven_change_red_green_refactor",
+    "turn_a_vague_request_into_a_testable_statement",
+    "turn_an_incident_into_a_check_that_would_have_caught_it",
+    "use_percentiles_not_averages_for_response_time",
+    "validate_input_at_the_boundary_and_refuse_early",
+    "verify_a_release_after_it_is_live",
+    "verify_an_agent_result_without_trusting_its_summary",
+    "verify_an_export_in_an_isolated_interpreter",
+    "verify_the_requested_output",
+    "version_an_interface_so_older_callers_keep_working",
+    "write_a_data_contract_for_a_table_or_feed",
+    "write_a_log_line_that_is_safe_to_share",
+    "write_a_migration_that_is_safe_to_run_twice",
+    "write_a_pinned_container_and_batch_job",
+    "write_a_regression_test_that_pins_a_defect",
+    "write_a_rollback_plan_before_the_release",
+    "write_a_task_brief_for_an_agent",
+    "write_acceptance_criteria_a_reviewer_can_check"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "items.json reference.kind",
+   "kinds": {
+    "skill": 123
+   },
+   "label": "examples/29_intelligence_service/starter-catalogue",
+   "name": "served starter catalogue",
+   "notes": [
+    "The folder holds 123 catalogue items. The 43 approved ones named by the host release manifest are the served library; the others stay candidates (see review_outcomes)."
+   ],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "(not recorded)": 123
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/architecture-audit-2026-09-19/pilot-release-24.json",
+    "/home/username/.le-inventory-20260924/examples/29_intelligence_service/starter-catalogue/host-release/manifest.json",
+    "/home/username/.le-inventory-20260924/examples/29_intelligence_service/starter-catalogue/items.json",
+    "/home/username/.le-inventory-20260924/examples/29_intelligence_service/starter-catalogue/reviews.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 178,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/examples/29_intelligence_service/starter-catalogue"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "reviews.json outcome per identity, and whether host-release/manifest.json names the identity",
+   "state_details": {
+    "approved and served: approved by the independent review and named by the host release manifest": 43,
+    "candidate: not reviewed": 74,
+    "candidate: rejected by the independent review, which keeps it a candidate": 6
+   },
+   "states": {
+    "approved and served": 43,
+    "candidate": 80,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one catalogue item in items.json; the host release manifest names the served ones",
+   "unit_file_bytes": 319107,
+   "unit_files_by_extension": {
+    ".md": 123
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 123,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 123,
+   "version_history": null
+  },
+  {
+   "all_files": 207,
+   "all_files_by_extension": {
+    ".json": 27,
+    ".md": 167,
+    ".py": 13
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "generation guide declaration: Agent Skills package with SKILL.md entry -> skill": 80
+   },
+   "details": {
+    "per_wave": {
+     "first-party-harness-candidates-2026-09-22": {
+      "approval_state": "none",
+      "entries": 24,
+      "files_under_packages_not_in_the_manifest": 0,
+      "package_count": 24,
+      "rights_state": "pending_independent_review"
+     },
+     "first-party-harness-candidates-2026-09-22-wave-2": {
+      "approval_state": "none",
+      "entries": 24,
+      "files_under_packages_not_in_the_manifest": 0,
+      "package_count": 24,
+      "rights_state": "pending_independent_review"
+     },
+     "first-party-harness-candidates-2026-09-22-wave-3": {
+      "approval_state": "none",
+      "entries": 20,
+      "files_under_packages_not_in_the_manifest": 0,
+      "package_count": 20,
+      "rights_state": "pending_independent_review"
+     },
+     "first-party-harness-candidates-2026-09-22-wave-4-ops": {
+      "approval_state": "none",
+      "entries": 12,
+      "files_under_packages_not_in_the_manifest": 0,
+      "package_count": 12,
+      "rights_state": "pending_independent_review"
+     }
+    }
+   },
+   "distinct_identities": 80,
+   "files": 80,
+   "identities": [
+    "adjudicate-a-protocol-tool-effect-request",
+    "adjudicate-model-disagreement-with-external-checks",
+    "allocate-scarce-stock-by-promised-service",
+    "audit-a-model-specific-skill-rendering",
+    "audit-a-published-guide-against-a-release",
+    "audit-as-of-data-visibility",
+    "audit-measurement-units",
+    "audit-resource-capacity-by-interval",
+    "audit-sampling-frame-coverage",
+    "audit-semantic-loss-in-protocol-fallback",
+    "audit-service-measure-against-agreement",
+    "balance-project-duty-coverage",
+    "bound-obsolete-stock-by-support-horizon",
+    "bridge-forecast-driver-changes",
+    "build-a-project-decision-provenance-map",
+    "carry-a-sales-promise-into-delivery",
+    "challenge-a-survey-instrument-for-contamination",
+    "challenge-retrieval-with-hard-negatives",
+    "check-prerequisite-order-in-a-task-guide",
+    "check-rate-denominators",
+    "classify-ambiguous-posting-account",
+    "compare-acquisition-channels-for-one-segment",
+    "compare-distribution-paths-with-failure-costs",
+    "compare-model-context-pairs-on-frozen-cases",
+    "compare-satisfaction-waves-by-respondent-mix",
+    "compile-a-native-material-placement-plan",
+    "contrast-described-and-observed-workflows",
+    "define-a-user-operation-performance-envelope",
+    "define-time-zone-reporting-window",
+    "derive-state-transition-tests-from-a-contract",
+    "design-a-bounded-product-experiment",
+    "design-catalogue-withdrawal-checks",
+    "diagnose-process-constraint-from-flow",
+    "establish-milestone-readiness-from-evidence",
+    "explain-a-service-charge-from-effective-rules",
+    "explain-engine-selection-from-eligible-evidence",
+    "explain-work-package-cost-variance",
+    "gate-a-product-launch-across-teams",
+    "map-independent-acceptance-evidence",
+    "map-observed-customer-journey-friction",
+    "map-repair-support-requirements-to-assets",
+    "map-system-output-to-permitted-consumers",
+    "match-a-product-claim-to-verified-capability",
+    "normalize-vendor-offers-for-one-decision",
+    "prepare-a-support-escalation-packet",
+    "propagate-a-plan-change-through-commitments",
+    "qualify-a-partner-integration-proposal",
+    "qualify-a-prebuilt-application-against-required-seams",
+    "qualify-an-invited-pilot-cohort",
+    "rebuild-state-from-ordered-events",
+    "reconcile-account-difference-to-postings",
+    "reconcile-inventory-availability",
+    "reconcile-native-material-use-evidence",
+    "reconcile-order-fulfillment-quantities",
+    "reconcile-record-flow-across-stages",
+    "reconcile-return-credit-to-original-sale",
+    "reconcile-snapshot-changes",
+    "reconcile-subcontractor-delivery-to-obligations",
+    "reconstruct-a-buyer-decision-path",
+    "reconstruct-causality-across-clock-skewed-records",
+    "reconstruct-service-clock-from-status-intervals",
+    "revalidate-output-allocation-on-model-fallback",
+    "scope-a-step-credential-lease-to-physical-use",
+    "screen-a-study-for-a-product-decision",
+    "screen-payable-for-document-mismatch",
+    "separate-recurring-support-causes-from-repeat-contacts",
+    "separate-shared-build-cache-from-task-state",
+    "specify-an-isolated-harness-startup-probe",
+    "synthesize-discovery-interviews-with-counterexamples",
+    "test-aggregate-trend-for-subgroup-reversal",
+    "test-control-operation-on-a-bounded-sample",
+    "trace-field-lineage-to-a-measure",
+    "trace-numeric-rounding",
+    "trace-resource-request-to-funding-window",
+    "trace-statement-line-to-ledger",
+    "track-customer-promises-through-case-updates",
+    "triage-support-requests-against-approved-policy",
+    "validate-aggregate-grain",
+    "validate-source-to-target-field-map",
+    "verify-resolution-against-original-symptom"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the shared GENERATION-GUIDE.md, which each wave README names as governing, requires one Agent Skills package with a SKILL.md entry; each manifest entry's package_path must be that entry file",
+   "kinds": {
+    "skill": 80
+   },
+   "label": "artifacts/first-party-harness-candidates-2026-09-22 (and -wave-2, -wave-3, -wave-4-ops)",
+   "name": "first-party waves 1 to 4",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "(not recorded)": 80
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-2/manifest.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-3/manifest.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/manifest.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22/GENERATION-GUIDE.md",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22/manifest.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 66,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 52,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-2"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 47,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-3"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 42,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "manifest.json entry state (candidate_only) and approval_state",
+   "state_details": {
+    "candidate: manifest state candidate_only, approval_state none": 80
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 80,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one manifest.json entry: one native package and its separate review note",
+   "unit_file_bytes": 184489,
+   "unit_files_by_extension": {
+    ".md": 80
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 80,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 80,
+   "version_history": null
+  },
+  {
+   "all_files": 1510,
+   "all_files_by_extension": {
+    "(none)": 75,
+    ".csv": 5,
+    ".diff": 5,
+    ".json": 866,
+    ".jsonl": 1,
+    ".md": 287,
+    ".mdc": 6,
+    ".py": 150,
+    ".sql": 1,
+    ".toml": 15,
+    ".txt": 99
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "wave 5 file class: command_file -> command or workflow recipe": 5,
+    "wave 5 file class: hook_with_script -> hook": 5,
+    "wave 5 file class: plugin_bundle -> plugin manifest": 5,
+    "wave 5 file class: protocol_server_config_local -> protocol server configuration or server": 5,
+    "wave 5 file class: root_instruction_fragment -> instruction file or fragment": 5,
+    "wave 5 file class: rules_file -> rules file": 5,
+    "wave 5 file class: settings_fragment -> permission settings": 5,
+    "wave 5 file class: skill_with_scripts_and_tests -> skill": 15,
+    "wave 5 file class: subagent_definition -> subagent definition": 5,
+    "wave 5 file class: task_packet -> step packet": 10,
+    "wave 5 file class: verifier_package -> verifier": 10
+   },
+   "details": {
+    "newest_check_all_report": {
+     "checked_at": "2026-09-24T11:49:54.425804+00:00",
+     "file": "precheck-all-20260924T114954425867Z.json",
+     "packages": 75,
+     "passed_for_wave_gate": 56,
+     "refused": 19
+    },
+    "payload_inventory": {
+     "declared but missing on disk": 1,
+     "declared payload files": 752,
+     "digest differs from package.json": 54,
+     "digest differs from package.json, in packages whose state is refused by a precheck": 54,
+     "on disk but not declared": 1,
+     "payload files on disk": 752
+    }
+   },
+   "distinct_identities": 75,
+   "files": 752,
+   "identities": [
+    "applied_migrations_stay_unchanged",
+    "audit_train_test_drift",
+    "baseline_training_packet",
+    "build_group_stratified_folds",
+    "build_time_ordered_splits",
+    "cap_tool_call_budget",
+    "changelog_writer",
+    "check_csv_column_contract",
+    "check_diff_allowed_paths",
+    "cleaning_apply_packet",
+    "cleaning_plan_packet",
+    "competition_brief_packet",
+    "competition_plugin",
+    "csv_profile_server",
+    "csv_row_sampler_server",
+    "data_cleanup_plugin",
+    "data_sample_inspector",
+    "data_step_scoped_write_settings",
+    "deny_env_file_reads_settings",
+    "detect_text_written_tool_calls",
+    "detect_weakened_test_assertions",
+    "extract_test_failures",
+    "extract_ticket_acceptance_criteria",
+    "flag_outliers_by_median_deviation",
+    "focused_step_packet_rules",
+    "generated_files_stay_unedited",
+    "guard_shell_command_allowlist",
+    "guard_workspace_file_writes",
+    "honest_test_changes",
+    "interrupted_step_resume_packet",
+    "json_schema_check_server",
+    "leakage_reviewer",
+    "log_tool_activity",
+    "map_categories_by_reviewed_table",
+    "map_repository_layout",
+    "morning_report_packet",
+    "night_preflight",
+    "overnight_ticket_plugin",
+    "parse_dates_by_declared_formats",
+    "parse_numbers_by_declared_separators",
+    "pattern_tester_server",
+    "pick_next_experiment",
+    "plan_night_queue",
+    "portable_step_packet_plugin",
+    "project_commands_fragment",
+    "rank_experiments_by_fold_scores",
+    "raw_data_stays_read_only",
+    "read_only_investigation_settings",
+    "recompute_claimed_cv_score",
+    "record_blocker",
+    "repository_scout",
+    "reproducible_competition_notebooks",
+    "require_tests_before_stop",
+    "select_tests_for_changed_files",
+    "small_working_context_rules",
+    "sqlite_readonly_server",
+    "standardize_missing_value_tokens",
+    "step_status_plugin",
+    "submission_assembly_packet",
+    "target_encode_out_of_fold",
+    "test_commands_only_settings",
+    "test_run_summarizer",
+    "ticket_fix_verification_packet",
+    "ticket_reproduction_packet",
+    "ticket_triage_packet",
+    "unattended_git_rules",
+    "unattended_run_rules",
+    "validate_submission_file",
+    "verify_cleaned_copy_change_log",
+    "verify_criteria_have_evidence",
+    "verify_fail_then_pass_evidence",
+    "verify_fold_group_separation",
+    "verify_morning_report_claims",
+    "workspace_write_no_network_settings",
+    "write_step_handoff"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "package.json wave5.file_class",
+   "kinds": {
+    "command or workflow recipe": 5,
+    "hook": 5,
+    "instruction file or fragment": 5,
+    "permission settings": 5,
+    "plugin manifest": 5,
+    "protocol server configuration or server": 5,
+    "rules file": 5,
+    "skill": 15,
+    "step packet": 10,
+    "subagent definition": 5,
+    "verifier": 10
+   },
+   "label": "artifacts/first-party-harness-candidates-2026-09-24-wave-5",
+   "name": "first-party wave 5",
+   "notes": [
+    "Unit files are the payload/ files of each package (declared or present). package.json, review/ reports and review notes are records, not unit files."
+   ],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "anthropic": 75
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/flag_outliers_by_median_deviation/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/flag_outliers_by_median_deviation/review/precheck-20260924T114445792489Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/map_categories_by_reviewed_table/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/map_categories_by_reviewed_table/review/precheck-20260924T114448885648Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/parse_dates_by_declared_formats/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/parse_dates_by_declared_formats/review/precheck-20260924T114451965972Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/parse_numbers_by_declared_separators/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/parse_numbers_by_declared_separators/review/precheck-20260924T114454837829Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/standardize_missing_value_tokens/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a01_data_cleanup_executors/standardize_missing_value_tokens/review/precheck-20260924T114457290150Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/audit_train_test_drift/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/audit_train_test_drift/review/precheck-20260924T114459395864Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/build_group_stratified_folds/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/build_group_stratified_folds/review/precheck-20260924T114502343718Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/build_time_ordered_splits/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/build_time_ordered_splits/review/precheck-20260924T114504615933Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/rank_experiments_by_fold_scores/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/rank_experiments_by_fold_scores/review/precheck-20260924T114507285433Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/target_encode_out_of_fold/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a02_competition_modeling_tools/target_encode_out_of_fold/review/precheck-20260924T114510003434Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/detect_text_written_tool_calls/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/detect_text_written_tool_calls/review/precheck-20260924T114513244239Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/extract_test_failures/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/extract_test_failures/review/precheck-20260924T114516397782Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/extract_ticket_acceptance_criteria/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/extract_ticket_acceptance_criteria/review/precheck-20260924T114519130164Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/map_repository_layout/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/map_repository_layout/review/precheck-20260924T114521929018Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/select_tests_for_changed_files/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a03_ticket_work_tools/select_tests_for_changed_files/review/precheck-20260924T114524545997Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/cap_tool_call_budget/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/cap_tool_call_budget/review/precheck-20260924T114540170046Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/guard_shell_command_allowlist/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/guard_shell_command_allowlist/review/precheck-20260924T114554279462Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/guard_workspace_file_writes/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/guard_workspace_file_writes/review/precheck-20260924T114603178352Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/log_tool_activity/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/log_tool_activity/review/precheck-20260924T114610664855Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/require_tests_before_stop/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a04_unattended_guard_hooks/require_tests_before_stop/review/precheck-20260924T114634423868Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/changelog_writer/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/changelog_writer/review/precheck-20260924T114634548484Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/data_sample_inspector/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/data_sample_inspector/review/precheck-20260924T114634671841Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/leakage_reviewer/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/leakage_reviewer/review/precheck-20260924T114634803254Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/repository_scout/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/repository_scout/review/precheck-20260924T114634915013Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/test_run_summarizer/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a05_focused_subagents/test_run_summarizer/review/precheck-20260924T114643712552Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/night_preflight/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/night_preflight/review/precheck-20260924T114700701842Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/pick_next_experiment/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/pick_next_experiment/review/precheck-20260924T114703697332Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/plan_night_queue/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/plan_night_queue/review/precheck-20260924T114707663730Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/record_blocker/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/record_blocker/review/precheck-20260924T114710927206Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/write_step_handoff/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a06_step_ritual_commands/write_step_handoff/review/precheck-20260924T114713881878Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/csv_profile_server/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/csv_profile_server/review/precheck-20260924T114717906023Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/csv_row_sampler_server/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/csv_row_sampler_server/review/precheck-20260924T114720715321Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/json_schema_check_server/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/json_schema_check_server/review/precheck-20260924T114727790555Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/pattern_tester_server/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/pattern_tester_server/review/precheck-20260924T114730547769Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/sqlite_readonly_server/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a07_local_data_tool_servers/sqlite_readonly_server/review/precheck-20260924T114734910199Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/applied_migrations_stay_unchanged/review/precheck-20260924T114735033114Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/generated_files_stay_unedited/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/generated_files_stay_unedited/review/precheck-20260924T114735149562Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/honest_test_changes/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/honest_test_changes/review/precheck-20260924T114735266521Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/raw_data_stays_read_only/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/raw_data_stays_read_only/review/precheck-20260924T114735383621Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/reproducible_competition_notebooks/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a08_path_scoped_rules/reproducible_competition_notebooks/review/precheck-20260924T114735514249Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/interrupted_step_resume_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/interrupted_step_resume_packet/review/precheck-20260924T114740234748Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/morning_report_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/morning_report_packet/review/precheck-20260924T114742944613Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_fix_verification_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_fix_verification_packet/review/precheck-20260924T114747455691Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_reproduction_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_reproduction_packet/review/precheck-20260924T114752756130Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_triage_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a09_ticket_step_packets/ticket_triage_packet/review/precheck-20260924T114752898426Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/baseline_training_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/baseline_training_packet/review/precheck-20260924T114755945284Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/cleaning_apply_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/cleaning_apply_packet/review/precheck-20260924T114757618200Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/cleaning_plan_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/cleaning_plan_packet/review/precheck-20260924T114802385089Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/competition_brief_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/competition_brief_packet/review/precheck-20260924T114806512383Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/submission_assembly_packet/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a10_data_and_competition_step_packets/submission_assembly_packet/review/precheck-20260924T114808123034Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/competition_plugin/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/competition_plugin/review/precheck-20260924T114812775349Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/data_cleanup_plugin/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/data_cleanup_plugin/review/precheck-20260924T114815396626Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/overnight_ticket_plugin/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/overnight_ticket_plugin/review/precheck-20260924T114820293813Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/portable_step_packet_plugin/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/portable_step_packet_plugin/review/precheck-20260924T114824946201Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/step_status_plugin/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a11_session_plugins/step_status_plugin/review/precheck-20260924T114826262886Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/check_diff_allowed_paths/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/check_diff_allowed_paths/review/precheck-20260924T114830074707Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/detect_weakened_test_assertions/review/precheck-20260924T114836122716Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_criteria_have_evidence/review/precheck-20260924T114839252008Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_fail_then_pass_evidence/review/precheck-20260924T114842475780Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_morning_report_claims/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a12_ticket_result_verifiers/verify_morning_report_claims/review/precheck-20260924T114847615711Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/data_step_scoped_write_settings/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/data_step_scoped_write_settings/review/precheck-20260924T114850186057Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/deny_env_file_reads_settings/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/deny_env_file_reads_settings/review/precheck-20260924T114852814786Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/read_only_investigation_settings/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/read_only_investigation_settings/review/precheck-20260924T114859269014Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/test_commands_only_settings/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/test_commands_only_settings/review/precheck-20260924T114902449435Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/workspace_write_no_network_settings/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a13_unattended_permission_settings/workspace_write_no_network_settings/review/precheck-20260924T114907400723Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/focused_step_packet_rules/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/focused_step_packet_rules/review/precheck-20260924T114909583096Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/project_commands_fragment/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/project_commands_fragment/review/precheck-20260924T114911405930Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/small_working_context_rules/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/small_working_context_rules/review/precheck-20260924T114914813835Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/unattended_git_rules/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/unattended_git_rules/review/precheck-20260924T114924455149Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/unattended_run_rules/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a14_root_instruction_fragments/unattended_run_rules/review/precheck-20260924T114931622624Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/check_csv_column_contract/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/check_csv_column_contract/review/precheck-20260924T114936169579Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/recompute_claimed_cv_score/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/recompute_claimed_cv_score/review/precheck-20260924T114941401071Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/validate_submission_file/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/validate_submission_file/review/precheck-20260924T114946802887Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/verify_cleaned_copy_change_log/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/verify_cleaned_copy_change_log/review/precheck-20260924T114950533202Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/verify_fold_group_separation/package.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/packages/a15_data_and_competition_verifiers/verify_fold_group_separation/review/precheck-20260924T114954412029Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T202912182077Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T203002252913Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T203153908527Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T203320797081Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T203800086149Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T203906301397Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T204347596405Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T204606197104Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T204701100723Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260923T204909086053Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T003341322787Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T003343430717Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T051005291749Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T051618892517Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T052316446598Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T052546986002Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T052912778385Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T053814550347Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T054546657835Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T054629445460Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055143281720Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055304280501Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055533897169Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055553222159Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055700886283Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T055711456548Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T060133043340Z.json",
+    "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5/reports/precheck-all-20260924T114954425867Z.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 1510,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/first-party-harness-candidates-2026-09-24-wave-5"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "the newest reports/precheck-all-*.json that names the package (passed_for_wave_gate or refused), checked against the package's own newest review/precheck-*.json",
+   "state_details": {
+    "passed a precheck: passed the deterministic wave 5 pre-checks (not an approval)": 56,
+    "refused by a precheck: refused by the deterministic wave 5 pre-checks": 19
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 0,
+    "passed a precheck": 56,
+    "refused by a precheck": 19,
+    "unknown": 0
+   },
+   "unit_definition": "one packages/<assignment>/<identity>/package.json multi-file package",
+   "unit_file_bytes": 3864627,
+   "unit_files_by_extension": {
+    "(none)": 75,
+    ".csv": 5,
+    ".diff": 5,
+    ".json": 278,
+    ".jsonl": 1,
+    ".md": 209,
+    ".mdc": 6,
+    ".py": 149,
+    ".sql": 1,
+    ".toml": 15,
+    ".txt": 8
+   },
+   "unit_files_declared_but_missing": 1,
+   "unit_files_distinct_digests": 635,
+   "unit_files_whose_digest_differs_from_the_record": 54,
+   "units": 75,
+   "version_history": null
+  },
+  {
+   "all_files": 83,
+   "all_files_by_extension": {
+    ".json": 17,
+    ".md": 26,
+    ".py": 35,
+    ".toml": 1,
+    ".txt": 4
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "format pilot kind: local_protocol_server_connection -> protocol server configuration or server": 1,
+    "format pilot kind: native_step_instructions -> instruction file or fragment": 2,
+    "format pilot kind: skill_with_python_tool -> skill": 3,
+    "package tree role: skill_entry -> skill": 3
+   },
+   "details": {
+    "pilot_one_manifest": {
+     "delivery_payload_files": 28,
+     "file_roles": {
+      "candidate_tooling": 6,
+      "canonical_source": 2,
+      "delivery_payload": 28,
+      "receipt_only": 7,
+      "review_only": 4,
+      "test_only": 5
+     },
+     "physical_files": 52
+    },
+    "pilot_two_manifest": {
+     "distinct_delivery_body_digests": 7,
+     "logical_packages": 3,
+     "physical_delivery_paths": 9
+    }
+   },
+   "distinct_identities": 9,
+   "files": 39,
+   "identities": [
+    "audit-join-cardinality",
+    "audit-text-encoding",
+    "audit-zip-package",
+    "baltor.connection.json-shape-stdio.v1",
+    "baltor.context.profile-one-csv.v1",
+    "baltor.context.repair-one-failing-test.v1",
+    "baltor.tool.audit-csv-structure.v1",
+    "baltor.tool.audit-jsonl-identities.v1",
+    "baltor.tool.inventory-file-digests.v1"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "pilot one: candidate-items.json item kind; pilot two: the manifest.json package_trees entry role",
+   "kinds": {
+    "instruction file or fragment": 2,
+    "protocol server configuration or server": 1,
+    "skill": 6
+   },
+   "label": "artifacts/harness-intelligence-format-pilot-2026-09-22 and -wave-2",
+   "name": "format pilots",
+   "notes": [
+    "Pilot one unit files are its delivery variants for every client plus canonical connection sources; a client installs one variant, not all."
+   ],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "(not recorded)": 9
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/candidate-items.json",
+    "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2/manifest.json",
+    "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22/candidate-items.json",
+    "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22/manifest.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 59,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 24,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/harness-intelligence-format-pilot-2026-09-22-wave-2"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "candidate-items.json state and approval_state",
+   "state_details": {
+    "candidate: approval_state candidate_only": 3,
+    "candidate: candidate_only, approval_state none": 6
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 9,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one logical item in candidate-items.json",
+   "unit_file_bytes": 93556,
+   "unit_files_by_extension": {
+    ".json": 2,
+    ".md": 16,
+    ".py": 16,
+    ".toml": 1,
+    ".txt": 4
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 22,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 9,
+   "version_history": null
+  },
+  {
+   "all_files": 69,
+   "all_files_by_extension": {
+    "(none)": 1,
+    ".json": 27,
+    ".jsonl": 2,
+    ".md": 4,
+    ".py": 7,
+    ".txt": 28
+   },
+   "attempts_without_a_unit": {
+    "tactical first batch: candidate_draft_or_factory_refused": 10,
+    "tactical first batch: draft_json_not_admitted": 10
+   },
+   "declared_kind_values": {
+    "proposal family: harness_plugin -> plugin manifest": 1
+   },
+   "details": {
+    "fixture_source_binding": {
+     "new_logical_package_count": 0,
+     "original_package_id": "baltor-focused-brief-candidate",
+     "payload_files": 13,
+     "reason": "Repackages the already authored 13-file plugin as a preparation/staging fixture; no new intelligence claimed."
+    },
+    "tactical_first_batch_runs": {
+     "generation-run": {
+      "completions": 10,
+      "dispatches": 10,
+      "outcomes": {
+       "candidate_draft_or_factory_refused": 10
+      }
+     },
+     "generation-run-2": {
+      "completions": 10,
+      "dispatches": 10,
+      "outcomes": {
+       "draft_json_not_admitted": 10
+      }
+     }
+    }
+   },
+   "distinct_identities": 1,
+   "files": 13,
+   "identities": [
+    "focused_brief_plugin"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in plugin-fixture-proposals.json",
+   "kinds": {
+    "plugin manifest": 1
+   },
+   "label": "artifacts/native-candidate-preparation-2026-09-23 and artifacts/tactical-first-batch-2026-09-24",
+   "name": "native candidate preparation",
+   "notes": [
+    "The Tactical blocks batch (artifacts/native-blocks-batch-2026-09-24) is counted once, as its own source, not here.",
+    "The fixture repackages baltor-focused-brief-candidate; its source binding records 0 new logical packages. The fixture's identity carries that name as an alias, so the two count once."
+   ],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "openai": 1
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/native-candidate-preparation-2026-09-23/fixture-source-binding.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-candidate-preparation-2026-09-23/plugin-fixture-proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-candidate-preparation-2026-09-23/prepared-plugin-fixture/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/tactical-first-batch-2026-09-24/generation-run-2/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/tactical-first-batch-2026-09-24/generation-run/journal.jsonl"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 33,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/native-candidate-preparation-2026-09-23"
+    },
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 36,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/tactical-first-batch-2026-09-24"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "preparation and staging records; no review pre-check record exists for the fixture",
+   "state_details": {
+    "candidate: prepared and staged in an isolated test catalogue; repackages an existing plugin with zero new logical package credit": 1
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 1,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one prepared candidate item (items.json, record type v3)",
+   "unit_file_bytes": 21601,
+   "unit_files_by_extension": {
+    "(none)": 1,
+    ".json": 7,
+    ".md": 2,
+    ".py": 3
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 13,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 1,
+   "version_history": null
+  },
+  {
+   "all_files": 782,
+   "all_files_by_extension": {
+    ".json": 482,
+    ".jsonl": 9,
+    ".md": 146,
+    ".py": 109,
+    ".txt": 36
+   },
+   "attempts_without_a_unit": {
+    "ollama-minimax-run: usage_limit_reached": 10,
+    "tactical-run-native-profile: draft_blocks_not_admitted": 1,
+    "tactical-run-v2: output_limit_reached": 1,
+    "tactical-run: dispatched_without_a_recorded_completion": 1,
+    "tactical-run: draft_blocks_not_admitted": 5
+   },
+   "declared_kind_values": {
+    "proposal family: original_native_tool -> tool or script": 10
+   },
+   "details": {
+    "copy_in_the_tactical_worktree": {
+     "compared_with": "/home/username/.le-tactical-blocks-20260924/artifacts/native-blocks-batch-2026-09-24",
+     "exists": true,
+     "files_here": 782,
+     "files_there": 787,
+     "only_here": [],
+     "only_there": [
+      "ollama-minimax-run/.lock",
+      "tactical-run-native-profile/.lock",
+      "tactical-run-v2/.lock",
+      "tactical-run-validate-retry/.lock",
+      "tactical-run/.lock"
+     ],
+     "same_path_different_bytes": []
+    },
+    "generation_runs": {
+     "ollama-minimax-run": {
+      "completions": 10,
+      "dispatches": 10,
+      "outcomes": {
+       "usage_limit_reached": 10
+      }
+     },
+     "tactical-run": {
+      "completions": 5,
+      "dispatches": 6,
+      "outcomes": {
+       "dispatched_without_a_recorded_completion": 1,
+       "draft_blocks_not_admitted": 5
+      }
+     },
+     "tactical-run-native-profile": {
+      "completions": 9,
+      "dispatches": 9,
+      "outcomes": {
+       "draft_blocks_not_admitted": 1,
+       "prepared": 8
+      }
+     },
+     "tactical-run-v2": {
+      "completions": 11,
+      "dispatches": 11,
+      "outcomes": {
+       "output_limit_reached": 1,
+       "prepared": 10
+      }
+     },
+     "tactical-run-validate-retry": {
+      "completions": 1,
+      "dispatches": 1,
+      "outcomes": {
+       "prepared": 1
+      }
+     }
+    },
+    "prepared_batches": {
+     "pending-panel-batch": {
+      "review_record": "review-prechecks.json",
+      "reviewed_at": "2026-09-24T13:23:37.099895Z",
+      "synthetic_fixtures_not_candidates": false,
+      "totals": {
+       "approved": 0,
+       "calls": 0,
+       "calls_by_outcome": {},
+       "calls_with_unknown_physical_count": 0,
+       "calls_with_unknown_usage": 0,
+       "charged_tokens": 0,
+       "disagreements": 0,
+       "input_tokens_reported": 0,
+       "interrupted_dispatches": 0,
+       "items_selected": 8,
+       "items_with_a_standing_verdict_per_hour": null,
+       "not_started": 8,
+       "output_tokens_reported": 0,
+       "panel_incomplete": 0,
+       "pause_seconds": 0,
+       "physical_model_calls_known": 0,
+       "refused_before_review": 0,
+       "rejected": 0,
+       "run_seconds": 0
+      }
+     },
+     "plan-preflight": {
+      "review_record": "review-prechecks.json",
+      "reviewed_at": "2026-09-24T12:34:53.659786Z",
+      "synthetic_fixtures_not_candidates": true,
+      "totals": {
+       "approved": 0,
+       "calls": 0,
+       "calls_by_outcome": {},
+       "calls_with_unknown_physical_count": 0,
+       "calls_with_unknown_usage": 0,
+       "charged_tokens": 0,
+       "disagreements": 0,
+       "input_tokens_reported": 0,
+       "interrupted_dispatches": 0,
+       "items_selected": 8,
+       "items_with_a_standing_verdict_per_hour": null,
+       "not_started": 8,
+       "output_tokens_reported": 0,
+       "panel_incomplete": 0,
+       "pause_seconds": 0,
+       "physical_model_calls_known": 0,
+       "refused_before_review": 0,
+       "rejected": 0,
+       "run_seconds": 0
+      }
+     },
+     "review": {
+      "review_record": "review-prechecks.json",
+      "reviewed_at": "2026-09-24T12:32:32.300471Z",
+      "synthetic_fixtures_not_candidates": false,
+      "totals": {
+       "approved": 0,
+       "calls": 0,
+       "calls_by_outcome": {},
+       "calls_with_unknown_physical_count": 0,
+       "calls_with_unknown_usage": 0,
+       "charged_tokens": 0,
+       "disagreements": 0,
+       "input_tokens_reported": 0,
+       "interrupted_dispatches": 0,
+       "items_selected": 10,
+       "items_with_a_standing_verdict_per_hour": null,
+       "not_started": 0,
+       "output_tokens_reported": 0,
+       "panel_incomplete": 0,
+       "pause_seconds": 0,
+       "physical_model_calls_known": 0,
+       "refused_before_review": 10,
+       "rejected": 0,
+       "run_seconds": 0
+      }
+     },
+     "review-native-profile": {
+      "review_record": "review-panel-attempt-1.json",
+      "reviewed_at": "2026-09-24T12:41:52.980313Z",
+      "synthetic_fixtures_not_candidates": false,
+      "totals": {
+       "approved": 0,
+       "calls": 1,
+       "calls_by_outcome": {
+        "usage_limit_reached": 1
+       },
+       "calls_with_unknown_physical_count": 0,
+       "calls_with_unknown_usage": 1,
+       "charged_tokens": 23285,
+       "disagreements": 0,
+       "input_tokens_reported": 0,
+       "interrupted_dispatches": 0,
+       "items_selected": 8,
+       "items_with_a_standing_verdict_per_hour": 4181.185,
+       "not_started": 0,
+       "output_tokens_reported": 0,
+       "panel_incomplete": 7,
+       "pause_seconds": 0.0,
+       "physical_model_calls_known": 1,
+       "refused_before_review": 1,
+       "rejected": 0,
+       "run_seconds": 0.861
+      }
+     }
+    },
+    "run_prepared_packages": {
+     "distinct_package_digests": 19,
+     "found_in_a_reviewed_batch": 19,
+     "not_found_in_a_reviewed_batch": 0
+    }
+   },
+   "distinct_identities": 10,
+   "files": 108,
+   "identities": [
+    "assemble_bounded_instruction_sections",
+    "build_permission_scoped_lexical_index",
+    "check_tabular_transformation_invariants",
+    "plan_workspace_file_transitions",
+    "query_codegraph_change_impact",
+    "render_secret_reference_connections",
+    "resolve_exact_package_dependency_closure",
+    "review_json_with_native_claude_plugin",
+    "select_traceable_context_evidence",
+    "validate_focused_attempt_handoff"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in each batch's merged-proposals.json",
+   "kinds": {
+    "tool or script": 10
+   },
+   "label": "artifacts/native-blocks-batch-2026-09-24",
+   "name": "Tactical blocks batch",
+   "notes": [
+    "plan-preflight holds synthetic layout fixtures (producer layout-preflight:synthetic); they are counted in all files, not as units."
+   ],
+   "package_versions": 19,
+   "part_of_the_library": true,
+   "producer_families": {
+    "google": 10
+   },
+   "records_read": [
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/ollama-minimax-run/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/pending-panel-batch/merged-proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/pending-panel-batch/prepared-batch/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/pending-panel-batch/review-prechecks.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/plan-preflight/review-prechecks.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review-native-profile/merged-proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review-native-profile/prepared-batch/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review-native-profile/review-panel-attempt-1.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review-native-profile/review-prechecks.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review/merged-proposals.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review/prepared-batch/items.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/review/review-prechecks.json",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/tactical-run-native-profile/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/tactical-run-v2/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/tactical-run-validate-retry/journal.jsonl",
+    "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24/tactical-run/journal.jsonl"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 782,
+     "location": "committed tree of the inventory worktree at 2658b7bbd2ef00d2704dafe97222affebd95a80a",
+     "path": "/home/username/.le-inventory-20260924/artifacts/native-blocks-batch-2026-09-24"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "prechecks.refused in the newest review record of the batch (review-prechecks.json or a later review-panel attempt)",
+   "state_details": {
+    "passed a precheck: passed the native pre-checks; panel outcome not_started": 8,
+    "refused by a precheck: refused by the native pre-checks: format:native_activation_path_unqualified, format:native_passive_location_unqualified, format:native_python_syntax_invalid, format:native_skill_frontmatter_invalid": 1,
+    "refused by a precheck: refused by the native pre-checks: format:native_activation_path_unqualified, format:native_passive_location_unqualified, format:native_required_component_unqualified, format:native_schema_invalid": 1
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 0,
+    "passed a precheck": 8,
+    "refused by a precheck": 2,
+    "unknown": 0
+   },
+   "unit_definition": "one method identity; its current version is the package in the most recently reviewed prepared batch that holds it",
+   "unit_file_bytes": 177951,
+   "unit_files_by_extension": {
+    ".json": 57,
+    ".md": 31,
+    ".py": 20
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 102,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 10,
+   "version_history": [
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "assemble_bounded_instruction_sections",
+     "package_digest": "5517288a83451f0d491f41a47099c938e26b9857bf83ee4f9709ad5c21c120cb",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "assemble_bounded_instruction_sections",
+     "package_digest": "48b7a2cd7c283a97d33a6435b26ca7cb70aac7f2b9885c93fc5e3d656eb9fa76",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "build_permission_scoped_lexical_index",
+     "package_digest": "e37944afec73de245ebca8d92991f884607a4b9671f576af36effe4720523e54",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "build_permission_scoped_lexical_index",
+     "package_digest": "bd60016588c4fa0f57b8f5a930c9a4ab9a466cd9679bcb38da6226de21c12eb8",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "check_tabular_transformation_invariants",
+     "package_digest": "c6f053226df632050edf4b46ab0183253605279368181247078a9d92123bedfa",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "check_tabular_transformation_invariants",
+     "package_digest": "930df15a6e7ea2d8ef447224c8d63ad3c71b35f0c279b5fc7f4a36d972060f59",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "plan_workspace_file_transitions",
+     "package_digest": "e21dd5611b78513de0d67f9b2d2637d27e0aa8422b0c6cff06e42facb1f7acf3",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "plan_workspace_file_transitions",
+     "package_digest": "06dd58103e6cdb1ce701f8c83f0c683bc2e1946c46660f83888d3fa572c0a150",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "query_codegraph_change_impact",
+     "package_digest": "79a5923c492da0d44fa83526b8e849d75bf210220e7a05b55e198c8794267d42",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "query_codegraph_change_impact",
+     "package_digest": "3ee6e92162ae28ee8f72e27634953da5d6d595a0c7bb454de365fe1c97cf1050",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "render_secret_reference_connections",
+     "package_digest": "bb4ca0ecdc49d722343b87db8d3d3677c0f5f8abc57663f0a03ee54de8ea8184",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "render_secret_reference_connections",
+     "package_digest": "458c37bca37c8bd6a379516a2c572192bd0bfded50a8779ab8823ff34902afb0",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "resolve_exact_package_dependency_closure",
+     "package_digest": "1b2eb6a821e2881254feac441efaf40c6d06507be3d74c8f415d09cb9774beab",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile",
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "resolve_exact_package_dependency_closure",
+     "package_digest": "01f01f40d4df71c99cec160fee3fd111f56bd1365d036b0db7e4a60d0eca59b7",
+     "state": "passed a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": true,
+     "identity": "review_json_with_native_claude_plugin",
+     "package_digest": "846af1df06395679458fd4b68b6a3c76ad36acce2dcd3c817c59a767aeea03fa",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": true,
+     "identity": "select_traceable_context_evidence",
+     "package_digest": "91b5b81712313252c7f44ba702442a80720e7ee5826f233bdb71c4f38c90dd1a",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review"
+     ],
+     "current": false,
+     "identity": "validate_focused_attempt_handoff",
+     "package_digest": "0229305107f1128345e85aabe0f0e6214db51cd1f0c1b7f70c5045d2f0057a13",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "review-native-profile"
+     ],
+     "current": false,
+     "identity": "validate_focused_attempt_handoff",
+     "package_digest": "beecc7aa5511728e903f87495ab6f947a65273409f1d80b1a4d3ec80ee41abca",
+     "state": "refused by a precheck"
+    },
+    {
+     "batches": [
+      "pending-panel-batch"
+     ],
+     "current": true,
+     "identity": "validate_focused_attempt_handoff",
+     "package_digest": "be6acf4de7ed5d803cfec88fb488bfa4d6ed391c2e93bb19c7a1154af7125a63",
+     "state": "passed a precheck"
+    }
+   ]
+  },
+  {
+   "all_files": 384,
+   "all_files_by_extension": {
+    "(none)": 32,
+    ".json": 245,
+    ".md": 37,
+    ".py": 64,
+    ".pyc": 4,
+    ".txt": 2
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "proposal family: deterministic_native_method -> tool or script": 16
+   },
+   "details": {
+    "counts_declared_by_the_preparation_report": {
+     "approved": false,
+     "candidates": 16,
+     "payload_files": 128,
+     "unique_payload_digests": 113
+    },
+    "staging_report": {
+     "committed": true,
+     "hosted_publication": false,
+     "independent_qualification": false,
+     "records": 16
+    }
+   },
+   "distinct_identities": 16,
+   "files": 128,
+   "identities": [
+    "apply_flat_record_changes",
+    "apply_nonoverlapping_text_edits",
+    "assign_digest_shards",
+    "audit_half_open_interval_overlaps",
+    "compare_file_inventories",
+    "compute_weighted_quantiles",
+    "detect_portable_path_collisions",
+    "evaluate_capability_requirements",
+    "paired_sign_test",
+    "profile_csv_structure",
+    "reconcile_keyed_tables",
+    "reconcile_multiset_rows",
+    "render_focused_task_context",
+    "resolve_selected_dependency_closure",
+    "select_context_blocks",
+    "validate_event_precedence"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in proposals-v2.json",
+   "kinds": {
+    "tool or script": 16
+   },
+   "label": "artifacts/codex-component-supply-2026-09-23 (shared checkout, uncommitted)",
+   "name": "Codex component supply",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "openai": 16
+   },
+   "records_read": [
+    "/home/username/loop-engine/artifacts/codex-component-supply-2026-09-23/prepared-v2/items.json",
+    "/home/username/loop-engine/artifacts/codex-component-supply-2026-09-23/prepared-v2/preparation-report.json",
+    "/home/username/loop-engine/artifacts/codex-component-supply-2026-09-23/proposals-v2.json",
+    "/home/username/loop-engine/artifacts/codex-component-supply-2026-09-23/staging-report-v2.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 0,
+     "location": "shared checkout /home/username/loop-engine",
+     "path": "/home/username/loop-engine/artifacts/codex-component-supply-2026-09-23"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "preparation report and staging report; no review pre-check record exists for these bytes",
+   "state_details": {
+    "candidate: prepared and staged in an isolated candidate catalogue, excluded from normal search; no review pre-check": 16
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 16,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one prepared candidate item (items.json, record type v3)",
+   "unit_file_bytes": 395981,
+   "unit_files_by_extension": {
+    "(none)": 16,
+    ".json": 80,
+    ".md": 16,
+    ".py": 16
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 113,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 16,
+   "version_history": null
+  },
+  {
+   "all_files": 62,
+   "all_files_by_extension": {
+    "(none)": 3,
+    ".json": 41,
+    ".md": 11,
+    ".py": 7
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "proposal family: deterministic_native_method -> tool or script": 1
+   },
+   "details": {
+    "counts_declared_by_the_preparation_report": {
+     "approved": false,
+     "candidates": 1,
+     "payload_files": 9,
+     "unique_payload_digests": 9
+    },
+    "staging_report": {
+     "committed": true,
+     "hosted_publication": false,
+     "independent_qualification": false,
+     "records": 1
+    }
+   },
+   "distinct_identities": 1,
+   "files": 9,
+   "identities": [
+    "audit_wikilink_resolution"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in proposals-v1.json",
+   "kinds": {
+    "tool or script": 1
+   },
+   "label": "artifacts/codex-research-inspired-components-2026-09-23 (shared checkout, uncommitted)",
+   "name": "Codex research-inspired components",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "openai": 1
+   },
+   "records_read": [
+    "/home/username/loop-engine/artifacts/codex-research-inspired-components-2026-09-23/prepared-v1/items.json",
+    "/home/username/loop-engine/artifacts/codex-research-inspired-components-2026-09-23/prepared-v1/preparation-report.json",
+    "/home/username/loop-engine/artifacts/codex-research-inspired-components-2026-09-23/proposals-v1.json",
+    "/home/username/loop-engine/artifacts/codex-research-inspired-components-2026-09-23/staging-report-v1.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 0,
+     "location": "shared checkout /home/username/loop-engine",
+     "path": "/home/username/loop-engine/artifacts/codex-research-inspired-components-2026-09-23"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "preparation report and staging report; no review pre-check record exists for these bytes",
+   "state_details": {
+    "candidate: prepared and staged in an isolated candidate catalogue, excluded from normal search; no review pre-check": 1
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 1,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one prepared candidate item (items.json, record type v3)",
+   "unit_file_bytes": 139627,
+   "unit_files_by_extension": {
+    "(none)": 1,
+    ".json": 5,
+    ".md": 2,
+    ".py": 1
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 9,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 1,
+   "version_history": null
+  },
+  {
+   "all_files": 19,
+   "all_files_by_extension": {
+    ".json": 16,
+    ".md": 2,
+    ".py": 1
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "not declared (intended Agent Skills layout, incomplete) -> unknown": 3
+   },
+   "details": {
+    "cases_per_method": {
+     "inspect_python_symbol_dependencies": 15,
+     "plan_targeted_test_selection": 17,
+     "select_graph_context_neighborhood": 20
+    },
+    "executables_exist": false
+   },
+   "distinct_identities": 3,
+   "files": 15,
+   "identities": [
+    "inspect_python_symbol_dependencies",
+    "plan_targeted_test_selection",
+    "select_graph_context_neighborhood"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "no kind is declared; the author note cites the Agent Skills format, but no SKILL.md or implementation exists yet, so the kind stays unknown",
+   "kinds": {
+    "unknown": 3
+   },
+   "label": "artifacts/gemma4-harness-components-2026-09-23 (shared checkout, uncommitted)",
+   "name": "Gemma 4 harness components",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "(not recorded)": 3
+   },
+   "records_read": [
+    "/home/username/loop-engine/artifacts/gemma4-harness-components-2026-09-23/authors/contracts-first.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 0,
+     "location": "shared checkout /home/username/loop-engine",
+     "path": "/home/username/loop-engine/artifacts/gemma4-harness-components-2026-09-23"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "README (candidate supply lane) and contracts-first.json executables_exist",
+   "state_details": {
+    "candidate: incomplete candidate: contracts, examples and cases only": 3
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 3,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one method named in authors/contracts-first.json",
+   "unit_file_bytes": 275946,
+   "unit_files_by_extension": {
+    ".json": 15
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 15,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 3,
+   "version_history": null
+  },
+  {
+   "all_files": 778,
+   "all_files_by_extension": {
+    ".json": 1,
+    ".jsonl": 1,
+    ".md": 775,
+    ".pid": 1
+   },
+   "attempts_without_a_unit": {
+    "dispatched, no outcome journaled yet": 1,
+    "failed_candidate_shape": 47,
+    "failed_provider": 25
+   },
+   "declared_kind_values": {
+    "idea file kind: harness_routing -> instruction file or fragment": 21,
+    "idea file kind: skill -> skill": 720,
+    "idea file kind: subagent -> subagent definition": 34
+   },
+   "details": {
+    "candidate_files_on_disk": 775,
+    "candidate_files_on_disk_without_a_journaled_outcome": 0,
+    "ideas_whose_file_kind_defaulted_to_skill": 0,
+    "ideas_with_more_than_one_outcome": 0,
+    "journal_snapshot": {
+     "bytes_after_last_complete_line": 0,
+     "bytes_read": 719584,
+     "events": 3400,
+     "last_event_ts": "2026-09-24T13:55:54Z",
+     "path": "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch/journal.jsonl",
+     "sha256_of_bytes_read": "86915c2d06ed70adc1b3418986a2b113840c1a4af1fd64f70b875ca2bf4d5713",
+     "unparsed_lines": 0
+    },
+    "journaled_candidates_without_a_file": 0,
+    "lanes": {
+     "lane-ollama-gemma4-31b": {
+      "model": "gemma4:31b",
+      "provider": "ollama-cloud",
+      "units_in_this_inventory": 135
+     },
+     "lane-ollama-glm-53-flash": {
+      "model": "glm-5.3-flash",
+      "provider": "ollama-cloud",
+      "units_in_this_inventory": 135
+     },
+     "lane-ollama-gpt-oss-20b": {
+      "model": "gpt-oss:20b",
+      "provider": "ollama-cloud",
+      "units_in_this_inventory": 133
+     },
+     "lane-ollama-kimi-k3": {
+      "model": "kimi-k3",
+      "provider": "ollama-cloud",
+      "units_in_this_inventory": 3
+     },
+     "lane-ollama-nemotron-30b": {
+      "model": "nemotron-3-nano:30b",
+      "provider": "ollama-cloud",
+      "units_in_this_inventory": 3
+     },
+     "lane-tactical-gemma4": {
+      "model": "gemma-4-coding-abliterated",
+      "provider": "tactical",
+      "units_in_this_inventory": 366
+     }
+    },
+    "status_as_reported_by_the_batch": {
+     "calls_ceiling": 12000,
+     "calls_used": 548,
+     "candidates": 775,
+     "failed": 72,
+     "ideas_total": 10000,
+     "remaining": 9153,
+     "state": "incomplete",
+     "updated_at": "2026-09-24T13:55:49Z"
+    }
+   },
+   "distinct_identities": 775,
+   "files": 775,
+   "identities": [
+    "audio-aggregation-agent-coordination",
+    "audio-aggregation-agentic-benchmark",
+    "audio-aggregation-agentic-task",
+    "audio-aggregation-benchmarking",
+    "audio-aggregation-compliance-audit",
+    "audio-aggregation-customer-support",
+    "audio-aggregation-data-cleaning",
+    "audio-aggregation-data-engineering",
+    "audio-aggregation-database-operations",
+    "audio-aggregation-devops",
+    "audio-aggregation-documentation",
+    "audio-aggregation-entity-resolution",
+    "audio-aggregation-financial-reconciliation",
+    "audio-aggregation-machine-learning",
+    "audio-aggregation-matrix-mathematics",
+    "audio-aggregation-project-management",
+    "audio-aggregation-record-linkage",
+    "audio-aggregation-report-generation",
+    "audio-aggregation-security-review",
+    "audio-aggregation-software-development",
+    "audio-aggregation-string-operations",
+    "audio-aggregation-text-processing",
+    "audio-aggregation-training-material",
+    "binary-blob-aggregation-agent-coordination",
+    "binary-blob-aggregation-agentic-benchmark",
+    "binary-blob-aggregation-agentic-task",
+    "binary-blob-aggregation-benchmarking",
+    "binary-blob-aggregation-compliance-audit",
+    "binary-blob-aggregation-customer-support",
+    "binary-blob-aggregation-data-cleaning",
+    "binary-blob-aggregation-data-engineering",
+    "binary-blob-aggregation-database-operations",
+    "binary-blob-aggregation-devops",
+    "binary-blob-aggregation-documentation",
+    "binary-blob-aggregation-entity-resolution",
+    "binary-blob-aggregation-financial-reconciliation",
+    "binary-blob-aggregation-machine-learning",
+    "binary-blob-aggregation-matrix-mathematics",
+    "binary-blob-aggregation-project-management",
+    "binary-blob-aggregation-record-linkage",
+    "binary-blob-aggregation-report-generation",
+    "binary-blob-aggregation-research-analysis",
+    "binary-blob-aggregation-security-review",
+    "binary-blob-aggregation-software-development",
+    "binary-blob-aggregation-string-operations",
+    "binary-blob-aggregation-text-processing",
+    "binary-blob-aggregation-training-material",
+    "boolean-aggregation-agent-coordination",
+    "boolean-aggregation-agentic-benchmark",
+    "boolean-aggregation-agentic-task",
+    "boolean-aggregation-compliance-audit",
+    "boolean-aggregation-customer-support",
+    "boolean-aggregation-data-cleaning",
+    "boolean-aggregation-data-engineering",
+    "boolean-aggregation-database-operations",
+    "boolean-aggregation-devops",
+    "boolean-aggregation-documentation",
+    "boolean-aggregation-entity-resolution",
+    "boolean-aggregation-financial-reconciliation",
+    "boolean-aggregation-machine-learning",
+    "boolean-aggregation-record-linkage",
+    "boolean-aggregation-report-generation",
+    "boolean-aggregation-research-analysis",
+    "boolean-aggregation-security-review",
+    "boolean-aggregation-software-development",
+    "boolean-aggregation-training-material",
+    "csv-table-aggregation-agent-coordination",
+    "csv-table-aggregation-agentic-benchmark",
+    "csv-table-aggregation-agentic-task",
+    "csv-table-aggregation-benchmarking",
+    "csv-table-aggregation-compliance-audit",
+    "csv-table-aggregation-customer-support",
+    "csv-table-aggregation-data-cleaning",
+    "csv-table-aggregation-data-engineering",
+    "csv-table-aggregation-database-operations",
+    "csv-table-aggregation-devops",
+    "csv-table-aggregation-documentation",
+    "csv-table-aggregation-entity-resolution",
+    "csv-table-aggregation-financial-reconciliation",
+    "csv-table-aggregation-machine-learning",
+    "csv-table-aggregation-matrix-mathematics",
+    "csv-table-aggregation-record-linkage",
+    "csv-table-aggregation-report-generation",
+    "csv-table-aggregation-research-analysis",
+    "csv-table-aggregation-security-review",
+    "csv-table-aggregation-software-development",
+    "csv-table-aggregation-string-operations",
+    "csv-table-aggregation-training-material",
+    "date-and-time-aggregation-agent-coordination",
+    "date-and-time-aggregation-agentic-benchmark",
+    "date-and-time-aggregation-agentic-task",
+    "date-and-time-aggregation-benchmarking",
+    "date-and-time-aggregation-compliance-audit",
+    "date-and-time-aggregation-customer-support",
+    "date-and-time-aggregation-data-cleaning",
+    "date-and-time-aggregation-data-engineering",
+    "date-and-time-aggregation-database-operations",
+    "date-and-time-aggregation-devops",
+    "date-and-time-aggregation-documentation",
+    "date-and-time-aggregation-entity-resolution",
+    "date-and-time-aggregation-financial-reconciliation",
+    "date-and-time-aggregation-machine-learning",
+    "date-and-time-aggregation-matrix-mathematics",
+    "date-and-time-aggregation-project-management",
+    "date-and-time-aggregation-record-linkage",
+    "date-and-time-aggregation-report-generation",
+    "date-and-time-aggregation-research-analysis",
+    "date-and-time-aggregation-security-review",
+    "date-and-time-aggregation-software-development",
+    "date-and-time-aggregation-string-operations",
+    "date-and-time-aggregation-text-processing",
+    "date-and-time-aggregation-training-material",
+    "email-address-aggregation-agent-coordination",
+    "email-address-aggregation-agentic-benchmark",
+    "email-address-aggregation-agentic-task",
+    "email-address-aggregation-benchmarking",
+    "email-address-aggregation-compliance-audit",
+    "email-address-aggregation-customer-support",
+    "email-address-aggregation-data-cleaning",
+    "email-address-aggregation-data-engineering",
+    "email-address-aggregation-database-operations",
+    "email-address-aggregation-devops",
+    "email-address-aggregation-documentation",
+    "email-address-aggregation-entity-resolution",
+    "email-address-aggregation-financial-reconciliation",
+    "email-address-aggregation-machine-learning",
+    "email-address-aggregation-matrix-mathematics",
+    "email-address-aggregation-project-management",
+    "email-address-aggregation-record-linkage",
+    "email-address-aggregation-report-generation",
+    "email-address-aggregation-research-analysis",
+    "email-address-aggregation-security-review",
+    "email-address-aggregation-software-development",
+    "email-address-aggregation-string-operations",
+    "email-address-aggregation-text-processing",
+    "email-address-aggregation-training-material",
+    "file-path-aggregation-agent-coordination",
+    "file-path-aggregation-agentic-benchmark",
+    "file-path-aggregation-agentic-task",
+    "file-path-aggregation-benchmarking",
+    "file-path-aggregation-compliance-audit",
+    "file-path-aggregation-customer-support",
+    "file-path-aggregation-data-cleaning",
+    "file-path-aggregation-data-engineering",
+    "file-path-aggregation-database-operations",
+    "file-path-aggregation-devops",
+    "file-path-aggregation-documentation",
+    "file-path-aggregation-entity-resolution",
+    "file-path-aggregation-financial-reconciliation",
+    "file-path-aggregation-machine-learning",
+    "file-path-aggregation-matrix-mathematics",
+    "file-path-aggregation-project-management",
+    "file-path-aggregation-record-linkage",
+    "file-path-aggregation-report-generation",
+    "file-path-aggregation-research-analysis",
+    "file-path-aggregation-security-review",
+    "file-path-aggregation-software-development",
+    "file-path-aggregation-string-operations",
+    "file-path-aggregation-text-processing",
+    "file-path-aggregation-training-material",
+    "geolocation-aggregation-agent-coordination",
+    "geolocation-aggregation-agentic-benchmark",
+    "geolocation-aggregation-agentic-task",
+    "geolocation-aggregation-benchmarking",
+    "geolocation-aggregation-compliance-audit",
+    "geolocation-aggregation-customer-support",
+    "geolocation-aggregation-data-cleaning",
+    "geolocation-aggregation-data-engineering",
+    "geolocation-aggregation-database-operations",
+    "geolocation-aggregation-devops",
+    "geolocation-aggregation-documentation",
+    "geolocation-aggregation-entity-resolution",
+    "geolocation-aggregation-financial-reconciliation",
+    "geolocation-aggregation-machine-learning",
+    "geolocation-aggregation-matrix-mathematics",
+    "geolocation-aggregation-record-linkage",
+    "geolocation-aggregation-report-generation",
+    "geolocation-aggregation-research-analysis",
+    "geolocation-aggregation-software-development",
+    "geolocation-aggregation-string-operations",
+    "geolocation-aggregation-text-processing",
+    "graph-aggregation-agent-coordination",
+    "graph-aggregation-agentic-benchmark",
+    "graph-aggregation-agentic-task",
+    "graph-aggregation-benchmarking",
+    "graph-aggregation-compliance-audit",
+    "graph-aggregation-data-cleaning",
+    "graph-aggregation-data-engineering",
+    "graph-aggregation-database-operations",
+    "graph-aggregation-documentation",
+    "graph-aggregation-entity-resolution",
+    "graph-aggregation-financial-reconciliation",
+    "graph-aggregation-machine-learning",
+    "graph-aggregation-matrix-mathematics",
+    "graph-aggregation-project-management",
+    "graph-aggregation-record-linkage",
+    "graph-aggregation-report-generation",
+    "graph-aggregation-research-analysis",
+    "graph-aggregation-security-review",
+    "graph-aggregation-software-development",
+    "graph-aggregation-string-operations",
+    "graph-aggregation-text-processing",
+    "html-page-aggregation-agent-coordination",
+    "html-page-aggregation-agentic-benchmark",
+    "html-page-aggregation-agentic-task",
+    "html-page-aggregation-benchmarking",
+    "html-page-aggregation-compliance-audit",
+    "html-page-aggregation-customer-support",
+    "html-page-aggregation-data-cleaning",
+    "html-page-aggregation-data-engineering",
+    "html-page-aggregation-database-operations",
+    "html-page-aggregation-devops",
+    "html-page-aggregation-documentation",
+    "html-page-aggregation-entity-resolution",
+    "html-page-aggregation-financial-reconciliation",
+    "html-page-aggregation-machine-learning",
+    "html-page-aggregation-matrix-mathematics",
+    "html-page-aggregation-project-management",
+    "html-page-aggregation-record-linkage",
+    "html-page-aggregation-report-generation",
+    "html-page-aggregation-research-analysis",
+    "html-page-aggregation-security-review",
+    "html-page-aggregation-software-development",
+    "html-page-aggregation-string-operations",
+    "html-page-aggregation-text-processing",
+    "identifier-aggregation-agent-coordination",
+    "identifier-aggregation-agentic-benchmark",
+    "identifier-aggregation-agentic-task",
+    "identifier-aggregation-benchmarking",
+    "identifier-aggregation-compliance-audit",
+    "identifier-aggregation-customer-support",
+    "identifier-aggregation-data-cleaning",
+    "identifier-aggregation-data-engineering",
+    "identifier-aggregation-database-operations",
+    "identifier-aggregation-devops",
+    "identifier-aggregation-documentation",
+    "identifier-aggregation-entity-resolution",
+    "identifier-aggregation-financial-reconciliation",
+    "identifier-aggregation-machine-learning",
+    "identifier-aggregation-matrix-mathematics",
+    "identifier-aggregation-project-management",
+    "identifier-aggregation-record-linkage",
+    "identifier-aggregation-report-generation",
+    "identifier-aggregation-research-analysis",
+    "identifier-aggregation-security-review",
+    "identifier-aggregation-software-development",
+    "identifier-aggregation-string-operations",
+    "identifier-aggregation-text-processing",
+    "image-aggregation-agent-coordination",
+    "image-aggregation-agentic-benchmark",
+    "image-aggregation-agentic-task",
+    "image-aggregation-benchmarking",
+    "image-aggregation-compliance-audit",
+    "image-aggregation-customer-support",
+    "image-aggregation-data-cleaning",
+    "image-aggregation-data-engineering",
+    "image-aggregation-database-operations",
+    "image-aggregation-devops",
+    "image-aggregation-documentation",
+    "image-aggregation-entity-resolution",
+    "image-aggregation-financial-reconciliation",
+    "image-aggregation-machine-learning",
+    "image-aggregation-matrix-mathematics",
+    "image-aggregation-project-management",
+    "image-aggregation-record-linkage",
+    "image-aggregation-report-generation",
+    "image-aggregation-security-review",
+    "image-aggregation-software-development",
+    "image-aggregation-string-operations",
+    "image-aggregation-text-processing",
+    "json-array-aggregation-agent-coordination",
+    "json-array-aggregation-agentic-benchmark",
+    "json-array-aggregation-agentic-task",
+    "json-array-aggregation-benchmarking",
+    "json-array-aggregation-compliance-audit",
+    "json-array-aggregation-customer-support",
+    "json-array-aggregation-data-cleaning",
+    "json-array-aggregation-data-engineering",
+    "json-array-aggregation-database-operations",
+    "json-array-aggregation-devops",
+    "json-array-aggregation-documentation",
+    "json-array-aggregation-entity-resolution",
+    "json-array-aggregation-financial-reconciliation",
+    "json-array-aggregation-machine-learning",
+    "json-array-aggregation-matrix-mathematics",
+    "json-array-aggregation-project-management",
+    "json-array-aggregation-record-linkage",
+    "json-array-aggregation-report-generation",
+    "json-array-aggregation-research-analysis",
+    "json-array-aggregation-security-review",
+    "json-array-aggregation-software-development",
+    "json-array-aggregation-string-operations",
+    "json-array-aggregation-text-processing",
+    "json-object-aggregation-agent-coordination",
+    "json-object-aggregation-agentic-benchmark",
+    "json-object-aggregation-agentic-task",
+    "json-object-aggregation-benchmarking",
+    "json-object-aggregation-compliance-audit",
+    "json-object-aggregation-customer-support",
+    "json-object-aggregation-data-cleaning",
+    "json-object-aggregation-data-engineering",
+    "json-object-aggregation-database-operations",
+    "json-object-aggregation-devops",
+    "json-object-aggregation-documentation",
+    "json-object-aggregation-entity-resolution",
+    "json-object-aggregation-financial-reconciliation",
+    "json-object-aggregation-machine-learning",
+    "json-object-aggregation-matrix-mathematics",
+    "json-object-aggregation-project-management",
+    "json-object-aggregation-record-linkage",
+    "json-object-aggregation-report-generation",
+    "json-object-aggregation-research-analysis",
+    "json-object-aggregation-security-review",
+    "json-object-aggregation-software-development",
+    "json-object-aggregation-string-operations",
+    "json-object-aggregation-text-processing",
+    "log-lines-aggregation-agent-coordination",
+    "log-lines-aggregation-agentic-benchmark",
+    "log-lines-aggregation-agentic-task",
+    "log-lines-aggregation-benchmarking",
+    "log-lines-aggregation-compliance-audit",
+    "log-lines-aggregation-customer-support",
+    "log-lines-aggregation-data-cleaning",
+    "log-lines-aggregation-data-engineering",
+    "log-lines-aggregation-database-operations",
+    "log-lines-aggregation-devops",
+    "log-lines-aggregation-documentation",
+    "log-lines-aggregation-entity-resolution",
+    "log-lines-aggregation-financial-reconciliation",
+    "log-lines-aggregation-machine-learning",
+    "log-lines-aggregation-matrix-mathematics",
+    "log-lines-aggregation-project-management",
+    "log-lines-aggregation-record-linkage",
+    "log-lines-aggregation-report-generation",
+    "log-lines-aggregation-research-analysis",
+    "log-lines-aggregation-security-review",
+    "log-lines-aggregation-software-development",
+    "log-lines-aggregation-string-operations",
+    "log-lines-aggregation-text-processing",
+    "markdown-document-aggregation-agent-coordination",
+    "markdown-document-aggregation-agentic-benchmark",
+    "markdown-document-aggregation-agentic-task",
+    "markdown-document-aggregation-benchmarking",
+    "markdown-document-aggregation-compliance-audit",
+    "markdown-document-aggregation-customer-support",
+    "markdown-document-aggregation-data-cleaning",
+    "markdown-document-aggregation-data-engineering",
+    "markdown-document-aggregation-database-operations",
+    "markdown-document-aggregation-devops",
+    "markdown-document-aggregation-documentation",
+    "markdown-document-aggregation-entity-resolution",
+    "markdown-document-aggregation-financial-reconciliation",
+    "markdown-document-aggregation-machine-learning",
+    "markdown-document-aggregation-matrix-mathematics",
+    "markdown-document-aggregation-project-management",
+    "markdown-document-aggregation-quality-assurance",
+    "markdown-document-aggregation-record-linkage",
+    "markdown-document-aggregation-report-generation",
+    "markdown-document-aggregation-research-analysis",
+    "markdown-document-aggregation-security-review",
+    "markdown-document-aggregation-software-development",
+    "markdown-document-aggregation-string-operations",
+    "markdown-document-aggregation-text-processing",
+    "matrix-aggregation-agent-coordination",
+    "matrix-aggregation-agentic-benchmark",
+    "matrix-aggregation-agentic-task",
+    "matrix-aggregation-benchmarking",
+    "matrix-aggregation-compliance-audit",
+    "matrix-aggregation-customer-support",
+    "matrix-aggregation-data-cleaning",
+    "matrix-aggregation-data-engineering",
+    "matrix-aggregation-database-operations",
+    "matrix-aggregation-devops",
+    "matrix-aggregation-documentation",
+    "matrix-aggregation-entity-resolution",
+    "matrix-aggregation-financial-reconciliation",
+    "matrix-aggregation-machine-learning",
+    "matrix-aggregation-matrix-mathematics",
+    "matrix-aggregation-record-linkage",
+    "matrix-aggregation-report-generation",
+    "matrix-aggregation-research-analysis",
+    "matrix-aggregation-security-review",
+    "matrix-aggregation-string-operations",
+    "matrix-aggregation-text-processing",
+    "number-aggregation-agent-coordination",
+    "number-aggregation-agentic-benchmark",
+    "number-aggregation-agentic-task",
+    "number-aggregation-benchmarking",
+    "number-aggregation-compliance-audit",
+    "number-aggregation-customer-support",
+    "number-aggregation-data-cleaning",
+    "number-aggregation-data-engineering",
+    "number-aggregation-database-operations",
+    "number-aggregation-devops",
+    "number-aggregation-documentation",
+    "number-aggregation-entity-resolution",
+    "number-aggregation-financial-reconciliation",
+    "number-aggregation-machine-learning",
+    "number-aggregation-matrix-mathematics",
+    "number-aggregation-project-management",
+    "number-aggregation-record-linkage",
+    "number-aggregation-report-generation",
+    "number-aggregation-research-analysis",
+    "number-aggregation-security-review",
+    "number-aggregation-software-development",
+    "number-aggregation-string-operations",
+    "number-aggregation-text-processing",
+    "numeric-column-aggregation-agent-coordination",
+    "numeric-column-aggregation-agentic-benchmark",
+    "numeric-column-aggregation-agentic-task",
+    "numeric-column-aggregation-benchmarking",
+    "numeric-column-aggregation-compliance-audit",
+    "numeric-column-aggregation-customer-support",
+    "numeric-column-aggregation-data-cleaning",
+    "numeric-column-aggregation-data-engineering",
+    "numeric-column-aggregation-database-operations",
+    "numeric-column-aggregation-devops",
+    "numeric-column-aggregation-documentation",
+    "numeric-column-aggregation-entity-resolution",
+    "numeric-column-aggregation-financial-reconciliation",
+    "numeric-column-aggregation-machine-learning",
+    "numeric-column-aggregation-matrix-mathematics",
+    "numeric-column-aggregation-project-management",
+    "numeric-column-aggregation-record-linkage",
+    "numeric-column-aggregation-research-analysis",
+    "numeric-column-aggregation-security-review",
+    "numeric-column-aggregation-software-development",
+    "numeric-column-aggregation-string-operations",
+    "numeric-column-aggregation-text-processing",
+    "parquet-table-aggregation-agent-coordination",
+    "parquet-table-aggregation-agentic-benchmark",
+    "parquet-table-aggregation-agentic-task",
+    "parquet-table-aggregation-benchmarking",
+    "parquet-table-aggregation-customer-support",
+    "parquet-table-aggregation-data-cleaning",
+    "parquet-table-aggregation-data-engineering",
+    "parquet-table-aggregation-database-operations",
+    "parquet-table-aggregation-devops",
+    "parquet-table-aggregation-documentation",
+    "parquet-table-aggregation-entity-resolution",
+    "parquet-table-aggregation-financial-reconciliation",
+    "parquet-table-aggregation-machine-learning",
+    "parquet-table-aggregation-matrix-mathematics",
+    "parquet-table-aggregation-project-management",
+    "parquet-table-aggregation-record-linkage",
+    "parquet-table-aggregation-report-generation",
+    "parquet-table-aggregation-research-analysis",
+    "parquet-table-aggregation-security-review",
+    "parquet-table-aggregation-software-development",
+    "parquet-table-aggregation-string-operations",
+    "parquet-table-aggregation-text-processing",
+    "pdf-document-aggregation-agent-coordination",
+    "pdf-document-aggregation-agentic-benchmark",
+    "pdf-document-aggregation-agentic-task",
+    "pdf-document-aggregation-benchmarking",
+    "pdf-document-aggregation-compliance-audit",
+    "pdf-document-aggregation-customer-support",
+    "pdf-document-aggregation-data-cleaning",
+    "pdf-document-aggregation-data-engineering",
+    "pdf-document-aggregation-database-operations",
+    "pdf-document-aggregation-devops",
+    "pdf-document-aggregation-documentation",
+    "pdf-document-aggregation-entity-resolution",
+    "pdf-document-aggregation-financial-reconciliation",
+    "pdf-document-aggregation-matrix-mathematics",
+    "pdf-document-aggregation-project-management",
+    "pdf-document-aggregation-quality-assurance",
+    "pdf-document-aggregation-record-linkage",
+    "pdf-document-aggregation-report-generation",
+    "pdf-document-aggregation-research-analysis",
+    "pdf-document-aggregation-security-review",
+    "pdf-document-aggregation-software-development",
+    "pdf-document-aggregation-string-operations",
+    "pdf-document-aggregation-text-processing",
+    "person-name-aggregation-agent-coordination",
+    "person-name-aggregation-agentic-benchmark",
+    "person-name-aggregation-agentic-task",
+    "person-name-aggregation-benchmarking",
+    "person-name-aggregation-compliance-audit",
+    "person-name-aggregation-customer-support",
+    "person-name-aggregation-data-cleaning",
+    "person-name-aggregation-data-engineering",
+    "person-name-aggregation-database-operations",
+    "person-name-aggregation-devops",
+    "person-name-aggregation-documentation",
+    "person-name-aggregation-entity-resolution",
+    "person-name-aggregation-financial-reconciliation",
+    "person-name-aggregation-machine-learning",
+    "person-name-aggregation-matrix-mathematics",
+    "person-name-aggregation-project-management",
+    "person-name-aggregation-quality-assurance",
+    "person-name-aggregation-record-linkage",
+    "person-name-aggregation-research-analysis",
+    "person-name-aggregation-security-review",
+    "person-name-aggregation-string-operations",
+    "person-name-aggregation-text-processing",
+    "postal-address-aggregation-agent-coordination",
+    "postal-address-aggregation-agentic-benchmark",
+    "postal-address-aggregation-agentic-task",
+    "postal-address-aggregation-benchmarking",
+    "postal-address-aggregation-compliance-audit",
+    "postal-address-aggregation-customer-support",
+    "postal-address-aggregation-data-cleaning",
+    "postal-address-aggregation-data-engineering",
+    "postal-address-aggregation-database-operations",
+    "postal-address-aggregation-devops",
+    "postal-address-aggregation-documentation",
+    "postal-address-aggregation-entity-resolution",
+    "postal-address-aggregation-financial-reconciliation",
+    "postal-address-aggregation-machine-learning",
+    "postal-address-aggregation-matrix-mathematics",
+    "postal-address-aggregation-project-management",
+    "postal-address-aggregation-quality-assurance",
+    "postal-address-aggregation-record-linkage",
+    "postal-address-aggregation-report-generation",
+    "postal-address-aggregation-research-analysis",
+    "postal-address-aggregation-security-review",
+    "postal-address-aggregation-software-development",
+    "postal-address-aggregation-string-operations",
+    "postal-address-aggregation-text-processing",
+    "sql-query-log-aggregation-agent-coordination",
+    "sql-query-log-aggregation-agentic-benchmark",
+    "sql-query-log-aggregation-agentic-task",
+    "sql-query-log-aggregation-benchmarking",
+    "sql-query-log-aggregation-compliance-audit",
+    "sql-query-log-aggregation-customer-support",
+    "sql-query-log-aggregation-data-cleaning",
+    "sql-query-log-aggregation-data-engineering",
+    "sql-query-log-aggregation-database-operations",
+    "sql-query-log-aggregation-devops",
+    "sql-query-log-aggregation-documentation",
+    "sql-query-log-aggregation-entity-resolution",
+    "sql-query-log-aggregation-financial-reconciliation",
+    "sql-query-log-aggregation-machine-learning",
+    "sql-query-log-aggregation-matrix-mathematics",
+    "sql-query-log-aggregation-project-management",
+    "sql-query-log-aggregation-quality-assurance",
+    "sql-query-log-aggregation-record-linkage",
+    "sql-query-log-aggregation-report-generation",
+    "sql-query-log-aggregation-research-analysis",
+    "sql-query-log-aggregation-security-review",
+    "sql-query-log-aggregation-software-development",
+    "sql-query-log-aggregation-string-operations",
+    "sql-query-log-aggregation-text-processing",
+    "sql-table-aggregation-agent-coordination",
+    "sql-table-aggregation-agentic-benchmark",
+    "sql-table-aggregation-agentic-task",
+    "sql-table-aggregation-benchmarking",
+    "sql-table-aggregation-compliance-audit",
+    "sql-table-aggregation-customer-support",
+    "sql-table-aggregation-data-cleaning",
+    "sql-table-aggregation-data-engineering",
+    "sql-table-aggregation-database-operations",
+    "sql-table-aggregation-devops",
+    "sql-table-aggregation-documentation",
+    "sql-table-aggregation-entity-resolution",
+    "sql-table-aggregation-financial-reconciliation",
+    "sql-table-aggregation-matrix-mathematics",
+    "sql-table-aggregation-record-linkage",
+    "sql-table-aggregation-security-review",
+    "sql-table-aggregation-software-development",
+    "sql-table-aggregation-string-operations",
+    "sql-table-aggregation-text-processing",
+    "string-aggregation-agent-coordination",
+    "string-aggregation-agentic-benchmark",
+    "string-aggregation-benchmarking",
+    "string-aggregation-compliance-audit",
+    "string-aggregation-customer-support",
+    "string-aggregation-data-cleaning",
+    "string-aggregation-data-engineering",
+    "string-aggregation-database-operations",
+    "string-aggregation-devops",
+    "string-aggregation-documentation",
+    "string-aggregation-entity-resolution",
+    "string-aggregation-financial-reconciliation",
+    "string-aggregation-machine-learning",
+    "string-aggregation-matrix-mathematics",
+    "string-aggregation-quality-assurance",
+    "string-aggregation-record-linkage",
+    "string-aggregation-report-generation",
+    "string-aggregation-research-analysis",
+    "string-aggregation-security-review",
+    "string-aggregation-software-development",
+    "string-aggregation-string-operations",
+    "string-aggregation-text-processing",
+    "string-column-aggregation-agent-coordination",
+    "string-column-aggregation-agentic-benchmark",
+    "string-column-aggregation-agentic-task",
+    "string-column-aggregation-benchmarking",
+    "string-column-aggregation-compliance-audit",
+    "string-column-aggregation-customer-support",
+    "string-column-aggregation-data-cleaning",
+    "string-column-aggregation-database-operations",
+    "string-column-aggregation-devops",
+    "string-column-aggregation-documentation",
+    "string-column-aggregation-entity-resolution",
+    "string-column-aggregation-financial-reconciliation",
+    "string-column-aggregation-machine-learning",
+    "string-column-aggregation-matrix-mathematics",
+    "string-column-aggregation-project-management",
+    "string-column-aggregation-quality-assurance",
+    "string-column-aggregation-record-linkage",
+    "string-column-aggregation-report-generation",
+    "string-column-aggregation-research-analysis",
+    "string-column-aggregation-security-review",
+    "text-aggregation-agentic-benchmark",
+    "text-aggregation-agentic-task",
+    "text-aggregation-compliance-audit",
+    "text-aggregation-customer-support",
+    "text-aggregation-data-cleaning",
+    "text-aggregation-data-engineering",
+    "text-aggregation-database-operations",
+    "text-aggregation-devops",
+    "text-aggregation-documentation",
+    "text-aggregation-entity-resolution",
+    "text-aggregation-financial-reconciliation",
+    "text-aggregation-machine-learning",
+    "text-aggregation-matrix-mathematics",
+    "text-aggregation-quality-assurance",
+    "text-aggregation-report-generation",
+    "text-aggregation-research-analysis",
+    "text-aggregation-security-review",
+    "text-aggregation-string-operations",
+    "text-aggregation-text-processing",
+    "toml-config-aggregation-agent-coordination",
+    "toml-config-aggregation-agentic-benchmark",
+    "toml-config-aggregation-agentic-task",
+    "toml-config-aggregation-benchmarking",
+    "toml-config-aggregation-compliance-audit",
+    "toml-config-aggregation-customer-support",
+    "toml-config-aggregation-data-cleaning",
+    "toml-config-aggregation-data-engineering",
+    "toml-config-aggregation-database-operations",
+    "toml-config-aggregation-devops",
+    "toml-config-aggregation-documentation",
+    "toml-config-aggregation-entity-resolution",
+    "toml-config-aggregation-financial-reconciliation",
+    "toml-config-aggregation-machine-learning",
+    "toml-config-aggregation-matrix-mathematics",
+    "toml-config-aggregation-quality-assurance",
+    "toml-config-aggregation-record-linkage",
+    "toml-config-aggregation-report-generation",
+    "toml-config-aggregation-research-analysis",
+    "toml-config-aggregation-security-review",
+    "toml-config-aggregation-software-development",
+    "toml-config-aggregation-string-operations",
+    "toml-config-aggregation-text-processing",
+    "tree-structure-aggregation-agent-coordination",
+    "tree-structure-aggregation-agentic-benchmark",
+    "tree-structure-aggregation-agentic-task",
+    "tree-structure-aggregation-benchmarking",
+    "tree-structure-aggregation-compliance-audit",
+    "tree-structure-aggregation-customer-support",
+    "tree-structure-aggregation-data-cleaning",
+    "tree-structure-aggregation-data-engineering",
+    "tree-structure-aggregation-database-operations",
+    "tree-structure-aggregation-devops",
+    "tree-structure-aggregation-documentation",
+    "tree-structure-aggregation-entity-resolution",
+    "tree-structure-aggregation-financial-reconciliation",
+    "tree-structure-aggregation-machine-learning",
+    "tree-structure-aggregation-matrix-mathematics",
+    "tree-structure-aggregation-record-linkage",
+    "tree-structure-aggregation-report-generation",
+    "tree-structure-aggregation-research-analysis",
+    "tree-structure-aggregation-software-development",
+    "tree-structure-aggregation-string-operations",
+    "tree-structure-aggregation-text-processing",
+    "tsv-table-aggregation-agent-coordination",
+    "tsv-table-aggregation-agentic-benchmark",
+    "tsv-table-aggregation-agentic-task",
+    "tsv-table-aggregation-benchmarking",
+    "tsv-table-aggregation-compliance-audit",
+    "tsv-table-aggregation-customer-support",
+    "tsv-table-aggregation-data-cleaning",
+    "tsv-table-aggregation-data-engineering",
+    "tsv-table-aggregation-database-operations",
+    "tsv-table-aggregation-devops",
+    "tsv-table-aggregation-documentation",
+    "tsv-table-aggregation-entity-resolution",
+    "tsv-table-aggregation-financial-reconciliation",
+    "tsv-table-aggregation-machine-learning",
+    "tsv-table-aggregation-matrix-mathematics",
+    "tsv-table-aggregation-record-linkage",
+    "tsv-table-aggregation-report-generation",
+    "tsv-table-aggregation-security-review",
+    "tsv-table-aggregation-software-development",
+    "tsv-table-aggregation-string-operations",
+    "tsv-table-aggregation-text-processing",
+    "url-aggregation-agent-coordination",
+    "url-aggregation-agentic-benchmark",
+    "url-aggregation-agentic-task",
+    "url-aggregation-benchmarking",
+    "url-aggregation-compliance-audit",
+    "url-aggregation-customer-support",
+    "url-aggregation-data-cleaning",
+    "url-aggregation-data-engineering",
+    "url-aggregation-devops",
+    "url-aggregation-documentation",
+    "url-aggregation-entity-resolution",
+    "url-aggregation-financial-reconciliation",
+    "url-aggregation-machine-learning",
+    "url-aggregation-matrix-mathematics",
+    "url-aggregation-quality-assurance",
+    "url-aggregation-record-linkage",
+    "url-aggregation-research-analysis",
+    "url-aggregation-security-review",
+    "url-aggregation-software-development",
+    "url-aggregation-string-operations",
+    "url-aggregation-text-processing",
+    "vector-aggregation-agent-coordination",
+    "vector-aggregation-agentic-benchmark",
+    "vector-aggregation-agentic-task",
+    "vector-aggregation-benchmarking",
+    "vector-aggregation-compliance-audit",
+    "vector-aggregation-customer-support",
+    "vector-aggregation-data-cleaning",
+    "vector-aggregation-data-engineering",
+    "vector-aggregation-database-operations",
+    "vector-aggregation-documentation",
+    "vector-aggregation-entity-resolution",
+    "vector-aggregation-financial-reconciliation",
+    "vector-aggregation-matrix-mathematics",
+    "vector-aggregation-quality-assurance",
+    "vector-aggregation-record-linkage",
+    "vector-aggregation-report-generation",
+    "vector-aggregation-research-analysis",
+    "vector-aggregation-security-review",
+    "vector-aggregation-software-development",
+    "vector-aggregation-string-operations",
+    "vector-aggregation-text-processing",
+    "version-range-aggregation-agent-coordination",
+    "version-range-aggregation-agentic-benchmark",
+    "version-range-aggregation-agentic-task",
+    "version-range-aggregation-benchmarking",
+    "version-range-aggregation-compliance-audit",
+    "version-range-aggregation-customer-support",
+    "version-range-aggregation-data-cleaning",
+    "version-range-aggregation-data-engineering",
+    "version-range-aggregation-database-operations",
+    "version-range-aggregation-devops",
+    "version-range-aggregation-documentation",
+    "version-range-aggregation-entity-resolution",
+    "version-range-aggregation-financial-reconciliation",
+    "version-range-aggregation-machine-learning",
+    "version-range-aggregation-matrix-mathematics",
+    "version-range-aggregation-record-linkage",
+    "version-range-aggregation-report-generation",
+    "version-range-aggregation-research-analysis",
+    "version-range-aggregation-security-review",
+    "version-range-aggregation-software-development",
+    "version-range-aggregation-string-operations",
+    "version-range-aggregation-text-processing",
+    "yaml-config-aggregation-agent-coordination",
+    "yaml-config-aggregation-agentic-benchmark",
+    "yaml-config-aggregation-agentic-task",
+    "yaml-config-aggregation-benchmarking",
+    "yaml-config-aggregation-compliance-audit",
+    "yaml-config-aggregation-customer-support",
+    "yaml-config-aggregation-data-cleaning",
+    "yaml-config-aggregation-data-engineering",
+    "yaml-config-aggregation-database-operations",
+    "yaml-config-aggregation-devops",
+    "yaml-config-aggregation-documentation",
+    "yaml-config-aggregation-entity-resolution",
+    "yaml-config-aggregation-financial-reconciliation",
+    "yaml-config-aggregation-machine-learning",
+    "yaml-config-aggregation-matrix-mathematics",
+    "yaml-config-aggregation-quality-assurance",
+    "yaml-config-aggregation-record-linkage",
+    "yaml-config-aggregation-report-generation",
+    "yaml-config-aggregation-research-analysis",
+    "yaml-config-aggregation-security-review",
+    "yaml-config-aggregation-string-operations",
+    "yaml-config-aggregation-text-processing"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the idea's declared file_kind in the batch matrix",
+   "kinds": {
+    "instruction file or fragment": 21,
+    "skill": 720,
+    "subagent definition": 34
+   },
+   "label": ".loop-engine-dev/overnight-2026-09-24/batch (shared checkout, running)",
+   "name": "overnight batch",
+   "notes": [
+    "The batch is still running. Counts are as of the journal snapshot above; files written after it are reported, not counted."
+   ],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "(not recorded)": 775
+   },
+   "records_read": [
+    "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch/journal.jsonl",
+    "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch/status.json",
+    "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/matrix-10k.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 0,
+     "location": "shared checkout /home/username/loop-engine",
+     "path": "/home/username/loop-engine/.loop-engine-dev/overnight-2026-09-24/batch"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "journal.jsonl outcome events; a written candidate passed only the generation-time shape check, so it is a candidate",
+   "state_details": {
+    "candidate: written after the generation-time shape check; no review pre-check": 775
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 775,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one idea whose journaled outcome is candidate_written; its candidates/<lane>/<idea>.md file is the unit file",
+   "unit_file_bytes": 1433103,
+   "unit_files_by_extension": {
+    ".md": 775
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 775,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 775,
+   "version_history": null
+  },
+  {
+   "all_files": 795,
+   "all_files_by_extension": {
+    "(none)": 6,
+    ".csv": 14,
+    ".json": 416,
+    ".jsonl": 8,
+    ".md": 171,
+    ".py": 100,
+    ".txt": 80
+   },
+   "attempts_without_a_unit": {
+    "data-cleanup-alibaba: candidate_draft_or_factory_refused": 3,
+    "data-cleanup-alibaba: dispatched_without_a_recorded_completion": 1,
+    "docs-api-deepseek: candidate_draft_or_factory_refused": 16,
+    "overnight-tickets-alibaba: candidate_draft_or_factory_refused": 2,
+    "refactor-migrate-mistral: candidate_draft_or_factory_refused": 3,
+    "refactor-migrate-mistral: timeout": 1,
+    "review-security-mistral: timeout": 1,
+    "testing-ci-deepseek: timeout": 1
+   },
+   "declared_kind_values": {
+    "proposal family: original_native_command -> command or workflow recipe": 2,
+    "proposal family: original_native_hook -> hook": 2,
+    "proposal family: original_native_packet -> step packet": 3,
+    "proposal family: original_native_skill -> skill": 3,
+    "proposal family: original_native_subagent -> subagent definition": 4,
+    "proposal family: original_native_task_packet -> step packet": 1,
+    "proposal family: original_native_tool -> tool or script": 38
+   },
+   "details": {
+    "runs": {
+     "data-cleanup-alibaba": {
+      "call_ceiling": 25,
+      "completions": 23,
+      "dispatches": 24,
+      "model": "qwen3.5:397b",
+      "outcomes": {
+       "candidate_draft_or_factory_refused": 3,
+       "dispatched_without_a_recorded_completion": 1,
+       "prepared": 20
+      },
+      "pending": [
+       {
+        "attempt": 1,
+        "method_id": "data_cleanup_transcode_bytes_by_bom_and_declared_encodings"
+       }
+      ],
+      "producer_family": "alibaba"
+     },
+     "docs-api-deepseek": {
+      "call_ceiling": 25,
+      "completions": 25,
+      "dispatches": 25,
+      "model": "deepseek-v4-pro:0813",
+      "outcomes": {
+       "candidate_draft_or_factory_refused": 16,
+       "prepared": 9
+      },
+      "pending": [],
+      "producer_family": "deepseek"
+     },
+     "overnight-tickets-alibaba": {
+      "call_ceiling": 25,
+      "completions": 25,
+      "dispatches": 25,
+      "model": "qwen3.5:397b",
+      "outcomes": {
+       "candidate_draft_or_factory_refused": 2,
+       "prepared": 23
+      },
+      "pending": [],
+      "producer_family": "alibaba"
+     },
+     "refactor-migrate-mistral": {
+      "call_ceiling": 25,
+      "completions": 4,
+      "dispatches": 4,
+      "model": "mistral-large-3:675b",
+      "outcomes": {
+       "candidate_draft_or_factory_refused": 3,
+       "timeout": 1
+      },
+      "pending": [],
+      "producer_family": "mistral"
+     },
+     "review-security-mistral": {
+      "call_ceiling": 25,
+      "completions": 1,
+      "dispatches": 1,
+      "model": "mistral-large-3:675b",
+      "outcomes": {
+       "timeout": 1
+      },
+      "pending": [],
+      "producer_family": "mistral"
+     },
+     "testing-ci-deepseek": {
+      "call_ceiling": 25,
+      "completions": 2,
+      "dispatches": 2,
+      "model": "deepseek-v4-pro:0813",
+      "outcomes": {
+       "prepared": 1,
+       "timeout": 1
+      },
+      "pending": [],
+      "producer_family": "deepseek"
+     }
+    },
+    "runs_refused_before_any_dispatch": {
+     "data-science-moonshot": {
+      "dispatches": "0",
+      "family": null,
+      "model": null,
+      "stop_reason": "refused before dispatch: UnknownModelOutputLimit for kimi-k3, reported as preflight_or_io_refused"
+     },
+     "harness-setup-moonshot": {
+      "dispatches": "0",
+      "family": "moonshot",
+      "model": "kimi-k3",
+      "stop_reason": "refused before dispatch: UnknownModelOutputLimit for kimi-k3, reported as preflight_or_io_refused"
+     }
+    },
+    "searched_roots": [
+     {
+      "exists": true,
+      "root": "/home/username/.le-safety/session-4d86b429-scratchpad-20260924",
+      "run_folders_found": []
+     },
+     {
+      "exists": true,
+      "root": "/home/username/baltor-private/generation-2026-09-23",
+      "run_folders_found": [
+       "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba",
+       "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek",
+       "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba",
+       "/home/username/baltor-private/generation-2026-09-23/refactor-migrate-mistral",
+       "/home/username/baltor-private/generation-2026-09-23/review-security-mistral",
+       "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek"
+      ]
+     }
+    ]
+   },
+   "distinct_identities": 53,
+   "files": 427,
+   "identities": [
+    "data_cleanup_build_golden_records_by_field_rules",
+    "data_cleanup_canonicalize_json_rfc8785",
+    "data_cleanup_check_cross_field_rules",
+    "data_cleanup_cluster_values_by_fingerprint_keys",
+    "data_cleanup_convert_amounts_to_currency_minor_units",
+    "data_cleanup_convert_quantities_to_declared_unit",
+    "data_cleanup_convert_spreadsheet_serial_dates",
+    "data_cleanup_encode_american_soundex_keys",
+    "data_cleanup_flag_json_numbers_changed_by_binary64",
+    "data_cleanup_flatten_json_records_to_columns",
+    "data_cleanup_make_unique_snake_case_headers",
+    "data_cleanup_measure_blocking_pair_completeness",
+    "data_cleanup_rejoin_split_free_text_field",
+    "data_cleanup_repair_json_lines_framing",
+    "data_cleanup_repair_utf8_mojibake",
+    "data_cleanup_report_json_field_type_drift",
+    "data_cleanup_restore_identifier_leading_zeros",
+    "data_cleanup_rewrite_csv_dialect",
+    "data_cleanup_score_strings_with_jaro_winkler",
+    "data_cleanup_validate_identifier_check_digits",
+    "docs_api_check_changelog_structure",
+    "docs_api_check_fenced_code_block_syntax",
+    "docs_api_check_markdown_links_and_anchors",
+    "docs_api_check_readme_section_profile",
+    "docs_api_docs_change_reviewer_subagent",
+    "docs_api_draft_and_verify_change_docs_commands",
+    "docs_api_draft_how_to_page_step_packet",
+    "docs_api_flag_unsupported_factual_claims",
+    "docs_api_measure_python_docstring_coverage",
+    "overnight_tickets_budget_step_context_for_small_windows",
+    "overnight_tickets_chain_progress_checkpoints",
+    "overnight_tickets_check_step_graph_dataflow",
+    "overnight_tickets_check_ticket_readiness_rubric",
+    "overnight_tickets_decompose_ticket_step_packet",
+    "overnight_tickets_detect_repeated_tool_call_cycles",
+    "overnight_tickets_detect_stalled_steps_from_checkpoints",
+    "overnight_tickets_detect_truncated_step_output",
+    "overnight_tickets_fence_ticket_text_for_node_context",
+    "overnight_tickets_find_blocker_cycles_and_external_waits",
+    "overnight_tickets_find_contradictions_between_step_handoffs",
+    "overnight_tickets_group_reports_by_failure_signature",
+    "overnight_tickets_lint_subagent_definition_files",
+    "overnight_tickets_locate_fault_step_packet",
+    "overnight_tickets_log_excerpt_finder_subagent",
+    "overnight_tickets_minimal_change_step_packet",
+    "overnight_tickets_packet_ambiguity_reviewer_subagent",
+    "overnight_tickets_pick_next_runnable_step_command",
+    "overnight_tickets_render_node_context_from_step_record",
+    "overnight_tickets_require_fresh_handoff_before_stop_hook",
+    "overnight_tickets_restore_assignment_after_compaction_hook",
+    "overnight_tickets_scope_drift_reviewer_subagent",
+    "overnight_tickets_select_first_actions_by_ticket_evidence",
+    "testing_ci_classify_flaky_tests_from_rerun_history"
+   ],
+   "identity_keys_repeated_within_this_source": [],
+   "kind_basis": "the proposal family in the attempt's proposals.json",
+   "kinds": {
+    "command or workflow recipe": 2,
+    "hook": 2,
+    "skill": 3,
+    "step packet": 4,
+    "subagent definition": 4,
+    "tool or script": 38
+   },
+   "label": "original native generation runs through Ollama Cloud (drafts outside the repository)",
+   "name": "Ollama wave drafts",
+   "notes": [],
+   "package_versions": null,
+   "part_of_the_library": true,
+   "producer_families": {
+    "alibaba": 43,
+    "deepseek": 10
+   },
+   "records_read": [
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_build_golden_records_by_field_rules.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_build_golden_records_by_field_rules.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_canonicalize_json_rfc8785.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_canonicalize_json_rfc8785.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_check_cross_field_rules.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_check_cross_field_rules.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_cluster_values_by_fingerprint_keys.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_cluster_values_by_fingerprint_keys.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_amounts_to_currency_minor_units.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_amounts_to_currency_minor_units.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_quantities_to_declared_unit.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_quantities_to_declared_unit.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_spreadsheet_serial_dates.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_convert_spreadsheet_serial_dates.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_encode_american_soundex_keys.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_encode_american_soundex_keys.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_flag_json_numbers_changed_by_binary64.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_flag_json_numbers_changed_by_binary64.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_flatten_json_records_to_columns.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_flatten_json_records_to_columns.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_make_unique_snake_case_headers.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_make_unique_snake_case_headers.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_measure_blocking_pair_completeness.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_measure_blocking_pair_completeness.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_rejoin_split_free_text_field.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_rejoin_split_free_text_field.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_repair_json_lines_framing.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_repair_json_lines_framing.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_repair_utf8_mojibake.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_repair_utf8_mojibake.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_report_json_field_type_drift.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_report_json_field_type_drift.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_restore_identifier_leading_zeros.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_restore_identifier_leading_zeros.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_rewrite_csv_dialect.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_rewrite_csv_dialect.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_score_strings_with_jaro_winkler.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_score_strings_with_jaro_winkler.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_validate_identifier_check_digits.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/data_cleanup_validate_identifier_check_digits.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/data-science-moonshot.status",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_changelog_structure.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_changelog_structure.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_fenced_code_block_syntax.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_fenced_code_block_syntax.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_markdown_links_and_anchors.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_markdown_links_and_anchors.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_readme_section_profile.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_check_readme_section_profile.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_docs_change_reviewer_subagent.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_docs_change_reviewer_subagent.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_draft_and_verify_change_docs_commands.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_draft_and_verify_change_docs_commands.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_draft_how_to_page_step_packet.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_draft_how_to_page_step_packet.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_flag_unsupported_factual_claims.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_flag_unsupported_factual_claims.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_measure_python_docstring_coverage.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/docs_api_measure_python_docstring_coverage.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/harness-setup-moonshot.status",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_budget_step_context_for_small_windows.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_budget_step_context_for_small_windows.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_chain_progress_checkpoints.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_chain_progress_checkpoints.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_check_step_graph_dataflow.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_check_step_graph_dataflow.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_check_ticket_readiness_rubric.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_check_ticket_readiness_rubric.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_decompose_ticket_step_packet.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_decompose_ticket_step_packet.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_repeated_tool_call_cycles.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_repeated_tool_call_cycles.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_stalled_steps_from_checkpoints.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_stalled_steps_from_checkpoints.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_truncated_step_output.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_detect_truncated_step_output.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_fence_ticket_text_for_node_context.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_fence_ticket_text_for_node_context.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_find_blocker_cycles_and_external_waits.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_find_blocker_cycles_and_external_waits.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_find_contradictions_between_step_handoffs.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_find_contradictions_between_step_handoffs.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_group_reports_by_failure_signature.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_group_reports_by_failure_signature.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_lint_subagent_definition_files.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_lint_subagent_definition_files.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_locate_fault_step_packet.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_locate_fault_step_packet.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_log_excerpt_finder_subagent.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_log_excerpt_finder_subagent.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_minimal_change_step_packet.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_minimal_change_step_packet.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_packet_ambiguity_reviewer_subagent.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_packet_ambiguity_reviewer_subagent.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_pick_next_runnable_step_command.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_pick_next_runnable_step_command.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_render_node_context_from_step_record.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_render_node_context_from_step_record.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_require_fresh_handoff_before_stop_hook.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_require_fresh_handoff_before_stop_hook.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_restore_assignment_after_compaction_hook.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_restore_assignment_after_compaction_hook.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_scope_drift_reviewer_subagent.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_scope_drift_reviewer_subagent.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_select_first_actions_by_ticket_evidence.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/overnight_tickets_select_first_actions_by_ticket_evidence.attempt-1/proposals.json",
+    "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/refactor-migrate-mistral/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/refactor-migrate-mistral/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/review-security-mistral/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/review-security-mistral/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek/journal.jsonl",
+    "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek/run.json",
+    "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek/testing_ci_classify_flaky_tests_from_rerun_history.attempt-1/candidates/items.json",
+    "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek/testing_ci_classify_flaky_tests_from_rerun_history.attempt-1/proposals.json"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/data-cleanup-alibaba"
+    },
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/docs-api-deepseek"
+    },
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/overnight-tickets-alibaba"
+    },
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/refactor-migrate-mistral"
+    },
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/review-security-mistral"
+    },
+    {
+     "exists": true,
+     "location": "outside any repository checkout",
+     "path": "/home/username/baltor-private/generation-2026-09-23/testing-ci-deepseek"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "run journals; prepared drafts were packaged by the generator but never put through a review pre-check",
+   "state_details": {
+    "candidate: prepared by the generator; no review pre-check": 53
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 53,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one prepared candidate (METHOD.attempt-N/candidates/items.json) in a run folder whose run.json names provider ollama_cloud",
+   "unit_file_bytes": 1612120,
+   "unit_files_by_extension": {
+    ".csv": 14,
+    ".json": 140,
+    ".jsonl": 2,
+    ".md": 171,
+    ".py": 100
+   },
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 377,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 53,
+   "version_history": null
+  },
+  {
+   "all_files": 108,
+   "all_files_by_extension": {
+    ".json": 44,
+    ".jsonl": 10,
+    ".md": 10,
+    ".py": 22,
+    ".pyc": 7,
+    ".txt": 15
+   },
+   "attempts_without_a_unit": {},
+   "declared_kind_values": {
+    "research category: contract -> other": 1000,
+    "research category: plugin -> plugin manifest": 1000,
+    "research category: skill -> skill": 1000,
+    "research category: tool -> protocol server configuration or server": 1000
+   },
+   "details": {
+    "collections": {
+     "contract": {
+      "distinct_names": 999,
+      "distinct_research_ids": 1000,
+      "file": "contracts-ranked.jsonl",
+      "licence_reported": {
+       " ": 1,
+       "(C) Copyright IBM Corp. 2016 All Rights Reserved.": 1,
+       "(not reported)": 856,
+       "AGPL": 1,
+       "API Terms And Conditions": 1,
+       "API available under GNU Lesser General Public License": 1,
+       "API terms of use": 1,
+       "Apache 2.0": 43,
+       "Apache 2.0 License": 1,
+       "AppVeyor End User License Agreement (EULA)": 1,
+       "As per Developer Terms of Use": 1,
+       "Attribution-NonCommercial-ShareAlike 4.0 International": 1,
+       "Auckland Museum licence": 1,
+       "BSD-3-Clause": 1,
+       "BSD3": 1,
+       "CC BY-NC 4.0": 1,
+       "CC-BY": 2,
+       "CC-BY 4.0": 1,
+       "CC-BY-SA": 1,
+       "CC-BY-SA 2.0": 1,
+       "CC0 1.0": 1,
+       "Commercial": 2,
+       "Copyright Province of British Columbia - Access only": 1,
+       "Creative Commons": 2,
+       "Creative Commons Attribution 3.0": 13,
+       "Crown Copyright": 1,
+       "DB Data Portal": 1,
+       "Distributed under the MIT license": 2,
+       "GNU GENERAL PUBLIC LICENSE": 1,
+       "GNU General Public License v2.0": 1,
+       "GPLv3": 1,
+       "Interzoid license": 20,
+       "LGPL-2.1": 1,
+       "MIT": 12,
+       "MIT License": 2,
+       "Mozilla Public License 2.0": 1,
+       "NamSorAPI_Lic_v0.0.7": 1,
+       "Nitro Public License": 1,
+       "Open Government Licence - Surrey": 1,
+       "Open Government License - British Columbia": 6,
+       "Open Parliament Licence": 1,
+       "Queen's Printer License": 1,
+       "See license": 1,
+       "This page was built with the Swagger API.": 2,
+       "U.S. Public Domain License": 6
+      },
+      "licence_verified": {
+       "False": 1000
+      },
+      "qualification_status": {
+       "unreviewed": 1000
+      },
+      "rows": 1000,
+      "rows_declared_by_manifest": 1000,
+      "sha256_matches_manifest": true
+     },
+     "plugin": {
+      "distinct_names": 944,
+      "distinct_research_ids": 1000,
+      "file": "plugins-ranked.jsonl",
+      "licence_reported": {
+       "(not reported)": 3,
+       "AGPL-3.0": 1,
+       "Apache-2.0": 169,
+       "BSD-2-Clause": 1,
+       "BSD-3-Clause": 4,
+       "CC-BY-4.0": 1,
+       "CC0-1.0": 2,
+       "GPL-3.0": 1,
+       "ISC": 3,
+       "MIT": 813,
+       "MIT-0": 1,
+       "Unlicense": 1
+      },
+      "licence_verified": {
+       "False": 1000
+      },
+      "qualification_status": {
+       "unreviewed": 1000
+      },
+      "rows": 1000,
+      "rows_declared_by_manifest": 1000,
+      "sha256_matches_manifest": true
+     },
+     "skill": {
+      "distinct_names": 972,
+      "distinct_research_ids": 1000,
+      "file": "skills-ranked.jsonl",
+      "licence_reported": {
+       "Apache-2.0": 190,
+       "CC0-1.0": 22,
+       "ISC": 25,
+       "MIT": 569,
+       "NOASSERTION": 35,
+       "unknown": 159
+      },
+      "licence_verified": {
+       "False": 1000
+      },
+      "qualification_status": {
+       "unreviewed": 1000
+      },
+      "rows": 1000,
+      "rows_declared_by_manifest": 1000,
+      "sha256_matches_manifest": true
+     },
+     "tool": {
+      "distinct_names": 1000,
+      "distinct_research_ids": 1000,
+      "file": "tools-ranked.jsonl",
+      "licence_reported": {
+       "AGPL-3.0": 1,
+       "AGPL-3.0-only": 3,
+       "AGPL-3.0-or-later": 1,
+       "Apache-2.0": 10,
+       "BSL-1.1": 1,
+       "MIT": 96,
+       "SEE LICENSE IN LICENSE": 1,
+       "unknown": 887
+      },
+      "licence_verified": {
+       "False": 1000
+      },
+      "qualification_status": {
+       "unreviewed": 1000
+      },
+      "rows": 1000,
+      "rows_declared_by_manifest": 1000,
+      "sha256_matches_manifest": true
+     }
+    },
+    "research_index": {
+     "active_store_rows": 0,
+     "database_path": "/home/username/.le-codex-research-cache/four-catalogues-20260923/research-index.db",
+     "execution_available": false,
+     "lifecycle": "candidate",
+     "records": 4000
+    }
+   },
+   "distinct_identities": 3898,
+   "files": 0,
+   "identity_keys_repeated_within_this_source": 62,
+   "kind_basis": "the research record category",
+   "kinds": {
+    "other": 1000,
+    "plugin manifest": 1000,
+    "protocol server configuration or server": 1000,
+    "skill": 1000
+   },
+   "label": "artifacts/harness-source-research-2026-09-23 (shared checkout, uncommitted)",
+   "name": "harness source research",
+   "notes": [
+    "These records describe outside material. The raw third-party content is kept outside the repository; no file here is a harness payload, so unit files are zero. Licence declarations are unverified for every record."
+   ],
+   "package_versions": null,
+   "part_of_the_library": false,
+   "producer_families": {
+    "(not recorded)": 4000
+   },
+   "records_read": [
+    "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/contracts-ranked.jsonl",
+    "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/plugins-ranked.jsonl",
+    "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/research-index-manifest.json",
+    "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/skills-ranked.jsonl",
+    "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23/tools-ranked.jsonl"
+   ],
+   "roots": [
+    {
+     "exists": true,
+     "files_tracked_by_git_here": 0,
+     "location": "shared checkout /home/username/loop-engine",
+     "path": "/home/username/loop-engine/artifacts/harness-source-research-2026-09-23"
+    }
+   ],
+   "scope": "requested",
+   "state_basis": "research-index-manifest.json lifecycle (candidate) and each row's qualification_status; these are outside leads, not library candidates",
+   "state_details": {
+    "candidate: outside research record, lifecycle candidate, qualification unreviewed, licence verified False": 4000
+   },
+   "states": {
+    "approved and served": 0,
+    "candidate": 4000,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "unit_definition": "one research record about outside material (a skill, plugin, contract or tool integration); not a Baltor package",
+   "unit_file_bytes": 0,
+   "unit_files_by_extension": {},
+   "unit_files_declared_but_missing": 0,
+   "unit_files_distinct_digests": 0,
+   "unit_files_whose_digest_differs_from_the_record": 0,
+   "units": 4000,
+   "version_history": null
+  }
+ ],
+ "totals": {
+  "library_requested_sources": {
+   "by_kind_deduplicated": {
+    "command or workflow recipe": 7,
+    "hook": 7,
+    "instruction file or fragment": 28,
+    "permission settings": 5,
+    "plugin manifest": 6,
+    "protocol server configuration or server": 6,
+    "rules file": 5,
+    "skill": 947,
+    "step packet": 14,
+    "subagent definition": 43,
+    "tool or script": 65,
+    "unknown": 3,
+    "verifier": 10
+   },
+   "by_kind_sum": {
+    "command or workflow recipe": 7,
+    "hook": 7,
+    "instruction file or fragment": 28,
+    "permission settings": 5,
+    "plugin manifest": 6,
+    "protocol server configuration or server": 6,
+    "rules file": 5,
+    "skill": 947,
+    "step packet": 14,
+    "subagent definition": 43,
+    "tool or script": 65,
+    "unknown": 3,
+    "verifier": 10
+   },
+   "by_state_deduplicated": {
+    "approved and served": 43,
+    "candidate": 1018,
+    "passed a precheck": 64,
+    "refused by a precheck": 21,
+    "unknown": 0
+   },
+   "by_state_sum": {
+    "approved and served": 43,
+    "candidate": 1018,
+    "passed a precheck": 64,
+    "refused by a precheck": 21,
+    "unknown": 0
+   },
+   "distinct_identities": 1146,
+   "name_neighbours_not_counted_as_overlaps": [
+    {
+     "first": "Tactical blocks batch: resolve_exact_package_dependency_closure",
+     "second": "Codex component supply: resolve_selected_dependency_closure",
+     "shared_words": [
+      "closure",
+      "dependency",
+      "resolve"
+     ]
+    }
+   ],
+   "overlap_count": 0,
+   "overlaps": [],
+   "sources": [
+    "served starter catalogue",
+    "first-party waves 1 to 4",
+    "first-party wave 5",
+    "format pilots",
+    "native candidate preparation",
+    "Tactical blocks batch",
+    "Codex component supply",
+    "Codex research-inspired components",
+    "Gemma 4 harness components",
+    "overnight batch",
+    "Ollama wave drafts"
+   ],
+   "unit_file_digests_shared_by_more_than_one_source": 2,
+   "unit_files_by_extension_sum": {
+    "(none)": 93,
+    ".csv": 19,
+    ".diff": 5,
+    ".json": 584,
+    ".jsonl": 3,
+    ".md": 1425,
+    ".mdc": 6,
+    ".py": 305,
+    ".sql": 1,
+    ".toml": 16,
+    ".txt": 12
+   },
+   "unit_files_distinct_digests": 2259,
+   "unit_files_sum": 2469,
+   "units_sum": 1146
+  },
+  "library_with_additional_sources": {
+   "by_kind_deduplicated": {
+    "command or workflow recipe": 7,
+    "hook": 7,
+    "instruction file or fragment": 28,
+    "permission settings": 5,
+    "plugin manifest": 6,
+    "protocol server configuration or server": 6,
+    "rules file": 5,
+    "skill": 947,
+    "step packet": 14,
+    "subagent definition": 43,
+    "tool or script": 78,
+    "unknown": 3,
+    "verifier": 10
+   },
+   "by_kind_sum": {
+    "command or workflow recipe": 7,
+    "hook": 7,
+    "instruction file or fragment": 28,
+    "permission settings": 5,
+    "plugin manifest": 7,
+    "protocol server configuration or server": 6,
+    "rules file": 5,
+    "skill": 947,
+    "step packet": 14,
+    "subagent definition": 43,
+    "tool or script": 78,
+    "unknown": 3,
+    "verifier": 10
+   },
+   "by_state_deduplicated": {
+    "approved and served": 43,
+    "candidate": 1031,
+    "passed a precheck": 64,
+    "refused by a precheck": 21,
+    "unknown": 0
+   },
+   "by_state_sum": {
+    "approved and served": 43,
+    "candidate": 1032,
+    "passed a precheck": 64,
+    "refused by a precheck": 21,
+    "unknown": 0
+   },
+   "distinct_identities": 1159,
+   "name_neighbours_not_counted_as_overlaps": [
+    {
+     "first": "Tactical blocks batch: resolve_exact_package_dependency_closure",
+     "second": "Codex component supply: resolve_selected_dependency_closure",
+     "shared_words": [
+      "closure",
+      "dependency",
+      "resolve"
+     ]
+    }
+   ],
+   "overlap_count": 1,
+   "overlaps": [
+    {
+     "counted_as": {
+      "kind": "plugin manifest",
+      "source": "native candidate preparation",
+      "state": "candidate"
+     },
+     "identity_key": "baltor_focused_brief_candidate",
+     "identity_keys": [
+      "baltor_focused_brief_candidate",
+      "focused_brief_plugin"
+     ],
+     "kinds": [
+      "plugin manifest"
+     ],
+     "raw_identities": [
+      "harness plugin context: baltor-focused-brief-candidate",
+      "native candidate preparation: focused_brief_plugin"
+     ],
+     "sources": [
+      "native candidate preparation",
+      "harness plugin context"
+     ],
+     "states": [
+      "candidate"
+     ]
+    }
+   ],
+   "sources": [
+    "served starter catalogue",
+    "first-party waves 1 to 4",
+    "first-party wave 5",
+    "format pilots",
+    "native candidate preparation",
+    "Tactical blocks batch",
+    "Codex component supply",
+    "Codex research-inspired components",
+    "Gemma 4 harness components",
+    "overnight batch",
+    "Ollama wave drafts",
+    "mixed native originals",
+    "original native generation live runs",
+    "harness plugin context"
+   ],
+   "unit_file_digests_shared_by_more_than_one_source": 14,
+   "unit_files_by_extension_sum": {
+    "(none)": 106,
+    ".csv": 19,
+    ".diff": 5,
+    ".json": 653,
+    ".jsonl": 3,
+    ".md": 1442,
+    ".mdc": 6,
+    ".py": 322,
+    ".sql": 1,
+    ".toml": 16,
+    ".txt": 12
+   },
+   "unit_files_distinct_digests": 2349,
+   "unit_files_sum": 2585,
+   "units_sum": 1160
+  },
+  "outside_research": {
+   "by_kind": {
+    "other": 1000,
+    "plugin manifest": 1000,
+    "protocol server configuration or server": 1000,
+    "skill": 1000
+   },
+   "by_state": {
+    "approved and served": 0,
+    "candidate": 4000,
+    "passed a precheck": 0,
+    "refused by a precheck": 0,
+    "unknown": 0
+   },
+   "name_collisions_with_library_identities": [],
+   "records": 4000
+  }
+ }
+}

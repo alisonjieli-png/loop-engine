@@ -7086,6 +7086,78 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-24'
     expires_on: '2027-09-24'
+  - finding_id: hardcoding.3cd07e6d8318c907b68f6f12
+    owner: tools.inventory_harness_library:read_served_catalogue
+    rationale: "Closed outcome vocabulary (approved, rejected, not_reviewed) of the rows in the starter catalogue's starter_catalogue_independent_review/v2 record. The read-only library inventory compares the recorded outcome with it only to report each item's state; it grants no approval and causes no effect, and any other value is reported as unknown, never as approved."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.cf75413d0113de7aaf9f5282
+    owner: tools.inventory_harness_library:read_served_catalogue
+    rationale: "Closed outcome vocabulary (approved, rejected, not_reviewed) of the rows in the starter catalogue's starter_catalogue_independent_review/v2 record. The read-only library inventory compares the recorded outcome with it only to report each item's state; it grants no approval and causes no effect, and any other value is reported as unknown, never as approved."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.c8d2b830dee06c5bd2d26167
+    owner: tools.inventory_harness_library:read_served_catalogue
+    rationale: "Closed outcome vocabulary (approved, rejected, not_reviewed) of the rows in the starter catalogue's starter_catalogue_independent_review/v2 record. The read-only library inventory compares the recorded outcome with it only to report each item's state; it grants no approval and causes no effect, and any other value is reported as unknown, never as approved."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.f7b91f2e31130dc14f3830e1
+    owner: tools.inventory_harness_library:read_served_catalogue
+    rationale: "Closed outcome vocabulary (approved, rejected, not_reviewed) of the rows in the starter catalogue's starter_catalogue_independent_review/v2 record. The read-only library inventory compares the recorded outcome with it only to report each item's state; it grants no approval and causes no effect, and any other value is reported as unknown, never as approved."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.0b93b04a3de1d93ff2bf49f3
+    owner: tools.inventory_harness_library:read_tactical_blocks
+    rationale: "Closed row outcome vocabulary of the candidate review panel record (the approved, rejected, not_started and panel_incomplete outcomes that tools/candidate_review/panel.py writes). The read-only library inventory compares a recorded outcome with it only to report each Tactical blocks batch package's state; it grants no approval and causes no effect, and any other outcome is reported as unknown."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.1dca2f7bacf26eadab2d89a3
+    owner: tools.inventory_harness_library:read_tactical_blocks
+    rationale: "Closed row outcome vocabulary of the candidate review panel record (the approved, rejected, not_started and panel_incomplete outcomes that tools/candidate_review/panel.py writes). The read-only library inventory compares a recorded outcome with it only to report each Tactical blocks batch package's state; it grants no approval and causes no effect, and any other outcome is reported as unknown."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.007e637daf375cc13222352a
+    owner: tools.inventory_harness_library:read_tactical_blocks
+    rationale: "Closed row outcome vocabulary of the candidate review panel record (the approved, rejected, not_started and panel_incomplete outcomes that tools/candidate_review/panel.py writes). The read-only library inventory compares a recorded outcome with it only to report each Tactical blocks batch package's state; it grants no approval and causes no effect, and any other outcome is reported as unknown."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.9d9602bce263eec5db564409
+    owner: tools.inventory_harness_library:read_tactical_blocks
+    rationale: "Closed row outcome vocabulary of the candidate review panel record (the approved, rejected, not_started and panel_incomplete outcomes that tools/candidate_review/panel.py writes). The read-only library inventory compares a recorded outcome with it only to report each Tactical blocks batch package's state; it grants no approval and causes no effect, and any other outcome is reported as unknown."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.95028b184483ea0821e821ff
+    owner: tools.inventory_harness_library:read_first_party_waves
+    rationale: "Closed entry state value (candidate_only) of the first-party candidate manifests of waves 1 to 4. The read-only library inventory compares it with each entry's recorded state only to report the entry as a candidate; any other value is reported as unknown, and the inventory causes no effect."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.7f3ed9aba1d0f6fe321ade2b
+    owner: tools.inventory_harness_library:read_format_pilots
+    rationale: "Closed package tree role (skill_entry) of the second format pilot's manifest. The read-only library inventory reads it only to map a declared entry role to the skill kind; a missing role maps to unknown, and the inventory causes no effect."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.1c6d77123672e6d401747b88
+    owner: tools.inventory_harness_library:read_harness_research
+    rationale: "Closed lifecycle value (candidate) of the outside research index manifest. The read-only library inventory compares it only to report research records as candidates, outside every library total; any other lifecycle is reported as unknown, and the inventory causes no effect."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.a6c01f9683c7937238280312
+    owner: tools.inventory_harness_library:read_overnight_batch
+    rationale: "Closed outcome value (candidate_written) of the overnight_batch_event/v1 journal records that tools/overnight_candidate_batch.py writes. The read-only library inventory compares it only to count written candidates; every other outcome is counted as a generation attempt without a unit, and the inventory causes no effect."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23

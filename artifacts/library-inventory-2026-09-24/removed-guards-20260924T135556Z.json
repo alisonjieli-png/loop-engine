@@ -1,0 +1,94 @@
+{
+ "all_detected": true,
+ "baseline": {
+  "failed_checks": [],
+  "suite_exit_code": 0,
+  "suite_tail": "Ran 5 tests in 0.003s\n\nOK"
+ },
+ "module": "tools/inventory_harness_library.py",
+ "mutants": [
+  {
+   "detected": true,
+   "expected_failing_check": "test_counts_journaled_candidates_not_files_on_disk",
+   "failed_checks": [
+    "test_counts_journaled_candidates_not_files_on_disk"
+   ],
+   "guard": "journal line still being written is parsed",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.004s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_counts_journaled_candidates_not_files_on_disk",
+   "failed_checks": [
+    "test_counts_journaled_candidates_not_files_on_disk"
+   ],
+   "guard": "an idea without a candidate_written outcome becomes a unit",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.004s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_an_unmapped_declared_value_stays_unknown",
+   "failed_checks": [
+    "test_an_unmapped_declared_value_stays_unknown"
+   ],
+   "guard": "an unmapped declared value defaults to skill",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_kind_comes_from_the_record_and_state_from_the_newest_report",
+   "failed_checks": [
+    "test_kind_comes_from_the_record_and_state_from_the_newest_report"
+   ],
+   "guard": "the kind is taken from a SKILL.md file name",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.003s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_kind_comes_from_the_record_and_state_from_the_newest_report",
+   "failed_checks": [
+    "test_kind_comes_from_the_record_and_state_from_the_newest_report"
+   ],
+   "guard": "the oldest check-all report wins",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.004s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_an_identity_in_two_sources_counts_once",
+   "failed_checks": [
+    "test_an_identity_in_two_sources_counts_once"
+   ],
+   "guard": "identities are compared without normalization",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.004s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_an_identity_in_two_sources_counts_once",
+   "failed_checks": [
+    "test_an_identity_in_two_sources_counts_once"
+   ],
+   "guard": "the first record of a group is counted instead of the most advanced",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.005s\n\nFAILED (failures=1)"
+  },
+  {
+   "detected": true,
+   "expected_failing_check": "test_a_declared_alias_joins_two_names",
+   "failed_checks": [
+    "test_a_declared_alias_joins_two_names"
+   ],
+   "guard": "declared aliases are ignored",
+   "suite_exit_code": 1,
+   "suite_tail": "Ran 5 tests in 0.004s\n\nFAILED (failures=1)"
+  }
+ ],
+ "python": "3.14.4",
+ "record_type": "inventory_removed_guard_checks/v1",
+ "tests": "tools/test_inventory_harness_library.py"
+}
