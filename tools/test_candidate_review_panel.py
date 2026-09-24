@@ -94,10 +94,15 @@ def _installation(name: str, family: str, quota_group: str = "") -> dict:
             "lens": config.LENSES[0], "enabled": True, "disabled_reason": "", "settings": {}}
 
 
+#: The behaviour checks here use the three-family policy as their fixture, the strictest rule the panel has
+#: run under; the committed two-family policy has its own checks in test_candidate_review_batching.
+THREE_FAMILY_POLICY = {"minimum_approvals": 3, "minimum_distinct_families": 3, "reviewers_per_item": 3}
+
+
 def _configuration(installations: list, **policy) -> config.PanelConfiguration:
     value = copy.deepcopy(PANEL_RECORD)
     value["installations"] = installations
-    value["policy"].update(policy)
+    value["policy"].update({**THREE_FAMILY_POLICY, **policy})
     return config.PanelConfiguration.from_dict(value)
 
 

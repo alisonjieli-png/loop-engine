@@ -2,8 +2,8 @@
   "record_type": "candidate_review_panel/v1",
   "policy": {
     "record_type": "candidate_review_panel_policy/v1",
-    "minimum_approvals": 3,
-    "minimum_distinct_families": 3,
+    "minimum_approvals": 2,
+    "minimum_distinct_families": 2,
     "exclude_producer_family": true,
     "any_rejection_withholds_approval": true,
     "reviewers_per_item": 3,

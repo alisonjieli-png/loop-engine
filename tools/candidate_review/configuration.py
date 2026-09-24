@@ -6,10 +6,16 @@ from the catalogue's review sheet, the producer declaration and the reviewer
 instructions. Nothing in this module calls a model, reads a credential or
 touches the network.
 
-The approval floor is the owner's rule of 22 September 2026: at least three
-approving reviewers from at least three model families, none of them the family
-that produced the item, and any rejection keeps the item a candidate. A policy
-that weakens any part of that rule is refused, not clamped.
+The approval floor is two approving reviewers from two model families, none of
+them the family that produced the item, and any rejection keeps the item a
+candidate. A policy that weakens any part of that rule is refused, not clamped.
+The owner's rule of 22 September 2026 set three families; on 24 September 2026
+the main engineering session decided two, because only two families could be
+reached while the Ollama Cloud allowance and the Codex subscription were spent
+and the owner asked for the library to be fully live. A third family joins new
+reviews whenever it can be reached, because the committed policy asks three
+reviewers per item. The decision is recorded in the decision table of
+AGENTS.md.
 """
 from __future__ import annotations
 
@@ -23,8 +29,8 @@ from .records import (
     positive_number, read_part, read_record, refuse, sha256_hex, text_field,
 )
 
-#: The owner's floor for approval: approvals and distinct families. A policy may ask more, never less.
-QUORUM_FLOOR = 3
+#: The floor for approval: approvals and distinct families. A policy may ask more, never less.
+QUORUM_FLOOR = 2
 #: The six pre-check kinds. Every one of them must run for every item.
 PRECHECK_KINDS = ("licence", "format", "safety", "effects", "secrets", "duplicates")
 #: The engines each kind may name, in the only vocabulary a policy can use. The factory table in

@@ -55,7 +55,7 @@ from candidate_review import verdicts  # noqa: E402
 from candidate_review.ledger import ReviewLedger  # noqa: E402
 from candidate_review.records import BATCH_CALL_RECORD, CandidateReviewError  # noqa: E402
 from test_candidate_review_panel import (  # noqa: E402
-    CRITERIA, DATA, INSTRUCTIONS, Harness, _request, approving, attempt,
+    CRITERIA, DATA, INSTRUCTIONS, PANEL_RECORD, Harness, _request, approving, attempt, rejecting,
 )
 
 ITEMS = ("profile_text_column_before_cleaning", "normalize_whitespace_and_unicode_text",
@@ -398,6 +398,55 @@ class RunLimitTest(unittest.TestCase):
             with mock.patch.object(panel_module.PanelRunRequest, "below_quorum", property(lambda self: False)):
                 result = run(harness, requests(), collect_below_quorum_reason="collect while a family is away")
         self.assertEqual(result.calls, [])
+
+
+class CommittedTwoFamilyPolicyTest(unittest.TestCase):
+    """The committed policy: two approving families, neither the producer's, and a third family when reachable."""
+
+    POLICY = {name: PANEL_RECORD["policy"][name]
+              for name in ("minimum_approvals", "minimum_distinct_families", "reviewers_per_item")}
+
+    def test_the_committed_policy_is_two_families_asked_three_at_most(self):
+        self.assertEqual(self.POLICY, {"minimum_approvals": 2, "minimum_distinct_families": 2,
+                                       "reviewers_per_item": 3})
+
+    def test_two_families_approve_and_the_producer_family_is_never_asked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"producer": approving, "a": approving, "b": approving},
+                              families=("anthropic", "zhipu", "deepseek"), **self.POLICY)
+            result = run(harness, requests(ITEMS[:1]), batch_sizes={})
+        self.assertEqual(outcomes(result), {ITEMS[0]: panel_module.APPROVED})
+        self.assertEqual(harness.calls("producer"), [])
+        self.assertEqual(len(result.calls), 2)
+
+    def test_a_third_reachable_family_is_asked_and_its_rejection_withholds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"a": approving, "b": approving, "c": rejecting},
+                              families=("zhipu", "deepseek", "openai"), **self.POLICY)
+            result = run(harness, requests(ITEMS[:1]), batch_sizes={})
+        self.assertEqual(outcomes(result), {ITEMS[0]: panel_module.REJECTED})
+        self.assertEqual(len(result.calls), 3)
+
+    def test_one_family_other_than_the_producer_never_approves(self):
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"producer": approving, "a": approving},
+                              families=("anthropic", "zhipu"), **self.POLICY)
+            silent = run(harness, requests(ITEMS[:1]), batch_sizes={})
+            collected = run(harness, requests(ITEMS[:1]), run_id="run-2", batch_sizes={},
+                            collect_below_quorum_reason="one family is reachable")
+        self.assertEqual(silent.calls, [])
+        self.assertEqual(outcomes(collected), {ITEMS[0]: panel_module.PANEL_INCOMPLETE})
+        self.assertEqual(len(collected.calls), 1)
+
+    def test_mutant_that_counts_the_producer_family_lets_one_other_family_approve(self):
+        """Mutant control: with the producer family counted, one other family approves an anthropic item."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"producer": approving, "a": approving},
+                              families=("anthropic", "zhipu"), **self.POLICY)
+            with mock.patch.object(panel_module, "producer_family_excluded", lambda installation, producer: False), \
+                    mock.patch.object(panel_module, "counts_toward_approval", lambda family, producer_family: True):
+                result = run(harness, requests(ITEMS[:1]), batch_sizes={})
+        self.assertEqual(outcomes(result), {ITEMS[0]: panel_module.APPROVED})
 
 
 class CommandOptionsTest(unittest.TestCase):

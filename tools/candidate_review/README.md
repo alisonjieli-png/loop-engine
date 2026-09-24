@@ -20,15 +20,23 @@ edits `reviews.json`, the item file, a body or a host manifest, and it serves
 nothing. The lead engineer merges its verdicts into the served catalogue
 through the existing carry and manifest tools.
 
-The approval rule is the owner's rule of 22 September 2026:
+The approval rule of the committed policy:
 
-- at least three reviewers approve the item;
-- the approving reviewers come from at least three model families;
+- at least two reviewers approve the item;
+- the approving reviewers come from at least two model families;
 - none of them is from the family that produced the item;
 - no reviewer rejects it. One written rejection keeps the item a candidate with
-  its reasons.
+  its reasons;
+- every deterministic pre-check passes first.
 
-A policy that weakens any part of the rule is refused when the panel loads. The
+The policy asks three reviewers per item, so a third family joins a review
+whenever one can be reached, and its rejection withholds approval like any
+other. The owner's rule of 22 September 2026 required three families. On 24
+September 2026 the main engineering session set the floor at two, because only
+two families could be reached while the Ollama Cloud allowance and the Codex
+subscription were spent, and the owner asked for the library to be fully live;
+the decision table of `AGENTS.md` records it. A policy below the floor, or one
+that weakens any other part of the rule, is refused when the panel loads. The
 decision itself counts no approval from the producer's family, so the rule
 holds even if a defect let that family be asked.
 

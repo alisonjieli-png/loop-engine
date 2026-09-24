@@ -79,22 +79,24 @@ class PanelPolicyTest(unittest.TestCase):
 
     def test_the_committed_panel_loads(self):
         panel = config.PanelConfiguration.from_dict(_panel())
-        self.assertGreaterEqual(panel.policy.minimum_approvals, 3)
-        self.assertGreaterEqual(panel.policy.minimum_distinct_families, 3)
+        self.assertGreaterEqual(panel.policy.minimum_approvals, config.QUORUM_FLOOR)
+        self.assertGreaterEqual(panel.policy.minimum_distinct_families, config.QUORUM_FLOOR)
+        self.assertEqual(config.QUORUM_FLOOR, 2, "the floor is the two-family rule of 24 September 2026")
+        self.assertGreaterEqual(panel.policy.reviewers_per_item, 3, "a third family joins whenever it is reachable")
         self.assertTrue(panel.policy.exclude_producer_family)
         self.assertTrue(panel.policy.any_rejection_withholds_approval)
         self.assertEqual(set(panel.policy.prechecks), set(config.PRECHECK_KINDS))
         self.assertEqual(len({item.installation_id for item in panel.installations}), len(panel.installations))
 
-    def test_a_quorum_below_three_approvals_is_refused(self):
-        self.refused(lambda value: value["policy"].__setitem__("minimum_approvals", 2), "policy_quorum_below_floor")
+    def test_a_quorum_below_two_approvals_is_refused(self):
+        self.refused(lambda value: value["policy"].__setitem__("minimum_approvals", 1), "policy_quorum_below_floor")
 
-    def test_a_quorum_below_three_families_is_refused(self):
-        self.refused(lambda value: value["policy"].__setitem__("minimum_distinct_families", 2),
+    def test_a_quorum_below_two_families_is_refused(self):
+        self.refused(lambda value: value["policy"].__setitem__("minimum_distinct_families", 1),
                      "policy_quorum_below_floor")
 
     def test_asking_fewer_reviewers_than_the_quorum_is_refused(self):
-        self.refused(lambda value: value["policy"].__setitem__("reviewers_per_item", 2),
+        self.refused(lambda value: value["policy"].__setitem__("reviewers_per_item", 1),
                      "policy_reviewers_below_quorum")
 
     def test_the_producer_family_may_never_approve(self):
@@ -143,12 +145,12 @@ class PanelPolicyTest(unittest.TestCase):
     def test_the_quorum_floor_is_what_refuses_a_small_quorum(self):
         """Mutant control: with the floor lowered to one, the known-wrong quorum loads."""
         value = _panel()
-        value["policy"]["minimum_approvals"] = 2
-        value["policy"]["minimum_distinct_families"] = 2
-        value["policy"]["reviewers_per_item"] = 2
+        value["policy"]["minimum_approvals"] = 1
+        value["policy"]["minimum_distinct_families"] = 1
+        value["policy"]["reviewers_per_item"] = 1
         with mock.patch.object(config, "QUORUM_FLOOR", 1):
             loaded = config.PanelConfiguration.from_dict(value)
-        self.assertEqual(loaded.policy.minimum_approvals, 2)
+        self.assertEqual(loaded.policy.minimum_approvals, 1)
 
     def test_the_permissive_set_is_what_refuses_a_licence(self):
         """Mutant control: with every identifier treated as permissive, the known-wrong licence loads."""

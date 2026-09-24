@@ -62,11 +62,13 @@ REVIEWER_FIELDS = ("reviewer_id", "label", "engine_kind", "family", "model", "mo
 POPULATION_FIELDS = ("rule", "seed", "eligible_count", "eligible", "selected")
 PRECHECK_OUTCOME_FIELDS = ("refused", "reasons", "results")
 PRECHECK_RESULT_FIELDS = ("kind", "engine_id", "engine_version", "status", "findings")
-DECISION_RULE = ("An item is approved only when at least three reviewers approve it, from at least three "
-                 "different model families, none of them the family that produced the item, and no reviewer "
-                 "rejects it. One written rejection keeps the item a candidate with its reasons. Deterministic "
-                 "pre-checks for licence, format, safety, effects, secrets and duplicates run first and refuse "
-                 "before any reviewer is asked.")
+def decision_rule(policy) -> str:
+    """The approval rule of one policy, in words, as the dated record states it."""
+    return (f"An item is approved only when at least {policy.minimum_approvals} reviewers approve it, from at "
+            f"least {policy.minimum_distinct_families} different model families, none of them the family that "
+            "produced the item, and no reviewer rejects it. One written rejection keeps the item a candidate with "
+            "its reasons. Deterministic pre-checks for licence, format, safety, effects, secrets and duplicates run "
+            "first and refuse before any reviewer is asked.")
 WHAT_AN_APPROVAL_PERMITS = ("An approved row may be merged into the catalogue's review record by the lead engineer "
                             "and then served by a host whose licence policy accepts the item's licence. Approval "
                             "covers only the bytes named by the row's digest and grants no effect, network access, "
@@ -268,7 +270,7 @@ def build_panel_review_record(result, ledger, *, catalogue, configuration, crite
             "complements_review_record": ({"path": "reviews.json", "record_type": "starter_catalogue_independent_review/v2",
                                            "sha256": catalogue.review_record_sha256}
                                           if catalogue.review_record_sha256 else None),
-            "approval_ref_prefix": prefix, "decision_rule": DECISION_RULE,
+            "approval_ref_prefix": prefix, "decision_rule": decision_rule(configuration.policy),
             "what_an_approval_permits": WHAT_AN_APPROVAL_PERMITS,
             "what_a_rejection_records": WHAT_A_REJECTION_RECORDS,
             "what_a_row_without_a_verdict_records": WHAT_A_ROW_WITHOUT_A_VERDICT_RECORDS,
