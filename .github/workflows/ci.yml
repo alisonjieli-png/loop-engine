@@ -237,6 +237,12 @@ jobs:
       - name: Development command and report regression checks
         run: PYTHONPATH=src:tools python -m unittest discover -s tools -p 'test_*.py'
 
+      - name: Served website matches its site map
+        # Every page, header entry, footer link, section and hostname of the
+        # typed site map against the pages this checkout serves (roadmap
+        # S-6.67). It joined this list once the restored pages were served.
+        run: PYTHONPATH=src:tools python -m unittest tools/check_website_site_map.py
+
       - name: Component guides match the source
         # The fast rules run in the tools tests above. This step adds the slow
         # one: it runs every self-test command the guides tell a reader to

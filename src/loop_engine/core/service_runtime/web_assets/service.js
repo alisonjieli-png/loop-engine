@@ -32,6 +32,21 @@
   // Three addresses open views of their own: the Get started funnel, the page a message link opens, and the setup guide's
   // address. They are added here rather than in the table above, so that a change to either place merges on its own.
   routeNames["/get-started"] = "start"; routeNames["/auth/confirm"] = "confirm"; routeNames["/setup"] = "setup";
+  /* The pages of September 24, 2026: the four audience pages, the demonstration of one task, three case studies and the
+     service status. Each address names its own view; web_site_map.json lists them with their titles. */
+  Object.assign(routeNames, {"/for/coding-agents":"for-coding-agents", "/for/engineering-teams":"for-engineering-teams",
+    "/for/comparing-tools":"for-comparing-tools", "/for/protocol-and-client":"for-protocol-and-client", "/demo":"demo",
+    "/case-studies/data-cleanup":"case-studies-data-cleanup", "/case-studies/pi-and-gemma-4":"case-studies-pi-and-gemma-4",
+    "/case-studies/sign-up-protection":"case-studies-sign-up-protection", "/status":"status"});
+  /* A hostname whose root is another page, such as docs.baltor.ai, is named by the service in the page it serves. On such a
+     hostname the root address shows that page, and the links to the homepage, the brand and Library, go to the homepage on the
+     canonical hostname instead, as whole-page links. It is decided here, before the links below learn to open views. */
+  const rootAddress = document.querySelector('meta[name="baltor-root-address"]')?.getAttribute("content") || "/";
+  if (rootAddress !== "/" && routeNames[rootAddress]) {
+    routeNames["/"] = routeNames[rootAddress];
+    const canonicalOrigin = new URL(document.querySelector('link[rel="canonical"]')?.getAttribute("href") || location.href).origin;
+    document.querySelectorAll('a[href="/"], a[href^="/#"]').forEach(link => { link.setAttribute("href", canonicalOrigin + link.getAttribute("href")); delete link.dataset.page; });
+  }
   /* A link from this service's own message opens /auth/confirm?token_hash=...&type=signup or recovery. The token is read once
      into page memory and removed from the address bar and the history at once, before anything else runs, as /auth/callback
      does. It is never stored or logged, and it leaves the page only for the identity provider, when the person submits the
@@ -52,7 +67,10 @@
   const setMenu = open => { menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header").classList.toggle("menu-open", open); };
   menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"The perfect harness setup for every task", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
+  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); setMenu(false); document.title = serviceName + " | " + {home:"The perfect harness setup for every task", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Examples and case studies", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password",
+    "for-coding-agents":"Stop starting from nothing", "for-engineering-teams":"Expertise for the whole team", "for-comparing-tools":"What it is and what it costs",
+    "for-protocol-and-client":"Protocol, client and setup", demo:"One task, step by step", "case-studies-data-cleanup":"Data cleanup with and without Baltor",
+    "case-studies-pi-and-gemma-4":"Pi and Gemma 4 on Ollama Cloud", "case-studies-sign-up-protection":"How sign-up is protected", status:"Service status"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();

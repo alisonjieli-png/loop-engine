@@ -27,11 +27,14 @@ mutant control that removes the rule and requires its named check to fail.
 
 This module holds the rules, their known-wrong cases and their mutant controls, which pass on their own and
 run with the other tools tests. The comparison of the served website with the site map is
-`tools/check_website_site_map.py`. On 243a8811, live as Fly release 20, it fails until the pages that the
-target site map of September 23, 2026 restores are merged, so it is not in the continuous integration list
-yet; `docs/verification/HANDOFF-SITE-STANDARDS-2026-09-23.md` names the line that adds it. Its failing
-output is saved as `artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt`. Do not weaken a
-rule to make it pass: change the pages, or change the site map together with a dated removal row.
+`tools/check_website_site_map.py`. On 243a8811, live as Fly release 20, it failed until the pages that the
+target site map of September 23, 2026 restores were served; its failing output is saved as
+`artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt`. Roadmap step S-6.67 served them on
+September 24, 2026 and the check joined the continuous integration list. Three of its rules were corrected
+then, each keeping a known-wrong case: a packaged file's content version (`?v=` and its SHA-256) is not part of
+its address, a documentation body under /assets/ is part of a page rather than a page, and a page that only
+earlier links reach is a way in, so what it links to is reached. Do not weaken a rule to make it pass:
+change the pages, or change the site map together with a dated removal row.
 
 Run the rules alone:
 
@@ -69,6 +72,9 @@ KNOWN_WRONG_OUTPUT = "artifacts/website-audit-2026-09-23/site-map-check-on-main-
 HTML = web_pages.HTML_MEDIA_TYPE
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 YEAR = re.compile(r"\b20[0-9]{2}\b")
+#: The content version the service appends to a packaged file's address in a served page, since September 23, 2026.
+#: Only this exact query is read as the same address; any other query is a different address.
+ASSET_VERSION = re.compile(r"\?v=[0-9a-f]{64}$")
 EXTERNAL = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//)", re.IGNORECASE)
 
 
@@ -144,6 +150,11 @@ def parse(page):
 
 def first(node, test):
     return next((item for item in node.walk() if test(item)), None)
+
+
+def unversioned(value):
+    """An address as the site map names it: a packaged file's content version is not part of its address."""
+    return ASSET_VERSION.sub("", value) if isinstance(value, str) and value.startswith("/assets/") else value
 
 
 @dataclass
@@ -280,7 +291,7 @@ def header_matches_the_site_map(site):
 
 
 def _footer_links(nav):
-    return [("link", item.label(), item.attrs["href"]) for item in nav.walk() if item.tag == "a" and "href" in item.attrs]
+    return [("link", item.label(), unversioned(item.attrs["href"])) for item in nav.walk() if item.tag == "a" and "href" in item.attrs]
 
 
 def footer_matches_the_site_map(site):
@@ -322,7 +333,7 @@ def footer_matches_the_site_map(site):
         if row is None:
             problems.append(f"{where}: no base row names {base.operator!r} and {base.operator_line!r}")
         else:
-            if not any(item.tag == "img" and item.attrs.get("src") == base.mark for item in row.walk()):
+            if not any(item.tag == "img" and unversioned(item.attrs.get("src")) == base.mark for item in row.walk()):
                 problems.append(f"{where}: the base row {row.text()!r} does not show the mark {base.mark}")
             if not YEAR.search(row.text()):
                 problems.append(f"{where}: the base row {row.text()!r} does not name the year")
@@ -397,7 +408,8 @@ def every_page_is_reached_or_has_a_reason(site):
     pages = {page.address: page for page in site_map.pages}
     for address in site.table:
         answer = site.answer(address)
-        if answer is not None and answer[1] == HTML and address not in pages:
+        # A file under /assets/ is part of a page, such as a documentation body the page script draws, not a page.
+        if answer is not None and answer[1] == HTML and address not in pages and not address.startswith("/assets/"):
             problems.append(f"{address}: served as a page and absent from the site map")
     header, footer, content = set(), set(), {}
     for document, addresses in site.page_documents():
@@ -405,7 +417,10 @@ def every_page_is_reached_or_has_a_reason(site):
         footer |= _chrome_links(document, "footer")
     for page in site_map.pages:
         content[page.address] = _content_links(site, page)
-    reached, waiting = set(), ["/", *(surface.address for surface in site_map.hostnames)]
+    # A page nothing links to is still a way in: an earlier link, a message or the identity provider opens it, and the
+    # site map writes down which. What such a page links to is reached from there.
+    reached, waiting = set(), ["/", *(surface.address for surface in site_map.hostnames),
+                               *(page.address for page in site_map.pages if page.unlinked_reason)]
     while waiting:
         address = waiting.pop()
         if address in reached or address not in pages or site.document(address) is None:
@@ -533,26 +548,26 @@ def inventory_of(site, release, revision):
 
 # The fixture site: a small website that passes every rule, so that each known-wrong case changes one thing.
 FIXTURE_MAP = {
-    "record_type": "service_web_site_map/v1", "decided_on": "2026-09-23", "decided_by": "the fixture",
-    "display_name": "Example", "canonical_hostname": "example.com",
+    "record_type": "service_web_site_map/v2", "decided_on": "2026-09-23", "decided_by": "the fixture",
+    "display_name": "Example", "canonical_hostname": "example.com", "social_image": "/assets/mark.svg",
     "groups": ["Product", "Company", "Account"],
     "pages": [
-        {"address": "/", "view": "home", "title": "Home", "group": "Product", "linked_from": ["header", "footer"],
-         "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": True},
-        {"address": "/pricing", "view": "pricing", "title": "Pricing", "group": "Product", "linked_from": ["header", "footer"],
-         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": True},
-        {"address": "/start", "view": "start", "title": "Start", "group": "Product", "linked_from": ["header"],
-         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False},
-        {"address": "/guide", "view": "guide", "title": "Guide", "group": "Product", "linked_from": ["page"],
-         "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": False},
-        {"address": "/old", "view": "pricing", "title": "Pricing", "group": "Product", "linked_from": [],
-         "unlinked_reason": "old address kept so earlier links work", "scroll_budget": "page", "price_in_first_screen": False},
-        {"address": "/login", "view": "login", "title": "Sign in", "group": "Company", "linked_from": ["header", "footer"],
-         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False},
-        {"address": "/app", "view": "workspace", "title": "Workspace", "group": "Account", "linked_from": ["header"],
-         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False},
-        {"address": "/admin", "view": "admin", "title": "Administration", "group": "Account", "linked_from": ["header"],
-         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False}],
+        {"address": "/", "view": "home", "title": "Home", "description": "The fixture homepage.", "group": "Product", "linked_from": ["header", "footer"],
+         "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": True, "indexed": True},
+        {"address": "/pricing", "view": "pricing", "title": "Pricing", "description": "What the fixture costs.", "group": "Product", "linked_from": ["header", "footer"],
+         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": True, "indexed": True},
+        {"address": "/start", "view": "start", "title": "Start", "description": "Start with the fixture.", "group": "Product", "linked_from": ["header"],
+         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False, "indexed": True},
+        {"address": "/guide", "view": "guide", "title": "Guide", "description": "How to use the fixture.", "group": "Product", "linked_from": ["page"],
+         "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": False, "indexed": True},
+        {"address": "/old", "view": "pricing", "title": "Pricing", "description": "The earlier address of the fixture's pricing.", "group": "Product", "linked_from": [],
+         "unlinked_reason": "old address kept so earlier links work", "scroll_budget": "page", "price_in_first_screen": False, "indexed": False},
+        {"address": "/login", "view": "login", "title": "Sign in", "description": "Sign in to the fixture.", "group": "Company", "linked_from": ["header", "footer"],
+         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False, "indexed": True},
+        {"address": "/app", "view": "workspace", "title": "Workspace", "description": "The fixture's workspace.", "group": "Account", "linked_from": ["header"],
+         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False, "indexed": False},
+        {"address": "/admin", "view": "admin", "title": "Administration", "description": "The fixture's administration.", "group": "Account", "linked_from": ["header"],
+         "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": False, "indexed": False}],
     "header": {
         "signed_out": [{"role": "brand", "label": "Example", "href": "/"}, {"role": "link", "label": "Pricing", "href": "/pricing"},
                        {"role": "link", "label": "Sign in", "href": "/login"}, {"role": "primary", "label": "Get started", "href": "/start"}],
@@ -593,8 +608,8 @@ FIXTURE_PARTS = {
                '<nav aria-label="Product"><p class="footer-heading">Product</p><a href="/pricing">Pricing</a>'
                '<a href="/#library">Library</a></nav>'
                '<nav aria-label="Company"><p class="footer-heading">Company</p><a href="/login">Sign in</a>'
-               '<a href="/assets/notices.txt">Notices</a></nav>'
-               '<div><p><img src="/assets/mark.svg" alt="">© 2026 Example.AI · 1 Example Street</p></div></footer>'),
+               '<a href="/assets/notices.txt?v=0000000000000000000000000000000000000000000000000000000000000000">Notices</a></nav>'
+               '<div><p><img src="/assets/mark.svg?v=0000000000000000000000000000000000000000000000000000000000000000" alt="">© 2026 Example.AI · 1 Example Street</p></div></footer>'),
     "tail": "</body></html>",
 }
 FIXTURE_FILES = {"/assets/site.css": "text/css", "/assets/notices.txt": "text/plain", "/assets/mark.svg": "image/svg+xml"}
@@ -681,13 +696,15 @@ KNOWN_WRONG = {
         ("a header label changes", _part("header", ">Sign in<", ">Log in<"))),
     "footer_matches_the_site_map": (
         ("a footer group is missing", _part("footer", '<nav aria-label="Company"><p class="footer-heading">Company</p>'
-                                                     '<a href="/login">Sign in</a><a href="/assets/notices.txt">Notices</a></nav>', "")),
+                                                     '<a href="/login">Sign in</a><a href="/assets/notices.txt?v=0000000000000000000000000000000000000000000000000000000000000000">Notices</a></nav>', "")),
         ("a footer group is hidden", _part("footer", '<nav aria-label="Product">', '<nav aria-label="Product" hidden>')),
         ("a footer link is missing", _part("footer", '<a href="/#library">Library</a>', "")),
         ("footer links are out of order", _part("footer", '<a href="/pricing">Pricing</a><a href="/#library">Library</a>',
                                                 '<a href="/#library">Library</a><a href="/pricing">Pricing</a>')),
         ("a footer group gains a link", _part("footer", '<a href="/#library">Library</a>', '<a href="/#library">Library</a><a href="/guide">Guide</a>')),
-        ("the base row loses the mark", _part("footer", '<p><img src="/assets/mark.svg" alt="">', "<p>")),
+        ("the base row loses the mark", _part("footer", '<p><img src="/assets/mark.svg?v=0000000000000000000000000000000000000000000000000000000000000000" alt="">', "<p>")),
+        ("a packaged file's link carries a query other than its content version",
+         _part("footer", '<a href="/assets/notices.txt?v=0000000000000000000000000000000000000000000000000000000000000000">', '<a href="/assets/notices.txt?x=1">')),
         ("the base row loses the operator line", _part("footer", " · 1 Example Street", ""))),
     "internal_addresses_are_served": (
         ("a link names an address nothing serves", _part("home", '<a href="/guide">', '<a href="/guide">Guide</a><a href="/nowhere">')),
@@ -773,7 +790,16 @@ def _record_change(path, value):
 
 _DELETE = object()
 KNOWN_WRONG_RECORDS = {
-    "a record version this reader was not written for": _record_change(("record_type",), "service_web_site_map/v2"),
+    "a record version this reader was not written for": _record_change(("record_type",), "service_web_site_map/v1"),
+    "a page without a description": _record_change(("pages", 1, "description"), _DELETE),
+    "a description a search engine would cut short": _record_change(("pages", 1, "description"), "Pricing. " * 20),
+    "a description on two lines": _record_change(("pages", 1, "description"), "What the fixture costs.\nAnd more."),
+    "a page only earlier links reach that asks to be listed": _record_change(("pages", 4, "indexed"), True),
+    "two listed pages with one description": _record_change(("pages", 1, "description"), "The fixture homepage."),
+    "two listed pages with one title": _record_change(("pages", 2, "title"), "Pricing"),
+    "a hostname whose root only earlier links reach": _record_change(("hostnames", 1, "address"), "/old"),
+    "a canonical hostname whose root is not the homepage": _record_change(("hostnames", 0, "address"), "/pricing"),
+    "a shared-link picture outside the packaged files": _record_change(("social_image",), "https://example.com/mark.svg"),
     "an unknown field": _record_change(("colour",), "blue"),
     "a missing field": _record_change(("hostnames",), _DELETE),
     "a repeated page address": lambda record: {**record, "pages": record["pages"] + [record["pages"][1]]},
@@ -792,7 +818,10 @@ KNOWN_WRONG_RECORDS = {
 GUARDED_RECORD_CASES = {
     "_consistency": ("a page that says the footer links it when the footer does not",
                      "a header link to an address that is not a page",
-                     "a hostname that opens an address that is not a page"),
+                     "a hostname that opens an address that is not a page",
+                     "a hostname whose root only earlier links reach",
+                     "a canonical hostname whose root is not the homepage",
+                     "two listed pages with one description"),
     "_unique": ("a repeated page address",),
 }
 
@@ -802,7 +831,7 @@ class SiteMapRecords(unittest.TestCase):
 
     def test_the_packaged_records_are_read_by_the_typed_reader(self):
         site_map, layout = load_site_map(), load_layout_standard()
-        self.assertEqual(site_map.record_type, "service_web_site_map/v1")
+        self.assertEqual(site_map.record_type, "service_web_site_map/v2")
         self.assertEqual(layout.record_type, "service_web_layout_standard/v1")
         self.assertEqual([group.name for group in site_map.footer_groups], ["Product", "Use cases", "Documentation", "Company"])
         self.assertEqual(max(layout.section_padding_px["desktop"]), 64)

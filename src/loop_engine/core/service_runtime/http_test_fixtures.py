@@ -77,13 +77,16 @@ class HttpDomainFixture:
 
 
 @contextmanager
-def running_http(fixture, *, authentication=None, application_factory=None, billing_processor=None, **changes):
+def running_http(fixture, *, authentication=None, application_factory=None, billing_processor=None, hostnames=(),
+                 **changes):
+    """A real service on a loopback socket. `hostnames` adds each name, with this socket's port, to the
+    allowed hosts, so a check can send the Host a hostname surface sends; the socket stays on loopback."""
     import uvicorn
     bound = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     bound.bind(("127.0.0.1", 0))
     port = bound.getsockname()[1]
     base = f"http://127.0.0.1:{port}"
-    configuration = ServiceHttpConfiguration(base, (f"127.0.0.1:{port}",),
+    configuration = ServiceHttpConfiguration(base, (f"127.0.0.1:{port}", *(f"{name}:{port}" for name in hostnames)),
         allowed_origins=("http://127.0.0.1:5173",), allow_loopback_http=True, **changes)
     service = (application_factory(configuration) if application_factory is not None else
                ServiceHttpApplication(fixture.runtime, fixture.provisioning, configuration,

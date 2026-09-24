@@ -7,7 +7,9 @@ for them, and asks for each rejected item by its exact identity to confirm the
 service refuses. It makes no body read and adds no usage record. It also reads
 the public homepage and asks the service for the manifest of each item the
 homepage demonstration names, because the page prints each item's digest as a
-recorded fact from the served library.
+recorded fact from the served library. Since September 24, 2026 it does the
+same for the demonstration page at /demo, whose five steps print the digest of
+every reference they show.
 
 The account credential resolves from this workstation's system keyring. It is
 looked up by the origin's hostname, or by --credential-host when one deployment
@@ -33,15 +35,23 @@ REVIEW_RECORD = "examples/29_intelligence_service/starter-catalogue/reviews.json
 RELEASE_MANIFEST = "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"
 
 
-#: Six catalogue disclosure checks and the homepage demonstration digest check.
-PLANNED_CHECKS = 7
+#: Six catalogue disclosure checks and the digest checks of the homepage and of the demonstration page.
+PLANNED_CHECKS = 8
 #: One item of the homepage demonstration: its identity and the digest prefix it prints.
 DEMONSTRATION_ITEM = re.compile(r'data-demo-item="([a-z0-9_]+)"[^>]*>.*?data-fact="digest">([0-9a-f]{8})<', re.S)
+#: One view of the one page, from its opening tag to the next view or the end of the main part.
+VIEW = r'<section data-view="{}"[^>]*>.*?(?=\n\s*<section data-view="|</main>)'
 
 
 def demonstration_digests(page):
     """Each item the homepage demonstration names, with the digest prefix it prints."""
     return dict(DEMONSTRATION_ITEM.findall(page))
+
+
+def demonstration_page_digests(page, view="demo"):
+    """Each item one view names, with the digest prefix it prints, read from that view only."""
+    found = re.search(VIEW.format(re.escape(view)), page, re.S)
+    return demonstration_digests(found.group(0)) if found else {}
 
 
 def demonstration_mismatches(shown, served):
@@ -157,13 +167,20 @@ def main():
         check("every_rejected_item_is_refused_by_direct_address",
               all(row["status"] in (403, 404) for row in refusals.values()),
               json.dumps(sorted({row["code"] for row in refusals.values()})))
-        # The public homepage is read without the account key.
-        calls += 1
-        with opener.open(urllib.request.Request(args.origin.rstrip("/") + "/", None,
-                                                {"Accept": "text/html"}), timeout=30) as response:
-            shown = demonstration_digests(response.read(4_000_000).decode("utf-8", "replace"))
+        # The public homepage and the demonstration page are read without the account key.
+        def public_page(path):
+            nonlocal calls
+            calls += 1
+            with opener.open(urllib.request.Request(args.origin.rstrip("/") + path, None,
+                                                    {"Accept": "text/html"}), timeout=30) as response:
+                return response.read(4_000_000).decode("utf-8", "replace")
+        home_page = public_page("/")
+        # Each check reads the view that printed the digest: the homepage's own step, and the demonstration
+        # page's five steps, read from /demo.
+        shown = demonstration_page_digests(home_page, "home")
+        steps = demonstration_page_digests(public_page("/demo"), "demo")
         served_digests = {}
-        for identity in shown:
+        for identity in sorted(set(shown) | set(steps)):
             status, manifest = request("/api/v1/provisioning",
                 {"record_type": "service_provisioning_request/v1", "operation": "manifest",
                  "identity": identity})
@@ -171,6 +188,9 @@ def main():
         mismatched = demonstration_mismatches(shown, served_digests)
         check("the_homepage_demonstration_prints_the_digests_the_service_serves",
               bool(shown) and not mismatched, json.dumps(mismatched or sorted(shown)))
+        mismatched_steps = demonstration_mismatches(steps, served_digests)
+        check("the_demonstration_page_prints_the_digests_the_service_serves",
+              bool(steps) and not mismatched_steps, json.dumps(mismatched_steps or sorted(steps)))
     except Exception as error:  # noqa: BLE001 - an interrupted check is reported, not hidden
         checks.append({"name": "remaining_checks_interrupted", "passed": False,
                        "error_type": type(error).__name__, "detail": str(error)[:300]})

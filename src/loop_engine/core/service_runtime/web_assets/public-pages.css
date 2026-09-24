@@ -1,0 +1,190 @@
+/* The pages of September 24, 2026: the examples gallery, the demonstration of one task, three case studies, the four audience
+   pages and the service status. They follow docs/guides/website-design-standards.md: each opens with a white introduction band,
+   the bands span the window with 64 pixels of padding on a desktop and 40 on a phone, content starts on the header's left edge,
+   running text stays within 80 characters a line, every control is at least 44 pixels tall, and no band is dark. Every colour,
+   typeface and radius is a token of service.css. */
+main:has(> .showcase-page:not([hidden])){max-width:none;padding:0}
+.showcase-page{overflow-wrap:anywhere}
+.showcase-intro,.showcase-band{padding:var(--band-pad) max(var(--band-gutter),calc((100% - var(--content-max)) / 2))}
+.showcase-intro{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem;background:var(--band);border-bottom:1px solid var(--rule)}
+.showcase-intro>*{margin:0}
+.showcase-intro h1{max-width:24ch;font-size:clamp(2rem,3.2vw,2.75rem);line-height:1.08;letter-spacing:-.035em;text-wrap:balance}
+.showcase-intro .lede{max-width:47.5rem;font-size:var(--text-lead);line-height:1.5;color:var(--muted)}
+.showcase-intro .actions{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin-top:.5rem}
+.showcase-page .button{max-width:100%;white-space:normal;text-align:center}
+.case-meta{color:var(--subtle);font-size:.875rem}
+.showcase-band{display:flex;flex-direction:column;gap:2rem;background:var(--ground)}
+.showcase-band>*{margin-top:0;margin-bottom:0}
+.showcase-band+.showcase-band{border-top:1px solid var(--rule)}
+.showcase-band.is-plain{background:var(--band)}
+.band-heading+*{margin-top:-.75rem!important}
+.band-heading{display:flex;flex-direction:column;gap:.5rem}
+.band-heading>*{margin:0}
+.band-heading h2{font-size:clamp(1.5rem,2.2vw,1.875rem);line-height:1.2;letter-spacing:-.02em}
+.band-heading p{max-width:40rem;color:var(--muted)}
+.showcase-page .text-link{display:inline-flex;align-items:center;min-height:44px}
+.showcase-page p code,.showcase-page li code,.showcase-page dd code{font-family:var(--font-mono);font-size:.875em;overflow-wrap:anywhere}
+
+/* Cards and grids. */
+.card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.card-grid.is-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.showcase-card{display:flex;flex-direction:column;gap:.625rem;min-width:0;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.showcase-card>*{margin:0}
+.showcase-card h2,.showcase-card h3{font-size:1.125rem;line-height:1.3;letter-spacing:-.01em}
+.showcase-card p,.showcase-card li{color:var(--muted);line-height:1.6}
+.showcase-card .text-link{margin-top:auto;align-self:flex-start}
+.showcase-card .status-tag{margin-bottom:.125rem}
+.card-note{font-size:.9375rem}
+.evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem}
+.evidence-grid.is-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.evidence-grid section{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.evidence-grid h2{margin:0;font-size:1.125rem;line-height:1.3}
+.evidence-grid p{margin:0;max-width:40rem;color:var(--muted);line-height:1.6}
+@media(max-width:980px){.card-grid,.evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.card-grid,.card-grid.is-two,.evidence-grid,.evidence-grid.is-two{grid-template-columns:minmax(0,1fr)}.showcase-card{padding:1.25rem}}
+
+/* The examples gallery: the demonstration as one wide card with its five steps drawn beside it, then the case studies, then the
+   first search a reader can try. */
+.gallery-feature{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:2rem;align-items:center;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);color:var(--ink);text-decoration:none}
+.gallery-feature:hover{border-color:var(--accent)}
+.gallery-feature-copy{display:flex;flex-direction:column;gap:.625rem;min-width:0}
+.gallery-feature-copy>*{margin:0}
+.gallery-feature h2{font-size:clamp(1.5rem,2.2vw,1.875rem);line-height:1.2;letter-spacing:-.02em}
+.gallery-feature p{color:var(--muted);max-width:36rem}
+.gallery-kind{color:var(--accent);font-size:.8125rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.gallery-steps{display:flex;list-style:none;margin:0;padding:0;counter-reset:none}
+.gallery-steps li{position:relative;flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:.5rem;min-width:0;color:var(--muted);font-size:.8125rem;font-weight:600;text-align:center}
+.gallery-steps li::before{content:"";position:absolute;top:1rem;left:calc(-50% + 1.25rem);right:calc(50% + 1.25rem);height:2px;background:var(--line-strong)}
+.gallery-steps li:first-child::before{display:none}
+.gallery-steps span{display:grid;place-items:center;width:2rem;height:2rem;border-radius:999px;background:var(--button);color:var(--button-ink);font-size:.875rem;font-weight:700}
+.first-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.first-steps .quiet{align-self:flex-start}
+.first-note{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem;padding:1.25rem 1.5rem;background:var(--soft);border-radius:var(--radius-card)}
+.first-note p{margin:0;max-width:44rem;color:var(--muted)}
+.first-note .actions{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin:0}
+@media(max-width:860px){.gallery-feature{grid-template-columns:minmax(0,1fr);padding:1.5rem}.first-steps{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.gallery-steps li{font-size:.75rem}.gallery-steps li::before{left:calc(-50% + 1rem);right:calc(50% + 1rem)}}
+
+/* The demonstration: the task, its five steps in a row and the controls, then one step at a time. The step's search and download
+   are recorded, its folder is an example, and each part says which under its own label. */
+.task-layout{display:flex;flex-direction:column;gap:1.25rem;min-width:0}
+.task-top{display:flex;flex-direction:column;gap:1rem;min-width:0}
+.task-brief{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem 1rem;margin:0;padding:1rem 1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.task-brief p{margin:0}
+.task-brief-label{flex-shrink:0;color:var(--accent);font-size:.8125rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.task-brief-text{flex:1 1 30rem;max-width:62rem;color:var(--muted);line-height:1.55}
+.task-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;list-style:none;margin:0;padding:0}
+.task-steps a{display:flex;align-items:center;gap:.625rem;min-height:52px;height:100%;padding:.5rem .75rem;background:var(--paper);border:1px solid var(--border);border-radius:12px;color:var(--ink);font-size:.9375rem;font-weight:600;line-height:1.3;text-decoration:none}
+.task-steps a:hover{border-color:var(--accent)}
+.task-steps a[aria-current=step]{border-color:var(--info);background:var(--info-soft);color:var(--info)}
+.task-steps-number{display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;border:1.5px solid var(--line-strong);border-radius:999px;color:var(--muted);font-size:.8125rem;font-weight:700}
+.task-steps a.is-done .task-steps-number{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.task-steps a[aria-current=step] .task-steps-number{background:var(--button);border-color:var(--button);color:var(--button-ink)}
+.task-steps-text{min-width:0}
+.task-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem 1.5rem}
+.task-controls[hidden]{display:none}
+.task-harness{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem}
+.task-harness p{margin:0;color:var(--subtle);font-size:.875rem;font-weight:600}
+.task-harness-options{display:flex;flex-wrap:wrap;gap:.375rem}
+.task-harness-options button{min-height:44px;padding:.5rem .875rem;border-radius:999px;background:var(--paper);color:var(--muted);font-size:.875rem}
+.task-harness-options button[aria-pressed=true]{background:var(--info-soft);border-color:var(--info);color:var(--info)}
+.task-moves{display:flex;flex-wrap:wrap;gap:.5rem}
+.task-moves button{min-height:44px}
+.task-panels{min-width:0}
+.task-step{min-width:0;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel);box-shadow:var(--card-shadow);overflow:hidden}
+.task-panels>.task-step+.task-step{margin-top:1.25rem}
+.task-step-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:.75rem 1rem;padding:1rem 1.375rem;border-bottom:1px solid var(--border);background:var(--panel-head)}
+.task-step-head>div{min-width:0}
+.task-step-head p,.task-step-head h3{margin:0}
+.task-step-count{color:var(--subtle);font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.task-step-head h3{margin-top:.125rem!important;font-size:1.25rem;letter-spacing:-.01em}
+.task-step-goal{margin-top:.25rem!important;color:var(--muted);font-size:.9375rem}
+.task-step-parts{display:flex;flex-direction:column;gap:1rem;list-style:none;margin:0;padding:1.25rem 1.375rem}
+.task-part{min-width:0}
+.task-part>p{margin:0}
+.task-part-name{margin:0 0 .5rem!important;color:var(--subtle);font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.task-part .step-demo-results{margin-top:.625rem}
+.task-part[data-task-stage=folder]{display:flex;flex-direction:column;gap:.625rem;padding:1rem 1.125rem;border-radius:12px;background:var(--night)}
+.task-folder-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem .75rem}
+.task-folder-head .task-part-name{margin:0!important;color:var(--night-ink)}
+.task-folder-head .status-tag{color:var(--night-building);background:var(--night-building-soft)}
+.task-tree{margin:0;padding:0;max-height:none;border:0;background:none;color:var(--code-ink);font-family:var(--font-mono);font-size:.78125rem;line-height:1.65;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+.task-tree [data-task-skill-root]{color:var(--night-accent)}
+.task-tree-note{color:var(--night-muted)}
+@media(max-width:600px){.task-tree-note{display:none}}
+.task-output{color:var(--night-muted);font-size:.8125rem}
+.task-output code{color:var(--night-ink)}
+@media(min-width:1100px){.task-step-parts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"search folder" "download folder";gap:1rem 1.5rem;align-items:start}
+  .task-part[data-task-stage=search]{grid-area:search}.task-part[data-task-stage=download]{grid-area:download}.task-part[data-task-stage=folder]{grid-area:folder}}
+@media(max-width:900px){.task-steps{grid-template-columns:minmax(0,1fr)}.task-steps a{min-height:44px}}
+@media(max-width:480px){.task-step-head,.task-step-parts{padding-left:1rem;padding-right:1rem}.task-brief{padding:1rem}}
+
+/* The service status: one summary, then one card for each part of the service. Every state has words; the light only repeats them. */
+.status-summary{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem 2rem;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-panel)}
+.status-summary-main{display:flex;align-items:flex-start;gap:1rem;min-width:0}
+.status-summary-main p,.status-summary-side p{margin:0}
+.status-light{flex-shrink:0;width:14px;height:14px;margin-top:.55rem;border-radius:999px;background:var(--subtle)}
+.status-summary[data-status-state=working] .status-light{background:var(--ok)}
+.status-summary[data-status-state=limited] .status-light{background:var(--info)}
+.status-summary[data-status-state=down] .status-light{background:var(--error)}
+.status-word{font-size:clamp(1.5rem,2.2vw,1.875rem);font-weight:650;line-height:1.2;letter-spacing:-.02em}
+.status-sentence{margin-top:.25rem!important;color:var(--muted);max-width:40rem}
+.status-summary-side{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1rem}
+.status-time{color:var(--subtle);font-size:.875rem}
+.status-noscript{margin:1rem 0 0;color:var(--muted)}
+.status-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.25rem}
+.status-wide{grid-column:1/-1}
+.status-list{display:flex;flex-direction:column;gap:.5rem;list-style:none;margin:0;padding:0}
+.status-list.is-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem 1.5rem}
+.status-list li{display:flex;align-items:baseline;gap:.625rem;min-width:0;color:var(--ink);font-size:.9375rem}
+.status-state{flex-shrink:0;padding:.125rem .5rem;border-radius:999px;font-size:.75rem;font-weight:600}
+.is-passing .status-state{color:var(--ok);background:var(--ok-soft)}
+.is-failing .status-state{color:var(--error);background:var(--planned-soft)}
+.status-list .is-empty{color:var(--muted)}
+.status-facts,.protocol-facts{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:.375rem 1rem;margin:0}
+.status-facts .fact-values{display:flex;flex-wrap:wrap;gap:.25rem .5rem;min-width:0}
+.status-facts .fact-values code{min-width:0;overflow-wrap:anywhere}
+.status-facts dt,.protocol-facts dt{color:var(--subtle);font-size:.875rem}
+.status-facts dd,.protocol-facts dd{margin:0;color:var(--ink);font-size:.9375rem;min-width:0}
+@media(max-width:1180px){.status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.status-list.is-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.status-grid,.status-list.is-columns{grid-template-columns:minmax(0,1fr)}}
+
+/* The case studies: the numbers first, then the findings, then the results and the limits. A finding that went against Baltor
+   carries the error colour and says so in words. */
+.stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.stat{display:flex;flex-direction:column;gap:.375rem;min-width:0;padding:1.25rem 1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.stat-value{font-size:clamp(1.5rem,2.4vw,2rem);font-weight:650;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
+.stat.is-negative .stat-value{color:var(--error)}
+.stat-label{color:var(--muted);font-size:.9375rem}
+.finding.is-negative{border-left:4px solid var(--error)}
+.result-table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card);font-size:.9375rem}
+.result-table th,.result-table td{padding:.75rem 1rem;text-align:left;vertical-align:top;border-top:1px solid var(--border)}
+.result-table thead th{border-top:0;color:var(--subtle);font-size:.8125rem;font-weight:600}
+.result-table tbody th{color:var(--ink);font-weight:600}
+.result-table td{color:var(--muted)}
+.result-table .is-negative td strong{color:var(--error)}
+.showcase-band .caption{max-width:47.5rem;margin-top:.75rem}
+.case-split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;align-items:start}
+.case-split>section{display:flex;flex-direction:column;gap:.625rem;min-width:0}
+.case-split>section>*{margin:0}
+.case-split h2{font-size:clamp(1.375rem,2vw,1.625rem);line-height:1.25;letter-spacing:-.02em}
+.case-split p{color:var(--muted);max-width:40rem;line-height:1.6}
+.case-risk{border-left:4px solid var(--error)}
+.case-steps{display:flex;flex-direction:column;gap:.625rem;margin:0;padding-left:1.25rem;color:var(--muted);line-height:1.6}
+.case-steps strong{color:var(--ink)}
+.check-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.fact-ladder{display:flex;flex-direction:column;gap:.5rem;list-style:none;margin:0;padding:0}
+.fact-ladder li{display:grid;grid-template-columns:7rem minmax(0,1fr) auto;align-items:center;gap:.5rem 1.25rem;padding:1rem 1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.fact-ladder p{margin:0;color:var(--muted);line-height:1.55}
+.fact-ladder-name{font-weight:650;color:var(--ink)}
+.case-code{margin:0;padding:1rem 1.25rem;background:var(--code-bg);border:1px solid var(--code-rule);border-radius:var(--radius-card);color:var(--code-ink);font-family:var(--font-mono);font-size:.8125rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+@media(max-width:980px){.stat-row{grid-template-columns:repeat(2,minmax(0,1fr))}.check-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:480px){.stat{padding:1rem}.stat-label{font-size:.875rem}}
+@media(max-width:860px){.case-split{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.result-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .result-table,.result-table tbody,.result-table tr,.result-table th,.result-table td{display:block;width:100%}
+  .result-table tr{padding:.75rem 1rem;border-top:1px solid var(--border)}.result-table tr:first-child{border-top:0}
+  .result-table th,.result-table td{padding:.125rem 0;border:0}
+  .result-table td{display:grid;grid-template-columns:minmax(0,8.5rem) minmax(0,1fr);gap:.75rem}
+  .result-table td::before{content:attr(data-label);color:var(--subtle);font-size:.8125rem;font-weight:600}
+  .fact-ladder li{grid-template-columns:minmax(0,1fr)}}

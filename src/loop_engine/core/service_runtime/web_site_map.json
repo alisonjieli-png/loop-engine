@@ -1,148 +1,1054 @@
 {
-  "record_type": "service_web_site_map/v1",
-  "decided_on": "2026-09-23",
-  "decided_by": "the integrating session, from the owner's direction of September 23, 2026",
+  "record_type": "service_web_site_map/v2",
+  "decided_on": "2026-09-24",
+  "decided_by": "the integrating session, from the owner's direction of September 23, 2026 and the showcase, case study and hostname direction of September 24, 2026",
   "display_name": "Baltor",
   "canonical_hostname": "baltor.ai",
-  "groups": ["Product", "Use cases", "Documentation", "Company", "Account"],
+  "groups": [
+    "Product",
+    "Use cases",
+    "Documentation",
+    "Company",
+    "Account"
+  ],
   "pages": [
-    {"address": "/", "view": "home", "title": "The perfect harness setup for every task", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": true},
-    {"address": "/get-started", "view": "get-started", "title": "Get started", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/setup", "view": "setup", "title": "Get set up", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/connect", "view": "setup", "title": "Get set up", "group": "Product", "linked_from": [], "unlinked_reason": "old address kept so earlier links work", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/how-it-works", "view": "about", "title": "How it works", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": false},
-    {"address": "/pricing", "view": "pricing", "title": "Pricing", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": true},
-    {"address": "/examples", "view": "examples", "title": "Try your first retrieval", "group": "Product", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/use-cases", "view": "use-cases", "title": "Use cases", "group": "Use cases", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/overnight", "view": "overnight", "title": "Solve complex problems overnight", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/efficiency", "view": "efficiency", "title": "More efficient operation", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/learning", "view": "learning", "title": "Learning and optimization, built in", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/for/coding-agents", "view": "for-coding-agents", "title": "Stop starting from nothing", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/for/engineering-teams", "view": "for-engineering-teams", "title": "Expertise for the whole team", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/for/comparing-tools", "view": "for-comparing-tools", "title": "What it is and what it costs", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/for/protocol-and-client", "view": "for-protocol-and-client", "title": "Protocol, client and setup", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/docs", "view": "docs", "title": "Documentation", "group": "Documentation", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/getting-set-up", "view": "docs-getting-set-up", "title": "Getting set up", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/searching-and-retrieving", "view": "docs-searching-and-retrieving", "title": "Searching and retrieving", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/serving-and-connections", "view": "docs-serving-and-connections", "title": "Serving and connections", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/troubleshooting", "view": "docs-troubleshooting", "title": "Troubleshooting", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/your-account", "view": "docs-your-account", "title": "Your account", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/docs/usage-and-what-you-pay-for", "view": "docs-usage-and-what-you-pay-for", "title": "Usage and what you pay for", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/security", "view": "security", "title": "Access and data boundaries", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/status", "view": "status", "title": "Service status", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/docs/what-baltor-is", "view": "docs-what-baltor-is", "title": "What Baltor is", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/waitlist", "view": "get-started", "title": "Get started", "group": "Company", "linked_from": [], "unlinked_reason": "The older address of Get started. It opens the same account creation form, so earlier links and emails keep working.", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/login", "view": "login", "title": "Sign in", "group": "Company", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/privacy", "view": "privacy", "title": "Privacy notice", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/terms", "view": "terms", "title": "Terms of service", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
-    {"address": "/deck", "view": "deck", "title": "Deck", "group": "Company", "linked_from": [], "unlinked_reason": "The deck the owner asked for on September 24, 2026 is shared by its own address and opens at the root of deck.baltor.ai, so no header or footer link leads to it.", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/signup", "view": "signup", "title": "Account status", "group": "Account", "linked_from": ["page"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/app", "view": "workspace", "title": "Intelligence workspace", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/account", "view": "account", "title": "Your account", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/admin", "view": "admin", "title": "Access administration", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/auth/callback", "view": "login", "title": "Sign in", "group": "Account", "linked_from": [], "unlinked_reason": "the identity provider sends a person back to this address after sign-in, and the page moves them on to the sign-in page", "scroll_budget": "page", "price_in_first_screen": false},
-    {"address": "/auth/confirm", "view": "login", "title": "Sign in", "group": "Account", "linked_from": [], "unlinked_reason": "the address in the account confirmation email; a person reaches it only from that email", "scroll_budget": "page", "price_in_first_screen": false}
+    {
+      "address": "/",
+      "view": "home",
+      "title": "The perfect harness setup for every task",
+      "description": "A library of skills, instructions and tools your harness searches and downloads from, with each file placed where the harness reads it.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": true,
+      "indexed": true
+    },
+    {
+      "address": "/get-started",
+      "view": "start",
+      "title": "Get started",
+      "description": "Create your Baltor account with your email address, choose a password, subscribe to Baltor Pro for $29 a month and connect your harness.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/setup",
+      "view": "setup",
+      "title": "Get set up",
+      "description": "Connect Claude Code, Codex, OpenCode, Pi or the Baltor Harness to the library, then search and download your first item.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/connect",
+      "view": "setup",
+      "title": "Get set up",
+      "description": "The earlier address of Get set up, which connects your harness to the Baltor library.",
+      "group": "Product",
+      "linked_from": [],
+      "unlinked_reason": "old address kept so earlier links work",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/how-it-works",
+      "view": "about",
+      "title": "How it works",
+      "description": "How Baltor gives each step of a task the skills, instructions and tools it needs, and what stays on your own machine.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "long",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/pricing",
+      "view": "pricing",
+      "title": "Pricing",
+      "description": "One plan, Baltor Pro, $29 a month for the whole library. One downloaded item is the measured unit, with no overage billing.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": true,
+      "indexed": true
+    },
+    {
+      "address": "/examples",
+      "view": "examples",
+      "title": "Examples and case studies",
+      "description": "A visual walk through one task, case studies written from saved evidence, and a first retrieval you can try yourself.",
+      "group": "Product",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/use-cases",
+      "view": "use-cases",
+      "title": "Use cases",
+      "description": "Three ways teams use Baltor: solve complex problems overnight, operate more efficiently, and learn from every run.",
+      "group": "Use cases",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/overnight",
+      "view": "overnight",
+      "title": "Solve complex problems overnight",
+      "description": "Hand a long job to a small or local model before you log off, with each step getting only the files it needs.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/efficiency",
+      "view": "efficiency",
+      "title": "More efficient operation",
+      "description": "Give every step only the context it needs, reuse proven code and run each decision on the smallest model that does it well.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/learning",
+      "view": "learning",
+      "title": "Learning and optimization, built in",
+      "description": "Every run leaves a record of what worked and what failed, and Baltor is designed to set up the next task with it.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/for/coding-agents",
+      "view": "for-coding-agents",
+      "title": "Stop starting from nothing",
+      "description": "For a developer whose coding agent starts every task from nothing: give each step the guidance and reusable code it needs.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/for/engineering-teams",
+      "view": "for-engineering-teams",
+      "title": "Expertise for the whole team",
+      "description": "For a team lead who wants the same reviewed expertise available to every person and every agent on the team.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/for/comparing-tools",
+      "view": "for-comparing-tools",
+      "title": "What it is and what it costs",
+      "description": "What Baltor is, what it is not and what it costs, for someone comparing tools before anything else.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/for/protocol-and-client",
+      "view": "for-protocol-and-client",
+      "title": "Protocol, client and setup",
+      "description": "The protocol, the endpoint, the credential and the client setup, for a developer who wants the technical facts first.",
+      "group": "Use cases",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs",
+      "view": "docs",
+      "title": "Documentation",
+      "description": "Set up your harness, search the library, download checked files, and understand your account and your usage.",
+      "group": "Documentation",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/getting-set-up",
+      "view": "setup",
+      "title": "Get set up",
+      "description": "The documentation address of Get set up, which connects your harness to the Baltor library.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/docs/searching-and-retrieving",
+      "view": "docs",
+      "title": "Searching and retrieving",
+      "description": "How to search the library, inspect a reference and download the exact version you chose, checked against its digest.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/serving-and-connections",
+      "view": "docs",
+      "title": "Serving and connections",
+      "description": "How the service answers your harness: the endpoint, the protocol versions, the key header and the limits of each request.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/troubleshooting",
+      "view": "docs",
+      "title": "Troubleshooting",
+      "description": "What to check when a connection, a search or a download is refused, and what each answer from the service means.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/your-account",
+      "view": "docs",
+      "title": "Your account",
+      "description": "Your Baltor account, your personal keys and how the service checks your access to the library.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/usage-and-what-you-pay-for",
+      "view": "docs",
+      "title": "Usage and what you pay for",
+      "description": "The plan, what counts as one download, and how to read the usage record of your account.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/security",
+      "view": "security",
+      "title": "Access and data boundaries",
+      "description": "What you share when you connect, what the service stores, and why connecting never lets Baltor run anything on your computer.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/status",
+      "view": "status",
+      "title": "Service status",
+      "description": "Live readings of the Baltor service: whether it is working, each required check, the library release and whether new accounts are open.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/docs/what-baltor-is",
+      "view": "docs",
+      "title": "What Baltor is",
+      "description": "What Baltor is: the hosted library, the Baltor Harness you can install, and the models you bring yourself.",
+      "group": "Company",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/waitlist",
+      "view": "start",
+      "title": "Get started",
+      "description": "The earlier address of Get started, which creates your Baltor account.",
+      "group": "Company",
+      "linked_from": [],
+      "unlinked_reason": "The older address of Get started. It opens the same account creation form, so earlier links and emails keep working.",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/login",
+      "view": "login",
+      "title": "Sign in",
+      "description": "Sign in to your Baltor account to search the library, download checked items and manage your keys.",
+      "group": "Company",
+      "linked_from": [
+        "header",
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/privacy",
+      "view": "privacy",
+      "title": "Privacy notice",
+      "description": "What the Baltor service stores about you, why it stores it, where it is kept and for how long.",
+      "group": "Company",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/terms",
+      "view": "terms",
+      "title": "Terms of service",
+      "description": "The terms of service of Baltor, operated by Baltor.AI.",
+      "group": "Company",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/deck",
+      "view": "deck",
+      "title": "Deck",
+      "group": "Company",
+      "linked_from": [],
+      "unlinked_reason": "The deck the owner asked for on September 24, 2026 is shared by its own address and opens at the root of deck.baltor.ai, so no header or footer link leads to it.",
+      "scroll_budget": "page",
+      "price_in_first_screen": false
+    },
+    {
+      "address": "/signup",
+      "view": "signup",
+      "title": "Account status",
+      "description": "The state of your Baltor account, and where to create one.",
+      "group": "Account",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/app",
+      "view": "workspace",
+      "title": "Intelligence workspace",
+      "description": "Your signed-in workspace: search the library and download checked items.",
+      "group": "Account",
+      "linked_from": [
+        "header"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/account",
+      "view": "account",
+      "title": "Your account",
+      "description": "Your Baltor plan, your keys and your usage.",
+      "group": "Account",
+      "linked_from": [
+        "header"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/admin",
+      "view": "admin",
+      "title": "Access administration",
+      "description": "Account administration for Baltor staff.",
+      "group": "Account",
+      "linked_from": [
+        "header"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/auth/callback",
+      "view": "login",
+      "title": "Sign in",
+      "description": "Where the identity provider returns you after signing in.",
+      "group": "Account",
+      "linked_from": [],
+      "unlinked_reason": "the identity provider sends a person back to this address after sign-in, and the page moves them on to the sign-in page",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/auth/confirm",
+      "view": "confirm",
+      "title": "Choose your password",
+      "description": "Confirm your email address and choose your password.",
+      "group": "Account",
+      "linked_from": [],
+      "unlinked_reason": "the address in the account confirmation email; a person reaches it only from that email",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": false
+    },
+    {
+      "address": "/demo",
+      "view": "demo",
+      "title": "One task, step by step",
+      "description": "One data cleanup task in five small steps. Each step searches the library, downloads only what it chose and checks the bytes against the digest.",
+      "group": "Product",
+      "linked_from": [
+        "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/case-studies/data-cleanup",
+      "view": "case-studies-data-cleanup",
+      "title": "Data cleanup with and without Baltor",
+      "description": "We measured library items against no item on a data cleanup task. They did not help on this test, and one item made results worse.",
+      "group": "Use cases",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/case-studies/pi-and-gemma-4",
+      "view": "case-studies-pi-and-gemma-4",
+      "title": "Pi and Gemma 4 on Ollama Cloud",
+      "description": "Pi with Gemma 4 31B on Ollama Cloud searched the library, installed a checked skill, and a new Pi session loaded and used it.",
+      "group": "Use cases",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/case-studies/sign-up-protection",
+      "view": "case-studies-sign-up-protection",
+      "title": "How sign-up is protected",
+      "description": "How email-first sign-up keeps an address with its real owner, and the live checks of September 24, 2026 that showed it working.",
+      "group": "Use cases",
+      "linked_from": [
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "page",
+      "price_in_first_screen": false,
+      "indexed": true
+    }
   ],
   "header": {
     "signed_out": [
-      {"role": "brand", "label": "Baltor", "href": "/"},
-      {"role": "link", "label": "How it works", "href": "/how-it-works"},
-      {"role": "link", "label": "Use cases", "href": "/use-cases"},
-      {"role": "link", "label": "Library", "href": "/#library"},
-      {"role": "link", "label": "Pricing", "href": "/pricing"},
-      {"role": "link", "label": "Docs", "href": "/docs"},
-      {"role": "link", "label": "Get set up", "href": "/setup"},
-      {"role": "link", "label": "Sign in", "href": "/login"},
-      {"role": "primary", "label": "Get started", "href": "/get-started"}
+      {
+        "role": "brand",
+        "label": "Baltor",
+        "href": "/"
+      },
+      {
+        "role": "link",
+        "label": "How it works",
+        "href": "/how-it-works"
+      },
+      {
+        "role": "link",
+        "label": "Use cases",
+        "href": "/use-cases"
+      },
+      {
+        "role": "link",
+        "label": "Library",
+        "href": "/#library"
+      },
+      {
+        "role": "link",
+        "label": "Pricing",
+        "href": "/pricing"
+      },
+      {
+        "role": "link",
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "role": "link",
+        "label": "Get set up",
+        "href": "/setup"
+      },
+      {
+        "role": "link",
+        "label": "Sign in",
+        "href": "/login"
+      },
+      {
+        "role": "primary",
+        "label": "Get started",
+        "href": "/get-started"
+      }
     ],
     "signed_in": [
-      {"role": "brand", "label": "Baltor", "href": "/"},
-      {"role": "link", "label": "Workspace", "href": "/app"},
-      {"role": "link", "label": "Get set up", "href": "/setup"},
-      {"role": "link", "label": "Library", "href": "/#library"},
-      {"role": "link", "label": "Docs", "href": "/docs"},
-      {"role": "link", "label": "Account", "href": "/account"},
-      {"role": "button", "label": "Sign out", "href": null}
+      {
+        "role": "brand",
+        "label": "Baltor",
+        "href": "/"
+      },
+      {
+        "role": "link",
+        "label": "Workspace",
+        "href": "/app"
+      },
+      {
+        "role": "link",
+        "label": "Get set up",
+        "href": "/setup"
+      },
+      {
+        "role": "link",
+        "label": "Library",
+        "href": "/#library"
+      },
+      {
+        "role": "link",
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "role": "link",
+        "label": "Account",
+        "href": "/account"
+      },
+      {
+        "role": "button",
+        "label": "Sign out",
+        "href": null
+      }
     ],
     "operator": [
-      {"role": "brand", "label": "Baltor", "href": "/"},
-      {"role": "link", "label": "Workspace", "href": "/app"},
-      {"role": "link", "label": "Get set up", "href": "/setup"},
-      {"role": "link", "label": "Library", "href": "/#library"},
-      {"role": "link", "label": "Docs", "href": "/docs"},
-      {"role": "link", "label": "Account", "href": "/account"},
-      {"role": "link", "label": "Administration", "href": "/admin"},
-      {"role": "button", "label": "Sign out", "href": null}
+      {
+        "role": "brand",
+        "label": "Baltor",
+        "href": "/"
+      },
+      {
+        "role": "link",
+        "label": "Workspace",
+        "href": "/app"
+      },
+      {
+        "role": "link",
+        "label": "Get set up",
+        "href": "/setup"
+      },
+      {
+        "role": "link",
+        "label": "Library",
+        "href": "/#library"
+      },
+      {
+        "role": "link",
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "role": "link",
+        "label": "Account",
+        "href": "/account"
+      },
+      {
+        "role": "link",
+        "label": "Administration",
+        "href": "/admin"
+      },
+      {
+        "role": "button",
+        "label": "Sign out",
+        "href": null
+      }
     ]
   },
   "footer": {
     "brand_href": "/",
     "groups": [
-      {"name": "Product", "links": [
-        {"role": "link", "label": "Get started", "href": "/get-started"},
-        {"role": "link", "label": "Get set up", "href": "/setup"},
-        {"role": "link", "label": "How it works", "href": "/how-it-works"},
-        {"role": "link", "label": "Library", "href": "/#library"},
-        {"role": "link", "label": "Pricing", "href": "/pricing"},
-        {"role": "link", "label": "First example", "href": "/examples"}
-      ]},
-      {"name": "Use cases", "links": [
-        {"role": "link", "label": "Use cases", "href": "/use-cases"},
-        {"role": "link", "label": "Solve problems overnight", "href": "/overnight"},
-        {"role": "link", "label": "Efficient operation", "href": "/efficiency"},
-        {"role": "link", "label": "Learning built in", "href": "/learning"},
-        {"role": "link", "label": "For coding agents", "href": "/for/coding-agents"},
-        {"role": "link", "label": "For engineering teams", "href": "/for/engineering-teams"},
-        {"role": "link", "label": "For comparing tools", "href": "/for/comparing-tools"},
-        {"role": "link", "label": "For protocol and client work", "href": "/for/protocol-and-client"}
-      ]},
-      {"name": "Documentation", "links": [
-        {"role": "link", "label": "Docs", "href": "/docs"},
-        {"role": "link", "label": "Getting set up", "href": "/docs/getting-set-up"},
-        {"role": "link", "label": "Searching and retrieving", "href": "/docs/searching-and-retrieving"},
-        {"role": "link", "label": "Serving and connections", "href": "/docs/serving-and-connections"},
-        {"role": "link", "label": "Troubleshooting", "href": "/docs/troubleshooting"},
-        {"role": "link", "label": "Your account", "href": "/docs/your-account"},
-        {"role": "link", "label": "Usage and what you pay for", "href": "/docs/usage-and-what-you-pay-for"},
-        {"role": "link", "label": "Access and data", "href": "/security"},
-        {"role": "link", "label": "Status", "href": "/status"}
-      ]},
-      {"name": "Company", "links": [
-        {"role": "link", "label": "What Baltor is", "href": "/docs/what-baltor-is"},
-        {"role": "link", "label": "Sign in", "href": "/login"},
-        {"role": "link", "label": "Privacy notice", "href": "/privacy"},
-        {"role": "link", "label": "Terms of service", "href": "/terms"},
-        {"role": "link", "label": "Open-source notices", "href": "/assets/third-party-notices.txt"}
-      ]}
+      {
+        "name": "Product",
+        "links": [
+          {
+            "role": "link",
+            "label": "Get started",
+            "href": "/get-started"
+          },
+          {
+            "role": "link",
+            "label": "Get set up",
+            "href": "/setup"
+          },
+          {
+            "role": "link",
+            "label": "How it works",
+            "href": "/how-it-works"
+          },
+          {
+            "role": "link",
+            "label": "Library",
+            "href": "/#library"
+          },
+          {
+            "role": "link",
+            "label": "Pricing",
+            "href": "/pricing"
+          },
+          {
+            "role": "link",
+            "label": "Demonstration",
+            "href": "/demo"
+          },
+          {
+            "role": "link",
+            "label": "Examples",
+            "href": "/examples"
+          }
+        ]
+      },
+      {
+        "name": "Use cases",
+        "links": [
+          {
+            "role": "link",
+            "label": "Use cases",
+            "href": "/use-cases"
+          },
+          {
+            "role": "link",
+            "label": "Solve problems overnight",
+            "href": "/overnight"
+          },
+          {
+            "role": "link",
+            "label": "Efficient operation",
+            "href": "/efficiency"
+          },
+          {
+            "role": "link",
+            "label": "Learning built in",
+            "href": "/learning"
+          },
+          {
+            "role": "link",
+            "label": "Case studies",
+            "href": "/examples#case-studies"
+          },
+          {
+            "role": "link",
+            "label": "For coding agents",
+            "href": "/for/coding-agents"
+          },
+          {
+            "role": "link",
+            "label": "For engineering teams",
+            "href": "/for/engineering-teams"
+          },
+          {
+            "role": "link",
+            "label": "For comparing tools",
+            "href": "/for/comparing-tools"
+          },
+          {
+            "role": "link",
+            "label": "For protocol and client work",
+            "href": "/for/protocol-and-client"
+          }
+        ]
+      },
+      {
+        "name": "Documentation",
+        "links": [
+          {
+            "role": "link",
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "role": "link",
+            "label": "Getting set up",
+            "href": "/docs/getting-set-up"
+          },
+          {
+            "role": "link",
+            "label": "Searching and retrieving",
+            "href": "/docs/searching-and-retrieving"
+          },
+          {
+            "role": "link",
+            "label": "Serving and connections",
+            "href": "/docs/serving-and-connections"
+          },
+          {
+            "role": "link",
+            "label": "Troubleshooting",
+            "href": "/docs/troubleshooting"
+          },
+          {
+            "role": "link",
+            "label": "Your account",
+            "href": "/docs/your-account"
+          },
+          {
+            "role": "link",
+            "label": "Usage and what you pay for",
+            "href": "/docs/usage-and-what-you-pay-for"
+          },
+          {
+            "role": "link",
+            "label": "Access and data",
+            "href": "/security"
+          },
+          {
+            "role": "link",
+            "label": "Status",
+            "href": "/status"
+          }
+        ]
+      },
+      {
+        "name": "Company",
+        "links": [
+          {
+            "role": "link",
+            "label": "What Baltor is",
+            "href": "/docs/what-baltor-is"
+          },
+          {
+            "role": "link",
+            "label": "Sign in",
+            "href": "/login"
+          },
+          {
+            "role": "link",
+            "label": "Privacy notice",
+            "href": "/privacy"
+          },
+          {
+            "role": "link",
+            "label": "Terms of service",
+            "href": "/terms"
+          },
+          {
+            "role": "link",
+            "label": "Open-source notices",
+            "href": "/assets/third-party-notices.txt"
+          }
+        ]
+      }
     ],
-    "base_row": {"operator": "Baltor.AI", "operator_line": "1428 Bryn Mawr St, Saxton, PA 16678", "mark": "/assets/baltor-mark.svg"}
+    "base_row": {
+      "operator": "Baltor.AI",
+      "operator_line": "1428 Bryn Mawr St, Saxton, PA 16678",
+      "mark": "/assets/baltor-mark.svg"
+    }
   },
   "hostnames": [
-    {"hostname": "baltor.ai", "address": "/", "anchor": ""},
-    {"hostname": "www.baltor.ai", "address": "/", "anchor": ""},
-    {"hostname": "docs.baltor.ai", "address": "/docs", "anchor": ""},
-    {"hostname": "status.baltor.ai", "address": "/status", "anchor": ""},
-    {"hostname": "examples.baltor.ai", "address": "/examples", "anchor": ""},
-    {"hostname": "demo.baltor.ai", "address": "/", "anchor": "step-demo"},
-    {"hostname": "app.baltor.ai", "address": "/app", "anchor": ""},
-    {"hostname": "deck.baltor.ai", "address": "/deck", "anchor": ""}
+    {
+      "hostname": "baltor.ai",
+      "address": "/",
+      "anchor": ""
+    },
+    {
+      "hostname": "www.baltor.ai",
+      "address": "/",
+      "anchor": ""
+    },
+    {
+      "hostname": "docs.baltor.ai",
+      "address": "/docs",
+      "anchor": ""
+    },
+    {
+      "hostname": "status.baltor.ai",
+      "address": "/status",
+      "anchor": ""
+    },
+    {
+      "hostname": "examples.baltor.ai",
+      "address": "/examples",
+      "anchor": ""
+    },
+    {
+      "hostname": "demo.baltor.ai",
+      "address": "/demo",
+      "anchor": ""
+    },
+    {
+      "hostname": "app.baltor.ai",
+      "address": "/",
+      "anchor": ""
+    },
+    {
+      "hostname": "deck.baltor.ai",
+      "address": "/deck",
+      "anchor": ""
+    }
   ],
   "removed": [
-    {"date": "2026-09-23", "kind": "header_link", "state": "signed_out", "subject": "/waitlist", "reason": "The one primary action of the header is Get started, at /get-started, in every access state, and its label never switches. The invitation page stays linked from the Company group of the footer.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "header_link", "state": "signed_in", "subject": "/how-it-works", "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. How it works stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "header_link", "state": "signed_in", "subject": "/pricing", "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. Pricing stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "header_link", "state": "operator", "subject": "/how-it-works", "reason": "The operator's header is the signed-in header plus Administration. How it works stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "header_link", "state": "operator", "subject": "/pricing", "reason": "The operator's header is the signed-in header plus Administration. Pricing stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "page", "state": "", "subject": "/context", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "footer_link", "state": "", "subject": "/context", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "page", "state": "", "subject": "/model-choice", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "footer_link", "state": "", "subject": "/model-choice", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "page", "state": "", "subject": "/tool-choice", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "footer_link", "state": "", "subject": "/tool-choice", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "footer_link", "state": "", "subject": "/waitlist", "reason": "The owner asked on September 23, 2026 to remove every mention of invitation only, so the site reads as fully working. Get started, in the Product group, takes every new account, and /waitlist opens the same form.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "section", "state": "", "subject": "band:harnesses", "reason": "The owner asked on September 23, 2026 for a library-first hero that shows Pi and a Baltor Harness setup as working, not planned. The hero now lists every harness Baltor sets up, and each one has steps on Get set up, so the separate strip repeated it. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "section", "state": "", "subject": "heading:harness-strip-title", "reason": "The owner asked on September 23, 2026 for a library-first hero that shows Pi and a Baltor Harness setup as working, not planned. The hero now lists every harness Baltor sets up, and each one has steps on Get set up, so the separate strip repeated it. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "section", "state": "", "subject": "band:problems", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. The use-case band and the three use-case pages carry what this band said. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.", "decided_by": "owner, September 23, 2026"},
-    {"date": "2026-09-23", "kind": "section", "state": "", "subject": "heading:problems-title", "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. The use-case band and the three use-case pages carry what this band said. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.", "decided_by": "owner, September 23, 2026"}
-  ]
+    {
+      "date": "2026-09-23",
+      "kind": "header_link",
+      "state": "signed_out",
+      "subject": "/waitlist",
+      "reason": "The one primary action of the header is Get started, at /get-started, in every access state, and its label never switches. The invitation page stays linked from the Company group of the footer.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "header_link",
+      "state": "signed_in",
+      "subject": "/how-it-works",
+      "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. How it works stays in the signed-out header and in the Product group of the footer.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "header_link",
+      "state": "signed_in",
+      "subject": "/pricing",
+      "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. Pricing stays in the signed-out header and in the Product group of the footer.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "header_link",
+      "state": "operator",
+      "subject": "/how-it-works",
+      "reason": "The operator's header is the signed-in header plus Administration. How it works stays in the signed-out header and in the Product group of the footer.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "header_link",
+      "state": "operator",
+      "subject": "/pricing",
+      "reason": "The operator's header is the signed-in header plus Administration. Pricing stays in the signed-out header and in the Product group of the footer.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "page",
+      "state": "",
+      "subject": "/context",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "footer_link",
+      "state": "",
+      "subject": "/context",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "page",
+      "state": "",
+      "subject": "/model-choice",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "footer_link",
+      "state": "",
+      "subject": "/model-choice",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "page",
+      "state": "",
+      "subject": "/tool-choice",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "footer_link",
+      "state": "",
+      "subject": "/tool-choice",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. This page's subject is now a section of the More efficient operation page at /efficiency.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "footer_link",
+      "state": "",
+      "subject": "/waitlist",
+      "reason": "The owner asked on September 23, 2026 to remove every mention of invitation only, so the site reads as fully working. Get started, in the Product group, takes every new account, and /waitlist opens the same form.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "section",
+      "state": "",
+      "subject": "band:harnesses",
+      "reason": "The owner asked on September 23, 2026 for a library-first hero that shows Pi and a Baltor Harness setup as working, not planned. The hero now lists every harness Baltor sets up, and each one has steps on Get set up, so the separate strip repeated it. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "section",
+      "state": "",
+      "subject": "heading:harness-strip-title",
+      "reason": "The owner asked on September 23, 2026 for a library-first hero that shows Pi and a Baltor Harness setup as working, not planned. The hero now lists every harness Baltor sets up, and each one has steps on Get set up, so the separate strip repeated it. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "section",
+      "state": "",
+      "subject": "band:problems",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. The use-case band and the three use-case pages carry what this band said. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.",
+      "decided_by": "owner, September 23, 2026"
+    },
+    {
+      "date": "2026-09-23",
+      "kind": "section",
+      "state": "",
+      "subject": "heading:problems-title",
+      "reason": "The owner named three hero use cases on September 23, 2026: solve complex problems overnight, more efficient operation, and recursive learning and optimization built in. The use-case band and the three use-case pages carry what this band said. The markup is kept in artifacts/website-archive-2026-09-23/homepage-before-2026-09-23-redesign.html.",
+      "decided_by": "owner, September 23, 2026"
+    }
+  ],
+  "social_image": "/assets/favicon-192.png"
 }

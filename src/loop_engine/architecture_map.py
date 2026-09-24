@@ -58,7 +58,7 @@ MODULE_MAP = {
         "billing_effects", "stripe_sessions", "stripe_session_checks", "stripe_session_transport_checks",
         "billing_policy", "billing_policy_checks",
         "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
-        "http_test_fixtures", "refusals", "web_pages", "web_site_map", "access", "access_checks",
+        "http_test_fixtures", "refusals", "web_pages", "web_site_map", "web_surface_checks", "access", "access_checks",
         "browser_identity", "browser_identity_checks",
         "request_limits", "request_limit_checks", "capacity_checks",
         "promotions", "promotion_checks",

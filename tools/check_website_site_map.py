@@ -3,11 +3,11 @@
 Kind: development check over packaged files. The rules, their known-wrong cases and their mutant controls
 live in `tools/test_website_site_map.py`; this file applies the same rules to the served website itself.
 
-It is kept out of the continuous integration list until the pages that the target site map of September
-23, 2026 restores are merged, because on 243a8811 (Fly release 20) five rules refuse the served website:
-the pages are missing. That run is saved as
-`artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt`, and
-`docs/verification/HANDOFF-SITE-STANDARDS-2026-09-23.md` names the line that adds this check to the list.
+On 243a8811 (Fly release 20) five rules refused the served website, because the pages that the target
+site map of September 23, 2026 restores were missing. That run is saved as
+`artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt`. Roadmap step S-6.67 served
+those pages on September 24, 2026 and added this check to the continuous integration list, as
+`docs/verification/HANDOFF-SITE-STANDARDS-2026-09-23.md` planned.
 
     PYTHONPATH=src:tools python -m unittest tools/check_website_site_map.py
 """

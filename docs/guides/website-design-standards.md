@@ -202,10 +202,10 @@ base row. No link stands outside the groups except the brand.
 
 | Group | Links |
 |---|---|
-| Product | Get started, Get set up, How it works, Library, Pricing, First example |
-| Use cases | Use cases, the four benefit pages and the four audience pages |
+| Product | Get started, Get set up, How it works, Library, Pricing, Demonstration, Examples |
+| Use cases | Use cases, the three use case pages, Case studies, the four audience pages |
 | Documentation | Docs, the six documentation pages, Access and data, Status |
-| Company | What Baltor is, Request an invitation, Sign in, Privacy notice, Terms of service, Open-source notices |
+| Company | What Baltor is, Sign in, Privacy notice, Terms of service, Open-source notices |
 
 The base row shows the mark, "Baltor.AI", the year and the operator's postal
 line, which the privacy notice publishes.
@@ -224,7 +224,32 @@ line, which the privacy notice publishes.
 - One primary action.
 - The title is "Baltor | " and the page title of the site map, and the page
   names `https://baltor.ai` and its address as its canonical address.
+- The service writes the title, the page's one-line description from the site
+  map (at most 160 characters), the canonical address and the shared-link
+  tags into the served page itself, so a search engine and a shared link read
+  them before any script runs. A page the site map does not list for search
+  engines carries `noindex`. A page with a file of its own gets the same head
+  once the site map lists it.
 - Every page other than the homepage opens with the white introduction band.
+
+## Hostnames, robots.txt and sitemap.xml
+
+The `hostnames` list of the site map gives the page each hostname shows at its
+root address, since September 24, 2026:
+
+| Hostname | Root page |
+|---|---|
+| `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` | the homepage |
+| `docs.baltor.ai` | `/docs` |
+| `status.baltor.ai` | `/status` |
+| `examples.baltor.ai` | `/examples` |
+| `demo.baltor.ai` | `/demo` |
+
+A hostname the list does not name shows the homepage. Every other address
+shows its own page on every hostname, and every page names its address on
+`https://baltor.ai` as canonical. `/robots.txt` and `/sitemap.xml` are written
+from the site map: the sitemap lists each page marked `indexed`, and
+robots.txt leaves out the interface routes and each page that is not.
 
 ## Accessibility
 

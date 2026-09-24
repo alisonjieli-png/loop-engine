@@ -34,8 +34,8 @@ from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
-from .web_pages import (CACHEABLE_WEB_ASSETS, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL, WEB_ASSETS,
-                        asset_etag, missing_address_page, served_asset, validator_matches)
+from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
+                        WEB_ASSETS, asset_etag, missing_address_page, served_asset, validator_matches)
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -140,7 +140,7 @@ PROTOCOL_PATH = "/mcp"
 #: that decide what is served, so that it cannot drift from them. A failure
 #: record keeps the path only when it is one of these; anything else is
 #: recorded as the unmatched name, because a stranger chooses that text.
-DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
+DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS, *GENERATED_WEB_FILES)
 #: The addresses whose request body may itself be a credential. Sign-up takes an
 #: address alone since September 23, 2026, and refuses a request that carries a
 #: password, but a caller can still send one, and the refused body would hold
@@ -1386,10 +1386,16 @@ class ServiceHttpApplication:
 
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
-        asset = served_asset(path, method, self.configuration.display_name)
+        # The Host was checked against the allowed hosts before this route ran,
+        # so it only chooses which page a hostname shows at its root address.
+        asset = served_asset(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers()
+            if media_type == HTML_MEDIA_TYPE and path.startswith("/assets/"):
+                # A documentation body is part of a page, fetched by the page's
+                # script. A search engine may read it and must not list it alone.
+                headers["X-Robots-Tag"] = "noindex"
             if path in CACHEABLE_WEB_ASSETS:
                 headers["ETag"] = asset_etag(body)
                 if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):

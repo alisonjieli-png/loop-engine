@@ -1,6 +1,7 @@
 /* Read-only browser acceptance of the deployed public site. No credentials. */
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync} from "node:fs";
+import {spawnSync} from "node:child_process";
 import {resolve} from "node:path";
 import {createHash} from "node:crypto";
 
@@ -43,6 +44,23 @@ const hash=value=>createHash("sha256").update(value).digest("hex");
 const assetDigests=new Map();
 const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/third-party-notices.txt"?"THIRD-PARTY-NOTICES.md":path.slice("/assets/".length);assetDigests.set(path,hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",name))));}return assetDigests.get(path);};
 const sameOriginAsset=(value,path)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&url.search==="?v="+assetDigest(path);}catch(_){return false;}};
+/* The page this hostname shows at its root address, read through the typed reader of web_site_map.json, the one list of pages and
+   hostnames. docs, status, examples and demo open their own page at the root since September 24, 2026; the homepage checks run
+   where the root is the homepage, and every other check runs on every hostname. PYTHON names a qualified environment when the
+   release worktree has no .venv of its own. */
+const python=process.env.PYTHON||(existsSync(resolve(root,".venv/bin/python"))?resolve(root,".venv/bin/python"):"python3");
+const siteMapRead=spawnSync(python,["-c","import json\nfrom loop_engine.core.service_runtime.web_site_map import as_plain_record, load_site_map\nprint(json.dumps(as_plain_record(load_site_map())))"],
+  {cwd:root,env:{...process.env,PYTHONPATH:resolve(root,"src")},encoding:"utf8"});
+if(siteMapRead.status!==0)throw new Error("The typed reader refused the site map:\n"+siteMapRead.stderr);
+const siteMap=JSON.parse(siteMapRead.stdout),canonicalOrigin="https://"+siteMap.canonical_hostname;
+const rootAddress=siteMap.hostnames.find(item=>item.hostname===new URL(origin).hostname)?.address||"/";
+const rootPage=siteMap.pages.find(item=>item.address===rootAddress),rootIsHome=rootAddress==="/";
+const pageTitle=entry=>siteMap.display_name+" | "+entry.title;
+const opensItsPage=(shown,entry)=>Boolean(entry)&&JSON.stringify(shown.views)===JSON.stringify([entry.view])&&shown.title===pageTitle(entry)&&shown.canonical===canonicalOrigin+entry.address;
+const shownPage=target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
+  canonical:document.querySelector('link[rel="canonical"]')?.getAttribute("href")||"",brand:document.querySelector("header a.brand")?.getAttribute("href")||""}));
+/* The pages of September 24, 2026, checked on every hostname at their own addresses. */
+const showcasePaths=["/demo","/status","/examples","/case-studies/data-cleanup","/case-studies/pi-and-gemma-4","/case-studies/sign-up-protection","/for/coding-agents","/for/engineering-teams","/for/comparing-tools","/for/protocol-and-client"];
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
@@ -50,6 +68,14 @@ const page=await context.newPage();page.on("pageerror",error=>errors.push(error.
 try{
   const home=await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone")&&document.querySelector("#service-status").textContent.includes("Service available"));
   check("HTTPS_homepage_is_available",home.status()===200);
+  /* The root of this hostname opens the page the site map names for it, with that page's own title and canonical address, and serves
+     exactly what that page's own address serves here. Where that page is not the homepage, the brand leads to the homepage on the
+     canonical hostname. The known-wrong roots: another view, the homepage's title, and another canonical address. */
+  const rootShown=await shownPage(page);
+  const rootBytes=await (await page.request.get(origin+"/",{maxRedirects:0})).text(),ownBytes=await (await page.request.get(origin+rootAddress,{maxRedirects:0})).text();
+  check("live_hostname_root_opens_the_page_the_site_map_names",opensItsPage(rootShown,rootPage)&&rootBytes===ownBytes&&(rootIsHome||rootShown.brand===canonicalOrigin+"/"));
+  check("hostname_root_check_rejects_another_view_title_or_canonical_address",!opensItsPage({...rootShown,views:[...rootShown.views,"home"]},rootPage)
+    &&!opensItsPage({...rootShown,title:siteMap.display_name+" | The perfect harness setup for every task x"},rootPage)&&!opensItsPage({...rootShown,canonical:canonicalOrigin+"/other"},rootPage));
   const namedAssets=await page.evaluate(()=>[...document.querySelectorAll("[src],link[href],footer a[href]")].flatMap(node=>[node.getAttribute("src"),node.getAttribute("href")]).filter(Boolean).filter(value=>{try{return new URL(value,location.href).pathname.startsWith("/assets/");}catch(_){return false;}}));
   check("live_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>sameOriginAsset(value,new URL(value,origin).pathname)));
   const versionedMark="/assets/baltor-mark.svg?v="+assetDigest("/assets/baltor-mark.svg");
@@ -63,6 +89,7 @@ try{
   const liveLabel="Get started",livePath="/get-started";
   const liveTakesAddresses=liveReport.record_type==="service_capabilities/v1"&&(liveReport.website?.registration_available===true||liveReport.website?.waitlist_available===true);
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
+  if(rootIsHome){
   /* The hero, as the owner decided on September 23, 2026: it says what Baltor is, the library of everything a harness can use,
      placed where the harness reads it, and the work it removes, done by hand; it no longer promises a fresh harness for each step. */
   const liveHero=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
@@ -129,6 +156,7 @@ try{
     check("live_primary_action_lands_on_the_funnel_email_field",liveField.path==="/get-started"&&JSON.stringify(liveField.views)===JSON.stringify(["start"])&&liveField.shown&&liveField.top>=0&&liveField.bottom<=liveField.viewport);
   }
   await phone.close();
+  }
   /* The signed-out top bar in the order of the site map, as the owner decided on September 23, 2026: How it works, Use cases,
      Library, Pricing, Docs, the guide Get set up and Sign in, then the primary action "Get started", which opens the funnel. The
      footer's Product group starts with Get started and Get set up, its Use cases group links the hub and the three use cases,
@@ -144,7 +172,7 @@ try{
   check("live_footer_links_get_started_get_set_up_and_the_use_cases_and_not_the_waitlist",footerHolds(liveFooter));
   check("footer_check_rejects_a_waitlist_link_and_a_missing_use_case",!footerHolds({...liveFooter,all:[...liveFooter.all,"/waitlist"]})&&!footerHolds({...liveFooter,useCases:liveFooter.useCases.filter(href=>href!=="/learning")}));
   /* The connection entry on the homepage is written by the page script with the deployed address. */
-  check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));
+  if(rootIsHome)check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));
   await page.locator('header a[data-page="pricing"]').click();
   /* Read as a person reads it: the amount and "a month" stand on two lines of the plan card. */
   const livePricing=(await page.locator('[data-view="pricing"]').innerText()).replace(/\s+/g," ");
@@ -244,11 +272,11 @@ try{
   await page.waitForFunction(()=>location.search===""&&document.body.dataset.page==="confirm");
   check("live_invalid_confirmation_clears_query_without_opening_a_password_form",await page.locator('#confirm-unusable').isVisible()&&await page.locator('#confirm-password-step').isHidden());
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
-  for(const asset of ["documentation-index.json","documentation.js","documentation.css","docs/what-baltor-is.html","docs/your-account.html","docs/searching-and-retrieving.html","docs/usage-and-what-you-pay-for.html","docs/troubleshooting.html","docs/serving-and-connections.html","service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2","baltor-mark.svg","favicon-32.png","favicon-192.png","apple-touch-icon.png"]){
+  for(const asset of ["public-pages.js","public-pages.css","documentation-index.json","documentation.js","documentation.css","docs/what-baltor-is.html","docs/your-account.html","docs/searching-and-retrieving.html","docs/usage-and-what-you-pay-for.html","docs/troubleshooting.html","docs/serving-and-connections.html","service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2","baltor-mark.svg","favicon-32.png","favicon-192.png","apple-touch-icon.png"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));
   }
-  await page.locator("#how-explore").click();
+  if(rootIsHome)await page.locator("#how-explore").click();else await page.goto(origin+"/how-it-works#task-breakdown");
   check("how_it_works_separates_client_and_server",await page.locator('[data-view="about"] .service-zone').isVisible()&&await page.locator('[data-view="about"] .client-zone').isVisible());
   const providerCopy=await page.locator('[data-view="about"] .provider-lane').innerText();
   const explainsProviderBoundary=text=>text.includes("Model keys stay in your environment")&&text.includes("A remote model may receive the information you allow");
@@ -276,7 +304,7 @@ try{
   }
   for(const width of [1440,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/docs","/docs/what-baltor-is","/docs/your-account","/docs/searching-and-retrieving","/docs/usage-and-what-you-pay-for","/docs/troubleshooting","/docs/serving-and-connections","/","/use-cases","/overnight","/efficiency","/learning","/get-started","/how-it-works","/pricing","/login","/admin","/connect","/examples","/security","/terms"]){
+    for(const path of ["/docs","/docs/what-baltor-is","/docs/your-account","/docs/searching-and-retrieving","/docs/usage-and-what-you-pay-for","/docs/troubleshooting","/docs/serving-and-connections","/","/use-cases","/overnight","/efficiency","/learning","/get-started","/how-it-works","/pricing","/login","/admin","/connect","/examples","/security","/terms",...showcasePaths]){
       await page.goto(origin+path);
       if(path.startsWith("/docs/"))await page.waitForSelector("#docs-article h2");
       check(`live_layout_${width}_${path}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
@@ -298,7 +326,7 @@ try{
     try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
     finally{exempt.forEach(node=>{node.hidden=false;});}
   },[termsWords,privacyWords]);
-  for(const path of ["/docs/what-baltor-is","/docs/your-account","/docs/searching-and-retrieving","/docs/usage-and-what-you-pay-for","/docs/troubleshooting","/docs/serving-and-connections","/","/use-cases","/overnight","/efficiency","/learning","/get-started","/waitlist","/how-it-works","/pricing","/connect","/setup","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs"]){
+  for(const path of ["/docs/what-baltor-is","/docs/your-account","/docs/searching-and-retrieving","/docs/usage-and-what-you-pay-for","/docs/troubleshooting","/docs/serving-and-connections","/","/use-cases","/overnight","/efficiency","/learning","/get-started","/waitlist","/how-it-works","/pricing","/connect","/setup","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...showcasePaths]){
     await page.goto(origin+path);
     await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
     if(path.startsWith("/docs/"))await page.waitForSelector("#docs-article h2");
@@ -324,6 +352,26 @@ try{
   const plantedInvitation=customerLanguage(await readRetired(page));
   await page.evaluate(()=>document.getElementById("known-wrong-invitation")?.remove());
   check("live_invitation_word_exemption_still_reads_a_word_beside_the_privacy_notice",liveInvitation.test(plantedInvitation)&&!liveInvitation.test(customerLanguage(await readRetired(page))));
+  /* The pages of September 24, 2026 at their own addresses, each with its own title and canonical address; the two files written
+     from the site map; HEAD answering like GET without a body; and the status page agreeing with the health record it reads. */
+  for(const address of showcasePaths){
+    const direct=await page.request.get(origin+address,{maxRedirects:0});await page.goto(origin+address);
+    check("live_page_opens_with_its_own_title_and_canonical_address_"+address.slice(1).replace(/\//g,"-"),direct.status()===200&&opensItsPage(await shownPage(page),siteMap.pages.find(item=>item.address===address)));
+  }
+  const robots=await page.request.get(origin+"/robots.txt",{maxRedirects:0}),sitemap=await page.request.get(origin+"/sitemap.xml",{maxRedirects:0});
+  const listed=[...(await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map(found=>found[1]),listable=siteMap.pages.filter(item=>item.indexed).map(item=>canonicalOrigin+item.address);
+  check("live_robots_and_sitemap_follow_the_site_map",robots.status()===200&&(await robots.text()).includes("Sitemap: "+canonicalOrigin+"/sitemap.xml")&&sitemap.status()===200&&JSON.stringify(listed)===JSON.stringify(listable));
+  const headAnswer=await page.request.fetch(origin+"/",{method:"HEAD",maxRedirects:0}),getAnswer=await page.request.get(origin+"/",{maxRedirects:0});
+  check("live_head_answers_like_get_without_a_body",headAnswer.status()===200&&(await headAnswer.body()).length===0&&headAnswer.headers()["content-type"]===getAnswer.headers()["content-type"]
+    &&headAnswer.headers()["content-length"]===String((await getAnswer.body()).length));
+  await page.goto(origin+"/status");await page.waitForFunction(()=>document.getElementById("status-summary")?.dataset.statusState!=="reading",null,{timeout:15000}).catch(()=>{});
+  const liveHealth=(await (await page.request.get(origin+"/api/v1/health",{maxRedirects:0})).json())?.result||{};
+  const statusShown=await page.evaluate(()=>({state:document.getElementById("status-summary")?.dataset.statusState||"",text:document.querySelector('[data-view="status"]')?.innerText||""}));
+  const statusAgrees=(shown,health)=>health.record_type==="service_health/v2"&&Array.isArray(health.checks)&&shown.state===(!health.ready?"down":health.checks.every(item=>item.passed)?"working":"limited")
+    &&!/\d\s*%|\buptime of\b/i.test(shown.text);
+  check("live_status_page_agrees_with_the_health_record_and_shows_no_uptime_figure",statusAgrees(statusShown,liveHealth));
+  check("status_check_rejects_a_green_page_while_not_ready_and_an_uptime_figure",!statusAgrees({...statusShown,state:"working"},{...liveHealth,ready:false})
+    &&!statusAgrees({...statusShown,text:statusShown.text+" 99.9% uptime"},liveHealth));
   const anonymous=await page.request.get(origin+"/api/v1/admin/access",{maxRedirects:0});
   check("deployed_administration_still_requires_credentials",anonymous.status()===401);
   check("no_browser_runtime_errors",errors.length===0);

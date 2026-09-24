@@ -552,6 +552,9 @@ def self_test():
     from .catalogue_serving_checks import run_checks as catalogue_serving_checks
     with tempfile.TemporaryDirectory(prefix="service-catalogue-serving-") as directory:
         catalogue_serving_checks(check, Path(directory))
+    from .web_surface_checks import run_checks as web_surface_checks
+    with tempfile.TemporaryDirectory(prefix="service-web-surfaces-") as directory:
+        web_surface_checks(check, Path(directory))
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
     # Known-wrong case for the guard above: a merge can drop the call and keep
     # the import beside it. Nothing then runs the module, and the import alone

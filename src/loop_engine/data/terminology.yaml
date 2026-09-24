@@ -407,13 +407,26 @@ vocabulary_note: >-
 surfaces:
   public_website_pages:
     definition: >-
-      The homepage, the How it works view and the shared footer of the served
-      website. A customer reads these without any technical background.
+      The homepage, the How it works view, the shared footer and the public
+      pages of September 24, 2026 of the served website: the demonstration,
+      the service status, the examples gallery, the three case studies and the
+      four audience pages. A customer reads these without any technical
+      background.
     enforcement: checked
     html_page: src/loop_engine/core/service_runtime/web_assets/index.html
     html_regions:
     - view:home
     - view:about
+    - view:demo
+    - view:status
+    - view:examples
+    - view:case-studies-data-cleanup
+    - view:case-studies-pi-and-gemma-4
+    - view:case-studies-sign-up-protection
+    - view:for-coding-agents
+    - view:for-engineering-teams
+    - view:for-comparing-tools
+    - view:for-protocol-and-client
     - footer
   website_documentation_view:
     definition: >-
@@ -427,8 +440,9 @@ surfaces:
   website_application_views:
     definition: >-
       The signed-in views of the served website: sign in, registration,
-      workspace, account, administration, client connection, first example and
-      access and data.
+      workspace, account, administration, client connection and access and
+      data. The first example moved into the public examples gallery on
+      September 24, 2026.
     enforcement: declared_only
     html_page: src/loop_engine/core/service_runtime/web_assets/index.html
     html_regions:
@@ -438,7 +452,6 @@ surfaces:
     - view:account
     - view:admin
     - view:setup
-    - view:examples
     - view:security
   technical_documents:
     definition: >-

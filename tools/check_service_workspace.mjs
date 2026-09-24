@@ -1,6 +1,7 @@
 /* Real browser + HTTP + durable-domain checks. Providers are local fixtures.
    Removed-guard controls change the served page script in memory only, never a source file. */
 import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
+import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
@@ -16,7 +17,7 @@ const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/
 const sameOriginAsset=(value,origin,path,requireVersion=true)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&(url.search===""?!requireVersion:url.search==="?v="+assetDigest(path));}catch(_){return false;}};
 const assetRoute=(path,origin)=>url=>(origin?[origin]:serviceOrigins).some(base=>sameOriginAsset(url.href,base,path,false));
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png","-start-open-desktop.png","-start-open-mobile.png","-start-closed-desktop.png","-start-closed-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png","-start-open-desktop.png","-start-open-mobile.png","-start-closed-desktop.png","-start-closed-mobile.png",...showcaseScreenshotSuffixes].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -193,7 +194,12 @@ with ExitStack() as stack:
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"billing_founding_token":founding_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject]}),flush=True)
+    # A service that also answers every hostname of the site map, with this socket's port, so a browser that resolves those names to
+    # the loopback address opens each hostname's own page at its root. The names come from the typed site map, never a copy.
+    from loop_engine.core.service_runtime.web_site_map import load_site_map
+    (root/"surfaces").mkdir(); surfaces=HttpDomainFixture(root/"surfaces")
+    surface_base,_=stack.enter_context(running_http(surfaces,display_name="Baltor",hostnames=tuple(item.hostname for item in load_site_map().hostnames)))
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"billing_founding_token":founding_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject],"surface_base":surface_base}),flush=True)
     sys.stdin.readline()
 `;
 /* The Python that runs the fixture services: PYTHON when it is set, so a worktree without its own environment can name a
@@ -273,7 +279,7 @@ const redundantAccessLabel=/join the waiting list|request access|early access/i,
 /* The public pages a visitor can open without signing in, including the three use cases the owner named on September 23, 2026
    and their hub. Each is scanned on three real services below. */
 const useCasePaths=["/use-cases","/overnight","/efficiency","/learning"];
-const accessJourneyPaths=["/",...useCasePaths,"/pricing","/how-it-works","/setup","/get-started","/waitlist","/signup","/examples","/security","/docs","/privacy","/terms","/login"];
+const accessJourneyPaths=["/",...useCasePaths,"/pricing","/how-it-works","/setup","/get-started","/waitlist","/signup","/examples","/security","/docs","/privacy","/terms","/login",...showcasePaths];
 /* The access card that leads the guide and the card of the Get started funnel are the journey itself. */
 const publicActions=target=>target.evaluate(()=>{
   const lead=document.getElementById("start-access"),card=document.getElementById("waitlist-card"),funnel=document.querySelector('[data-view="start"] .funnel-card'),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
@@ -1049,7 +1055,7 @@ try {
      view keeps the exact runtime terms, so it and its pages are scanned for the other rules only. */
   const docsIndex=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation-index.json"),"utf8"));
   const docsPagePaths=docsIndex.sections.flatMap(section=>section.pages).filter(entry=>entry.body&&entry.address.startsWith("/docs/")).map(entry=>entry.address);
-  const servedRoutes=["/",...useCasePaths,"/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...docsPagePaths];
+  const servedRoutes=["/",...useCasePaths,"/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...docsPagePaths,...showcasePaths];
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
@@ -1083,7 +1089,7 @@ try {
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  const servedFiles=["/assets/public-pages.js","/assets/public-pages.css","/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -2305,7 +2311,7 @@ try {
     await page.setViewportSize({width,height:1000});
     /* Every public page, the three use cases the owner named on September 23, 2026 and their hub included, fits the width it is
        read at and shows one view. */
-    for(const path of ["/",...useCasePaths,"/get-started","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/terms","/waitlist"]){
+    for(const path of ["/",...useCasePaths,"/get-started","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/terms","/waitlist",...showcasePaths]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -2313,7 +2319,7 @@ try {
   }
   for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/",...useCasePaths,"/get-started","/how-it-works","/pricing","/connect","/examples","/security","/privacy","/terms"]){
+    for(const path of ["/",...useCasePaths,"/get-started","/how-it-works","/pricing","/connect","/examples","/security","/privacy","/terms",...showcasePaths]){
       await page.goto(fixture.base+path); await page.evaluate(()=>document.documentElement.style.fontSize="200%");
       const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
       check(`enlarged_text_${width}_${path}`,!enlarged.overflow&&enlarged.views===1,enlarged);
@@ -3598,6 +3604,9 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
+  /* The pages of September 24, 2026 and the page each hostname shows at its root, in tools/showcase_page_checks.mjs. */
+  await runShowcasePageChecks({root,python:process.env.PYTHON||resolve(root,".venv/bin/python"),browser,context,fixture,check,mutants,output,safeError,localOnly,
+    words:{retiredAccessWords,invitationWords,publicVocabulary}});
   await page.goto(fixture.base+"/"); await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:output.replace(/\.json$/,"-desktop.png"),fullPage:true});
   await page.setViewportSize({width:390,height:1000}); await page.click("#theme");

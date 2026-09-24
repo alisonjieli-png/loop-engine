@@ -1,4 +1,4 @@
-"""Known-wrong cases for the homepage digest guard of tools/check_hosted_catalogue.py."""
+"""Known-wrong cases for the homepage and demonstration page digest guards of tools/check_hosted_catalogue.py."""
 from __future__ import annotations
 
 import sys
@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from check_hosted_catalogue import demonstration_digests, demonstration_mismatches  # noqa: E402
+from check_hosted_catalogue import demonstration_digests, demonstration_mismatches, demonstration_page_digests  # noqa: E402
 
 PAGE = ('<li data-demo-item="split_address_lines_into_components" class="is-chosen"><span>split</span>'
         '<span data-fact="digest">53dc74e3</span>…</li>'
@@ -38,6 +38,25 @@ class DemonstrationDigestTests(unittest.TestCase):
 
     def test_known_wrong_a_page_without_the_demonstration_names_nothing(self):
         self.assertEqual(demonstration_digests("<main>no demonstration</main>"), {})
+
+
+ONE_PAGE = ('<main>\n    <section data-view="home">' + PAGE + '</section>\n'
+            '    <section data-view="demo" hidden><li data-demo-item="profile_text_column_before_cleaning" class="is-chosen">'
+            '<span data-fact="digest">3274cbf5</span></li></section>\n    <section data-view="pricing" hidden>'
+            '<li data-demo-item="invented_item"><span data-fact="digest">00000000</span></li></section>\n</main>')
+
+
+class ViewDigestTests(unittest.TestCase):
+    def test_each_view_is_read_on_its_own(self):
+        self.assertEqual(demonstration_page_digests(ONE_PAGE, "home"), demonstration_digests(PAGE))
+        self.assertEqual(demonstration_page_digests(ONE_PAGE, "demo"), {"profile_text_column_before_cleaning": "3274cbf5"})
+
+    def test_known_wrong_a_page_without_the_view_names_nothing(self):
+        # A deployed page that lost the demonstration view must not borrow the homepage's items.
+        self.assertEqual(demonstration_page_digests(ONE_PAGE.replace('data-view="demo"', 'data-view="retired"'), "demo"), {})
+
+    def test_known_wrong_an_item_of_the_next_view_is_not_read_as_the_demonstration(self):
+        self.assertNotIn("invented_item", demonstration_page_digests(ONE_PAGE, "demo"))
 
 
 if __name__ == "__main__":

@@ -7169,6 +7169,15 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: '2026-09-24'
     expires_on: '2027-09-24'
+  - finding_id: hardcoding.91cbc8db8ca94560a7e699d0
+    owner: loop_engine.core.service_runtime.web_site_map:SiteMap.canonical_origin
+    rationale: The scheme of the website's canonical origin. Every page names its canonical address on the
+      canonical hostname the typed site map declares, and that address is always https; the hostname itself
+      is data in web_site_map.json, so the scheme is the only fixed part. It opens no connection and chooses
+      no provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23

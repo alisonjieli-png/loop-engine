@@ -3,11 +3,13 @@
 Kind: passive typed records with their reader. This module owns two packaged
 records and nothing that serves them. `web_site_map.json` beside it is the site
 map: every page the website serves (its address, the view that shows it, its
-title, its group, the places that link to it or the reason nothing does, its
-scroll budget), the header entries in order for a visitor who is signed out, a
-signed-in person and an operator, the footer groups and their links, the base
-row of the footer, the page each hostname opens, and a dated row for everything
-the website removed on purpose. `web_layout_standard.json` holds the measured
+title and the one-line description a search engine shows, its group, the places
+that link to it or the reason nothing does, its scroll budget, and whether a
+search engine may list it), the picture a shared link shows, the header entries
+in order for a visitor who is signed out, a signed-in person and an operator,
+the footer groups and their links, the base row of the footer, the page each
+hostname opens at its root address, and a dated row for everything the website
+removed on purpose. `web_layout_standard.json` holds the measured
 rules of `docs/guides/website-design-standards.md`: the widths a check measures
 at, the section padding values it allows, the containers, the scroll budget,
 the text contrast, the touch target size, the typefaces and the price wording.
@@ -16,14 +18,23 @@ Both records are refused here, before any check uses them, when they carry a
 record version this reader was not written for, an unknown or a missing field,
 a duplicate address, a header or footer link to an address that is not a page,
 a page that nothing links to without a written reason, a page that says it is
-linked from the header or the footer when that list does not hold it, or a
-removal without a date and a reason. `tools/test_website_site_map.py` compares
+linked from the header or the footer when that list does not hold it, a page
+that only earlier links reach and still asks to be listed by a search engine,
+two listed pages with the same title or the same description, a hostname whose
+root is not a linked page, or a removal without a date and a reason. `tools/test_website_site_map.py` compares
 the site map with the pages the service serves, and
 `tools/check_website_layout.mjs` measures the served pages in a browser; both
 read the records through `load_site_map` and `load_layout_standard`.
 
 Nothing here serves a page, reads a request or grants authority. The served
-address table stays in `web_pages.py`.
+address table stays in `web_pages.py`, which reads this record to write each
+page's title, description and canonical address, to choose the page a hostname
+shows at its root, and to write `robots.txt` and `sitemap.xml`. This module
+imports no other service module, so that reading it never starts the service.
+
+Version 2, September 24, 2026, added the description, the listing choice and the
+shared-link picture. A version 1 record lacks them and is refused, because a
+reader that guessed them would publish a description nobody wrote.
 """
 from __future__ import annotations
 
@@ -32,7 +43,7 @@ import json
 import re
 from typing import Any
 
-SITE_MAP_RECORD_TYPE = "service_web_site_map/v1"
+SITE_MAP_RECORD_TYPE = "service_web_site_map/v2"
 LAYOUT_STANDARD_RECORD_TYPE = "service_web_layout_standard/v1"
 #: The packaged files that hold the two records, beside this module.
 SITE_MAP_FILE = "web_site_map.json"
@@ -49,6 +60,8 @@ FOOTER_ROLES = ("link",)
 SCROLL_BUDGETS = ("long", "page", "documentation")
 #: What a dated removal row can name.
 REMOVAL_KINDS = ("page", "header_link", "footer_link", "section")
+#: The longest description a page may carry. Search engines cut a longer one short.
+DESCRIPTION_MAX_CHARACTERS = 160
 #: The window sizes the layout standard names: a desktop, a laptop, the widest screen that folds the header
 #: into its menu, a phone upright and a phone held sideways.
 VIEWPORTS = ("desktop", "laptop", "menu", "phone", "landscape")
@@ -67,16 +80,23 @@ class SiteMapError(ValueError):
 
 @dataclass(frozen=True)
 class SitePage:
-    """One page the website serves, and the one view that shows it."""
+    """One page the website serves, and the one view that shows it.
+
+    `indexed` says whether a search engine may list the page: the page is in
+    `sitemap.xml` and carries no `noindex` tag. A page that only earlier links
+    or messages reach is never listed.
+    """
 
     address: str
     view: str
     title: str
+    description: str
     group: str
     linked_from: tuple[str, ...]
     unlinked_reason: str
     scroll_budget: str
     price_in_first_screen: bool
+    indexed: bool
 
 
 @dataclass(frozen=True)
@@ -140,6 +160,7 @@ class SiteMap:
     decided_by: str
     display_name: str
     canonical_hostname: str
+    social_image: str
     groups: tuple[str, ...]
     pages: tuple[SitePage, ...]
     header: dict
@@ -152,6 +173,25 @@ class SiteMap:
     def page(self, address: str) -> SitePage | None:
         """The page at an exact address, or None."""
         return next((page for page in self.pages if page.address == address), None)
+
+    @property
+    def canonical_origin(self) -> str:
+        """The one origin every page names as its canonical address."""
+        return "https://" + self.canonical_hostname
+
+    def root_address(self, host: str | None) -> str:
+        """The address of the page a request's Host shows at the root address "/".
+
+        The port and the letter case are ignored, and so is one trailing dot. A
+        hostname the site map does not name, an address and no Host at all show
+        the homepage, so a new hostname can never show a page nobody chose for it.
+        """
+        name = hostname_of(host)
+        return next((surface.address for surface in self.hostnames if surface.hostname == name), "/")
+
+    def indexed_pages(self) -> tuple[SitePage, ...]:
+        """The pages a search engine may list, in site map order."""
+        return tuple(page for page in self.pages if page.indexed)
 
     def header_paths(self) -> dict:
         """The addresses each header state links to, without fragments."""
@@ -197,6 +237,25 @@ class LayoutStandard:
     price: dict
 
 
+def hostname_of(host: str | None) -> str:
+    """The hostname of a Host header value, in lower case, without a port or a final dot.
+
+    An address in brackets, an IPv6 address, keeps no hostname, because no
+    hostname surface is ever an address. A value with a user part, a path or
+    white space is not a hostname either.
+    """
+    if not isinstance(host, str):
+        return ""
+    value = host.strip().lower()
+    if not value or value.startswith("[") or any(mark in value for mark in "@/\\ \t"):
+        return ""
+    name, colon, port = value.rpartition(":") if value.count(":") == 1 else (value, "", "")
+    if colon and not port.isdigit():
+        return ""
+    name = name[:-1] if name.endswith(".") else name
+    return name if _HOSTNAME.fullmatch(name) else ""
+
+
 def _fields(value: Any, where: str, required: tuple[str, ...]) -> dict:
     """An object with exactly the named fields, or a refusal naming the difference."""
     if not isinstance(value, dict):
@@ -229,8 +288,8 @@ def _unique(values: list, where: str) -> None:
 
 
 def _page(value: Any, where: str, groups: tuple[str, ...]) -> SitePage:
-    row = _fields(value, where, ("address", "view", "title", "group", "linked_from", "unlinked_reason",
-                                 "scroll_budget", "price_in_first_screen"))
+    row = _fields(value, where, ("address", "view", "title", "description", "group", "linked_from", "unlinked_reason",
+                                 "scroll_budget", "price_in_first_screen", "indexed"))
     address = _text(row["address"], where + ".address", _ADDRESS)
     places = tuple(_text(place, where + ".linked_from", None) for place in _list(row["linked_from"], where + ".linked_from", True))
     if any(place not in LINK_PLACES for place in places):
@@ -243,10 +302,16 @@ def _page(value: Any, where: str, groups: tuple[str, ...]) -> SitePage:
         raise SiteMapError(f"{where}.group must be one of {groups}")
     if row["scroll_budget"] not in SCROLL_BUDGETS:
         raise SiteMapError(f"{where}.scroll_budget must be one of {SCROLL_BUDGETS}")
-    if not isinstance(row["price_in_first_screen"], bool):
-        raise SiteMapError(f"{where}.price_in_first_screen must be true or false")
+    if not isinstance(row["price_in_first_screen"], bool) or not isinstance(row["indexed"], bool):
+        raise SiteMapError(f"{where}.price_in_first_screen and {where}.indexed must be true or false")
+    description = _text(row["description"], where + ".description")
+    if len(description) > DESCRIPTION_MAX_CHARACTERS or any(mark in description for mark in "\n\r\t<>"):
+        raise SiteMapError(f"{where}.description is one plain line of at most {DESCRIPTION_MAX_CHARACTERS} characters")
+    if reason and row["indexed"]:
+        raise SiteMapError(f"{where}: a page that only earlier links or messages reach is never listed by a search engine")
     return SitePage(address, _text(row["view"], where + ".view", _TOKEN), _text(row["title"], where + ".title"),
-                    row["group"], places, reason, row["scroll_budget"], row["price_in_first_screen"])
+                    description, row["group"], places, reason, row["scroll_budget"], row["price_in_first_screen"],
+                    row["indexed"])
 
 
 def _entry(value: Any, where: str) -> NavigationEntry:
@@ -324,12 +389,19 @@ def _consistency(site_map: SiteMap) -> None:
     for surface in site_map.hostnames:
         if surface.address not in addresses:
             raise SiteMapError(f"hostname {surface.hostname} opens {surface.address}, which is not a page")
+        if site_map.page(surface.address).unlinked_reason:
+            raise SiteMapError(f"hostname {surface.hostname} opens {surface.address}, which only earlier links reach")
+        if surface.hostname == site_map.canonical_hostname and surface.address != "/":
+            raise SiteMapError(f"the canonical hostname {surface.hostname} opens the homepage at its root")
+    listed = site_map.indexed_pages()
+    _unique([page.title for page in listed], "the titles of listed pages")
+    _unique([page.description for page in listed], "the descriptions of listed pages")
 
 
 def site_map_from_record(record: Any) -> SiteMap:
     """Read a site map record, or refuse it with the reason."""
     row = _fields(record, "site map", ("record_type", "decided_on", "decided_by", "display_name", "canonical_hostname",
-                                       "groups", "pages", "header", "footer", "hostnames", "removed"))
+                                       "social_image", "groups", "pages", "header", "footer", "hostnames", "removed"))
     if row["record_type"] != SITE_MAP_RECORD_TYPE:
         raise SiteMapError(f"this reader reads {SITE_MAP_RECORD_TYPE}, not {row['record_type']!r}")
     groups = tuple(_text(name, "site map.groups") for name in _list(row["groups"], "site map.groups"))
@@ -347,9 +419,12 @@ def site_map_from_record(record: Any) -> SiteMap:
                                          _text(surface["anchor"], f"site map.hostnames[{index}].anchor", _TOKEN, empty=True)))
     _unique([surface.hostname for surface in hostnames], "site map.hostnames")
     removed = tuple(_removal(item, f"site map.removed[{index}]") for index, item in enumerate(_list(row["removed"], "site map.removed", True)))
+    social_image = _text(row["social_image"], "site map.social_image", _HREF)
+    if not social_image.startswith("/assets/") or "#" in social_image:
+        raise SiteMapError("site map.social_image is a packaged picture under /assets/")
     site_map = SiteMap(SITE_MAP_RECORD_TYPE, _text(row["decided_on"], "site map.decided_on", _DATE),
                        _text(row["decided_by"], "site map.decided_by"), _text(row["display_name"], "site map.display_name"),
-                       _text(row["canonical_hostname"], "site map.canonical_hostname", _HOSTNAME), groups, pages,
+                       _text(row["canonical_hostname"], "site map.canonical_hostname", _HOSTNAME), social_image, groups, pages,
                        _header(row["header"], "site map.header"), footer_brand, footer_groups, base_row,
                        tuple(hostnames), removed)
     _consistency(site_map)

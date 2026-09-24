@@ -7,12 +7,23 @@ transport, no credential and no interface address; `http` keeps those.
 It was separated from `http` on September 21, 2026, because that module had
 grown past this repository's length convention and every new page made it
 longer. Adding a page is now a change to a small module that serves pages.
+
+Since September 24, 2026 it also writes what a page says about itself before
+it runs any script: its own title and description, its canonical address on
+the canonical hostname, the tags a shared link shows, whether a search engine
+may list it, and, on a hostname whose root is another page, which page that
+root shows. It reads all of that from the typed site map (`web_site_map`), the
+one record of the website's pages, and writes `robots.txt` and `sitemap.xml`
+from the same record, so no second list of pages or hostnames exists.
 """
 from __future__ import annotations
 
 from functools import lru_cache
 from hashlib import sha256
 from html import escape
+import re
+
+from .web_site_map import SiteMap, load_site_map
 
 HTML_MEDIA_TYPE = "text/html"
 #: The name of this deployment is written into a served page here. A packaged
@@ -52,6 +63,17 @@ WEB_ASSETS = {
     "/use-cases": ("index.html", HTML_MEDIA_TYPE), "/overnight": ("index.html", HTML_MEDIA_TYPE),
     "/efficiency": ("index.html", HTML_MEDIA_TYPE), "/learning": ("index.html", HTML_MEDIA_TYPE),
     "/waitlist": ("index.html", HTML_MEDIA_TYPE),
+    # The four audience pages of the September 23 site map, restored on September 24, 2026.
+    "/for/coding-agents": ("index.html", HTML_MEDIA_TYPE), "/for/engineering-teams": ("index.html", HTML_MEDIA_TYPE),
+    "/for/comparing-tools": ("index.html", HTML_MEDIA_TYPE), "/for/protocol-and-client": ("index.html", HTML_MEDIA_TYPE),
+    # The showcase of September 24, 2026: one task shown step by step, three case studies written from saved
+    # evidence, and the service status read live. demo.baltor.ai and status.baltor.ai open two of them at their root.
+    "/demo": ("index.html", HTML_MEDIA_TYPE), "/status": ("index.html", HTML_MEDIA_TYPE),
+    "/case-studies/data-cleanup": ("index.html", HTML_MEDIA_TYPE),
+    "/case-studies/pi-and-gemma-4": ("index.html", HTML_MEDIA_TYPE),
+    "/case-studies/sign-up-protection": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/public-pages.css": ("public-pages.css", "text/css"),
+    "/assets/public-pages.js": ("public-pages.js", "text/javascript"),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
     # The Baltor extension for Pi, one TypeScript file the Pi recipe tells a customer to save in .pi/extensions.
     # It is served as text so a browser shows it for reading before it is saved.
@@ -102,14 +124,25 @@ WEB_ASSETS = {
     # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }
-# Only declared, packaged non-page files are public cache entries. Browser
-# account pages and every API response retain the transport's no-store rule.
+#: Files written from the site map rather than packaged, with their media types.
+#: Each answers GET and HEAD like a packaged file, with a strong validator.
+GENERATED_WEB_FILES = {
+    "/robots.txt": "text/plain; charset=utf-8",
+    "/sitemap.xml": "application/xml",
+}
+#: Addresses a crawler is asked to leave alone besides the unlisted pages: the
+#: interface routes, the protocol endpoint and its authorization metadata.
+ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/")
+# Only declared non-page files, packaged or generated, are public cache
+# entries. Browser account pages and every API response retain the transport's
+# no-store rule.
 CACHEABLE_WEB_ASSETS = frozenset(path for path, (_name, media) in WEB_ASSETS.items()
-                                 if media != HTML_MEDIA_TYPE)
+                                 if media != HTML_MEDIA_TYPE) | frozenset(GENERATED_WEB_FILES)
 PUBLIC_ASSET_CACHE_CONTROL = "public, max-age=300"
 MISSING_ADDRESS_PAGE = """<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
 <title>{name} | Address not found</title><link rel="stylesheet" href="/assets/service.css"></head>
 <body><main id="main" class="reading" style="padding:4rem 4vw">
 <p class="eyebrow">Address not found</p>
@@ -140,7 +173,117 @@ def asset_etag(body):
 def packaged_asset_versions():
     """One immutable release's asset identities; a new image starts a new process."""
     return tuple((path, sha256(read_packaged_asset(WEB_ASSETS[path][0])).hexdigest())
-                 for path in sorted(CACHEABLE_WEB_ASSETS))
+                 for path in sorted(CACHEABLE_WEB_ASSETS) if path in WEB_ASSETS)
+
+
+@lru_cache(maxsize=1)
+def packaged_site_map():
+    """The packaged site map, read once by its typed reader; a new release starts a new process."""
+    return load_site_map()
+
+
+#: The head elements this module writes into every page the site map lists, whether the page is a view of the one
+#: page application or a file of its own. Any of them a page already carries, in any attribute order or quoting, is
+#: taken out first, so a page never ends up with two titles, two descriptions or two canonical addresses.
+_HEAD_END = re.compile(rb"</head\s*>", re.IGNORECASE)
+_TITLE = re.compile(rb"\s*<title\b[^>]*>.*?</title\s*>", re.IGNORECASE | re.DOTALL)
+_WRITTEN_TAGS = re.compile(rb"""\s*<(?:meta\b[^>]*\b(?:name\s*=\s*["']?(?:description|robots|twitter:[^"'\s>]*|baltor-root-address)"""
+                           rb"""|property\s*=\s*["']?og:[^"'\s>]*)|link\b[^>]*\brel\s*=\s*["']?canonical)\b[^>]*>""", re.IGNORECASE)
+
+
+class PageHeadError(ValueError):
+    """A page this module cannot write a head into, with the reason."""
+
+
+def page_head(site_map: SiteMap, path: str, host: str | None, display_name: str):
+    """The head values of the page an address shows on a hostname, or None for an address that is not a page.
+
+    At the root address the Host decides the page, through the site map's
+    hostname table; every other address shows its own page on every hostname.
+    The canonical address is always on the canonical hostname.
+    """
+    root = site_map.root_address(host)
+    address = root if path == "/" else path
+    page = site_map.page(address)
+    if page is None:
+        return None
+    return {"title": display_name + " | " + page.title, "description": page.description,
+            "canonical": site_map.canonical_origin + page.address, "indexed": page.indexed,
+            "image": site_map.canonical_origin + site_map.social_image, "site_name": display_name,
+            "root_address": root, "view": page.view}
+
+
+#: The one view the packaged one-page application shows before its script runs, and the mark of a hidden view.
+HOME_VIEW = b'<section data-view="home">'
+_HIDDEN_VIEW = b'<section data-view="%s" hidden'
+
+
+def with_view_shown(body: bytes, view: str) -> bytes:
+    """The one-page application with the page's own view shown and the homepage hidden, before any script runs.
+
+    Until September 24, 2026 every address was served with the homepage shown,
+    so a reader without the script and a crawler that does not run it saw the
+    homepage at every address, and a reader with the script saw it flash first.
+    A page that is not a view of the one-page application, or whose markers are
+    not each found once, is returned unchanged.
+    """
+    hidden = _HIDDEN_VIEW % view.encode("ascii")
+    if view == "home" or body.count(HOME_VIEW) != 1 or body.count(hidden) != 1:
+        return body
+    return body.replace(HOME_VIEW, b'<section data-view="home" hidden>', 1).replace(hidden, hidden[:-len(b" hidden")], 1)
+
+
+def with_page_head(body: bytes, head) -> bytes:
+    """The page bytes with its own title, description, canonical address and shared-link tags.
+
+    The title, the description and every tag this module writes are taken out
+    of the page's head wherever they stand, and written once just before the
+    head closes. A page without exactly one closing head tag is refused, so a
+    fragment or a broken page is never given a head in the wrong place.
+    """
+    ends = _HEAD_END.findall(body)
+    if len(ends) != 1:
+        raise PageHeadError("a page carries exactly one closing head tag")
+    before, closing, after = body.partition(ends[0])
+    before = _WRITTEN_TAGS.sub(b"", _TITLE.sub(b"", before))
+    value = lambda text: escape(text, quote=True).encode("utf-8")
+    tags = [b"<title>" + value(head["title"]) + b"</title>",
+            b'<meta name="description" content="' + value(head["description"]) + b'">',
+            b'<link rel="canonical" href="' + value(head["canonical"]) + b'">',
+            b'<meta property="og:type" content="website">',
+            b'<meta property="og:site_name" content="' + value(head["site_name"]) + b'">',
+            b'<meta property="og:title" content="' + value(head["title"]) + b'">',
+            b'<meta property="og:description" content="' + value(head["description"]) + b'">',
+            b'<meta property="og:url" content="' + value(head["canonical"]) + b'">',
+            b'<meta property="og:image" content="' + value(head["image"]) + b'">',
+            b'<meta name="twitter:card" content="summary">']
+    if not head["indexed"]:
+        tags.append(b'<meta name="robots" content="noindex">')
+    if head["root_address"] != "/":
+        tags.append(b'<meta name="baltor-root-address" content="' + value(head["root_address"]) + b'">')
+    return before.rstrip() + b"\n" + b"".join(b"  " + tag + b"\n" for tag in tags) + closing + after
+
+
+def robots_text(site_map: SiteMap) -> bytes:
+    """`robots.txt`: the unlisted pages and the interface routes are left alone, and the site map is named."""
+    lines = ["# " + site_map.display_name + ". Written from the website's site map; do not edit by hand.",
+             "User-agent: *"]
+    lines += ["Disallow: " + prefix for prefix in ROBOTS_DISALLOWED_PREFIXES]
+    lines += ["Disallow: " + page.address for page in site_map.pages if not page.indexed]
+    lines += ["", "Sitemap: " + site_map.canonical_origin + "/sitemap.xml"]
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
+def sitemap_xml(site_map: SiteMap) -> bytes:
+    """`sitemap.xml`: every page a search engine may list, at its canonical address, in site map order."""
+    rows = ["  <url><loc>" + escape(site_map.canonical_origin + page.address, quote=False) + "</loc></url>"
+            for page in site_map.indexed_pages()]
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            + "\n".join(rows) + "\n</urlset>\n").encode("utf-8")
+
+
+GENERATORS = {"/robots.txt": robots_text, "/sitemap.xml": sitemap_xml}
 
 
 def version_asset_references(body):
@@ -157,19 +300,32 @@ def validator_matches(value, etag):
                for part in value.split(","))
 
 
-def served_asset(path, method, display_name):
+def served_asset(path, method, display_name, host=None, site_map=None):
     """Return `(body, media_type)` for a served address, or None when this service serves none.
 
     The deployment's name is written into a served page here, so that a caller
-    does not have to know which packaged files carry the placeholder.
+    does not have to know which packaged files carry the placeholder. So are the
+    page's own head values, for the page the address shows on the request's
+    Host. `site_map` replaces the packaged site map for a check only.
     """
-    if method not in ("GET", "HEAD") or path not in WEB_ASSETS:
+    if method not in ("GET", "HEAD"):
         return None
-    name, media_type = WEB_ASSETS[path]
+    site_map = site_map or packaged_site_map()
+    if path in GENERATED_WEB_FILES:
+        return GENERATORS[path](site_map), GENERATED_WEB_FILES[path]
+    if path not in WEB_ASSETS:
+        return None
+    # A hostname whose root is another page serves that page's own file at its root, so a page with a file of its
+    # own opens there as surely as a view of the one page application does.
+    root = site_map.root_address(host) if path == "/" else path
+    name, media_type = WEB_ASSETS[root if root in WEB_ASSETS else path]
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
         body = version_asset_references(body)
+        head = page_head(site_map, path, host, display_name)
+        if head is not None:
+            body = with_view_shown(with_page_head(body, head), head["view"])
     return body, media_type
 
 

@@ -211,6 +211,56 @@ listed in `web_site_map.json` beside `web_pages.py`, and the measured rules in
 `web_layout_standard.json`. A page, link or section leaves the website only
 with a dated removal row in that record.
 
+## Hostnames, page heads, robots.txt and sitemap.xml
+
+Since September 24, 2026 the service writes each page's own head before any
+script runs, from the typed site map (`web_site_map.json`, record
+`service_web_site_map/v2`): the title, the one-line description, the
+canonical address on `https://baltor.ai`, the Open Graph and card tags a
+shared link shows, and `noindex` for a page a search engine may not list. The
+title, the description and those tags are taken out of a page's own head
+first, so a page with a file of its own, not only a view of `index.html`,
+ends with one of each once the site map lists it.
+
+The site map's hostname table decides the page a hostname shows at its root
+address: `docs.baltor.ai` the documentation, `status.baltor.ai` the service
+status, `examples.baltor.ai` the examples gallery and `demo.baltor.ai` the
+demonstration. `baltor.ai`, `www.baltor.ai` and `app.baltor.ai` show the
+homepage, and so does a hostname the table does not name. The root serves
+exactly what the page's own address serves on that hostname, with a
+`baltor-root-address` tag that `service.js` reads to show the view and to send
+the homepage links to the canonical hostname. Every other address shows its
+own page on every hostname.
+
+`/robots.txt` and `/sitemap.xml` are written from the same record: the
+sitemap lists every page marked `indexed` at its canonical address, and
+robots.txt leaves out the interface routes and every unlisted page. Both
+answer HEAD like GET, with a strong validator. The checks are
+`web_surface_checks.py` in the service self-test and
+`tools/showcase_page_checks.mjs` in the browser suite.
+
+## The showcase pages
+
+`public-pages.js` and `public-pages.css` serve the pages of September 24,
+2026:
+
+- `/demo`, one data cleanup task in five steps. Each step's search results,
+  sizes and digests are recorded from this release's library; each step's
+  folder is an example layout at the native skill location of the harness the
+  reader picks. `tools/test_showcase_pages.py` reruns every search against the
+  packaged library and compares the folder roots with
+  `tools/install_selected_material.py`.
+- `/status`, read by the browser from `/api/v1/health` and
+  `/api/v1/capabilities`. It shows readiness, each check, the served catalogue
+  release and its item count, whether new accounts and subscriptions are open,
+  and when it read them. It keeps no history and shows no uptime figure.
+- `/examples`, the gallery: the demonstration, the case studies and the first
+  search a reader can try in the workspace.
+- Three case studies under `/case-studies/`, each naming its evidence files in
+  `data-evidence`. Every number a case study shows must be a number of those
+  files.
+- The four audience pages under `/for/`.
+
 ## Customer documentation
 
 The versioned `documentation-index.json` supplies the four sections and seven
