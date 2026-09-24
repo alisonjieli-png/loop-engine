@@ -97,45 +97,90 @@ Use cases we are building demonstrations for, each with and without Baltor:
   transformations;
 - a data science competition taken from task to submission.
 
-## Status on September 22, 2026
+## Status on September 24, 2026
 
-Working on the live service today:
+Working on the live service today (Fly release 24):
 
-- the website and account sign-in for invited people;
-- personal client keys and copy-ready connection settings for OpenCode, Codex
-  and Claude Code;
-- the Model Context Protocol endpoint (protocol version `2025-11-25`), with
-  search that returns references and downloads that check access and bytes;
-- a first reviewed collection: 43 items approved by three independent
-  reviewers are in the deployed release.
+- public sign-up at <https://baltor.ai/get-started>: your email address, then
+  the link we send you, then a password you choose. The first 10 accounts
+  hold Baltor Pro free each month;
+- Baltor Pro at $29 a month through Stripe checkout, cancelled from your
+  account page;
+- personal client keys, and ready connection entries for Claude Code, Codex,
+  OpenCode, Pi (through a small Baltor extension) and the Baltor Harness (with
+  one manual step);
+- the Model Context Protocol endpoint, speaking protocol revisions
+  `2025-11-25` and `2026-07-28`, with search that returns references and
+  downloads that check access and bytes;
+- a reviewed library of 43 skills, each approved by three independent
+  reviewers from model families other than the one that wrote it;
+- an Administration view where a superadmin sees every account and can grant
+  or revoke free monthly Baltor Pro and switch an account off or on. Staff
+  roles are fixed in code: superadmin, developer and analytics.
 
 Not open yet:
 
-- public registration and email sign-up (accounts open in small groups);
-- payment (the plan is Baltor Pro, 29 United States dollars a month; the
-  payment account is ready and nobody has been charged);
-- the account dashboard pages for renewing, cancelling, exporting and deleting;
-- a free allowance for accounts without a subscription;
-- starting a fresh standard harness for each step from the engine.
+- items with more than one file, placed as a package in your harness working
+  directory;
+- the engine starting a fresh standard harness for each step, and searching
+  the library by itself;
+- a separate page for each of the demo, docs, status and examples hostnames.
 
 The [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section records the running release. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
 lists what is being built now, next and later, generated from the
 [roadmap](docs/roadmap/roadmap.yaml).
 
+## How the library grows
+
+Every item starts as a candidate, and a candidate is served only after an
+independent review approves it:
+
+```text
+Library item
+├── Sources
+│   ├── original methods written by the first-party generation waves
+│   ├── generation lanes on Ollama Cloud models and a Gemma 4 model server
+│   └── outside projects, used only as inspiration unless their licence
+│       allows copying
+├── Deterministic pre-checks: layout, digests, secrets, network use, effects,
+│   duplicates, and each package's own tests in a sandbox with no network
+├── Review panel: three approvals from three model families that did not
+│   write the item, and no rejection
+└── Catalogue release: published to the running service without a redeploy,
+    with the previous release kept for rollback
+```
+
+The candidate pool holds several thousand files across skills, instruction
+files, subagents, commands, hooks, rules, plugin manifests, protocol server
+configurations, permission settings, step packets and verifiers. None of them
+is served until the review approves it. The library target is 10,000
+approved items first and 100,000 after that.
+
 ## Connect your harness
 
-1. Get a personal client key from your account page, or from the person who
-   invited you.
-2. Put it in the environment variable `BALTOR_SERVICE_TOKEN`. A connection
-   entry names that variable and never contains the key.
-3. Add the Baltor server to your harness. The Connect page on
-   <https://baltor.ai> gives the exact entry for OpenCode, Codex and Claude
-   Code, and [getting set up](docs/guides/service-getting-set-up.md) explains
-   each one.
+1. Create your account at <https://baltor.ai/get-started>, then subscribe to
+   Baltor Pro from your account page, unless your account already includes
+   it.
+2. Create a personal client key on your account page and put it in the
+   environment variable `BALTOR_SERVICE_TOKEN`. A connection entry names that
+   variable and never contains the key.
+3. Add Baltor to your harness. The Get set up page on <https://baltor.ai/setup>
+   gives the exact entry for Claude Code, Codex, OpenCode, Pi and the Baltor
+   Harness, and [getting set up](docs/guides/service-getting-set-up.md)
+   explains each one.
 
 Revoking a key stops its next request. It does not recall files that were
 already downloaded.
+
+## Case studies
+
+- [Data cleanup with and without Baltor](case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md)
+  measures what library material did to a cheap model's cleanup work,
+  including the cases where it cost more tokens or made the result worse.
+- [Release 24 account journeys](artifacts/release-24-2026-09-24/README.md)
+  record how sign-up was checked on the live site, including an attempt to
+  take over an address through the identity provider's own sign-up.
 
 ## Components and engines
 
