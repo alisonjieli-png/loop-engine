@@ -82,12 +82,12 @@ NAME_TOKEN = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$")
 #: A refusal code is one lowercase word, with or without underscores.
 CODE_TOKEN = re.compile(r"^[a-z][a-z0-9_]*$")
 ADDRESS = re.compile(r"^/(?:mcp|api/[A-Za-z0-9/_.-]*|\.well-known/[A-Za-z0-9/_.-]*"
-                     r"|assets/[A-Za-z0-9._-]+|[a-z][a-z0-9-]*)$")
+                     r"|assets/[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*|[a-z][a-z0-9-]*)$")
 INLINE_CODE = re.compile(r"`([^`\n]+)`")
 FENCE = re.compile(r"^```([A-Za-z0-9+-]*)\s*$")
 TABLE_ROW = re.compile(r"^\|(.+)\|\s*$")
 #: Programs whose command lines this check verifies.
-CHECKED_PROGRAMS = ("loop-engine", "codex", "opencode", "claude")
+CHECKED_PROGRAMS = ("loop-engine", "codex", "opencode", "claude", "pi")
 
 
 class DocumentationDrift(Exception):
@@ -448,6 +448,9 @@ def check(root: Path, pages=DOCUMENTED_PAGES) -> dict:
                     refuse(page, "command", command, "the command line interface has no such command")
                 elif words[1] == "service" and (len(words) < 3 or words[2] not in facts["service_commands"]):
                     refuse(page, "command", command, "the service command accepts no such operation")
+                # The Baltor Harness recipe is confirmed with a command of the engine itself.
+                elif command in facts["recipe_commands"]:
+                    documented_recipes.add(facts["recipe_commands"][command])
             elif command not in facts["recipe_commands"]:
                 refuse(page, "command", command, "no client recipe publishes this verification command")
             else:

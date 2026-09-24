@@ -105,17 +105,17 @@ refusal instead uses the protocol's own error object.
 | `/api/v1/account/signup` | POST | Account creation when enabled. |
 | `/api/v1/account/recovery` | POST | Account recovery when available. |
 | `/api/v1/account/promotion` | POST | Redeem an enabled promotion. |
-| `/api/v1/waitlist` | POST | Request an invitation. |
+| `/api/v1/waitlist` | POST | Keep an address until its account can be created. |
 | `/api/v1/admin/access` | GET, POST | Authorized operator token administration. |
-| `/api/v1/admin/waitlist` | GET, POST | Authorized invitation administration. |
+| `/api/v1/admin/waitlist` | GET, POST | Authorized administration of kept addresses. |
 | `/api/v1/billing/plans` | GET | Plans offered to the authenticated account. |
 | `/api/v1/billing/checkout` | POST | Create an authorized checkout session. |
 | `/api/v1/billing/portal` | POST | Open an authorized customer portal session. |
 | `/api/v1/billing/webhook` | POST | Receive provider events with signature verification. |
 
 An address can exist while its feature is unavailable. Check capabilities and
-the returned refusal. Authorization requirements differ: a public invitation
-request is not an operator decision, and a billing webhook uses its provider
+the returned refusal. Authorization requirements differ: a kept address is not
+an operator decision, and a billing webhook uses its provider
 signature. A client token is not a browser-management session.
 
 The external authorization metadata addresses

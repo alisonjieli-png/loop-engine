@@ -37,7 +37,8 @@ const argv=process.argv.slice(2),mode=argv[0]==="--local"?"local":argv[0]==="--u
 const given=mode==="url"?argv[1]:null,output=resolve((mode==="url"?argv[2]:argv[1])||"");
 if(!mode||(mode==="url"&&(!given||!given.startsWith("https://")||new URL(given).origin!==given))||!output.endsWith(".json")||existsSync(output))
   throw new Error(usage+" The origin has no path, and the report path must be new.");
-const python=existsSync(resolve(root,".venv/bin/python"))?resolve(root,".venv/bin/python"):"python3";
+/* PYTHON names a qualified environment when the checkout has no .venv of its own, as a separate worktree may not. */
+const python=process.env.PYTHON||(existsSync(resolve(root,".venv/bin/python"))?resolve(root,".venv/bin/python"):"python3");
 const env={...process.env,PYTHONPATH:resolve(root,"src")};
 const READER=`import json
 from loop_engine.core.service_runtime.web_site_map import as_plain_record, load_layout_standard, load_site_map

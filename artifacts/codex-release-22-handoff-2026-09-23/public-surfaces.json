@@ -1,0 +1,770 @@
+{
+  "record_type": "public_release_surfaces/v1",
+  "release_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "method": "sequential public GET; no redirects; no service credentials or cookies",
+  "service_credentials_used": false,
+  "account_actions": false,
+  "rows": [
+    {
+      "host": "baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:16.569175+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:16.804442+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:16.974084+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:17.239021+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "www.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:17.570694+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "www.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:17.846920+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "www.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:18.079625+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "www.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:18.487096+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "app.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:18.744969+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "app.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:19.033161+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "app.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:19.219250+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "app.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:19.499938+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "baltor-pilot.fly.dev",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:19.763970+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "baltor-pilot.fly.dev",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:20.013239+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "baltor-pilot.fly.dev",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:20.181359+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "baltor-pilot.fly.dev",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:20.621273+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "demo.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:20.944451+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "demo.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:21.236176+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "demo.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:21.400526+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "demo.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:21.660082+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "examples.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:21.922280+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "examples.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:22.249783+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "examples.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:22.412833+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "examples.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:22.657565+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "docs.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:23.012309+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "docs.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:23.218290+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "docs.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:23.404453+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "docs.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:23.802981+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "status.baltor.ai",
+      "path": "/api/v1/health",
+      "observed_at": "2026-09-23T20:11:24.178343+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 1703,
+      "sha256": "e21ad09942b0be442363ee452acb0bc4b103418271a56f57520ab35b9a95a1b2",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_health/v2",
+      "ready": true
+    },
+    {
+      "host": "status.baltor.ai",
+      "path": "/api/v1/capabilities",
+      "observed_at": "2026-09-23T20:11:24.512373+00:00",
+      "status": 200,
+      "content_type": "application/json",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 2671,
+      "sha256": "d5007afb820d4489d38713b8a292782fe963af8575aa9de93afde947bb0a1977",
+      "truncated": false,
+      "record_type": "service_http_result/v1",
+      "result_record_type": "service_capabilities/v1",
+      "api_version": "v1",
+      "capabilities": {
+        "website": {
+          "display_name": "Baltor",
+          "registration_available": false,
+          "client_access_available": true,
+          "waitlist_available": true
+        },
+        "protocol": {
+          "transport": "streamable_http",
+          "versions": [
+            "2025-11-25",
+            "2026-07-28"
+          ],
+          "handshake_versions": [
+            "2025-11-25"
+          ],
+          "per_request_versions": [
+            "2026-07-28"
+          ],
+          "sdk_version": "2.2.0",
+          "session_state": "stateless"
+        },
+        "retrieval": {
+          "request_record_type": "service_retrieval_request/v2",
+          "authority_effects": "metadata_eligibility_only",
+          "modes": [
+            "lexical",
+            "hybrid"
+          ],
+          "lexical_backend": "sqlite_fts5",
+          "vector_backend": "deterministic_character_hash",
+          "semantic_embedding_model_installed": false
+        },
+        "delivery": {
+          "body_format": "utf8_text",
+          "package_files": "download_by_path",
+          "requires_reauthorization": true
+        }
+      }
+    },
+    {
+      "host": "status.baltor.ai",
+      "path": "/",
+      "observed_at": "2026-09-23T20:11:24.728109+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    },
+    {
+      "host": "status.baltor.ai",
+      "path": "/privacy",
+      "observed_at": "2026-09-23T20:11:25.072122+00:00",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "cache_control": "no-store",
+      "etag": "",
+      "content_bytes": 101579,
+      "sha256": "8f38b8ce4b92c3a9e75c635cdd88440cd4a99198b7c4ce919639045ec3776538",
+      "truncated": false,
+      "http_title": "Baltor | Material your coding tools can search"
+    }
+  ],
+  "all_http_200": true
+}

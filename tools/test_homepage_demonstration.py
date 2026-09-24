@@ -5,9 +5,11 @@ Their item names, kinds, licences, sizes and digests must be what a real search 
 library returns, run here through the same host loader and the same retrieval route the service uses. A
 catalogue release rewrites each body and so each digest, and the page then fails here until it shows the new
 values; the failure names them. The download names the reference the search marked as chosen, and the packaged
-bytes of that reference have the digest it names. The third part, a fresh harness that holds only the files of
-the step, is being built and says so under a label of its own. Its folder places the downloaded skill and holds
-files that are not Markdown, because harness material is any file a harness reads.
+bytes of that reference have the digest it names. The third part, the working folder of the step, shows where each
+file goes rather than a recorded run, and says so under a label of its own, "Example layout". The owner removed the
+status words on September 23, 2026, so the folder no longer says "Being built", and a label that still carries one of
+the retired words is refused. Its folder places the downloaded skill and holds files that are not Markdown, because
+harness material is any file a harness reads.
 
 Two more facts on the homepage come from the same release: the count of items in the library is the number of
 items in the packaged manifest, and the connection entry is the reviewed Claude Code recipe with the public
@@ -42,7 +44,9 @@ STUDIES = ROOT / "case-studies"
 #: The results record whose design names, for each family, the items its material arms placed.
 STUDY_RESULTS = "data_cleanup_results/v1"
 STAGES = (("search", "recorded"), ("download", "recorded"), ("folder", "illustration"))
-LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Being built"}
+LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Example layout"}
+#: The status words the owner removed from the homepage on September 23, 2026. No part of the demonstration says one.
+RETIRED_STATUS = re.compile(r"being built|being prepared|\bplanned\b|available now|coming soon", re.IGNORECASE)
 #: The address the served homepage writes into its connection entry. Once the page script has checked the
 #: reviewed recipe record, it writes the entry again with the address of the service that serves the page.
 PUBLIC_ENDPOINT = "https://baltor.ai/mcp"
@@ -146,7 +150,7 @@ def label_problems(demonstration):
     head = demonstration["labels"].get("", ("", ""))
     for stage, evidence in STAGES:
         label, text = demonstration["labels"].get(stage, head)
-        if label != evidence or LABEL_WORDS[evidence] not in text:
+        if label != evidence or LABEL_WORDS[evidence] not in text or RETIRED_STATUS.search(text):
             problems.append(f"the {stage} part must say {LABEL_WORDS[evidence]!r}; it says {text or '(nothing)'!r}")
     return problems
 
@@ -346,22 +350,33 @@ class HomepageDemonstrationTest(unittest.TestCase):
         cls.recipes = json.loads(RECIPES.read_text(encoding="utf-8"))
         cls.hits = release_search(cls.demonstration["query"]) if cls.demonstration["query"] else []
 
-    def test_each_part_says_whether_it_is_recorded_or_being_built(self):
+    def test_each_part_says_whether_it_is_recorded_or_an_example_layout(self):
         self.assertEqual(label_problems(self.demonstration), [])
         # KNOWN_WRONG: the folder without a label of its own falls under the recorded label of the head.
         unlabelled = _changed(self.demonstration, lambda copy: copy["labels"].pop("folder"))
         self.assertEqual(len(label_problems(unlabelled)), 1)
-        # KNOWN_WRONG: a head that calls the recorded search and download "being built".
+        # KNOWN_WRONG: a head that calls the recorded search and download an example layout.
         relabelled = _changed(self.demonstration, lambda copy: copy["labels"].update({"": ["illustration", LABEL_WORDS["illustration"]]}))
         self.assertEqual(len(label_problems(relabelled)), 2)
+        # KNOWN_WRONG: the folder still called "Being built", and a label that keeps a retired word beside the new one.
+        building = _changed(self.demonstration, lambda copy: copy["labels"].update({"folder": ["illustration", "Being built"]}))
+        self.assertEqual(len(label_problems(building)), 1)
+        both = _changed(self.demonstration, lambda copy: copy["labels"].update({"folder": ["illustration", "Example layout, being built"]}))
+        self.assertEqual(len(label_problems(both)), 1)
+        # PLANTED: the served folder label changed back in the page source itself, the way a stale page would serve it.
+        planted = _planted(self.page, 'data-demo-label="illustration">Example layout<', 'data-demo-label="illustration">Being built<')
+        self.assertEqual(len(label_problems(read_demonstration(planted))), 1)
 
     def test_the_search_shows_what_this_release_library_returns(self):
         self.assertEqual(self.demonstration["query"], "split address lines in a customer file")
         self.assertEqual(search_problems(self.demonstration, self.hits), [])
+        # The compact demonstration of September 23, 2026 shows the first two references the search returns; the known-wrong
+        # cases below change the second and the last, so at least two are needed.
+        self.assertGreaterEqual(len(self.demonstration["items"]), 2)
         # KNOWN_WRONG: one digest changed by one character, one size changed, and two places swapped.
         wrong_digest = _changed(self.demonstration, lambda copy: copy["items"][1].update(
             digest=copy["items"][1]["digest"][:-1] + ("0" if copy["items"][1]["digest"][-1] != "0" else "1")))
-        wrong_size = _changed(self.demonstration, lambda copy: copy["items"][2].update(size="9.9 KB"))
+        wrong_size = _changed(self.demonstration, lambda copy: copy["items"][-1].update(size="9.9 KB"))
         swapped = _changed(self.demonstration, lambda copy: copy["items"].reverse())
         self.assertEqual(len(search_problems(wrong_digest, self.hits)), 1)
         self.assertEqual(len(search_problems(wrong_size, self.hits)), 1)

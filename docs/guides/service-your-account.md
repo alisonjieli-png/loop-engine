@@ -2,10 +2,11 @@
 
 Kind: customer guide to sign-in, personal client tokens and access decisions.
 
-Open [Get started](https://app.baltor.ai/get-started) for the current access path.
-When signup is open, enter your email, open the link and choose a password on
-the confirmation page. Otherwise follow the configured invitation path or sign
-in to an existing account. Manage your account at `/account`.
+Open [Get started](https://app.baltor.ai/get-started) to create your account.
+Enter your email, open the link and choose a password on the confirmation page.
+While the service cannot create accounts at once, the same form keeps your
+address and we email you the link when your account can be created. Manage your
+account at `/account`.
 
 Your browser sign-in and your coding tool's client token are different
 credentials. The browser manages your account. The client token authorizes the
@@ -44,7 +45,8 @@ belonging to another account.
 | `bodies` | Metadata and permitted body downloads. |
 
 A subscription or operator grant supplies the account entitlement. Creating a
-token does not upgrade it. Invited access can be free through an operator grant.
+token does not upgrade it. An operator grant can make Baltor Pro free for an
+account.
 
 ### Scopes
 
@@ -85,14 +87,15 @@ curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://app.baltor.ai/
 ```
 
 The `service_session/v1` result contains `principal`, `authentication_mode`,
-`token_expires_at` and `access_source`. The source explains whether a
-subscription, operator invitation or promotion currently covers the account. Check the principal's `tenant_id`, `entitlement` and scopes
+`token_expires_at` and `access_source`. The source is `subscription`,
+`operator_grant`, `promotion_code` or `none`, and says what currently covers the
+account. Check the principal's `tenant_id`, `entitlement` and scopes
 before using a client on a shared machine. Keep credentials out of logs and
 support messages.
 
 ## Subscription and help
 
-Baltor Pro is $29 a month. Invited accounts are free through their grant.
+Baltor Pro is $29 a month. Accounts with an operator grant use it free.
 When available, the account page opens checkout or the customer portal. Account
 creation and checkout are separate capabilities; available checkout does not
 mean public registration is open.

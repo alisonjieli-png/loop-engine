@@ -1,0 +1,981 @@
+{
+  "approved_count": 43,
+  "body_attempts": [
+    {
+      "actual_digest": "f1642915914a9b3adfec7fe34137bf1f0731af4eb459eb86a1505a6b08e84ddc",
+      "at": "2026-09-23T20:09:45.028341+00:00",
+      "digest_matches": true,
+      "expected_digest": "f1642915914a9b3adfec7fe34137bf1f0731af4eb459eb86a1505a6b08e84ddc",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "analyse_errors_by_segment_and_cluster",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-000",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "0ffea302ab4a61eb71ded09fcc534a7261ea7c7b6bee32fd9b9e40439bc6efa7",
+      "at": "2026-09-23T20:09:45.287678+00:00",
+      "digest_matches": true,
+      "expected_digest": "0ffea302ab4a61eb71ded09fcc534a7261ea7c7b6bee32fd9b9e40439bc6efa7",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "apply_hold_or_escalate_each_correction",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-001",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "ddb3602bce3f538d7ad9ddf4332604fa5a4bd2672b612de445b016ec92b97c6e",
+      "at": "2026-09-23T20:09:45.538808+00:00",
+      "digest_matches": true,
+      "expected_digest": "ddb3602bce3f538d7ad9ddf4332604fa5a4bd2672b612de445b016ec92b97c6e",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "audit_data_splits_for_errors_and_leakage",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-002",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "dadc2e3fde5cd8334c140281f8caa7456eb61be10fe7b5fffd527d6cd70921f8",
+      "at": "2026-09-23T20:09:45.785359+00:00",
+      "digest_matches": true,
+      "expected_digest": "dadc2e3fde5cd8334c140281f8caa7456eb61be10fe7b5fffd527d6cd70921f8",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "canonicalize_company_legal_suffixes",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-003",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "a53a1a19881b1e14d9b6c605a612842d467d50ee431078d1e97a8aebf9db06cf",
+      "at": "2026-09-23T20:09:46.023619+00:00",
+      "digest_matches": true,
+      "expected_digest": "a53a1a19881b1e14d9b6c605a612842d467d50ee431078d1e97a8aebf9db06cf",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "carry_competing_readings_of_a_request",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-004",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "301d27b21e8bce3b8d3ac0450488ea415d85078c26ba6d3387e1dfe489dcae28",
+      "at": "2026-09-23T20:09:46.332237+00:00",
+      "digest_matches": true,
+      "expected_digest": "301d27b21e8bce3b8d3ac0450488ea415d85078c26ba6d3387e1dfe489dcae28",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "check_for_existing_work_before_building",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-005",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "b7f6c0c73f848a510c463b37b6a38750cc92c3d1252dd9b78840709190633326",
+      "at": "2026-09-23T20:09:46.566585+00:00",
+      "digest_matches": true,
+      "expected_digest": "b7f6c0c73f848a510c463b37b6a38750cc92c3d1252dd9b78840709190633326",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "check_that_a_result_is_stable_and_generalizes",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-006",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "23052a8295488a9c522eff0aaffeb0aedb461ed433b2f2c25f8ed8432515a7bc",
+      "at": "2026-09-23T20:09:46.787386+00:00",
+      "digest_matches": true,
+      "expected_digest": "23052a8295488a9c522eff0aaffeb0aedb461ed433b2f2c25f8ed8432515a7bc",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "choose_metrics_by_task_type_and_industry",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-007",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "a4ac0c154540ea15882c7ae1f74fdbc9e5abbbc7d97c85b92f95a4c636fbf786",
+      "at": "2026-09-23T20:09:47.008789+00:00",
+      "digest_matches": true,
+      "expected_digest": "a4ac0c154540ea15882c7ae1f74fdbc9e5abbbc7d97c85b92f95a4c636fbf786",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "choose_one_next_action",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-008",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "90868166271390a8e69c978be2a6c1eb1febac56c55f20619be99469aafb4e0c",
+      "at": "2026-09-23T20:09:47.304693+00:00",
+      "digest_matches": true,
+      "expected_digest": "90868166271390a8e69c978be2a6c1eb1febac56c55f20619be99469aafb4e0c",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "choose_review_perspectives",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-009",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "81235b8087cc88b02f36fb24e3aa8fadb2d788db9a576bf6dd7471029b6052e2",
+      "at": "2026-09-23T20:09:47.545020+00:00",
+      "digest_matches": true,
+      "expected_digest": "81235b8087cc88b02f36fb24e3aa8fadb2d788db9a576bf6dd7471029b6052e2",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "copy_a_table_with_corrections_never_in_place",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-010",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "84960b603363ee2127f23193560a4052d0022b8cdc34850bdae3128983ddb0a8",
+      "at": "2026-09-23T20:09:47.759765+00:00",
+      "digest_matches": true,
+      "expected_digest": "84960b603363ee2127f23193560a4052d0022b8cdc34850bdae3128983ddb0a8",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "decide_whether_a_step_needs_a_model",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-011",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "6161841ded81d570e84ee50a4f12697ef2c9c9e919a4057a3ccc88ebd9b25494",
+      "at": "2026-09-23T20:09:47.988207+00:00",
+      "digest_matches": true,
+      "expected_digest": "6161841ded81d570e84ee50a4f12697ef2c9c9e919a4057a3ccc88ebd9b25494",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "deliver_the_best_available_result_when_blocked",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-012",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "f8d5548ca7821d4e35f736e6ce392022073bb8c1d0b8e2e0addd1ba5efd59386",
+      "at": "2026-09-23T20:09:48.224566+00:00",
+      "digest_matches": true,
+      "expected_digest": "f8d5548ca7821d4e35f736e6ce392022073bb8c1d0b8e2e0addd1ba5efd59386",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "detect_malformed_values_by_dominant_pattern",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-013",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "c8301e743d21a606683de3a146440daaba58d196e0a0b9b8c7c8ec80344938e2",
+      "at": "2026-09-23T20:09:48.461029+00:00",
+      "digest_matches": true,
+      "expected_digest": "c8301e743d21a606683de3a146440daaba58d196e0a0b9b8c7c8ec80344938e2",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "diagnose_a_stall_and_change_strategy",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-014",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "4d61734e74b7c74a1a67325e9194b390df57c6fb1b285bb20b226c6aca40c8e1",
+      "at": "2026-09-23T20:09:48.681287+00:00",
+      "digest_matches": true,
+      "expected_digest": "4d61734e74b7c74a1a67325e9194b390df57c6fb1b285bb20b226c6aca40c8e1",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "escalate_uncertain_values_with_candidates",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-015",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "9098d348157dc107da0fc037e3a5557ead5a0d7da771567f5229ecf33d2ed0e0",
+      "at": "2026-09-23T20:09:48.952342+00:00",
+      "digest_matches": true,
+      "expected_digest": "9098d348157dc107da0fc037e3a5557ead5a0d7da771567f5229ecf33d2ed0e0",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "export_a_standalone_python_package",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-016",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "a34d168852ecefe8fc538e0701d891b4cdd0e9e457ebabf343944c9f4144136d",
+      "at": "2026-09-23T20:09:49.167625+00:00",
+      "digest_matches": true,
+      "expected_digest": "a34d168852ecefe8fc538e0701d891b4cdd0e9e457ebabf343944c9f4144136d",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "find_duplicate_records_with_blocking_keys",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-017",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "1fad35eb48a6aef537a6919e380a7a0fc82b9899f4f6d03fc360b91f80c7a3c0",
+      "at": "2026-09-23T20:09:49.335883+00:00",
+      "digest_matches": true,
+      "expected_digest": "1fad35eb48a6aef537a6919e380a7a0fc82b9899f4f6d03fc360b91f80c7a3c0",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "forecast_an_action_then_compare",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-018",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "9c9af76b9df47b6a66584dbca75a1385a0d12b7e8dd546f76cbb3d5c3c1b143b",
+      "at": "2026-09-23T20:09:49.584210+00:00",
+      "digest_matches": true,
+      "expected_digest": "9c9af76b9df47b6a66584dbca75a1385a0d12b7e8dd546f76cbb3d5c3c1b143b",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "freeze_the_success_metric_before_measuring",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-019",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "64580ec31576a77e0ad27999e2d6cc06b89541acd55025b0d0d0d87d8390132a",
+      "at": "2026-09-23T20:09:49.828603+00:00",
+      "digest_matches": true,
+      "expected_digest": "64580ec31576a77e0ad27999e2d6cc06b89541acd55025b0d0d0d87d8390132a",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "hand_over_a_result_its_consumer_can_use",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-020",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "4cd3047732ee475bbd920155bac92328fa6f9c246a9f020daa99c155c5e5dfd8",
+      "at": "2026-09-23T20:09:50.134919+00:00",
+      "digest_matches": true,
+      "expected_digest": "4cd3047732ee475bbd920155bac92328fa6f9c246a9f020daa99c155c5e5dfd8",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "layer_exception_catalogs_with_precedence",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-021",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "ecc844f1ca0be4ab7c10e3db8fcdb3fdc5666ba9cf9d3b8b6a1c168cf913c29a",
+      "at": "2026-09-23T20:09:50.372858+00:00",
+      "digest_matches": true,
+      "expected_digest": "ecc844f1ca0be4ab7c10e3db8fcdb3fdc5666ba9cf9d3b8b6a1c168cf913c29a",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "look_for_structure_the_model_missed",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-022",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "e0256bb07984d11027143480164fbad4877c63d2d94afcd2eec1bbfa14caf25b",
+      "at": "2026-09-23T20:09:51.591768+00:00",
+      "digest_matches": true,
+      "expected_digest": "e0256bb07984d11027143480164fbad4877c63d2d94afcd2eec1bbfa14caf25b",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "measure_the_environment_before_relying_on_it",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-023",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "2e07b1b8cc291b53450878fde7dd8ab62f5de475dc97886f0c3a2d6e17918fa7",
+      "at": "2026-09-23T20:09:51.824173+00:00",
+      "digest_matches": true,
+      "expected_digest": "2e07b1b8cc291b53450878fde7dd8ab62f5de475dc97886f0c3a2d6e17918fa7",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "normalize_and_recover_email_addresses",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-024",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "bdceb7ee05a5e8cd72207b79a9bc2c5de9d4bc8f936fae71ef766f1446aa1c2a",
+      "at": "2026-09-23T20:09:52.055667+00:00",
+      "digest_matches": true,
+      "expected_digest": "bdceb7ee05a5e8cd72207b79a9bc2c5de9d4bc8f936fae71ef766f1446aa1c2a",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "normalize_phone_numbers",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-025",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "9853c2e1dccd9c781ceedaf84dbb7880a5cd960c228dfdf48f85395e033e63b3",
+      "at": "2026-09-23T20:09:52.323532+00:00",
+      "digest_matches": true,
+      "expected_digest": "9853c2e1dccd9c781ceedaf84dbb7880a5cd960c228dfdf48f85395e033e63b3",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "normalize_website_addresses",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-026",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "6ea8d409a0881cf524a6ad2f99692cd055453871b58cbcd17893d993458f3f38",
+      "at": "2026-09-23T20:09:52.631373+00:00",
+      "digest_matches": true,
+      "expected_digest": "6ea8d409a0881cf524a6ad2f99692cd055453871b58cbcd17893d993458f3f38",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "normalize_whitespace_and_unicode_text",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-027",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "3286da92d8752ef7ecf740c7e1a34f1eab4bc93432bef151324f32241a8170bb",
+      "at": "2026-09-23T20:09:52.867916+00:00",
+      "digest_matches": true,
+      "expected_digest": "3286da92d8752ef7ecf740c7e1a34f1eab4bc93432bef151324f32241a8170bb",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "orient_on_a_task_and_write_its_contracts",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-028",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "d13992549e35ddef2cdda5d64eb5908bfab90b1d6f8ac18cabb0d0a6bb80e501",
+      "at": "2026-09-23T20:09:53.138018+00:00",
+      "digest_matches": true,
+      "expected_digest": "d13992549e35ddef2cdda5d64eb5908bfab90b1d6f8ac18cabb0d0a6bb80e501",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "plan_and_split_work_with_explicit_joins",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-029",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "50f3776afe61d76a32fa1b399f7b725f5b5bfee0bf51dd96ac8cca36cca74bde",
+      "at": "2026-09-23T20:09:53.448956+00:00",
+      "digest_matches": true,
+      "expected_digest": "50f3776afe61d76a32fa1b399f7b725f5b5bfee0bf51dd96ac8cca36cca74bde",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "profile_text_column_before_cleaning",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-030",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "bc9c4dd2420c99e61c4785cd73ae7ac64912f8da3b2026b960adf1348490da59",
+      "at": "2026-09-23T20:09:53.704106+00:00",
+      "digest_matches": true,
+      "expected_digest": "bc9c4dd2420c99e61c4785cd73ae7ac64912f8da3b2026b960adf1348490da59",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "propose_a_dedupe_without_deleting_rows",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-031",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "e092435636a6d3761e8daa5c0889863116012fa428753e75e895b4db9a051103",
+      "at": "2026-09-23T20:09:53.995028+00:00",
+      "digest_matches": true,
+      "expected_digest": "e092435636a6d3761e8daa5c0889863116012fa428753e75e895b4db9a051103",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "read_the_train_validation_gap",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-032",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "9c1927d3a6ab5c6ea45cce20985aea788fdffe606911ca9704928acfa39e1017",
+      "at": "2026-09-23T20:09:54.239326+00:00",
+      "digest_matches": true,
+      "expected_digest": "9c1927d3a6ab5c6ea45cce20985aea788fdffe606911ca9704928acfa39e1017",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "report_observed_derived_assumed_and_unknown",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-033",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "34dd74f2c25585fe90b078da9826e67f4488a6ea611af5d55290e1911e872552",
+      "at": "2026-09-23T20:09:54.452007+00:00",
+      "digest_matches": true,
+      "expected_digest": "34dd74f2c25585fe90b078da9826e67f4488a6ea611af5d55290e1911e872552",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "resolve_missing_information",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-034",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "35d08095990185ec8a3e7a9a225c21fc1f4fbac3c1a350452e2ecad8d9e81b63",
+      "at": "2026-09-23T20:09:54.688161+00:00",
+      "digest_matches": true,
+      "expected_digest": "35d08095990185ec8a3e7a9a225c21fc1f4fbac3c1a350452e2ecad8d9e81b63",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "restore_capitalisation_of_names",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-035",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "e3407570e80491eed17f3f66a7d2c0ba3612ce77306cf6196ed62125c1c5c383",
+      "at": "2026-09-23T20:09:54.945017+00:00",
+      "digest_matches": true,
+      "expected_digest": "e3407570e80491eed17f3f66a7d2c0ba3612ce77306cf6196ed62125c1c5c383",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "review_an_accepted_solution_adversarially",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-036",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "ee3b8aa222c964c16b913b5db711dda10468fc5de2db91373e5ea37842b25a73",
+      "at": "2026-09-23T20:09:55.156379+00:00",
+      "digest_matches": true,
+      "expected_digest": "ee3b8aa222c964c16b913b5db711dda10468fc5de2db91373e5ea37842b25a73",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "score_duplicate_pairs_by_weakest_signal",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-037",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "e3baf9a43a60d96c7d08abae5c5304cc02e68990ff4e047021fa5ce087193c6d",
+      "at": "2026-09-23T20:09:55.377731+00:00",
+      "digest_matches": true,
+      "expected_digest": "e3baf9a43a60d96c7d08abae5c5304cc02e68990ff4e047021fa5ce087193c6d",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "split_address_lines_into_components",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-038",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "dcb4af67f72ed075ddc03322ddaa01fe0d7fb6d53fbe428d5477b502e521aa5c",
+      "at": "2026-09-23T20:09:55.625231+00:00",
+      "digest_matches": true,
+      "expected_digest": "dcb4af67f72ed075ddc03322ddaa01fe0d7fb6d53fbe428d5477b502e521aa5c",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "test_driven_change_red_green_refactor",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-039",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "a137847f4210a11fe8203bc5f5f11e986bf77cf363991cae6a64603fcb61b923",
+      "at": "2026-09-23T20:09:55.818312+00:00",
+      "digest_matches": true,
+      "expected_digest": "a137847f4210a11fe8203bc5f5f11e986bf77cf363991cae6a64603fcb61b923",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "verify_an_export_in_an_isolated_interpreter",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-040",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "69af8383e0897b9e0645b319f4a33003208b6b3a4646df0158665fa5e6445243",
+      "at": "2026-09-23T20:09:56.033294+00:00",
+      "digest_matches": true,
+      "expected_digest": "69af8383e0897b9e0645b319f4a33003208b6b3a4646df0158665fa5e6445243",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "verify_the_requested_output",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-041",
+      "size_matches": true
+    },
+    {
+      "actual_digest": "a11aa4b3f9033a54a2f012047354b94b24bad304c75a1ac28f0fdc41d9442d4b",
+      "at": "2026-09-23T20:09:56.325121+00:00",
+      "digest_matches": true,
+      "expected_digest": "a11aa4b3f9033a54a2f012047354b94b24bad304c75a1ac28f0fdc41d9442d4b",
+      "headers_match": true,
+      "http_status": 200,
+      "identity": "write_a_pinned_container_and_batch_job",
+      "metering": "confirmed_required_read",
+      "outcome": "matches",
+      "request_id": "catalogue-check-f6fca9553f7d47c4975c398eaeb32245-042",
+      "size_matches": true
+    }
+  ],
+  "completed": true,
+  "expected_export_sha256": "8b3a7372ba5f4f5e83f2478097deef62e35ae87b89fb6d246f96ad015cfe71e9",
+  "expected_release": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75",
+  "finished_at": "2026-09-23T20:09:58.057070+00:00",
+  "health_after": {
+    "catalogue_state_revision": 14,
+    "content_digest": "5408d39a5cbb04fd528a2b7ef4e3d3479b554a88abed02cf515b504d1460161a",
+    "items": 43,
+    "release_id": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75"
+  },
+  "health_before": {
+    "catalogue_state_revision": 14,
+    "content_digest": "5408d39a5cbb04fd528a2b7ef4e3d3479b554a88abed02cf515b504d1460161a",
+    "items": 43,
+    "release_id": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75"
+  },
+  "http_requests": 92,
+  "issues": [],
+  "items": [
+    {
+      "declared_effects": [],
+      "digest": "f1642915914a9b3adfec7fe34137bf1f0731af4eb459eb86a1505a6b08e84ddc",
+      "identity": "analyse_errors_by_segment_and_cluster",
+      "manifest_matches": true,
+      "size_bytes": 2569
+    },
+    {
+      "declared_effects": [],
+      "digest": "0ffea302ab4a61eb71ded09fcc534a7261ea7c7b6bee32fd9b9e40439bc6efa7",
+      "identity": "apply_hold_or_escalate_each_correction",
+      "manifest_matches": true,
+      "size_bytes": 2903
+    },
+    {
+      "declared_effects": [],
+      "digest": "ddb3602bce3f538d7ad9ddf4332604fa5a4bd2672b612de445b016ec92b97c6e",
+      "identity": "audit_data_splits_for_errors_and_leakage",
+      "manifest_matches": true,
+      "size_bytes": 2665
+    },
+    {
+      "declared_effects": [],
+      "digest": "dadc2e3fde5cd8334c140281f8caa7456eb61be10fe7b5fffd527d6cd70921f8",
+      "identity": "canonicalize_company_legal_suffixes",
+      "manifest_matches": true,
+      "size_bytes": 2801
+    },
+    {
+      "declared_effects": [],
+      "digest": "a53a1a19881b1e14d9b6c605a612842d467d50ee431078d1e97a8aebf9db06cf",
+      "identity": "carry_competing_readings_of_a_request",
+      "manifest_matches": true,
+      "size_bytes": 2432
+    },
+    {
+      "declared_effects": [
+        "reads_fs"
+      ],
+      "digest": "301d27b21e8bce3b8d3ac0450488ea415d85078c26ba6d3387e1dfe489dcae28",
+      "identity": "check_for_existing_work_before_building",
+      "manifest_matches": true,
+      "size_bytes": 3010
+    },
+    {
+      "declared_effects": [],
+      "digest": "b7f6c0c73f848a510c463b37b6a38750cc92c3d1252dd9b78840709190633326",
+      "identity": "check_that_a_result_is_stable_and_generalizes",
+      "manifest_matches": true,
+      "size_bytes": 2709
+    },
+    {
+      "declared_effects": [],
+      "digest": "23052a8295488a9c522eff0aaffeb0aedb461ed433b2f2c25f8ed8432515a7bc",
+      "identity": "choose_metrics_by_task_type_and_industry",
+      "manifest_matches": true,
+      "size_bytes": 3530
+    },
+    {
+      "declared_effects": [],
+      "digest": "a4ac0c154540ea15882c7ae1f74fdbc9e5abbbc7d97c85b92f95a4c636fbf786",
+      "identity": "choose_one_next_action",
+      "manifest_matches": true,
+      "size_bytes": 2738
+    },
+    {
+      "declared_effects": [],
+      "digest": "90868166271390a8e69c978be2a6c1eb1febac56c55f20619be99469aafb4e0c",
+      "identity": "choose_review_perspectives",
+      "manifest_matches": true,
+      "size_bytes": 3390
+    },
+    {
+      "declared_effects": [
+        "reads_fs",
+        "writes_fs"
+      ],
+      "digest": "81235b8087cc88b02f36fb24e3aa8fadb2d788db9a576bf6dd7471029b6052e2",
+      "identity": "copy_a_table_with_corrections_never_in_place",
+      "manifest_matches": true,
+      "size_bytes": 2716
+    },
+    {
+      "declared_effects": [],
+      "digest": "84960b603363ee2127f23193560a4052d0022b8cdc34850bdae3128983ddb0a8",
+      "identity": "decide_whether_a_step_needs_a_model",
+      "manifest_matches": true,
+      "size_bytes": 3457
+    },
+    {
+      "declared_effects": [],
+      "digest": "6161841ded81d570e84ee50a4f12697ef2c9c9e919a4057a3ccc88ebd9b25494",
+      "identity": "deliver_the_best_available_result_when_blocked",
+      "manifest_matches": true,
+      "size_bytes": 2577
+    },
+    {
+      "declared_effects": [],
+      "digest": "f8d5548ca7821d4e35f736e6ce392022073bb8c1d0b8e2e0addd1ba5efd59386",
+      "identity": "detect_malformed_values_by_dominant_pattern",
+      "manifest_matches": true,
+      "size_bytes": 2754
+    },
+    {
+      "declared_effects": [],
+      "digest": "c8301e743d21a606683de3a146440daaba58d196e0a0b9b8c7c8ec80344938e2",
+      "identity": "diagnose_a_stall_and_change_strategy",
+      "manifest_matches": true,
+      "size_bytes": 2891
+    },
+    {
+      "declared_effects": [],
+      "digest": "4d61734e74b7c74a1a67325e9194b390df57c6fb1b285bb20b226c6aca40c8e1",
+      "identity": "escalate_uncertain_values_with_candidates",
+      "manifest_matches": true,
+      "size_bytes": 2645
+    },
+    {
+      "declared_effects": [
+        "writes_fs"
+      ],
+      "digest": "9098d348157dc107da0fc037e3a5557ead5a0d7da771567f5229ecf33d2ed0e0",
+      "identity": "export_a_standalone_python_package",
+      "manifest_matches": true,
+      "size_bytes": 2754
+    },
+    {
+      "declared_effects": [],
+      "digest": "a34d168852ecefe8fc538e0701d891b4cdd0e9e457ebabf343944c9f4144136d",
+      "identity": "find_duplicate_records_with_blocking_keys",
+      "manifest_matches": true,
+      "size_bytes": 2722
+    },
+    {
+      "declared_effects": [],
+      "digest": "1fad35eb48a6aef537a6919e380a7a0fc82b9899f4f6d03fc360b91f80c7a3c0",
+      "identity": "forecast_an_action_then_compare",
+      "manifest_matches": true,
+      "size_bytes": 2664
+    },
+    {
+      "declared_effects": [],
+      "digest": "9c9af76b9df47b6a66584dbca75a1385a0d12b7e8dd546f76cbb3d5c3c1b143b",
+      "identity": "freeze_the_success_metric_before_measuring",
+      "manifest_matches": true,
+      "size_bytes": 2811
+    },
+    {
+      "declared_effects": [],
+      "digest": "64580ec31576a77e0ad27999e2d6cc06b89541acd55025b0d0d0d87d8390132a",
+      "identity": "hand_over_a_result_its_consumer_can_use",
+      "manifest_matches": true,
+      "size_bytes": 2733
+    },
+    {
+      "declared_effects": [
+        "reads_fs"
+      ],
+      "digest": "4cd3047732ee475bbd920155bac92328fa6f9c246a9f020daa99c155c5e5dfd8",
+      "identity": "layer_exception_catalogs_with_precedence",
+      "manifest_matches": true,
+      "size_bytes": 2754
+    },
+    {
+      "declared_effects": [],
+      "digest": "ecc844f1ca0be4ab7c10e3db8fcdb3fdc5666ba9cf9d3b8b6a1c168cf913c29a",
+      "identity": "look_for_structure_the_model_missed",
+      "manifest_matches": true,
+      "size_bytes": 2704
+    },
+    {
+      "declared_effects": [
+        "reads_fs",
+        "network",
+        "spawns_process"
+      ],
+      "digest": "e0256bb07984d11027143480164fbad4877c63d2d94afcd2eec1bbfa14caf25b",
+      "identity": "measure_the_environment_before_relying_on_it",
+      "manifest_matches": true,
+      "size_bytes": 2653
+    },
+    {
+      "declared_effects": [],
+      "digest": "2e07b1b8cc291b53450878fde7dd8ab62f5de475dc97886f0c3a2d6e17918fa7",
+      "identity": "normalize_and_recover_email_addresses",
+      "manifest_matches": true,
+      "size_bytes": 2691
+    },
+    {
+      "declared_effects": [],
+      "digest": "bdceb7ee05a5e8cd72207b79a9bc2c5de9d4bc8f936fae71ef766f1446aa1c2a",
+      "identity": "normalize_phone_numbers",
+      "manifest_matches": true,
+      "size_bytes": 2579
+    },
+    {
+      "declared_effects": [],
+      "digest": "9853c2e1dccd9c781ceedaf84dbb7880a5cd960c228dfdf48f85395e033e63b3",
+      "identity": "normalize_website_addresses",
+      "manifest_matches": true,
+      "size_bytes": 2351
+    },
+    {
+      "declared_effects": [],
+      "digest": "6ea8d409a0881cf524a6ad2f99692cd055453871b58cbcd17893d993458f3f38",
+      "identity": "normalize_whitespace_and_unicode_text",
+      "manifest_matches": true,
+      "size_bytes": 2688
+    },
+    {
+      "declared_effects": [],
+      "digest": "3286da92d8752ef7ecf740c7e1a34f1eab4bc93432bef151324f32241a8170bb",
+      "identity": "orient_on_a_task_and_write_its_contracts",
+      "manifest_matches": true,
+      "size_bytes": 2861
+    },
+    {
+      "declared_effects": [],
+      "digest": "d13992549e35ddef2cdda5d64eb5908bfab90b1d6f8ac18cabb0d0a6bb80e501",
+      "identity": "plan_and_split_work_with_explicit_joins",
+      "manifest_matches": true,
+      "size_bytes": 2737
+    },
+    {
+      "declared_effects": [],
+      "digest": "50f3776afe61d76a32fa1b399f7b725f5b5bfee0bf51dd96ac8cca36cca74bde",
+      "identity": "profile_text_column_before_cleaning",
+      "manifest_matches": true,
+      "size_bytes": 2904
+    },
+    {
+      "declared_effects": [],
+      "digest": "bc9c4dd2420c99e61c4785cd73ae7ac64912f8da3b2026b960adf1348490da59",
+      "identity": "propose_a_dedupe_without_deleting_rows",
+      "manifest_matches": true,
+      "size_bytes": 2591
+    },
+    {
+      "declared_effects": [],
+      "digest": "e092435636a6d3761e8daa5c0889863116012fa428753e75e895b4db9a051103",
+      "identity": "read_the_train_validation_gap",
+      "manifest_matches": true,
+      "size_bytes": 2803
+    },
+    {
+      "declared_effects": [],
+      "digest": "9c1927d3a6ab5c6ea45cce20985aea788fdffe606911ca9704928acfa39e1017",
+      "identity": "report_observed_derived_assumed_and_unknown",
+      "manifest_matches": true,
+      "size_bytes": 2301
+    },
+    {
+      "declared_effects": [],
+      "digest": "34dd74f2c25585fe90b078da9826e67f4488a6ea611af5d55290e1911e872552",
+      "identity": "resolve_missing_information",
+      "manifest_matches": true,
+      "size_bytes": 2579
+    },
+    {
+      "declared_effects": [],
+      "digest": "35d08095990185ec8a3e7a9a225c21fc1f4fbac3c1a350452e2ecad8d9e81b63",
+      "identity": "restore_capitalisation_of_names",
+      "manifest_matches": true,
+      "size_bytes": 3627
+    },
+    {
+      "declared_effects": [],
+      "digest": "e3407570e80491eed17f3f66a7d2c0ba3612ce77306cf6196ed62125c1c5c383",
+      "identity": "review_an_accepted_solution_adversarially",
+      "manifest_matches": true,
+      "size_bytes": 3147
+    },
+    {
+      "declared_effects": [],
+      "digest": "ee3b8aa222c964c16b913b5db711dda10468fc5de2db91373e5ea37842b25a73",
+      "identity": "score_duplicate_pairs_by_weakest_signal",
+      "manifest_matches": true,
+      "size_bytes": 2573
+    },
+    {
+      "declared_effects": [],
+      "digest": "e3baf9a43a60d96c7d08abae5c5304cc02e68990ff4e047021fa5ce087193c6d",
+      "identity": "split_address_lines_into_components",
+      "manifest_matches": true,
+      "size_bytes": 3009
+    },
+    {
+      "declared_effects": [
+        "reads_fs",
+        "writes_fs",
+        "spawns_process"
+      ],
+      "digest": "dcb4af67f72ed075ddc03322ddaa01fe0d7fb6d53fbe428d5477b502e521aa5c",
+      "identity": "test_driven_change_red_green_refactor",
+      "manifest_matches": true,
+      "size_bytes": 2356
+    },
+    {
+      "declared_effects": [
+        "reads_fs",
+        "spawns_process"
+      ],
+      "digest": "a137847f4210a11fe8203bc5f5f11e986bf77cf363991cae6a64603fcb61b923",
+      "identity": "verify_an_export_in_an_isolated_interpreter",
+      "manifest_matches": true,
+      "size_bytes": 2809
+    },
+    {
+      "declared_effects": [
+        "reads_fs"
+      ],
+      "digest": "69af8383e0897b9e0645b319f4a33003208b6b3a4646df0158665fa5e6445243",
+      "identity": "verify_the_requested_output",
+      "manifest_matches": true,
+      "size_bytes": 2876
+    },
+    {
+      "declared_effects": [
+        "writes_fs"
+      ],
+      "digest": "a11aa4b3f9033a54a2f012047354b94b24bad304c75a1ac28f0fdc41d9442d4b",
+      "identity": "write_a_pinned_container_and_batch_job",
+      "manifest_matches": true,
+      "size_bytes": 2660
+    }
+  ],
+  "listing": {
+    "duplicate_count": 0,
+    "expected_ids_present": [
+      "analyse_errors_by_segment_and_cluster",
+      "apply_hold_or_escalate_each_correction",
+      "audit_data_splits_for_errors_and_leakage",
+      "canonicalize_company_legal_suffixes",
+      "carry_competing_readings_of_a_request",
+      "check_for_existing_work_before_building",
+      "check_that_a_result_is_stable_and_generalizes",
+      "choose_metrics_by_task_type_and_industry",
+      "choose_one_next_action",
+      "choose_review_perspectives",
+      "copy_a_table_with_corrections_never_in_place",
+      "decide_whether_a_step_needs_a_model",
+      "deliver_the_best_available_result_when_blocked",
+      "detect_malformed_values_by_dominant_pattern",
+      "diagnose_a_stall_and_change_strategy",
+      "escalate_uncertain_values_with_candidates",
+      "export_a_standalone_python_package",
+      "find_duplicate_records_with_blocking_keys",
+      "forecast_an_action_then_compare",
+      "freeze_the_success_metric_before_measuring",
+      "hand_over_a_result_its_consumer_can_use",
+      "layer_exception_catalogs_with_precedence",
+      "look_for_structure_the_model_missed",
+      "measure_the_environment_before_relying_on_it",
+      "normalize_and_recover_email_addresses",
+      "normalize_phone_numbers",
+      "normalize_website_addresses",
+      "normalize_whitespace_and_unicode_text",
+      "orient_on_a_task_and_write_its_contracts",
+      "plan_and_split_work_with_explicit_joins",
+      "profile_text_column_before_cleaning",
+      "propose_a_dedupe_without_deleting_rows",
+      "read_the_train_validation_gap",
+      "report_observed_derived_assumed_and_unknown",
+      "resolve_missing_information",
+      "restore_capitalisation_of_names",
+      "review_an_accepted_solution_adversarially",
+      "score_duplicate_pairs_by_weakest_signal",
+      "split_address_lines_into_components",
+      "test_driven_change_red_green_refactor",
+      "verify_an_export_in_an_isolated_interpreter",
+      "verify_the_requested_output",
+      "write_a_pinned_container_and_batch_job"
+    ],
+    "missing_ids": [],
+    "observed_nonapproved_count": 0,
+    "offered_count": 43,
+    "unexpected_identity_hashes": [],
+    "withheld_count": 0
+  },
+  "metering": {
+    "account_interval_delta": null,
+    "account_usage_after": null,
+    "account_usage_before": null,
+    "confirmed_metered_responses": 43,
+    "dispatched": 43,
+    "note": "Each unique request_id is dispatched at most once. Confirmed counts rely on the existing download endpoint's committed-meter-before-success contract. Account-wide deltas may include concurrent operations; unknown requests are never counted as free.",
+    "unknown_outcomes": 0,
+    "usage_after_observation": "unavailable",
+    "usage_observation": "before_unavailable",
+    "verified_bodies": 43
+  },
+  "origin": "https://baltor.ai",
+  "record_type": "catalogue_reanchor_live_check/v1",
+  "scope": "The selected account's complete authorized list, every expected manifest, and optionally its exact body bytes. This is not an audit of hidden catalogue records or other accounts.",
+  "source_anchor": "390643ef42518edcd8df88a1d9b972ea9fe2c104",
+  "started_at": "2026-09-23T20:09:33.192236+00:00",
+  "state": "matches_expected",
+  "verify_bodies": true
+}

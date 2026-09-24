@@ -1,0 +1,19 @@
+{
+  "returncode": 0,
+  "result": {
+    "protocol": "2025-11-25",
+    "tool_count": 5,
+    "search_ok": true,
+    "bodies_loaded": false,
+    "per_request": {
+      "protocol": "2026-07-28",
+      "tool_count": 5,
+      "search_ok": true,
+      "bodies_loaded": false
+    }
+  },
+  "credential_printed": false,
+  "model_calls": 0,
+  "body_reads": 0,
+  "stderr_present": false
+}

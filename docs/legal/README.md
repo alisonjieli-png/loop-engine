@@ -7,6 +7,12 @@ the operator and a postal contact address, and the website serves it at
 their words "I have approved the terms", and the website serves them at
 `/terms`. Neither document is legal advice.
 
+The same evening the owner told engineering to amend them: "you can fix the
+terms of service". Section 2 is now "Availability" and no longer calls the
+service a beta, and section 6 now states the price as "$29 a month" without the
+sentences about free search and invited beta users. The meaning of both
+sections is otherwise unchanged.
+
 | Document | State |
 |---|---|
 | [Privacy notice](PRIVACY-NOTICE.md) | Published. Approved by the owner on September 22, 2026. The website serves the same text at `/privacy`, linked from the footer of every page. |

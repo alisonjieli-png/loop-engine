@@ -1,0 +1,99 @@
+    <section data-view="home">
+      <div class="home-band band-hero" data-band="hero">
+      <div class="hero product-hero">
+        <div class="hero-copy"><h1>Supercharge your developers and AI agents.</h1><p class="hero-subhead">Big tasks go better in small steps. Baltor is designed to give each step a fresh harness that holds only what that step needs, aiming to limit context drift and help smaller models do more of the work.</p><div class="actions hero-actions"><a class="button primary" id="hero-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a><a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a></div><ul class="hero-facts"><li>Search is free</li><li>Works with Claude Code, Codex and OpenCode</li><li id="hero-access-note">Invitation only while we open in small groups</li></ul></div>
+        <div class="hero-aside"><p class="hero-positioning">Harness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as Claude Code, Codex or OpenCode. Today your agent can search Baltor's reviewed library at each step and download only what that step needs, with its source, licence and exact version. The fresh harness for each step is being built.</p><p class="hero-split">Free to install. Paid access to the library, one plan at 29 United States dollars each month. <span class="hero-value">Your model keys stay with you, and Baltor never asks you for a provider key.</span></p></div>
+<section class="step-demo" id="step-demo" aria-labelledby="step-demo-title" data-step-demo>
+<div class="step-demo-head"><div><p class="step-demo-eyebrow">What your coding agent sees at one step</p><h2 id="step-demo-title">Split the address lines in a customer file</h2></div><p class="status-tag is-recorded" data-demo-label="recorded">Recorded from this release's library</p></div>
+<ol class="step-demo-parts">
+<li class="step-demo-part" data-demo-stage="search" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">1</span><div class="step-demo-body">
+<p class="step-demo-query"><svg class="step-demo-glass" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="step-demo-verb">search:</span> <code data-demo-query>split address lines in a customer file</code></p>
+<ol class="step-demo-results" aria-label="References the search returned">
+<li data-demo-item="split_address_lines_into_components" class="is-chosen"><span class="step-demo-name">split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">3.0 KB</span> · sha256 <span data-fact="digest">e3baf9a4</span>…</span><span class="step-demo-chosen">Chosen</span></li>
+<li data-demo-item="find_duplicate_records_with_blocking_keys"><span class="step-demo-name">find_<wbr>duplicate_<wbr>records_<wbr>with_<wbr>blocking_<wbr>keys</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">a34d1688</span>…</span></li>
+<li data-demo-item="normalize_whitespace_and_unicode_text"><span class="step-demo-name">normalize_<wbr>whitespace_<wbr>and_<wbr>unicode_<wbr>text</span><span class="step-demo-facts"><span data-fact="kind">skill</span> · <span data-fact="licence">MIT</span> · <span data-fact="size">2.7 KB</span> · sha256 <span data-fact="digest">6ea8d409</span>…</span></li>
+</ol></div></li>
+<li class="step-demo-part" data-demo-stage="download" data-demo-evidence="recorded"><span class="step-demo-number" aria-hidden="true">2</span><div class="step-demo-body">
+<p class="step-demo-download"><code data-demo-download="split_address_lines_into_components">download split_<wbr>address_<wbr>lines_<wbr>into_<wbr>components</code><span class="step-demo-ok">Bytes match the digest · 1 download recorded</span></p></div></li>
+<li class="step-demo-part" data-demo-stage="folder" data-demo-evidence="illustration"><span class="step-demo-number is-dark" aria-hidden="true">3</span><div class="step-demo-body step-demo-harness">
+<div class="step-demo-harness-head"><p>A fresh harness, holding only this step's files</p><p class="status-tag is-building" data-demo-label="illustration">Being built</p></div>
+<pre class="step-demo-tree" tabindex="0" aria-label="The folder for this step">step-folder/
+├── <span data-demo-path="AGENTS.md">AGENTS.md</span><span class="step-demo-note-inline"></span>
+├── <span data-demo-path="CLAUDE.md">CLAUDE.md</span><span class="step-demo-note-inline">                  imports @AGENTS.md</span>
+├── <span data-demo-folder=".agents/skills/split-address-lines-into-components/">.agents/skills/split-address-lines-into-components/</span><span class="step-demo-note-inline"></span>
+│   ├── <span data-demo-path=".agents/skills/split-address-lines-into-components/SKILL.md">SKILL.md</span><span class="step-demo-note-inline"></span>
+│   └── <span data-demo-path=".agents/skills/split-address-lines-into-components/scripts/split_address_lines.py">scripts/split_address_lines.py</span><span class="step-demo-note-inline"></span>
+├── <span data-demo-path=".mcp.json">.mcp.json</span><span class="step-demo-note-inline">                  this step's tools only</span>
+└── <span data-demo-path=".baltor/step.lock.json">.baltor/step.lock.json</span><span class="step-demo-note-inline">     item, version, digest</span></pre>
+</div></li>
+</ol>
+</section>
+      </div>
+      </div>
+      <div class="home-band band-plain band-strip" data-band="harnesses">
+      <section class="harness-strip" aria-labelledby="harness-strip-title" data-offer="recipes"><h2 id="harness-strip-title">Works with the harness you already run</h2><ul class="harness-list"><li><span class="harness-name">Claude Code</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">Codex</span><span class="harness-state is-live">Connect today</span></li><li><span class="harness-name">OpenCode</span><span class="harness-state is-live">Connect today</span></li><li class="is-planned"><span class="harness-name">Pi</span><span class="harness-state">Planned</span></li></ul><p class="harness-note">Other clients can connect when they speak the protocol version this service accepts.</p></section>
+      </div>
+      <div class="home-band" data-band="problems">
+      <section class="problems" id="why" aria-labelledby="problems-title"><div class="section-title"><p class="eyebrow">Why teams use Baltor</p><h2 id="problems-title">Right-sized help for every step of the work.</h2><p>Long sessions drift and large models are costly. Baltor gives each step the material it asks for, so the work stays focused and smaller models can do more of it.</p></div>
+      <ul class="problem-grid">
+<li class="problem" data-problem="context"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><h3>Only the context a step needs</h3><p>Search returns short references. Your agent downloads only the item it chose, so a small step never carries the whole history.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+<li class="problem" data-problem="model"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg><h3>Smaller models for smaller decisions</h3><p>With the right material in front of it, a smaller or local model can take on work that would otherwise need a large one.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+<li class="problem" data-problem="expertise"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19V6a2 2 0 0 1 2-2h12v15H6a2 2 0 0 0-2 2z"/><path d="M8 8h6"/></svg><h3>Expertise your agent does not have</h3><p>A reviewed library of skills. Every item is approved by reviewers who did not write it.</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+<li class="problem" data-problem="reuse"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg><h3>Reuse code instead of rewriting it</h3><p>Every item carries its source, licence and exact version, so proven work can be reused rather than generated again.</p><p class="status-tag is-building" data-status="building">Code packages coming</p></li>
+<li class="problem" data-problem="mistakes"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/></svg><h3>Fewer repeated mistakes</h3><p>What went wrong in earlier work is kept, so the next step can start from it instead of repeating it.</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+<li class="problem" data-problem="overnight"><svg class="problem-icon" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><h3>Long jobs that finish overnight</h3><p>Work is split into small steps, each in its own fresh harness, so a small model can carry a long task to the end while you are away.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+      </ul></section>
+      </div>
+      <div class="home-band band-night" data-band="how">
+      <section class="how-band" id="how" aria-labelledby="how-title"><div class="section-title"><p class="eyebrow">How it works</p><h2 id="how-title">One fresh harness for each step.</h2><p>From one task to a checked result, in five steps. Search and download work today; the rest is being built.</p></div>
+      <ol class="how-steps">
+<li class="how-step" data-how-step="split"><span class="how-index">01</span><h3>Split</h3><p>The task becomes small, focused steps with clear inputs and outputs.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+<li class="how-step" data-how-step="search"><span class="how-index">02</span><h3>Search</h3><p>The step asks the library for what it needs. Searching is free.</p><p class="status-tag is-live" data-status="live">Live</p></li>
+<li class="how-step" data-how-step="download"><span class="how-index">03</span><h3>Download</h3><p>One exact version, checked against its digest and recorded in your usage.</p><p class="status-tag is-live" data-status="live">Live</p></li>
+<li class="how-step" data-how-step="run"><span class="how-index">04</span><h3>Run</h3><p>A freshly started harness holds only that step's files, and nothing from your global settings.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+<li class="how-step" data-how-step="check"><span class="how-index">05</span><h3>Check</h3><p>An independent check accepts the result, not the agent that produced it.</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+      </ol>
+      <div class="how-connect"><div class="how-connect-copy"><h3>Connect in one entry</h3><p>Your harness gets the service address and the name of the environment variable that holds your key. The key itself never goes into a file.</p><p class="how-connect-where">Claude Code, in <code>.mcp.json</code></p><a class="text-link" id="how-explore" href="/how-it-works#task-breakdown" data-page="about">Explore an example task</a></div><pre class="how-code" data-home-recipe="claude-code" tabindex="0" aria-label="The Claude Code entry">{
+  "mcpServers": {
+    "baltor": {
+      "type": "http",
+      "url": "https://baltor.ai/mcp",
+      "headers": {
+        "Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"
+      }
+    }
+  }
+}</pre></div></section>
+      </div>
+      <div class="home-band band-plain" data-band="library">
+      <section class="library" id="library" aria-labelledby="library-title"><div class="library-main"><div class="section-title"><p class="eyebrow">The library</p><h2 id="library-title">Anything a harness can pick up.</h2><p>Not only Markdown: instruction files, skills with their scripts, tools, subagents, hooks and protocol server settings. The library is built to hold every kind, and the tags say which you can download today.</p></div>
+      <ul class="kind-grid">
+<li class="kind" data-kind="skills"><h3>Skills</h3><p class="kind-files">SKILL.md today · scripts/ and assets/ coming</p><p class="status-tag is-available" data-status="available">Available now</p></li>
+<li class="kind" data-kind="instructions"><h3>Instruction files</h3><p class="kind-files">AGENTS.md · CLAUDE.md</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+<li class="kind" data-kind="tools"><h3>Tools and code</h3><p class="kind-files">tested scripts and packages</p><p class="status-tag is-building" data-status="building">Being built</p></li>
+<li class="kind" data-kind="agents"><h3>Subagents and commands</h3><p class="kind-files">agent and command definitions</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+<li class="kind" data-kind="hooks"><h3>Hooks</h3><p class="kind-files">steps your harness runs itself</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+<li class="kind" data-kind="servers"><h3>Protocol servers</h3><p class="kind-files">one step's tool settings</p><p class="status-tag is-planned" data-status="planned">Planned</p></li>
+      </ul></div>
+      <aside class="library-facts" aria-label="The library today"><p class="library-count"><span class="library-number" data-library-count>43</span><span>reviewed items in the library today, and growing</span></p><ul class="check-list"><li>Approved by reviewers who did not write the item, bound to its exact bytes</li><li>Items that need file, network or process access are offered only to a step that declares it</li></ul><p class="library-note">Today every item is a single file. Packages with scripts and assets are coming.</p></aside></section>
+      </div>
+      <div class="home-band" data-band="trust">
+      <section class="trust" aria-labelledby="trust-title"><h2 id="trust-title">Built for teams that check the details.</h2><ul class="trust-grid"><li><h3>Your keys stay yours</h3><p>Baltor never asks for a model key. Your harness calls your models through the connection you control.</p></li><li><h3>Exact versions, verified</h3><p>Every download names its version and digest, and your access is checked again before the bytes are read.</p></li><li><h3>Nothing runs on your computer</h3><p>Connecting gives Baltor no permission to run commands on your computer. Your harness decides what runs, with the permissions you set.</p></li></ul></section>
+      </div>
+      <div class="home-band band-plain" data-band="pricing">
+      <section class="pricing-teaser" id="pricing-summary" aria-labelledby="pricing-teaser-heading"><div class="section-title"><p class="eyebrow">Pricing</p><h2 id="pricing-teaser-heading">One plan. Search is free.</h2><p>One monthly plan. Searching never counts: the measured unit is one downloaded item, and invited accounts are free while invitations go out in small groups. Model costs stay with your own provider, and there is no overage billing.</p></div>
+      <div class="plan-summary"><div class="plan-summary-head"><h3>Baltor Pro</h3><p class="status-tag is-building" id="home-plan-access">Invitation only</p></div><p class="plan-summary-price"><span class="plan-amount">$29</span><span class="plan-per">per month</span></p><ul class="check-list"><li data-offer="search">Free search of the library</li><li data-offer="downloads">One downloaded item is the measured unit, with no overage billing</li><li data-offer="keys"><span id="offer-usage-keys">Keys issued by the person who runs the service; a key for each device from your account page is being prepared</span></li><li data-offer="usage">Usage you can see, item by item</li></ul><div class="pricing-teaser-side"><a class="button primary" id="home-pricing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="home-pricing-primary-label">Get started</span></a><p class="caption" id="pricing-teaser-note">Payment is not open yet. Nothing on this page charges you today.</p><a class="text-link" href="/pricing" data-page="pricing">See what is included</a></div></div></section>
+      </div>
+      <div class="home-band" data-band="faq">
+      <section class="faq" id="faq" aria-labelledby="faq-title"><div class="faq-intro"><h2 id="faq-title">Questions, answered.</h2><p>Anything else, write to the operator at the contact address in the <a href="/privacy" data-page="privacy">privacy notice</a>.</p></div><div class="faq-list">
+<details class="faq-item" open><summary>Which tools work with it?</summary><p>Claude Code, Codex and OpenCode have reviewed connection settings on the Get started page. Another client can connect when it speaks the Model Context Protocol version this service accepts and sends the key in a header.</p></details>
+<details class="faq-item"><summary>What counts as a download?</summary><p>One item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.</p></details>
+<details class="faq-item"><summary>What does Baltor keep about my work?</summary><p>For each item your agent downloads, one usage record: the item's name, its digest and the time. Your tasks, files, prompts and model keys stay on your computer. The <a href="/privacy" data-page="privacy">privacy notice</a> lists everything the service stores and for how long.</p></details>
+<details class="faq-item"><summary>When can I sign up?</summary><p>Accounts open in small groups. The Get started page shows what this service offers you today, and a person reads every invitation request. Invited accounts are free while we open in small groups.</p></details>
+      </div></section>
+      </div>
+      <div class="home-band band-night" data-band="closing">
+      <section class="closing-band closing-callout" aria-labelledby="closing-title"><div><h2 id="closing-title">Bring your next task to Baltor.</h2><p id="closing-note">Request an invitation today. Invited accounts are free while we open in small groups.</p></div><div class="closing-actions"><a class="button primary" id="closing-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="closing-primary-label">Get started</span><svg class="button-arrow" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a></div></section>
+      <p class="caption benefit-limits">Token savings depend on the task and configuration, and nobody has measured them yet. No percentage reduction, replacement of specialist teams or guaranteed daily performance gain is claimed for this service.</p>
+      </div>
+    </section>

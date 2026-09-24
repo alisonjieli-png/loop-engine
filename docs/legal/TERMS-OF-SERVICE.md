@@ -7,8 +7,9 @@ Last changed: September 23, 2026
 1. **The service.** Baltor gives your tools access to reviewed material over
    the internet. You run your own tools and models on your own computer.
    Baltor does not run your tasks and is not responsible for their results.
-2. **Beta.** The service is a beta. It can change, be interrupted or lose
-   stored usage records. Do not rely on it for work that cannot tolerate that.
+2. **Availability.** The service can change or be interrupted, and stored
+   usage records can be lost. Do not rely on it for work that cannot tolerate
+   that.
 3. **Your account.** Keep your password and access keys private. You are
    responsible for use of your keys until you revoke them. Revoke a key that
    may have been exposed.
@@ -18,10 +19,9 @@ Last changed: September 23, 2026
 5. **Acceptable use.** Do not try to read material that your account may not
    read, do not share keys outside your organization, and do not overload
    the service.
-6. **Price.** One plan at 29 United States dollars each month, charged by
-   Stripe. Search is free. Invited beta users are not charged. You can cancel
-   at any time from the billing page and keep access until the end of the paid
-   month.
+6. **Price.** One plan, Baltor Pro, at $29 a month, charged by Stripe. You
+   can cancel at any time from the billing page and keep access until the end
+   of the paid month.
 7. **Ending.** You can stop using the service at any time. Baltor can suspend
    an account that breaks these terms.
 8. **Liability.** To the extent the law allows, Baltor's liability is limited

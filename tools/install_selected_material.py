@@ -1129,10 +1129,52 @@ CODEX_PROFILE = ClientLayoutProfile(
     observed_client_versions=("0.155.1",),
 )
 
+# Pi joined the recipes registry on September 24, 2026. Pi 0.73.1 loads project
+# skills from .pi/skills/<name>/SKILL.md, and only when the file begins with a
+# name and a description, which the generated header supplies. That was observed
+# end to end with Pi's own skill loader in the Pi setup run of September 23, 2026.
+# Pi offers no listing command that starts no model turn, so its listing is None.
+PI_PROFILE = ClientLayoutProfile(
+    client_kind="pi",
+    executable_name="pi",
+    locations=(NativeLocation(SKILL_KIND, (".pi", "skills"), "SKILL.md", SKILL_FILE_RENDERING),),
+    unplaced_kinds=(
+        ("instruction_file", "client_reads_instruction_files_only_through_files_the_project_owns"),
+        ("reusable_code", "code_needs_independent_admission_before_local_use"),
+        ("tool", "code_needs_independent_admission_before_local_use"),
+    ),
+    listing=None,
+    version_arguments=("--version",),
+    model_turn_subcommands=("-p", "--print"),
+    observed_client_versions=("0.73.1",),
+)
+
+# The Baltor Harness joined the recipes registry on September 24, 2026. It reads
+# library material only from the task file today: its skill loader refuses a
+# served SKILL.md, so no kind has a native location and each is refused with its
+# reason. It prints no version and offers no listing, so no command is ever run.
+BALTOR_HARNESS_PROFILE = ClientLayoutProfile(
+    client_kind="baltor-harness",
+    executable_name="loop-engine",
+    locations=(),
+    unplaced_kinds=(
+        ("skill", "engine_reads_library_material_only_from_the_task_file"),
+        ("instruction_file", "engine_reads_library_material_only_from_the_task_file"),
+        ("reusable_code", "code_needs_independent_admission_before_local_use"),
+        ("tool", "code_needs_independent_admission_before_local_use"),
+    ),
+    listing=None,
+    version_arguments=(),
+    model_turn_subcommands=("solve", "overnight"),
+    observed_client_versions=("0.1.0",),
+)
+
 CLIENT_LAYOUT_PROFILES = {
     OPENCODE_PROFILE.client_kind: OPENCODE_PROFILE,
     CLAUDE_CODE_PROFILE.client_kind: CLAUDE_CODE_PROFILE,
     CODEX_PROFILE.client_kind: CODEX_PROFILE,
+    PI_PROFILE.client_kind: PI_PROFILE,
+    BALTOR_HARNESS_PROFILE.client_kind: BALTOR_HARNESS_PROFILE,
 }
 
 

@@ -2,9 +2,9 @@
 
 Kind: customer guide to the plan, download usage and uncertain outcomes.
 
-Baltor Pro is $29 a month. Search is free, and there is no overage billing at
-launch. Invited accounts are free through an operator grant. Model access and
-provider charges are separate from this subscription.
+Baltor Pro is $29 a month, and there is no overage billing at launch. Accounts
+with an operator grant use it free. Model access and provider charges are
+separate from this subscription.
 
 ## The measured unit
 

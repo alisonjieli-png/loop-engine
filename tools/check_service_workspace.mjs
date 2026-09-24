@@ -143,7 +143,9 @@ with ExitStack() as stack:
     print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key}),flush=True)
     sys.stdin.readline()
 `;
-const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
+/* The Python that runs the fixture services: PYTHON when it is set, so a worktree without its own environment can name a
+   qualified one, and the checkout's .venv otherwise. */
+const child=spawn(process.env.PYTHON||resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
 const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const serviceOrigins=[fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base];
@@ -155,6 +157,9 @@ const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.b
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
+/* The Baltor Harness recipe names the command and package a customer types, loop-engine, exactly as written. That lowercase
+   name is not prose, so it is taken out before the plain-words rule reads a recipe; Loop Engine in words is still refused. */
+const withoutProgramName=text=>text.replace(/(?<![A-Za-z])loop-engine(?![A-Za-z])/g,"");
 /* Words a customer page may never carry. The first set is the runtime vocabulary, which belongs in the Documentation
    view and in the repository. The second set describes the product as a trial, which the owner retired: who may create
    an account is a matter of configuration, not of copy. Each rule is checked against a known-wrong page of its own. */
@@ -163,6 +168,13 @@ const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|r
    offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
    drifts between the two is a named failure below rather than a silent disagreement. */
 const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
+/* The words of an invitation-only service, which the owner retired on September 23, 2026: "remove all mentions of invitation
+   only, this should be consistent as if it is fully working" and "We also need to get rid of 'search is free'". No page a
+   customer can open says invite, invited or invitation, small groups, waiting list, search is free, being built, being prepared
+   or planned, in any state the service reports. The privacy notice and the terms of service keep the words the owner approved,
+   so the reading leaves out each of them only while it is shown with exactly the approved words. The hosted check reads the
+   deployed pages with the same rule, and a named check below compares the two copies. */
+const invitationWords=/\binvit(?:e|es|ed|ing|ations?)\b|small groups|waiting list|\bsearch(?:ing)? is free\b|being built|being prepared|\bplanned\b/i;
 /* The Markdown of a published notice is read as a reader sees it rendered: a code span, strong text or a link is the same
    words without its marks. */
 const markdownWords=text=>text.replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
@@ -170,53 +182,70 @@ const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.s
 /* The terms of service the owner approved on September 23, 2026, read from the source tree, so the served page is compared
    with the approved text and never with itself. */
 const approvedTermsWords=markdownWords(readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8"));
-/* The approved terms say beta, in sections 2 and 6, and a published legal text keeps the words the owner approved. The
-   retired-word rule therefore leaves out that one text, and only while it is exactly the approved text: every other word of a
-   page or a served file is read, and terms with one changed word are read whole. docs/legal/README.md records the reason. */
+/* The privacy notice the owner approved on September 22, 2026, read the same way. It says small groups, invite and planned, and it
+   keeps those words while it is exactly the approved text. */
+const approvedPrivacyWords=markdownWords(readFileSync(resolve(root,"docs/legal/PRIVACY-NOTICE.md"),"utf8"));
+/* A published legal text keeps the words the owner approved. The approved terms said beta in sections 2 and 6 until the owner
+   had them amended on the evening of September 23, 2026, and the approved privacy notice still says small groups and planned. The
+   word rules therefore leave out each legal text, and only while it is exactly the approved text: every other word of a page or
+   a served file is read, and a legal text with one changed word is read whole. docs/legal/README.md records the reason. */
 const termsBlock=/<article id="terms-of-service" data-terms-of-service>[\s\S]*?<\/article>/;
-const markupWords=markup=>markup.replace(/<[^>]*>/g," ").replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,"&").split(/\s+/).filter(Boolean);
-const withoutApprovedTerms=markup=>{const found=markup.match(termsBlock);return found&&sameWords(markupWords(found[0]),approvedTermsWords)?markup.replace(found[0],""):markup;};
+/* Words of served markup as a reader sees them: an inline element such as a link, a code span or strong text joins the words
+   around it, and every other tag separates words, so "(<code>iad</code>)" reads "(iad)" as the rendered notice does. */
+const markupWords=markup=>markup.replace(/<\/?(?:a|b|code|em|i|span|strong|time)\b[^>]*>/g,"").replace(/<[^>]*>/g," ").replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,"&").split(/\s+/).filter(Boolean);
+const withoutApprovedBlock=(markup,block,approved)=>{const found=markup.match(block);return found&&sameWords(markupWords(found[0]),approved)?markup.replace(found[0],""):markup;};
+const withoutApprovedTerms=(markup,approved=approvedTermsWords)=>withoutApprovedBlock(markup,termsBlock,approved);
 /* A statement that the terms of service are not published. The owner approved and published them on September 23, 2026.
    The hosted check reads the deployed pages with the same rule, and a named check below compares the two copies. */
 const unpublishedTerms=/terms of service:?\s+not yet published|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)/i;
 /* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant"; September 23:
    "I think we need to have 'Get Setup' which is a guide on how to get setup and 'get started' is the sign up and
-   registration/pay funnel". So every link or button that starts the access journey says "Get started" and opens /get-started,
-   the funnel, in every state: the funnel adapts, so no label switches. Two pages keep page links of their own, each by its own
-   name: the guide, "Get set up" at /setup, and the waiting list page, "Request an invitation" at /waitlist. The labels the owner
-   called redundant are reported anywhere, an invitation request is reported anywhere but on the invitation journey or as the
-   waiting list page's own link, and account creation is offered only while the service reports registration open, and then
-   only on the guide and the account pages. Each rule has a known-wrong page of its own in the journey below. The readers
-   return empty values for a missing element, so a page without the new parts fails these checks by name instead of stopping. */
-const accessLabels={closed:"Get started",open:"Get started"},accessPaths={closed:"/get-started",open:"/get-started"},accessAddresses=["/get-started"];
+   registration/pay funnel", and later the same day: "remove all mentions of invitation only". So every link or button that
+   starts the access journey says "Get started" and opens /get-started, the funnel, in every state: the funnel adapts, so no
+   label switches. /waitlist is the funnel's older address, so a link to it opens the journey too. One page keeps a page link of
+   its own, by its own name: the guide, "Get set up" at /setup, in the header, the footer and the hero. The labels the owner
+   called redundant and an invitation request are reported anywhere, and account creation is offered only while the service
+   takes new accounts, by registration or by its request list, and then only in the funnel, in the card that leads the guide and
+   on the account pages. Each rule has a known-wrong page of its own in the journey below. The readers return empty values for a
+   missing element, so a page without the new parts fails these checks by name instead of stopping. */
+const accessLabels={closed:"Get started",open:"Get started"},accessPaths={closed:"/get-started",open:"/get-started"},accessAddresses=["/get-started","/waitlist"];
 const getStartedPage="/setup";
-/* The page links by their own names: the guide and the waiting list page. */
-const pageLinkNames={"get-set-up":["Get set up","/setup"],"waitlist":["Request an invitation","/waitlist"]};
+/* The page link by its own name: the guide. The signed-out header marks its entry apart from the signed-in one, so each place
+   names the link it holds. */
+const pageLinkNames={"get-set-up":["Get set up","/setup"],"get-set-up-guide":["Get set up","/setup"]};
 const isPageLink=action=>Boolean(action.pageLink&&pageLinkNames[action.pageLink]&&action.text===pageLinkNames[action.pageLink][0]&&action.href===pageLinkNames[action.pageLink][1]);
 const stateLabel=registrationOpen=>registrationOpen?accessLabels.open:accessLabels.closed,statePath=registrationOpen=>registrationOpen?accessPaths.open:accessPaths.closed;
 const opensTheJourney=href=>accessAddresses.includes(href.split("#")[0]);
-const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/ask for an invitation|request an invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
-/* The public pages a visitor can open without signing in. Each is scanned on three real services below. */
-const accessJourneyPaths=["/","/pricing","/how-it-works","/setup","/get-started","/waitlist","/signup","/examples","/security","/docs","/privacy","/terms","/login"];
-const waitingNote="Invitation only while we open in small groups";
-const openNote="Account creation is open";
-/* The access card that leads the Get started page and the invitation card of the waiting list page are the journey itself. */
+const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
+/* The public pages a visitor can open without signing in, including the three use cases the owner named on September 23, 2026
+   and their hub. Each is scanned on three real services below. */
+const useCasePaths=["/use-cases","/overnight","/efficiency","/learning"];
+const accessJourneyPaths=["/",...useCasePaths,"/pricing","/how-it-works","/setup","/get-started","/waitlist","/signup","/examples","/security","/docs","/privacy","/terms","/login"];
+/* The access card that leads the guide and the card of the Get started funnel are the journey itself. */
 const publicActions=target=>target.evaluate(()=>{
   const lead=document.getElementById("start-access"),card=document.getElementById("waitlist-card"),funnel=document.querySelector('[data-view="start"] .funnel-card'),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
   return [...document.querySelectorAll("header a, header button, footer a, [data-view]:not([hidden]) a, [data-view]:not([hidden]) button")].filter(shown)
-    .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",
-      lead:Boolean((lead&&lead.contains(node))||(card&&card.contains(node))||(funnel&&funnel.contains(node))),account:Boolean(node.closest('[data-view="signup"]')),pageLink:node.dataset.nav||""}));
+    .map(node=>{const href=node.getAttribute("href")||"",target=href.startsWith("#")?document.getElementById(href.slice(1)):null;
+      /* A link within the page to the card that leads the guide, such as the guide's own list of steps, belongs to that card. */
+      const toLead=Boolean(lead&&target&&(lead===target||lead.contains(target)));
+      return {id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href,
+        lead:Boolean((lead&&lead.contains(node))||(card&&card.contains(node))||(funnel&&funnel.contains(node))||toLead),account:Boolean(node.closest('[data-view="signup"]')),pageLink:node.dataset.nav||""};});
 });
-const accessActionProblems=(actions,registrationOpen)=>{const label=stateLabel(registrationOpen),path=statePath(registrationOpen);return [
-  ...actions.filter(action=>opensTheJourney(action.href)&&action.text!==label).map(action=>"an action that opens the sign-up funnel says "+JSON.stringify(action.text)),
+/* A text link may give the label as the answer to a short question, as the sign-in page's "No account yet? Get started." does.
+   Any other wording of a link into the journey is a second label. */
+const saysTheLabel=(text,label)=>text===label||new RegExp("^[A-Z][^.?!]{0,40}\\? "+label+"\\.$").test(text);
+/* takesAccounts: the service reports registration open, or keeps the request list the funnel's form writes to. Either way the
+   funnel offers its one account form, so account creation may be offered in the journey itself and on the account pages. */
+const accessActionProblems=(actions,registrationOpen,takesAccounts=registrationOpen)=>{const label=stateLabel(registrationOpen),path=statePath(registrationOpen);return [
+  ...actions.filter(action=>opensTheJourney(action.href)&&!saysTheLabel(action.text,label)).map(action=>"an action that opens the sign-up funnel says "+JSON.stringify(action.text)),
   ...actions.filter(action=>action.pageLink&&!isPageLink(action)).map(action=>"a page link says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href)),
   ...actions.filter(action=>action.text===label&&!action.lead&&action.href!==path).map(action=>"a "+JSON.stringify(label)+" action opens "+JSON.stringify(action.href)),
   ...actions.filter(action=>redundantAccessLabel.test(action.text)).map(action=>"a second label for the same journey: "+JSON.stringify(action.text)),
-  ...actions.filter(action=>invitationAccessLabel.test(action.text)&&!action.lead&&!isPageLink(action)).map(action=>"an invitation request outside the invitation journey: "+JSON.stringify(action.text)),
-  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!registrationOpen||!(action.lead||action.account))).map(action=>(registrationOpen?"account creation offered outside the Get started and account pages: ":"account creation offered while registration is closed: ")+JSON.stringify(action.text))];};
-/* The Get started page leads with one panel: "register", "invite" or "operator". The reader says which panel is shown, whether
-   the link to the invitation page and the account action can be seen, and whether the panel is the first thing under the page
-   heading. The invitation form itself lives on the waiting list page since September 23, 2026, so it is never seen here. */
+  ...actions.filter(action=>invitationAccessLabel.test(action.text)).map(action=>"an invitation request, which the owner retired on September 23, 2026: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!takesAccounts||!(action.lead||action.account))).map(action=>(takesAccounts?"account creation offered outside the funnel, the guide's lead and the account pages: ":"account creation offered while the service takes no new accounts: ")+JSON.stringify(action.text))];};
+/* The guide, Get set up, leads with one panel: "register", "invite" or "operator". The reader says which panel is shown, whether
+   the panel's link to the Get started funnel and the account action can be seen, and whether the panel is the first thing under
+   the page heading. The form that takes an address lives in the funnel, so it is never seen here. */
 const startLead=target=>target.evaluate(()=>{
   const lead=document.getElementById("start-access"),seen=id=>{const node=document.getElementById(id);return Boolean(node&&node.getClientRects().length>0);};
   return {state:lead?.dataset.startAccess||"",shown:[...document.querySelectorAll("[data-start-state]")].filter(panel=>!panel.hidden).map(panel=>panel.dataset.startState),
@@ -241,28 +270,29 @@ const signOutFromHeader=async target=>{
 const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAll("header nav a")].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim()),
   primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-toggle")?.checked===true,
   focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
-const menuLinks=["How it works","Library","Pricing","Docs","Sign in"];
+/* The signed-out menu, in the order of the site map's signed-out header: the pages, the guide and Sign in. */
+const menuLinks=["How it works","Use cases","Library","Pricing","Docs","Get set up","Sign in"];
 const menuWorks=states=>states.closed.links.length===0&&states.closed.primary&&!states.closed.open
   &&JSON.stringify(states.pressed.links)===JSON.stringify(menuLinks)&&states.pressed.open&&states.pressed.primary
   &&!states.escaped.open&&states.escaped.links.length===0
   &&JSON.stringify(states.keyed.links)===JSON.stringify(menuLinks)&&states.keyed.focusMark!=="none"
   &&states.chosen.path==="/pricing"&&!states.chosen.open&&states.chosen.links.length===0&&states.chosen.primary;
-/* The guide is not in the signed-out header; a visitor reaches it from the footer, the homepage and the Docs page. */
+/* The guide is in the signed-out header since September 23, 2026, and in the footer, the hero and the funnel. The footer's link
+   is the one every page carries in every sign-in state, so the journey opens the guide from there. */
 const openGuide=async target=>{await target.locator('footer a[data-nav="get-set-up"]').click();};
 const openGetStarted=async target=>{await openGuide(target);return startLead(target);};
-/* One press on the hero's primary action, and where the invitation email field then stands in the window. The live review of
-   September 22 asked for one action that lands on a visible email field with no page or press in between. */
+/* One press on the hero's primary action, and where the funnel's email field then stands in the window. The live review of
+   September 22 asked for one action that lands on a visible email field with no page or press in between; since September 23 the
+   field is #funnel-email in the Get started funnel itself, with no second page behind it. */
 const pressThePrimaryAction=async (target,width,height)=>{
   const label=((await target.locator("#hero-primary").textContent())||"").replace(/[↗→]/g,"").trim();
   await target.locator("#hero-primary").click();
-  const entryPath=new URL(target.url()).pathname;
-  const invitation=target.locator("#funnel-invite");
-  const offered=await invitation.isVisible()&&await invitation.getAttribute("href")==="/waitlist";
-  if(offered)await invitation.click();
-  return {width,height,label,entryPath,offered,...await target.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?node.getBoundingClientRect():null;
-    return {path:location.pathname,shown:Boolean(node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"),top:box?Math.round(box.top):-1,bottom:box?Math.round(box.bottom):-1,viewport:innerHeight};})};
+  await target.waitForFunction(()=>document.getElementById("funnel")?.dataset.funnelState==="register",null,{timeout:5000}).catch(()=>{});
+  return {width,height,label,...await target.evaluate(()=>{const node=document.getElementById("funnel-email"),box=node?node.getBoundingClientRect():null;
+    return {path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),
+      shown:Boolean(node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"),top:box?Math.round(box.top):-1,bottom:box?Math.round(box.bottom):-1,viewport:innerHeight};})};
 };
-const landsOnTheField=item=>item.label===accessLabels.closed&&item.entryPath===accessPaths.closed&&item.path==="/waitlist"&&item.offered&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
+const landsOnTheField=item=>item.label===accessLabels.closed&&item.path===accessPaths.closed&&JSON.stringify(item.views)===JSON.stringify(["start"])&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
 /* The first screen on a phone: where the hero's primary action stands, how tall the header is, and whether the page scrolls sideways. */
 const firstScreen=target=>target.evaluate(()=>{const box=document.getElementById("hero-primary")?.getBoundingClientRect()||{top:-1,bottom:-1};
   return {top:Math.round(box.top),bottom:Math.round(box.bottom),viewport:innerHeight,width:innerWidth,header:Math.round(document.querySelector("header")?.getBoundingClientRect().height||0),overflow:document.documentElement.scrollWidth>innerWidth+1};});
@@ -298,11 +328,13 @@ const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("
 const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:["no primary action is shown"]),
   ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
 /* The demonstration of one step, as the design draws it: the search and the download are recorded from this release's library
-   under one label in the panel's head, and the fresh harness below them carries its own label because it is being built. The
-   names, kinds, licences, sizes and digests are compared with this release's packaged manifest, read from the source tree, and
-   the order of the search is compared with a real search of that library by tools/test_homepage_demonstration.py. */
+   under one label in the panel's head, and the step's working folder below them carries a label of its own, "Example layout",
+   because it shows where the files go rather than a recorded run. The owner removed the status words on September 23, 2026, so
+   no part says "Being built" any longer. The names, kinds, licences, sizes and digests are compared with this release's packaged
+   manifest, read from the source tree, and the order of the search is compared with a real search of that library by
+   tools/test_homepage_demonstration.py. */
 const demoStages=[["search","recorded"],["download","recorded"],["folder","illustration"]];
-const demoLabelWords={recorded:"Recorded from this release's library",illustration:"Being built"};
+const demoLabelWords={recorded:"Recorded from this release's library",illustration:"Example layout"};
 const demoState=target=>target.evaluate(()=>{
   const demo=document.getElementById("step-demo"),visible=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
   const panels=demo?[...demo.querySelectorAll("[data-demo-stage]")]:[],head=demo?.querySelector(".step-demo-head [data-demo-label]");
@@ -312,11 +344,11 @@ const demoState=target=>target.evaluate(()=>{
     text:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,panel.textContent.replace(/\s+/g," ")]))};
 });
 const demoLabelProblems=state=>[...(JSON.stringify(state.stages)!==JSON.stringify(demoStages)?["the parts are "+JSON.stringify(state.stages)]:[]),
-  ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])||!state.labels[stage][2]).map(([stage,evidence])=>"the "+stage+" part is not labelled "+JSON.stringify(demoLabelWords[evidence]))];
+  ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])||invitationWords.test(state.labels[stage][1])||!state.labels[stage][2]).map(([stage,evidence])=>"the "+stage+" part is not labelled "+JSON.stringify(demoLabelWords[evidence]))];
 const livePathProblems=state=>[
   ...(/\bsearch\b/.test(state.text.search||"")&&/sha256/.test(state.text.search||"")?[]:["the search part shows no search with digests"]),
   ...(/\bdownload\b/.test(state.text.download||"")&&/Bytes match the digest/.test(state.text.download||"")?[]:["the download part shows no checked download"]),
-  ...["search","download"].filter(stage=>/illustration|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" part carries illustrated or planned words")];
+  ...["search","download"].filter(stage=>/illustration|example layout|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" part carries illustrated or planned words")];
 const demoFacts=target=>target.evaluate(()=>{
   const demo=document.getElementById("step-demo"),fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
   return {items:demo?[...demo.querySelectorAll("[data-demo-item]")].map(node=>({identity:node.dataset.demoItem,kind:fact(node,"kind"),licence:fact(node,"licence"),size:fact(node,"size"),digest:fact(node,"digest"),chosen:node.classList.contains("is-chosen")})):[],
@@ -335,22 +367,26 @@ const demoFactProblems=facts=>[
   ...(facts.download&&facts.items[0]?.identity===facts.download&&facts.items[0]?.chosen?[]:["the download does not name the reference the search chose"])];
 const folderPaths=target=>target.evaluate(()=>[...document.querySelectorAll("#step-demo [data-demo-path]")].map(node=>node.dataset.demoPath));
 const folderProblems=paths=>paths.some(path=>!/\.md$/i.test(path))?[]:["the step folder shows only Markdown files"];
-/* The six problems, the five steps and the six kinds of harness material each carry the honest state of the part behind them.
-   Only the parts that work on the live service today may say so: a narrow context and reviewed expertise among the problems,
-   search and download among the steps, and skills among the kinds. Any other card that claims to be available is the
-   known-wrong case. */
-const problemOrder=["context","model","expertise","reuse","mistakes","overnight"],availableProblems=["context","expertise"];
-const stepOrder=["split","search","download","run","check"],liveSteps=["search","download"];
-const kindOrder=["skills","instructions","tools","agents","hooks","servers"],availableKinds=["skills"];
-const statusCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>{const tag=node.querySelector(".status-tag");
-  return {name:node.dataset[key],status:tag?.dataset.status||"",text:tag?.textContent.trim()||"",shown:Boolean(tag&&tag.getClientRects().length)&&node.getClientRects().length>0};}),[selector,key]);
-const statusProblems=(cards,order,available)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
-  ...cards.filter(card=>!card.shown||!card.text).map(card=>card.name+" shows no status"),
-  ...cards.filter(card=>["available","live"].includes(card.status)!==available.includes(card.name)).map(card=>card.name+" says "+JSON.stringify(card.text))];
+/* The homepage cards since September 23, 2026: the six kinds of harness material, the three steps of How it works and the three
+   use cases the owner named, each in the design's order and each under its own heading. The owner removed the status words from
+   them the same day, so no card carries a status tag and no card says Available now, Being built, Planned, Coming soon or that
+   packages are coming. The two labels of the demonstration are the only tags the homepage keeps. A card that claims or disclaims
+   a state is the known-wrong case. Each use case links to its own page. */
+const kindOrder=["skills","instructions","tools","agents","hooks","servers"],howOrder=["ask","get","place"],useCaseOrder=["overnight","efficiency","learning"];
+const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
+const homeCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>({name:node.dataset[key]||"",
+  title:node.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim(),tags:node.querySelectorAll(".status-tag, [data-status]").length,
+  links:[...node.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:node.getClientRects().length>0})),[selector,key]);
+const cardStatusWords=/available now|being built|\bplanned\b|coming soon|packages coming/i;
+const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
+  ...cards.filter(card=>!card.shown||!card.title).map(card=>card.name+" is not shown under its own heading"),
+  ...cards.filter(card=>card.tags>0||cardStatusWords.test(card.text)).map(card=>card.name+" carries a status: "+JSON.stringify(card.text.slice(0,80)))];
+const useCaseProblems=cards=>[...cardProblems(cards,useCaseOrder),
+  ...cards.filter(card=>useCaseTitles[card.name]!==card.title||JSON.stringify(card.links)!==JSON.stringify(["/"+card.name])).map(card=>card.name+" is titled "+JSON.stringify(card.title)+" and links "+JSON.stringify(card.links))];
 /* No layout shift from late script. The first screen is measured as served, with the page script held back, and again once
    the script has run and the service has answered. Nothing measured here may move by more than one pixel. The fonts are
    waited for in both pages, so a font that arrives late is not mistaken for the script. */
-const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-see-step","#hero-access-note",".hero-split","#step-demo",'[data-band="harnesses"]'].map(selector=>{
+const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-setup","#hero-access-note",".hero-price",".hero-harnesses","#step-demo",'[data-band="library"]'].map(selector=>{
   const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
   return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];}));});
 /* Text contrast, as WCAG AA sets it: 4.5 to 1 for body text and 3 to 1 for large text, measured against the solid grounds
@@ -473,7 +509,7 @@ async function checkShownRecipe(page,base,record,recipe,note){
   note("recipe_states_how_to_check_and_revoke_"+id,recipe.verification_command.length>0&&plainCommand.test(await content("#client-verify-command"))&&await content("#client-verify-command")===recipe.verification_command&&await content("#client-verify-note")===recipe.verification_note&&/revoke/i.test(record.revocation_note)&&await content("#client-revoke-note")===record.revocation_note&&await content("#client-removal-note")===recipe.removal_note&&await page.locator("#client-revoke-note").isVisible()&&await page.locator("#client-removal-note").isVisible());
   let source=null;try{source=new URL(recipe.source_url);}catch(_){}
   note("recipe_cites_its_source_"+id,recipe.source_url.startsWith("https://")&&source!==null&&source.username===""&&source.password===""&&await page.locator("#client-source").getAttribute("href")===recipe.source_url&&(await page.locator("#client-source").getAttribute("rel")).includes("noopener"));
-  note("connect_view_uses_plain_words_"+id,!internalTerms.test(view));
+  note("connect_view_uses_plain_words_"+id,!internalTerms.test(withoutProgramName(view)));
   return view;
 }
 /* A known-wrong record must be refused before anything from it is displayed. A page without the rule shows it, and the ordinary recipe checks then fail. */
@@ -633,17 +669,30 @@ try {
   const bothFaces=families=>["Geist","Geist Mono"].every(family=>families.includes(family));
   check("website_typefaces_load_from_this_service",bothFaces(typefaces),{typefaces});
   check("typeface_check_rejects_a_page_without_the_code_face",!bothFaces(typefaces.filter(family=>family!=="Geist Mono"))&&!bothFaces([]));
-  /* The headline is the owner's line. It has to name the two readers it addresses, the developers and the agents they run.
-     The sentence under it names the unit of work this product sells. Each rule has its own known-wrong case beside it. */
-  const headline=await page.locator('[data-view="home"] h1').innerText();
-  const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
-  const namesTheStep=text=>/\beach step\b/i.test(text);
-  check("homepage_headline_names_the_developer_and_the_agent",namesTheReader(headline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{headline});
-  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation.","Supercharge your workflow.","Material your coding tools can search.","Supercharge your agents."].every(claim=>!namesTheReader(claim))&&namesTheReader("Supercharge your developers and AI agents"));
-  const subhead=await page.locator('[data-view="home"] .hero-subhead').innerText();
-  check("homepage_subhead_names_the_unit_of_work",namesTheStep(subhead),{subhead});
-  check("subhead_check_rejects_a_sentence_that_never_names_the_step",["Baltor is a library your coding tools can search.","Supercharge your developers and AI agents."].every(claim=>!namesTheStep(claim))&&namesTheStep("Give your AI agents what they need for each step."));
-  check("homepage_says_the_model_keys_stay_with_the_customer",(await page.locator(".hero-value").innerText()).includes("Your model keys stay with you")&&(await page.locator(".hero-value").innerText()).includes("never asks you for a provider key")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
+  /* The hero, as the owner decided on September 23, 2026: it says what Baltor is, the library of everything a harness can use,
+     placed where the harness reads it, and the pain it removes, the searching, sorting and copying done by hand. "One harness per
+     step" left the hero the same day; it is a runtime option that How it works describes. Each rule has its own known-wrong case
+     beside it: the owner's earlier lines, a hero that names only one of the two, and a hero that promises a fresh harness again. */
+  const heroCopy=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({headline:node.querySelector("h1")?.textContent.replace(/\s+/g," ").trim()||"",
+    subhead:node.querySelector(".hero-subhead")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim()}));
+  const saysWhatBaltorIs=copy=>/\bharness\b/i.test(copy.headline+" "+copy.subhead)&&/\bskills\b/i.test(copy.subhead)&&/\btools\b/i.test(copy.subhead)&&/where (?:your|the|each) harness reads/i.test(copy.subhead);
+  const saysThePain=copy=>/\bby hand\b/i.test(copy.subhead);
+  const keepsThePerStepOptionOut=copy=>!/fresh harness|harness (?:for|per) (?:each|every) step|one harness per step/i.test(copy.text);
+  const heroProblems=copy=>[...(saysWhatBaltorIs(copy)?[]:["the hero does not say what Baltor is and where the files go"]),...(saysThePain(copy)?[]:["the hero does not name the work it removes"]),
+    ...(keepsThePerStepOptionOut(copy)?[]:["the hero promises a fresh harness for each step"])];
+  check("homepage_hero_says_what_baltor_is_and_the_pain_it_removes",heroProblems(heroCopy).length===0&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{...heroCopy,problems:heroProblems(heroCopy)});
+  const earlierHero={headline:"Supercharge your developers and AI agents.",subhead:"Big tasks go better in small steps. Baltor is designed to give each step a fresh harness that holds only what that step needs, aiming to limit context drift and help smaller models do more of the work."};
+  check("hero_check_rejects_the_earlier_lines_a_hero_without_the_pain_and_a_fresh_harness_promise",heroProblems({...earlierHero,text:earlierHero.headline+" "+earlierHero.subhead}).length===3
+    &&heroProblems({headline:"The perfect harness setup for every task.",subhead:"Baltor finds skills, instructions and tools and puts each file where your harness reads it.",text:"The perfect harness setup for every task."}).length===1
+    &&heroProblems({headline:"Stop copying files by hand.",subhead:"Nobody has to search, sort or copy them by hand.",text:"Stop copying files by hand."}).length===1
+    &&heroProblems({...heroCopy,text:heroCopy.text+" Each step runs in a fresh harness."}).length===1);
+  /* The model keys stay with the customer: the trust band says Baltor never asks for a model key, the footer says so on every page,
+     and the closing caption claims no percentage. */
+  const keyPromise=await page.evaluate(()=>({trust:document.querySelector('[data-band="trust"]')?.textContent.replace(/\s+/g," ")||"",footer:document.querySelector("footer .footer-bottom")?.textContent.replace(/\s+/g," ")||"",
+    limits:document.querySelector('[data-view="home"] .benefit-limits')?.textContent.replace(/\s+/g," ")||""}));
+  const keepsTheKeysPromise=state=>state.trust.includes("Baltor never asks for a model key")&&state.footer.includes("Your model keys stay with you")&&state.limits.includes("No percentage reduction");
+  check("homepage_says_the_model_keys_stay_with_the_customer",keepsTheKeysPromise(keyPromise),keyPromise);
+  check("model_key_check_rejects_a_page_that_drops_the_promise",!keepsTheKeysPromise({...keyPromise,trust:keyPromise.trust.replace("Baltor never asks for a model key","")})&&!keepsTheKeysPromise({...keyPromise,footer:""})&&!keepsTheKeysPromise({...keyPromise,limits:""}));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   /* The light ground is an off-white, not white, so the rule reads the ground the page paints in a light system setting and
      requires the same light ground in a dark one. Every channel of a light ground is at least 230. */
@@ -653,76 +702,107 @@ try {
   check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light")&&isLight(lightGround)&&await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)===lightGround,{ground:lightGround});
   check("light_ground_check_rejects_a_dark_ground",!isLight("rgb(12, 20, 36)")&&isLight("rgb(243, 245, 250)"));
   await page.emulateMedia({colorScheme:"light"});
-  /* The closing caption is the one place that names what nobody has measured, and it names the daily gain it does not promise. */
-  check("benefit_limits_do_not_guarantee_daily_improvement",(await page.locator('[data-band="closing"] .benefit-limits').innerText()).includes("guaranteed daily performance gain"));
+  /* The closing caption is the one place that names what nobody has measured: it claims no percentage and no guaranteed gain. */
+  const limitsText=await page.locator('[data-band="closing"] .benefit-limits').innerText();
+  const claimsNoGain=text=>/no percentage reduction or guaranteed (?:daily performance )?gain is claimed/i.test(text);
+  check("benefit_limits_do_not_guarantee_daily_improvement",claimsNoGain(limitsText),{limits:limitsText});
+  check("benefit_limit_check_rejects_a_caption_that_promises_a_gain",!claimsNoGain("Guaranteed daily gains on every task.")&&!claimsNoGain("")&&claimsNoGain(limitsText));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
-  /* The owner removed the category pill on September 23. Start directly at the headline.
-     The remaining positioning paragraph still explains the product in plain words. */
+  /* The owner removed the category pill above the headline on September 23, and the opening starts directly at the heading
+     (docs/verification/HOMEPAGE-BADGE-AND-ASSET-DELIVERY-2026-09-23.md). The redesign of the same day did not change that
+     decision, so a label above the headline is still refused here. */
   const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));
   const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
   check("homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
   check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
-  const positioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
-  const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
-  check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
-  check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
-  const heroSplit=await page.locator('[data-view="home"] .hero-split').innerText();
-  check("homepage_states_the_free_and_paid_split",heroSplit.startsWith("Free to install. Paid access to the library")&&heroSplit.includes("29 United States dollars each month"),{split:heroSplit});
-  /* One primary action in the hero: while account creation is closed, "Request an invitation", opening the invitation form. One
-     secondary link beside it, which moves to the demonstration on the same page, and no second way into the access journey
-     anywhere in the hero. */
-  const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
-  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("id")==="hero-primary"&&await heroPrimary.getAttribute("href")===accessPaths.closed&&(await heroPrimary.innerText()).replace(/[↗→]/g,"").trim()===accessLabels.closed&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-see-step").isVisible()&&await page.locator("#hero-see-step").getAttribute("href")==="#step-demo"&&(await page.locator("#hero-see-step").innerText()).trim()==="See one step work"&&await page.locator('[data-view="home"] .hero a[href^="/signup"], [data-view="home"] .hero a[href^="/waitlist"], [data-view="home"] .hero a[href^="/connect"], [data-view="home"] .hero a[href^="/get-started"]').count()===1);
+  /* The owner's category line, "harness and agent optimized operation", stays on every page, written out in full in the footer's
+     brand column, and the hero explains the word harness by naming the harnesses Baltor sets up: exactly the five the owner named
+     on September 23, 2026, in that order, with no status word beside any of them. */
+  const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
+  const categoryState=await page.evaluate(()=>({footer:[...document.querySelectorAll("footer .footer-brand p")].map(node=>node.textContent.replace(/\s+/g," ").trim()).join("\n"),
+    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.replace(/\s+/g," ").trim())}));
+  const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),
+    ...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
+  check("the_owner_category_line_stays_in_full_and_the_hero_names_the_harnesses",categoryProblems(categoryState).length===0,{...categoryState,problems:categoryProblems(categoryState)});
+  check("category_line_check_rejects_a_shortened_line_a_missing_harness_a_status_and_a_new_order",categoryProblems({...categoryState,footer:"Optimized operation."}).length===1
+    &&categoryProblems({...categoryState,harnesses:heroHarnesses.filter(name=>name!=="Pi")}).length===1&&categoryProblems({...categoryState,harnesses:heroHarnesses.map(name=>name==="Pi"?"Pi Planned":name)}).length===1
+    &&categoryProblems({...categoryState,harnesses:[...heroHarnesses].reverse()}).length===1);
+  /* The price in the hero, as the owner decided on September 23, 2026: "Baltor Pro $29 a month", written the one way the design
+     standards allow. */
+  const heroPrice=await page.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"");
+  const statesThePlanAndPrice=text=>/^Baltor Pro \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
+  check("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(heroPrice),{price:heroPrice});
+  check("hero_price_check_rejects_a_missing_price_and_another_way_of_writing_it",!statesThePlanAndPrice("")&&!statesThePlanAndPrice("Baltor Pro")&&!statesThePlanAndPrice("Baltor Pro 29 United States dollars each month")
+    &&!statesThePlanAndPrice("Baltor Pro $29 per month")&&statesThePlanAndPrice("Baltor Pro $29 a month for the whole library"));
+  /* Two actions in the hero, as the owner decided on September 23, 2026: Get started, the one primary action, which opens the
+     funnel, and Get set up, the secondary action, which opens the guide, with one line under them that says how the two differ.
+     No second way into the access journey anywhere in the hero. */
+  const readHeroActions=target=>target.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
+    return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
+      secondary:[...hero.querySelectorAll(".button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
+      journey:[...hero.querySelectorAll("a[href]")].filter(node=>/^\/(?:get-started|waitlist|signup|connect)(?:$|[/?#])/.test(node.getAttribute("href"))).length,
+      paths:hero.querySelector(".hero-paths")?.textContent.replace(/\s+/g," ").trim()||""};});
+  const heroActions=await readHeroActions(page);
+  const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary",accessLabels.closed,accessPaths.closed]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
+    ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),
+    ...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
+    ...(/\bGet started\b[^.]*\baccount\b/i.test(state.paths)&&/\bGet set up\b[^.]*\bconnect/i.test(state.paths)?[]:["the line under the actions reads "+JSON.stringify(state.paths)])];
+  check("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(heroActions).length===0,{...heroActions,problems:heroActionProblems(heroActions)});
+  check("hero_action_check_rejects_a_second_primary_a_missing_guide_and_a_missing_explanation",heroActionProblems({...heroActions,primary:[...heroActions.primary,["planted","Request an invitation","/waitlist"]],journey:heroActions.journey+1}).length===2
+    &&heroActionProblems({...heroActions,secondary:[]}).length===1&&heroActionProblems({...heroActions,secondary:[["hero-see-step","See one step work","#step-demo"]]}).length===1
+    &&heroActionProblems({...heroActions,paths:""}).length===1&&heroActionProblems({...heroActions,paths:"Get started creates your account."}).length===1);
   /* The single call to action. Every primary button a visitor can see on the homepage, in the header and in the footer carries
      the one label of the reported state and opens the page behind it, and the header carries exactly one of them. */
   const homePrimaries=await primaryActions(page);
   check("homepage_primary_actions_all_carry_the_one_label",primaryProblems(homePrimaries).length===0&&homePrimaries.filter(action=>action.header).length===1&&homePrimaries.length>=4,{actions:homePrimaries,problems:primaryProblems(homePrimaries)});
   check("primary_action_check_rejects_a_second_label_and_a_second_address",primaryProblems([...homePrimaries,{id:"planted",text:"Join the waiting list",href:accessPaths.closed,header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:accessLabels.closed,href:"/signup#waiting-list",header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:"Request an invitation",href:"/waitlist",header:false}]).length===1&&primaryProblems([]).length===1);
-  /* The design's order: the hero with the demonstration beside it, the harnesses, the six problems, how it works, the library,
-     trust, pricing, questions and the closing band. Each is a band of its own, directly under the homepage view. */
-  const bandOrder=["hero","harnesses","problems","how","library","trust","pricing","faq","closing"];
+  /* The design's order since September 23, 2026: the hero with the demonstration beside the copy, the library, the three use
+     cases, how it works, trust, pricing, questions and the closing band. The harness strip and the six problems left the homepage
+     that day; their content moved to the use-case pages. Each is a band of its own, directly under the homepage view. */
+  const bandOrder=["hero","library","use-cases","how","trust","pricing","faq","closing"];
   const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>({bands:[...home.children].map(node=>node.dataset.band||node.tagName.toLowerCase()),demoIn:document.getElementById("step-demo")?.closest("[data-band]")?.dataset.band||""}));
   const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.demoIn==="hero";
   check("homepage_bands_follow_the_design_order",followsTheDesign(homeFlow),homeFlow);
-  check("band_order_check_rejects_a_moved_band_and_a_demonstration_outside_the_hero",!followsTheDesign({...homeFlow,bands:[...bandOrder.slice(0,2),bandOrder[3],bandOrder[2],...bandOrder.slice(4)]})&&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,demoIn:"how"}));
-  /* The opening message leads the page, with the supporting words beside it on a wide screen, and the demonstration of one step
-     follows below it at the full width of the page. The review of September 23 found the demonstration beside the message
-     taking the first look, so the known-wrong layout puts it back beside the message. */
+  check("band_order_check_rejects_a_moved_band_a_returned_band_and_a_demonstration_outside_the_hero",!followsTheDesign({...homeFlow,bands:[bandOrder[0],bandOrder[2],bandOrder[1],...bandOrder.slice(3)]})
+    &&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,bands:[bandOrder[0],"harnesses","problems",...bandOrder.slice(1)]})&&!followsTheDesign({...homeFlow,demoIn:"how"}));
+  /* The demonstration of one step sits beside the copy in the hero on a wide screen, as the owner decided on September 23, 2026,
+     so the first look shows what an agent gets at one step. The known-wrong layouts put it below the copy, as the review of the
+     same morning had it, and leave it out. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector('.product-hero'),copy=hero?.querySelector('.hero-copy'),aside=hero?.querySelector('.hero-aside'),example=hero?.querySelector('.step-demo');
-    const next=home.querySelector('.harness-strip');
-    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0,bottom:0};
-    return {pageWidth:box(next).width,copyBottom:box(copy).bottom,copyRight:box(copy).right,asideBottom:box(aside).bottom,asideLeft:box(aside).left,
-      exampleTop:box(example).top,exampleWidth:box(example).width,hasExample:Boolean(example),hasAside:Boolean(aside),viewport:innerWidth};
+    const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".step-demo");
+    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
+    return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),
+      exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};
   });
-  const demoBelowTheMessage=m=>m.hasExample&&m.hasAside&&m.pageWidth>0&&m.exampleTop>=Math.max(m.copyBottom,m.asideBottom)-1&&m.exampleWidth>=0.95*m.pageWidth&&(m.viewport<1100||m.asideLeft>=m.copyRight-1);
-  check("homepage_demonstration_sits_below_the_opening_message_at_full_width",demoBelowTheMessage(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_demonstration_beside_the_message_or_narrower_than_the_page",!demoBelowTheMessage({...heroLayout,exampleTop:heroLayout.copyBottom-200})
-    &&!demoBelowTheMessage({...heroLayout,exampleWidth:heroLayout.pageWidth*0.5})&&!demoBelowTheMessage({...heroLayout,hasExample:false}));
-  /* The opening message says in plain words why a fresh, focused harness for each step helps, and the supporting words say what
-     works today and what is being built. */
-  const opening=await page.locator('[data-view="home"] .hero-subhead').innerText(),supporting=await page.locator('[data-view="home"] .hero-aside').innerText();
-  const saysWhy=text=>/fresh harness/i.test(text)&&/only what that step needs/i.test(text)&&/\bdrifts?\b/i.test(text);
-  const saysWhatWorksToday=text=>/\btoday\b/i.test(text)&&/being built/i.test(text);
-  check("opening_message_says_why_a_fresh_harness_for_each_step_helps",saysWhy(opening)&&saysWhatWorksToday(supporting),{opening,supporting});
-  check("opening_message_check_rejects_a_message_without_the_reason_or_the_limit",!saysWhy("Give your AI agents what they need for each step.")&&!saysWhatWorksToday("Each step runs in a fresh harness."));
-  /* The link beside the primary action moves to the demonstration and stays on the homepage. */
-  await page.locator("#hero-see-step").click();
-  await page.waitForFunction(()=>{const box=document.getElementById("step-demo")?.getBoundingClientRect();return Boolean(box&&box.top<innerHeight&&box.bottom>0);});
-  const seeStep=await page.evaluate(()=>({path:location.pathname,hash:location.hash,home:!document.querySelector('[data-view="home"]').hidden,top:Math.round(document.getElementById("step-demo").getBoundingClientRect().top),
-    bar:Math.round(document.querySelector("header").getBoundingClientRect().bottom)}));
-  /* The sticky header stays over the page, so the section lands just below it rather than behind it. */
-  check("see_one_step_moves_to_the_demonstration_on_the_homepage",seeStep.path==="/"&&seeStep.hash==="#step-demo"&&seeStep.home&&seeStep.top>=seeStep.bar-1&&seeStep.top<=seeStep.bar+24,seeStep);
-  await page.evaluate(()=>{history.replaceState({},"","/");scrollTo(0,0);});
+  const demoBesideTheCopy=m=>m.hasExample&&m.hasCopy&&m.viewport>=1100&&m.exampleLeft>=m.copyRight-1&&m.exampleTop<m.copyBottom&&m.exampleBottom>m.copyTop;
+  check("homepage_demonstration_sits_beside_the_copy_in_the_hero",demoBesideTheCopy(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_demonstration_below_the_copy_or_missing",!demoBesideTheCopy({...heroLayout,exampleTop:heroLayout.copyBottom+24,exampleBottom:heroLayout.copyBottom+624,exampleLeft:heroLayout.copyRight-600})
+    &&!demoBesideTheCopy({...heroLayout,hasExample:false}));
+  /* One harness per step is a runtime option since September 23, 2026: the homepage's How it works band says it can be turned on
+     for long runs and off for quick ones, and the hero no longer promises it. */
+  const howText=await page.locator('[data-band="how"]').innerText();
+  const describesTheOption=text=>/one harness per step/i.test(text)&&/turn it on/i.test(text)&&/\boff\b/i.test(text);
+  check("how_it_works_describes_one_harness_per_step_as_an_option",describesTheOption(howText)&&keepsThePerStepOptionOut(heroCopy),{how:howText.slice(0,600)});
+  check("per_step_option_check_rejects_a_band_without_the_option_and_a_promise_in_its_place",!describesTheOption("Ask, get, place.")&&!describesTheOption("Every step runs in one harness per step.")&&describesTheOption(howText));
+  /* The hero's secondary action opens the guide, Get set up, a page of its own. */
+  await page.locator("#hero-setup").click();
+  const heroGuide=await page.evaluate(()=>({path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title}));
+  check("hero_get_set_up_opens_the_guide",heroGuide.path==="/setup"&&JSON.stringify(heroGuide.views)===JSON.stringify(["setup"])&&heroGuide.title.endsWith("| Get set up"),heroGuide);
+  await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   /* The demonstration of one step, read from the page as served: the search and the download, recorded from this release's
-     library under one label, and the fresh harness that is being built, under a label of its own. */
+     library under one label, and the step's working folder, an example layout, under a label of its own. */
   const demo=await demoState(page);
   check("demo_shows_the_search_the_download_and_the_step_folder",JSON.stringify(demo.stages.map(([stage])=>stage))===JSON.stringify(demoStages.map(([stage])=>stage))&&JSON.stringify(demo.shown)===JSON.stringify(demoStages.map(([stage])=>stage)),{stages:demo.stages,shown:demo.shown});
-  check("demo_labels_each_part_as_recorded_or_as_being_built",demoLabelProblems(demo).length===0,{problems:demoLabelProblems(demo)});
-  check("demo_label_check_rejects_a_missing_label_and_a_folder_called_recorded",demoLabelProblems({...demo,labels:{...demo.labels,folder:["","",false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["recorded",demoLabelWords.recorded,true]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,search:["recorded",demoLabelWords.recorded,false]}}).length===1);
+  check("demo_labels_each_part_as_recorded_or_as_an_example_layout",demoLabelProblems(demo).length===0,{problems:demoLabelProblems(demo)});
+  /* The known-wrong labels: none on the folder, the folder called recorded, a hidden label on the search, and the folder still
+     called "Being built", the status word the owner removed on September 23, 2026. */
+  check("demo_label_check_rejects_a_missing_label_a_folder_called_recorded_and_a_status_word",demoLabelProblems({...demo,labels:{...demo.labels,folder:["","",false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["recorded",demoLabelWords.recorded,true]}}).length===1
+    &&demoLabelProblems({...demo,labels:{...demo.labels,search:["recorded",demoLabelWords.recorded,false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["illustration","Being built",true]}}).length===1
+    &&demoLabelProblems({...demo,labels:{...demo.labels,folder:["illustration",demoLabelWords.illustration+", being built",true]}}).length===1);
   check("demo_recorded_parts_show_only_the_live_search_and_download_path",livePathProblems(demo).length===0,{problems:livePathProblems(demo)});
-  check("demo_live_path_check_rejects_an_illustration_in_a_recorded_part",livePathProblems({...demo,text:{...demo.text,search:(demo.text.search||"")+" An illustration of a workflow."}}).length===1&&livePathProblems({...demo,text:{...demo.text,download:""}}).length===1);
+  check("demo_live_path_check_rejects_an_illustration_in_a_recorded_part",livePathProblems({...demo,text:{...demo.text,search:(demo.text.search||"")+" An illustration of a workflow."}}).length===1&&livePathProblems({...demo,text:{...demo.text,download:""}}).length===1
+    &&livePathProblems({...demo,text:{...demo.text,download:(demo.text.download||"")+" Example layout"}}).length===1);
   /* The names, kinds, licences, sizes and digests the demonstration shows are this release's, read from the packaged manifest.
      A catalogue release rewrites every body and so every digest, and the page must follow it. The download names the reference
      the search chose. */
@@ -730,15 +810,20 @@ try {
   check("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(shownFacts).length===0,{problems:demoFactProblems(shownFacts)});
   const oneDigestChanged=structuredClone(shownFacts);
   if(oneDigestChanged.items[1])oneDigestChanged.items[1].digest=oneDigestChanged.items[1].digest.replace(/.$/,last=>last==="0"?"1":"0");
-  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",shownFacts.items.length===3&&demoFactProblems(oneDigestChanged).length===1&&demoFactProblems({...shownFacts,download:shownFacts.items[1]?.identity||""}).length===1,{problems:demoFactProblems(oneDigestChanged)});
+  /* The compact demonstration of September 23, 2026 shows the first two references the search returns; the known-wrong cases
+     change the second one, so at least two are needed. */
+  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",shownFacts.items.length>=2&&demoFactProblems(oneDigestChanged).length===1&&demoFactProblems({...shownFacts,download:shownFacts.items[1]?.identity||""}).length===1,{problems:demoFactProblems(oneDigestChanged)});
   const releasedIdentities=Object.keys(releasedReferences);
   const namesOnlyReleasedItems=names=>names.length>0&&names.every(name=>releasedIdentities.includes(name));
   check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownFacts.items.map(item=>item.identity)),{items:shownFacts.items.map(item=>item.identity)});
   check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownFacts.items.map(item=>item.identity),"invented_item_nobody_approved"]));
   /* The step folder. Harness material is any file a harness reads, so the folder shows files that are not Markdown, and the
-     library band says so in words. */
+     library band says so in words: it names the scripts, the tools and code, the hooks and the protocol server settings beside the
+     instruction files. */
   const shownPaths=await folderPaths(page),libraryText=await page.locator('[data-band="library"]').innerText();
-  check("demo_folder_holds_a_file_that_is_not_markdown",folderProblems(shownPaths).length===0&&/not only markdown/i.test(libraryText),{paths:shownPaths});
+  const namesFilesBeyondMarkdown=text=>/\bscripts\b/i.test(text)&&/tools and code/i.test(text)&&/\bhooks\b/i.test(text)&&/protocol server/i.test(text);
+  check("demo_folder_holds_a_file_that_is_not_markdown",folderProblems(shownPaths).length===0&&namesFilesBeyondMarkdown(libraryText),{paths:shownPaths});
+  check("library_word_check_rejects_a_band_that_names_only_instruction_files",!namesFilesBeyondMarkdown("Instruction files such as AGENTS.md and CLAUDE.md.")&&namesFilesBeyondMarkdown(libraryText));
   check("folder_check_rejects_a_folder_of_markdown_files_only",folderProblems(shownPaths.filter(path=>/\.md$/i.test(path))).length===1&&folderProblems(["AGENTS.md","scripts/run.py"]).length===0);
   /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
   const moving=await page.evaluate(()=>[...document.querySelectorAll('[data-view="home"], [data-view="home"] *')].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);
@@ -748,25 +833,29 @@ try {
   const countAgrees=shown=>shown.trim()===String(releasedItemCount);
   check("library_count_agrees_with_this_release_manifest",countAgrees(shownCount),{shown:shownCount,released:releasedItemCount});
   check("library_count_check_rejects_a_count_this_release_does_not_hold",!countAgrees(String(releasedItemCount+1))&&!countAgrees("10,000")&&countAgrees(String(releasedItemCount)));
-  /* The six problems, the five steps and the kinds of harness material each carry the honest state of the part behind them. */
-  const problemCards=await statusCards(page,"[data-problem]","problem"),stepCards=await statusCards(page,"[data-how-step]","howStep"),kindCards=await statusCards(page,"[data-kind]","kind");
-  check("homepage_names_six_problems_each_with_its_honest_state",statusProblems(problemCards,problemOrder,availableProblems).length===0,{problems:statusProblems(problemCards,problemOrder,availableProblems)});
-  check("problem_state_check_rejects_a_part_called_available_a_missing_state_and_a_new_order",
-    statusProblems(problemCards.map(card=>card.name==="overnight"?{...card,status:"available",text:"Available now"}:card),problemOrder,availableProblems).length===1
-    &&statusProblems(problemCards.map(card=>card.name==="context"?{...card,shown:false}:card),problemOrder,availableProblems).length===1
-    &&statusProblems([...problemCards].reverse(),problemOrder,availableProblems).length===1);
-  check("how_it_works_steps_say_only_search_and_download_are_live",statusProblems(stepCards,stepOrder,liveSteps).length===0,{problems:statusProblems(stepCards,stepOrder,liveSteps)});
-  check("step_state_check_rejects_a_fresh_harness_called_live",statusProblems(stepCards.map(card=>card.name==="run"?{...card,status:"live",text:"Live"}:card),stepOrder,liveSteps).length===1);
-  check("library_kinds_say_only_skills_download_today",statusProblems(kindCards,kindOrder,availableKinds).length===0,{problems:statusProblems(kindCards,kindOrder,availableKinds)});
-  check("kind_state_check_rejects_instruction_files_called_available",statusProblems(kindCards.map(card=>card.name==="instructions"?{...card,status:"available",text:"Available now"}:card),kindOrder,availableKinds).length===1);
+  /* The six kinds of harness material, the three steps of How it works and the three use cases, in the design's order, each under
+     its own heading and none with a status word, as the owner decided on September 23, 2026. */
+  const kindCards=await homeCards(page,"[data-kind]","kind"),stepCards=await homeCards(page,"[data-how-step]","howStep"),useCaseCards=await homeCards(page,'[data-view="home"] [data-use-case]',"useCase");
+  check("library_names_the_six_kinds_without_a_status_word",cardProblems(kindCards,kindOrder).length===0,{problems:cardProblems(kindCards,kindOrder)});
+  check("kind_check_rejects_a_kind_called_available_a_missing_kind_and_a_new_order",cardProblems(kindCards.map(card=>card.name==="instructions"?{...card,tags:1,text:card.text+" Available now"}:card),kindOrder).length===1
+    &&cardProblems(kindCards.filter(card=>card.name!=="hooks"),kindOrder).length===1&&cardProblems([...kindCards].reverse(),kindOrder).length===1);
+  check("how_it_works_band_names_ask_get_and_place_without_a_status_word",cardProblems(stepCards,howOrder).length===0,{problems:cardProblems(stepCards,howOrder)});
+  check("step_check_rejects_a_step_called_live_or_being_built",cardProblems(stepCards.map(card=>card.name==="get"?{...card,tags:1,text:card.text+" Live"}:card),howOrder).length===1
+    &&cardProblems(stepCards.map(card=>card.name==="place"?{...card,text:card.text+" Being built"}:card),howOrder).length===1);
+  check("homepage_links_the_three_use_cases_the_owner_named",useCaseProblems(useCaseCards).length===0,{problems:useCaseProblems(useCaseCards),cards:useCaseCards.map(({text,...rest})=>rest)});
+  check("use_case_check_rejects_a_missing_case_another_page_another_title_and_a_status",useCaseProblems(useCaseCards.filter(card=>card.name!=="learning")).length===1
+    &&useCaseProblems(useCaseCards.map(card=>card.name==="overnight"?{...card,links:["/context"]}:card)).length===1&&useCaseProblems(useCaseCards.map(card=>card.name==="efficiency"?{...card,title:"Less in each request"}:card)).length===1
+    &&useCaseProblems(useCaseCards.map(card=>card.name==="learning"?{...card,text:card.text+" Planned"}:card)).length===1);
   /* Owner decision of September 21, 2026: the page says what the product does and names a real limit where there is one, and it
-     does not apologise for a measurement nobody asked for. The states above carry the limits; the problem cards carry no apology
-     and no percentage. */
-  const problemText=await page.locator('[data-band="problems"]').evaluate(node=>node.textContent);
+     does not apologise for a measurement nobody asked for. The homepage and the three use-case pages carry no apology and no
+     percentage; the problems they answer now live on the use-case pages. */
   const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
   const apologyProblems=text=>[...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence),...(/\d+\s*%/.test(text)?["a percentage"]:[])];
-  check("problem_cards_carry_no_measurement_apology_and_no_percentage",apologyProblems(problemText).length===0,{problems:apologyProblems(problemText)});
-  check("apology_check_rejects_a_returned_apology_and_a_percentage",measurementApologies.every(sentence=>apologyProblems(problemText+" "+sentence).length===1)&&apologyProblems(problemText+" Saves 40% of tokens.").length===1);
+  const claimText=await page.locator('[data-view="home"]').evaluate(node=>node.textContent),useCaseText={};
+  for(const view of ["use-cases","overnight","efficiency","learning"])useCaseText[view]=await page.locator('[data-view="'+view+'"]').evaluate(node=>node.textContent).catch(()=>"");
+  const apologies=[["home",claimText],...Object.entries(useCaseText)].flatMap(([view,text])=>apologyProblems(text).map(problem=>view+": "+problem));
+  check("homepage_and_use_cases_carry_no_measurement_apology_and_no_percentage",apologies.length===0&&Object.values(useCaseText).every(text=>text.length>0),{problems:apologies});
+  check("apology_check_rejects_a_returned_apology_and_a_percentage",measurementApologies.every(sentence=>apologyProblems(claimText+" "+sentence).length===1)&&apologyProblems(claimText+" Saves 40% of tokens.").length===1);
   /* The entry the how-it-works band shows is the reviewed Claude Code recipe. Once the page script has checked the record, it is
      written with this service's own address, as the Get started page gives it; the served text, with the public address, is
      compared with the record by tools/test_homepage_demonstration.py. */
@@ -779,7 +868,9 @@ try {
      through the style object, which the page policy allows, and then put everything back. */
   const bands=await homeBands(page);
   check("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(bands).length===0,{problems:bandProblems(bands),count:bands.count,ground:bands.ground});
-  const plantBands=change=>page.evaluate(change=>{const bands=[...(document.querySelector('[data-view="home"]')?.children||[])];if(bands.length<3)return false;const [upper,lower]=[bands[1],bands[2]];
+  /* The planted changes touch the last two bands, where the closing band has no band below it, so each change makes exactly one
+     problem whatever grounds the bands above alternate between. */
+  const plantBands=change=>page.evaluate(change=>{const bands=[...(document.querySelector('[data-view="home"]')?.children||[])].filter(node=>getComputedStyle(node).display!=="none"&&node.getBoundingClientRect().height>0);if(bands.length<3)return false;const [upper,lower]=[bands.at(-2),bands.at(-1)];
     if(change==="ground")lower.style.backgroundColor=getComputedStyle(upper).backgroundColor;if(change==="rules"){upper.style.borderBottom="0";lower.style.borderTop="0";}if(change==="white")document.body.style.backgroundColor="#ffffff";return true;},change);
   const restoreBands=()=>page.evaluate(()=>{for(const node of [document.body,...(document.querySelector('[data-view="home"]')?.children||[])])node.removeAttribute("style");});
   const plantedBandProblems={};
@@ -809,37 +900,58 @@ try {
   const lowContrast=Object.entries(contrastByTheme).filter(([,problems])=>problems.length).map(([page,problems])=>({page,problems:problems.slice(0,4)}));
   check("public_text_meets_AA_contrast_in_both_appearances",Object.keys(contrastByTheme).length===14&&lowContrast.length===0,{pages:Object.keys(contrastByTheme).length,lowContrast});
   await page.goto(fixture.base+"/");
-  const plantedGrey=await page.evaluate(()=>{const line=document.createElement("p");line.id="known-wrong-grey";line.textContent="A grey line nobody can read";line.style.color="#c4c4c4";line.style.backgroundColor="#ffffff";document.querySelector('[data-band="harnesses"]').append(line);return true;});
+  const plantedGrey=await page.evaluate(()=>{const line=document.createElement("p");line.id="known-wrong-grey";line.textContent="A grey line nobody can read";line.style.color="#c4c4c4";line.style.backgroundColor="#ffffff";document.querySelector('[data-band="library"]').append(line);return true;});
   const greyProblems=await contrastProblems(page);await page.evaluate(()=>document.getElementById("known-wrong-grey")?.remove());
   check("contrast_check_rejects_a_grey_line_on_white",plantedGrey&&greyProblems.length===1&&greyProblems[0].text==="A grey line nobody can read",{problems:greyProblems});
   check("keyboard_focus_is_visible_in_both_appearances",["light","dark"].every(theme=>(marksByTheme[theme]||[]).length===12&&unmarkedStops(marksByTheme[theme]).length===0),{marks:marksByTheme});
   check("focus_check_rejects_a_stop_without_a_mark",unmarkedStops([...(marksByTheme.light||[]),{name:"planted",outline:"none",width:0}]).length===1);
-  /* The harnesses that connect today are exactly the clients of the reviewed recipes. Another client is named only as planned. */
-  const strip=await page.locator(".harness-list li").evaluateAll(items=>items.map(item=>({name:item.querySelector(".harness-name")?.textContent.trim()||"",state:item.querySelector(".harness-state")?.textContent.trim()||""})));
+  /* Every reviewed recipe's client is among the harnesses the hero names, so no client the guide sets up is left unnamed. The
+     converse, that the guide sets up every harness the hero names, is checked on the guide itself below. */
   const recipeClients=recipeRecord.recipes.map(recipe=>recipe.name.replace(/\s+\d+(?:\.\w+)*$/,"")).sort();
-  const stripProblems=items=>[...(JSON.stringify(items.filter(item=>item.state==="Connect today").map(item=>item.name).sort())!==JSON.stringify(recipeClients)?["the clients that connect today are not the reviewed recipes"]:[]),
-    ...items.filter(item=>!["Connect today","Planned"].includes(item.state)).map(item=>item.name+" says "+JSON.stringify(item.state))];
-  check("harness_strip_names_the_reviewed_clients_and_marks_the_rest_planned",stripProblems(strip).length===0,{strip,problems:stripProblems(strip)});
-  check("harness_strip_check_rejects_a_planned_client_that_connects_today",stripProblems(strip.map(item=>item.state==="Planned"?{...item,state:"Connect today"}:item)).length===1&&stripProblems(strip.filter(item=>item.name!=="Codex")).length===1);
+  const namesEveryRecipeClient=names=>recipeClients.length>0&&recipeClients.every(name=>names.includes(name));
+  check("hero_names_every_client_the_reviewed_recipes_set_up",namesEveryRecipeClient(categoryState.harnesses),{recipes:recipeClients,hero:categoryState.harnesses});
+  check("recipe_client_check_rejects_a_hero_list_without_a_reviewed_client",!namesEveryRecipeClient(categoryState.harnesses.filter(name=>name!=="Codex"))&&!namesEveryRecipeClient([]));
+  /* What an account gives you, in the plan summary on the homepage: the whole library, the download as the measured unit, a key for
+     each client and the usage record. */
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),planText=await page.locator(".plan-summary").innerText();
-  check("homepage_says_what_an_account_gives_you",JSON.stringify(offers)===JSON.stringify(["downloads","keys","recipes","search","usage"])&&["search","download","usage"].every(word=>planText.toLowerCase().includes(word)),{offers});
+  const givesEveryOffer=(names,text)=>JSON.stringify(names)===JSON.stringify(["downloads","keys","library","usage"])&&["search","download","usage"].every(word=>text.toLowerCase().includes(word));
+  check("homepage_says_what_an_account_gives_you",givesEveryOffer(offers,planText),{offers});
+  check("offer_check_rejects_a_summary_without_the_usage_record",!givesEveryOffer(offers.filter(name=>name!=="usage"),planText)&&!givesEveryOffer(offers,planText.replace(/usage/gi,"")));
+  /* The pricing band on the homepage states the price the one way the design standards allow, "$29 a month", and the measured unit,
+     and links the pricing page. It no longer says who is free: the owner removed that on September 23, 2026. */
   const teaserText=await page.locator(".pricing-teaser").innerText();
-  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("$29")&&teaserText.includes("per month")&&/one downloaded item/i.test(teaserText)&&/invited accounts are free/i.test(teaserText)&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
-  const closingActions=await page.locator('[data-band="closing"]').evaluate(band=>[...band.querySelectorAll("a, button")].filter(node=>node.getClientRects().length>0).map(node=>node.id||node.textContent.trim()));
-  check("homepage_closes_with_one_action",JSON.stringify(closingActions)===JSON.stringify(["closing-primary"]),{actions:closingActions});
-  const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;});
-  check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
+  const teaserProblems=text=>[...(/\$29 a month/.test(text)?[]:["no \"$29 a month\""]),...(/per month|United States dollars/i.test(text)?["the price is written another way"]:[]),
+    ...(/one downloaded item/i.test(text)?[]:["no measured unit"]),...(invitationWords.test(text)?["a retired word: "+text.match(invitationWords)[0]]:[])];
+  check("homepage_states_the_plan_price_and_the_measured_unit",teaserProblems(teaserText).length===0&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing",{problems:teaserProblems(teaserText)});
+  check("teaser_check_rejects_another_price_phrase_a_missing_unit_and_free_invited_accounts",teaserProblems(teaserText.replace("$29 a month","$29 per month")).length>=1&&teaserProblems(teaserText.replace(/one downloaded item/gi,"one call")).length===1
+    &&teaserProblems(teaserText+" Invited accounts are free.").length===1&&teaserProblems(teaserText+" Search is free.").length===1);
+  /* The closing band holds the one primary action, Get started, and at most the guide beside it as a secondary action. */
+  const closingActions=await page.locator('[data-band="closing"]').evaluate(band=>[...band.querySelectorAll("a, button")].filter(node=>node.getClientRects().length>0)
+    .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",primary:node.classList.contains("primary")})));
+  const closingProblems=actions=>[...(JSON.stringify(actions.filter(action=>action.primary).map(action=>[action.id,action.text,action.href]))===JSON.stringify([["closing-primary",accessLabels.closed,accessPaths.closed]])?[]:["the closing band's primary actions are "+JSON.stringify(actions.filter(action=>action.primary))]),
+    ...actions.filter(action=>!action.primary&&!(action.text==="Get set up"&&action.href==="/setup")).map(action=>"the closing band also offers "+JSON.stringify(action.text)+" at "+JSON.stringify(action.href))];
+  check("homepage_closes_with_one_action_and_the_guide",closingProblems(closingActions).length===0,{actions:closingActions,problems:closingProblems(closingActions)});
+  check("closing_check_rejects_a_second_primary_and_a_second_way_in",closingProblems([...closingActions,{id:"planted",text:"Join the waiting list",href:"/waitlist",primary:true}]).length===1
+    &&closingProblems([...closingActions,{id:"",text:"Request an invitation",href:"/waitlist",primary:false}]).length===1&&closingProblems(closingActions.filter(action=>!action.primary)).length===1);
+  /* No number, guarantee or "always" on the homepage and the use-case pages, which sell: those are statements of fact and need
+     evidence. The closing caption, which names what is not claimed, is the one exception. */
+  const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;})+" "+Object.values(useCaseText).join(" ");
+  check("homepage_and_use_cases_make_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
-  /* The page reads without its script: a browser that never receives the script shows the six problems with their states, the
-     three parts of the demonstration and the reviewed entry with the public address. */
+  /* The page reads without its script: a browser that never receives the script shows the hero with its price, its two actions
+     and the harnesses, the three use cases, the three parts of the demonstration and the reviewed entry with the public address. */
   const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
   await withoutScript.route("**/*",localOnly);
   await withoutScript.route(assetRoute("/assets/service.js",fixture.base),route=>route.abort());
   const plain=await withoutScript.newPage();
   plain.on("pageerror",()=>{});
   await plain.goto(fixture.base+"/");
-  const plainProblems=statusProblems(await statusCards(plain,"[data-problem]","problem"),problemOrder,availableProblems);
-  check("problems_read_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});
+  const plainHome=await plain.evaluate(()=>({price:document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||"",
+    actions:["hero-primary","hero-setup"].filter(id=>(document.getElementById(id)?.getClientRects().length||0)>0),
+    harnesses:[...document.querySelectorAll('[data-view="home"] .hero-harnesses li')].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim())}));
+  const plainProblems=[...(statesThePlanAndPrice(plainHome.price)?[]:["the hero shows no price"]),...(plainHome.actions.length===2?[]:["the hero shows the actions "+JSON.stringify(plainHome.actions)]),
+    ...(JSON.stringify(plainHome.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(plainHome.harnesses)]),...useCaseProblems(await homeCards(plain,'[data-view="home"] [data-use-case]',"useCase"))];
+  check("homepage_reads_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});
   const plainDemo=await demoState(plain);
   check("demo_reads_when_the_script_has_not_run",JSON.stringify(plainDemo.shown)===JSON.stringify(demoStages.map(([stage])=>stage))&&demoLabelProblems(plainDemo).length===0&&demoStages.every(([stage])=>(plainDemo.text[stage]||"").trim().length>40),{shown:plainDemo.shown});
   const servedEntry=await plain.locator("[data-home-recipe]").evaluate(node=>({id:node.dataset.homeRecipe,text:node.textContent}));
@@ -865,40 +977,44 @@ try {
   await plain.locator("header .menu-button").click();const plainMenu=await menuState(plain);
   check("phone_menu_opens_when_the_script_has_not_run",plainMenu.open&&JSON.stringify(plainMenu.links)===JSON.stringify(menuLinks),plainMenu);
   await plain.close();await withoutScript.close();
-  /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
-     The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
-  const servedRoutes=["/","/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs"];
+  /* Retired words, runtime words and the words of an invitation-only service, read from every page a customer can open: the
+     shared header and footer, the three use cases and their hub, and every page of the documentation index. The Documentation
+     view keeps the exact runtime terms, so it and its pages are scanned for the other rules only. */
+  const docsIndex=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/documentation-index.json"),"utf8"));
+  const docsPagePaths=docsIndex.sections.flatMap(section=>section.pages).filter(entry=>entry.body&&entry.address.startsWith("/docs/")).map(entry=>entry.address);
+  const servedRoutes=["/",...useCasePaths,"/how-it-works","/pricing","/setup","/connect","/get-started","/waitlist","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs",...docsPagePaths];
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
   /* A page without the shared header or footer, such as the page for an address the service does not serve, is read
      as far as it goes, so an unserved address fails its own named checks instead of stopping the whole journey. */
   const readShownText=target=>target.evaluate(()=>[document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n"));
-  /* The same text for the retired-word rule, without the approved terms while they are shown with exactly the approved words.
-     The terms are hidden only while this one reading is taken, and shown again at once. */
-  const readRetiredText=target=>target.evaluate(approved=>{
-    const words=text=>text.split(/\s+/).filter(Boolean),exempt=[...document.querySelectorAll("[data-terms-of-service]")]
-      .filter(node=>node.getClientRects().length>0&&JSON.stringify(words(node.innerText))===JSON.stringify(approved));
+  /* The same text for the retired-word rule and the invitation-word rule, without the approved terms and the approved privacy
+     notice while each is shown with exactly the approved words. They are hidden only while this one reading is taken, and shown
+     again at once. */
+  const readRetiredText=target=>target.evaluate(([terms,privacy])=>{
+    const words=text=>text.split(/\s+/).filter(Boolean),same=(node,approved)=>node.getClientRects().length>0&&JSON.stringify(words(node.innerText))===JSON.stringify(approved);
+    const exempt=[...[...document.querySelectorAll("[data-terms-of-service]")].filter(node=>same(node,terms)),...[...document.querySelectorAll("[data-privacy-notice]")].filter(node=>same(node,privacy))];
     exempt.forEach(node=>{node.hidden=true;});
     try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
     finally{exempt.forEach(node=>{node.hidden=false;});}
-  },approvedTermsWords);
+  },[approvedTermsWords,approvedPrivacyWords]);
   const scanShownText=(path,shownText,retiredText=shownText)=>{
     if(retiredAccessWords.test(retiredText))vocabularyProblems.push({path,rule:"retired access word",found:retiredText.match(retiredAccessWords)[0]});
-    if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
+    if(invitationWords.test(retiredText))vocabularyProblems.push({path,rule:"invitation word",found:retiredText.match(invitationWords)[0]});
+    if(!path.startsWith("/docs")&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
     if(unpublishedTerms.test(shownText))vocabularyProblems.push({path,rule:"terms called unpublished",found:shownText.match(unpublishedTerms)[0]});
   };
-  for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page),await readRetiredText(page));}
-  /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
-     address is reached through the navigation. Every link on the website points at "/waitlist" or "/connect", both served. */
-  await page.goto(fixture.base+"/");
-  await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
-  scanShownText("/get-started",await readShownText(page),await readRetiredText(page));
+  /* A documentation page draws its article after the page script fetches it, so the reading waits for the article. */
+  const openCustomerPage=async (target,base,path)=>{await target.goto(base+path);
+    await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
+    if(path.startsWith("/docs/"))await target.waitForSelector("#docs-article h2",{timeout:10000}).catch(()=>{});};
+  for(const path of servedRoutes){await openCustomerPage(page,fixture.base,path);scanShownText(path,await readShownText(page),await readRetiredText(page));}
   /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
      and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
-  const servedFiles=["/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
+  const servedFiles=["/assets/documentation-index.json","/assets/documentation.js","/assets/documentation.css","/assets/docs/what-baltor-is.html","/assets/docs/your-account.html","/assets/docs/searching-and-retrieving.html","/assets/docs/usage-and-what-you-pay-for.html","/assets/docs/troubleshooting.html","/assets/docs/serving-and-connections.html","/","/assets/service.js","/assets/client-access.js","/assets/pi/baltor.ts","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -910,10 +1026,54 @@ try {
   check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];
   for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
-  const retiredIn=(path,text)=>{const read=withoutApprovedTerms(text);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
+  /* approved: the words the terms are compared with; a known-wrong case below passes another approved text. */
+  const retiredIn=(path,text,approved=approvedTermsWords)=>{const read=withoutApprovedTerms(text,approved);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
   const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
+  /* The words of an invitation-only service in the served files as well: the text of the served page and of every documentation
+     body, and every string the page scripts and records can write into a page, so a message that only a state this pass never
+     reaches would show is read too. A script's comments and its lowercase names, such as a state called "invite", are not
+     customer text. Three kinds of file hold no text of ours and are named with their reason: the identity provider's library,
+     the licences of the open-source notices, and the typefaces and pictures. The approved privacy notice and terms of service are
+     left out of the served page only while each holds exactly the approved words. */
+  const notOurText={"/assets/supabase-client.js":"the identity provider's own library","/assets/third-party-notices.txt":"the licence texts of other projects",
+    "/assets/geist.woff2":"a typeface","/assets/geist-mono.woff2":"a typeface","/assets/baltor-mark.svg":"a picture","/assets/favicon-32.png":"a picture","/assets/favicon-192.png":"a picture","/assets/apple-touch-icon.png":"a picture"};
+  const withoutComments=source=>source.replace(/\/\*[\s\S]*?\*\//g," ").replace(/(^|[\s;{}()\[\],])\/\/[^\n]*/g,"$1");
+  const customerStrings=source=>[...withoutComments(source).matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g)].map(found=>found[1]??found[2]??found[3]??"")
+    .filter(value=>!/^[a-z][a-z0-9]*(?:[-_.:/][a-z0-9]+)*$/.test(value));
+  const privacyBlock=/<article id="privacy-notice" data-privacy-notice>[\s\S]*?<\/article>/;
+  /* approved: the words each legal text is compared with; a known-wrong case below passes another approved text. */
+  const withoutApprovedLegalText=(markup,approved={})=>withoutApprovedBlock(withoutApprovedTerms(markup,approved.terms||approvedTermsWords),privacyBlock,approved.privacy||approvedPrivacyWords);
+  const customerText=(path,text,approved)=>path==="/"||path.endsWith(".html")?markupWords(withoutApprovedLegalText(text,approved)).join(" "):customerStrings(text).join("\n");
+  const invitationIn=(path,text,approved)=>{if(notOurText[path])return [];const read=customerText(path,text,approved);return invitationWords.test(read)?[{path:"the served file "+path,rule:"invitation word",found:read.match(invitationWords)[0]}]:[];};
+  /* A sentence written inside a legal text, just after the article's own opening tag, so the case depends on no word of the text. */
+  const writtenInside=(block,sentence)=>block.replace(/^(<article[^>]*>)/,"$1<p>"+sentence+"</p>");
+  const invitationFileProblems=servedTexts.flatMap(([path,text])=>invitationIn(path,text));
+  check("no_customer_page_uses_the_words_of_an_invitation_only_service",vocabularyProblems.filter(item=>item.rule==="invitation word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="invitation word")});
+  check("no_served_file_carries_the_words_of_an_invitation_only_service",servedTexts.length===servedFiles.length&&invitationFileProblems.length===0,{files:servedTexts.length,problems:invitationFileProblems});
+  check("every_served_asset_route_is_read_for_invitation_words_or_named_with_its_reason",assetRoutes.length>0&&assetRoutes.every(path=>servedFiles.includes(path))&&Object.keys(notOurText).every(path=>assetRoutes.includes(path)),{excluded:notOurText});
+  /* The known-wrong cases of the invitation-word rule: every phrase the owner retired, each on its own; and the words the site
+     keeps, which the rule must leave alone. */
+  const invitationKnownWrong=["Invitation only while we open in small groups.","Request an invitation","Invited accounts are free.","We invite people in small groups.","Join the waiting list.",
+    "Search is free.","Searching is free, and each item your tools download appears here.","Being built","A key for each device from your account page is being prepared.","Planned"];
+  const invitationKept=["Get started","Create your account","One plan. The whole library.","The plan can change as you learn more.","Your account covers Baltor Pro.","Get set up connects your harness."];
+  check("invitation_word_check_rejects_a_known_wrong_page",invitationKnownWrong.every(claim=>invitationWords.test(claim))&&invitationKept.every(claim=>!invitationWords.test(claim)),{pages:invitationKnownWrong.length});
+  /* The served-file reading is narrow in the same way. Each case is read on its own, so a page defect elsewhere cannot hide it: a
+     message in a script string and a sentence in a documentation body are reported; a comment and a lowercase state name are
+     not. Each approved legal text is left out while it holds exactly the approved words, and read whole once one word changes:
+     the privacy notice carries retired words of its own, and the terms, amended on September 23, 2026, carry none, so a sentence
+     is written inside them and read once as an unapproved change and once as if the owner had approved it. */
+  const servedIndexMarkup=servedTexts.find(([path])=>path==="/")?.[1]||"",privacyMarkup=servedIndexMarkup.match(privacyBlock)?.[0]||"",termsMarkup=servedIndexMarkup.match(termsBlock)?.[0]||"";
+  const termsWithFreeSearch=writtenInside(termsMarkup,"Search is free.");
+  check("served_file_invitation_scan_rejects_a_planted_message_and_leaves_names_comments_and_approved_texts_alone",
+    invitationIn("/assets/service.js",'message("x", "Invitation only while we open in small groups.");').length===1
+    &&invitationIn("/assets/docs/what-baltor-is.html","<p>Search is free.</p>").length===1
+    &&invitationIn("/assets/service.js",'/* the invitation panel */ const state = "invite"; $("funnel-invite").hidden = true; // being built').length===0
+    &&privacyMarkup!==""&&invitationWords.test(markupWords(privacyMarkup).join(" "))&&invitationIn("/",privacyMarkup).length===0&&invitationIn("/",privacyMarkup.replace("five days","thirty days")).length===1
+    &&termsMarkup!==""&&termsWithFreeSearch!==termsMarkup&&invitationIn("/",termsMarkup).length===0&&invitationIn("/",termsWithFreeSearch).length===1
+    &&invitationIn("/",termsWithFreeSearch,{terms:markupWords(termsWithFreeSearch)}).length===0,
+    {privacy_block_found:privacyMarkup!=="",terms_block_found:termsMarkup!==""});
   /* The terms of service are published, so no page and no served file may still say that they are not. The served files are
      read whole, hidden views included. */
   const unpublishedClaims=[...vocabularyProblems.filter(item=>item.rule==="terms called unpublished"),
@@ -925,34 +1085,44 @@ try {
      are the approved words, so a retired word written beside the terms, or inside terms that changed, is still reported. */
   const servedMarkup=servedTexts.find(([path])=>path==="/")?.[1]||"";
   const plantedBeside=servedMarkup.replace('<p class="eyebrow">Terms</p>','<p class="eyebrow">Terms</p><p>Join the private beta.</p>');
-  const plantedInside=servedMarkup.replace("Search is free. Invited beta users","Search is free for our private beta. Invited beta users");
+  /* The terms carry no retired word since the owner's amendment of September 23, 2026, so the sentence written inside them is read
+     once as an unapproved change, which is reported, and once as if the owner had approved it, which is left out. */
+  const servedTerms=servedMarkup.match(termsBlock)?.[0]||"",termsWithBeta=writtenInside(servedTerms,"The service is a private beta.");
+  const plantedInside=servedTerms?servedMarkup.replace(servedTerms,termsWithBeta):servedMarkup;
   check("retired_word_exemption_leaves_out_only_the_unchanged_approved_terms",termsBlock.test(servedMarkup)&&retiredIn("/",servedMarkup).length===0
     &&plantedBeside!==servedMarkup&&retiredIn("/",plantedBeside).length===1&&plantedInside!==servedMarkup&&retiredIn("/",plantedInside).length===1
-    &&retiredAccessWords.test(servedMarkup.match(termsBlock)?.[0]||""),{terms_block_found:termsBlock.test(servedMarkup)});
+    &&retiredIn("/",plantedInside,markupWords(termsWithBeta)).length===0,{terms_block_found:termsBlock.test(servedMarkup)});
   /* One known-wrong page for each retired phrase, including a page that never writes pilot or beta and still offers
-     early access. An earlier rule read only pilot and beta and let that last page through. */
+     early access. An earlier rule read only pilot and beta and let that last page through. The last case keeps this rule to its
+     own words: the invitation words have a rule of their own above. */
   const retiredKnownWrong=["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only.","Request early access from your account page."];
   check("retired_word_check_rejects_a_known_wrong_page",retiredKnownWrong.every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."),{pages:retiredKnownWrong.length});
   check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
   check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
-  /* The header, signed out: How it works first in the navigation, and one primary action beside it, "Get started", which opens the
-     sign-up funnel. No link in the navigation is a way into the access journey, and the guide is not in the signed-out bar. */
+  /* The header, signed out, as the owner decided on September 23, 2026: How it works first, then Use cases, Library, Pricing,
+     Docs, the guide and Sign in in the navigation, and one primary action beside it, "Get started", which opens the sign-up
+     funnel. The guide is in the bar by its own name, "Get set up" at /setup; no link in the navigation is a way into the access
+     journey. The known-wrong headers: a second way in, no action, no guide, an invitation link and a second primary action. */
   await page.goto(fixture.base+"/");
-  const headerState=await page.evaluate(()=>({nav:[...document.querySelectorAll("header nav a")].filter(node=>!node.hidden).map(node=>({label:node.textContent.trim(),page:node.dataset.page||"",href:node.getAttribute("href")||""})),
+  const readHeaderState=target=>target.evaluate(()=>({nav:[...document.querySelectorAll("header nav a")].filter(node=>!node.hidden).map(node=>({label:node.textContent.trim(),page:node.dataset.page||"",href:node.getAttribute("href")||""})),
     primary:[...document.querySelectorAll("header .button.primary")].map(node=>({id:node.id,label:node.textContent.trim(),href:node.getAttribute("href")}))}));
+  const headerState=await readHeaderState(page);
+  const guideEntries=state=>state.nav.filter(item=>item.page==="setup"||item.href==="/setup").map(item=>[item.label,item.href]);
   const oneHeaderAction=state=>state.primary.length===1&&state.primary[0].label===accessLabels.closed&&state.primary[0].href===accessPaths.closed&&state.nav.length>2
-    &&state.nav[0].label==="How it works"&&!state.nav.some(item=>item.page==="setup"||/get started|join|waiting list|invitation|create (?:your )?account/i.test(item.label));
-  check("header_offers_one_primary_action_beside_the_navigation",oneHeaderAction(headerState),headerState);
-  check("header_check_rejects_a_second_way_in_and_a_missing_action",!oneHeaderAction({...headerState,nav:[{label:"Get started",page:"get-started",href:"/get-started"},...headerState.nav]})&&!oneHeaderAction({...headerState,primary:[]})
-    &&!oneHeaderAction({...headerState,nav:[...headerState.nav,{label:"Get set up",page:"setup",href:"/setup"}]})&&!oneHeaderAction({...headerState,nav:[...headerState.nav,{label:"Request an invitation",page:"waitlist",href:"/waitlist"}]})
+    &&state.nav[0].label==="How it works"&&JSON.stringify(guideEntries(state))===JSON.stringify([["Get set up","/setup"]])
+    &&!state.nav.some(item=>opensTheJourney(item.href)||/get started|join|waiting list|invitation|create (?:your )?account/i.test(item.label));
+  check("header_offers_one_primary_action_and_the_guide_beside_the_navigation",oneHeaderAction(headerState),headerState);
+  check("header_check_rejects_a_second_way_in_a_missing_action_a_missing_guide_and_an_invitation",!oneHeaderAction({...headerState,nav:[{label:"Get started",page:"get-started",href:"/get-started"},...headerState.nav]})&&!oneHeaderAction({...headerState,primary:[]})
+    &&!oneHeaderAction({...headerState,nav:headerState.nav.filter(item=>item.page!=="setup")})&&!oneHeaderAction({...headerState,nav:[...headerState.nav,{label:"Request an invitation",page:"waitlist",href:"/waitlist"}]})
     &&!oneHeaderAction({...headerState,primary:[...headerState.primary,{id:"planted",label:"Join the waiting list",href:"/waitlist"}]}));
-  /* The top bar lists the site's pages to a visitor: How it works, Library, Pricing and Docs, with Use cases after How it works once
-     that page exists, then Sign in and the primary action, "Get started". On a wide screen and at 980 pixels they stand in one
-     row; on a phone the pages stand in the menu, the primary action stays in the bar, and the bar stays one compact row. The
-     owner, September 23, 2026: "the UI seems to have incorrectly got rid of many pages in top bar, such as "get started"", and
-     later the same day: "not every page needs to be in the header". */
-  const barPages=["How it works","Library","Pricing","Docs"];
+  /* The top bar lists the site's pages to a visitor in the order of the site map: How it works, Use cases, Library, Pricing, Docs,
+     Get set up and Sign in, then the primary action, "Get started". On a phone the pages stand in the menu and the primary action
+     stays in the bar. The owner, September 23, 2026: "the UI seems to have incorrectly got rid of many pages in top bar, such as
+     "get started"", later the same day: "not every page needs to be in the header", and after the redesign: "some pages have
+     been lost in the header". Whether the bar stays one row at 1440 and 980 pixels is a layout rule, reported by a check of its
+     own so that a layout finding and a lost page never hide each other. */
+  const barPages=menuLinks;
   const barState=async (target,width)=>{
     await target.setViewportSize({width,height:900});
     const button=target.locator("header .menu-button"),folded=await button.isVisible();
@@ -965,36 +1135,45 @@ try {
     if(folded)await target.keyboard.press("Escape");
     return {width,folded,...state};
   };
-  const barProblems=state=>{const want=state.pages.includes("Use cases")?[barPages[0],"Use cases",...barPages.slice(1)]:barPages;
-    return [...(JSON.stringify(state.pages.filter(name=>[...want,"Use cases"].includes(name)))===JSON.stringify(want)?[]:[state.width+" pixels wide, the bar lists "+JSON.stringify(state.pages)]),
-      ...(!state.folded&&state.barHeight>80?[state.width+" pixels wide, the bar takes "+state.barHeight+" pixels, more than one row"]:[]),
-      ...(state.folded&&state.barHeight>80?[state.width+" pixels wide, the phone bar takes "+state.barHeight+" pixels"]:[]),
-      ...(state.overflow?[state.width+" pixels wide, the page scrolls sideways"]:[]),
-      ...(JSON.stringify(state.primary)===JSON.stringify([accessLabels.closed,accessPaths.closed])?[]:[state.width+" pixels wide, the primary action is "+JSON.stringify(state.primary)])];};
+  const barProblems=state=>[...(JSON.stringify(state.pages.filter(name=>barPages.includes(name)))===JSON.stringify(barPages)?[]:[state.width+" pixels wide, the bar lists "+JSON.stringify(state.pages)]),
+    ...(state.overflow?[state.width+" pixels wide, the page scrolls sideways"]:[]),
+    ...(JSON.stringify(state.primary)===JSON.stringify([accessLabels.closed,accessPaths.closed])?[]:[state.width+" pixels wide, the primary action is "+JSON.stringify(state.primary)])];
+  const barRowProblems=state=>[...(!state.folded&&state.barHeight>80?[state.width+" pixels wide, the bar takes "+state.barHeight+" pixels, more than one row"]:[]),
+    ...(state.folded&&state.barHeight>80?[state.width+" pixels wide, the phone bar takes "+state.barHeight+" pixels"]:[])];
   const bars=[];for(const width of [1440,980,390])bars.push(await barState(page,width));
   await page.setViewportSize({width:1440,height:1000});
-  check("top_bar_lists_the_pages_and_the_get_started_action",bars.length===3&&!bars[0].folded&&!bars[1].folded&&bars[2].folded&&bars.every(state=>barProblems(state).length===0),{bars,problems:bars.flatMap(barProblems)});
-  check("top_bar_check_rejects_a_missing_page_a_new_order_a_second_row_and_a_missing_action",barProblems({...bars[0],pages:bars[0].pages.filter(name=>name!=="Pricing")}).length===1
-    &&barProblems({...bars[0],pages:[bars[0].pages[1],bars[0].pages[0],...bars[0].pages.slice(2)]}).length===1&&barProblems({...bars[1],barHeight:130}).length===1
-    &&barProblems({...bars[0],primary:[]}).length===1&&barProblems({...bars[0],pages:[barPages[0],"Use cases",...barPages.slice(1),"Sign in"]}).length===0);
+  check("top_bar_lists_the_pages_and_the_get_started_action",bars.length===3&&bars[2].folded&&bars.every(state=>barProblems(state).length===0),{bars,problems:bars.flatMap(barProblems)});
+  check("top_bar_check_rejects_a_missing_page_a_new_order_a_missing_guide_and_a_missing_action",barProblems({...bars[0],pages:bars[0].pages.filter(name=>name!=="Pricing")}).length===1
+    &&barProblems({...bars[0],pages:[bars[0].pages[1],bars[0].pages[0],...bars[0].pages.slice(2)]}).length===1&&barProblems({...bars[0],pages:bars[0].pages.filter(name=>name!=="Get set up")}).length===1
+    &&barProblems({...bars[0],primary:[]}).length===1&&barProblems({...bars[0],pages:barPages}).length===0);
+  check("top_bar_stays_one_compact_row",bars.length===3&&!bars[0].folded&&!bars[1].folded&&bars[2].folded&&bars.every(state=>barRowProblems(state).length===0),{bars:bars.map(({pages,...rest})=>rest),problems:bars.flatMap(barRowProblems)});
+  check("top_bar_row_check_rejects_a_second_row",barRowProblems({...bars[1],folded:false,barHeight:130}).length===1&&barRowProblems({...bars[2],folded:true,barHeight:254}).length===1);
   /* The footer: the brand column, then four groups with stable ids, and the base row with the mark. A group shows once it holds a
-     link. Product links the Get started page by name. */
+     link. Product starts with Get started and the guide, Get set up, by name. Use cases links the hub and the three use cases the
+     owner named on September 23, 2026. The footer no longer links /waitlist, which since that day opens the funnel as an older
+     address. */
   const readFooter=target=>target.evaluate(()=>({groups:[...document.querySelectorAll("footer .footer-links")].map(group=>({id:group.id,heading:group.querySelector(".footer-heading")?.textContent.trim()||"",
       shown:group.getClientRects().length>0,links:[...group.querySelectorAll("a")].map(link=>[link.textContent.trim(),link.getAttribute("href")])})),
     mark:Boolean(document.querySelector("footer .footer-bottom img.brand-mark"))}));
   const footerState=await readFooter(page);
   const footerGroups=[["footer-product","Product"],["footer-use-cases","Use cases"],["footer-documentation","Documentation"],["footer-company","Company"]];
+  const groupLinks=(state,id)=>state.groups.find(group=>group.id===id)?.links||[];
   const footerProblems=state=>[...(JSON.stringify(state.groups.map(group=>[group.id,group.heading]))===JSON.stringify(footerGroups)?[]:["the footer groups are "+JSON.stringify(state.groups.map(group=>group.id))]),
     ...state.groups.filter(group=>group.shown!==(group.links.length>0)).map(group=>group.id+(group.shown?" shows with no link":" holds links and is hidden")),
-    ...(JSON.stringify((state.groups.find(group=>group.id==="footer-product")?.links||[]).slice(0,2))===JSON.stringify([[accessLabels.closed,accessPaths.closed],["Get set up",getStartedPage]])?[]:["Product does not start with Get started and Get set up"]),
-    ...["/how-it-works","/#library","/pricing","/examples"].filter(href=>!(state.groups.find(group=>group.id==="footer-product")?.links||[]).some(([,target])=>target===href)).map(href=>"Product lacks "+href),
-    ...["/docs","/security"].filter(href=>!(state.groups.find(group=>group.id==="footer-documentation")?.links||[]).some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
-    ...["/waitlist","/login","/privacy","/assets/third-party-notices.txt"].filter(href=>!(state.groups.find(group=>group.id==="footer-company")?.links||[]).some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),
+    ...(JSON.stringify(groupLinks(state,"footer-product").slice(0,2))===JSON.stringify([[accessLabels.closed,accessPaths.closed],["Get set up",getStartedPage]])?[]:["Product does not start with Get started and Get set up"]),
+    ...["/how-it-works","/#library","/pricing","/examples"].filter(href=>!groupLinks(state,"footer-product").some(([,target])=>target===href)).map(href=>"Product lacks "+href),
+    ...useCasePaths.filter(href=>!groupLinks(state,"footer-use-cases").some(([,target])=>target===href)).map(href=>"Use cases lacks "+href),
+    ...["/docs","/security"].filter(href=>!groupLinks(state,"footer-documentation").some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
+    ...["/login","/privacy","/terms","/assets/third-party-notices.txt"].filter(href=>!groupLinks(state,"footer-company").some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),
+    ...state.groups.flatMap(group=>group.links).filter(([,target])=>(target||"").split("#")[0]==="/waitlist").map(([name])=>"the footer still links /waitlist as "+JSON.stringify(name)),
     ...(state.mark?[]:["the base row carries no mark"])];
-  check("footer_carries_four_groups_with_get_started_get_set_up_and_the_mark",footerProblems(footerState).length===0,{footer:footerState,problems:footerProblems(footerState)});
+  check("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(footerState).length===0,{footer:footerState,problems:footerProblems(footerState)});
   const withoutProduct=structuredClone(footerState);withoutProduct.groups[0].links=withoutProduct.groups[0].links.filter(([name])=>name!=="Get set up");
-  check("footer_check_rejects_a_lost_link_a_missing_group_and_an_empty_group_on_show",footerProblems(withoutProduct).length===1
-    &&footerProblems({...footerState,groups:footerState.groups.slice(1)}).length>=1&&footerProblems({...footerState,groups:footerState.groups.map(group=>group.id==="footer-use-cases"?{...group,shown:!group.shown}:group)}).length===1);
+  const withWaitlist=structuredClone(footerState);withWaitlist.groups.find(group=>group.id==="footer-company")?.links.unshift(["Request an invitation","/waitlist"]);
+  const withoutLearning=structuredClone(footerState);for(const group of withoutLearning.groups)if(group.id==="footer-use-cases")group.links=group.links.filter(([,target])=>target!=="/learning");
+  check("footer_check_rejects_a_lost_link_a_missing_group_an_empty_group_on_show_and_the_waitlist",footerProblems(withoutProduct).length===1
+    &&footerProblems({...footerState,groups:footerState.groups.slice(1)}).length>=1&&footerProblems({...footerState,groups:footerState.groups.map(group=>group.id==="footer-use-cases"?{...group,shown:!group.shown}:group)}).length===1
+    &&footerProblems(withWaitlist).length===1&&footerProblems(withoutLearning).length===1);
   /* At phone width the links fold into a menu that works without the page script. A press on the menu button shows every link,
      Escape closes it, the keyboard reaches it through the checkbox behind the button with a visible focus mark, and choosing a
      link closes it on the page that opens. The Get started action stays in the bar the whole time. */
@@ -1046,22 +1225,42 @@ try {
   check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   check("get_started_page_carries_the_copyable_connection_settings",await page.locator('#client-tabs[role="tablist"] [role="tab"]').count()===recipeRecord.recipes.length&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
-  // The guide aliases stay on setup; Get started now opens the dedicated funnel.
+  /* Every harness the hero names as one "Baltor sets up" has steps of its own on the guide: a reviewed connection entry among the
+     tabs. The questions on the homepage say "Get set up shows the exact steps for each", so a harness named there without an
+     entry here is a promise the guide does not keep. This replaces the harness strip's rule, which the owner's removal of the
+     status words retired: a harness no longer says "Planned", so the guide must set it up. */
+  const guideTabs=await page.locator('#client-tabs [role="tab"]').evaluateAll(items=>items.map(item=>item.textContent.replace(/\s+/g," ").trim()));
+  const setsUpEveryNamedHarness=(names,tabs)=>names.length>0&&names.every(name=>tabs.some(tab=>tab===name||tab.startsWith(name+" ")));
+  check("every_harness_the_hero_names_has_steps_on_the_guide",setsUpEveryNamedHarness(heroHarnesses,guideTabs),{hero:heroHarnesses,guide:guideTabs,missing:heroHarnesses.filter(name=>!setsUpEveryNamedHarness([name],guideTabs))});
+  check("named_harness_check_rejects_a_harness_the_guide_does_not_set_up",!setsUpEveryNamedHarness([...heroHarnesses,"Invented Harness"],heroHarnesses)&&setsUpEveryNamedHarness(["OpenCode"],["OpenCode 1.x"])&&!setsUpEveryNamedHarness(["Pi"],["Codex","Pipeline tool"]));
+  // The guide aliases stay on setup; Get started opens the dedicated funnel, and so does /waitlist, its older address.
   const guideShownViews=()=>page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view));
   await page.evaluate(()=>{history.pushState({},"","/connect");dispatchEvent(new PopStateEvent("popstate"));});
   const aliasViews=await guideShownViews();
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
   const funnelViews=await guideShownViews();
+  await page.evaluate(()=>{history.pushState({},"","/waitlist");dispatchEvent(new PopStateEvent("popstate"));});
+  const olderFunnelViews=await guideShownViews(),olderFunnelTitle=await page.title();
   check("guide_alias_and_funnel_open_distinct_views",JSON.stringify(aliasViews)===JSON.stringify(["setup"])&&JSON.stringify(funnelViews)===JSON.stringify(["start"]),{aliasViews,funnelViews});
+  /* The owner, September 23, 2026: /waitlist opens the same funnel as an older address, so earlier links and emails keep working. */
+  check("waitlist_address_opens_the_get_started_funnel",JSON.stringify(olderFunnelViews)===JSON.stringify(["start"])&&olderFunnelTitle.endsWith("| Get started"),{views:olderFunnelViews,title:olderFunnelTitle});
   for(const address of ["/setup","/get-started","/connect","/waitlist"]){const served=await page.request.get(fixture.base+address);check("guide_and_funnel_addresses_are_served_"+address.slice(1),served.status()===200&&(served.headers()["content-type"]||"").startsWith("text/html"),{status:served.status()});}
   await page.goto(fixture.base+"/");
   await headerLink(page,"pricing");
   check("pricing_view_opens_from_the_navigation",new URL(page.url()).pathname==="/pricing"&&await page.locator('[data-view="pricing"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Pricing"));
-  const pricingText=await page.locator('[data-view="pricing"]').innerText();
-  const pricingFacts=[["plan name","Baltor Pro"],["price","29 United States dollars"],["period","each month"],["free search","Search is free."],["measured unit","one downloaded item"],["invited accounts","Invited accounts are free."]];
-  const missingFacts=text=>pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name);
+  /* The pricing view is read as a person reads it: the amount and "a month" stand on two lines of the plan card, and a line break
+     inside the price is a space. */
+  const pricingText=(await page.locator('[data-view="pricing"]').innerText()).replace(/\s+/g," ");
+  /* The published facts in the pricing view's words since September 23, 2026: one plan, Baltor Pro, "$29 a month", the download
+     as the measured unit, and how to stop paying. The owner removed "Search is free" and the free invited accounts that day, and
+     the price is written only "$29 a month", so each of those is a refused phrase with a known-wrong page of its own. */
+  const pricingFacts=[["one plan","One plan"],["plan name","Baltor Pro"],["price","$29 a month"],["measured unit","one downloaded item"],["how to stop paying","Cancel from your account page."]];
+  const refusedPricingPhrases=[["free search",/\bsearch(?:ing)? is free\b/i],["free invited accounts",/\binvited\b/i],["another way of writing the price",/United States dollars|per month|\$29\s*\/\s*mo/i]];
+  const missingFacts=text=>[...pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name),...refusedPricingPhrases.filter(([,rule])=>rule.test(text)).map(([name])=>name)];
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
-  check("pricing_fact_check_fails_when_one_fact_is_missing",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name)),{facts:pricingFacts.length});
+  check("pricing_fact_check_fails_when_one_fact_is_missing_or_a_retired_offer_returns",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name))
+    &&missingFacts(pricingText+"\nSearch is free.").includes("free search")&&missingFacts(pricingText+"\nInvited accounts are free.").includes("free invited accounts")
+    &&missingFacts(pricingText+"\n29 United States dollars each month").includes("another way of writing the price"),{facts:pricingFacts.length});
   check("pricing_view_offers_exactly_one_plan",await page.locator("[data-plan-point]").count()===5&&await page.locator('[data-view="pricing"] .plan-card').count()===1&&await page.locator('[data-view="pricing"] .button.primary').count()===1);
   /* While the service reports no checkout, the pricing view may not carry a control that starts a payment. The guide states that rule, so a check owns it. */
   const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
@@ -1077,6 +1276,7 @@ try {
   await page.evaluate(()=>document.getElementById("known-wrong-purchase").remove());
   check("purchase_control_check_rejects_a_pricing_view_that_offers_one",plantedPurchase.includes("a#known-wrong-purchase")&&(await purchaseControls(page)).length===0,{planted:plantedPurchase});
   check("pricing_view_uses_plain_words",!internalTerms.test(pricingText));
+  check("program_name_exception_still_refuses_loop_engine_in_words",["Built on Loop Engine.","Run the Loop-Engine tool.","Every step is a Loop node."].every(claim=>internalTerms.test(withoutProgramName(claim)))&&!internalTerms.test(withoutProgramName("Run loop-engine doctor, install loop-engine[integrations] and delete ~/.loop-engine.")));
   check("plain_word_check_rejects_a_page_that_names_the_runtime",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification."].every(claim=>internalTerms.test(pricingText+"\n"+claim)));
   const pricingFits=[];
   for(const width of [1440,820,390,360,320]){
@@ -1157,9 +1357,10 @@ try {
   }
   /* The terms of service the owner approved on September 23, 2026, served like the privacy notice: at their own address on a
      direct visit, with the operator line and the date of the last change that section 9 promises, a link to the privacy
-     notice, the same words as docs/legal/TERMS-OF-SERVICE.md, and a link in the shared footer. The approved words say beta
-     twice, so the page is also read for a retired word outside the approved text. Removed-guard controls serve changed
-     bytes in memory, never a source file, and each must fail its own named check. */
+     notice, the same words as docs/legal/TERMS-OF-SERVICE.md, and a link in the shared footer. The owner had them amended the
+     same evening: section 2 no longer calls the service a beta, and section 6 states the price as "$29 a month" without free
+     search or invited beta users. The page is also read for a retired word and an invitation word outside the approved text.
+     Removed-guard controls serve changed bytes in memory, never a source file, and each must fail its own named check. */
   const termsOperatorLine="Operator: "+privacyOperator+", "+privacyAddress+".",termsDate="Last changed: September 23, 2026";
   const termsLink='<a href="/terms" data-page="terms">Terms of service</a>';
   const termsState=async opened=>opened.evaluate(()=>{
@@ -1176,6 +1377,7 @@ try {
     note("terms_of_service_link_the_privacy_notice",JSON.stringify(state.privacy)===JSON.stringify(["privacy"]),{links:state.privacy});
     const retired=await readRetiredText(opened);
     note("terms_page_carries_no_retired_word_outside_the_approved_text",state.text!==""&&!retiredAccessWords.test(retired),{found:retiredAccessWords.test(retired)?retired.match(retiredAccessWords)[0]:null});
+    note("terms_page_carries_no_invitation_word_outside_the_approved_text",state.text!==""&&!invitationWords.test(retired),{found:invitationWords.test(retired)?retired.match(invitationWords)[0]:null});
   };
   const checkTermsFooterLink=async (opened,note)=>{
     const links=await opened.locator('footer a[href="/terms"]').evaluateAll(items=>items.map(item=>({text:item.textContent.trim(),page:item.dataset.page,shown:item.offsetParent!==null})));
@@ -1202,7 +1404,9 @@ try {
     {name:"drop_the_operator_from_the_served_terms",path:"/terms",find:'<strong>Operator:</strong> '+privacyOperator+", "+privacyAddress+".",replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
     {name:"drop_the_privacy_link_from_the_served_terms",path:"/terms",find:'The <a href="/privacy" data-page="privacy">privacy notice</a> says',replacement:"The privacy notice says",run:checkTerms,expected:["terms_of_service_link_the_privacy_notice"]},
     {name:"write_a_retired_word_beside_the_approved_terms",path:"/terms",find:'<p class="eyebrow">Terms</p>',replacement:'<p class="eyebrow">Terms</p><p>Join the private beta.</p>',run:checkTerms,expected:["terms_page_carries_no_retired_word_outside_the_approved_text"]},
-    {name:"write_a_retired_word_inside_the_approved_terms",path:"/terms",find:"Search is free. Invited beta users",replacement:"Search is free for our private beta. Invited beta users",run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text","terms_page_carries_no_retired_word_outside_the_approved_text"]}];
+    {name:"write_a_retired_word_inside_the_approved_terms",path:"/terms",find:'<ol class="terms-list">',replacement:'<ol class="terms-list"><li>Join the private beta.</li>',run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text","terms_page_carries_no_retired_word_outside_the_approved_text"]},
+    /* The sentences the owner had removed from the terms on September 23, 2026, written back into the served terms. */
+    {name:"write_free_search_back_into_the_served_terms",path:"/terms",find:'<ol class="terms-list">',replacement:'<ol class="terms-list"><li>Search is free. Invited beta users are not charged.</li>',run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text","terms_page_carries_no_invitation_word_outside_the_approved_text"]}];
   for(const control of termsControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
@@ -1276,17 +1480,21 @@ try {
   }
   check("homepage_and_demo_fit_small_screens_and_enlarged_text",demoFits.length===4&&demoFits.every(item=>!item.overflow&&item.wide.length===0),{problems:demoFits.filter(item=>item.overflow||item.wide.length)});
   await page.setViewportSize({width:1440,height:1000});
-  /* The capabilities the service can report, for account creation, for a waiting list, for payment and for personal keys,
-     each read from a real service, with the removed-guard controls for both directions and for the record version the page
-     was written against. Every public action carries the one label of the reported state. The state also shows in the note under
-     the hero action and in the one panel that leads the Get started page. */
-  const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,note:waitingNote,tag:"Invitation only",closing:"Request an invitation today. Invited accounts are free while we open in small groups."},
-    open:{state:"open",href:accessPaths.open,label:accessLabels.open,note:openNote,tag:"Open to new accounts",closing:"Create your account today. Search is free, and invited accounts stay free."}};
-  /* The ten actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
-     How it works, the first example, access and data, the setup guide and the footer. */
-  const accessActionIds=["about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","pricing-primary","security-access"];
+  /* The capabilities the service can report, for account creation, for a request list, for payment and for personal keys, each
+     read from a real service, with the removed-guard controls for both directions and for the record version the page was
+     written against. Every public action carries the one label, "Get started", and opens the funnel in every state. Since the
+     owner's decision of September 23, 2026 every state also has the same words: the note beside the hero's price, the plan's
+     tag and the closing note read the same whether account creation is open or not, and none of them says invitation. The
+     state itself still shows in each action's data-access-state, in the pricing view's note, in the personal-key wording and
+     in the one panel that leads the guide. */
+  const accessWords={note:"for the whole library",tag:"One plan",closing:"Create your account and connect your harness in a few minutes."};
+  const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,...accessWords},open:{state:"open",href:accessPaths.open,label:accessLabels.open,...accessWords}};
+  /* The thirteen actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
+     How it works, the first example, access and data, the documentation, the footer, and the one on each use-case page, which
+     carries no id and is named here by its view. */
+  const accessActionIds=["[efficiency]","[learning]","[overnight]","about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","pricing-primary","security-access"];
   const accessActions=target=>target.evaluate(()=>({note:document.getElementById("hero-access-note")?.textContent||"",tag:document.getElementById("home-plan-access")?.textContent||"",closing:document.getElementById("closing-note")?.textContent||"",
-    actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
+    actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id||"["+(item.closest("[data-view]")?.dataset.view||"")+"]",state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
   const sameAccess=(found,want)=>JSON.stringify(found.actions.map(action=>action.id))===JSON.stringify(accessActionIds)&&found.actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label)
     &&found.note===want.note&&found.tag===want.tag&&found.closing===want.closing;
   /* A capabilities record whose version this page was not written against may have renamed a field or given it a different meaning.
@@ -1301,94 +1509,106 @@ try {
     return {page:opened,state};
   };
   const paymentState=async opened=>{await headerLink(opened,"pricing");return {badge:await opened.locator("#pricing-state").innerText(),shown:await opened.locator("#pricing-payment-state").innerText()};};
+  /* Payment wording follows two reported facts, in the words of September 23, 2026. While account creation is closed the pricing
+     view asks for the account first, whatever checkout reports; with account creation and checkout both open it says to subscribe
+     from the account page; with account creation open and no checkout it offers no payment. */
+  const paymentWords={accountFirst:{badge:"Available now",note:"Create your account, then subscribe from your account page. Cancel any time."},
+    open:{badge:"Available now",note:"Subscribe from your account page, and cancel any time."},
+    closed:{badge:"Baltor Pro",note:"Subscribe from your account page once your account is ready."}};
+  const samePayment=(payment,want)=>payment.badge===want.badge&&payment.shown===want.note;
   /* The personal-key wording is published in two places. Both follow the reported capability; neither is written as a fact in the page. */
   const keyWording={
     open:{offer:"A personal key for each device, from your account page",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Keys issued by the person who runs the service; a key for each device from your account page is being prepared",
-            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
+    closed:{offer:"A key for each client you connect, issued to your account",
+            plan:"Every client you connect gets its own key, issued to your account."}};
   const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
   const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
-  /* The waiting list is an offer, and the pricing page lists unfinished work that names its form. Both follow the reported
-     capability, read only from the record version this page was written against, so the page never offers the form and calls it
-     unfinished at once, and a record version it was not written for offers nothing. */
-  const waitlistWording={pending:{offered:false,unfinished:"Public account creation, the waiting list form and complete native client onboarding are not finished."},
-                         offered:{offered:true,unfinished:"Public account creation and complete native client onboarding are not finished."}};
-  const waitlistClaims=async opened=>{await paymentState(opened);return opened.evaluate(()=>{
-    const shown=id=>{const node=document.getElementById(id);return node?!node.hidden:null;},unfinished=document.getElementById("pricing-in-progress");
-    return {form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
-      unfinished:unfinished?unfinished.innerText.split(". ")[0]+".":null};});};
-  const sameWaitlistClaims=(claims,want)=>claims.form===want.offered&&claims.signup_link===want.offered
-    &&claims.pending_note===!want.offered&&claims.unfinished===want.unfinished;
-  /* Payment wording follows two reported facts. While account creation is closed the pricing view says invitation only,
-     whatever checkout reports, so the page never offers the waiting list beside "Payment open". Payment is open only when
-     account creation and checkout are both open; with account creation open and no checkout, payment is not open. */
-  const invitationOnly=(actions,payment)=>sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Invitation only"
-    &&["by invitation","stay free","account page"].every(words=>payment.shown.includes(words));
+  /* The request list shows on the account status page as a button to Get started, and the note that points to Get started shows
+     only while no list is kept. Both follow the reported capability, read only from the record version this page was written
+     against, so a record version it was not written for offers nothing. The waiting list page itself is no longer reachable:
+     /waitlist opens the funnel. */
+  const waitlistWording={pending:{offered:false},offered:{offered:true}};
+  const waitlistClaims=opened=>opened.evaluate(()=>{const shown=id=>{const node=document.getElementById(id);return node?!node.hidden:null;};
+    return {signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending")};});
+  const sameWaitlistClaims=(claims,want)=>claims.signup_link===want.offered&&claims.pending_note===!want.offered;
+  const accountFirst=(actions,payment)=>sameAccess(actions,expectedAccess.waiting)&&samePayment(payment,paymentWords.accountFirst);
   const carefulState=async (opened,note,name)=>{
     const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened),lead=await openGetStarted(opened);
-    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed)&&sameLead(lead,"operator"),{actions,payment,keys,lead});
+    note(name,sameAccess(actions,expectedAccess.waiting)&&samePayment(payment,paymentWords.closed)&&sameKeys(keys,keyWording.closed)&&sameLead(lead,"operator"),{actions,payment,keys,lead});
   };
+  /* The homepage in the reported state carries no word of an invitation-only service: the note, the tag and the closing note are
+     written by the page script, so each state is read. */
+  const homepageWordProblems=async opened=>{const read=await readRetiredText(opened);return invitationWords.test(read)?[read.match(invitationWords)[0]]:[];};
   /* The actions a visitor reaches first: the homepage, the pricing view and the guide, in that order. */
-  const journeyActionProblems=async (opened,registrationOpen)=>{
+  const journeyActionProblems=async (opened,registrationOpen,takesAccounts=registrationOpen)=>{
     const problems=[];
-    for(const name of [null,"pricing","guide"]){if(name==="guide")await openGuide(opened);else if(name)await headerLink(opened,name);problems.push(...accessActionProblems(await publicActions(opened),registrationOpen));}
+    for(const name of [null,"pricing","guide"]){if(name==="guide")await openGuide(opened);else if(name)await headerLink(opened,name);problems.push(...accessActionProblems(await publicActions(opened),registrationOpen,takesAccounts));}
     return problems;
+  };
+  /* One press on the hero's primary action lands on the funnel's email field, in the first screen at 1440 by 900 and at 390 by
+     844, wherever the funnel takes an address: a service with a request list and a service with registration open. */
+  const landingScenario=name=>async (opened,note)=>{
+    const landings=[];
+    for(const [width,height] of [[1440,900],[390,844]]){
+      await opened.setViewportSize({width,height});
+      await opened.evaluate(()=>{history.pushState({},"","/");dispatchEvent(new PopStateEvent("popstate"));scrollTo(0,0);});
+      landings.push(await pressThePrimaryAction(opened,width,height));
+    }
+    note(name,landings.length===2&&landings.every(landsOnTheField),{landings});
+    note(name.replace("the_primary_action_opens","landing_check_for"),landings.length===2&&!landsOnTheField({...landings[1],path:"/signup",views:["signup"],shown:false})
+      &&!landsOnTheField({...landings[1],top:landings[1].viewport+10,bottom:landings[1].viewport+58})&&!landsOnTheField({...landings[1],label:"Request an invitation"})
+      &&!landsOnTheField({...landings[1],path:"/waitlist",views:["waitlist"]})&&!landsOnTheField({...landings[1],shown:false}),{landings});
   };
   const scenarios={
     closed_service:{origin:"base",run:async (opened,note)=>{
-      const actions=await accessActions(opened),keys=await keyState(opened);
+      const actions=await accessActions(opened),keys=await keyState(opened),words=await homepageWordProblems(opened);
       note("public_actions_say_get_started_while_registration_is_closed",sameAccess(actions,expectedAccess.waiting),actions);
+      note("homepage_carries_no_invitation_word_while_registration_is_closed",words.length===0,{found:words});
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
-      const journey=await journeyActionProblems(opened,false);
-      note("no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed",journey.length===0,{problems:journey});
+      const journey=await journeyActionProblems(opened,false,false);
+      note("no_public_action_offers_a_second_label_or_account_creation_while_the_service_takes_no_accounts",journey.length===0,{problems:journey});
       const lead=await startLead(opened);
-      note("get_started_leads_with_the_operator_when_the_service_offers_neither",sameLead(lead,"operator"),lead);
+      note("guide_leads_with_the_operator_when_the_service_offers_neither",sameLead(lead,"operator"),lead);
       const payment=await paymentState(opened);
-      note("pricing_view_says_invitation_only_while_account_creation_is_closed",invitationOnly(actions,payment),{actions,payment});
+      note("pricing_view_asks_for_the_account_first_while_account_creation_is_closed",accountFirst(actions,payment),{actions,payment});
       const claims=await waitlistClaims(opened);
-      note("unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
+      note("account_status_page_offers_no_get_started_button_while_the_service_keeps_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
     }},
     waitlist_offered:{origin:"account_base",run:async (opened,note)=>{
-      const journey=await journeyActionProblems(opened,false);
-      note("no_public_action_offers_a_second_label_or_account_creation_while_a_list_is_kept",journey.length===0,{problems:journey});
-      const lead=await startLead(opened);
-      note("get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list",sameLead(lead,"invite"),lead);
+      const words=await homepageWordProblems(opened);
+      note("homepage_carries_no_invitation_word_while_the_service_keeps_a_list",words.length===0,{found:words});
+      const journey=await journeyActionProblems(opened,false,true);
+      note("no_public_action_offers_a_second_label_or_account_creation_outside_the_journey_while_a_list_is_kept",journey.length===0,{problems:journey});
+      const lead=await startLead(opened),leadLink=await opened.locator("#start-invite-link").getAttribute("href").catch(()=>"");
+      note("guide_leads_with_the_get_started_link_when_the_service_keeps_a_list",sameLead(lead,"invite")&&leadLink===accessPaths.closed,{lead,link:leadLink});
       const claims=await waitlistClaims(opened);
-      note("unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
+      note("account_status_page_offers_get_started_once_the_service_keeps_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
     }},
-    waitlist_landing:{origin:"account_base",run:async (opened,note)=>{
-      const landings=[];
-      for(const [width,height] of [[1440,900],[390,844]]){
-        await opened.setViewportSize({width,height});
-        await opened.evaluate(()=>{history.pushState({},"","/");dispatchEvent(new PopStateEvent("popstate"));scrollTo(0,0);});
-        landings.push(await pressThePrimaryAction(opened,width,height));
-      }
-      note("the_primary_action_opens_the_invitation_email_field_in_the_first_screen",landings.length===2&&landings.every(landsOnTheField),{landings});
-      note("landing_check_rejects_the_account_status_page_and_a_field_below_the_first_screen",landings.length===2&&!landsOnTheField({...landings[1],path:"/signup",shown:false})
-        &&!landsOnTheField({...landings[1],top:landings[1].viewport+10,bottom:landings[1].viewport+58})&&!landsOnTheField({...landings[1],label:"Request an invitation"}),{landings});
-    }},
+    list_landing:{origin:"account_base",run:landingScenario("the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_the_service_keeps_a_list")},
+    open_landing:{origin:"signup_base",run:landingScenario("the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_registration_is_open")},
     unsupported_version_waitlist:{origin:"account_base",version:"service_capabilities/v2",run:async (opened,note)=>{
       const claims=await waitlistClaims(opened),lead=await openGetStarted(opened);
       note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending)&&sameLead(lead,"operator"),{claims,lead});
     }},
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
-      const actions=await accessActions(opened);
+      const actions=await accessActions(opened),words=await homepageWordProblems(opened);
       note("public_actions_say_get_started_while_registration_is_open",sameAccess(actions,expectedAccess.open),actions);
-      const journey=await journeyActionProblems(opened,true);
+      note("homepage_carries_no_invitation_word_while_registration_is_open",words.length===0,{found:words});
+      const journey=await journeyActionProblems(opened,true,true);
       note("no_public_action_offers_account_creation_outside_the_get_started_and_account_pages",journey.length===0,{problems:journey});
       const lead=await startLead(opened);
-      note("get_started_leads_with_account_creation_when_registration_is_open",sameLead(lead,"register"),lead);
+      note("guide_leads_with_account_creation_when_registration_is_open",sameLead(lead,"register"),lead);
       const payment=await paymentState(opened);
-      note("pricing_view_says_payment_is_not_open_when_account_creation_is_open_without_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),{actions,payment});
+      note("pricing_view_offers_no_payment_when_account_creation_is_open_without_checkout",samePayment(payment,paymentWords.closed),{actions,payment});
     }},
     open_checkout:{origin:"billing_base",run:async (opened,note)=>{
       const actions=await accessActions(opened),payment=await paymentState(opened);
-      note("pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed",invitationOnly(actions,payment),{actions,payment});
+      note("pricing_view_asks_for_the_account_first_when_checkout_is_open_and_account_creation_is_closed",accountFirst(actions,payment),{actions,payment});
     }},
     open_sales:{origin:"checkout_signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened),payment=await paymentState(opened);
-      note("pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open",sameAccess(actions,expectedAccess.open)&&payment.badge==="Payment open"&&payment.shown.includes("Payment is open"),{actions,payment});
+      note("pricing_view_says_to_subscribe_when_account_creation_and_checkout_are_open",sameAccess(actions,expectedAccess.open)&&samePayment(payment,paymentWords.open),{actions,payment});
     }},
     client_access:{origin:"account_base",run:async (opened,note)=>{
       const keys=await keyState(opened);
@@ -1402,30 +1622,33 @@ try {
       run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_client_access")}};
   const publicOrigins=["base","signup_base","billing_base","account_base","checkout_signup_base"];
   const reported=[];
-  for(const name of publicOrigins){const value=(await (await page.request.get(fixture[name]+"/api/v1/capabilities")).json()).result;reported.push({name,record_type:value.record_type,registration:value.website.registration_available,checkout:value.billing.checkout,client_access:value.website.client_access_available});}
+  for(const name of publicOrigins){const value=(await (await page.request.get(fixture[name]+"/api/v1/capabilities")).json()).result;reported.push({name,record_type:value.record_type,registration:value.website.registration_available,checkout:value.billing.checkout,client_access:value.website.client_access_available,list:value.website.waitlist_available});}
   check("the_public_states_are_reported_by_real_services",JSON.stringify(reported)===JSON.stringify([
-    {name:"base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:false},
-    {name:"signup_base",record_type:"service_capabilities/v1",registration:true,checkout:false,client_access:false},
-    {name:"billing_base",record_type:"service_capabilities/v1",registration:false,checkout:true,client_access:false},
-    {name:"account_base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:true},
-    {name:"checkout_signup_base",record_type:"service_capabilities/v1",registration:true,checkout:true,client_access:false}]),{reported});
+    {name:"base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:false,list:false},
+    {name:"signup_base",record_type:"service_capabilities/v1",registration:true,checkout:false,client_access:false,list:false},
+    {name:"billing_base",record_type:"service_capabilities/v1",registration:false,checkout:true,client_access:false,list:false},
+    {name:"account_base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:true,list:true},
+    {name:"checkout_signup_base",record_type:"service_capabilities/v1",registration:true,checkout:true,client_access:false,list:false}]),{reported});
   for(const name of Object.keys(scenarios)){
     const scenario=scenarios[name],{page:opened}=await openPublic(fixture[scenario.origin],null,scenario.version);
     await scenario.run(opened,check);await opened.close();
   }
-  /* Every public page on three real services: one that offers neither registration nor a list, one that keeps a waiting list,
-     and one with registration open. The known-wrong page after it plants one wrong action at a time into the real homepage. */
-  const actionScan=[];
-  for(const [name,registrationOpen] of [["base",false],["account_base",false],["signup_base",true]]){
+  /* Every public page on three real services: one that offers neither registration nor a list, one that keeps a request list,
+     and one with registration open. Each page is read for its actions and for the words of an invitation-only service. The
+     known-wrong pages after it plant one wrong action, and one retired sentence, at a time into the real pages. */
+  const actionScan=[],stateWords=[];
+  for(const [name,registrationOpen,takesAccounts] of [["base",false,false],["account_base",false,true],["signup_base",true,true]]){
     const scanned=await context.newPage();scanned.on("pageerror",error=>errors.push(safeError(error.message)));
     for(const path of accessJourneyPaths){
-      await scanned.goto(fixture[name]+path);
-      await scanned.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability");
-      actionScan.push({origin:name,path,problems:accessActionProblems(await publicActions(scanned),registrationOpen)});
+      await openCustomerPage(scanned,fixture[name],path);
+      actionScan.push({origin:name,path,problems:accessActionProblems(await publicActions(scanned),registrationOpen,takesAccounts)});
+      const read=await readRetiredText(scanned);
+      if(invitationWords.test(read))stateWords.push({origin:name,path,found:read.match(invitationWords)[0]});
     }
     await scanned.close();
   }
   check("every_public_page_offers_one_call_to_action_and_nothing_the_service_cannot_honour",actionScan.length===3*accessJourneyPaths.length&&actionScan.every(item=>item.problems.length===0),{problems:actionScan.filter(item=>item.problems.length)});
+  check("no_public_page_uses_the_words_of_an_invitation_only_service_in_any_reported_state",actionScan.length===3*accessJourneyPaths.length&&stateWords.length===0,{problems:stateWords});
   const knownWrong=await context.newPage();knownWrong.on("pageerror",error=>errors.push(safeError(error.message)));
   await knownWrong.goto(fixture.base+"/");await knownWrong.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
   const plantedAction=async (text,href,place)=>{
@@ -1437,8 +1660,23 @@ try {
   const secondLabel=await plantedAction("Join the waiting list",accessPaths.closed,'[data-view="home"] .hero-actions');
   const creationWhileClosed=await plantedAction("Create your account","/signup",'[data-view="home"] .closing-actions');
   const invitationOutside=await plantedAction("Ask for an invitation",accessPaths.closed,'[data-view="home"] .pricing-teaser-side');
+  const olderAddress=await plantedAction("Request an invitation","/waitlist",'[data-view="home"] .closing-actions');
+  /* The label as the answer to a short question is the label; a question answered with other words is a second label. */
+  const questionLabel=await plantedAction("No account yet? Get started.",accessPaths.closed,'[data-view="home"] .closing-actions');
+  const questionOther=await plantedAction("No account yet? Join us.",accessPaths.closed,'[data-view="home"] .closing-actions');
+  check("access_action_check_rejects_a_second_label_account_creation_and_an_invitation",secondLabel.length===2&&creationWhileClosed.length===1&&invitationOutside.length===2&&olderAddress.length===2
+    &&questionLabel.length===0&&questionOther.length===1,{secondLabel,creationWhileClosed,invitationOutside,olderAddress,questionLabel,questionOther});
+  /* The reading of the words, planted into real pages: a note under the hero's price, a sentence written beside the approved
+     privacy notice, and the notice itself with one word changed, which is then read whole. Each must be reported. */
+  const plantedWords=async (path,change)=>{await openCustomerPage(knownWrong,fixture.base,path);const planted=await knownWrong.evaluate(change);const read=await readRetiredText(knownWrong);return planted&&invitationWords.test(read);};
+  const clean={home:!invitationWords.test(await (async()=>{await openCustomerPage(knownWrong,fixture.base,"/");return readRetiredText(knownWrong);})()),
+    privacy:!invitationWords.test(await (async()=>{await openCustomerPage(knownWrong,fixture.base,"/privacy");return readRetiredText(knownWrong);})())};
+  const plantedNote=await plantedWords("/",()=>{const node=document.getElementById("hero-access-note");if(!node)return false;node.textContent="Invitation only while we open in small groups";return true;});
+  const plantedBesidePrivacy=await plantedWords("/privacy",()=>{const view=document.querySelector('[data-view="privacy"]');if(!view)return false;const line=document.createElement("p");line.textContent="Search is free.";view.prepend(line);return true;});
+  const changedPrivacy=await plantedWords("/privacy",()=>{const walker=document.createTreeWalker(document.querySelector("[data-privacy-notice]")||document.body,NodeFilter.SHOW_TEXT);
+    for(let node=walker.nextNode();node;node=walker.nextNode())if(node.textContent.includes("five days")){node.textContent=node.textContent.replace("five days","thirty days");return true;}return false;});
   await knownWrong.close();
-  check("access_action_check_rejects_a_second_label_account_creation_and_an_invitation_outside_its_form",secondLabel.length===2&&creationWhileClosed.length===1&&invitationOutside.length===2,{secondLabel,creationWhileClosed,invitationOutside});
+  check("invitation_word_reading_rejects_a_planted_note_a_sentence_beside_the_privacy_notice_and_a_changed_notice",clean.home&&clean.privacy&&plantedNote&&plantedBesidePrivacy&&changedPrivacy,{clean,plantedNote,plantedBesidePrivacy,changedPrivacy});
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
   const paymentCall="applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));";
   const paymentRule='const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : checkout === true ? "open" : "closed";';
@@ -1447,26 +1685,31 @@ try {
   const publicControls=[
     {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_actions_say_get_started_while_registration_is_closed"]},
     {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_actions_say_get_started_while_registration_is_open"]},
-    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Get started"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
-    {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["get_started_leads_with_the_operator_when_the_service_offers_neither","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
-    {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["get_started_leads_with_account_creation_when_registration_is_open"]},
-    {name:"send_the_invitation_action_to_the_account_status_page",scenario:"waitlist_landing",find:'href:"/get-started", note:"Invitation only',replacement:'href:"/signup#waiting-list", note:"Invitation only',expected:["the_primary_action_opens_the_invitation_email_field_in_the_first_screen"]},
-    {name:"never_lead_with_the_invitation_form",scenario:"waitlist_offered",find:invitationLead,replacement:'false ? "invite"',expected:["get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list"]},
-    {name:"always_say_payment_is_open",scenario:"closed_service",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_while_account_creation_is_closed"]},
-    {name:"always_say_payment_is_open_once_checkout_is_open",scenario:"open_checkout",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
-    {name:"ignore_account_creation_when_checkout_is_open",scenario:"open_checkout",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => checkout === true ? "open" : "closed";',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
-    {name:"ignore_checkout_when_account_creation_is_open",scenario:"open_registration",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : "open";',expected:["pricing_view_says_payment_is_not_open_when_account_creation_is_open_without_checkout"]},
-    {name:"never_say_payment_is_open",scenario:"open_sales",find:paymentCall,replacement:"applyPaymentState(publicPaymentState(value.website.registration_available === true, false));",expected:["pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open"]},
-    {name:"always_say_invitation_only",scenario:"open_sales",find:paymentCall,replacement:'applyPaymentState("invitation_only");',expected:["pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open"]},
+    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Get started"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_the_service_takes_no_accounts"]},
+    /* The owner's retired words, brought back into the words the page script writes: the invitation note of the closed state and the
+       free search of the open state's closing note. */
+    {name:"bring_back_the_invitation_note",scenario:"closed_service",find:'waiting:{label:"Get started", href:"/get-started", note:"for the whole library"',replacement:'waiting:{label:"Get started", href:"/get-started", note:"Invitation only while we open in small groups"',expected:["public_actions_say_get_started_while_registration_is_closed","homepage_carries_no_invitation_word_while_registration_is_closed"]},
+    {name:"bring_back_free_search_in_the_closing_note",scenario:"open_registration",find:'connect your harness in a few minutes."},\n    waiting:{',replacement:'connect your harness in a few minutes. Search is free."},\n    waiting:{',expected:["public_actions_say_get_started_while_registration_is_open","homepage_carries_no_invitation_word_while_registration_is_open"]},
+    {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["guide_leads_with_the_operator_when_the_service_offers_neither"]},
+    {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["guide_leads_with_account_creation_when_registration_is_open"]},
+    {name:"send_the_primary_action_to_the_account_status_page",scenario:"list_landing",find:'waiting:{label:"Get started", href:"/get-started"',replacement:'waiting:{label:"Get started", href:"/signup"',expected:["the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_the_service_keeps_a_list"]},
+    {name:"send_the_open_primary_action_to_the_account_status_page",scenario:"open_landing",find:'open:{label:"Get started", href:"/get-started"',replacement:'open:{label:"Get started", href:"/signup"',expected:["the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_registration_is_open"]},
+    {name:"never_lead_with_the_get_started_link",scenario:"waitlist_offered",find:invitationLead,replacement:'false ? "invite"',expected:["guide_leads_with_the_get_started_link_when_the_service_keeps_a_list"]},
+    {name:"always_say_payment_is_open",scenario:"closed_service",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_asks_for_the_account_first_while_account_creation_is_closed"]},
+    {name:"always_say_payment_is_open_once_checkout_is_open",scenario:"open_checkout",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_asks_for_the_account_first_when_checkout_is_open_and_account_creation_is_closed"]},
+    {name:"ignore_account_creation_when_checkout_is_open",scenario:"open_checkout",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => checkout === true ? "open" : "closed";',expected:["pricing_view_asks_for_the_account_first_when_checkout_is_open_and_account_creation_is_closed"]},
+    {name:"ignore_checkout_when_account_creation_is_open",scenario:"open_registration",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : "open";',expected:["pricing_view_offers_no_payment_when_account_creation_is_open_without_checkout"]},
+    {name:"never_say_payment_is_open",scenario:"open_sales",find:paymentCall,replacement:"applyPaymentState(publicPaymentState(value.website.registration_available === true, false));",expected:["pricing_view_says_to_subscribe_when_account_creation_and_checkout_are_open"]},
+    {name:"always_ask_for_the_account_first",scenario:"open_sales",find:paymentCall,replacement:'applyPaymentState("invitation_only");',expected:["pricing_view_says_to_subscribe_when_account_creation_and_checkout_are_open"]},
     {name:"always_claim_personal_keys",scenario:"closed_service",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(true);",expected:["personal_key_claim_is_held_back_when_the_service_reports_no_client_access"]},
     {name:"never_claim_personal_keys",scenario:"client_access",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(false);",expected:["personal_key_claim_appears_when_the_service_reports_client_access"]},
     {name:"ignore_the_capabilities_record_version",scenario:"unsupported_version_registration",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_registration"]},
     {name:"ignore_the_record_version_over_payment",scenario:"unsupported_version_checkout",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_checkout"]},
     {name:"ignore_the_record_version_over_personal_keys",scenario:"unsupported_version_client_access",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_client_access"]},
     {name:"ignore_the_record_version_over_the_waiting_list",scenario:"unsupported_version_waitlist",find:waitlistGate,replacement:"const open = value?.website?.waitlist_available === true;",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list"]},
-    {name:"keep_calling_the_offered_waiting_list_form_unfinished",scenario:"waitlist_offered",find:'$("in-progress-waitlist").hidden = open;',replacement:'$("in-progress-waitlist").hidden = false;',expected:["unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list"]},
-    {name:"keep_saying_the_offered_waiting_list_form_is_being_built",scenario:"waitlist_offered",find:'$("waiting-list-pending").hidden = open;',replacement:'$("waiting-list-pending").hidden = false;',expected:["unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list"]},
-    {name:"stop_naming_the_waiting_list_form_as_unfinished_before_it_is_offered",scenario:"closed_service",find:'$("in-progress-waitlist").hidden = open;',replacement:'$("in-progress-waitlist").hidden = true;',expected:["unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list"]}];
+    {name:"keep_the_pointer_note_once_the_service_keeps_a_list",scenario:"waitlist_offered",find:'$("waiting-list-pending").hidden = open;',replacement:'$("waiting-list-pending").hidden = false;',expected:["account_status_page_offers_get_started_once_the_service_keeps_a_list"]},
+    {name:"never_offer_get_started_on_the_account_status_page",scenario:"waitlist_offered",find:'for (const name of ["signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;',replacement:'for (const name of ["signup-waitlist-link", "waitlist-form"]) $(name).hidden = true;',expected:["account_status_page_offers_get_started_once_the_service_keeps_a_list"]},
+    {name:"hide_the_pointer_note_before_the_service_keeps_a_list",scenario:"closed_service",find:'$("waiting-list-pending").hidden = open;',replacement:'$("waiting-list-pending").hidden = true;',expected:["account_status_page_offers_no_get_started_button_while_the_service_keeps_no_list"]}];
   for(const control of publicControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},scenario=scenarios[control.scenario];
     let applied=false,problem="";
@@ -1476,9 +1719,9 @@ try {
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
   /* Removed-guard controls for the homepage itself: one digest of the demonstration changed, the band grounds and rules taken
-     away, a note that grows after the script runs, a part that is being built called available or live, a second primary
-     action in the header, and the pricing heading centred beside the plan card again. Each serves changed bytes of one or more
-     files in memory, never a source file, and must fail its own named check. */
+     away, a card with a status word again, the owner's decisions of September 23, 2026 undone one at a time, a note that grows
+     after the script runs, a second primary action in the header, and the pricing heading centred beside the plan card again.
+     Each serves changed bytes of one or more files in memory, never a source file, and must fail its own named check. */
   const openChanged=async changes=>{
     const opened=await context.newPage(),found=new Set();
     opened.on("pageerror",()=>{});
@@ -1501,12 +1744,39 @@ try {
     {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/service.css",find:"--band:#FFFFFF;",replacement:"--band:#F5F6F8;"},{path:"/assets/service.css",find:"--rule:#E2E6EC;",replacement:"--rule:transparent;"}],
      run:async (opened,note)=>note("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(await homeBands(opened)).length===0),
      expected:["homepage_sets_every_band_apart_on_an_off_white_ground"]},
-    {name:"call_the_overnight_work_available",changes:[{path:"/",find:'data-status="building">Being built</p></li>\n      </ul></section>',replacement:'data-status="available">Available now</p></li>\n      </ul></section>'}],
-     run:async (opened,note)=>note("homepage_names_six_problems_each_with_its_honest_state",statusProblems(await statusCards(opened,"[data-problem]","problem"),problemOrder,availableProblems).length===0),
-     expected:["homepage_names_six_problems_each_with_its_honest_state"]},
-    {name:"call_the_fresh_harness_live",changes:[{path:"/",find:'and nothing from your global settings.</p><p class="status-tag is-building" data-status="building">Being built</p>',replacement:'and nothing from your global settings.</p><p class="status-tag is-live" data-status="live">Live</p>'}],
-     run:async (opened,note)=>note("how_it_works_steps_say_only_search_and_download_are_live",statusProblems(await statusCards(opened,"[data-how-step]","howStep"),stepOrder,liveSteps).length===0),
-     expected:["how_it_works_steps_say_only_search_and_download_are_live"]},
+    /* The owner's decisions of September 23, 2026, each undone in the served bytes: a status word back on a card, the price out of
+       the hero, the old second action in place of the guide, the retired words beside the hero's actions, the demonstration below
+       the copy, a use case gone, the guide gone from the signed-out header and the old waiting list address back in the footer. */
+    {name:"call_a_library_kind_available",changes:[{path:"/",find:'<li class="kind" data-kind="tools"><h3>Tools and code</h3>',replacement:'<li class="kind" data-kind="tools"><h3>Tools and code</h3><p class="status-tag is-available" data-status="available">Available now</p>'}],
+     run:async (opened,note)=>note("library_names_the_six_kinds_without_a_status_word",cardProblems(await homeCards(opened,"[data-kind]","kind"),kindOrder).length===0),
+     expected:["library_names_the_six_kinds_without_a_status_word"]},
+    {name:"call_a_how_step_live",changes:[{path:"/",find:'<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3>',replacement:'<li class="how-step" data-how-step="get"><span class="how-index">02</span><h3>Get</h3><p class="status-tag is-live" data-status="live">Live</p>'}],
+     run:async (opened,note)=>note("how_it_works_band_names_ask_get_and_place_without_a_status_word",cardProblems(await homeCards(opened,"[data-how-step]","howStep"),howOrder).length===0),
+     expected:["how_it_works_band_names_ask_get_and_place_without_a_status_word"]},
+    {name:"take_the_price_out_of_the_hero",changes:[{path:"/",find:'<span class="hero-price-amount">$29 a month</span>',replacement:'<span class="hero-price-amount"></span>'}],
+     run:async (opened,note)=>note("homepage_hero_states_the_plan_and_the_price",statesThePlanAndPrice(await opened.evaluate(()=>document.querySelector('[data-view="home"] .hero-price')?.textContent.replace(/\s+/g," ").trim()||""))),
+     expected:["homepage_hero_states_the_plan_and_the_price"]},
+    {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
+     run:async (opened,note)=>note("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(await readHeroActions(opened)).length===0),
+     expected:["homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ"]},
+    {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<span><strong>Get set up</strong> connects your harness.</span>',replacement:'<span><strong>Get set up</strong> connects your harness.</span> <span>Invitation only while we open in small groups. Search is free.</span>'}],
+     run:async (opened,note)=>note("homepage_carries_no_invitation_word_while_registration_is_closed",(await homepageWordProblems(opened)).length===0),
+     expected:["homepage_carries_no_invitation_word_while_registration_is_closed"]},
+    {name:"move_the_demonstration_below_the_copy",changes:[{path:"/assets/architecture.css",find:".band-hero .hero.product-hero>.step-demo{grid-column:auto;margin-top:0}",replacement:".band-hero .hero.product-hero>.step-demo{grid-column:1/-1;margin-top:0}"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:1440,height:1000});note("homepage_demonstration_sits_beside_the_copy_in_the_hero",demoBesideTheCopy(await opened.locator('[data-view="home"]').evaluate(home=>{
+       const hero=home.querySelector(".product-hero"),copy=hero?.querySelector(".hero-copy"),example=hero?.querySelector(".step-demo");const box=node=>node?node.getBoundingClientRect():{left:0,right:0,top:0,bottom:0};
+       return {copyTop:Math.round(box(copy).top),copyBottom:Math.round(box(copy).bottom),copyRight:Math.round(box(copy).right),exampleTop:Math.round(box(example).top),exampleBottom:Math.round(box(example).bottom),exampleLeft:Math.round(box(example).left),hasExample:Boolean(example),hasCopy:Boolean(copy),viewport:innerWidth};})));},
+     expected:["homepage_demonstration_sits_beside_the_copy_in_the_hero"]},
+    {name:"hide_the_learning_use_case",changes:[{path:"/",find:'<li class="use-case" data-use-case="learning">',replacement:'<li class="use-case" data-use-case="learning" hidden>'}],
+     run:async (opened,note)=>note("homepage_links_the_three_use_cases_the_owner_named",useCaseProblems(await homeCards(opened,'[data-view="home"] [data-use-case]',"useCase")).length===0),
+     expected:["homepage_links_the_three_use_cases_the_owner_named"]},
+    {name:"drop_get_set_up_from_the_signed_out_header",changes:[{path:"/",find:'<a href="/setup" data-page="setup" data-nav="get-set-up-guide" data-signed-out>Get set up</a>',replacement:""}],
+     run:async (opened,note)=>{note("header_offers_one_primary_action_and_the_guide_beside_the_navigation",oneHeaderAction(await readHeaderState(opened)));
+       const states=[];for(const width of [1440,980,390])states.push(await barState(opened,width));note("top_bar_lists_the_pages_and_the_get_started_action",states.every(state=>barProblems(state).length===0));},
+     expected:["header_offers_one_primary_action_and_the_guide_beside_the_navigation","top_bar_lists_the_pages_and_the_get_started_action"]},
+    {name:"link_the_waiting_list_again_from_the_footer",changes:[{path:"/",find:'<a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a>',replacement:'<a href="/waitlist" data-page="start">Request an invitation</a><a href="/login" data-page="login">Sign in</a><a href="/privacy" data-page="privacy">Privacy notice</a>'}],
+     run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
+     expected:["footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
     {name:"unfold_the_phone_menu_into_the_header",changes:[{path:"/assets/architecture.css",find:"  .header nav{display:none;position:absolute;",replacement:"  .header nav{display:flex;flex-wrap:wrap;flex-basis:100%;position:static;"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:844});note("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(await firstScreen(opened)));},
      expected:["phone_first_screen_holds_the_whole_primary_action_under_a_compact_header"]},
@@ -1520,8 +1790,8 @@ try {
      run:async (opened,note)=>{const states=[];for(const width of [1440,980,390])states.push(await barState(opened,width));note("top_bar_lists_the_pages_and_the_get_started_action",states.every(state=>barProblems(state).length===0));},
      expected:["top_bar_lists_the_pages_and_the_get_started_action"]},
     {name:"drop_get_set_up_from_the_footer",changes:[{path:"/",find:'<a href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a><a href="/how-it-works" data-page="about">How it works</a>',replacement:'<a href="/how-it-works" data-page="about">How it works</a>'}],
-     run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_and_the_mark",footerProblems(await readFooter(opened)).length===0),
-     expected:["footer_carries_four_groups_with_get_started_get_set_up_and_the_mark"]},
+     run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
+     expected:["footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
     {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); $("menu-toggle").checked = false;',replacement:"show(name);"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:1000});await opened.locator("header .menu-button").click();await opened.locator('header nav a[data-page="pricing"]').click();
        const state=await menuState(opened);note("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",state.path==="/pricing"&&!state.open&&state.links.length===0);},
@@ -1543,14 +1813,15 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
-  /* The header in both sign-in states, read as a person sees it on a real service. Signed out, it offers Sign in and the one
-     primary action. Signed in, it offers the account entry, which opens the account page, and Sign out, and neither Sign in
-     nor the invitation action. At phone width the links fold into the menu, so the opened menu and the bar together must
-     offer exactly what the wide header offers. Sign out, pressed in the phone menu, ends the sign-in, opens the sign-in page
-     and restores the signed-out header at both widths. The review of September 23 found Sign in and the invitation action
-     still offered to a signed-in person. Two removed-guard controls serve the page script without the step that hides the
-     signed-out entries and without the step that brings them back. */
-  const signedOutHeader=["How it works","Library","Pricing","Docs","Sign in",accessLabels.closed];
+  /* The header in both sign-in states, read as a person sees it on a real service. Signed out, it offers the pages, the guide,
+     Sign in and the one primary action, in the order of the site map. Signed in, it offers the account entry, which opens the
+     account page, and Sign out, and neither Sign in nor Get started. At phone width the links fold into the menu, so the opened
+     menu and the bar together must offer exactly what the wide header offers. Sign out, pressed in the phone menu, ends the
+     sign-in, opens the sign-in page and restores the signed-out header at both widths. The review of September 23 found Sign in
+     and the access action still offered to a signed-in person, and the owner found pages lost from the header the same day. Two
+     removed-guard controls serve the page script without the step that hides the signed-out entries and without the step that
+     brings them back. */
+  const signedOutHeader=[...menuLinks,accessLabels.closed];
   const signedInHeader=["Workspace","Get set up","Library","Docs","Account","Sign out"];
   const headerEntries=async (target,width)=>{
     await target.setViewportSize({width,height:1000});
@@ -1568,7 +1839,7 @@ try {
   const headerProblems=(state,want)=>[...(JSON.stringify(state.entries)===JSON.stringify(want)?[]:[state.width+" pixels wide, the header offers "+JSON.stringify(state.entries)]),
     ...(want.includes("Account")&&JSON.stringify(state.account)!==JSON.stringify(["/account"])?[state.width+" pixels wide, the account entry does not open the account page"]:[]),
     ...(state.folded&&Math.abs(state.menuRight-state.barEnd)>1?[state.width+" pixels wide, the menu button ends at "+state.menuRight+" and the bar at "+state.barEnd]:[])];
-  const headerChecks=["header_offers_sign_in_and_the_invitation_to_a_visitor_who_is_not_signed_in","header_offers_the_account_entry_and_sign_out_to_a_signed_in_person",
+  const headerChecks=["header_offers_the_pages_the_guide_sign_in_and_get_started_to_a_visitor_who_is_not_signed_in","header_offers_the_account_entry_and_sign_out_to_a_signed_in_person",
     "header_sign_out_ends_the_sign_in_and_restores_the_signed_out_header"];
   const headerScenario=async (opened,note)=>{
     const visitor=[await headerEntries(opened,1440),await headerEntries(opened,390)];
@@ -1588,7 +1859,7 @@ try {
     try{await headerScenario(opened,(name,passed,detail)=>{noted.add(name);check(name,passed,detail);});}
     catch(error){for(const name of headerChecks.filter(name=>!noted.has(name)))check(name,false,{error:safeError(error)});}
     await opened.close();}
-  check("header_state_check_rejects_a_leftover_sign_in_or_invitation_a_missing_sign_out_and_a_misplaced_menu_button",
+  check("header_state_check_rejects_a_leftover_sign_in_or_get_started_a_missing_sign_out_a_missing_guide_and_a_misplaced_menu_button",
     headerProblems({width:1440,entries:signedOutHeader,account:[]},signedOutHeader).length===0&&headerProblems({width:390,entries:signedInHeader,account:["/account"]},signedInHeader).length===0
     &&headerProblems({width:1440,entries:[...signedInHeader,"Sign in"],account:["/account"]},signedInHeader).length===1
     &&headerProblems({width:1440,entries:[...signedInHeader,accessLabels.closed],account:["/account"]},signedInHeader).length===1
@@ -1596,9 +1867,10 @@ try {
     &&headerProblems({width:1440,entries:signedInHeader,account:["/app"]},signedInHeader).length===1
     &&headerProblems({width:390,entries:signedInHeader,account:["/account"]},signedOutHeader).length===1
     &&headerProblems({width:390,folded:true,entries:signedInHeader,account:["/account"],menuRight:160,barEnd:373},signedInHeader).length===1
-    &&headerProblems({width:390,folded:true,entries:signedInHeader,account:["/account"],menuRight:373,barEnd:373},signedInHeader).length===0);
+    &&headerProblems({width:390,folded:true,entries:signedInHeader,account:["/account"],menuRight:373,barEnd:373},signedInHeader).length===0
+    &&headerProblems({width:1440,entries:signedOutHeader.filter(name=>name!=="Get set up"),account:[]},signedOutHeader).length===1);
   const headerControls=[
-    {name:"keep_sign_in_and_the_invitation_action_after_sign_in",find:'document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });',replacement:"",expected:[headerChecks[1]]},
+    {name:"keep_sign_in_and_get_started_after_sign_in",find:'document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });',replacement:"",expected:[headerChecks[1]]},
     {name:"keep_the_account_entry_and_sign_out_after_sign_out",find:"showSignedIn(false);",replacement:"",expected:[headerChecks[2]]}];
   for(const control of headerControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
@@ -1608,18 +1880,26 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
   }
-  /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
+  /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the
+     served text, and the page script starts from the same careful state before the service answers and keeps it for a record
+     version it was not written for: the pricing view with no payment until the account is ready, the words every access state
+     shares, keys issued to the account, the operator's panel leading the guide, and the one "Get started" action. Each element
+     is read by its id from the served page itself, so a changed attribute order cannot hide a changed word. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
-  /* The careful access state is the operator's panel leading the Get started page, with the invitation form and the account
-     action held back, and the note under the hero action written for closed registration. */
-  const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
-    "Payment is not open yet. Nothing on this page charges you today.",'data-start-access="operator"',waitingNote,keyWording.closed.offer,keyWording.closed.plan,
-    'id="hero-primary" href="/get-started" data-page="get-started" data-access-state="waiting"><span data-access-label id="hero-primary-label">Get started</span>'];
+  const servedDefaults=markup=>page.evaluate(markup=>{const doc=new DOMParser().parseFromString(markup,"text/html"),text=id=>doc.getElementById(id)?.textContent.replace(/\s+/g," ").trim()??null,hero=doc.getElementById("hero-primary");
+    return {"pricing-state":text("pricing-state"),"pricing-payment-state":text("pricing-payment-state"),"pricing-teaser-note":text("pricing-teaser-note"),"hero-access-note":text("hero-access-note"),
+      "home-plan-access":text("home-plan-access"),"closing-note":text("closing-note"),"offer-usage-keys":text("offer-usage-keys"),"plan-keys-detail":text("plan-keys-detail"),
+      "start-access":doc.getElementById("start-access")?.dataset.startAccess??null,"hero-primary":hero?[hero.getAttribute("href"),hero.dataset.accessState,hero.querySelector("[data-access-label]")?.textContent.trim()]:null};},markup);
+  const carefulDefaults={"pricing-state":paymentWords.closed.badge,"pricing-payment-state":paymentWords.closed.note,"pricing-teaser-note":"Cancel any time from your account page.","hero-access-note":accessWords.note,
+    "home-plan-access":accessWords.tag,"closing-note":accessWords.closing,"offer-usage-keys":keyWording.closed.offer,"plan-keys-detail":keyWording.closed.plan,"start-access":"operator","hero-primary":[accessPaths.closed,"waiting",accessLabels.closed]};
   const unsettled=/Checking payment|Checking whether payment is open/;
-  const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
-  check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
-  const wrongDefault=servedHome.split(carefulDefaults[0]).join("Checking payment").split(carefulDefaults[1]).join("Checking whether payment is open.");
-  check("careful_default_check_rejects_a_served_page_that_never_settles",carefulProblems(wrongDefault).length>=3,{problems:carefulProblems(wrongDefault)});
+  const carefulProblems=(found,markup)=>[...Object.entries(carefulDefaults).filter(([id,want])=>JSON.stringify(found[id])!==JSON.stringify(want)).map(([id])=>id+" is served as "+JSON.stringify(found[id])+" and the careful state is "+JSON.stringify(carefulDefaults[id])),
+    ...(unsettled.test(markup)?["an unsettled placeholder"]:[])];
+  const servedFound=await servedDefaults(servedHome);
+  check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedFound,servedHome).length===0,{problems:carefulProblems(servedFound,servedHome)});
+  const wrongMarkup=servedHome.replace(/(id="pricing-state"[^>]*>)[^<]*/,"$1Checking payment").replace(/(id="pricing-payment-state"[^>]*>)[^<]*/,"$1Checking whether payment is open.");
+  const wrongFound=await servedDefaults(wrongMarkup);
+  check("careful_default_check_rejects_a_served_page_that_never_settles",wrongMarkup!==servedHome&&carefulProblems(wrongFound,wrongMarkup).filter(problem=>/^pricing-state |^pricing-payment-state |unsettled/.test(problem)).length===3,{problems:carefulProblems(wrongFound,wrongMarkup)});
   /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
   const namedRule=(path,name)=>{const found=readFileSync(resolve(root,path),"utf8").match(new RegExp("^\\s*const "+name+"=(\\/.+\\/i);$","m"));return found?found[1]:"";};
   const ruleSource=path=>namedRule(path,"internalTerms");
@@ -1633,6 +1913,11 @@ try {
   check("both_public_page_checks_use_one_retired_word_rule",workspaceRetired!==""&&workspaceRetired===hostedRetired&&workspaceRetired===String(retiredAccessWords),{workspace:workspaceRetired,hosted:hostedRetired});
   const droppedBranch=workspaceRetired.replace("|early access","");
   check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
+  /* The words of an invitation-only service are read twice as well: here from the source tree and on the deployed pages. */
+  const workspaceInvitation=namedRule("tools/check_service_workspace.mjs","invitationWords"),hostedInvitation=namedRule("tools/check_hosted_website.mjs","liveInvitation");
+  check("both_public_page_checks_use_one_invitation_word_rule",workspaceInvitation!==""&&workspaceInvitation===hostedInvitation&&workspaceInvitation===String(invitationWords),{workspace:workspaceInvitation,hosted:hostedInvitation});
+  const droppedFreeSearch=workspaceInvitation.replace("|\\bsearch(?:ing)? is free\\b","");
+  check("invitation_word_rule_comparison_rejects_a_drifted_copy",droppedFreeSearch!==workspaceInvitation&&!new RegExp(droppedFreeSearch.slice(1,-2),"i").test("Search is free.")&&invitationWords.test("Search is free."),{dropped:droppedFreeSearch});
   /* The rule that finds a statement that the terms are not published is read twice too: here and on the deployed pages. */
   const workspaceUnpublished=namedRule("tools/check_service_workspace.mjs","unpublishedTerms"),hostedUnpublished=namedRule("tools/check_hosted_website.mjs","unpublishedTerms");
   check("both_public_page_checks_use_one_unpublished_terms_rule",workspaceUnpublished!==""&&workspaceUnpublished===hostedUnpublished&&workspaceUnpublished===String(unpublishedTerms),{workspace:workspaceUnpublished,hosted:hostedUnpublished});
@@ -1699,7 +1984,8 @@ try {
   let sameAddress=null;try{sameAddress=[schemeOnly,withBackslashes].every(text=>new URL(text).href===otherOrigin);}catch(_){sameAddress=false;}
   check("known_wrong_addresses_reach_another_host_in_a_client_address_parser",sameAddress===true&&otherOrigin!==fixture.base+"/mcp",{forms:2});
   const {page:recipePage,state:recipeState}=await openConnect(recipeContext,fixture.base);
-  check("connect_view_offers_the_three_reviewed_recipes",recipeRecord.recipes.length===3&&["codex","opencode","claude-code"].every(id=>recipeRecord.recipes.some(item=>item.id===id))&&JSON.stringify(await recipePage.locator('#client-tabs [role="tab"]').evaluateAll(items=>items.map(item=>item.dataset.recipe)))===JSON.stringify(recipeRecord.recipes.map(item=>item.id)));
+  /* Pi and the Baltor Harness joined the three protocol clients on September 24, 2026, so every harness the hero names has steps. */
+  check("connect_view_offers_the_five_reviewed_recipes",recipeRecord.recipes.length===5&&["codex","opencode","claude-code","pi","baltor-harness"].every(id=>recipeRecord.recipes.some(item=>item.id===id))&&JSON.stringify(await recipePage.locator('#client-tabs [role="tab"]').evaluateAll(items=>items.map(item=>item.dataset.recipe)))===JSON.stringify(recipeRecord.recipes.map(item=>item.id)));
   /* The recipes are tabs: the arrow keys, Home and End move the choice and the focus, only the chosen tab is in the tab order, and
      the panel is labelled by the chosen tab. A page whose key handler is taken away is the removed-guard control. */
   const tabState=target=>target.evaluate(()=>{const tabs=[...document.querySelectorAll('#client-tabs [role="tab"]')];
@@ -1709,9 +1995,10 @@ try {
   const recipeIds=recipeRecord.recipes.map(item=>item.id);
   const pressRecipeKeys=async target=>{const keyed=[];if(await target.locator("#client-tab-"+recipeIds[0]).count()===0)return keyed;
     await target.locator("#client-tab-"+recipeIds[0]).click();await target.locator("#client-tab-"+recipeIds[0]).focus();
-    for(const [key,want] of [["ArrowRight",recipeIds[1]],["ArrowRight",recipeIds[2]],["ArrowRight",recipeIds[0]],["ArrowLeft",recipeIds[2]],["Home",recipeIds[0]],["End",recipeIds[2]]]){await target.keyboard.press(key);keyed.push({key,want,...await tabState(target)});}
+    const last=recipeIds[recipeIds.length-1];
+    for(const [key,want] of [["ArrowRight",recipeIds[1]],["ArrowRight",recipeIds[2]],["End",last],["ArrowRight",recipeIds[0]],["ArrowLeft",last],["Home",recipeIds[0]]]){await target.keyboard.press(key);keyed.push({key,want,...await tabState(target)});}
     return keyed;};
-  const tabsFollowKeys=items=>items.length===6&&items.every(item=>JSON.stringify(item.chosen)===JSON.stringify([item.want])&&item.focused===item.want&&JSON.stringify(item.inOrder)===JSON.stringify([item.want])&&item.labelled==="client-tab-"+item.want)&&new Set(items.map(item=>item.text)).size===3;
+  const tabsFollowKeys=items=>items.length===6&&items.every(item=>JSON.stringify(item.chosen)===JSON.stringify([item.want])&&item.focused===item.want&&JSON.stringify(item.inOrder)===JSON.stringify([item.want])&&item.labelled==="client-tab-"+item.want)&&new Set(items.map(item=>item.text)).size===new Set(items.map(item=>item.want)).size;
   const keyed=await pressRecipeKeys(recipePage);
   check("recipe_tabs_follow_the_arrow_keys_home_and_end",tabsFollowKeys(keyed),{keyed:keyed.map(({text,...rest})=>rest)});
   check("recipe_tab_check_rejects_a_tab_that_keeps_the_focus_elsewhere",!tabsFollowKeys(keyed.map((item,index)=>index===2?{...item,focused:""}:item))&&!tabsFollowKeys(keyed.slice(1))&&!tabsFollowKeys(keyed.map(item=>({...item,inOrder:recipeIds}))));
@@ -1941,7 +2228,9 @@ try {
   check("changed_download_is_refused_by_the_browser",(await page.locator(".result").first().innerText()).includes("do not match")); await page.unroute("**/api/v1/download");
   for(const width of [1440,820,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/terms","/waitlist"]){
+    /* Every public page, the three use cases the owner named on September 23, 2026 and their hub included, fits the width it is
+       read at and shows one view. */
+    for(const path of ["/",...useCasePaths,"/get-started","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/terms","/waitlist"]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -1949,7 +2238,7 @@ try {
   }
   for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security","/privacy","/terms"]){
+    for(const path of ["/",...useCasePaths,"/get-started","/how-it-works","/pricing","/connect","/examples","/security","/privacy","/terms"]){
       await page.goto(fixture.base+path); await page.evaluate(()=>document.documentElement.style.fontSize="200%");
       const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
       check(`enlarged_text_${width}_${path}`,!enlarged.overflow&&enlarged.views===1,enlarged);
@@ -2057,6 +2346,8 @@ try {
      which the owner is closing. Every rule below has a removed-guard control that serves changed page bytes in memory, for that control
      run only, and must fail the rule's own named check. */
   const standIn=fixture.confirm_identity_origin;
+  /* The plan step's words for a signed-in account without paid access while checkout is closed, and for one that checkout covers. */
+  const unpaidPlanText="$29 a month. Subscribe from your account page.",checkoutPlanText="$29 a month. Cancel any time from your account page.";
   const outbox=async (target,address)=>(await (await target.request.get(standIn+"/stand-in/outbox?to="+encodeURIComponent(address))).json());
   const newestLink=async (target,address)=>{const box=await outbox(target,address);return (box.messages.at(-1)?.text||"").split(/\s+/).find(word=>word.includes("/auth/confirm?"))||"";};
   const standInSignIn=async (target,address,password)=>(await target.request.post(standIn+"/auth/v1/token?grant_type=password",{data:{email:address,password}})).status();
@@ -2101,11 +2392,13 @@ try {
     await target.waitForFunction(()=>location.pathname!=="/auth/confirm",null,{timeout:5000}).catch(()=>{});
     const order=sent.map(item=>item.method+" "+item.path),verified=order.indexOf("POST /auth/v1/verify"),chosen=order.indexOf("PUT /auth/v1/user"),activated=order.indexOf("POST /api/v1/account/activate");
     const after={path:new URL(target.url()).pathname,views:await shownViews(target),connected:await target.locator("#connection-state").textContent(),
-      funnel:await target.evaluate(()=>({state:document.getElementById("funnel")?.dataset.funnelState,title:document.getElementById("funnel-plan-title")?.textContent,subscribe:!document.getElementById("funnel-subscribe")?.hidden}))};
+      funnel:await target.evaluate(()=>({state:document.getElementById("funnel")?.dataset.funnelState,title:document.getElementById("funnel-plan-title")?.textContent,text:document.getElementById("funnel-plan-text")?.textContent,subscribe:!document.getElementById("funnel-subscribe")?.hidden}))};
     note("the_new_password_is_set_before_the_account_opens",verified>=0&&chosen>verified&&activated>chosen&&after.connected==="Connected"&&after.path==="/get-started"
       &&JSON.stringify(after.views)===JSON.stringify(["start"]),{order,after});
     note("a_password_chosen_first_by_someone_else_no_longer_opens_the_account",await standInSignIn(target,address,chosenFirst)===400&&await standInSignIn(target,address,owner)===200);
-    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Payment is not open yet"&&after.funnel.subscribe===false,after.funnel);
+    /* While checkout is closed the plan step names the plan and its price and offers no control that starts a payment. Since
+       September 23, 2026 it no longer says that payment is not open; the absent control is what the rule holds. */
+    note("get_started_funnel_offers_no_payment_while_checkout_is_closed",after.funnel.state==="plan"&&after.funnel.title==="Subscribe to Baltor Pro"&&after.funnel.text===unpaidPlanText&&after.funnel.subscribe===false,after.funnel);
     return {address,owner,link,signedIn:after.connected==="Connected"};
   };
   /* A used link says so plainly, changes nothing and offers a way to ask for another. */
@@ -2150,16 +2443,22 @@ try {
       title:document.getElementById("funnel-plan-title")?.textContent||"",subscribe:shown(document.getElementById("funnel-subscribe")),
       heading:box(document.getElementById("funnel-title")),priceBox:box(document.querySelector(".funnel-price")),lastStep:box(document.querySelector('[data-funnel-step="setup"]')),
       field:box(document.getElementById("funnel-email")),action:box(document.getElementById("funnel-signup-button"))||box(document.getElementById("funnel-invite")),
-      viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};
+      viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1,words:view?.innerText||""};
   });
   const openSteps=["Create your account","Confirm your email","Choose a password","Subscribe to Baltor Pro","Get set up"];
-  const funnelProblems=(facts,open,waitingList=false)=>[...(facts.path==="/get-started"&&JSON.stringify(facts.views)===JSON.stringify(["start"])?[]:["the page is not the funnel alone"]),
-    ...(facts.state===(open?"register":"invite")?[]:["the card is "+JSON.stringify(facts.state)]),
+  /* The funnel in each state a service can report. Where the service takes new accounts, by registration or by its request list,
+     the card shows the one account form, #funnel-email with its one action and the sentence that links the terms and the privacy
+     notice, and the first step reads "Create your account", in the same words in both states. Where it takes neither, the card
+     offers Sign in. The price line says "$29 a month" and, since the owner's decision of September 23, 2026, no longer says that
+     search is free; no step and no action says invitation. */
+  const funnelProblems=(facts,open,waitingList=false)=>{const creating=open||waitingList;return [...(facts.path==="/get-started"&&JSON.stringify(facts.views)===JSON.stringify(["start"])?[]:["the page is not the funnel alone"]),
+    ...(facts.state===(creating?"register":"invite")?[]:["the card is "+JSON.stringify(facts.state)]),
     ...(facts.primaries.length===1?[]:[facts.primaries.length+" primary actions"]),
-    ...(open?(facts.primaries[0]?.id==="funnel-signup-button"&&facts.form&&facts.consent?.text===consentWords&&JSON.stringify(facts.consent?.links)===JSON.stringify(["/terms","/privacy"])?[]:["the account form, its one action or its consent sentence is missing"])
-      :(facts.primaries[0]?.id==="funnel-invite"&&facts.primaries[0]?.text===(waitingList?"Request an invitation":"Sign in")&&facts.primaries[0]?.href===(waitingList?"/waitlist":"/login")&&!facts.form&&!facts.consent?[]:["the invitation action is missing or account creation is offered"])),
-    ...(JSON.stringify(facts.steps)===JSON.stringify([open?openSteps[0]:waitingList?"Get an invitation":"Sign in",...openSteps.slice(1)])&&facts.setup==="/setup"?[]:["the five steps read "+JSON.stringify(facts.steps)]),
-    ...(facts.price.includes("$29 a month")&&facts.price.includes("search is free")?[]:["the price line reads "+JSON.stringify(facts.price)])];
+    ...(creating?(facts.primaries[0]?.id==="funnel-signup-button"&&facts.form&&facts.consent?.text===consentWords&&JSON.stringify(facts.consent?.links)===JSON.stringify(["/terms","/privacy"])?[]:["the account form, its one action or its consent sentence is missing"])
+      :(facts.primaries[0]?.id==="funnel-invite"&&facts.primaries[0]?.text==="Sign in"&&facts.primaries[0]?.href==="/login"&&!facts.form&&!facts.consent?[]:["the sign-in action is missing or account creation is offered"])),
+    ...(JSON.stringify(facts.steps)===JSON.stringify([creating?openSteps[0]:"Sign in",...openSteps.slice(1)])&&facts.setup==="/setup"?[]:["the five steps read "+JSON.stringify(facts.steps)]),
+    ...(facts.price.includes("$29 a month")&&!invitationWords.test(facts.price)?[]:["the price line reads "+JSON.stringify(facts.price)]),
+    ...(invitationWords.test(facts.words||"")?["the funnel says "+JSON.stringify(facts.words.match(invitationWords)[0])]:[])];};
   /* The first screen: at 1440 by 900 the heading, the price, all five steps and the first step's action; at 390 by 844 the heading and the
      first step's field and action. The steps may follow on a phone. */
   const firstScreenProblems=(facts,wide,open)=>[...(facts.overflow?["the page scrolls sideways"]:[]),
@@ -2174,28 +2473,51 @@ try {
     await opened.close();
   };
   const funnelScenario=(base,open,waitingList=false)=>async (target,note)=>{
+    const creating=open||waitingList,state=open?"open":waitingList?"list":"closed";
     await target.goto(base+"/get-started");
     await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
-    await target.waitForFunction(want=>document.getElementById("funnel")?.dataset.funnelState===want,open?"register":"invite",{timeout:5000}).catch(()=>{});
+    await target.waitForFunction(want=>document.getElementById("funnel")?.dataset.funnelState===want,creating?"register":"invite",{timeout:5000}).catch(()=>{});
     const facts=await funnelFacts(target);
-    note(open?"get_started_funnel_offers_account_creation_while_registration_is_open":waitingList?"get_started_funnel_offers_the_configured_waiting_list":"get_started_funnel_offers_sign_in_when_registration_and_waiting_list_are_closed",funnelProblems(facts,open,waitingList).length===0,{problems:funnelProblems(facts,open,waitingList)});
+    note(open?"get_started_funnel_offers_account_creation_while_registration_is_open":waitingList?"get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list":"get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed",funnelProblems(facts,open,waitingList).length===0,{problems:funnelProblems(facts,open,waitingList)});
     for(const [wide,size] of [[true,{width:1440,height:900}],[false,{width:390,height:844}]]){
       await target.setViewportSize(size);const sized=await funnelFacts(target);
-      note("get_started_funnel_first_step_fits_the_first_screen_"+(open?"open":"closed")+"_"+size.width,firstScreenProblems(sized,wide,open).length===0,{problems:firstScreenProblems(sized,wide,open)});
+      note("get_started_funnel_first_step_fits_the_first_screen_"+state+"_"+size.width,firstScreenProblems(sized,wide,creating).length===0,{problems:firstScreenProblems(sized,wide,creating)});
     }
+  };
+  /* The funnel's form on a service that keeps a request list: the address goes to the list, the visitor is told that a link to
+     finish creating the account follows by email, the funnel moves on to the second step, and the service's own record holds the
+     address. A second request from the same address is told that it is already registered, and the form stays. */
+  const listRequest=async (target,note)=>{
+    const address=journeyAddress("list"),sent=[];
+    target.on("request",request=>{const url=new URL(request.url());if(request.method()==="POST")sent.push({path:url.pathname,body:request.postData()||""});});
+    await target.goto(fixture.account_base+"/get-started");
+    await target.waitForFunction(()=>document.getElementById("funnel")?.dataset.funnelState==="register",null,{timeout:10000}).catch(()=>{});
+    const ask=async ()=>{await target.fill("#funnel-email",address);await target.click("#funnel-signup-button");
+      await target.waitForFunction(()=>{const node=document.getElementById("funnel-signup-message");return Boolean(node&&node.textContent&&node.textContent!=="Sending…");},null,{timeout:10000}).catch(()=>{});
+      return target.evaluate(()=>({message:document.getElementById("funnel-signup-message")?.textContent||"",error:document.getElementById("funnel-signup-message")?.classList.contains("error")===true,
+        form:Boolean(document.getElementById("funnel-signup-form")?.getClientRects().length),current:document.querySelector("[data-funnel-step][aria-current=step]")?.dataset.funnelStep||""}));};
+    const first=await ask(),requests=sent.filter(item=>item.path==="/api/v1/waitlist");
+    let body={};try{body=JSON.parse(requests[0]?.body||"{}");}catch(_){}
+    const listed=await target.request.get(fixture.account_base+"/api/v1/admin/waitlist",{headers:{Authorization:"Bearer "+fixture.account_admin_token}});
+    const entries=listed.status()===200?(await listed.json()).result.entries.filter(entry=>entry.email===address):[];
+    note("get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows",requests.length===1&&JSON.stringify(body)===JSON.stringify({record_type:"service_waitlist_request/v1",email:address,note:""})
+      &&!first.error&&first.message==="Thank you. We will email you a link to finish creating your account."&&!first.message.includes(address)&&first.current==="confirm"
+      &&entries.length===1&&entries[0].state==="waiting"&&!invitationWords.test(first.message),{first,requests:requests.length,entries:entries.length,status:listed.status()});
+    const second=await ask();
+    note("get_started_funnel_tells_a_second_request_from_the_same_address_that_it_is_registered",second.error&&second.message.startsWith("This address is already registered.")&&second.form&&!invitationWords.test(second.message),second);
   };
   const signedInFunnel=(credential,covered)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
     await target.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
     const facts=await funnelFacts(target);
-    if(covered){note("get_started_funnel_tells_an_invited_account_the_invitation_covers_it",facts.state==="plan"&&facts.title==="Your invitation covers Baltor Pro"&&!facts.subscribe
+    if(covered){note("get_started_funnel_tells_a_granted_account_that_its_plan_is_covered",facts.state==="plan"&&facts.title==="Your account covers Baltor Pro"&&!facts.subscribe&&!invitationWords.test(facts.words)
       &&facts.primaries.length===1&&facts.primaries[0].id==="funnel-setup-action"&&facts.primaries[0].href==="/setup",facts);return;}
     let link="";
     if(facts.subscribe){await target.click("#funnel-subscribe");
       await target.waitForFunction(()=>document.querySelector("#funnel-plan-message a")!==null||document.getElementById("funnel-plan-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});
       link=await target.evaluate(()=>document.querySelector("#funnel-plan-message a")?.href||"");}
-    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Baltor Pro"&&facts.subscribe&&facts.primaries.length===1
+    note("get_started_funnel_offers_checkout_to_an_account_without_paid_access",facts.state==="plan"&&facts.title==="Subscribe to Baltor Pro"&&facts.subscribe&&facts.primaries.length===1&&(await target.locator("#funnel-plan-text").textContent())===checkoutPlanText
       &&facts.primaries[0].id==="funnel-subscribe"&&facts.primaries[0].text==="Subscribe for $29 a month"&&link.startsWith("https://checkout.stripe.com/"),{...facts,link});
   };
   /* A scenario that needs a second visit opens a second context, as a person opening the link on another device would. */
@@ -2204,7 +2526,7 @@ try {
     sign_up:(target,note)=>signUpJourney(target,note),
     used_link:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>usedLink(second,note,journey));},
     recovery:async (target,note,mutation,tracker)=>{const journey=await signUpJourney(target,()=>{});await inSecondContext(mutation,tracker,second=>recoveryJourney(second,note,journey));},
-    funnel_open:funnelScenario(fixture.confirm_base,true),funnel_closed:funnelScenario(fixture.base,false),funnel_waitlist:funnelScenario(fixture.account_base,false,true),
+    funnel_open:funnelScenario(fixture.confirm_base,true),funnel_closed:funnelScenario(fixture.base,false),funnel_waitlist:funnelScenario(fixture.account_base,false,true),list_request:listRequest,
     invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
@@ -2223,11 +2545,16 @@ try {
     {name:"offer_payment_while_checkout_is_closed",scenario:"sign_up",path:"/assets/service.js",find:"(checkout ? funnelPlans.checkout : funnelPlans.unpaid)",replacement:"funnelPlans.checkout",expected:["get_started_funnel_offers_no_payment_while_checkout_is_closed"]},
     {name:"take_a_used_link_for_a_sign_in",scenario:"used_link",path:"/assets/service.js",find:"if (verified.error || !verified.data?.session) { showConfirmation(); message(\"confirm-message\", \"\"); return; }",replacement:"",expected:["a_used_link_says_so_plainly_and_offers_a_new_one"]},
     {name:"refuse_recovery_links",scenario:"recovery",path:"/assets/service.js",find:'const confirmTypes = ["signup", "recovery"];',replacement:'const confirmTypes = ["signup"];',expected:["recovery_reaches_the_same_choose_a_password_page"]},
-    {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'registrationOpen ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
-    {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'registrationOpen ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_waiting_list_are_closed"]},
+    {name:"never_offer_account_creation_on_the_funnel",scenario:"funnel_open",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'false ? "register" : "invite"',expected:["get_started_funnel_offers_account_creation_while_registration_is_open"]},
+    {name:"always_offer_account_creation_on_the_funnel",scenario:"funnel_closed",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'true ? "register" : "invite"',expected:["get_started_funnel_offers_sign_in_when_registration_and_the_request_list_are_closed"]},
+    {name:"ignore_the_request_list_on_the_funnel",scenario:"funnel_waitlist",path:"/assets/service.js",find:'(registrationOpen || waitingList) ? "register" : "invite"',replacement:'registrationOpen ? "register" : "invite"',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
+    {name:"bring_back_free_search_in_the_funnel_price_line",scenario:"funnel_waitlist",path:"/get-started",find:'subscribe to Baltor Pro for $29 a month and connect your harness.</p>',replacement:'subscribe to Baltor Pro for $29 a month and connect your harness. Search is free.</p>',expected:["get_started_funnel_takes_the_address_where_the_service_keeps_a_request_list"]},
+    {name:"send_no_address_to_the_request_list",scenario:"list_request",path:"/assets/service.js",find:'email:$("funnel-email").value.trim(),note:""',replacement:'email:"",note:""',expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
+    {name:"take_no_request_on_the_funnel",scenario:"list_request",path:"/assets/service.js",find:"const listed = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;",replacement:"const listed = false;",expected:["get_started_funnel_puts_the_address_on_the_request_list_and_says_a_link_follows"]},
     {name:"push_the_first_step_below_the_first_screen_open",scenario:"funnel_open",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_open_1440","get_started_funnel_first_step_fits_the_first_screen_open_390"]},
     {name:"push_the_first_step_below_the_first_screen_closed",scenario:"funnel_closed",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_closed_1440","get_started_funnel_first_step_fits_the_first_screen_closed_390"]},
-    {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_an_invited_account_the_invitation_covers_it"]},
+    {name:"push_the_first_step_below_the_first_screen_list",scenario:"funnel_waitlist",path:"/assets/service.css",find:".funnel-band{padding:64px",replacement:".funnel-band{padding-top:900px!important;padding:64px",expected:["get_started_funnel_first_step_fits_the_first_screen_list_1440","get_started_funnel_first_step_fits_the_first_screen_list_390"]},
+    {name:"ignore_where_paid_access_comes_from",scenario:"invited",path:"/assets/service.js",find:"funnelPlans[accessSource] ||",replacement:"",expected:["get_started_funnel_tells_a_granted_account_that_its_plan_is_covered"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
@@ -2247,51 +2574,47 @@ try {
     mutants.push({name:"signup_session_"+name,applied:mutationApplied,detected,required_checks:expected,failed_checks:failed,missed_checks:expected.filter(name=>!failed.includes(name))});
     check("signup_session_guard_removal_detected_"+name,detected,{failed});
   }
-  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
-     form leads the waiting list page, a page of its own again since September 23, 2026, which every page reaches through the one
-     primary action of the header, "Request an invitation" at /waitlist while account creation is closed. The Get started page
-     leads with a link to it. */
+  /* The request list is offered only where the service keeps one. The first service keeps none; the account service keeps one.
+     Since September 23, 2026 the list has no page of its own: /waitlist opens the Get started funnel as an older address, the
+     funnel's one form takes the address, the header's one primary action, "Get started", leads there, and the guide's lead links
+     to Get started. The form's own journey, the request, the record and the second request, is checked in the funnel above. */
   await page.setViewportSize({width:1440,height:1000});
-  await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#waitlist-state").textContent!=="Checking availability");
-  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator('[data-view="waitlist"]').isVisible()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#start-invite").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
+  const funnelAt=target=>target.evaluate(()=>({path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
+    state:document.getElementById("funnel")?.dataset.funnelState||"",field:Boolean(document.getElementById("funnel-email")?.getClientRects().length),
+    oldForm:Boolean(document.getElementById("waitlist-form")?.getClientRects().length)}));
+  const opensTheFunnel=(state,path,withField)=>state.path===path&&JSON.stringify(state.views)===JSON.stringify(["start"])&&state.title.endsWith("| Get started")&&state.field===withField
+    &&state.state===(withField?"register":"invite")&&!state.oldForm;
+  await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability");
+  const closedList=await funnelAt(page);
+  check("a_service_without_a_request_list_takes_no_address_at_the_older_address",opensTheFunnel(closedList,"/waitlist",false)&&await page.locator("#waitlist-discount").isHidden(),closedList);
   await page.goto(fixture.base+"/signup");
   check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
   await page.goto(fixture.account_base+"/pricing"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
   await page.locator("#header-primary").click();
-  const enteredFunnel=new URL(page.url()).pathname===accessPaths.closed&&await page.locator("#funnel-invite").isVisible();
-  if(enteredFunnel)await page.locator("#funnel-invite").click();
-  check("a_service_with_a_waiting_list_opens_the_invitation_form_from_the_header",enteredFunnel&&new URL(page.url()).pathname==="/waitlist"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
-  const invitationPage=async target=>target.evaluate(()=>({views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),title:document.title,
-    form:Boolean(document.querySelector('[data-view="waitlist"] #waitlist-form')?.getClientRects().length),formOnGetStarted:Boolean(document.querySelector('[data-view="setup"] #waitlist-form'))}));
-  const ownInvitationPage=state=>JSON.stringify(state.views)===JSON.stringify(["waitlist"])&&state.title.endsWith("| Request an invitation")&&state.form&&!state.formOnGetStarted;
+  await page.waitForFunction(()=>document.getElementById("funnel")?.dataset.funnelState==="register",null,{timeout:10000}).catch(()=>{});
+  const fromHeader=await funnelAt(page);
+  check("a_service_with_a_request_list_opens_the_account_form_from_the_header",opensTheFunnel(fromHeader,accessPaths.closed,true),fromHeader);
   await openGuide(page);
   const getStartedLead=await startLead(page);
-  check("the_get_started_page_links_to_the_invitation_page_when_the_service_keeps_a_list",sameLead(getStartedLead,"invite")&&await page.locator("#start-invite-link").getAttribute("href")==="/waitlist",getStartedLead);
-  await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form",{state:"visible"});
-  const ownPage=await invitationPage(page);
-  check("the_waiting_list_address_opens_its_own_page",new URL(page.url()).pathname==="/waitlist"&&ownInvitationPage(ownPage),ownPage);
+  check("the_guide_links_to_get_started_when_the_service_keeps_a_list",sameLead(getStartedLead,"invite")&&await page.locator("#start-invite-link").getAttribute("href")===accessPaths.closed,getStartedLead);
+  await page.goto(fixture.account_base+"/waitlist"); await page.waitForFunction(()=>document.getElementById("funnel")?.dataset.funnelState==="register",null,{timeout:10000}).catch(()=>{});
+  const waitlistAddressState=await funnelAt(page);
+  check("the_waiting_list_address_opens_the_get_started_funnel_with_its_form",opensTheFunnel(waitlistAddressState,"/waitlist",true),waitlistAddressState);
   {
-    let applied=false,problem="",own=true;
+    /* The removed-guard control: the page script routes /waitlist back to the old waiting list page. */
+    let applied=false,problem="",opens=true;
     try{const opened=await context.newPage();opened.on("pageerror",()=>{});
-      await opened.route(assetRoute("/assets/service.js",fixture.account_base),async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split('"/waitlist":"waitlist"').join('"/waitlist":"setup"');applied=changed!==source;await route.fulfill({response,body:changed});});
+      await opened.route(assetRoute("/assets/service.js",fixture.account_base),async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split('"/waitlist":"start"').join('"/waitlist":"waitlist"');applied=changed!==source;await route.fulfill({response,body:changed});});
       await opened.goto(fixture.account_base+"/waitlist");await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
-      own=ownInvitationPage(await invitationPage(opened));await opened.close();}catch(error){problem=safeError(error);}
-    const detected=applied&&!problem&&!own,name="send_the_waiting_list_address_back_to_the_get_started_page",required=["the_waiting_list_address_opens_its_own_page"];
-    mutants.push({name,applied,detected,required_checks:required,missed_checks:own?required:[],failed_checks:own?[]:required,...(problem?{problem}:{})});
+      opens=opensTheFunnel(await funnelAt(opened),"/waitlist",true);await opened.close();}catch(error){problem=safeError(error);}
+    const detected=applied&&!problem&&!opens,name="send_the_waiting_list_address_back_to_its_old_page",required=["the_waiting_list_address_opens_the_get_started_funnel_with_its_form"];
+    mutants.push({name,applied,detected,required_checks:required,missed_checks:opens?required:[],failed_checks:opens?[]:required,...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+name,detected,{applied,...(problem?{problem}:{})});
   }
-  check("invitation_page_check_rejects_the_get_started_page_and_a_form_on_it",!ownInvitationPage({...ownPage,views:["setup"]})&&!ownInvitationPage({...ownPage,formOnGetStarted:true})&&!ownInvitationPage({...ownPage,title:"Baltor | Get started"}));
+  check("older_address_check_rejects_the_old_page_the_guide_and_a_funnel_without_its_form",!opensTheFunnel({...waitlistAddressState,views:["waitlist"]},"/waitlist",true)
+    &&!opensTheFunnel({...waitlistAddressState,views:["setup"],title:"Baltor | Get set up"},"/waitlist",true)&&!opensTheFunnel({...waitlistAddressState,field:false,state:"invite"},"/waitlist",true)
+    &&!opensTheFunnel({...waitlistAddressState,oldForm:true},"/waitlist",true)&&opensTheFunnel(waitlistAddressState,"/waitlist",true));
   check("the_discount_is_named_only_where_checkout_takes_a_code",await page.locator("#waitlist-discount").isHidden(),{discount_code:(await (await page.request.get(fixture.account_base+"/api/v1/capabilities")).json()).result.billing.discount_code});
-  await page.fill("#waitlist-email","browser.request@example.invalid"); await page.fill("#waitlist-note","My agents rebuild the same checks on every task.");
-  await page.click("#waitlist-button"); await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.startsWith("Thank you"));
-  check("a_visitor_leaves_an_address_and_is_told_a_person_will_read_it",await page.locator("#waitlist-form").isHidden()&&(await page.locator("#waitlist-state").innerText())==="Request received"&&!(await page.locator("#waitlist-message").innerText()).includes("browser.request@example.invalid"));
-  const listed=await page.request.get(fixture.account_base+"/api/v1/admin/waitlist",{headers:{Authorization:"Bearer "+fixture.account_admin_token}});
-  const entries=listed.status()===200?(await listed.json()).result.entries:[];
-  check("the_address_the_visitor_typed_reached_the_service_record",listed.status()===200&&entries.length===1&&entries[0].email==="browser.request@example.invalid"&&entries[0].state==="waiting",{status:listed.status(),entries:entries.length});
-  await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form:not([hidden])");
-  await page.fill("#waitlist-email","browser.request@example.invalid"); await page.click("#waitlist-button");
-  await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.includes("already on the list"));
-  check("a_second_request_from_the_same_address_is_told_the_truth",await page.locator("#waitlist-form").isVisible());
   /* Browsing the four groups. The page is never allowed to agree with itself: every group, count and
      filtered list is compared with a real reply from the same service, read with the same credential
      through a separate request. The known-wrong cases sit beside the states they refuse. */

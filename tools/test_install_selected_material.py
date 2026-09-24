@@ -935,13 +935,26 @@ class InstallChecks(ServiceCase):
                         tool.registered_client_kinds()
                 self.assertEqual(refused.exception.code, "client_registry_unreadable")
 
+    def test_pi_places_skills_in_its_project_folder_and_the_baltor_harness_places_none(self):
+        pi = tool.layout_profile_for("pi")
+        self.assertEqual((pi.location_for("skill").directory_segments, pi.location_for("skill").file_name),
+                         ((".pi", "skills"), "SKILL.md"))
+        harness = tool.layout_profile_for("baltor-harness")
+        self.assertEqual(harness.native_roots(), ())
+        for kind in ("skill", "instruction_file", "reusable_code", "tool"):
+            with self.subTest(kind=kind):
+                with self.assertRaises(tool.InstallRefusal) as refused:
+                    harness.location_for(kind)
+                self.assertEqual(refused.exception.code, "kind_has_no_native_location")
+
     def test_client_kinds_come_from_the_recipes_registry(self):
         self.assertLessEqual(set(tool.CLIENT_LAYOUT_PROFILES), set(tool.registered_client_kinds()))
         # Every recipe client kind now carries a layout profile; a kind the
         # recipes registry does not name is refused before anything else.
         self.assertEqual(set(tool.CLIENT_LAYOUT_PROFILES), set(tool.registered_client_kinds()))
         with running_http(self.fixture) as (base, _service):
-            for kind in ("unheard-of", "gemini-cli", "pi"):
+            # Pi joined the registry on September 24, 2026, so a client the registry never named stands in for it.
+            for kind in ("unheard-of", "gemini-cli", "aider"):
                 with self.subTest(kind=kind):
                     with self.assertRaises(tool.InstallRefusal) as refused:
                         tool.InstallRequest(origin=base, key_variable=KEY_VARIABLE, client_kind=kind,

@@ -119,6 +119,76 @@ the server through the client's prompt. A missing-variable warning means the
 client process did not receive the variable. In a session, inspect `/mcp` to
 confirm that the tools are listed.
 
+### Pi
+
+Pi has no built-in Model Context Protocol client, so Baltor connects to Pi
+through a small Pi extension: one TypeScript file, served at
+[`/assets/pi/baltor.ts`](https://app.baltor.ai/assets/pi/baltor.ts). Pi runs
+every extension in `.pi/extensions` with your permissions and does not ask
+first, so read the file before you start Pi. It needs no other packages.
+
+```bash
+mkdir -p .pi/extensions
+curl -fsSL https://app.baltor.ai/assets/pi/baltor.ts -o .pi/extensions/baltor.ts
+```
+
+Create `.pi/baltor.json` beside it. It holds the name of the variable, never
+the token:
+
+```json
+{
+  "baltor": {
+    "url": "https://app.baltor.ai/mcp",
+    "token_env": "BALTOR_SERVICE_TOKEN"
+  }
+}
+```
+
+Check the connection from the terminal holding the environment variable:
+
+```bash
+pi -p --baltor-check
+```
+
+The check makes no model call and downloads nothing. Its last line says
+`Result: ready`. In a Pi session, the /baltor command runs the same check.
+The extension adds a search tool and a download tool. A download checks every
+file against its published SHA-256 digest before it writes anything, installs
+the skill in `.pi/skills` and never replaces a folder it did not install. Pi
+lists a new skill from the next session.
+
+### Baltor Harness
+
+The Baltor Harness is Baltor's own engine: the free, open source `loop-engine`
+command from this repository. It works through a task in small steps on the
+model you choose and keeps a record of every step. It does not search or
+download from Baltor by itself yet. Search and download with your token as
+[Searching and retrieving](service-searching-and-retrieving.md) shows, check
+each download's SHA-256 against its digest, and add the material to your task
+file.
+
+```bash
+python3 -m venv ~/.baltor-harness
+~/.baltor-harness/bin/pip install 'git+https://github.com/alisonjieli-png/loop-engine'
+export PATH="$HOME/.baltor-harness/bin:$PATH"
+loop-engine doctor
+```
+
+The first line of the answer should read `Loop Engine doctor: CONFIGURATION
+VALID`. This checks the installation only: it makes no model call and does not
+contact Baltor. Then run the task with the material in it, for example on
+Ollama Cloud with `OLLAMA_API_KEY` in your environment:
+
+```bash
+loop-engine solve --file task.md --ollama-api-key --model-route cloud.default --unattended --max-model-calls 60 --workspace baltor-run
+```
+
+`--workspace` must be an empty folder or one that does not exist yet. When the
+run ends it prints its output files; compare them with what you asked for.
+The engine's own verification is strict and can refuse a correct result, so
+check the output yourself. To run on a model on your own machine, follow the
+local engine's [installation guide](../../README.md#install).
+
 ## Check account, tools and material separately
 
 A configured server entry is not a completed handshake or a finished task.

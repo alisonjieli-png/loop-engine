@@ -19,8 +19,8 @@
   };
   // "/setup" opens the guide, Get set up, and "/connect" stays an alias for it, so older links and emails still work.
   // "/get-started" is the sign-up, registration and payment funnel.
-  // "/waitlist" opens the waiting list page, which holds the invitation form; the guide links to it.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/docs/getting-set-up":"setup", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"waitlist", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"waitlist", "/auth/callback":"login"};
+  // "/waitlist" is the funnel's older address, so earlier links and emails open the same journey.
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/docs/getting-set-up":"setup", "/how-it-works":"about", "/setup":"setup", "/connect":"setup", "/get-started":"start", "/use-cases":"use-cases", "/overnight":"overnight", "/efficiency":"efficiency", "/learning":"learning", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"start", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
@@ -43,7 +43,7 @@
   }
   const serviceName = document.title.split(" | ")[0];
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Request an invitation", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
+  const route = () => { const name = routeNames[location.pathname] || (location.pathname.startsWith("/docs/") ? "docs" : "home"); show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"The perfect harness setup for every task", "use-cases":"Use cases", overnight:"Solve complex problems overnight", efficiency:"More efficient operation", learning:"Learning and optimization, built in", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Documentation", about:"How it works", setup:"Get set up", waitlist:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service", start:"Get started", confirm:"Choose your password"}[name]; if (name === "docs") window.BaltorDocumentation?.show(location.pathname); };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -58,14 +58,14 @@
      state shows in the note under the hero action, in the plan's tag, in the closing note and in the panel that leads the guide. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Get started", href:"/get-started", note:"Account creation is open", tag:"Open to new accounts",
-          closing:"Create your account today. Search is free, and invited accounts stay free."},
-    waiting:{label:"Get started", href:"/get-started", note:"Invitation only while we open in small groups", tag:"Invitation only",
-             closing:"Request an invitation today. Invited accounts are free while we open in small groups."}};
+    open:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
+          closing:"Create your account and connect your harness in a few minutes."},
+    waiting:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
+             closing:"Create your account and connect your harness in a few minutes."}};
   const paymentStates = {
-    open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
-    invitation_only:{badge:"Invitation only", note:"Accounts open by invitation. Invited accounts stay free. A signed-in account can subscribe from its account page when checkout is available.", teaser:"Accounts open by invitation, and invited accounts stay free."},
-    closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+    open:{badge:"Available now", note:"Subscribe from your account page, and cancel any time.", teaser:"Cancel any time from your account page."},
+    invitation_only:{badge:"Available now", note:"Create your account, then subscribe from your account page. Cancel any time.", teaser:"Cancel any time from your account page."},
+    closed:{badge:"Baltor Pro", note:"Subscribe from your account page once your account is ready.", teaser:"Cancel any time from your account page."}};
   /* One public payment state from two reported facts. While account creation is closed the page says invitation only, whatever checkout reports,
      so it never offers the waiting list beside "Payment open". Payment is open only when account creation and checkout are both open.
      The account page keeps its own checkout and portal buttons, which follow the session options of the signed-in account. */
@@ -96,8 +96,8 @@
   const clientAccessStates = {
     open:{offer:"A personal key for each device, from your account page",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Keys issued by the person who runs the service; a key for each device from your account page is being prepared",
-            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
+    closed:{offer:"A key for each client you connect, issued to your account",
+            plan:"Every client you connect gets its own key, issued to your account."}};
   const applyClientAccessState = open => {
     const state = open === true ? clientAccessStates.open : clientAccessStates.closed;
     $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
@@ -289,7 +289,7 @@
     $("waiting-list-pending").hidden = open;
     // So does the pricing page's list of unfinished work: it names the form only while no list is offered.
     $("in-progress-waitlist").hidden = open;
-    $("waitlist-state").textContent = open ? "Open for requests" : "Not taking requests";
+    $("waitlist-state").textContent = open ? "Open" : "Not available";
     $("waitlist-discount").hidden = !open || value?.billing?.discount_code !== true;
   };
   $("waitlist-form").addEventListener("submit", async event => {
@@ -298,7 +298,7 @@
     // Answers the service can give this form. Anything else is reported as it
     // arrived, without guessing that the request was recorded.
     const answers = {waitlist_address_invalid:"That does not look like an email address we can write to. Check it and try again.",
-      waitlist_address_already_listed:"This address is already on the list. One request is enough, and a person will read it.",
+      waitlist_address_already_listed:"This address is already registered. Check your email for your link.",
       waitlist_address_has_account:"This address already has an account. Use sign-in instead.",
       waitlist_source_flooded:"Too many requests have come from this connection. Please try again later.",
       waitlist_unavailable:"This service is not taking requests right now. Nothing was recorded.",
@@ -310,8 +310,8 @@
       const value = await response.json();
       if (!response.ok) throw new Error(answers[value?.error?.code] || "Your request was not recorded. Please try again.");
       if (value.result?.state !== "waiting") throw new Error("Your request was not recorded. Please try again.");
-      $("waitlist-form").hidden = true; $("waitlist-state").textContent = "Request received";
-      message("waitlist-message", "Thank you. Your request is on the list and a person will read it. We do not promise a date, and we will only write to you about this.");
+      $("waitlist-form").hidden = true; $("waitlist-state").textContent = "Received";
+      message("waitlist-message", "Thank you. We will email you a link to finish creating your account, and we will only write to you about this.");
     } catch (error) { message("waitlist-message", error.message, true); }
     finally { busy = false; $("waitlist-button").disabled = false; }
   });
@@ -347,6 +347,30 @@
   });
   listenForSignUp("email-signup-form", "signup-email", "email-signup-button", "signup-message", () => {});
   listenForSignUp("funnel-signup-form", "funnel-email", "funnel-signup-button", "funnel-signup-message", () => { funnelSent = true; renderFunnel(); });
+  /* While account creation is closed, the Get started form still takes the address: the service keeps it on its request list,
+     and the link to finish creating the account follows by email. One form, one set of words, in every state. */
+  $("funnel-signup-form").addEventListener("submit", async event => {
+    event.preventDefault(); if (busy || registrationOpen) return;
+    const listed = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;
+    if (!listed) return;
+    busy = true; $("funnel-signup-button").disabled = true; message("funnel-signup-message", "Sending…");
+    const answers = {waitlist_address_invalid:"That does not look like an email address we can write to. Check it and try again.",
+      waitlist_address_already_listed:"This address is already registered. Check your email for your link.",
+      waitlist_address_has_account:"This address already has an account. Sign in instead.",
+      waitlist_source_flooded:"Too many requests have come from this connection. Please try again later.",
+      waitlist_unavailable:"Accounts cannot be created right now. Nothing was recorded.",
+      failed_attempt_limit_reached:"Too many refused attempts from this connection. Please try again later."};
+    try {
+      const response = await fetch("/api/v1/waitlist", {method:"POST",credentials:"omit",redirect:"error",cache:"no-store",
+        headers:{"Content-Type":"application/json"},body:JSON.stringify({record_type:"service_waitlist_request/v1",email:$("funnel-email").value.trim(),note:""})});
+      const value = await response.json();
+      if (!response.ok) throw new Error(answers[value?.error?.code] || "Nothing was recorded. Please try again.");
+      if (value.result?.state !== "waiting") throw new Error("Nothing was recorded. Please try again.");
+      message("funnel-signup-message", "Thank you. We will email you a link to finish creating your account.");
+      funnelSent = true; renderFunnel();
+    } catch (error) { message("funnel-signup-message", error.message, true); }
+    finally { busy = false; $("funnel-signup-button").disabled = false; }
+  });
   $("recovery-form").addEventListener("submit", async event => {
     event.preventDefault(); if (busy || identityConfiguration?.recovery_available !== true) return;
     busy = true; $("recovery-button").disabled = true; message("recovery-message", "Sending your link…");
@@ -416,27 +440,27 @@
      Where paid access comes from is read from the session record. The page never guesses it, and it offers no payment
      control unless the service reports checkout open. */
   const funnelPlans = {
-    operator_grant:{title:"Your invitation covers Baltor Pro", text:"There is nothing to pay while your invitation lasts. Search and downloads are open to this account.", covered:true},
+    operator_grant:{title:"Your account covers Baltor Pro", text:"There is nothing to pay on this account. Search and downloads are open.", covered:true},
     promotion_code:{title:"A promotion code covers Baltor Pro", text:"There is nothing to pay while the code lasts. Search and downloads are open to this account.", covered:true},
     subscription:{title:"You subscribe to Baltor Pro", text:"Manage or cancel the subscription from your account page.", covered:true},
-    checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Search stays free, and you can cancel from your account page.", covered:false, subscribe:true},
-    unpaid:{title:"Payment is not open yet", text:"Search is free. Subscribing opens here when payment does.", covered:false}};
+    checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
+    unpaid:{title:"Subscribe to Baltor Pro", text:"$29 a month. Subscribe from your account page.", covered:false}};
   const funnelOrder = ["account", "confirm", "password", "plan", "setup"];
   function renderFunnel() {
     const signedIn = Boolean(token), checkout = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.billing?.checkout === true;
     const waitingList = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;
     const plan = signedIn ? funnelPlans[accessSource] || (checkout ? funnelPlans.checkout : funnelPlans.unpaid) : null;
-    const state = signedIn ? "plan" : registrationOpen ? "register" : "invite", creating = signedIn || registrationOpen;
+    const state = signedIn ? "plan" : (registrationOpen || waitingList) ? "register" : "invite", creating = signedIn || registrationOpen || waitingList;
     $("funnel").dataset.funnelState = state;
     for (const panel of document.querySelectorAll("[data-funnel-panel]")) panel.hidden = panel.dataset.funnelPanel !== state;
     $("funnel-signin").hidden = signedIn || (!registrationOpen && !waitingList);
-    $("funnel-account-title").textContent = creating ? "Create your account" : waitingList ? "Get an invitation" : "Sign in";
-    $("funnel-account-note").textContent = creating ? "Your email address, nothing else" : waitingList ? "Accounts open in small groups" : "Use an existing account";
-    $("funnel-invite-title").textContent = waitingList ? "Request an invitation" : "Sign in to your account";
-    $("funnel-invite-note").textContent = waitingList ? "Accounts open in small groups. Leave your email address, and a person reads every request." : "Account creation is closed. Sign in if you already have an account.";
-    $("funnel-invite").href = waitingList ? "/waitlist" : "/login";
-    $("funnel-invite").dataset.page = waitingList ? "waitlist" : "login";
-    $("funnel-invite").textContent = waitingList ? "Request an invitation" : "Sign in";
+    $("funnel-account-title").textContent = creating ? "Create your account" : "Sign in";
+    $("funnel-account-note").textContent = creating ? "Your email address, nothing else" : "Use an existing account";
+    $("funnel-invite-title").textContent = "Sign in to your account";
+    $("funnel-invite-note").textContent = "Sign in with the account you already have.";
+    $("funnel-invite").href = "/login";
+    $("funnel-invite").dataset.page = "login";
+    $("funnel-invite").textContent = "Sign in";
     if (plan) {
       $("funnel-plan-title").textContent = plan.title; $("funnel-plan-text").textContent = plan.text;
       $("funnel-plan-step").textContent = plan.covered ? "Step 5 of 5" : "Step 4 of 5";
@@ -507,7 +531,7 @@
     const rows = usageItems(value), view = $("usage-view");
     $("usage").textContent = JSON.stringify(value, null, 2); $("usage-raw").hidden = false;
     if (!rows) { view.replaceChildren(element("p", "This service answered with a usage record this page was not written for, so no table is shown. The raw record is below.", "usage-note")); return; }
-    if (!rows.length) { view.replaceChildren(element("p", "No downloads are recorded for this account yet. Searching is free, and each item your tools download appears here.", "usage-empty")); return; }
+    if (!rows.length) { view.replaceChildren(element("p", "No downloads are recorded for this account yet. Each item your tools download appears here.", "usage-empty")); return; }
     const labels = ["Item", "Downloads", "Last used"], total = rows.reduce((sum, row) => sum + row.records, 0);
     const table = element("table", "", "usage-table"), head = document.createElement("thead"), heading = document.createElement("tr"), body = document.createElement("tbody");
     for (const label of labels) { const cell = element("th", label); cell.scope = "col"; heading.append(cell); }

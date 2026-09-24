@@ -6604,6 +6604,360 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-23
     expires_on: 2027-09-23
+  - finding_id: hardcoding.877376c9811cab94c0e27635
+    owner: src.loop_engine.core.service_runtime.web_assets.client-recipes.json:url
+    rationale: "Reviewed public source address a client recipe cites, shown as the recipe's Client documentation link. The page's recipe rule and the browser suite require an https address with no user name; the address is documentation for a person, not a runtime route or credential."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.9050b5a2b826fc88ff57ba83
+    owner: src.loop_engine.core.service_runtime.web_assets.client-recipes.json:url
+    rationale: "Reviewed public source address a client recipe cites, shown as the recipe's Client documentation link. The page's recipe rule and the browser suite require an https address with no user name; the address is documentation for a person, not a runtime route or credential."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.a6c193f21bfc7f0354c3eeab
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:url
+    rationale: "Default service address of the published Baltor extension for Pi, used only when the customer's .pi/baltor.json names none. The customer's configuration overrides it; the extension refuses a non-https address and never follows a redirect."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.7c4b81cfc009748885670ecc
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:url
+    rationale: "Default service address of the published Baltor extension for Pi, used only when the customer's .pi/baltor.json names none. The customer's configuration overrides it; the extension refuses a non-https address and never follows a redirect."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.e215d8a8beb39f18b3eab485
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.802ca022695a20a60e6b2266
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.4da903b019375ecec03f95ae
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.3b02c1a31a2fed6d40d60e90
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:type
+    rationale: "A TypeScript type annotation (string) in the download request of the published Baltor extension for Pi. It holds no credential; the token is read only from the environment variable the customer names."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.226ff20ead98fe297e056548
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.2e020de637b6563d5e017161
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.0760e70dfdf81e8cce5c5318
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.8c3128cab7304ffa98bf215f
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.fa1f20da307d778d48104ab6
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.d5c8f2f6847222abbc27bf24
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.9761cdf5008e1a499a8dbabe
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.e229912134309494d112ab75
+    owner: src.loop_engine.core.service_runtime.web_assets.pi.baltor.ts:record
+    rationale: "Template text in an error or status message of the published Baltor extension for Pi that names a versioned record type or a file name constant declared once at the top of the file. It is message wording, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.0d0f0a2e4e807345e437dd2f
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.2c14e640d4c4bcdca5917f2e
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.70ece0e7417241cf7397be1e
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.fd458471b96973413b9cb764
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.89be5ee84c31d10db63c8ff9
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.51652c3361f88a4d2ee96f55
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.2b095688e23f3c1699f55165
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.841c44e50dc69b5a75c42142
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.ecfa13afb1b95dffa01e2140
+    owner: tools.harness_idea_matrix.py:vocabulary
+    rationale: "Closed vocabulary of the idea matrix's occupation source (none, onet_pinned, hand_authored), validated where the matrix record is read. The matrix produces candidate ideas only; nothing it emits is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.b44a9d0a6744fb6e31006bb5
+    owner: tools.opencode_generation_lanes.py:url
+    rationale: "Declared provider endpoint or schema address of a governed OpenCode generation lane. The lanes produce candidates only, every call is recorded with a ceiling, and a lane that names an undeclared or local endpoint is refused before a process starts."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.7fc1401b0139658a1ef57e13
+    owner: tools.opencode_generation_lanes.py:credential_reference
+    rationale: "Name of the environment variable a generation lane passes through to its provider. The value is never written to a file or record; the Tactical key resolves through tools/operator_credentials.py."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.08bcf1eea08e35bb89e94ad4
+    owner: tools.opencode_generation_lanes.py:url
+    rationale: "Declared provider endpoint or schema address of a governed OpenCode generation lane. The lanes produce candidates only, every call is recorded with a ceiling, and a lane that names an undeclared or local endpoint is refused before a process starts."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.89a4fbb93cdf5abc6ef756a3
+    owner: tools.opencode_generation_lanes.py:credential_reference
+    rationale: "Name of the environment variable a generation lane passes through to its provider. The value is never written to a file or record; the Tactical key resolves through tools/operator_credentials.py."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.bab7b1b37ca2ca65680f7015
+    owner: tools.opencode_generation_lanes.py:field
+    rationale: "Field name and empty default read from the lane's declared provider record, where the key variable is looked up. It is a record field, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.a2242562158075cc860766a5
+    owner: tools.opencode_generation_lanes.py:field
+    rationale: "Field name and empty default read from the lane's declared provider record, where the key variable is looked up. It is a record field, not a deployment value."
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.490cc2b6f474d2933c87880e
+    owner: tools.opencode_generation_lanes.py:url
+    rationale: "Declared provider endpoint or schema address of a governed OpenCode generation lane. The lanes produce candidates only, every call is recorded with a ceiling, and a lane that names an undeclared or local endpoint is refused before a process starts."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.708b7027647e63dc1dd68c90
+    owner: tools.opencode_generation_lanes.py:credential_reference
+    rationale: "Name of the environment variable a generation lane passes through to its provider. The value is never written to a file or record; the Tactical key resolves through tools/operator_credentials.py."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.d1833565dece1b81407be089
+    owner: tools.opencode_generation_lanes.py:credential_reference
+    rationale: "Name of the environment variable a generation lane passes through to its provider. The value is never written to a file or record; the Tactical key resolves through tools/operator_credentials.py."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.30a50a469b44c6be3745c874
+    owner: tools.operator_credentials.json:credential_reference
+    rationale: "Environment variable name in the operator credential reference table, which maps each keyring entry to the variable a command receives. It is the approved secret infrastructure itself and holds no secret."
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.df4a2f4800f2701928b9337c
+    owner: tools.expand_occupation_inventory.py:url
+    rationale: "Pinned public O*NET database download and licence addresses that the occupation inventory expander reads, recorded with the release it names so the expansion can be reproduced. They are research sources, not a runtime route or credential."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.707de8082d4efeabcddf3d0e
+    owner: tools.expand_occupation_inventory.py:url
+    rationale: "Pinned public O*NET database download and licence addresses that the occupation inventory expander reads, recorded with the release it names so the expansion can be reproduced. They are research sources, not a runtime route or credential."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.8b2d5ab4880b009f01b07928
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.b6b23a0004cceb901aad1d8d
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.43f90f4f5ae01238e5003ecb
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.20e60f17dced1e7a859f2cb5
+    owner: tools.opencode_generation_lanes.py:url
+    rationale: "Public schema address declared by a generated plugin manifest kind. It identifies the file format the candidate follows; it is not a runtime route or credential."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.50e7b0a8469b8422aad8f4b6
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.1e87b424c583898f12d01689
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.5256bc49aec03d72eb737752
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.9d60bcac3d2095e07415d39a
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.e74dfa022f4816bd5a945a5c
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.8403c2c93bf42b2d6fe0d842
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.5b9a56d1cd82708032a67410
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.635b0f8929233585412da1be
+    owner: tools.opencode_generation_lanes.py:vocabulary
+    rationale: "Closed vocabulary of the harness file kinds a generation lane may produce (skill, subagent, hook, rules, workflow, plugin manifest, harness routing), validated where the lane reads its idea record. Lanes produce candidates only; nothing is approved or served without the independent review panel."
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.2f3f8ccc199ae4cb83141104
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.354e5ec0418a266e2425d707
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.4730d75532444a0a67292294
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.a082a4ac692444370d086c29
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.a31eb0e7cca7bffca5a1bcf7
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.abd304517b099caee81171fb
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.b22c695621402a6ad0aa336c
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.c22b7c6c78a0c80552f1e4d3
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.e276531bcf2f52ee33566837
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
+  - finding_id: hardcoding.fbb3e4c395461568d52333d6
+    owner: tools.research_source_watch.json:url
+    rationale: "Public project, registry and specification addresses in the research source watch list, which a recurring research job reads for news and releases with reports-only effect. They are sources to read, not runtime routes or credentials."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-24'
+    expires_on: '2027-09-24'
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23

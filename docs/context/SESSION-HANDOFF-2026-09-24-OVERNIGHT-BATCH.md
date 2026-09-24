@@ -58,12 +58,12 @@ artifact, like the smoke run recorded in
 
 | Lane | Provider | Model | Endpoint |
 |---|---|---|---|
-| lane-ollama-gpt-oss-20b | Ollama Cloud | gpt-oss:20b | https://ollama.com/v1 |
-| lane-ollama-gemma4-31b | Ollama Cloud | gemma4:31b | https://ollama.com/v1 |
-| lane-ollama-glm-53-flash | Ollama Cloud | glm-5.3-flash | https://ollama.com/v1 |
-| lane-ollama-kimi-k3 | Ollama Cloud | kimi-k3 | https://ollama.com/v1 |
-| lane-ollama-nemotron-30b | Ollama Cloud | nemotron-3-nano:30b | https://ollama.com/v1 |
-| lane-tactical-gemma4 | Tactical | gemma-4-coding-abliterated | https://ai.tacticalengineering.net:6969/v1 |
+| lane-ollama-gpt-oss-20b | Ollama Cloud | gpt-oss:20b | `https://ollama.com/v1` |
+| lane-ollama-gemma4-31b | Ollama Cloud | gemma4:31b | `https://ollama.com/v1` |
+| lane-ollama-glm-53-flash | Ollama Cloud | glm-5.3-flash | `https://ollama.com/v1` |
+| lane-ollama-kimi-k3 | Ollama Cloud | kimi-k3 | `https://ollama.com/v1` |
+| lane-ollama-nemotron-30b | Ollama Cloud | nemotron-3-nano:30b | `https://ollama.com/v1` |
+| lane-tactical-gemma4 | Tactical | gemma-4-coding-abliterated | `https://ai.tacticalengineering.net:6969/v1` |
 
 No local model is installed, started or called. Any lane naming a local
 endpoint is refused before a process starts. The Tactical key is never

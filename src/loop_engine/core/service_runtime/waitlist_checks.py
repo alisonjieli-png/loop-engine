@@ -559,25 +559,39 @@ def _invitation_section(page):
     return page.split(marker, 1)[1].split("</section>", 1)[0].lower() if marker in page else ""
 
 
+def _funnel_card(page):
+    """The card of the Get started funnel, the one form that takes a new address since September 23, 2026; empty when there is none."""
+    marker = '<div class="funnel-card" id="funnel-card">'
+    return page.split(marker, 1)[1].split('<ol class="funnel-steps"', 1)[0].lower() if marker in page else ""
+
+
 def page_checks(check, _root):
     """The public words: no release stage, and no promise of a date."""
     page = read_packaged_asset("index.html").decode("utf-8")
     section = _invitation_section(page)
     view = lambda name: page.split('<section data-view="' + name + '"', 1)[-1].split("<section data-view=", 1)[0] if '<section data-view="' + name + '"' in page else ""
     invite = view("setup").split('<section class="start-invite"', 1)[-1].split("</section>", 1)[0] if '<section class="start-invite"' in view("setup") else ""
-    check("the_invitation_form_leads_the_waiting_list_page_and_get_started_links_to_it",
-          bool(section) and '<section class="panel waitlist-card"' in view("waitlist") and 'id="waitlist-form"' in view("waitlist")
-          and 'href="/waitlist"' in invite and 'data-start-access="operator"' in view("setup") and 'id="waitlist-form"' not in view("setup"))
+    # The owner, September 23, 2026: one way in, "Get started" is the sign-up and pay funnel, and nothing reads as
+    # invitation only. The funnel's form takes every new address; while accounts cannot be created at once it keeps the
+    # address on this list. /waitlist, the older address, opens the same funnel, and the guide links to the funnel.
+    funnel, script = _funnel_card(page), read_packaged_asset("service.js").decode("utf-8")
+    register = funnel.split('data-funnel-panel="register"', 1)[1].split("data-funnel-panel=", 1)[0] if 'data-funnel-panel="register"' in funnel else ""
+    check("the_get_started_funnel_takes_every_new_address_and_the_guide_and_the_older_address_lead_to_it",
+          'id="funnel-signup-form"' in register and 'href="/get-started"' in invite and 'data-start-access="operator"' in view("setup")
+          and 'id="waitlist-form"' not in view("setup") and 'id="funnel-signup-form"' not in view("setup")
+          and '"/waitlist":"start"' in script and '"/get-started":"start"' in script)
     check("KNOWN_WRONG_the_invitation_card_reader_finds_nothing_on_a_page_without_the_card",
           _invitation_section(page.replace('<section class="panel waitlist-card"', '<section class="moved-away"')) == "")
-    found = sorted(word for word in FORBIDDEN_PAGE_WORDS if word in section)
+    check("KNOWN_WRONG_the_funnel_reader_finds_nothing_on_a_page_without_the_funnel",
+          _funnel_card(page.replace('<div class="funnel-card" id="funnel-card">', '<div class="moved-away">')) == "")
+    found = sorted(word for word in FORBIDDEN_PAGE_WORDS if word in section or word in funnel)
     check("the_waiting_list_words_name_no_release_stage_and_promise_no_date", not found)
     check("KNOWN_WRONG_the_word_guard_finds_a_promise_when_the_words_carry_one",
           sorted(word for word in FORBIDDEN_PAGE_WORDS
                  if word in "we will invite you within days of the beta starting") == ["beta", "days", "within"])
-    check("the_form_asks_for_an_address_and_an_optional_note_and_says_a_person_decides",
-          'id="waitlist-email"' in section and 'id="waitlist-note"' in section
-          and "optional" in section and "a person" in section)
+    check("the_funnel_asks_only_for_an_address_and_names_the_terms_and_the_privacy_notice",
+          'id="funnel-email"' in register and 'type="email"' in register and "<textarea" not in register
+          and 'href="/terms"' in register and 'href="/privacy"' in register)
     check("the_served_page_and_the_address_table_agree",
           WAITLIST_PAGE in WEB_ASSETS and WEB_ASSETS[WAITLIST_PAGE][0] == "index.html"
           and '"' + WAITLIST_PAGE + '"' in read_packaged_asset("service.js").decode("utf-8"))
@@ -593,7 +607,6 @@ def page_checks(check, _root):
     check("KNOWN_WRONG_the_hidden_offer_guard_finds_an_offer_that_is_shown_at_once",
           _hidden_until_the_service_answers(
               '<section class="start-invite" id="start-invite" data-start-state="invite">')["start-invite"] is False)
-    script = read_packaged_asset("service.js").decode("utf-8")
     check("the_page_shows_each_offer_only_from_the_record_the_service_publishes",
           "waitlist_available" in script and "discount_code" in script and "registration_available" in script
           and all(name in script for name in ("signup-waitlist-link", "waitlist-form", "waitlist-closed",

@@ -1,0 +1,15 @@
+{
+  "added": 0,
+  "bodies_written": 43,
+  "bundle_digest": "10e2ea539a72b62d2115e98a7dbb3d347340f7ab54929a5f4a93208dad199807",
+  "changed": 43,
+  "content_digest": "5408d39a5cbb04fd528a2b7ef4e3d3479b554a88abed02cf515b504d1460161a",
+  "durable_withdrawals": 0,
+  "items": 43,
+  "operation": "publish",
+  "previous_release_id": "c824a1d2e2228d2caf9005057efd1085277393391d65d8a6dbdbf4743aeb6753",
+  "record_type": "service_catalogue_operation/v1",
+  "release_id": "74d3c075b0447ea128cbc9797265ed5cee2246d67b45d166b586aa9691c56a75",
+  "state": "published",
+  "withdrawn": 0
+}

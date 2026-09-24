@@ -5,6 +5,7 @@ import json
 import os
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 import sys
 
@@ -93,8 +94,9 @@ class LaneSetupChecks(unittest.TestCase):
                                  "{env:%s}" % DECLARED_ENDPOINTS[provider]["key_environment"])
 
     def test_environment_is_scrubbed_and_isolated(self):
-        os.environ["SNEAKY_SECRET"] = "leaked"
-        try:
+        # The lane passes its provider's key through by name. The test supplies a stand-in value, so it runs the
+        # same on a machine that holds no real key, such as continuous integration, where it failed on September 24, 2026.
+        with mock.patch.dict(os.environ, {"SNEAKY_SECRET": "leaked", "OLLAMA_API_KEY": "stand-in-value"}):
             with tempfile.TemporaryDirectory() as temporary:
                 lane = _lane("ollama-cloud", "gpt-oss:20b", Path(temporary) / "lane")
                 lane.write_config()
@@ -103,9 +105,7 @@ class LaneSetupChecks(unittest.TestCase):
                 self.assertEqual(environment["OPENCODE_CONFIG_DIR"],
                                  str(lane.config_directory))
                 self.assertEqual(environment["XDG_DATA_HOME"], str(lane.data_home))
-                self.assertIn("OLLAMA_API_KEY", environment)
-        finally:
-            del os.environ["SNEAKY_SECRET"]
+                self.assertEqual(environment["OLLAMA_API_KEY"], "stand-in-value")
 
     def test_lane_roots_do_not_share_directories(self):
         with tempfile.TemporaryDirectory() as temporary:

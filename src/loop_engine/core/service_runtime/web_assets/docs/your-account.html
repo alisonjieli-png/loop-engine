@@ -1,4 +1,4 @@
-<p>Open <a href="/get-started">Get started</a> for the current access path. When signup is open, enter your email, open the link and choose a password on the confirmation page. Otherwise follow the configured invitation path or sign in to an existing account. Manage your account at <code>/account</code>.</p>
+<p>Open <a href="/get-started">Get started</a> to create your account. Enter your email, open the link and choose a password on the confirmation page. While the service cannot create accounts at once, the same form keeps your address and we email you the link when your account can be created. Manage your account at <code>/account</code>.</p>
 <p>Your browser sign-in and your coding tool's client token are different credentials. The browser manages your account. The client token authorizes the specific service operations its scopes allow.</p>
 <h2 id="create-a-client-token">Create a client token</h2>
 <p>On <code>/account</code>, open Your client tokens and create one for each client or machine. Give it a label you will recognize. Copy the secret when it is shown; later listings contain its identity and state, not the secret.</p>
@@ -8,7 +8,7 @@
 <p>The service rechecks authorization when it releases the result. An unknown or inaccessible identity returns <code>item_unavailable</code>; it is not listed as material belonging to another account.</p>
 <h3 id="entitlements">Entitlements</h3>
 <table><thead><tr><th>Value</th><th>Access</th></tr></thead><tbody><tr><td><code>metadata</code></td><td>Search, discovery, listing and manifests.</td></tr><tr><td><code>bodies</code></td><td>Metadata and permitted body downloads.</td></tr></tbody></table>
-<p>A subscription or operator grant supplies the account entitlement. Creating a token does not upgrade it. Invited access can be free through an operator grant.</p>
+<p>A subscription or operator grant supplies the account entitlement. Creating a token does not upgrade it. An operator grant can make Baltor Pro free for an account.</p>
 <h3 id="scopes">Scopes</h3>
 <table><thead><tr><th>Scope</th><th>Service operation</th></tr></thead><tbody><tr><td><code>provisioning:metadata</code></td><td>Search, discover, list and manifest.</td></tr><tr><td><code>provisioning:read</code></td><td>Body reads and downloads.</td></tr><tr><td><code>usage:read</code></td><td>Your account's usage.</td></tr><tr><td><code>billing:manage</code></td><td>Authorized checkout and customer portal operations.</td></tr><tr><td><code>access:manage</code></td><td>Operator access administration.</td></tr></tbody></table>
 <p>A personal client token is limited by the account, browser session and host policy. It cannot create more client tokens through the customer management endpoint; that operation requires a browser session.</p>
@@ -19,7 +19,7 @@
 <h2 id="confirm-which-account-a-client-uses">Confirm which account a client uses</h2>
 <p>With the environment variable from the setup guide available to your terminal:</p>
 <pre><code class="language-bash">curl -sS -H "Authorization: Bearer $BALTOR_SERVICE_TOKEN" https://app.baltor.ai/api/v1/session</code></pre>
-<p>The <code>service_session/v1</code> result contains <code>principal</code>, <code>authentication_mode</code>, <code>token_expires_at</code> and <code>access_source</code>. The source explains whether a subscription, operator invitation or promotion currently covers the account. Check the principal's <code>tenant_id</code>, <code>entitlement</code> and scopes before using a client on a shared machine. Keep credentials out of logs and support messages.</p>
+<p>The <code>service_session/v1</code> result contains <code>principal</code>, <code>authentication_mode</code>, <code>token_expires_at</code> and <code>access_source</code>. The source is <code>subscription</code>, <code>operator_grant</code>, <code>promotion_code</code> or <code>none</code>, and says what currently covers the account. Check the principal's <code>tenant_id</code>, <code>entitlement</code> and scopes before using a client on a shared machine. Keep credentials out of logs and support messages.</p>
 <h2 id="subscription-and-help">Subscription and help</h2>
-<p>Baltor Pro is $29 a month. Invited accounts are free through their grant. When available, the account page opens checkout or the customer portal. Account creation and checkout are separate capabilities; available checkout does not mean public registration is open.</p>
+<p>Baltor Pro is $29 a month. Accounts with an operator grant use it free. When available, the account page opens checkout or the customer portal. Account creation and checkout are separate capabilities; available checkout does not mean public registration is open.</p>
 <p>Model access and provider charges remain yours. See <a href="/docs/usage-and-what-you-pay-for">Usage and what you pay for</a> for download records, or <a href="/docs/troubleshooting">Troubleshooting</a> for a refusal.</p>

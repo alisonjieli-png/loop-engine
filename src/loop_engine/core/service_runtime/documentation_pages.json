@@ -14,13 +14,13 @@
   },
   "serving-and-connections": {
    "body_address": "/assets/docs/serving-and-connections.html",
-   "body_digest": "aaf654fc1a525d2226993480030fada2e56f3b9a9b996950e8b09e5f9fde7334",
+   "body_digest": "204a96911f7009b8278729c4bd36c4df960a858fee325a81ffcc7543e2068325",
    "heading": "Serving and connections",
    "id": "serving-and-connections",
    "kind_line": "Kind: technical reference for the published protocol, direct interface and refusal codes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-serving-and-connections.md",
-   "source_digest": "06ede1c1f54e0bba36f5b9d1aa2fac692fb3d4914ccb152c6de434e9539928a9",
+   "source_digest": "f4263ccc837db9ae79a4915b4186cfd0b55b2471dc86e973dc9b71ac382491f0",
    "title": "Serving and connections"
   },
   "troubleshooting": {
@@ -36,13 +36,13 @@
   },
   "usage-and-what-you-pay-for": {
    "body_address": "/assets/docs/usage-and-what-you-pay-for.html",
-   "body_digest": "91d87cb7d51ee4e7498f391346035cac9011803c04634c4c0ba19522868d7ca6",
+   "body_digest": "e687fd65f59fa8a161bd8d7c1f589af119a02b5ac31d6aaad6d18a374dc4d112",
    "heading": "Usage and what you pay for",
    "id": "usage-and-what-you-pay-for",
    "kind_line": "Kind: customer guide to the plan, download usage and uncertain outcomes.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-usage-and-what-you-pay-for.md",
-   "source_digest": "18dc7fc3ea511f42f4b49a0f5eeab5418cfca983523af27db5061fd3290787b1",
+   "source_digest": "0f3e71cccf7ca4bf6cc66aab4954bb70ba852dcb809583b996b7b686a11acdf4",
    "title": "Usage and what you pay for"
   },
   "what-baltor-is": {
@@ -58,13 +58,13 @@
   },
   "your-account": {
    "body_address": "/assets/docs/your-account.html",
-   "body_digest": "248f86b38e32a5acd70a6d8c2bd0d2de380c47bea225c6673a802278b45412c8",
+   "body_digest": "8f717149850e8bfb43d915d698503d9b74612b85461c00f7ebed9aaca460ec18",
    "heading": "Your account",
    "id": "your-account",
    "kind_line": "Kind: customer guide to sign-in, personal client tokens and access decisions.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-your-account.md",
-   "source_digest": "90e68f2f8704ddb0a8382f364a3db7edf6a45152303335a33f03f2cabbb7a0f5",
+   "source_digest": "0e8f4f701ff533ef5d3b7e9c5695651b75f7f7ff30d00212a2cabc4fbd2ff697",
    "title": "Your account"
   }
  },

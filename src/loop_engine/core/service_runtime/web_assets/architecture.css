@@ -531,3 +531,78 @@ main:has(> [data-view="waitlist"]:not([hidden])){max-width:none;padding:0}
 .start-invite .button{align-self:flex-start}
 @media(max-width:900px){.waitlist-layout{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.waitlist-layout{padding-top:1.25rem;padding-bottom:3rem}.waitlist-card,.waitlist-after{padding:1.25rem}.waitlist-card textarea{height:4.5rem}}
+
+/* The homepage and use-case pages of September 23, 2026. The owner: the hero should say at once that Baltor is the library of
+   everything a harness can use, placed where the harness reads it; the main pain is gathering, vetting and organising those
+   files. Three use cases follow, each with its own page. Band padding lands on 64 pixels on a desktop and 40 on a phone, the
+   hero holds its copy and the demonstration side by side from the top, and the only dark band is the closing action. */
+.home-band.band-hero{padding-top:clamp(2rem,3.34vw,3rem);padding-bottom:clamp(2.5rem,4.45vw,4rem)}
+.band-hero .hero.product-hero{grid-template-columns:minmax(0,1fr);gap:2rem;align-items:start}
+@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:2.5rem clamp(2.5rem,4vw,4rem)}
+  .band-hero .hero.product-hero>.step-demo{grid-column:auto;margin-top:0}}
+.band-hero .hero-copy{gap:1.25rem}
+.band-hero .hero-copy>.eyebrow{margin:0}
+.band-hero .hero.product-hero h1{font-size:clamp(2.5rem,4.2vw,3.75rem);line-height:1.05}
+.band-hero .hero-paths{display:flex;flex-wrap:wrap;gap:.25rem 1rem;color:var(--subtle);font-size:.875rem}
+.band-hero .hero-paths strong{color:var(--ink);font-weight:600}
+.band-hero .hero-meta{display:flex;flex-direction:column;gap:.875rem;padding-top:1rem;border-top:1px solid var(--line-strong)}
+.band-hero .hero-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .6rem;margin:0;color:var(--muted);font-size:.9375rem}
+.band-hero .hero-price strong{color:var(--ink);font-weight:650}
+.band-hero .hero-price-amount{color:var(--ink);font-weight:650}
+.hero-harnesses{display:flex;flex-wrap:wrap;gap:.5rem;list-style:none;margin:0;padding:0}
+.hero-harnesses li{display:inline-flex;align-items:center;min-height:32px;padding:0 .75rem;border:1px solid var(--line-strong);border-radius:999px;background:var(--paper);color:var(--ink);font-size:.8125rem;font-weight:600}
+/* The demonstration beside the headline: its three parts stack in one column, whatever the window width. */
+.step-demo.is-compact .step-demo-head{padding:.875rem 1.125rem}
+.step-demo.is-compact .step-demo-parts{display:flex;flex-direction:column;gap:.875rem;padding:1rem 1.125rem}
+@media(min-width:1100px){.step-demo.is-compact .step-demo-parts{display:flex;grid-template-columns:none;grid-template-areas:none}}
+.step-demo.is-compact .step-demo-results{margin-top:.625rem}
+.step-demo.is-compact .step-demo-results li{padding:.625rem .875rem}
+.step-demo.is-compact .step-demo-tree{font-size:.75rem;line-height:1.6}
+/* The library band. */
+.library-facts .text-link{align-self:flex-start}
+/* Three use cases on the homepage and on their hub page. Three cards stay in one row or one column, never two and one. */
+.use-cases{display:flex;flex-direction:column;gap:2rem}
+.use-case-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
+.use-case{display:flex;flex-direction:column;gap:.75rem;min-width:0;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.use-case h3,.use-case h2{margin:0;font-size:1.25rem;line-height:1.3;letter-spacing:-.01em}
+.use-case p{margin:0;color:var(--muted);font-size:1rem;line-height:1.6}
+.use-case .text-link,.use-case .button{margin-top:auto;align-self:flex-start}
+.use-case-icon{flex-shrink:0;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:980px){.use-case-grid{grid-template-columns:minmax(0,1fr)}.use-case{padding:1.25rem}}
+/* How it works sits on a light band now. Its code sample keeps the dark code ground, which a light band may hold. */
+.home-band:not(.band-night) .how-band{gap:2rem}
+.home-band:not(.band-night) .how-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+.home-band:not(.band-night) .how-step{background:var(--ground);border-color:var(--border)}
+.home-band:not(.band-night) .how-step h3{color:var(--ink)}
+.home-band:not(.band-night) .how-step p:not(.status-tag){color:var(--muted)}
+.home-band:not(.band-night) .how-index{color:var(--accent)}
+.home-band:not(.band-night) .how-connect-copy{background:var(--ground);border-color:var(--border)}
+.home-band:not(.band-night) .how-connect-copy h3{color:var(--ink)}
+.home-band:not(.band-night) .how-connect-copy p{color:var(--muted)}
+.home-band:not(.band-night) .how-connect-copy code{color:var(--ink)}
+.home-band:not(.band-night) .how-connect-copy .text-link{margin-top:auto}
+.home-band:not(.band-night) .how-code{margin:0;padding:1.5rem 1.75rem;max-height:none;background:var(--code-bg);border:1px solid var(--code-rule);border-radius:var(--radius-card);color:var(--code-ink);font-family:var(--font-mono);font-size:.875rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}
+.how-option{display:flex;flex-direction:column;gap:.35rem;padding:1rem 1.125rem;border:1px solid var(--border);border-radius:12px;background:var(--paper)}
+.how-connect-copy .how-option h3{margin:0;font-size:1rem}
+.how-connect-copy .how-option p{margin:0;font-size:.9375rem}
+@media(max-width:760px){.home-band:not(.band-night) .how-steps{grid-template-columns:minmax(0,1fr)}}
+/* The closing band's second action reads on the dark ground. */
+.band-night .closing-actions .button.secondary.on-night{background:transparent;color:#FFFFFF;border-color:var(--night-rule)}
+.band-night .closing-actions .button.secondary.on-night:hover{border-color:var(--night-accent)}
+/* The use-case pages: the white introduction band, then sections in two columns on a wide screen. */
+.use-case-page .page-intro h1{max-width:20ch;text-wrap:balance}
+/* Long words and button labels wrap at 320 pixels with text enlarged to 200 percent, as on the homepage and the pricing page. */
+.use-case-page{overflow-wrap:anywhere}
+.use-case-page .button{max-width:100%;white-space:normal;text-align:center}
+.use-case-page .page-intro .lede{max-width:47.5rem}
+.use-case-page .page-intro .actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.use-case-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+.use-case-body>section{display:flex;flex-direction:column;gap:.625rem;min-width:0;padding:1.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.use-case-body>section:first-child:nth-last-child(3){grid-column:1/-1}
+.use-case-body h2{margin:0;font-size:1.25rem;line-height:1.3;letter-spacing:-.01em}
+.use-case-body p{margin:0;color:var(--muted);line-height:1.6;max-width:68ch}
+.use-case-body .check-list{display:flex;flex-direction:column;gap:.625rem;color:var(--muted)}
+.use-case-steps{display:flex;flex-direction:column;gap:.625rem;margin:0;padding-left:1.25rem;color:var(--muted);line-height:1.6}
+.use-case-steps strong{color:var(--ink)}
+.use-case-grid.is-page .use-case{padding:1.75rem}
+@media(max-width:860px){.use-case-body{grid-template-columns:minmax(0,1fr)}.use-case-body>section{padding:1.25rem}}

@@ -1,0 +1,95 @@
+{
+  "record_type": "release_public_browser_summary/v1",
+  "release_revision": "231f51bb1facab517fbe915b08ea9ac85f913347",
+  "checker_sha256": "7f92bca993702aa8e7f60dca8e42c80d07e4f0053a5cfcd6a1d04fa1b37d1c41",
+  "maximum_concurrent_browser_jobs": 2,
+  "hosts": [
+    {
+      "host": "baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-baltor.ai.json",
+      "sha256": "4881a9935532f2175ea4f7bcf72db8f982c09aaebd5447b118d0cd65956e41ec"
+    },
+    {
+      "host": "www.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-www.baltor.ai.json",
+      "sha256": "60e0227df048c495ec985ea2b286f1cf157fb669ba600bacc28a196271292a5f"
+    },
+    {
+      "host": "app.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-app.baltor.ai.json",
+      "sha256": "6ef5ebf87238befa8a50df4b3a750bcda631e6083f5dd1b160484788e29b19c3"
+    },
+    {
+      "host": "baltor-pilot.fly.dev",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-baltor-pilot.fly.dev.json",
+      "sha256": "0848b0d330606d1129295b0766a5fd0338a7e5eb1a0b868793cb5f0fb4e12b91"
+    },
+    {
+      "host": "demo.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-demo.baltor.ai.json",
+      "sha256": "005a97529677bb05ad5144924195552d28e1897f7b6ab25bc60d12872503aa88"
+    },
+    {
+      "host": "examples.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-examples.baltor.ai.json",
+      "sha256": "cfd8bf49ea226214fd27f0b85fdbb210f9b8216f498ec776b82a05dd44efb54d"
+    },
+    {
+      "host": "docs.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-docs.baltor.ai.json",
+      "sha256": "a57cc9359b6fd8c4fd26a3d50ca0838ed655d07b63f33f3d768a52b6793da811"
+    },
+    {
+      "host": "status.baltor.ai",
+      "passed": 132,
+      "total": 132,
+      "all_passed": true,
+      "errors": [],
+      "external": [],
+      "file": "browser-status.baltor.ai.json",
+      "sha256": "80a78876c088f5ee7ee44095a45e78415821261ca3c90ac37d21351a008c365b"
+    }
+  ],
+  "passed": 1056,
+  "total": 1056,
+  "all_passed": true,
+  "service_credentials_used": false,
+  "accounts_created": false,
+  "emails_sent": false,
+  "deployment_changes": false
+}

@@ -1,6 +1,6 @@
 {
   "record_type": "website_client_recipes/v2",
-  "reviewed_at": "2026-09-20",
+  "reviewed_at": "2026-09-24",
   "credential_variable": "BALTOR_SERVICE_TOKEN",
   "revocation_note": "If you created this token on your Account page, open Account, find it under Your client tokens and select Revoke. If your operator gave you the token, ask your operator to revoke it. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.",
   "recipes": [
@@ -70,6 +70,45 @@
       "version_note": "Documented project configuration with environment variable expansion; native end-to-end qualification is pending. Check your installed version with claude --version.",
       "removal_note": "After the token is revoked, delete the baltor entry from .mcp.json and clear BALTOR_SERVICE_TOKEN from your environment.",
       "source_url": "https://code.claude.com/docs/en/mcp"
+    },
+    {
+      "id": "pi",
+      "name": "Pi",
+      "format": "json",
+      "configuration_location": "A .pi/baltor.json file in your project folder, next to the Baltor extension file .pi/extensions/baltor.ts",
+      "configuration_note": "Pi has no built-in Model Context Protocol client, so Baltor connects through a small Pi extension. Save the extension this website serves at /assets/pi/baltor.ts as .pi/extensions/baltor.ts in your project folder, and read it first: Pi runs every extension in that folder with your permissions. Then create this file beside it. This file holds the name of the variable, never the token. The extension adds two tools, baltor_search and baltor_download. A download checks the published SHA-256 digest before it writes anything, then installs the skill in .pi/skills.",
+      "configuration": {
+        "baltor": {
+          "url": "{{ENDPOINT}}",
+          "token_env": "BALTOR_SERVICE_TOKEN"
+        }
+      },
+      "verification_command": "pi -p --baltor-check",
+      "verification_note": "Run this command in your project folder, in the terminal where BALTOR_SERVICE_TOKEN is set. It makes no model call. It shows whether the service answered, which account the token belongs to, and each installed Baltor skill with its digest check and whether Pi's skill loader accepts it. The last line says Result: ready. In a Pi session, enter /baltor for the same check.",
+      "version_note": "Checked end to end with Pi 0.73.1 and Gemma 4 31B through Ollama Cloud on September 23, 2026: the model found and installed a Baltor skill with the two tools, and a new Pi session loaded that skill and used it. Check your installed version with pi --version.",
+      "removal_note": "After the token is revoked, delete .pi/extensions/baltor.ts and .pi/baltor.json, and clear BALTOR_SERVICE_TOKEN from your environment. Installed skills stay in .pi/skills until you delete them. Their install records are in .pi/baltor/installed.",
+      "source_url": "https://pi.dev/docs/latest/extensions"
+    },
+    {
+      "id": "baltor-harness",
+      "name": "Baltor Harness",
+      "format": "json",
+      "configuration_location": "No configuration file yet. The Baltor Harness steps in the linked guide use these values to search and download with your token, or use them with the engine's protocol client in Python.",
+      "configuration_note": "The Baltor Harness runs your task on your own model in small steps. It does not search or download from Baltor by itself yet: search and download with your token, add the downloaded material to your task file, then run loop-engine solve. The same address and variable work with the protocol client that ships with the engine (McpServerSpec, installed with loop-engine[integrations]). Keep the token in your environment, never in a file.",
+      "configuration": {
+        "mcp_servers": {
+          "baltor": {
+            "transport": "streamable_http",
+            "url": "{{ENDPOINT}}",
+            "credential_env": "BALTOR_SERVICE_TOKEN"
+          }
+        }
+      },
+      "verification_command": "loop-engine doctor",
+      "verification_note": "This command checks the installation only. It does not contact Baltor and makes no model call. To check the library connection, search once with your token, download one item and compare its SHA-256 with the body_digest that the search returned. The two must be equal.",
+      "version_note": "Works with one manual step. Checked on September 23, 2026 with loop-engine 0.1.0 from GitHub main: install, doctor, the Ollama Cloud route cloud.default, search, download with a digest check, and a task that used the downloaded item all ran. The engine does not search or download from Baltor by itself yet. Check your installed version with pip show loop-engine.",
+      "removal_note": "After the token is revoked, clear BALTOR_SERVICE_TOKEN from your environment, delete the baltor entry wherever you copied these values, and delete downloaded material you no longer need. To remove the engine, delete its virtual environment and the ~/.loop-engine folder that holds its run records.",
+      "source_url": "https://github.com/alisonjieli-png/loop-engine/blob/main/docs/guides/service-getting-set-up.md#baltor-harness"
     }
   ]
 }

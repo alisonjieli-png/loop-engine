@@ -1,0 +1,9 @@
+[
+  {
+    "machine": "83733ea7779068",
+    "state": "started",
+    "image": "sha256:76088e33805ca933ade44ac6629e20b4b2a22ded0201c034b95fee481ead931a",
+    "release": "22",
+    "region": "iad"
+  }
+]

@@ -45,8 +45,14 @@ WEB_ASSETS = {
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
+    # The three hero use cases the owner named on September 23, 2026, and their hub page.
+    "/use-cases": ("index.html", HTML_MEDIA_TYPE), "/overnight": ("index.html", HTML_MEDIA_TYPE),
+    "/efficiency": ("index.html", HTML_MEDIA_TYPE), "/learning": ("index.html", HTML_MEDIA_TYPE),
     "/waitlist": ("index.html", HTML_MEDIA_TYPE),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
+    # The Baltor extension for Pi, one TypeScript file the Pi recipe tells a customer to save in .pi/extensions.
+    # It is served as text so a browser shows it for reading before it is saved.
+    "/assets/pi/baltor.ts": ("pi/baltor.ts", "text/plain; charset=utf-8"),
     "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
     "/assets/service.css": ("service.css", "text/css"),
     "/assets/architecture.css": ("architecture.css", "text/css"),
