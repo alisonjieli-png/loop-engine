@@ -3085,7 +3085,7 @@ try {
     {name:"never_state_the_founding_offer",scenario:"founding_open",path:"/assets/service.js",
      find:"const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;",replacement:"const foundingOpen = false;",
      expected:["pricing_and_get_started_state_the_founding_offer_while_places_remain"]},
-    {name:"claim_two_model_families_for_review",scenario:"review_explained",path:"/security",find:"at least three model families",replacement:"at least two model families",
+    {name:"claim_three_model_families_for_review",scenario:"review_explained",path:"/security",find:"at least two model families",replacement:"at least three model families",
      expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"hide_that_a_first_release_reviewer_shared_the_authors_model_family",scenario:"review_explained",path:"/security",
      find:" One of those reviewers came from the same model family as the model that wrote the items.",replacement:"",expected:["how_review_works_states_only_what_the_review_records_hold"]},
