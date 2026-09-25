@@ -73,6 +73,7 @@ jobs:
             ${{ runner.temp }}/mcp-directory-state/build-report.json
             src/loop_engine/core/service_runtime/web_assets/directory
             src/loop_engine/core/service_runtime/web_assets/directory.html
+            src/loop_engine/core/service_runtime/public_lists/directory.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -81,7 +82,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          data="src/loop_engine/core/service_runtime/web_assets/directory src/loop_engine/core/service_runtime/web_assets/directory.html"
+          data="src/loop_engine/core/service_runtime/web_assets/directory src/loop_engine/core/service_runtime/web_assets/directory.html src/loop_engine/core/service_runtime/public_lists/directory.json"
           if git diff --quiet -- $data; then
             echo "The directory data did not change."
             exit 0

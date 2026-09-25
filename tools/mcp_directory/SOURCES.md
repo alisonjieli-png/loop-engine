@@ -45,7 +45,16 @@ verified against the files of a repository.
   `tools/resources/mcp-directory-categories.json`.
 - The commercial relationship of every row is `none`. The record and its rules
   are in `src/loop_engine/core/service_runtime/commercial_relationship.py`.
-  Ranking, ordering, filtering and inclusion never read it.
+  Ranking, ordering, filtering and inclusion never read it. The labels and
+  sentences are the ones the owner approved on September 24, 2026: a paid
+  link is labelled Paid link, an ad Ad in a band headed Ads, and Baltor's own
+  service is labelled as such.
+- Every outbound link of a row goes through the service's counted redirect,
+  `/out/directory/<link>/<row>`, which answers with the address the link
+  table `src/loop_engine/core/service_runtime/public_lists/directory.json`
+  holds and keeps one count per link per day, read from the path alone
+  (`public_links.py`). The owner approved aggregate link counting in the
+  privacy notice changes of September 24, 2026.
 
 ## Refresh the data
 
