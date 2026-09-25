@@ -13,6 +13,10 @@ on:
         description: For deployment, repeat the approved FLY_APP name
         type: string
         default: ''
+      revision:
+        description: For deployment, a full commit identity on main whose checks passed; empty means the head of main
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -31,6 +35,7 @@ jobs:
     env:
       OPERATION: ${{ inputs.operation }}
       APP_CONFIRMATION: ${{ inputs.app_confirmation }}
+      RELEASE_REVISION: ${{ inputs.revision || github.sha }}
       FLY_ORG: ${{ vars.FLY_ORG }}
       FLY_APP: ${{ vars.FLY_APP }}
       FLY_PRIMARY_REGION: ${{ vars.FLY_PRIMARY_REGION }}
@@ -72,16 +77,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          [[ "${RELEASE_REVISION}" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          # The owner, September 25, 2026: make releases "more flexible, reasonable". The released revision must be on
+          # main and have passed its checks, but main may move on while it is released: newer commits go out next time.
           current="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          [[ "${current}" == "${GITHUB_SHA}" ]] || exit 1
-          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?branch=main&head_sha=${GITHUB_SHA}&status=success&per_page=100" \
-            | jq -e --arg sha "${GITHUB_SHA}" --arg repo "${GITHUB_REPOSITORY}" \
+          on_main="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${RELEASE_REVISION}...${current}" --jq '.status')"
+          [[ "${on_main}" == "identical" || "${on_main}" == "ahead" ]] || exit 1
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?branch=main&head_sha=${RELEASE_REVISION}&status=success&per_page=100" \
+            | jq -e --arg sha "${RELEASE_REVISION}" --arg repo "${GITHUB_REPOSITORY}" \
               'any(.workflow_runs[]; .head_sha == $sha and .head_branch == "main" and .conclusion == "success" and .head_repository.full_name == $repo and (.event == "push" or .event == "workflow_dispatch"))' >/dev/null
 
       - name: Check out the approved source
         if: inputs.operation == 'deploy'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: ${{ inputs.revision || github.sha }}
           persist-credentials: false
 
       - name: Install the checked Fly command-line release
@@ -130,12 +140,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          image="loop-engine-service:${GITHUB_SHA}"
+          image="loop-engine-service:${RELEASE_REVISION}"
           docker build --file Dockerfile.service --tag "${image}" .
           python3 tools/check_fly_service_container.py --image "${image}" \
             --output "${RUNNER_TEMP}/fly-service-check.json"
 
-      - name: Refuse a stale deployment after the build
+      - name: Refuse a revision that left main during the build
         if: inputs.operation == 'deploy'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -143,7 +153,9 @@ jobs:
         run: |
           set -euo pipefail
           current="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
-          [[ "${current}" == "${GITHUB_SHA}" ]] || exit 1
+          on_main="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${RELEASE_REVISION}...${current}" --jq '.status')"
+          [[ "${on_main}" == "identical" || "${on_main}" == "ahead" ]] || exit 1
+          [[ "$(git rev-parse HEAD)" == "${RELEASE_REVISION}" ]] || exit 1
 
       - name: Publish and deploy the exact tested image
         if: inputs.operation == 'deploy'
@@ -155,8 +167,8 @@ jobs:
           set -euo pipefail
           install -d -m 700 "${DOCKER_CONFIG}"
           flyctl auth docker
-          image="registry.fly.io/${FLY_APP}:${GITHUB_SHA}"
-          docker tag "loop-engine-service:${GITHUB_SHA}" "${image}"
+          image="registry.fly.io/${FLY_APP}:${RELEASE_REVISION}"
+          docker tag "loop-engine-service:${RELEASE_REVISION}" "${image}"
           docker push "${image}"
           exact="$(docker image inspect "${image}" --format '{{index .RepoDigests 0}}')"
           [[ "${exact}" =~ ^registry\.fly\.io/${FLY_APP}@sha256:[0-9a-f]{64}$ ]] || exit 1
