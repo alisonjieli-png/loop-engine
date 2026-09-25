@@ -90,9 +90,9 @@
     waiting:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
              closing:"Search the whole library from the harness you already use."}};
   const paymentStates = {
-    open:{badge:"Available now", note:"Subscribe from your account page, and cancel any time.", teaser:"Cancel any time from your account page."},
-    invitation_only:{badge:"Available now", note:"Create your account, then subscribe from your account page. Cancel any time.", teaser:"Cancel any time from your account page."},
-    closed:{badge:"Baltor Pro", note:"Subscribe from your account page once your account is ready.", teaser:"Cancel any time from your account page."}};
+    open:{note:"Subscribe from your account page, and cancel any time.", teaser:"Cancel any time from your account page."},
+    invitation_only:{note:"Create your account, then subscribe from your account page. Cancel any time.", teaser:"Cancel any time from your account page."},
+    closed:{note:"Subscribe from your account page once your account is ready.", teaser:"Cancel any time from your account page."}};
   /* One public payment state from two reported facts. While account creation is closed the page says invitation only, whatever checkout reports,
      so it never offers the waiting list beside "Payment open". Payment is open only when account creation and checkout are both open.
      The account page keeps its own checkout and portal buttons, which follow the session options of the signed-in account. */
@@ -123,7 +123,7 @@
   };
   const applyPaymentState = name => {
     const state = paymentStates[name] || paymentStates.closed;
-    $("pricing-state").textContent = state.badge; $("pricing-payment-state").textContent = state.note;
+    $("pricing-payment-state").textContent = state.note;
     $("pricing-teaser-note").textContent = state.teaser;
   };
   const clientAccessStates = {

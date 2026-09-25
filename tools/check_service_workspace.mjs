@@ -1615,14 +1615,15 @@ try {
     await opened.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
     return {page:opened,state};
   };
-  const paymentState=async opened=>{await headerLink(opened,"pricing");return {badge:await opened.locator("#pricing-state").innerText(),shown:await opened.locator("#pricing-payment-state").innerText()};};
+  const paymentState=async opened=>{await headerLink(opened,"pricing");return {badges:await opened.locator(".plan-card .section-heading .badge").count(),shown:await opened.locator("#pricing-payment-state").innerText()};};
   /* Payment wording follows two reported facts, in the words of September 23, 2026. While account creation is closed the pricing
      view asks for the account first, whatever checkout reports; with account creation and checkout both open it says to subscribe
      from the account page; with account creation open and no checkout it offers no payment. */
-  const paymentWords={accountFirst:{badge:"Available now",note:"Create your account, then subscribe from your account page. Cancel any time."},
-    open:{badge:"Available now",note:"Subscribe from your account page, and cancel any time."},
-    closed:{badge:"Baltor Pro",note:"Subscribe from your account page once your account is ready."}};
-  const samePayment=(payment,want)=>payment.badge===want.badge&&payment.shown===want.note;
+  const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
+    open:{note:"Subscribe from your account page, and cancel any time."},
+    closed:{note:"Subscribe from your account page once your account is ready."}};
+  /* The owner retired status tags on September 23, 2026, so the plan card carries no badge in any payment state. */
+  const samePayment=(payment,want)=>payment.badges===0&&payment.shown===want.note;
   /* The personal-key wording is published in two places. Both follow the reported capability; neither is written as a fact in the page. */
   const keyWording={
     open:{offer:"A personal key for each device, from your account page",
@@ -1996,19 +1997,19 @@ try {
      is read by its id from the served page itself, so a changed attribute order cannot hide a changed word. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
   const servedDefaults=markup=>page.evaluate(markup=>{const doc=new DOMParser().parseFromString(markup,"text/html"),text=id=>doc.getElementById(id)?.textContent.replace(/\s+/g," ").trim()??null,hero=doc.getElementById("hero-primary");
-    return {"pricing-state":text("pricing-state"),"pricing-payment-state":text("pricing-payment-state"),"pricing-teaser-note":text("pricing-teaser-note"),"hero-access-note":text("hero-access-note"),
+    return {"pricing-payment-state":text("pricing-payment-state"),"pricing-teaser-note":text("pricing-teaser-note"),"hero-access-note":text("hero-access-note"),
       "home-plan-access":text("home-plan-access"),"closing-note":text("closing-note"),"offer-usage-keys":text("offer-usage-keys"),"plan-keys-detail":text("plan-keys-detail"),
       "start-access":doc.getElementById("start-access")?.dataset.startAccess??null,"hero-primary":hero?[hero.getAttribute("href"),hero.dataset.accessState,hero.querySelector("[data-access-label]")?.textContent.trim()]:null};},markup);
-  const carefulDefaults={"pricing-state":paymentWords.closed.badge,"pricing-payment-state":paymentWords.closed.note,"pricing-teaser-note":"Cancel any time from your account page.","hero-access-note":accessWords.note,
+  const carefulDefaults={"pricing-payment-state":paymentWords.closed.note,"pricing-teaser-note":"Cancel any time from your account page.","hero-access-note":accessWords.note,
     "home-plan-access":accessWords.tag,"closing-note":accessWords.closing,"offer-usage-keys":keyWording.closed.offer,"plan-keys-detail":keyWording.closed.plan,"start-access":"operator","hero-primary":[accessPaths.closed,"waiting",accessLabels.closed]};
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=(found,markup)=>[...Object.entries(carefulDefaults).filter(([id,want])=>JSON.stringify(found[id])!==JSON.stringify(want)).map(([id])=>id+" is served as "+JSON.stringify(found[id])+" and the careful state is "+JSON.stringify(carefulDefaults[id])),
     ...(unsettled.test(markup)?["an unsettled placeholder"]:[])];
   const servedFound=await servedDefaults(servedHome);
   check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedFound,servedHome).length===0,{problems:carefulProblems(servedFound,servedHome)});
-  const wrongMarkup=servedHome.replace(/(id="pricing-state"[^>]*>)[^<]*/,"$1Checking payment").replace(/(id="pricing-payment-state"[^>]*>)[^<]*/,"$1Checking whether payment is open.");
+  const wrongMarkup=servedHome.replace(/(id="pricing-payment-state"[^>]*>)[^<]*/,"$1Checking whether payment is open.");
   const wrongFound=await servedDefaults(wrongMarkup);
-  check("careful_default_check_rejects_a_served_page_that_never_settles",wrongMarkup!==servedHome&&carefulProblems(wrongFound,wrongMarkup).filter(problem=>/^pricing-state |^pricing-payment-state |unsettled/.test(problem)).length===3,{problems:carefulProblems(wrongFound,wrongMarkup)});
+  check("careful_default_check_rejects_a_served_page_that_never_settles",wrongMarkup!==servedHome&&carefulProblems(wrongFound,wrongMarkup).filter(problem=>/^pricing-payment-state |unsettled/.test(problem)).length===2,{problems:carefulProblems(wrongFound,wrongMarkup)});
   /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
   const namedRule=(path,name)=>{const found=readFileSync(resolve(root,path),"utf8").match(new RegExp("^\\s*const "+name+"=(\\/.+\\/i);$","m"));return found?found[1]:"";};
   const ruleSource=path=>namedRule(path,"internalTerms");

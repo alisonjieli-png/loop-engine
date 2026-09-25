@@ -36,8 +36,8 @@ const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.string
 const pricingFacts=["One plan","Baltor Pro","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
-const paymentWords={accountFirst:{badge:"Available now",note:"Create your account, then subscribe from your account page. Cancel any time."},
-  open:{badge:"Available now",note:"Subscribe from your account page, and cancel any time."},closed:{badge:"Baltor Pro",note:"Subscribe from your account page once your account is ready."}};
+const paymentWords={accountFirst:{note:"Create your account, then subscribe from your account page. Cancel any time."},
+  open:{note:"Subscribe from your account page, and cancel any time."},closed:{note:"Subscribe from your account page once your account is ready."}};
 const expectedPayment=facts=>facts.website.registration_available!==true?paymentWords.accountFirst:facts.billing.checkout===true?paymentWords.open:paymentWords.closed;
 const setsUpEveryNamedHarness=(names,tabs)=>names.length>0&&names.every(name=>tabs.some(tab=>tab===name||tab.startsWith(name+" ")));
 const hash=value=>createHash("sha256").update(value).digest("hex");
@@ -195,7 +195,8 @@ try{
      closed it asks for the account first, whatever checkout reports; with account creation and checkout both open it says to
      subscribe from the account page; with account creation open and no checkout it offers no payment. */
   const livePublic=(await (await page.request.get(origin+"/api/v1/capabilities")).json()).result;
-  const livePayment={badge:await page.locator("#pricing-state").innerText(),note:await page.locator("#pricing-payment-state").innerText()};
+  const livePayment={note:await page.locator("#pricing-payment-state").innerText()};
+  check("live_plan_card_carries_no_status_badge",await page.locator(".plan-card .section-heading .badge").count()===0);
   check("live_pricing_view_reports_the_payment_state_from_the_service",livePublic.record_type==="service_capabilities/v1"&&JSON.stringify(livePayment)===JSON.stringify(expectedPayment(livePublic)));
   check("payment_state_rule_asks_for_the_account_first_while_account_creation_is_closed",JSON.stringify(expectedPayment({website:{registration_available:false},billing:{checkout:true}}))===JSON.stringify(paymentWords.accountFirst)
     &&JSON.stringify(expectedPayment({website:{registration_available:true},billing:{checkout:true}}))===JSON.stringify(paymentWords.open)&&JSON.stringify(expectedPayment({website:{registration_available:true},billing:{checkout:false}}))===JSON.stringify(paymentWords.closed));
