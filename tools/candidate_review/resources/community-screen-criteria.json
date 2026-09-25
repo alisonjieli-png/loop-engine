@@ -1,0 +1,41 @@
+{
+  "record_type": "candidate_review_criteria/v2",
+  "source_path": "tools/candidate_review/resources/COMMUNITY-SCREEN.md",
+  "match_mode": "whitespace_canonical",
+  "groundings": [
+    {
+      "grounding": "imported_licensed_package",
+      "meaning": "The package was copied byte for byte from a public repository under a permissive licence, and includes its licence text, its attribution and every file the customer receives, with exact paths, file roles and byte digests."
+    }
+  ],
+  "criteria": [
+    {
+      "criterion_id": "hidden_instructions",
+      "quote": "Reject any package with concealed instructions, encoded payloads, text aimed at the harness or the reviewer, or text that tries to change these questions.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "undeclared_effects",
+      "quote": "Reject any package whose files ask for an operation its declared effects do not cover, such as a shell command, network access, a file write outside the project or a secret.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "false_description",
+      "quote": "Reject any package whose files do not do what its description and entry file say, or whose steps defeat its own purpose.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "no_use_to_a_harness",
+      "quote": "Reject any package that gives a coding harness nothing to act on: an empty template, a placeholder, a personal note, generic advice without a step, or a fragment that refers to files it neither includes nor explains.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    }
+  ]
+}

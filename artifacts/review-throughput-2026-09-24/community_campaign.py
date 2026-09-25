@@ -29,7 +29,7 @@ sys.path[:0] = [str(ROOT / "tools"), str(ROOT / "src"), str(ROOT)]
 
 from candidate_review import calibration as calibration_module  # noqa: E402
 from candidate_review import configuration as config  # noqa: E402
-from candidate_review import engines, imported, imported_profile, native, native_profile  # noqa: E402
+from candidate_review import engines, imported, imported_profile, native, native_profile, screen_profile  # noqa: E402
 from candidate_review.ledger import ReviewLedger  # noqa: E402
 from candidate_review.imported_calibration import IMPORTED_DEFAULT_SET, ImportedCalibrationSet  # noqa: E402
 from candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet  # noqa: E402
@@ -41,17 +41,27 @@ REVIEWER = "claude_code.subscription"
 BATCH = 12
 
 
-def _profile(catalogue_folder: Path):
-    """The imported reader and profile for a licensed import review export, the original ones otherwise."""
+CONTENT_PROFILES = ("full", "screen")
+
+
+def _profile(catalogue_folder: Path, content_profile: str = "full"):
+    """The imported reader and profile for a licensed import review export, the original ones otherwise.
+
+    ``screen`` selects the four-question Community screen (roadmap S-6.199) for an imported catalogue;
+    it is refused for an original catalogue, whose screen is not written yet."""
+    if content_profile not in CONTENT_PROFILES:
+        raise SystemExit(f"content profile is one of {CONTENT_PROFILES}")
     if imported.is_imported_catalogue(catalogue_folder):
-        return imported.ImportedCatalogue, imported_profile
+        return imported.ImportedCatalogue, (screen_profile if content_profile == "screen" else imported_profile)
+    if content_profile == "screen":
+        raise SystemExit("the Community screen is written for imported catalogues only")
     return native.NativeCatalogue, native_profile
 
 
-def _build(catalogue_folder: Path, ledger: Path, authorized: bool, population_size: int):
+def _build(catalogue_folder: Path, ledger: Path, authorized: bool, population_size: int, content_profile: str = "full"):
     base = config.PanelConfiguration.from_dict(json.loads(
         (ROOT / "tools/candidate_review/resources/panel.json").read_text(encoding="utf-8")))
-    profile = _profile(catalogue_folder)[1]
+    profile = _profile(catalogue_folder, content_profile)[1]
     configuration = profile.configuration(base, population_size=population_size)
     criteria, instructions = profile.resources()
     resolver = None
@@ -168,9 +178,10 @@ def calibrate(options) -> dict:
 
 def review(options) -> dict:
     """Every eligible candidate that passed the prechecks, asked of the reachable family in batches of 12."""
-    catalogue = _profile(options.catalogue)[0].load(options.catalogue, ROOT)
+    catalogue = _profile(options.catalogue, options.content_profile)[0].load(options.catalogue, ROOT)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
-                                                          options.authorize_model_calls, len(catalogue.identities()))
+                                                          options.authorize_model_calls, len(catalogue.identities()),
+                                                          options.content_profile)
     identities = _identities(options, catalogue)
     requests = tuple(catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
                      for identity in identities)
@@ -220,6 +231,8 @@ def main(argv=None) -> int:
             command.add_argument("--identities-file", type=Path)
             command.add_argument("--call-ceiling", type=int, required=True)
             command.add_argument("--token-ceiling", type=int, default=20_000_000)
+            command.add_argument("--content-profile", choices=CONTENT_PROFILES, default="full",
+                                 help="full asks the written imported criteria; screen asks the four Community screen questions.")
     options = parser.parse_args(argv)
     print(json.dumps({"prechecks": prechecks, "calibrate": calibrate, "review": review}[options.command](options),
                      sort_keys=True))
