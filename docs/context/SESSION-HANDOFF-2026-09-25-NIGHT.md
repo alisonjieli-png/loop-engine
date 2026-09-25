@@ -12,8 +12,9 @@ remains the task authority.
 | Fact | State at the end of the session |
 |---|---|
 | Fly release 35 | `2cc06eb7`, image `sha256:2778dce4…`, live 22:22 UTC: the imported-package review reader (S-6.196) and the wording reconciliation (S-6.181). Record [`pilot-release-35.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-35.json). |
-| Fly release 36 | started by the train for `cd079477` (the request screening station, the text model engine, the decision red team and the conformance manifest); its record is the next session's first check if the train's log at `~/.le-ci-tmp/release-36-train.log` does not say it is live. |
-| Catalogue | release `c7208dc8…` since 22:35 UTC: 316 packages (42 Verified, 274 Community, 223 of them imported), published without a redeploy; the customer retrieval check passed 6 of 6 ([record](../../artifacts/community-release-2-2026-09-25/README.md)). The host file's `license_policy` accepts MIT, Apache-2.0, BSD, ISC, CC0 and CC-BY since the release 35 restart. |
+| Fly release 36 | `cd079477`, image `sha256:b1198bff…`, live 23:23 UTC: the request screening station, the text model engine kind, the rules engine's screening answerer, the gateway's credential passthrough and the decision red team; nothing a visitor sees changed. Record [`pilot-release-36.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-36.json). |
+| Catalogue | release `11a2974d…` since 23:22 UTC: 1,629 packages (42 Verified, 1,587 Community, 1,536 of them imported), published without a redeploy after Tactical reviewed the rest of import batch 1 (1,313 approved, 46 rejected in 115 calls); the customer retrieval check passed 6 of 6 ([record](../../artifacts/community-release-3-2026-09-25/README.md)). Before it, release `c7208dc8…` (316 packages) from 22:35 UTC ([record](../../artifacts/community-release-2-2026-09-25/README.md)). The host file's `license_policy` accepts MIT, Apache-2.0, BSD, ISC, CC0 and CC-BY since the release 35 restart. |
+| The four-question screen | measured on the 240-package pilot: it approved 7 of the 10 packages the full imported review rejected, so the one call before publication asks the written criteria; recorded on main `ba0d6245` in the decision row, the plan record, the screen sheet and S-6.199. |
 | Public base | `https://baltor.ai` since the release 34 restart. |
 | Revenue | 0 paying subscribers, 0 customers, 2 checkout sessions started and none finished, 18 accounts (9 confirmed), measured with a counts-only script through the operator credentials. |
 
@@ -50,36 +51,36 @@ remains the task authority.
 
 ## Running unattended at the end of the session
 
-- The Tactical review of the remaining 1,376 precheck-passed packages of
-  batch 1 (`~/.le-ci-tmp/imported-calibration/batch001-rest.log`, ledger
-  `~/baltor-library/reviewed-2026-09-25/imported-batch-001/ledger-tactical.jsonl`,
-  identities `identities-batch001-rest.txt`). When it ends: write the
-  reviewed folder with `tools/write_reviewed_catalogue.py --identities-file`,
-  combine, bundle with the accepted licence list, publish as
-  community-release-3 through `baltor-private/tools/publish_catalogue.sh`,
-  wait 75 seconds, run the live retrieval check with a read-only imported
-  item and a fresh request identity, record it.
-- The release 36 train and the browser nightly (run 36199031805) on
-  `cd079477`.
+- The daily job on import batch 2 (2,000 packages, moved to
+  `~/baltor-library/review-batches/2026-09-26`):
+  `REPOSITORY=/home/username/.le-import-review-20260925 baltor-private/tools/daily_library_release.sh 2026-09-26`,
+  log `~/.le-ci-tmp/daily-2026-09-26/job3.log`, journal
+  `~/baltor-library/daily/2026-09-26/journal.jsonl`. Its stages are export
+  (skipped, the export exists), prechecks (done), calibrate, review (about
+  135 Tactical calls, 2.5 hours), write, combine (the folder list
+  `release-folders/reviewed-folders.txt` names the three earlier reviewed
+  folders), bundle. It stops before publishing: rerun it with `--publish`
+  after reading `daily/2026-09-26/counts.json` and the writer report; the
+  publish stage then uploads, publishes, waits, runs the retrieval check and
+  rolls back by itself on a failure. Then install the cron entry every six
+  hours. Two defects were fixed tonight before it ran: a symlinked export
+  folder is refused (`native_root_invalid`), and the exclusion reasons must
+  carry no spaces.
 
 ## Next steps, in order
 
-1. Record release 36 (`pilot-release-36.json`, its README, the client and
-   server map) and update the board.
-2. Publish community-release-3 from tonight's batch review; record it.
-3. Measure the four-question screen against the pilot's ten rejections on
-   Tactical (`community_campaign.py review --content-profile screen`
-   on the same 240 identities into a separate ledger); ship it as the
-   Community screen only if it rejects every one.
-4. Dry-run `baltor-private/tools/daily_library_release.sh 2026-09-26`
-   (export, prechecks, calibrate, review, write, combine, bundle), then
-   `--publish`, then the cron entry every six hours (S-6.197).
-5. Build the report route, flag records and withdrawal rules (S-6.199),
-   then the serving measurement at 1,000, 5,000 and 10,000 (S-6.203).
-6. Continuous integration sharding and the pre-push hook (S-6.200); the
+1. Publish the daily job's batch 2 result after a look at its counts, record
+   it, install the cron entry (S-6.197).
+2. Build the report route, flag records and withdrawal rules (S-6.199),
+   then the serving measurement at 1,000, 5,000 and 10,000 (S-6.203); the
+   live service already serves 1,629 with the view current.
+3. Continuous integration sharding and the pre-push hook (S-6.200); the
    page and demo generators (S-6.201) starting with the red-team page on
    its own hostname; the quickstart nightly checks (S-6.202); the weekly
    number (S-6.204).
+4. Jev runs when a TypeSafe credential is in the environment as
+   `TYPESAFE_API_KEY`; an Ollama Cloud model when the weekly allowance
+   returns; Codex reviews from September 29.
 
 ## Traps found tonight
 
