@@ -44,7 +44,7 @@ STUDIES = ROOT / "case-studies"
 #: The results record whose design names, for each family, the items its material arms placed.
 STUDY_RESULTS = "data_cleanup_results/v1"
 STAGES = (("search", "recorded"), ("download", "recorded"), ("folder", "illustration"))
-LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Example layout"}
+LABEL_WORDS = {"recorded": "Real results from the library", "illustration": "Example layout"}
 #: The status words the owner removed from the homepage on September 23, 2026. No part of the demonstration says one.
 RETIRED_STATUS = re.compile(r"being built|being prepared|\bplanned\b|available now|coming soon", re.IGNORECASE)
 #: The address the served homepage writes into its connection entry. Once the page script has checked the

@@ -382,7 +382,7 @@ const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:[
    manifest, read from the source tree, and the order of the search is compared with a real search of that library by
    tools/test_homepage_demonstration.py. */
 const demoStages=[["search","recorded"],["download","recorded"],["folder","illustration"]];
-const demoLabelWords={recorded:"Recorded from this release's library",illustration:"Example layout"};
+const demoLabelWords={recorded:"Real results from the library",illustration:"Example layout"};
 const demoState=target=>target.evaluate(()=>{
   const demo=document.getElementById("step-demo"),visible=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
   const panels=demo?[...demo.querySelectorAll("[data-demo-stage]")]:[],head=demo?.querySelector(".step-demo-head [data-demo-label]");
@@ -395,7 +395,7 @@ const demoLabelProblems=state=>[...(JSON.stringify(state.stages)!==JSON.stringif
   ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])||invitationWords.test(state.labels[stage][1])||!state.labels[stage][2]).map(([stage,evidence])=>"the "+stage+" part is not labelled "+JSON.stringify(demoLabelWords[evidence]))];
 const livePathProblems=state=>[
   ...(/\bsearch\b/.test(state.text.search||"")&&/sha256/.test(state.text.search||"")?[]:["the search part shows no search with digests"]),
-  ...(/\bdownload\b/.test(state.text.download||"")&&/Bytes match the digest/.test(state.text.download||"")?[]:["the download part shows no checked download"]),
+  ...(/\bdownload\b/.test(state.text.download||"")?[]:["the download part shows no checked download"]),
   ...["search","download"].filter(stage=>/illustration|example layout|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" part carries illustrated or planned words")];
 const demoFacts=target=>target.evaluate(()=>{
   const demo=document.getElementById("step-demo"),fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
@@ -795,11 +795,17 @@ try {
   const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary",accessLabels.closed,accessPaths.closed]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
     ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),
     ...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
-    ...(/\bGet started\b[^.]*\baccount\b/i.test(state.paths)&&/\bGet set up\b[^.]*\bconnect/i.test(state.paths)?[]:["the line under the actions reads "+JSON.stringify(state.paths)])];
+    ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
   check("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(heroActions).length===0,{...heroActions,problems:heroActionProblems(heroActions)});
   check("hero_action_check_rejects_a_second_primary_a_missing_guide_and_a_missing_explanation",heroActionProblems({...heroActions,primary:[...heroActions.primary,["planted","Request an invitation","/waitlist"]],journey:heroActions.journey+1}).length===2
     &&heroActionProblems({...heroActions,secondary:[]}).length===1&&heroActionProblems({...heroActions,secondary:[["hero-see-step","See one step work","#step-demo"]]}).length===1
-    &&heroActionProblems({...heroActions,paths:""}).length===1&&heroActionProblems({...heroActions,paths:"Get started creates your account."}).length===1);
+    &&heroActionProblems({...heroActions,paths:"Get started creates your account. Get set up connects your harness."}).length===1);
+  /* Filler the owner retired on September 24, 2026: lines that repeat the buttons or describe our checks instead of the visitor's benefit. */
+  const retiredFiller=["creates your account.","connects your harness.","Bytes match the digest","Recorded from this release's library"];
+  const fillerProblems=text=>retiredFiller.filter(phrase=>text.includes(phrase));
+  const homeText=await page.locator('[data-view="home"]').evaluate(home=>home.textContent.replace(/\s+/g," "));
+  check("homepage_carries_no_retired_filler_phrases",fillerProblems(homeText).length===0,{found:fillerProblems(homeText)});
+  check("filler_check_rejects_a_returned_phrase",fillerProblems(homeText+" Bytes match the digest").length===1);
   /* The single call to action. Every primary button a visitor can see on the homepage, in the header and in the footer carries
      the one label of the reported state and opens the page behind it, and the header carries exactly one of them. */
   const homePrimaries=await primaryActions(page);
@@ -1807,7 +1813,7 @@ try {
     {name:"bring_back_see_one_step_in_place_of_the_guide",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-see-step" href="#step-demo">See one step work</a>'}],
      run:async (opened,note)=>note("homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(await readHeroActions(opened)).length===0),
      expected:["homepage_hero_offers_get_started_and_get_set_up_and_says_how_they_differ"]},
-    {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<span><strong>Get set up</strong> connects your harness.</span>',replacement:'<span><strong>Get set up</strong> connects your harness.</span> <span>Invitation only while we open in small groups. Search is free.</span>'}],
+    {name:"write_the_retired_words_beside_the_hero_actions",changes:[{path:"/",find:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a>',replacement:'<a class="button secondary" id="hero-setup" href="/setup" data-page="setup">Get set up</a> <span>Invitation only while we open in small groups. Search is free.</span>'}],
      run:async (opened,note)=>note("homepage_carries_no_invitation_word_while_registration_is_closed",(await homepageWordProblems(opened)).length===0),
      expected:["homepage_carries_no_invitation_word_while_registration_is_closed"]},
     {name:"move_the_demonstration_below_the_copy",changes:[{path:"/assets/architecture.css",find:".band-hero .hero.product-hero>.step-demo{grid-column:auto;margin-top:0}",replacement:".band-hero .hero.product-hero>.step-demo{grid-column:1/-1;margin-top:0}"}],
