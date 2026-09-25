@@ -76,6 +76,7 @@ all = [
 
 [project.urls]
 Homepage = "https://github.com/alisonjieli-png/loop-engine"
+Repository = "https://github.com/alisonjieli-png/loop-engine"
 Documentation = "https://github.com/alisonjieli-png/loop-engine/tree/main/docs"
 Issues = "https://github.com/alisonjieli-png/loop-engine/issues"
 

@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 46,
-  "waiting": 135
+  "now": 47,
+  "waiting": 134
  },
  "lanes": {
   "blocked": [
@@ -1351,6 +1351,23 @@
     ]
    },
    {
+    "acceptance": "A visitor can judge the library before paying, and nobody can rebuild the library from the page.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.39",
+     "S-6.67"
+    ],
+    "id": "S-6.184",
+    "next_local_work": "Add each Verified item's version, known limits and measured effect, printing 'not measured' unless a saved study record names the item, with named checks that refuse an effect without a record and an item shown as helping when its study measured harm; then rate-limit /library like the other public reads. Focus: serves the first-journey measure.",
+    "phase": 6,
+    "status": "building",
+    "title": "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account",
+    "waiting_on": [
+     "S-6.39",
+     "S-6.67"
+    ]
+   },
+   {
     "acceptance": "A customer never sees an item in search that the same account is then refused, and every item says whether it is Verified or Community.",
     "blocked_on": "",
     "depends_on": [
@@ -2279,23 +2296,6 @@
     "waiting_on": [
      "S-6.66",
      "S-6.120"
-    ]
-   },
-   {
-    "acceptance": "A visitor can judge the library before paying, and nobody can rebuild the library from the page.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.39",
-     "S-6.67"
-    ],
-    "id": "S-6.184",
-    "next_local_work": "Remove the vector method sentence first, then build the page from the served manifest and the review record. Focus: serves the first-journey measure.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account",
-    "waiting_on": [
-     "S-6.39",
-     "S-6.67"
     ]
    },
    {
@@ -5019,5 +5019,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:0f86305e220ca038e42bb13c1462a50946fe92b10257cf27525d107b09c42086"
+ "source_fingerprint": "sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d42b9e5055116"
 }

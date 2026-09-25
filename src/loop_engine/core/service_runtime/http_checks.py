@@ -58,10 +58,13 @@ def _web_checks(check, root):
             page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
             from .web_pages import WEB_ASSETS
             from .model_directory_pages import handles as _rendered_by_the_model_directory
+            from .library_page import handles as _rendered_from_the_served_catalogue
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
-            # The model directory's pages are rendered from its records after the page table finds nothing.
+            # The model directory's pages are rendered from its records after the page table finds nothing, and the
+            # library page from the catalogue the service serves.
             unserved = sorted(value for value in linked
                               if value not in WEB_ASSETS and not _rendered_by_the_model_directory(value)
+                              and not _rendered_from_the_served_catalogue(value)
                               and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)

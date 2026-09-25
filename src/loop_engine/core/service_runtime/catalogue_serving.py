@@ -106,6 +106,9 @@ class CatalogueView:
     index: object = field(default=None, repr=False)
     state_revision: int = 0
     built_at: float = 0.0
+    #: The served release's own record of what it added, changed and withdrew, each with its note; the public library
+    #: page lists it. A view built in code or from the image has none.
+    changes: dict = field(default_factory=dict, repr=False, compare=False)
     _lazy: dict = field(default_factory=dict, repr=False, compare=False)
 
     def approved_bindings(self):
@@ -266,7 +269,8 @@ def store_view(config, settings, *, license_policy, family_policy):
                          withdrawn=frozenset(key for key in withdrawn if key[0] in dict(release.items)),
                          withdrawal_check=check, body_store=body_store,
                          index=ReleaseSearchIndex(tuple(entries), release.schema),
-                         state_revision=state["revision"] if state else 0, built_at=time.time())
+                         state_revision=state["revision"] if state else 0, built_at=time.time(),
+                         changes=dict(release.document.get("changes") or {}))
 
 
 def catalogue_state_gate(config, settings):

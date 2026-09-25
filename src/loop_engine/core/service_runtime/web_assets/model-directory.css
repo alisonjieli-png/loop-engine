@@ -39,6 +39,9 @@ main:has(> .md-page){max-width:none;padding:0}
 .md-row-link{display:flex;flex-direction:column;justify-content:center;min-height:44px;color:var(--ink);text-decoration:none}
 .md-row-link:hover .md-name{text-decoration:underline}
 .md-name{font-weight:650;color:var(--accent)}
+/* A row with no page of its own, such as a library item: the same layout, and a name that does not look like a link. */
+.md-row-head{display:flex;flex-direction:column;justify-content:center;gap:.25rem;min-height:44px}
+.md-row-head .md-name{color:var(--ink);font-weight:600;line-height:1.45}
 .md-maker{color:var(--muted);font-size:.875rem}
 .md-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.25rem 1rem;margin:0}
 .md-facts div{min-width:0}
@@ -69,6 +72,9 @@ main:has(> .md-page){max-width:none;padding:0}
 .md-label{background:var(--soft);color:var(--ink)}
 .md-code{max-width:100%;margin:.5rem 0 0;padding:1rem;overflow-x:auto;background:var(--code-bg);color:var(--code-ink);border-radius:10px;font-family:var(--font-mono);font-size:.8125rem;line-height:1.55;white-space:pre}
 .md-code code{font-family:var(--font-mono)}
+/* A document shown in full, such as a library item's Markdown: its long lines wrap instead of scrolling sideways, and
+   the page shows all of it rather than the 320 pixels service.css allows any other block. */
+.md-code-wrap{white-space:pre-wrap;overflow-wrap:anywhere;max-height:none}
 code{font-family:var(--font-mono);font-size:.875em}
 .md-setup{margin:.75rem 0 0;padding:0 1rem;background:var(--paper);border:1px solid var(--border);border-radius:12px}
 .md-setup summary{display:flex;align-items:center;min-height:48px;cursor:pointer;font-weight:650}

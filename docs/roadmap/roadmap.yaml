@@ -4354,9 +4354,9 @@ steps:
   - id: S-6.184
     phase: 6
     title: "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account"
-    status: proposed
+    status: building
     depends_on: [S-6.39, S-6.67]
-    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/service.js, src/loop_engine/core/service_runtime/provisioning.py]
+    boundary: [src/loop_engine/core/service_runtime/library_page.py, src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/service.js, src/loop_engine/core/service_runtime/provisioning.py]
     verify:
       - "a rate-limited /library page needs no sign-in and shows each Verified item's name, purpose, kind, licence, digest, version, tier, review record, known limits and measured effect, or 'not measured' when no saved study covers it"
       - "counts by kind and tier stand in for the other items, one full sample body is shown, and the release and withdrawal log is listed"
@@ -4364,8 +4364,8 @@ steps:
       - "no public page and no public record names the search backends"
     adversarial: "A preview that lists every body, a measured effect without a saved record, an item shown as helping when its study measured harm and paging that walks the whole library must each fail a named check."
     acceptance: "A visitor can judge the library before paying, and nobody can rebuild the library from the page."
-    evidence: "Observed on September 25, 2026: Browse the library ends at 'Sign in to browse', and the workspace prints 'Installed vector method: deterministic_character_hash'. All 43 served bodies are MIT-licensed in the public repository. S-6.39 requires that retrieval engines are never exposed and that nobody can reconstruct the library through search. Stakeholder review: 65 personas in 15 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
-    next_local_work: "Remove the vector method sentence first, then build the page from the served manifest and the review record. Focus: serves the first-journey measure."
+    evidence: "Observed on September 25, 2026: Browse the library ends at 'Sign in to browse', and the workspace prints 'Installed vector method: deterministic_character_hash'. All 43 served bodies are MIT-licensed in the public repository. S-6.39 requires that retrieval engines are never exposed and that nobody can reconstruct the library through search. Stakeholder review: 65 personas in 15 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md. Release 33 took the vector method sentence off the workspace. The /library page is built for release 34 (src/loop_engine/core/service_runtime/library_page.py, checked by tools/test_library_page.py): it renders from the served catalogue view without sign-in, lists every Verified item with its purpose, identity, kind, licence, size, digest, label and review record, counts the Community items by kind and tier without listing them, prints one body in full and lists the served release's additions, changes and withdrawals with each note. The header, footer and homepage Library links open it."
+    next_local_work: "Add each Verified item's version, known limits and measured effect, printing 'not measured' unless a saved study record names the item, with named checks that refuse an effect without a record and an item shown as helping when its study measured harm; then rate-limit /library like the other public reads. Focus: serves the first-journey measure."
   - id: S-6.185
     phase: 6
     title: "A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle"

@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:0f86305e220ca038e42bb13c1462a50946fe92b10257cf27525d107b09c42086`.
+Source fingerprint: `sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d42b9e5055116`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 46 |
+| Being built now | 47 |
 | Can start next | 15 |
-| Waiting on earlier work | 135 |
+| Waiting on earlier work | 134 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -50,6 +50,7 @@ Source fingerprint: `sha256:0f86305e220ca038e42bb13c1462a50946fe92b10257cf27525d
 | S-6.24 | Deliver client, authentication, endpoint-based model and native-harness onboarding | building | S-6.5, S-6.9, S-6.12 |
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
 | S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85 |
+| S-6.184 | A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account | building | S-6.39, S-6.67 |
 | S-6.177 | Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download | building | S-6.63 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
@@ -133,7 +134,6 @@ Source fingerprint: `sha256:0f86305e220ca038e42bb13c1462a50946fe92b10257cf27525d
 | S-6.192 | One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published | proposed | S-6.65 |
 | S-6.190 | Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item | proposed | S-6.45, S-6.62 |
 | S-6.186 | Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people | proposed | S-6.66, S-6.120 |
-| S-6.184 | A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account | proposed | S-6.39, S-6.67 |
 | S-6.183 | The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry | proposed | S-6.67 |
 | S-6.182 | The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release | proposed | S-6.65, S-6.35 |
 | S-6.181 | One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record | proposed | S-6.33 |

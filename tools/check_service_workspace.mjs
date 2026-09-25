@@ -1284,7 +1284,7 @@ try {
   const footerProblems=state=>[...(JSON.stringify(state.groups.map(group=>[group.id,group.heading]))===JSON.stringify(footerGroups)?[]:["the footer groups are "+JSON.stringify(state.groups.map(group=>group.id))]),
     ...state.groups.filter(group=>group.shown!==(group.links.length>0)).map(group=>group.id+(group.shown?" shows with no link":" holds links and is hidden")),
     ...(JSON.stringify(groupLinks(state,"footer-product").slice(0,2))===JSON.stringify([[accessLabels.closed,accessPaths.closed],["Get set up",getStartedPage]])?[]:["Product does not start with Get started and Get set up"]),
-    ...["/how-it-works","/#library","/pricing","/examples"].filter(href=>!groupLinks(state,"footer-product").some(([,target])=>target===href)).map(href=>"Product lacks "+href),
+    ...["/how-it-works","/library","/pricing","/examples"].filter(href=>!groupLinks(state,"footer-product").some(([,target])=>target===href)).map(href=>"Product lacks "+href),
     ...useCasePaths.filter(href=>!groupLinks(state,"footer-use-cases").some(([,target])=>target===href)).map(href=>"Use cases lacks "+href),
     ...["/docs","/security"].filter(href=>!groupLinks(state,"footer-documentation").some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
     ...["/login","/privacy","/terms","/assets/third-party-notices.txt"].filter(href=>!groupLinks(state,"footer-company").some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),

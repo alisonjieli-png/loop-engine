@@ -1,5 +1,16 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.04dd1a45335f78d34b107c8a
+    owner: pyproject.toml:project.urls.Repository
+    rationale: The packaging metadata is the one owner of the public repository address. An installed
+      distribution carries it as its Repository project URL, and the library page at /library reads it
+      from there at run time to link each item's review record, so no Python module writes the address.
+      It selects no provider or route and grants no authority; without it the page links nothing and says
+      the record is kept with the release. The Homepage, Documentation and Issues entries beside it predate
+      the baseline.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-25'
+    expires_on: '2027-09-25'
   - finding_id: hardcoding.20ea916032835992d349a0b5
     owner: tools.candidate_review.reviewers.command_line:codex_session_root
     rationale: CODEX_HOME is the Codex command line's own documented variable for its home folder. The

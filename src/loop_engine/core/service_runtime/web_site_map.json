@@ -114,6 +114,22 @@
       "indexed": true
     },
     {
+      "address": "/library",
+      "view": "library",
+      "title": "The library",
+      "description": "Every Verified item with its licence, size, digest and review record, the Community items by kind, one item in full, and what the served release changed.",
+      "group": "Product",
+      "linked_from": [
+        "header",
+        "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/directory",
       "view": "directory",
       "title": "MCP server and agent API directory",
@@ -677,7 +693,7 @@
       {
         "role": "link",
         "label": "Library",
-        "href": "/#library"
+        "href": "/library"
       },
       {
         "role": "link",
@@ -724,7 +740,7 @@
       {
         "role": "link",
         "label": "Library",
-        "href": "/#library"
+        "href": "/library"
       },
       {
         "role": "link",
@@ -761,7 +777,7 @@
       {
         "role": "link",
         "label": "Library",
-        "href": "/#library"
+        "href": "/library"
       },
       {
         "role": "link",
@@ -809,7 +825,7 @@
           {
             "role": "link",
             "label": "Library",
-            "href": "/#library"
+            "href": "/library"
           },
           {
             "role": "link",
@@ -1179,6 +1195,38 @@
       "subject": "heading:how-title",
       "reason": "The owner said on September 24, 2026 that the homepage is too complicated. The hero now shows the directory a step gets and the demonstrations show each run start to finish, so the Ask, get, place band repeated them. Get set up holds the connection entry for each harness, How it works explains the steps, and the overnight page states the choice of one harness per step. The markup is kept in artifacts/website-archive-2026-09-24/homepage-before-2026-09-24-hero.html.",
       "decided_by": "owner, September 24, 2026"
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "header_link",
+      "state": "signed_out",
+      "subject": "/#library",
+      "reason": "The Library link opens the library page at /library, which lists every Verified item with its licence, size, digest and review record, counts the Community items by kind and prints one item in full. The link used to scroll the homepage to its library band, which stays and links to the same page.",
+      "decided_by": "engineering, September 25, 2026, from the stakeholder review of September 24 (roadmap step S-6.184)"
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "header_link",
+      "state": "signed_in",
+      "subject": "/#library",
+      "reason": "The Library link opens the library page at /library, which lists every Verified item with its licence, size, digest and review record, counts the Community items by kind and prints one item in full. The link used to scroll the homepage to its library band, which stays and links to the same page.",
+      "decided_by": "engineering, September 25, 2026, from the stakeholder review of September 24 (roadmap step S-6.184)"
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "header_link",
+      "state": "operator",
+      "subject": "/#library",
+      "reason": "The Library link opens the library page at /library, which lists every Verified item with its licence, size, digest and review record, counts the Community items by kind and prints one item in full. The link used to scroll the homepage to its library band, which stays and links to the same page.",
+      "decided_by": "engineering, September 25, 2026, from the stakeholder review of September 24 (roadmap step S-6.184)"
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "footer_link",
+      "state": "",
+      "subject": "/#library",
+      "reason": "The Library link in the Product group opens the library page at /library. It used to scroll the homepage to its library band, which stays and links to the same page.",
+      "decided_by": "engineering, September 25, 2026, from the stakeholder review of September 24 (roadmap step S-6.184)"
     }
   ],
   "social_image": "/assets/favicon-192.png"

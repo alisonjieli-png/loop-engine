@@ -36,6 +36,7 @@ from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceReq
 from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 from .model_directory_pages import rendered_page
+from . import library_page
 from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, validator_matches)
 
@@ -1503,6 +1504,11 @@ class ServiceHttpApplication:
         if asset is None:
             # The model directory's pages are rendered from packaged records rather than listed as files.
             asset = rendered_page(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None and library_page.handles(path):
+            # The public library page is rendered from the catalogue this service serves now, so a catalogue release
+            # published without a redeploy reaches it within the refresher's minute.
+            asset = library_page.rendered(self.provisioning.current_view(), path, method,
+                                          self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers()
