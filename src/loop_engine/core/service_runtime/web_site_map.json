@@ -103,7 +103,7 @@
       "address": "/examples",
       "view": "examples",
       "title": "Examples and case studies",
-      "description": "A visual walk through one task, case studies written from saved evidence, and a first retrieval you can try yourself.",
+      "description": "Watch one task run step by step, read what happened in three real cases, and try a first search yourself.",
       "group": "Product",
       "linked_from": [
         "footer"
@@ -520,7 +520,7 @@
       "address": "/demo",
       "view": "demo",
       "title": "One task, step by step",
-      "description": "One data cleanup task in five small steps. Each step searches the library, downloads only what it chose and checks the bytes against the digest.",
+      "description": "One data cleanup task in five small steps. Each step searches the library, downloads only what it chose and puts it where the harness reads it.",
       "group": "Product",
       "linked_from": [
         "footer",
@@ -563,7 +563,7 @@
       "address": "/case-studies/pi-and-gemma-4",
       "view": "case-studies-pi-and-gemma-4",
       "title": "Pi and Gemma 4 on Ollama Cloud",
-      "description": "Pi with Gemma 4 31B on Ollama Cloud searched the library, installed a checked skill, and a new Pi session loaded and used it.",
+      "description": "Pi with Gemma 4 31B on Ollama Cloud searched the library, installed a skill, and a new Pi session loaded and used it.",
       "group": "Use cases",
       "linked_from": [
         "page"

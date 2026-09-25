@@ -407,7 +407,7 @@ const heroDirectory=target=>target.evaluate(()=>{
 const heroDirectoryProblems=state=>[...(state.shown?[]:["the hero shows no working directory"]),
   ...(JSON.stringify(state.parts)===JSON.stringify(heroDirectoryParts)?[]:["the directory holds the parts "+JSON.stringify(state.parts)]),
   ...(state.label==="Example layout"&&!invitationWords.test(state.label)?[]:["the directory is labelled "+JSON.stringify(state.label)]),
-  ...(/no manual search/i.test(state.note)&&/no manual setup/i.test(state.note)?[]:["the directory does not say it was placed with no manual search and no manual setup"]),
+  ...(/no manual search/i.test(state.text)&&/no manual setup/i.test(state.text)?[]:["the hero does not say the files are placed with no manual search and no manual setup"]),
   ...(perStepClaim(state.text).length===0&&/\bbuilt to\b/i.test(state.note)?[]:["the hero states assembly for each step as a current capability: "+JSON.stringify(perStepClaim(state.text))]),
   ...(state.example===0&&!/\bsearch:|\bsha256\b|Bytes match the digest|Recorded from this release/i.test(state.text)?[]:["the hero shows a worked example again"])];
 /* The demonstration pages show each step's search and download, recorded from this release's library: the names, kinds, licences,
@@ -753,7 +753,7 @@ try {
      and the closing caption claims no percentage. */
   const keyPromise=await page.evaluate(()=>({trust:document.querySelector('[data-band="trust"]')?.textContent.replace(/\s+/g," ")||"",footer:document.querySelector("footer .footer-bottom")?.textContent.replace(/\s+/g," ")||"",
     limits:document.querySelector('[data-view="home"] .benefit-limits')?.textContent.replace(/\s+/g," ")||""}));
-  const keepsTheKeysPromise=state=>state.trust.includes("Baltor never asks for a model key")&&state.footer.includes("Your model keys stay with you")&&state.limits.includes("No percentage reduction");
+  const keepsTheKeysPromise=state=>state.trust.includes("Baltor never asks for a model key")&&state.footer.includes("Your model keys stay with you")&&state.limits.includes("Savings depend on the task");
   check("homepage_says_the_model_keys_stay_with_the_customer",keepsTheKeysPromise(keyPromise),keyPromise);
   check("model_key_check_rejects_a_page_that_drops_the_promise",!keepsTheKeysPromise({...keyPromise,trust:keyPromise.trust.replace("Baltor never asks for a model key","")})&&!keepsTheKeysPromise({...keyPromise,footer:""})&&!keepsTheKeysPromise({...keyPromise,limits:""}));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
@@ -765,11 +765,14 @@ try {
   check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light")&&isLight(lightGround)&&await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)===lightGround,{ground:lightGround});
   check("light_ground_check_rejects_a_dark_ground",!isLight("rgb(12, 20, 36)")&&isLight("rgb(243, 245, 250)"));
   await page.emulateMedia({colorScheme:"light"});
-  /* The closing caption is the one place that names what nobody has measured: it claims no percentage and no guaranteed gain. */
+  /* The closing caption says that savings depend on the task, the model and the setup, and promises no number and no gain. On
+     September 24, 2026 the owner retired captions that describe Baltor's own review of its words, so the caption no longer says
+     what is not claimed; the promise check below still refuses a number, a guarantee or "always" anywhere on the homepage. */
   const limitsText=await page.locator('[data-band="closing"] .benefit-limits').innerText();
-  const claimsNoGain=text=>/no percentage reduction or guaranteed (?:daily performance )?gain is claimed/i.test(text);
+  const claimsNoGain=text=>/\bSavings depend on the task\b/i.test(text)&&!/\d+\s*%|\bguarantee\w*\b|\balways\b/i.test(text);
   check("benefit_limits_do_not_guarantee_daily_improvement",claimsNoGain(limitsText),{limits:limitsText});
-  check("benefit_limit_check_rejects_a_caption_that_promises_a_gain",!claimsNoGain("Guaranteed daily gains on every task.")&&!claimsNoGain("")&&claimsNoGain(limitsText));
+  check("benefit_limit_check_rejects_a_caption_that_promises_a_gain",!claimsNoGain("Guaranteed daily gains on every task.")&&!claimsNoGain("")
+    &&!claimsNoGain("Savings depend on the task, and a 40% gain is guaranteed.")&&claimsNoGain(limitsText));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
   /* The owner removed the category pill above the headline on September 23, and the opening starts directly at the heading
@@ -866,7 +869,7 @@ try {
   check("hero_directory_check_rejects_a_worked_example_a_missing_part_and_missing_words",heroDirectoryProblems({...hero,example:1}).length===1
     &&heroDirectoryProblems({...hero,text:hero.text+" search: split address lines, sha256 53dc74e3"}).length===1
     &&heroDirectoryProblems({...hero,parts:hero.parts.filter(part=>part!=="tools")}).length===1
-    &&heroDirectoryProblems({...hero,note:hero.note.replace(/no manual setup/i,"")}).length===1);
+    &&heroDirectoryProblems({...hero,text:hero.text.replace(/no manual setup/ig,"")}).length===1);
   /* The known-wrong heroes of the owner's constraint of September 24, 2026: assembly for each step stated as what Baltor does today,
      as a label and as a sentence, and a note that no longer says the engine is built to do it. */
   check("per_step_assembly_check_rejects_a_current_capability_claim",["Assembled for this step.","Baltor assembles a directory like this for every step.","Built on demand for each step."].every(claim=>heroDirectoryProblems({...hero,text:hero.text+" "+claim}).length===1)
@@ -998,8 +1001,8 @@ try {
   check("closing_check_rejects_a_second_primary_and_a_second_way_in",closingProblems([...closingActions,{id:"planted",text:"Join the waiting list",href:"/waitlist",primary:true}]).length===1
     &&closingProblems([...closingActions,{id:"",text:"Request an invitation",href:"/waitlist",primary:false}]).length===1&&closingProblems(closingActions.filter(action=>!action.primary)).length===1);
   /* No number, guarantee or "always" on the homepage and the use-case pages, which sell: those are statements of fact and need
-     evidence. The closing caption, which names what is not claimed, is the one exception. */
-  const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;})+" "+Object.values(useCaseText).join(" ");
+     evidence. Since September 24, 2026 the closing caption is read too, because it no longer names what is not claimed. */
+  const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>node.textContent)+" "+Object.values(useCaseText).join(" ");
   check("homepage_and_use_cases_make_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
   /* The page reads without its script: a browser that never receives the script shows the hero with its price, its two actions,
@@ -1562,7 +1565,7 @@ try {
      tag and the closing note read the same whether account creation is open or not, and none of them says invitation. The
      state itself still shows in each action's data-access-state, in the pricing view's note, in the personal-key wording and
      in the one panel that leads the guide. */
-  const accessWords={note:"for the whole library",tag:"One plan",closing:"Create your account and connect your harness in a few minutes."};
+  const accessWords={note:"for the whole library",tag:"One plan",closing:"Search the whole library from the harness you already use."};
   const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,...accessWords},open:{state:"open",href:accessPaths.open,label:accessLabels.open,...accessWords}};
   /* The thirteen actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
      How it works, the first example, access and data, the documentation, the footer, and the one on each use-case page, which
@@ -1764,7 +1767,7 @@ try {
     /* The owner's retired words, brought back into the words the page script writes: the invitation note of the closed state and the
        free search of the open state's closing note. */
     {name:"bring_back_the_invitation_note",scenario:"closed_service",find:'waiting:{label:"Get started", href:"/get-started", note:"for the whole library"',replacement:'waiting:{label:"Get started", href:"/get-started", note:"Invitation only while we open in small groups"',expected:["public_actions_say_get_started_while_registration_is_closed","homepage_carries_no_invitation_word_while_registration_is_closed"]},
-    {name:"bring_back_free_search_in_the_closing_note",scenario:"open_registration",find:'connect your harness in a few minutes."},\n    waiting:{',replacement:'connect your harness in a few minutes. Search is free."},\n    waiting:{',expected:["public_actions_say_get_started_while_registration_is_open","homepage_carries_no_invitation_word_while_registration_is_open"]},
+    {name:"bring_back_free_search_in_the_closing_note",scenario:"open_registration",find:'from the harness you already use."},\n    waiting:{',replacement:'from the harness you already use. Search is free."},\n    waiting:{',expected:["public_actions_say_get_started_while_registration_is_open","homepage_carries_no_invitation_word_while_registration_is_open"]},
     {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["guide_leads_with_the_operator_when_the_service_offers_neither"]},
     {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["guide_leads_with_account_creation_when_registration_is_open"]},
     {name:"send_the_primary_action_to_the_account_status_page",scenario:"list_landing",find:'waiting:{label:"Get started", href:"/get-started"',replacement:'waiting:{label:"Get started", href:"/signup"',expected:["the_primary_action_opens_the_funnel_email_field_in_the_first_screen_where_the_service_keeps_a_list"]},

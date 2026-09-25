@@ -26,6 +26,14 @@ print(json.dumps({"site_map": as_plain_record(load_site_map()), "layout": as_pla
 /* The folder roots the demonstration offers for each harness, as tools/install_selected_material.py places a project skill.
    tools/test_showcase_pages.py compares the page script with the placement tool; this check compares the page with the script. */
 const skillRoots={"claude-code":".claude/skills/","codex":".agents/skills/","opencode":".opencode/skills/","pi":".pi/skills/"};
+/* The label of each demonstrated search and download, as tools/test_homepage_demonstration.py names it. The owner retired the earlier
+   label, "Recorded from this release's library", on September 24, 2026. */
+const recordedLabel="Real results from the library";
+/* The phrases the owner retired from every page on September 24, 2026, and the few of the same kind removed with them: words that
+   describe Baltor's own checks or repeat the navigation instead of telling a visitor something. Keep this list short; it is read in
+   the rendered words of every page, so it never pins other copy. */
+export const retiredFiller=["creates your account.","connects your harness.","Bytes match the digest","Recorded from this release's library",
+  "digest checked","typed in by hand","from saved evidence","Seen in the run"];
 
 export async function runShowcasePageChecks({root,python,browser,context,fixture,check,mutants,output,safeError,words,localOnly}){
   const read=spawnSync(python,["-c",READER],{cwd:root,env:{...process.env,PYTHONPATH:resolve(root,"src")},encoding:"utf8"});
@@ -104,14 +112,14 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
     await target.locator('[data-view="demo"] [data-task-harness="codex"]').click();const codex=await demoState(target);
     note("demo_folder_follows_the_chosen_harness",JSON.stringify(pi.roots)===JSON.stringify([skillRoots.pi])&&JSON.stringify(codex.roots)===JSON.stringify([skillRoots.codex])
       &&first.roots.length===1&&first.roots[0]===skillRoots["claude-code"],{first:first.roots,pi:pi.roots,codex:codex.roots});
-    note("demo_labels_each_step_recorded_and_its_folder_an_example",first.labels.length===1&&first.labels.every(([head,folder])=>head==="Recorded from this release's library"&&folder==="Example layout")
+    note("demo_labels_each_step_recorded_and_its_folder_an_example",first.labels.length===1&&first.labels.every(([head,folder])=>head===recordedLabel&&folder==="Example layout")
       &&!words.invitationWords.test(first.labels.flat().join(" ")),{labels:first.labels});
   };
   {const {opened,target}=await openDemo();await demoScenario(target,check);await opened.close();}
   {const plain=await browser.newContext({viewport:{width:1440,height:1000},javaScriptEnabled:false}),target=await plain.newPage();await plain.route("**/*",localOnly);
     const read={};
     for(const [address,steps] of [["/demo",5],["/demo/kaggle",6]]){await target.goto(base+address);const state=await demoState(target);
-      read[address]={steps,shown:state.shown.length,controls:state.controls,labelled:state.labels.length===steps&&state.labels.every(([head,folder])=>head==="Recorded from this release's library"&&folder==="Example layout")};}
+      read[address]={steps,shown:state.shown.length,controls:state.controls,labelled:state.labels.length===steps&&state.labels.every(([head,folder])=>head===recordedLabel&&folder==="Example layout")};}
     check("demo_reads_every_step_when_the_script_has_not_run",Object.values(read).every(item=>item.shown===item.steps&&!item.controls&&item.labelled),read);
     await plain.close();}
   const demoControls=[
@@ -187,6 +195,42 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
   check("every_page_head_uses_customer_words",heads.length===siteMap.pages.length&&heads.every(([,title,description])=>title&&description)&&headProblems(heads).length===0,{problems:headProblems(heads)});
   check("page_head_word_check_rejects_a_retired_an_invitation_and_a_runtime_word",["Join the private beta.","Request an invitation.","Built on Loop Engine."].every(text=>headProblems([["/",text,"x"]]).length===1));
   await page.close();
+
+  /* The filler the owner retired on September 24, 2026: "There are still some stupid and unnecessary text items on the front end
+     like: 'Get started creates your account. Get set up connects your harness.' and 'Bytes match the digest' 'Recorded from this
+     release's library' many of these phrases are meaningless". A short list of those phrases and the few of the same kind removed
+     with them, read in the words of every rendered page of the site map, as a person sees them once the page's scripts have run. It
+     pins no other copy, so any other change of wording passes. Two removed-guard controls put a phrase back, once in a page and once
+     in the words a script writes, for one browser context, and require the check to fail. */
+  const fillerProblems=texts=>texts.flatMap(([address,text])=>retiredFiller.filter(phrase=>text.toLowerCase().includes(phrase.toLowerCase())).map(phrase=>address+": "+phrase));
+  const renderedWords=async (target,address)=>{await target.goto(base+address);await target.waitForLoadState("networkidle",{timeout:5000}).catch(()=>{});
+    return target.evaluate(()=>{const view=document.querySelector("[data-view]:not([hidden])");
+      return [document.querySelector("header"),view||document.body,document.querySelector("footer")].filter(Boolean).map(node=>node.textContent).join(" ").replace(/[‘’]/g,"'").replace(/\s+/g," ");});};
+  const fillerScenario=async (note,addresses,change,tracker)=>{
+    const opened=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});await opened.route("**/*",localOnly);
+    if(change)await opened.route(url=>url.pathname===change.path,async route=>{const response=await route.fetch(),body=await response.text();
+      const changed=body.split(change.find).join(change.replacement);if(changed!==body)tracker.applied=true;await route.fulfill({response,body:changed});});
+    const target=await opened.newPage(),texts=[];
+    for(const address of addresses)texts.push([address,await renderedWords(target,address)]);
+    const problems=fillerProblems(texts);
+    note("no_rendered_page_carries_a_phrase_the_owner_retired",texts.every(([,words])=>words.length>0)&&problems.length===0,{pages:texts.length,problems});
+    await opened.close();
+  };
+  await fillerScenario(check,siteMap.pages.map(entry=>entry.address));
+  check("retired_phrase_check_finds_each_phrase_the_owner_named",["Get started creates your account. Get set up connects your harness.","Bytes match the digest",
+    "Recorded from this release’s library"].every(text=>fillerProblems([["/",text.replace(/[‘’]/g,"'")]]).length>=1)&&fillerProblems([["/","Real results from the library"]]).length===0);
+  const fillerControls=[
+    {name:"write_the_hero_buttons_line_back_on_a_page",addresses:["/examples"],change:{path:"/examples",find:'<h2 id="case-studies">Case studies</h2>',
+      replacement:'<h2 id="case-studies">Case studies</h2><p><strong>Get started</strong> creates your account.</p>'}},
+    {name:"write_a_retired_caption_from_the_page_script",addresses:["/"],change:{path:"/assets/service.js",find:'"Search the whole library from the harness you already use."',
+      replacement:'"Bytes match the digest"'}}];
+  for(const control of fillerControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},tracker={applied:false},expected=["no_rendered_page_carries_a_phrase_the_owner_retired"];let problem="";
+    try{await fillerScenario(note,control.addresses,control.change,tracker);}catch(error){problem=safeError(error);}
+    const missed=expected.filter(name=>!failed.has(name)),detected=tracker.applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied:tracker.applied,detected,required_checks:expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied:tracker.applied,missed_checks:missed,...(problem?{problem}:{})});
+  }
 
   /* The hostnames of the site map, each opened by name against one loopback service that answers them, in a browser of its own
      that resolves them to the loopback address. The root of docs, status, examples and demo opens its own page, and its brand

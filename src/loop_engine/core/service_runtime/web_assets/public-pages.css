@@ -174,7 +174,7 @@ main:has(> .showcase-page:not([hidden])){max-width:none;padding:0}
 .case-steps strong{color:var(--ink)}
 .check-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;list-style:none;margin:0;padding:0}
 .fact-ladder{display:flex;flex-direction:column;gap:.5rem;list-style:none;margin:0;padding:0}
-.fact-ladder li{display:grid;grid-template-columns:7rem minmax(0,1fr) auto;align-items:center;gap:.5rem 1.25rem;padding:1rem 1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.fact-ladder li{display:grid;grid-template-columns:7rem minmax(0,1fr);align-items:center;gap:.5rem 1.25rem;padding:1rem 1.25rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
 .fact-ladder p{margin:0;color:var(--muted);line-height:1.55}
 .fact-ladder-name{font-weight:650;color:var(--ink)}
 .case-code{margin:0;padding:1rem 1.25rem;background:var(--code-bg);border:1px solid var(--code-rule);border-radius:var(--radius-card);color:var(--code-ink);font-family:var(--font-mono);font-size:.8125rem;line-height:1.7;white-space:pre;overflow-x:auto;overflow-wrap:normal;word-break:normal}

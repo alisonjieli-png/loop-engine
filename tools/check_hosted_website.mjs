@@ -32,7 +32,7 @@ const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"Mo
 const useCaseProblems=cards=>[...cardProblems(cards,["overnight","efficiency","learning"]),...cards.filter(card=>useCaseTitles[card.name]!==card.title||JSON.stringify(card.links)!==JSON.stringify(["/"+card.name])).map(card=>card.name+" is titled or linked another way")];
 const heroActionProblems=state=>[...(JSON.stringify(state.primary)===JSON.stringify([["hero-primary","Get started","/get-started"]])?[]:["the hero's primary actions are "+JSON.stringify(state.primary)]),
   ...(JSON.stringify(state.secondary)===JSON.stringify([["hero-setup","Get set up","/setup"]])?[]:["the hero's secondary actions are "+JSON.stringify(state.secondary)]),...(state.journey===1?[]:[state.journey+" hero links lead into the access journey"]),
-  ...(/\bGet started\b[^.]*\baccount\b/i.test(state.paths)&&/\bGet set up\b[^.]*\bconnect/i.test(state.paths)?[]:["the line under the actions reads "+JSON.stringify(state.paths)])];
+  ...(state.paths===""?[]:["the hero repeats its buttons in a line of text: "+JSON.stringify(state.paths)])];
 const pricingFacts=["One plan","Baltor Pro","$29 a month","one downloaded item","Cancel from your account page."];
 const pricingProblems=text=>[...pricingFacts.filter(fact=>!text.includes(fact)).map(fact=>"missing "+fact),...(/\bsearch(?:ing)? is free\b/i.test(text)?["free search"]:[]),...(/\binvited\b/i.test(text)?["free invited accounts"]:[]),
   ...(/United States dollars|per month/i.test(text)?["another way of writing the price"]:[])];
@@ -141,12 +141,14 @@ try{
     &&!/\bsearch:|\bsha256\b|Bytes match the digest/i.test(state.text);
   check("live_hero_shows_a_working_directory_and_no_worked_example",showsNoWorkedExample(liveHeroDirectory));
   check("hero_directory_check_rejects_a_worked_example_again",!showsNoWorkedExample({...liveHeroDirectory,example:1})&&!showsNoWorkedExample({...liveHeroDirectory,text:liveHeroDirectory.text+" search: split address lines sha256 53dc74e3"}));
-  /* Two actions in the hero: Get started, the one primary action, and Get set up, the guide, with one line that says how they differ. */
+  /* Two actions in the hero: Get started, the one primary action, and Get set up, the guide. Since September 24, 2026 no line under
+     them repeats what the two buttons say; the owner retired it as filler. */
   const liveHeroActions=await page.locator('[data-view="home"] .hero').evaluate(hero=>{const words=node=>node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),shown=node=>node.getClientRects().length>0;
     return {primary:[...hero.querySelectorAll(".button.primary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),secondary:[...hero.querySelectorAll(".button.secondary")].filter(shown).map(node=>[node.id,words(node),node.getAttribute("href")]),
       journey:[...hero.querySelectorAll("a[href]")].filter(node=>/^\/(?:get-started|waitlist|signup|connect)(?:$|[/?#])/.test(node.getAttribute("href"))).length,paths:hero.querySelector(".hero-paths")?.textContent.replace(/\s+/g," ").trim()||""};});
   check("live_homepage_offers_get_started_and_get_set_up_and_says_how_they_differ",heroActionProblems(liveHeroActions).length===0&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
-  check("hero_action_check_rejects_a_second_primary_and_a_missing_guide",heroActionProblems({...liveHeroActions,primary:[...liveHeroActions.primary,["planted","Request an invitation","/waitlist"]]}).length>=1&&heroActionProblems({...liveHeroActions,secondary:[]}).length===1);
+  check("hero_action_check_rejects_a_second_primary_and_a_missing_guide",heroActionProblems({...liveHeroActions,primary:[...liveHeroActions.primary,["planted","Request an invitation","/waitlist"]]}).length>=1&&heroActionProblems({...liveHeroActions,secondary:[]}).length===1
+    &&heroActionProblems({...liveHeroActions,paths:"Get started creates your account. Get set up connects your harness."}).length===1);
   /* One primary action on the whole homepage and in the header, with the one label of the reported state. */
   const livePrimaries=await page.locator('header .button.primary, [data-view="home"] .button.primary, footer .button.primary').evaluateAll(items=>items.map(item=>[item.textContent.replace(/[↗→]/g,"").trim(),item.getAttribute("href"),Boolean(item.closest("header"))]));
   check("live_every_primary_action_carries_the_one_label",livePrimaries.length>=4&&livePrimaries.filter(([,,header])=>header).length===1&&livePrimaries.every(([label,href])=>label===liveLabel&&href===livePath));

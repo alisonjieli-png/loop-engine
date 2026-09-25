@@ -86,9 +86,9 @@
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
     open:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
-          closing:"Create your account and connect your harness in a few minutes."},
+          closing:"Search the whole library from the harness you already use."},
     waiting:{label:"Get started", href:"/get-started", note:"for the whole library", tag:"One plan",
-             closing:"Create your account and connect your harness in a few minutes."}};
+             closing:"Search the whole library from the harness you already use."}};
   const paymentStates = {
     open:{badge:"Available now", note:"Subscribe from your account page, and cancel any time.", teaser:"Cancel any time from your account page."},
     invitation_only:{badge:"Available now", note:"Create your account, then subscribe from your account page. Cancel any time.", teaser:"Cancel any time from your account page."},

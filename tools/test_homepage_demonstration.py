@@ -4,8 +4,8 @@ Since September 24, 2026 the hero shows no worked example. The owner: "instead o
 should show the directory structure emphasize that it is built on demand efficiently, no manual searches, no manual
 setup, etc. Then we can have 3 links to specific demos". The hero's figure is the working directory of one step: an
 instruction file with only that step's context, the skill it needs, its protocol server settings and reused code,
-under the label "Example layout", with the words that it was assembled for this step with no manual search and no
-manual setup. Three demonstrations follow, each linking to a page that shows its run start to finish. A search, a
+under the label "Example layout"; the hero says the files are placed with no manual search and no manual setup, and
+that the local engine is built to assemble such a directory for every step. Three demonstrations follow, each linking to a page that shows its run start to finish. A search, a
 reference, a digest or a download anywhere in the hero is the known-wrong page. The one-step demonstration that stood
 beside the hero until then, splitting the address lines of a customer file, is step 2 of the demonstration at /demo,
 whose every search is rerun by tools/test_showcase_pages.py; its markup is archived in
@@ -351,9 +351,9 @@ def hero_problems(page):
         problems.append("the hero directory is not labelled as an example layout")
     note = re.search(r"<p [^>]*data-hero-note[^>]*>([^<]*)</p>", hero)
     note = note.group(1) if note else ""
-    if not re.search(r"no manual search", note, re.IGNORECASE) or not re.search(r"no manual setup", note, re.IGNORECASE):
-        problems.append("the hero directory does not say it was placed with no manual search and no manual setup")
     words = " ".join(re.sub(r"<[^>]+>", " ", hero).split())
+    if not re.search(r"no manual search", words, re.IGNORECASE) or not re.search(r"no manual setup", words, re.IGNORECASE):
+        problems.append("the hero does not say the files are placed with no manual search and no manual setup")
     claims = [sentence for sentence in re.split(r"(?<=[.!?])\s+", words) if PER_STEP.search(sentence) and "built to" not in sentence.lower()]
     if claims or "built to" not in note.lower():
         problems.append(f"the hero states assembly for each step as a current capability: {claims}")
@@ -413,10 +413,11 @@ class HomepageHeroTest(unittest.TestCase):
         planted = _planted(self.page, '<figure class="hero-directory"', demonstration + '<figure class="hero-directory"')
         self.assertIn("the hero shows a worked example again", hero_problems(planted))
         # KNOWN_WRONG: a search and its digest written as words, a directory without its protocol server settings, and a
-        # directory that no longer says it was built without manual setup.
+        # hero that no longer says the files are placed without manual setup.
         self.assertEqual(len(hero_problems(_planted(self.page, '<p class="hero-directory-note"', '<p>search: split address lines, sha256 53dc74e3</p><p class="hero-directory-note"'))), 1)
         self.assertEqual(len(hero_problems(_planted(self.page, '<span data-hero-part="tools">', "<span>"))), 1)
-        self.assertEqual(len(hero_problems(_planted(self.page, "no manual setup of these files", "no setup of these files"))), 1)
+        self.assertEqual(len(hero_problems(_planted(self.page, "No manual search, no manual setup, nothing copied by hand.",
+                                                    "No manual search, nothing copied by hand."))), 1)
         self.assertTrue(hero)
 
     def test_the_hero_keeps_assembly_for_each_step_to_built_to_wording(self):

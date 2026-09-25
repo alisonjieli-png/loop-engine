@@ -9,7 +9,7 @@ reaches the network; the searches run on loopback over a temporary database.
 The demonstration at `/demo` breaks one data cleanup task into five steps, and the one at `/demo/kaggle` breaks a
 Kaggle competition into six, from the metric to the submission. Each step shows a search, the references it returned,
 a download of the one it chose and the folder where the harness reads it. The
-search and the download are recorded from this release's library and say so; the folder is an example and
+search and the download are real results from this release's library and say so; the folder is an example and
 says so. Each rule below refuses one way the page could stop being true, and each has known-wrong pages
 beside it that the rule must report:
 
