@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a69126b89e80e4574`.
+Source fingerprint: `sha256:866b78534b610dec67b39af708afc23b154d083fab555b26e1583ae43b3777f9`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a6912
 |---|---:|
 | Being built now | 45 |
 | Can start next | 15 |
-| Waiting on earlier work | 121 |
+| Waiting on earlier work | 136 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -128,6 +128,14 @@ Source fingerprint: `sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a6912
 | S-6.23 | Exercise every required internal component through its actual owning entry point | proposed | S-6.3, S-6.7, S-6.8, S-6.9, S-6.20, S-6.11 |
 | S-6.14 | Qualify the release candidate on the exact exported tree | proposed | S-6.4, S-6.5, S-6.6, S-6.10, S-6.12, S-6.13, S-6.21, S-6.23, S-6.24, S-6.26, S-6.27 |
 | S-6.16 | Activate approved paid access and publish the release decision | proposed | S-6.6, S-6.15, S-6.21 |
+| S-6.194 | A trust section and the web basics a reviewer checks first: CAA, DMARC reports, subprocessors, a dated list of what does not exist yet and a continuity answer | proposed | S-6.33 |
+| S-6.192 | One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published | proposed | S-6.65 |
+| S-6.190 | Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item | proposed | S-6.45, S-6.62 |
+| S-6.186 | Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people | proposed | S-6.66, S-6.120 |
+| S-6.184 | A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account | proposed | S-6.39, S-6.67 |
+| S-6.183 | The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry | proposed | S-6.67 |
+| S-6.182 | The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release | proposed | S-6.65, S-6.35 |
+| S-6.181 | One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record | proposed | S-6.33 |
 | S-6.19 | Continue flexible composition and controlled improvement research | proposed | S-6.3, S-6.20, S-6.14 |
 | S-6.84 | Write the functional component standard into the development rules, with a check for each rule | proposed | S-6.30, S-6.34 |
 | S-6.71 | One generated component index with a drift check | proposed | S-6.30, S-6.34 |
@@ -192,6 +200,13 @@ Source fingerprint: `sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a6912
 | S-6.174 | An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records | proposed | S-6.33 |
 | S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
 | S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
+| S-6.195 | Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence | proposed | S-6.21 |
+| S-6.193 | Identity controls: a second factor for every staff role, then OAuth for the protocol endpoint | proposed | S-6.120, S-6.5 |
+| S-6.191 | The Team plan, built and checked before it is sold | proposed | S-6.38, S-6.120 |
+| S-6.189 | Generation hygiene: certificate checks on every generation lane, a repository hygiene check, and a published note on how generated candidates are screened | proposed | S-6.63 |
+| S-6.188 | Company pages: About, Work with us and Press from public facts, with the block that names who runs Baltor held until the owner decides | proposed | S-6.67 |
+| S-6.187 | How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed | proposed | S-6.34 |
+| S-6.185 | A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle | proposed | S-6.47, S-6.32 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
 | S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | proposed | S-6.177 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |

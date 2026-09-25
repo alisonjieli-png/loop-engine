@@ -65,3 +65,23 @@ commit with main to tell the two apart.
 
 A paused line resumes and merges its own work when its agent restarts; the
 audit only confirms that the work is still there and tracked.
+
+## Resolved the same evening
+
+The comparison tool is `/home/username/baltor-private/tools/commit_loss_report.sh`.
+Its first run counted every line of some files as missing, because `/tmp` is
+over its quota and the temporary copy of main's file was empty; it now keeps
+its temporary files under `$HOME` and stops on an empty copy.
+
+| Worktree | Finding | Decision |
+|---|---|---|
+| `.le-stakeholder-review-20260924` | Commit `3a9fe1d6` of that morning: the stakeholder review record and 15 roadmap steps, never on main | Restored. The steps are numbered S-6.181 to S-6.195, because S-6.177 to S-6.180 were taken on main the same day; the record says so. |
+| `.le-integration/round-two` | A second round of the first-catalogue review by the same three reviewers: 114 of 123 items approved, against 43 on main | Not restored. Of its 71 extra approvals, the independent panel of September 22, with reviewers of four other families, had reviewed 29 and rejected all 29. |
+| `.le-integration/site-usecases`, `signup` and `site-docs` | Work in progress of September 23 | Superseded: the use case pages, the hostname pages, email-first sign-up and the documentation view went live later in other commits. |
+| `.le-decisions-20260924-s2` | The step stations and the material station of the paused decisions line: five source files main lacks | Kept with the paused line and added to its registry entry; it merges when that line resumes. |
+
+The round-two result bears on the 42 first-catalogue items served today. They
+were approved by the same kind of same-family review, and independent
+reviewers rejected every item of that review they examined. Their review by
+two other families (roadmap step S-6.178) may therefore withdraw many of
+them, and replacements should be ready before it runs.

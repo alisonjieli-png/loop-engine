@@ -1387,8 +1387,8 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.177, S-6.178]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.179, S-6.180]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.195, S-6.193, S-6.191, S-6.189, S-6.188, S-6.187, S-6.185, S-6.179, S-6.180]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,13 +1489,13 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.178, S-6.179]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176, S-6.193]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171, S-6.185]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172]
@@ -1504,13 +1504,13 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.101, S-6.177, S-6.180]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.195, S-6.194, S-6.192, S-6.191, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.101, S-6.177, S-6.180]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
-      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
+      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84, S-6.187]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173, S-6.188]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -4259,7 +4259,7 @@ steps:
       - "the published meaning of Verified drops its exception only when no served item still depends on it"
     adversarial: "An approval by a Claude model, an approval whose reviewer family is not recorded, and a Verified meaning without the exception while an unreviewed first-catalogue item is served must each fail a named check."
     acceptance: "Every item labelled Verified has reviewers of two model families that did not produce it, as the label says."
-    evidence: "examples/29_intelligence_service/starter-catalogue/reviews.json names reviewer one as Claude Opus 5 and records no model for the other two; the September 22 panel names Claude Code as the producer. Found by the release 30 live check on September 25, 2026. Blocked that day: the Ollama Cloud allowance was spent (probe 5, glm-5.3, 15:50 UTC), the Codex limit lasts until September 29 at 17:24 Eastern, and Tactical failed its calibration."
+    evidence: "examples/29_intelligence_service/starter-catalogue/reviews.json names reviewer one as Claude Opus 5 and records no model for the other two; the September 22 panel names Claude Code as the producer. Found by the release 30 live check on September 25, 2026. Blocked that day: the Ollama Cloud allowance was spent (probe 5, glm-5.3, 15:50 UTC), the Codex limit lasts until September 29 at 17:24 Eastern, and Tactical failed its calibration. Expect withdrawals: an unmerged second round of the same same-family review (worktree .le-integration/round-two) approved 71 more items, and the independent panel of September 22 had rejected all 29 of them it examined (docs/context/WORKTREE-AUDIT-2026-09-25.md)."
     next_local_work: "On September 29 after 17:24 Eastern, run the Codex panel over the 42 items in batches of 12, then an Ollama Cloud family when its allowance returns."
   - id: S-6.179
     phase: 6
@@ -4303,6 +4303,236 @@ steps:
     acceptance: "The main session builds and publishes a release from the folder, and every served item shows Verified or Community with its reviewers."
     evidence: "September 24, 2026: the owner asked for 1,000 and more harness components fully live and retrievable; the main session recorded the tiers in the AGENTS.md decision table. The overnight lanes of zhipu, openai, moonshot and nvidia hold 274 candidates and the two google lanes 1,019; the writer and its checks are tools/write_reviewed_catalogue.py and tools/test_write_reviewed_catalogue.py; campaign evidence is in artifacts/review-throughput-2026-09-24/README.md."
     next_local_work: "Finish Claude's Community review of the overnight and google-lane candidates, write the folders under /home/username/baltor-library/, review licensed imports as the import store fills, and ask a second calibrated family when one returns."
+  - id: S-6.181
+    phase: 6
+    title: "One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record"
+    status: proposed
+    depends_on: [S-6.33, S-6.121]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, src/loop_engine/core/service_runtime/web_assets/client-recipes.json, tools/test_homepage_demonstration.py, README.md, docs/guides/launch-benefits-and-evidence.md]
+    verify:
+      - "one claims register holds each public claim, the pages where it appears, the study or record behind it and its state: supported, measured against or untested"
+      - "a dated evidence page is generated from the register, leads with the data cleanup study's negative result, and is linked from the footer, the efficiency, overnight and learning pages and every case study"
+      - "the rendered words of the homepage, the use cases, overnight, efficiency, learning, pricing and team pages and the deck fail the check when a sentence states library search at every step, a fresh harness per step, a model chosen per step, code reuse or learning from runs in the present tense without 'designed to', or says Baltor places or puts files without naming the Pi extension"
+      - "each harness name on the homepage row, in the FAQ and on pricing shows one plain line taken from client-recipes.json, and a name that shows a state the recipe does not hold fails"
+      - "the README names no Fly release older than the newest pilot release record and repeats no review claim that the review record does not support"
+      - "the public capabilities record reports no operator-provisioned access and no open waiting list while registration is open"
+    adversarial: "One known-wrong page for each phrase family, a README that names an older release, the three-family review sentence restored, a harness line that the recipe does not support and a capabilities record that reports an open waiting list beside open registration must each fail a named check with its removed-guard control."
+    acceptance: "Every public surface states the same dated facts, and a reader can see which claims are supported, which were measured against and which are untested."
+    evidence: "September 24, 2026 stakeholder review: 214 of 250 personas in all 25 panels raised it, the first-ranked theme. Verified on September 25 at f0f8c508: present-tense unbuilt claims on the homepage cards and on /overnight, /efficiency and /learning; the hero check reads only the hero band; the README says Fly release 24 and three reviewer families while the review record names one reviewer from the producer's family and shows all 43 approvals carried; at 09:38 UTC the live capabilities record reported operator_provisioned access and waitlist_available true beside registration_available true. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Write the register from the September 25 verification, widen the hero check to the rendered pages with one known-wrong page per phrase family, and add the README release check. Focus: serves the one-truth measure proposed until November 2, 2026."
+  - id: S-6.182
+    phase: 6
+    title: "The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release"
+    status: proposed
+    depends_on: [S-6.65, S-6.35]
+    boundary: [src/loop_engine/core/service_runtime/account_email.py, src/loop_engine/core/service_runtime/http.py, docs/architecture/SERVICE-IDENTITY-ENDPOINTS-AND-MIGRATION.md, docs/guides, tools/check_hosted_website.mjs]
+    verify:
+      - "the host file's http.public_base_url is https://baltor.ai, with the allowed hosts and the checkout, cancel and portal return addresses, after a dated backup and following the identity endpoint migration procedure"
+      - "/api and /mcp keep answering on every hostname and only browser page requests are redirected, so the payment webhook registered on app.baltor.ai keeps working"
+      - "every release runs the staff sign-up link journey and fails when the emailed link host or the published protocol address is not on baltor.ai"
+      - "the service guides, the served documentation and the help articles name baltor.ai, and the security page lists the hosts a corporate proxy must allow"
+      - "a sign-in kept across reloads ships only after the owner approves the privacy notice sentence that describes it"
+    adversarial: "A release that publishes the Fly hostname in a connection entry, an emailed link on another host, a redirect that catches the payment webhook and a sign-in kept in browser storage without the approved notice must each fail a named check."
+    acceptance: "A new customer signs up, confirms, connects a harness and downloads a first item without leaving baltor.ai."
+    evidence: "Live on September 25, 2026: the identity record reports session_persistence page_memory and a redirect address on baltor-pilot.fly.dev, and the release 25 journey recorded the emailed link on that host. Release 28 commit 62163b00 fills every connection entry from the published address, so the host file must move first; no step recorded the move. Commit 9803ca47 on main keeps the sign-in in tab storage and changes the privacy notice without a recorded approval. Stakeholder review: 66 personas in 16 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Back up and move the host file's public base address in the same window as release 28, add the release check, then fix the guides. Focus: serves the first-journey measure."
+  - id: S-6.183
+    phase: 6
+    title: "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry"
+    status: proposed
+    depends_on: [S-6.67]
+    boundary: [README.md, pyproject.toml, .github/workflows]
+    verify:
+      - "the repository description names Baltor and what it serves, the homepage is https://baltor.ai and topics are set"
+      - "a tagged GitHub release exists, and every install line pins its archive with a SHA-256 digest instead of the moving main archive"
+      - "the remote server entry is published to the official registry under a baltor.ai namespace verified through a domain record, and its tool list matches the live endpoint"
+      - "a package index name is reserved only by publishing a real package, after the owner creates the account"
+    adversarial: "An install line that fetches the moving main archive, a registry entry whose tool list differs from the live endpoint and a placeholder package published only to hold a name must each be refused."
+    acceptance: "Someone who finds Baltor on GitHub or in the protocol server registry reaches baltor.ai and a pinned install."
+    evidence: "Observed on September 25, 2026: the description reads 'A Python engine for deterministic, hybrid, and non-deterministic task loops.', with no homepage, no topics and no releases; the install lines use archive/refs/heads/main.zip; a registry search for baltor returns no server. Page metadata, robots.txt and sitemap.xml belong to S-6.67 and S-6.46. Stakeholder review: 86 personas in 21 panels asked for Baltor to be findable and shareable. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Set the description, homepage and topics, cut a 0.x release with a pinned archive digest, then publish the registry entry. Focus: small; serves the first-journey measure."
+  - id: S-6.184
+    phase: 6
+    title: "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account"
+    status: proposed
+    depends_on: [S-6.39, S-6.67]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/service.js, src/loop_engine/core/service_runtime/provisioning.py]
+    verify:
+      - "a rate-limited /library page needs no sign-in and shows each Verified item's name, purpose, kind, licence, digest, version, tier, review record, known limits and measured effect, or 'not measured' when no saved study covers it"
+      - "counts by kind and tier stand in for the other items, one full sample body is shown, and the release and withdrawal log is listed"
+      - "Browse the library opens this page; search beyond the preview and every download still need an account"
+      - "no public page and no public record names the search backends"
+    adversarial: "A preview that lists every body, a measured effect without a saved record, an item shown as helping when its study measured harm and paging that walks the whole library must each fail a named check."
+    acceptance: "A visitor can judge the library before paying, and nobody can rebuild the library from the page."
+    evidence: "Observed on September 25, 2026: Browse the library ends at 'Sign in to browse', and the workspace prints 'Installed vector method: deterministic_character_hash'. All 43 served bodies are MIT-licensed in the public repository. S-6.39 requires that retrieval engines are never exposed and that nobody can reconstruct the library through search. Stakeholder review: 65 personas in 15 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Remove the vector method sentence first, then build the page from the served manifest and the review record. Focus: serves the first-journey measure."
+  - id: S-6.185
+    phase: 6
+    title: "A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle"
+    status: proposed
+    depends_on: [S-6.47, S-6.32]
+    boundary: [case-studies, docs/guides/launch-benefits-and-evidence.md]
+    verify:
+      - "a SkillsBench v1.1 subset chosen by a rule published before any result, one pinned harness and one cheap model whose no-material arm fails part of the work"
+      - "arms paired on every task: no material, the raw SkillsBench skill, Baltor's selection through served search allowed to return nothing, the forced full bundle and the oracle"
+      - "the sample is sized from a stated minimum detectable effect, SkillsBench's own deterministic verifiers score every attempt, and requests, tokens and seconds per accepted task sit beside every score"
+      - "the design digest is committed before the first counted call, the result is published whatever it shows, and the runner is released as a free with-and-without kit"
+      - "a weekly split of the model allowance between generation, review and studies is recorded before the run, and the run stops before its ceiling"
+    adversarial: "A subset chosen after results are seen, an unpaired arm, a modest effect claimed from three repetitions, a run past its ceiling and a benefit claimed on a population where the no-material arm already passes must each be refused."
+    acceptance: "Baltor holds one result on an outside population that could have come out either way, with its cost per accepted task."
+    evidence: "The only completed with-and-without study (case-studies/data-cleanup-with-and-without-baltor) used 143 synthetic rows and three repetitions, the cheap model scored 0.948 to 1.000 without material, and the result was negative. The SkillsBench pilot exists only as a proposal in docs/research/BENCHMARK-AND-SHOWCASE-OPTIONS-2026-09-22.md, with no abstention arm and no power calculation. S-6.161 reuses the near-ceiling population and S-6.173 compares harness sessions on Terminal-Bench. SkillsBench v1.1 is Apache-2.0. Stakeholder review: 74 personas in 14 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Write and freeze the design with no model call, then run a pilot within the recorded Ollama Cloud allowance after a one-call probe. Focus: serves the one-recorded-result measure."
+  - id: S-6.186
+    phase: 6
+    title: "Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people"
+    status: proposed
+    depends_on: [S-6.66, S-6.120]
+    boundary: [src/loop_engine/core/service_runtime/account_administration.py, docs/roadmap/roadmap.yaml]
+    verify:
+      - "downloads by host tenants, staff and accounts marked as tests are counted apart from customer downloads, and a pilot-owner download leaves the customer count unchanged"
+      - "a counts-only weekly read for the analytics role gives signed up, confirmed, client key created, first download, a download on days 8 to 14 and paid, and leaves out host tenants, staff and accounts marked as tests when they were created"
+      - "the weekly number is the count of outside accounts with a download in the last seven days, written as a dated aggregate outside the public repository"
+      - "10 to 20 outside developers and 3 to 5 teams, given access through superadmin sign-up links with free monthly Baltor Pro, each finish a task they chose, with a written success criterion and a without-Baltor baseline; a team pilot splits 20 of its own tickets and reports only aggregate outcomes"
+      - "D-17-T03 is rewritten for open registration and passes only for people outside engineering who signed up through Baltor's own sign-up"
+    adversarial: "A staff, host or test account counted as a customer, an account that only downloaded counted as finished, a founding place set aside by hand and a partner result published without consent must each fail a named check."
+    acceptance: "Every week shows how many outside people used Baltor, and the record names who finished a real task, what broke and who came back."
+    evidence: "The release 25 dashboard read 7 accounts, 0 paid, 6 switched off and 93 downloads in 30 days; the overview counts every usage row with no tenant filter and every release check downloads as the host tenant, so the 93 include engineering's checks. No outside person is recorded finishing a task. D-17-T03 still names invited users and a closed registration. The first 10 sign-ups of a month take the founding places automatically. Search counts and route metrics need an owner-approved privacy notice row. Stakeholder review: 89 and 83 personas. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Add the tenant filter with its check and mutant in the staff tools line, write the private partner kit, then rewrite D-17-T03. Focus: serves the first-journey measure."
+  - id: S-6.187
+    phase: 6
+    title: "How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed"
+    status: proposed
+    depends_on: [S-6.34]
+    boundary: [README.md, CONTRIBUTING.md, SECURITY.md]
+    verify:
+      - "a short statement linked from the README and CONTRIBUTING.md says that AI coding agents write most of the code, with counts at a named revision, what a person decides, that a release needs a passing continuous integration run and a deploy by image digest with rollback, that destructive, spending and legal actions need the owner, and what the September 19 and September 22 incidents were and how they were repaired"
+      - "the identity, billing, access and deployment paths are listed, and a change to one of them is pushed only with a recorded review from a model family that did not write it, within existing subscriptions"
+      - "the statement describes controls, not an inventory of credentials, counts no AI agent as a team member and names no person unless the owner adds a name"
+    adversarial: "A push that changes a listed path without a recorded second-family review, a review by the writing family and a statement that lists an AI agent as a team member must each fail a named check."
+    acceptance: "A reader can see how code is written and reviewed, and a sensitive change cannot land on the writing family's word alone."
+    evidence: "At af800171, 692 of 889 commits on main carried a Claude co-author trailer, including 50 of 57 commits that touch the web assets; main has no branch protection and no rulesets, and the repository has never had a pull request. The September 19 rule replacement is recorded in AGENTS.md and the September 22 merge losses in docs/context/SESSION-HANDOFF-2026-09-22.md. Branch protection with a required human review needs pull requests from side branches, which the owner's standing branch rule forbids, so that choice is the owner's. Stakeholder review: 20 personas in 4 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Write the statement and the path list, then add the second-family review record to the push checklist. Focus: serves the one-truth measure."
+  - id: S-6.188
+    phase: 6
+    title: "Company pages: About, Work with us and Press from public facts, with the block that names who runs Baltor held until the owner decides"
+    status: proposed
+    depends_on: [S-6.67]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/index.html, src/loop_engine/core/service_runtime/web_site_map.json]
+    verify:
+      - "/about states what Baltor does today and what it is designed to do, the operator line exactly as the approved notice gives it, how releases and library reviews are checked with links to the public records, and links to /changelog, /status, /security, /contact and the source"
+      - "a block that names who runs Baltor is published only when a typed owner decision record allows it, and the build refuses it otherwise"
+      - "/work-with-us says plainly what can be offered today, invents no role, salary, equity or date, explains how to contribute in public, lists open research questions linked to their records, and takes no applications until the owner approves a privacy notice line for applicant data"
+      - "/press gives a dated fact sheet whose every number has a saved source, the brand mark files and a contact address once inbound mail works"
+      - "each page has a site map row, a footer link and an inventory row"
+    adversarial: "A name block without the owner's decision record, a role, salary or date without a typed record, a press number without its source and an implied award must each fail a named check with its removed-guard control."
+    acceptance: "A visitor can see who runs Baltor, how to work with it and where each fact comes from, and nothing on the pages is invented."
+    evidence: "Observed on September 25, 2026: /about, /team, /careers, /jobs, /work-with-us and /press answer 404, and no page names a person. Publishing a name reverses a recorded August 31 direction, so the owner decides. Stakeholder review: 96 personas asked for an About page, 36 for a truthful Work with us page and 10 for a press kit. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Start from main after the support line merges, because both edit the footer and the routes, and ask the owner one yes-or-no question about naming. Focus: serves the one-truth measure."
+  - id: S-6.189
+    phase: 6
+    title: "Generation hygiene: certificate checks on every generation lane, a repository hygiene check, and a published note on how generated candidates are screened"
+    status: proposed
+    depends_on: [S-6.63]
+    boundary: [tools/opencode_generation_lanes.py, tools/candidate_review, docs/guides/billing-setup-and-pricing.md]
+    verify:
+      - "no generation lane runs with certificate verification switched off; a lane that cannot verify its server is paused, and a check with a removed-guard control refuses NODE_TLS_REJECT_UNAUTHORIZED in tools"
+      - "no verdict from a reviewer that failed calibration counts toward an approval"
+      - "a hygiene check refuses the private model server's host and port and the offending certificate hostname in new or changed current files, and leaves dated records unchanged"
+      - "the live payment account identifier and the keyring entry name move from AGENTS.md to the billing guide"
+      - "a public note says which models generate, which checks run before review, and that no generated output is served without independent review"
+    adversarial: "A lane started with verification off, an approval from a calibration-failed reviewer, a new file that names the private server and any rewrite of main's published history must each be refused."
+    acceptance: "Generated material reaches review only over verified connections, and the public tree stops gaining private infrastructure details."
+    evidence: "Read at f0f8c508: one generation lane sets NODE_TLS_REJECT_UNAUTHORIZED=0 for its OpenCode process and uses a refusal-removed model, which failed reviewer calibration in the review throughput line; a certificate hostname with an offensive word is in 24 tracked files, and the private model server is named in 49 files. Nothing from that lane is served, and deterministic prechecks run before review. The server and its certificate are the owner's. Stakeholder review: 67 personas in 16 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Route the lane through the existing pinned Python binding or pause it, add the two checks and move the two identifiers; the owner reissues the certificate. Focus: small; serves the one-truth measure."
+  - id: S-6.190
+    phase: 6
+    title: "Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item"
+    status: proposed
+    depends_on: [S-6.45, S-6.62]
+    boundary: [SECURITY.md, .github/workflows, tools/install_selected_material.py, src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts]
+    verify:
+      - "GitHub private vulnerability reporting is on, /.well-known/security.txt is served with a contact and an expiry, and SECURITY.md covers the hosted service and the material it serves"
+      - "the D-13 threat model is published: prompt injection in served text, tool poisoning, undeclared effects, a compromised serving machine or store, and a compromised reviewer"
+      - "each catalogue release record (release identity and item digests) is signed in GitHub Actions with keyless Sigstore, the signature is published beside the release, and tools/install_selected_material.py and the Pi extension verify it before writing"
+      - "the Pi extension is also distributed through a GitHub release pinned by digest"
+      - "the safety prechecks and the package scanner run over every served body, the result is published per item, and a labelled attack set reports detection counts with their denominators"
+    adversarial: "A release record with an altered digest, a signature made on the serving machine, an extension fetched only from the host it checks, a security.txt past its expiry and a detection rate without its denominator must each fail a named check."
+    acceptance: "A customer can report a problem, and can check that the bytes a step receives are the bytes Baltor released and reviewed without trusting the serving machine alone."
+    evidence: "On September 25, 2026 private vulnerability reporting answered enabled false while SECURITY.md points to it, and /.well-known/security.txt answered 404. No signing code exists; the Pi extension compares downloads only with digests from the server that also serves the extension; declared effects are self-declared; the threat model is a D-13 action that no line has written. S-6.148 signs submitted packages and leaves Baltor's own releases for later. Stakeholder review: 47 personas in 11 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Switch on private vulnerability reporting and serve security.txt now, then write the threat model and sign the next catalogue release. Focus: the disclosure route serves the one-truth measure; signing can follow November 2, 2026."
+  - id: S-6.191
+    phase: 6
+    title: "The Team plan, built and checked before it is sold"
+    status: proposed
+    depends_on: [S-6.38, S-6.120]
+    boundary: [src/loop_engine/core/service_runtime/account_administration.py, src/loop_engine/core/service_runtime/stripe_sessions.py, src/loop_engine/core/service_runtime/access.py]
+    verify:
+      - "an organization record with members, an administrator who can revoke a member, usage records attributed to each member, one subscription with a Stripe quantity, and a team share of the published concurrency allowance"
+      - "the Stripe price is created in the release whose checks pass, and the pricing answer that a team cannot share one account stays until then"
+      - "a shared private library waits until the privacy notice covers private uploads and the security page no longer warns against private content"
+      - "members join only through Baltor's own sign-up"
+    adversarial: "A revoked member's key that still answers, a member who reads another team's private item and a team that exceeds its share of concurrency must each fail a named check."
+    acceptance: "A team can buy seats, see each member's use and revoke a member, and nothing is sold before its checks pass."
+    evidence: "AGENTS.md records the Team plan at 299 dollars a month, sold only when its features pass their checks. No organization, member or seat code exists on main or in any line in flight; the pricing page says a team cannot share one account today; the service allows 8 concurrent operations and 4 for each account from one pool on one Machine. A data processing agreement, the contracting party and outreach to a first team need the owner. Stakeholder review: 52 personas in 16 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Write the three known-wrong checks, then build the organization record. Focus: after November 2, 2026, unless a design-partner team asks sooner."
+  - id: S-6.192
+    phase: 6
+    title: "One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published"
+    status: proposed
+    depends_on: [S-6.65]
+    boundary: [docs/legal/PRIVACY-NOTICE.md, docs/legal/TERMS-OF-SERVICE.md, docs/legal/README.md]
+    verify:
+      - "one privacy notice draft covers payment details in the present tense with the merchant of record once verified, search text that reaches the service and is not stored, Resend and Cloudflare as processors, rights requests by email once inbound mail works, retention per data type, lawful bases, the transfer basis, a minimum age, and the pending sentences on sign-in storage, the support region, referrals and the partner and security addresses"
+      - "one terms draft covers governing law and venue, refunds and cancellation, the price with tax where it applies, terms for the founding offer and a copyright complaint route"
+      - "a data processing agreement template is prepared for teams"
+      - "nothing is published before the owner's recorded approval, and the published text matches the approved draft word for word"
+    adversarial: "A published sentence without an approval record, a notice that still calls billing planned, a processor that sends customer mail without being named and an approval stretched to text the owner did not see must each fail a named check."
+    acceptance: "The privacy notice and the terms describe the live paid service, and every change carries the owner's approval."
+    evidence: "Live /privacy says payments are 'Planned, when billing opens' and that the service never receives prompts, while checkout has been live since September 21, 2026 and search text reaches the server; sign-up mail goes through Resend, which the notice does not name; the terms have no governing law clause and no refund statement. Commit 9803ca47 on main and the support line carry sentences that still wait for approval. Stakeholder review: 44 personas in 11 panels, and the one-truth theme. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Write the combined redline beside the approved drafts of September 24, 2026 and send it to the owner once. Focus: serves the one-truth measure; publication is the owner's."
+  - id: S-6.193
+    phase: 6
+    title: "Identity controls: a second factor for every staff role, then OAuth for the protocol endpoint"
+    status: proposed
+    depends_on: [S-6.120, S-6.5]
+    boundary: [src/loop_engine/core/service_runtime/account_policy.py, src/loop_engine/core/service_runtime/browser_identity.py, src/loop_engine/core/service_runtime/http.py]
+    verify:
+      - "every staff permission is refused unless the identity token carries a second factor (assurance level aal2), behind a host setting that switches on after the owner enrols a factor on both superadmin addresses"
+      - "the protocol endpoint publishes its resource metadata and supports consent and revocation through the protocol's authorization flow, so nobody pastes a key"
+      - "single sign-on, SAML and SCIM wait for a paying team and the owner's change to the one-way-in decision"
+    adversarial: "A superadmin session without a second factor and a token issued for another resource must each be refused by a named check."
+    acceptance: "Staff actions need a second factor, and a customer can connect a harness without copying a key."
+    evidence: "No second-factor code exists on main or in the lines in flight, and the superadmin role holds every administration permission. On September 25, 2026 the live capabilities record listed host_key as the only authentication mode. Stakeholder review: 38 personas in 10 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Add the second-factor check with its known-wrong case behind the host setting before the staff tools go live, then write the OAuth design with its checks. Focus: the staff check before the staff tools go live; OAuth after November 2, 2026."
+  - id: S-6.194
+    phase: 6
+    title: "A trust section and the web basics a reviewer checks first: CAA, DMARC reports, subprocessors, a dated list of what does not exist yet and a continuity answer"
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, src/loop_engine/core/service_runtime/http.py]
+    verify:
+      - "a CAA record names the certificate authority in use, a DMARC report address is set, and enforcement moves past p=none only after the reports show every sender aligned"
+      - "the security page gains a dated list of what does not exist yet (outside audit, penetration test, single sign-on, service level, several regions) and the data flow of one search and one download, and keeps the strengths reviewers credited"
+      - "a subprocessor table appears only when the privacy notice names the same providers"
+      - "a factual continuity answer says the source is MIT-licensed, downloaded files stay in the customer's folder under their licences and a customer can cancel at any time, and promises nothing more"
+    adversarial: "A DMARC change to enforcement before alignment is shown, a subprocessor table that differs from the notice and a continuity answer that promises a notice period the terms do not hold must each fail a named check."
+    acceptance: "A security reviewer finds the basics in place and a plain statement of what Baltor does not have yet."
+    evidence: "Observed on September 25, 2026: DMARC p=none with no report address, no CAA record and no subprocessor table; the Strict-Transport-Security header is missing and is a verify item of S-6.33. The terms have no notice period and deletion is by post. Stakeholder review: 33 personas in 9 panels, and the continuity item of the focus theme. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Add the domain records after confirming that no hostname is proxied, then the security page section. Focus: serves the one-truth measure."
+  - id: S-6.195
+    phase: 6
+    title: "Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence"
+    status: proposed
+    depends_on: [S-6.21]
+    boundary: [src/loop_engine/core/service_runtime/stripe_sessions.py]
+    verify:
+      - "every checkout session asks for Managed Payments explicitly, and a session answered without it is refused"
+      - "sandbox checkouts and a test-clock renewal with addresses in India, Brazil, Mexico, Nigeria, Kenya, the Philippines and Germany record the currency shown, the tax line, the payment methods offered and the statement descriptor, and a sandbox without Managed Payments is recorded as missing"
+      - "the pricing page keeps '$29 a month' and adds one answer about currency, tax and the statement text only after that evidence"
+    adversarial: "A session created without the setting and a pricing answer written before the sandbox record must each fail a named check."
+    acceptance: "A buyer outside the United States can see what they will pay and how it will appear, and the answer comes from recorded checkouts."
+    evidence: "The checkout sends customer, mode, price, quantity, return addresses and the promotion code switch, with no tax or Managed Payments parameter. The live payments record says Managed Payments is on for the account by default and demanded a product tax code. No checkout with an address outside the United States is recorded. The owner's September 23, 2026 direction keeps '$29 a month' on marketing pages. No live charge is made. Stakeholder review: 14 personas in 2 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
+    next_local_work: "Add the parameter and the refusal with tests, then run the sandbox set. Focus: after November 2, 2026, unless a design partner abroad cannot pay."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"

@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a69126b89e80e4574`.
+Plan fingerprint: `866b78534b610dec67b39af708afc23b154d083fab555b26e1583ae43b3777f9`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -1143,6 +1143,14 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.16 | Activate approved paid access and publish the release decision | proposed | S-6.6, S-6.15, S-6.21 |
 | S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85, S-6.99 |
 | S-6.121 | The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply | offline_verified | S-6.36 |
+| S-6.194 | A trust section and the web basics a reviewer checks first: CAA, DMARC reports, subprocessors, a dated list of what does not exist yet and a continuity answer | proposed | S-6.33 |
+| S-6.192 | One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published | proposed | S-6.65 |
+| S-6.190 | Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item | proposed | S-6.45, S-6.62 |
+| S-6.186 | Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people | proposed | S-6.66, S-6.120 |
+| S-6.184 | A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account | proposed | S-6.39, S-6.67 |
+| S-6.183 | The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry | proposed | S-6.67 |
+| S-6.182 | The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release | proposed | S-6.65, S-6.35 |
+| S-6.181 | One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record | proposed | S-6.33, S-6.121 |
 | S-6.177 | Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download | building | S-6.63 |
 | S-6.178 | Two other model families review the first catalogue, whose September 21 approvals do not show them | blocked | S-6.63, S-6.177 |
 
@@ -1221,6 +1229,13 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.174 | An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records | proposed | S-6.33 |
 | S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
 | S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
+| S-6.195 | Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence | proposed | S-6.21 |
+| S-6.193 | Identity controls: a second factor for every staff role, then OAuth for the protocol endpoint | proposed | S-6.120, S-6.5 |
+| S-6.191 | The Team plan, built and checked before it is sold | proposed | S-6.38, S-6.120 |
+| S-6.189 | Generation hygiene: certificate checks on every generation lane, a repository hygiene check, and a published note on how generated candidates are screened | proposed | S-6.63 |
+| S-6.188 | Company pages: About, Work with us and Press from public facts, with the block that names who runs Baltor held until the owner decides | proposed | S-6.67 |
+| S-6.187 | How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed | proposed | S-6.34 |
+| S-6.185 | A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle | proposed | S-6.47, S-6.32 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
 | S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | proposed | S-6.177 |
 
@@ -1231,14 +1246,14 @@ Legacy statuses remain historical component claims until current integration evi
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.178, S-6.179 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176 |
-| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176, S-6.193 |
+| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171, S-6.185 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13, S-6.57 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.101, S-6.177, S-6.180 |
-| Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84 |
-| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.195, S-6.194, S-6.192, S-6.191, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.101, S-6.177, S-6.180 |
+| Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84, S-6.187 |
+| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173, S-6.188 |
 
 ## Hosting coverage
 

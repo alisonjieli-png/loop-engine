@@ -4,7 +4,7 @@
   "done": 47,
   "next": 15,
   "now": 45,
-  "waiting": 121
+  "waiting": 136
  },
  "lanes": {
   "blocked": [
@@ -2203,6 +2203,135 @@
     ]
    },
    {
+    "acceptance": "A security reviewer finds the basics in place and a plain statement of what Baltor does not have yet.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.194",
+    "next_local_work": "Add the domain records after confirming that no hostname is proxied, then the security page section. Focus: serves the one-truth measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A trust section and the web basics a reviewer checks first: CAA, DMARC reports, subprocessors, a dated list of what does not exist yet and a continuity answer",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "The privacy notice and the terms describe the live paid service, and every change carries the owner's approval.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65"
+    ],
+    "id": "S-6.192",
+    "next_local_work": "Write the combined redline beside the approved drafts of September 24, 2026 and send it to the owner once. Focus: serves the one-truth measure; publication is the owner's.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One privacy notice and terms revision for a paid service, drafted by engineering and approved by the owner before it is published",
+    "waiting_on": [
+     "S-6.65"
+    ]
+   },
+   {
+    "acceptance": "A customer can report a problem, and can check that the bytes a step receives are the bytes Baltor released and reviewed without trusting the serving machine alone.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.45",
+     "S-6.62"
+    ],
+    "id": "S-6.190",
+    "next_local_work": "Switch on private vulnerability reporting and serve security.txt now, then write the threat model and sign the next catalogue release. Focus: the disclosure route serves the one-truth measure; signing can follow November 2, 2026.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Supply-chain trust for served material: a working disclosure route, a published threat model, signed catalogue releases verified before writing, and scan results per item",
+    "waiting_on": [
+     "S-6.45",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Every week shows how many outside people used Baltor, and the record names who finished a real task, what broke and who came back.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.66",
+     "S-6.120"
+    ],
+    "id": "S-6.186",
+    "next_local_work": "Add the tenant filter with its check and mutant in the staff tools line, write the private partner kit, then rewrite D-17-T03. Focus: serves the first-journey measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Design partners and one weekly number: outside developers and teams through a finished task of their own, counted without tracking people",
+    "waiting_on": [
+     "S-6.66",
+     "S-6.120"
+    ]
+   },
+   {
+    "acceptance": "A visitor can judge the library before paying, and nobody can rebuild the library from the page.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.39",
+     "S-6.67"
+    ],
+    "id": "S-6.184",
+    "next_local_work": "Remove the vector method sentence first, then build the page from the served manifest and the review record. Focus: serves the first-journey measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A library page anyone can open: Verified item cards, counts by kind and tier, one full sample and the release and withdrawal log, with downloads kept behind an account",
+    "waiting_on": [
+     "S-6.39",
+     "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "Someone who finds Baltor on GitHub or in the protocol server registry reaches baltor.ai and a pinned install.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67"
+    ],
+    "id": "S-6.183",
+    "next_local_work": "Set the description, homepage and topics, cut a 0.x release with a pinned archive digest, then publish the registry entry. Focus: small; serves the first-journey measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry",
+    "waiting_on": [
+     "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "A new customer signs up, confirms, connects a harness and downloads a first item without leaving baltor.ai.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65",
+     "S-6.35"
+    ],
+    "id": "S-6.182",
+    "next_local_work": "Back up and move the host file's public base address in the same window as release 28, add the release check, then fix the guides. Focus: serves the first-journey measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release",
+    "waiting_on": [
+     "S-6.65",
+     "S-6.35"
+    ]
+   },
+   {
+    "acceptance": "Every public surface states the same dated facts, and a reader can see which claims are supported, which were measured against and which are untested.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33",
+     "S-6.121"
+    ],
+    "id": "S-6.181",
+    "next_local_work": "Write the register from the September 25 verification, widen the hero check to the rendered pages with one known-wrong page per phrase family, and add the README release check. Focus: serves the one-truth measure proposed until November 2, 2026.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
     "acceptance": "Additional models, prompts, wrappers, cognitive steps, intelligence, and optimizers are tested without removing supported alternatives or claiming a universal winner.",
     "blocked_on": "",
     "depends_on": [
@@ -3261,6 +3390,117 @@
      "S-6.50",
      "S-6.94",
      "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "A buyer outside the United States can see what they will pay and how it will appear, and the answer comes from recorded checkouts.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.21"
+    ],
+    "id": "S-6.195",
+    "next_local_work": "Add the parameter and the refusal with tests, then run the sandbox set. Focus: after November 2, 2026, unless a design partner abroad cannot pay.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Payable outside the United States: Managed Payments requested on every checkout, sandbox renewals with addresses abroad, and one pricing answer from that evidence",
+    "waiting_on": [
+     "S-6.21"
+    ]
+   },
+   {
+    "acceptance": "Staff actions need a second factor, and a customer can connect a harness without copying a key.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.120",
+     "S-6.5"
+    ],
+    "id": "S-6.193",
+    "next_local_work": "Add the second-factor check with its known-wrong case behind the host setting before the staff tools go live, then write the OAuth design with its checks. Focus: the staff check before the staff tools go live; OAuth after November 2, 2026.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Identity controls: a second factor for every staff role, then OAuth for the protocol endpoint",
+    "waiting_on": [
+     "S-6.120",
+     "S-6.5"
+    ]
+   },
+   {
+    "acceptance": "A team can buy seats, see each member's use and revoke a member, and nothing is sold before its checks pass.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.38",
+     "S-6.120"
+    ],
+    "id": "S-6.191",
+    "next_local_work": "Write the three known-wrong checks, then build the organization record. Focus: after November 2, 2026, unless a design-partner team asks sooner.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The Team plan, built and checked before it is sold",
+    "waiting_on": [
+     "S-6.38",
+     "S-6.120"
+    ]
+   },
+   {
+    "acceptance": "Generated material reaches review only over verified connections, and the public tree stops gaining private infrastructure details.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63"
+    ],
+    "id": "S-6.189",
+    "next_local_work": "Route the lane through the existing pinned Python binding or pause it, add the two checks and move the two identifiers; the owner reissues the certificate. Focus: small; serves the one-truth measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Generation hygiene: certificate checks on every generation lane, a repository hygiene check, and a published note on how generated candidates are screened",
+    "waiting_on": [
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "A visitor can see who runs Baltor, how to work with it and where each fact comes from, and nothing on the pages is invented.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67"
+    ],
+    "id": "S-6.188",
+    "next_local_work": "Start from main after the support line merges, because both edit the footer and the routes, and ask the owner one yes-or-no question about naming. Focus: serves the one-truth measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Company pages: About, Work with us and Press from public facts, with the block that names who runs Baltor held until the owner decides",
+    "waiting_on": [
+     "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "A reader can see how code is written and reviewed, and a sensitive change cannot land on the writing family's word alone.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.34"
+    ],
+    "id": "S-6.187",
+    "next_local_work": "Write the statement and the path list, then add the second-family review record to the push checklist. Focus: serves the one-truth measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed",
+    "waiting_on": [
+     "S-6.34"
+    ]
+   },
+   {
+    "acceptance": "Baltor holds one result on an outside population that could have come out either way, with its cost per accepted task.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.47",
+     "S-6.32"
+    ],
+    "id": "S-6.185",
+    "next_local_work": "Write and freeze the design with no model call, then run a pilot within the recorded Ollama Cloud allowance after a one-call probe. Focus: serves the one-recorded-result measure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle",
+    "waiting_on": [
+     "S-6.47",
+     "S-6.32"
     ]
    },
    {
@@ -4779,5 +5019,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a69126b89e80e4574"
+ "source_fingerprint": "sha256:866b78534b610dec67b39af708afc23b154d083fab555b26e1583ae43b3777f9"
 }
