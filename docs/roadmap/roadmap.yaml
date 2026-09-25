@@ -982,7 +982,7 @@ continuation:
     - id: D-26
       title: "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day"
       stage: public_launch
-      steps: [S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
+      steps: [S-6.69, S-6.196, S-6.197, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
       depends_on: [D-20, D-22]
       actions:
         - "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line."
@@ -1387,7 +1387,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.196, S-6.197, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.195, S-6.193, S-6.191, S-6.189, S-6.188, S-6.187, S-6.185, S-6.179, S-6.180]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.196, S-6.197, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176, S-6.193]
@@ -3043,8 +3043,8 @@ steps:
       - "a sample of every file class is loaded in its target harnesses before a release and recorded as configured, loaded, used and verified"
     adversarial: "A package approved by its producer's family, a package whose bytes changed after review, a count that mixes candidates with approved packages and a day that exceeds its declared model-call ceiling must each be refused."
     acceptance: "The library reaches 10,000 and then 100,000 distinct approved packages through the independent panel, and then adds 100 to 1,000 approved packages a day, with the counts recorded per day."
-    evidence: "September 22, 2026: 10,000 is the first milestone and 100,000 the target. September 23, 2026, the owner: \"aggressively get everything working with at least 100,000 harness component files\" and \"generate and maintain adding 100 to 1,000 more harness components per day\". The milestone unit is a distinct approved package (decision of September 22); the files inside the packages are counted beside it."
-    next_local_work: "Calibrate the three-family panel on the malicious and benign controls and measure its throughput, run wave 5 and the Codex twelve-package cohort through it, then size the daily waves to the measured capacity."
+    evidence: "September 22, 2026: 10,000 is the first milestone and 100,000 the target. September 23, 2026, the owner: \"aggressively get everything working with at least 100,000 harness component files\" and \"generate and maintain adding 100 to 1,000 more harness components per day\". The milestone unit is a distinct approved package (decision of September 22); the files inside the packages are counted beside it. September 25, 2026, the owner: \"we need to be able to generate and upload 1,000 per day at a minimum, without significant issues and delays of deploying\". The review of that day found review, not supply or deployment, to be the limit: 58,787 imported candidates indexed and none reviewed, because the panel reads only original items (S-6.196); 51 approvals from 1,243 reviews of generated ideas; the Claude reviewer at 114 of the owner's 150 calls, Codex refused until September 29, the Ollama Cloud weekly allowance spent, and Tactical excluded after approving one known-wrong control of four; catalogue releases already live without a redeploy but each step started by hand (S-6.197)."
+    next_local_work: "Review imported packages first: build the panel's imported-layout reader (S-6.196), measure the import yield on 240 packages, qualify a reviewer without an allowance on a larger control set, spend metered allowances on review before generation, and run the daily job from approvals to a checked live release (S-6.197); then size the daily waves to the measured capacity."
   - id: S-6.70
     phase: 6
     title: "Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search"
@@ -4533,6 +4533,38 @@ steps:
     acceptance: "A buyer outside the United States can see what they will pay and how it will appear, and the answer comes from recorded checkouts."
     evidence: "The checkout sends customer, mode, price, quantity, return addresses and the promotion code switch, with no tax or Managed Payments parameter. The live payments record says Managed Payments is on for the account by default and demanded a product tax code. No checkout with an address outside the United States is recorded. The owner's September 23, 2026 direction keeps '$29 a month' on marketing pages. No live charge is made. Stakeholder review: 14 personas in 2 panels. Record: docs/research/STAKEHOLDER-REVIEW-2026-09-24.md."
     next_local_work: "Add the parameter and the refusal with tests, then run the sandbox set. Focus: after November 2, 2026, unless a design partner abroad cannot pay."
+  - id: S-6.196
+    phase: 6
+    title: "The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot"
+    status: proposed
+    depends_on: [S-6.63, S-6.69]
+    boundary: [tools/candidate_review, tools/licensed_import]
+    verify:
+      - "the import line's last two commits (19716691 and 8a026139) are on main with every line they added; its other seven are there already"
+      - "the panel reads the imported_licensed_package/v1 layout: each package's bytes match their recorded digests, and its upstream repository, commit, path, licence text and attribution are present, without rereading any source from this repository"
+      - "the upstream author is the producer, so no reviewing family is excluded as the producer, and the Community rule is unchanged: every automated check passes and one independent family approves"
+      - "criteria written for imported material: the package does what its description says, its declared effects cover what its files do, nothing in it is hidden, and it is useful to a harness"
+      - "a calibration set of known-good imported packages and known-wrong mutants of them (a false description, an undeclared effect, a hidden network call, a step that defeats the purpose) excludes a reviewer that approves any known-wrong control"
+      - "a 240-package pilot at 12 packages a call records the approval yield and the tokens and seconds of each call"
+    adversarial: "An imported package whose bytes differ from its digests, one without its licence text, a reviewer counted as the producer's family and a calibration that admits a reviewer after it approved a known-wrong control must each fail a named check."
+    acceptance: "Imported packages reach the Community tier through the same independent panel, and the measured yield sizes the daily review."
+    evidence: "Observed on September 25, 2026: 58,787 imported candidates are indexed and 4,000 are exported in the panel's layout, and none has been reviewed. The panel's reader refuses the export with native_sources_invalid, because it requires this repository's licence among the cited sources and rereads each source from this repository, which fits original items only. The import line's last two commits are not on main; its other seven are."
+    next_local_work: "Merge the import line's two remaining commits, then write the imported-layout reader and its criteria beside the native reader, with the calibration set and the pilot."
+  - id: S-6.197
+    phase: 6
+    title: "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback"
+    status: proposed
+    depends_on: [S-6.62, S-6.119, S-6.196]
+    boundary: [tools/write_reviewed_catalogue.py, tools/build_catalogue_release_bundle.py, tools/check_hosted_catalogue.py]
+    verify:
+      - "one restartable job with a journal writes the day's approved packages as a reviewed catalogue folder, builds an incremental bundle, publishes it without a redeploy, waits for the service's refresher and runs the live retrieval check"
+      - "a failed live check rolls the catalogue back to the previous release by itself and records why"
+      - "the job asks every reviewer lane that has capacity, skips a lane whose allowance is spent, and writes each lane's state"
+      - "each day's counts of packages exported, reviewed, approved, published and served are recorded"
+    adversarial: "A bundle that holds an unapproved package, a publish that skips the live check, a failed check that leaves the new release serving and a run that exceeds its declared call ceiling must each be refused."
+    acceptance: "Approved packages reach customers every day without a person starting any step and without a redeploy."
+    evidence: "Observed on September 25, 2026: the 93-item Community release went live without a redeploy, but exporting, reviewing, writing the reviewed folder, bundling, publishing and checking were each started by hand."
+    next_local_work: "Join the existing commands into one journaled job with the rollback, run it once by hand on the next approvals, then schedule it."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"

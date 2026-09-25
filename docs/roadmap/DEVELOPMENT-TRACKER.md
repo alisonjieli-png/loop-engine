@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d42b9e5055116`.
+Source fingerprint: `sha256:6ff6f773a83564bf5e71aef6a787ac86fb0e255cddabf35c75336d02f1e75e4d`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d
 |---|---:|
 | Being built now | 47 |
 | Can start next | 15 |
-| Waiting on earlier work | 134 |
+| Waiting on earlier work | 136 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -105,6 +105,8 @@ Source fingerprint: `sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
+| S-6.196 | The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot | proposed | S-6.63, S-6.69 |
+| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | proposed | S-6.62, S-6.119, S-6.196 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | proposed | S-6.40, S-6.76 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
@@ -276,7 +278,7 @@ Source fingerprint: `sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 10 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 11 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 13 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |

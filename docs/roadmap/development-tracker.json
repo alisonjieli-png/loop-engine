@@ -4,7 +4,7 @@
   "done": 47,
   "next": 15,
   "now": 47,
-  "waiting": 134
+  "waiting": 136
  },
  "lanes": {
   "blocked": [
@@ -1041,7 +1041,7 @@
      "S-6.62"
     ],
     "id": "S-6.69",
-    "next_local_work": "Calibrate the three-family panel on the malicious and benign controls and measure its throughput, run wave 5 and the Codex twelve-package cohort through it, then size the daily waves to the measured capacity.",
+    "next_local_work": "Review imported packages first: build the panel's imported-layout reader (S-6.196), measure the import yield on 240 packages, qualify a reviewer without an allowance on a larger control set, spend metered allowances on review before generation, and run the daily job from approvals to a checked live release (S-6.197); then size the daily waves to the measured capacity.",
     "phase": 6,
     "status": "building",
     "title": "The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day",
@@ -1803,6 +1803,42 @@
     "title": "Grow the library: original package factory first, scheduled source ingestion later",
     "waiting_on": [
      "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "Imported packages reach the Community tier through the same independent panel, and the measured yield sizes the daily review.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.69"
+    ],
+    "id": "S-6.196",
+    "next_local_work": "Merge the import line's two remaining commits, then write the imported-layout reader and its criteria beside the native reader, with the calibration set and the pilot.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.69"
+    ]
+   },
+   {
+    "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.119",
+     "S-6.196"
+    ],
+    "id": "S-6.197",
+    "next_local_work": "Join the existing commands into one journaled job with the rollback, run it once by hand on the next approvals, then schedule it.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.119",
+     "S-6.196"
     ]
    },
    {
@@ -4881,10 +4917,12 @@
    "stage": "public_launch",
    "status_counts": {
     "building": 4,
-    "proposed": 7
+    "proposed": 9
    },
    "steps": [
     "S-6.69",
+    "S-6.196",
+    "S-6.197",
     "S-6.70",
     "S-6.81",
     "S-6.82",
@@ -4897,7 +4935,7 @@
     "S-6.88"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 11
+   "total_steps": 13
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -5019,5 +5057,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:d583cfba5e3c4cfa2cd9bd173a4ee3c4893c0729c5fa3f4faf7d42b9e5055116"
+ "source_fingerprint": "sha256:6ff6f773a83564bf5e71aef6a787ac86fb0e255cddabf35c75336d02f1e75e4d"
 }
