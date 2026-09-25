@@ -221,8 +221,8 @@ const measurePage = ({thresholds, budgets, isHome, touch, phone}) => {
   }
 
   /* Interactive controls: tap targets on touch screens and controls that overlap each other. */
-  const controls = [...document.querySelectorAll("a[href], button, input:not([type=hidden]), select, textarea, summary, label.menu-button, [role=tab], [role=button]")]
-    .filter(node => visible(node) && !node.closest(".sr-only, [hidden]") && !node.classList.contains("skip") && !node.classList.contains("menu-toggle"));
+  const controls = [...document.querySelectorAll("a[href], button, input:not([type=hidden]), select, textarea, summary, [role=tab], [role=button]")]
+    .filter(node => visible(node) && !node.closest(".sr-only, [hidden]") && !node.classList.contains("skip"));
   const smallTargets = [];
   if (touch) {
     for (const node of controls) {
@@ -445,7 +445,7 @@ async function capture(browser, config, target) {
     }
 
     /* The phone menu. */
-    const menuButton = page.locator("label.menu-button");
+    const menuButton = page.locator("#menu-button");
     if (await menuButton.count() && await menuButton.isVisible()) {
       await menuButton.click();
       await page.waitForTimeout(200);
@@ -457,7 +457,7 @@ async function capture(browser, config, target) {
       });
       await page.keyboard.press("Escape");
       await page.waitForTimeout(120);
-      menu.closed_by_escape = await page.evaluate(() => !document.getElementById("menu-toggle").checked);
+      menu.closed_by_escape = await page.evaluate(() => document.getElementById("menu-button").getAttribute("aria-expanded") === "false");
       if (!menu.closed_by_escape) { await menuButton.click(); await page.waitForTimeout(120); }
       menu.closed = await page.evaluate(() => getComputedStyle(document.getElementById("main-nav")).display === "none");
       menu.every_item_visible = menu.items.every(item => item.visible);

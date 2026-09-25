@@ -181,10 +181,12 @@ operator's entry, which is how the Administration link is written today.
 
 - At 1440 and 1024 every entry, Sign in and the primary action sit on one row
   inside the bar.
-- At 860 and below the links fold into a menu opened by a 44 by 44 pixel
-  button. A checkbox opens it, so it works without the page script. The mark,
-  the primary action and the menu button stay in the bar; every other entry is
-  inside the menu, at least 44 pixels tall.
+- At 860 and below the links fold into a menu opened by one visible 44 by 44
+  pixel button named "Menu", with `aria-expanded` and
+  `aria-controls="main-nav"`; the name and the state sit on the control a
+  person touches. Without the page script the footer links every page the
+  menu holds. The mark, the primary action and the menu button stay in the
+  bar; every other entry is inside the menu, at least 44 pixels tall.
 - The header stays in view at every size: it is sticky, or it steps aside
   while the page scrolls down and comes back when it scrolls up. On a phone
   held sideways (844 by 390) the bar is at most 52 pixels tall unless it steps

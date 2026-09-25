@@ -197,9 +197,13 @@ def header_entries(document, state):
     header = first(document, lambda item: item.tag == "header")
     if header is None:
         return None
+    # A button that shows or hides the header's own navigation, the phone menu button, folds the entries; it is not one of them.
+    folded = {item.attrs.get("id") for item in header.walk() if item.tag == "nav" and item.attrs.get("id")}
     entries = []
     for item in header.walk():
         if not (item.tag == "button" or (item.tag == "a" and "href" in item.attrs)):
+            continue
+        if item.tag == "button" and item.attrs.get("aria-controls") in folded:
             continue
         chain = [item, *item.ancestors(header)]
         marked = lambda name: any(name in node.attrs for node in chain)
@@ -570,7 +574,8 @@ FIXTURE_MAP = {
 }
 FIXTURE_PARTS = {
     "head": '<!doctype html><html lang="en"><head><link rel="stylesheet" href="/assets/site.css"></head><body>',
-    "header": ('<header><a class="brand" href="/"><img src="/assets/mark.svg" alt=""><span>Example</span></a><nav>'
+    "header": ('<header><a class="brand" href="/"><img src="/assets/mark.svg" alt=""><span>Example</span></a>'
+               '<button type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu"></button><nav id="menu">'
                '<a href="/pricing">Pricing</a><a href="/app" data-signed-in hidden>Workspace</a>'
                '<a href="/admin" hidden>Administration</a><a href="/login" data-signed-out>Sign in</a>'
                '<button type="button" data-signed-in hidden>Sign out</button></nav>'
@@ -663,10 +668,13 @@ KNOWN_WRONG = {
     "header_matches_the_site_map": (
         ("a header link is missing", _part("header", '<a href="/pricing">Pricing</a>', "")),
         ("two header links are out of order", _part(
-            "header", '<nav><a href="/pricing">Pricing</a><a href="/app" data-signed-in hidden>Workspace</a>'
+            "header", '<nav id="menu"><a href="/pricing">Pricing</a><a href="/app" data-signed-in hidden>Workspace</a>'
                       '<a href="/admin" hidden>Administration</a><a href="/login" data-signed-out>Sign in</a>',
-            '<nav><a href="/app" data-signed-in hidden>Workspace</a><a href="/admin" hidden>Administration</a>'
+            '<nav id="menu"><a href="/app" data-signed-in hidden>Workspace</a><a href="/admin" hidden>Administration</a>'
             '<a href="/login" data-signed-out>Sign in</a><a href="/pricing">Pricing</a>')),
+        # The menu button is left out only because it controls the header's own navigation.
+        ("a header button that controls something else is an entry",
+         _part("header", "</nav>", '</nav><button type="button" aria-controls="elsewhere">Help</button>')),
         ("the header gains a link", _part("header", "</nav>", '<a href="/guide">Guide</a></nav>')),
         ("the primary action opens another page", _part("header", 'href="/start" data-signed-out', 'href="/pricing" data-signed-out')),
         ("the operator's entry is shown to everyone", _part("header", '<a href="/admin" hidden>', '<a href="/admin">')),

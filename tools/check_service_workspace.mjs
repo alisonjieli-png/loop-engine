@@ -320,7 +320,7 @@ const signOutFromHeader=async target=>{
   await button.click();
 };
 const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAll("header nav a")].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim()),
-  primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-toggle")?.checked===true,
+  primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true",
   focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
 /* The signed-out menu, in the order of the site map's signed-out header: the pages, the guide and Sign in. */
 const menuLinks=["How it works","Use cases","Library","Pricing","Docs","Get set up","Sign in"];
@@ -1031,9 +1031,17 @@ try {
   check("homepage_first_screen_does_not_move_when_the_script_runs",steadiness.length===2&&steadiness.every(item=>item.moved.length===0&&Object.values(item.served).every(Boolean)),{moved:steadiness.map(item=>({width:item.width,moved:item.moved}))});
   const nudged=Object.fromEntries(Object.entries(servedHeroBoxes).map(([key,box])=>[key,key==="#hero-primary"&&box?box.map((value,index)=>index===1?value+3:value):box]));
   check("steadiness_check_rejects_a_first_screen_that_moves",JSON.stringify(boxesMoved(servedHeroBoxes,nudged))===JSON.stringify(["#hero-primary"]));
-  /* The last measurement left the page without its script at phone width, where the menu still opens. */
-  await plain.locator("header .menu-button").click();const plainMenu=await menuState(plain);
-  check("phone_menu_opens_when_the_script_has_not_run",plainMenu.open&&JSON.stringify(plainMenu.links)===JSON.stringify(menuLinks),plainMenu);
+  /* The last measurement left the page without its script at phone width. Until September 24, 2026 a checkbox opened the menu
+     without the script, but a checkbox cannot say whether the menu is open, and the persona journeys of that day found its name on
+     a control clipped to one pixel under the logo while the icon a person touches was hidden from assistive technology. The menu is
+     now one button that the script runs. Without the script the served button already carries its name, its collapsed state and
+     the navigation it controls, and the footer, which needs no script, links every page the menu holds. */
+  const plainMenu=await plain.evaluate(()=>{const button=document.getElementById("menu-button"),footer=[...document.querySelectorAll("footer a")].map(link=>link.getAttribute("href"));
+    return {named:button?.getAttribute("aria-label")||"",expanded:button?.getAttribute("aria-expanded")||"",controls:button?.getAttribute("aria-controls")||"",shown:Boolean(button?.getClientRects().length),
+      menu:[...document.querySelectorAll("#main-nav a[data-signed-out], #main-nav a:not([data-signed-in]):not([id=admin-nav])")].map(link=>link.getAttribute("href")),footer};});
+  const unreachable=[...new Set(plainMenu.menu)].filter(href=>!plainMenu.footer.includes(href));
+  check("phone_menu_button_is_named_before_the_script_runs_and_the_footer_links_every_menu_page",plainMenu.named==="Menu"&&plainMenu.expanded==="false"&&plainMenu.controls==="main-nav"&&plainMenu.shown
+    &&plainMenu.menu.length>=6&&unreachable.length===0,{...plainMenu,unreachable});
   await plain.close();await withoutScript.close();
   /* Retired words, runtime words and the words of an invitation-only service, read from every page a customer can open: the
      shared header and footer, the three use cases and their hub, and every page of the documentation index. The Documentation
@@ -1850,7 +1858,7 @@ try {
     {name:"drop_get_set_up_from_the_footer",changes:[{path:"/",find:'<a href="/setup" data-page="setup" data-nav="get-set-up">Get set up</a><a href="/how-it-works" data-page="about">How it works</a>',replacement:'<a href="/how-it-works" data-page="about">How it works</a>'}],
      run:async (opened,note)=>note("footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark",footerProblems(await readFooter(opened)).length===0),
      expected:["footer_carries_four_groups_with_get_started_get_set_up_the_use_cases_and_the_mark"]},
-    {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); $("menu-toggle").checked = false;',replacement:"show(name);"}],
+    {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); setMenu(false);',replacement:"show(name);"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:1000});await opened.locator("header .menu-button").click();await opened.locator('header nav a[data-page="pricing"]').click();
        const state=await menuState(opened);note("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",state.path==="/pricing"&&!state.open&&state.links.length===0);},
      expected:["phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice"]},
@@ -1884,7 +1892,7 @@ try {
   const headerEntries=async (target,width)=>{
     await target.setViewportSize({width,height:1000});
     const button=target.locator("header .menu-button"),folded=await button.isVisible();
-    if(folded&&!await target.evaluate(()=>document.getElementById("menu-toggle")?.checked===true))await button.click();
+    if(folded&&!await target.evaluate(()=>document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true"))await button.click();
     const state=await target.evaluate(()=>{const shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
       const bar=document.querySelector("header"),menu=document.querySelector("header .menu-button");
       return {entries:[...document.querySelectorAll("header a:not(.brand), header button")].filter(shown).map(node=>node.textContent.replace(/\s+/g," ").trim()),
@@ -1909,7 +1917,7 @@ try {
     note(headerChecks[1],member.every(state=>headerProblems(state,signedInHeader).length===0),{problems:member.flatMap(state=>headerProblems(state,signedInHeader))});
     await signOutFromHeader(opened);
     await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
-    const left=await opened.evaluate(()=>({path:location.pathname,menuOpen:document.getElementById("menu-toggle")?.checked===true,searchClosed:document.getElementById("query")?.disabled===true}));
+    const left=await opened.evaluate(()=>({path:location.pathname,menuOpen:document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true",searchClosed:document.getElementById("query")?.disabled===true}));
     const after=[await headerEntries(opened,390),await headerEntries(opened,1440)];
     note(headerChecks[2],left.path==="/login"&&!left.menuOpen&&left.searchClosed&&after.every(state=>headerProblems(state,signedOutHeader).length===0),{left,problems:after.flatMap(state=>headerProblems(state,signedOutHeader))});
   };
@@ -2905,6 +2913,41 @@ try {
       &&pi.action&&pi.address===fixture.base+"/assets/pi/baltor.ts"&&copied===pi.address&&served?.status()===200&&body===piSource
       &&!other.href&&!other.action&&other.note===recipeRecord.recipes.find(item=>item.id==="codex").configuration_note,{pi,other,copied,status:served?.status()});
   };
+  /* Finding 7 of the persona journeys of September 24, 2026: the phone menu's named control was a checkbox clipped to one pixel under
+     the logo, and the 44 pixel icon a person touches was a label hidden from assistive technology. The menu is now one visible button
+     with a name, aria-expanded and aria-controls="main-nav". At phone width, on every public page, the control under the icon is that
+     button, it opens and closes the navigation it names and says so, Escape closes it with focus back on it, and a choice closes it,
+     with no script error. */
+  const menuPages=["/","/pricing","/how-it-works","/use-cases","/setup","/get-started","/security","/docs","/login"];
+  const phoneMenu=async (target,note)=>{
+    const pageErrors=[];target.on("pageerror",error=>pageErrors.push(safeError(error.message)));
+    await target.setViewportSize({width:390,height:844});
+    const facts=()=>target.evaluate(()=>{const button=document.getElementById("menu-button"),nav=document.getElementById("main-nav"),brand=document.querySelector("header .brand");
+      const box=button?.getBoundingClientRect(),logo=brand?.getBoundingClientRect(),under=box?document.elementFromPoint(box.left+box.width/2,box.top+box.height/2):null;
+      return {tag:button?.tagName||"",name:button?.getAttribute("aria-label")||"",hidden:button?.getAttribute("aria-hidden")||"",controls:button?.getAttribute("aria-controls")||"",expanded:button?.getAttribute("aria-expanded")||"",
+        size:box?[Math.round(box.width),Math.round(box.height)]:[0,0],touched:Boolean(under&&button&&(under===button||button.contains(under))),
+        apart:Boolean(box&&logo&&(box.left>=logo.right||box.right<=logo.left||box.top>=logo.bottom||box.bottom<=logo.top)),
+        navShown:Boolean(nav&&getComputedStyle(nav).display!=="none"),focused:document.activeElement===button,
+        checkbox:Boolean(document.getElementById("menu-toggle")||document.querySelector("header input[type=checkbox]")),hiddenLabel:Boolean(document.querySelector('header label[aria-hidden="true"]'))};});
+    const visits=[];
+    for(const path of menuPages){
+      await target.goto(fixture.base+path);await settled(target);
+      const closed=await facts();
+      await target.click("#menu-button").catch(()=>{});const opened=await facts();
+      await target.keyboard.press("Escape");const escaped=await facts();
+      await target.click("#menu-button").catch(()=>{});
+      await target.locator('#main-nav a[data-page="pricing"]').click({timeout:3000}).catch(()=>{});
+      const chosen=await facts();
+      visits.push({path,closed,opened,escaped,chosen});
+    }
+    const problems=visits.flatMap(({path,closed,opened,escaped,chosen})=>[
+      ...(closed.tag==="BUTTON"&&closed.name==="Menu"&&closed.hidden===""&&closed.controls==="main-nav"&&closed.expanded==="false"&&!closed.navShown?[]:[path+": the closed menu is "+JSON.stringify(closed)]),
+      ...(closed.size[0]>=44&&closed.size[1]>=44&&closed.touched&&closed.apart&&!closed.checkbox&&!closed.hiddenLabel?[]:[path+": the control a person touches is not the named button"]),
+      ...(opened.expanded==="true"&&opened.navShown?[]:[path+": a press does not open the menu and say so"]),
+      ...(escaped.expanded==="false"&&!escaped.navShown&&escaped.focused?[]:[path+": Escape does not close the menu with focus on its button"]),
+      ...(chosen.expanded==="false"&&!chosen.navShown?[]:[path+": a choice leaves the menu open"])]);
+    note("phone_menu_is_one_named_button_that_states_whether_it_is_open_on_every_page",visits.length===menuPages.length&&problems.length===0&&pageErrors.length===0,{problems,pageErrors});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2939,7 +2982,7 @@ try {
     kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn,
     founding_open:foundingPublic(fixture.signup_base,true),founding_closed:foundingPublic(fixture.confirm_base,false),
     plan_founding:coveredPlan(fixture.billing_founding_token,"founding_free_monthly"),plan_free_monthly:coveredPlan(fixture.billing_free_monthly_token,"free_monthly"),
-    review_explained:reviewExplained,pi_extension:piExtension};
+    review_explained:reviewExplained,pi_extension:piExtension,phone_menu:phoneMenu};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -3037,6 +3080,10 @@ try {
      replacement:"const target = $(\"client-configuration-note\"), found = null;",expected:["the_pi_extension_path_is_a_link_with_a_copy_action"]},
     {name:"copy_only_the_path_of_the_pi_extension",scenario:"pi_extension",path:"/assets/service.js",find:"$(\"client-file-address\").textContent = location.origin + found[0];",
      replacement:"$(\"client-file-address\").textContent = found[0];",expected:["the_pi_extension_path_is_a_link_with_a_copy_action"]},
+    {name:"never_say_whether_the_phone_menu_is_open",scenario:"phone_menu",path:"/assets/service.js",find:'menuButton.setAttribute("aria-expanded", String(open)); ',replacement:"",
+     expected:["phone_menu_is_one_named_button_that_states_whether_it_is_open_on_every_page"]},
+    {name:"hide_the_phone_menu_button_from_assistive_technology",scenario:"phone_menu",path:"/pricing",find:'aria-label="Menu" aria-expanded="false"',replacement:'aria-hidden="true" aria-expanded="false"',
+     expected:["phone_menu_is_one_named_button_that_states_whether_it_is_open_on_every_page"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

@@ -104,8 +104,15 @@ of bands. Each band is set off from the next by a change of ground and a one
 pixel rule, and a dark band carries how it works and the closing action.
 Every colour, typeface, radius and shadow is a custom property in the token
 block at the top of `service.css`, so a change of design edits that block.
-Below 860 pixels the header links fold into a menu that a checkbox opens, so
-the menu works without the page script and nothing moves when the script runs.
+Below 860 pixels the header links fold into a menu behind one visible button
+named "Menu", with `aria-expanded` and `aria-controls="main-nav"`. A press
+opens and closes it, Escape closes it and returns focus to the button, and
+opening a page closes it. Until September 24, 2026 a checkbox clipped to one
+pixel under the logo opened the menu without the page script, while the icon a
+person touches was hidden from assistive technology. Without the script the
+served button still carries its name and its collapsed state, and the footer
+links every page the menu holds. The site map check counts the button as a
+control of the navigation, not as a header entry.
 
 The header follows the sign-in that the page holds. A visitor who is not signed
 in sees Sign in and the one primary action. A signed-in person sees the account
