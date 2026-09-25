@@ -7185,6 +7185,12 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: '2026-09-24'
     expires_on: '2027-09-24'
+  - finding_id: hardcoding.54698e63238b3f8c3bb349a0
+    owner: loop_engine.core.service_runtime.model_directory_pages:SITEMAP_NAMESPACE
+    rationale: "The XML namespace name of the site map file format, which the model directory writes for its own pages as web_pages.py does for the site. It names a format; nothing fetches it, and it chooses no provider."
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: "2026-09-25"
+    expires_on: "2027-09-25"
 excluded_paths:
   - path: docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json
     owner: docs.verification.live-baltor-morning-2026-09-23
