@@ -2,9 +2,9 @@
  "counts": {
   "blocked": 2,
   "done": 44,
-  "next": 13,
+  "next": 15,
   "now": 42,
-  "waiting": 96
+  "waiting": 103
  },
  "lanes": {
   "blocked": [
@@ -652,6 +652,28 @@
     "phase": 6,
     "status": "ready",
     "title": "Reusable development workflows and recurring reviews with declared effect policies",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "After the owner creates the server and authorizes the setup app, the whole layout exists and passes the ordinary member checks, the setup app is gone, and every call is recorded.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.153",
+    "next_local_work": "Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "A change to Telegram's or Discord's bot platform reaches the next research digest within a day.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.157",
+    "next_local_work": "Add the four sources and raise the limits, with tests.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Research watch sources for the chat platforms",
     "waiting_on": []
    },
    {
@@ -2746,6 +2768,119 @@
     ]
    },
    {
+    "acceptance": "Any client, including the chat helpers, can ask for a recipe in words and get at most three Verified recipe cards or an honest abstention, and nobody can reconstruct the library through it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.39"
+    ],
+    "id": "S-6.149",
+    "next_local_work": "Write the request and result contracts and the projection from the served catalogue view with their checks, behind a host setting that is off.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance",
+    "waiting_on": [
+     "S-6.39"
+    ]
+   },
+   {
+    "acceptance": "A recorded platform request produces exactly one answer, either Verified recipe cards or an honest abstention, with a text-free record, and nothing happens when the host setting is off.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.149"
+    ],
+    "id": "S-6.150",
+    "next_local_work": "Declare the slot, the three records and the gate, with loopback checks over recorded Telegram and Discord payloads.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off",
+    "waiting_on": [
+     "S-6.149"
+    ]
+   },
+   {
+    "acceptance": "In a staff test chat, mentioning the bot returns one Verified recipe card answer or an abstention, and /recipe in the owned group answers only the asker.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.153"
+    ],
+    "id": "S-6.151",
+    "next_local_work": "Write the adapter against recorded guest_message payloads; the owner creates the bot in @BotFather and stores its token with the keyring tool.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "In a test server and in a direct message, /recipe and the message command return one private answer with Verified recipe cards or an abstention, and only the asker decides whether it is shared.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.153"
+    ],
+    "id": "S-6.152",
+    "next_local_work": "Write the adapter against recorded interaction payloads with signature checks; the owner creates the Discord team and application and stores the token with the keyring tool.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "Solved community problems become findable pages on Baltor with the consent of the people who solved them.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.153"
+    ],
+    "id": "S-6.154",
+    "next_local_work": "Write the card record and the consent flow, and render the first card from a staff example.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Solution cards: consented write-ups of solved community threads on Baltor's own pages",
+    "waiting_on": [
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "What people ask for and cannot find becomes the factory's next work, with their consent.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.40"
+    ],
+    "id": "S-6.155",
+    "next_local_work": "Declare recipe_demand/v1 and the grouping step, and feed one staff-made demand record into a dry run of the idea matrix.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Unmet recipe requests become consented demand records that feed the package factory",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.40"
+    ]
+   },
+   {
+    "acceptance": "Any paid capability inside Telegram or Discord follows each platform's rules and shows its real net revenue.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.151",
+     "S-6.152"
+    ],
+    "id": "S-6.156",
+    "next_local_work": "Keep the no-payment checks in the helper steps; build this gate only when a paid chat capability is chosen.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified",
+    "waiting_on": [
+     "S-6.151",
+     "S-6.152"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4230,5 +4365,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b169bc63fb83eb7"
+ "source_fingerprint": "sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc756ad3db93a50"
 }

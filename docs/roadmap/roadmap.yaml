@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
@@ -1498,19 +1498,19 @@ continuation:
       continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.153, S-6.154]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -3802,3 +3802,147 @@ steps:
     acceptance: "A customer can check that a served package is the exact one that was reviewed and released, and an author can publish from continuous integration without a stored key."
     evidence: "npm and PyPI mint short-lived publishing credentials from continuous integration identity tokens and publish Sigstore-signed provenance; PyPI's security model warns that anyone who can change a publishing workflow can publish and that a recreated account can inherit trust; Hugging Face marks GPG-signed commits as verified. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
     next_local_work: "Write author_submission_provenance/v1 with the source check, then the signed publish record and its verifier, then trusted publishing from GitHub Actions."
+  - id: S-6.149
+    phase: 6
+    title: "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance"
+    status: proposed
+    depends_on: [S-6.39]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_search.py, src/loop_engine/core/service_runtime/request_limits.py, src/loop_engine/core/service_runtime/http.py, src/loop_engine/core/boundary_registry.py]
+    verify:
+      - "public_recipe_search_request/v1 takes a query of at most 300 characters, a result count of at most 3 and a channel name, and public_recipe_search_result/v1 answers with identity, kind, purpose, tier label, licence, declared effects, file count and placement and a public page address, or with an abstention below the relevance floor"
+      - "the edge fixes the Verified tier; a qualified recipe needs complete card fields (purpose, kind, files with placement for at least one harness, licence, declared effects and the review record identity), and an item without them is never returned"
+      - "bodies, scores, backend names, paging cursors, internal attributes and commercial relationship fields never appear in a result"
+      - "each call counts against the published S-6.39 allowance per caller and per address, and the edge is registered in core.boundary_registry as a Starting Intelligence Loop with profile intelligence.search@1.0.0"
+      - "a public recipe page at /r/<identity> shows the same card fields for Verified items only, with no body and no download without signing in"
+    adversarial: "A fourth result, a paging cursor, a Community tier item, an item with incomplete card fields, a score or a backend name in a result, a body byte on a recipe page, and a client that walks the library through repeated queries past its allowance must each be refused by a named check with its removed-guard control."
+    acceptance: "Any client, including the chat helpers, can ask for a recipe in words and get at most three Verified recipe cards or an honest abstention, and nobody can reconstruct the library through it."
+    evidence: "September 25, 2026 research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md. Search on main needs a service token (/api/v1/retrieval) and answers up to 50 results; S-6.39 already requires a bounded free search. Release 25 served 43 items, all approved through the review panel."
+    next_local_work: "Write the request and result contracts and the projection from the served catalogue view with their checks, behind a host setting that is off."
+  - id: S-6.150
+    phase: 6
+    title: "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off"
+    status: proposed
+    depends_on: [S-6.149]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/boundary_registry.py, src/loop_engine/core/service_runtime]
+    verify:
+      - "a chat_request_channel engine slot with a fixed edge: a platform update in and recipe_rescue_request/v1 out, recipe_rescue_answer/v1 in and one platform reply out; a new platform is a new engine and changes no caller"
+      - "each answer is one Starting Intelligence Loop with profile intelligence.search@1.0.0 in deterministic mode: one public recipe search and one reply, with no model, no file, no outbound fetch and no spending"
+      - "the request gate runs before any search: platform authenticity, explicit invocation only, bot senders ignored, one reply per request, the host setting, the stage allowlist and blocklist, per requester, per conversation and global limits, and refusal of key-shaped text"
+      - "recipe_rescue_event/v1 records the channel, invocation kind, outcome, item identities, keyed hashes of requester and conversation, the hour, the catalogue release and the policy version, and has no field that can hold message text"
+      - "Useful and Not useful presses become User Feedback Intelligence records tied to the answer"
+      - "a failed search gives a plain failure reply, never a stored or invented recipe"
+      - "outside staff test chats the helper answers only after the owner approves the privacy notice addition, recorded in AGENTS.md"
+    adversarial: "A reply to an uninvoked message, a reply to a bot, a second reply to one request, a search run with the host setting off, a message text field in the event record, a key-shaped request that is echoed or stored, an invented recipe after a failed search, and a reply that carries a price, a code or a sponsored link must each fail a named check with its removed-guard control."
+    acceptance: "A recorded platform request produces exactly one answer, either Verified recipe cards or an honest abstention, with a text-free record, and nothing happens when the host setting is off."
+    evidence: "September 25, 2026 research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md. The owner approved the privacy notice drafts of September 24 and no other use of personal data, and a chat helper processes platform user identifiers and message text."
+    next_local_work: "Declare the slot, the three records and the gate, with loopback checks over recorded Telegram and Discord payloads."
+  - id: S-6.151
+    phase: 6
+    title: "Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group"
+    status: proposed
+    depends_on: [S-6.150, S-6.153]
+    boundary: [src/loop_engine/core/service_runtime, tools/operator_credentials.json]
+    verify:
+      - "the webhook refuses any request without the X-Telegram-Bot-Api-Secret-Token value and subscribes only to message, guest_message and callback_query updates"
+      - "a guest_message becomes one answerGuestQuery reply carrying the recipe card as an inline query result; the adapter uses no history or member list, which guest mode does not provide"
+      - "in the owned group the bot is a member without admin rights, with group privacy on, and answers /recipe with an ephemeral message visible only to the asker"
+      - "bot-to-bot communication and inline mode stay off, and no payment method is called"
+      - "the bot token stays in the system keyring under a declared reference, reaches the service only as a release secret and never appears in a log or a record"
+      - "the rate guidance holds: at most one message per second in a chat and 20 a minute in a group"
+    adversarial: "An update with a wrong secret header, a guest query answered twice, a reply to a message sent by a bot, the bot made an admin, a payment call, and the token in a log line must each be refused by a named check."
+    acceptance: "In a staff test chat, mentioning the bot returns one Verified recipe card answer or an abstention, and /recipe in the owned group answers only the asker."
+    evidence: "Telegram Bot API 10.0 (May 8, 2026) added guest mode, and Bot API 10.2 (July 14, 2026) added ephemeral messages and Communities. The bot features page documents one reply per mention, no history, no member list and loop prevention for bot-to-bot mode. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the adapter against recorded guest_message payloads; the owner creates the bot in @BotFather and stores its token with the keyring tool."
+  - id: S-6.152
+    phase: 6
+    title: "Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first"
+    status: proposed
+    depends_on: [S-6.150, S-6.153]
+    boundary: [src/loop_engine/core/service_runtime, tools/operator_credentials.json]
+    verify:
+      - "an HTTP interactions endpoint answers PING and refuses with status 401 any request whose X-Signature-Ed25519 and X-Signature-Timestamp do not verify"
+      - "global commands /recipe and the message command Find a recipe for this declare integration_types USER_INSTALL and GUILD_INSTALL and contexts GUILD, BOT_DM and PRIVATE_CHANNEL, with no age-restricted command"
+      - "in a server the first answer is ephemeral; a Share button posts the card publicly only when the asker presses it, and says plainly when Use External Apps or the asker's send permission does not allow it"
+      - "the first response goes out within 3 seconds, deferred when the search is slow, and one followup at most is used, inside the limit of 5 for user-installed apps"
+      - "no gateway connection and no privileged intent; the message command reads only the message the user selected"
+      - "the server install uses the applications.commands scope without the bot scope where Discord accepts it"
+    adversarial: "A request with a bad signature, a public answer before the asker presses Share, a Share that bypasses a server's Use External Apps setting, a response after 3 seconds without a deferral, and a request for the Message Content intent must each fail a named check."
+    acceptance: "In a test server and in a direct message, /recipe and the message command return one private answer with Verified recipe cards or an abstention, and only the asker decides whether it is shared."
+    evidence: "Discord documents user installation, interaction contexts, the Use External Apps permission, the 3-second first response, the 15-minute token and the 5-followup limit for user-installed apps (discord/discord-api-docs at 30017dee). Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the adapter against recorded interaction payloads with signature checks; the owner creates the Discord team and application and stores the token with the keyring tool."
+  - id: S-6.153
+    phase: 6
+    title: "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log"
+    status: proposed
+    depends_on: []
+    boundary: [tools/operator_credentials.json, tools/operator_credentials.py]
+    verify:
+      - "three credential references are declared with format checks, discord-community-setup, discord-recipe-rescue and telegram-recipe-rescue, and are stored only through the interactive store command"
+      - "a setup tool applies the Discord layout from the private community spec: roles, categories, channels, forum tags and guidelines, onboarding with at least 7 default channels of which at least 5 let everyone view and send, and the AutoMod rules; it creates only what is missing, records every call and never deletes"
+      - "the setup app leaves the server once the checks pass, and its credential is marked retired"
+      - "ordinary member checks run from an account that holds only the member role: staff channels hidden, a key-shaped message blocked, mention spam blocked, @everyone inert, invites to other servers blocked and onboarding roles assigned"
+      - "a community measures log keeps counts with their denominators: first useful result within 7 days, repeat useful use on days 8 to 14, resolution, peer help, steward minutes and helper answers, and never joins identities across platforms"
+    adversarial: "A layout run that deletes or changes a channel it did not create, onboarding enabled with fewer than 5 open channels, a check run from the owner account, a setup app left installed, and a measure reported as a percentage without its count must each be refused."
+    acceptance: "After the owner creates the server and authorizes the setup app, the whole layout exists and passes the ordinary member checks, the setup app is gone, and every call is recorded."
+    evidence: "Discord's Community Onboarding needs at least 7 default channels, 5 of them open to everyone; AutoMod exempts Administrator and Manage Server; a server has at most 6 keyword rules of 10 regular expressions each. The private setup kit is in /home/username/baltor-private/community-2026-09-24/. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit."
+  - id: S-6.154
+    phase: 6
+    title: "Solution cards: consented write-ups of solved community threads on Baltor's own pages"
+    status: proposed
+    depends_on: [S-6.153]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_site_map.json]
+    verify:
+      - "a solved help thread becomes a draft card: the problem, tools and versions, what was tried, the fix, the observed result, limits, and files with their licence"
+      - "every person quoted approves the draft and a steward checks attribution and private data before anything is published"
+      - "publication, library reuse and model training are three separate consents, and each card records which were given"
+      - "files meant for the library go through the author submission path of S-6.141 and its review, never copied into the library from a card"
+      - "Answer Overflow stays off until the help forum holds 50 consented solved posts, and if it is added it treats messages as private unless consented"
+    adversarial: "A card published without every quoted person's approval, a card that holds a key, an address or a private link, a card that reads library or training consent into publication consent, and Answer Overflow installed with its public default must each be refused."
+    acceptance: "Solved community problems become findable pages on Baltor with the consent of the people who solved them."
+    evidence: "Answer Overflow (MIT, 80b1dceb) treats messages in indexed channels as public unless a member opts out; indexed pages stay up to 7 days after indexing is disabled and in Google for an unknown time. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the card record and the consent flow, and render the first card from a staff example."
+  - id: S-6.155
+    phase: 6
+    title: "Unmet recipe requests become consented demand records that feed the package factory"
+    status: proposed
+    depends_on: [S-6.150, S-6.40]
+    boundary: [tools/harness_idea_matrix.py, tools/overnight_candidate_batch.py]
+    verify:
+      - "only the Ask Baltor to make this recipe button keeps request text, after a key-shaped text check, as a recipe_demand/v1 record with channel and time and no requester identity"
+      - "demand records are grouped by meaning and counted, and each group is offered to the idea matrix as a brief that keeps its count"
+      - "a package made from a brief is a candidate like any other and goes through the independent review; demand never approves anything"
+      - "a public count of open requests and of the recipes made from them is published without request text"
+    adversarial: "Request text kept without the button, a demand record that holds a requester identity, a brief that skips the review, and published request text must each be refused."
+    acceptance: "What people ask for and cannot find becomes the factory's next work, with their consent."
+    evidence: "Release 25 served 43 approved items, mostly data work and task planning methods and no creative recipes, so most creative requests will abstain at first. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Declare recipe_demand/v1 and the grouping step, and feed one staff-made demand record into a dry run of the idea matrix."
+  - id: S-6.156
+    phase: 6
+    title: "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified"
+    status: proposed
+    depends_on: [S-6.151, S-6.152]
+    boundary: [src/loop_engine/core/service_runtime/billing_policy.py, src/loop_engine/core/service_runtime]
+    verify:
+      - "the helpers call no payment method until this step is verified"
+      - "a Telegram sale of a digital good uses Stars only, answers /paysupport, handles refunds deducted from the bot balance, and records Stars apart from dollar subscription revenue"
+      - "a Discord sale uses Premium Apps in the supported regions at a price no higher than Baltor's own checkout, and checks the entitlement on every interaction"
+      - "accounting records collected revenue, platform and payment fees, refunds, execution cost and support cost as separate facts"
+    adversarial: "A Stripe link used to sell a digital good inside a Telegram bot, a Discord price above the website price, an entitlement assumed without a check, and Stars counted as dollars must each be refused."
+    acceptance: "Any paid capability inside Telegram or Discord follows each platform's rules and shows its real net revenue."
+    evidence: "Telegram's Bot Developer Terms, section 6.2, require Stars for digital goods. Discord's Developer Policy requires Premium Apps and price parity since October 7, 2024; Premium Apps pay 6 percent processing and a 15 percent Growth Tier platform fee up to 1,000,000 dollars, then 30 percent, with no mobile transactions. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Keep the no-payment checks in the helper steps; build this gate only when a paid chat capability is chosen."
+  - id: S-6.157
+    phase: 6
+    title: "Research watch sources for the chat platforms"
+    status: proposed
+    depends_on: []
+    boundary: [tools/research_source_watch.json, tools/refresh_research_sources.py]
+    verify:
+      - "the watch adds the Telegram Bot API changelog, the Discord developer change log in discord/discord-api-docs, the Answer Overflow repository and the Meta newsroom"
+      - "the watch tool's allowed page hosts and online source limit are raised, with their tests"
+      - "a change in a watched source opens or updates the research watch issue, and the next research digest reviews it against this record"
+    adversarial: "A watched page on a host outside the allowlist, a redirect followed to another host, and a source added without a roadmap step must each be refused by the watch tool's checks."
+    acceptance: "A change to Telegram's or Discord's bot platform reaches the next research digest within a day."
+    evidence: "The daily research watch holds 17 sources, with an online limit of 20 and a page host allowlist that includes neither core.telegram.org nor discord.com. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Add the four sources and raise the limits, with tests."

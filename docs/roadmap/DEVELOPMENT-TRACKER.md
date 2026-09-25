@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b169bc63fb83eb7`.
+Source fingerprint: `sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc756ad3db93a50`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
 | Being built now | 42 |
-| Can start next | 13 |
-| Waiting on earlier work | 96 |
+| Can start next | 15 |
+| Waiting on earlier work | 103 |
 | Blocked | 2 |
 | Done | 44 |
 
@@ -68,6 +68,8 @@ Source fingerprint: `sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b16
 |---|---|---|---|
 | S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep co |
 | S-6.76 | Reusable development workflows and recurring reviews with declared effect policies | ready | Choose a scheduler that can run the workflows against this machine (a timer that starts a headless harness, or a hosted routine for read-only jobs) and record the first scheduled runs. |
+| S-6.153 | Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log | proposed | Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit. |
+| S-6.157 | Research watch sources for the chat platforms | proposed | Add the four sources and raise the limits, with tests. |
 | S-2.10 | Intelligence access contract and no-direct-edit conformance rule | proposed |  |
 | S-2.18 | Relayer each declared boundary package from core one boundary at a time | proposed |  |
 | S-2.19 | Move the specifications at the docs root into their kind folders with redirect stubs | proposed |  |
@@ -164,6 +166,13 @@ Source fingerprint: `sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b16
 | S-6.146 | Author pages, package pages and the publishing dashboard | proposed | S-6.145, S-6.67 |
 | S-6.147 | Contributor terms and the privacy notice addition, published with the feature | proposed | S-6.141 |
 | S-6.148 | Provenance for submitted packages: verified source links, trusted publishing and a signed publish record | proposed | S-6.144 |
+| S-6.149 | A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance | proposed | S-6.39 |
+| S-6.150 | Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off | proposed | S-6.149 |
+| S-6.151 | Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group | proposed | S-6.150, S-6.153 |
+| S-6.152 | Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first | proposed | S-6.150, S-6.153 |
+| S-6.154 | Solution cards: consented write-ups of solved community threads on Baltor's own pages | proposed | S-6.153 |
+| S-6.155 | Unmet recipe requests become consented demand records that feed the package factory | proposed | S-6.150, S-6.40 |
+| S-6.156 | Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified | proposed | S-6.151, S-6.152 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
