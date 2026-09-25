@@ -86,6 +86,7 @@ ran on it or on an export of its exact tree.
 | Hardcoding gate on the export | exit 0, no new high finding |
 | Conformance on the export | all gates pass |
 | Self-test on the export | one check failed at a load average near 50: `core.mcp_sdk_transport` raised a timeout. That self-test alone then passed 7 of 7 in 26.9 seconds at a load of 73. |
+| Self-test, run again in the working tree at `d49123a0` | 3,452 of 3,452 in 1,427 seconds, no provider call |
 | markdownlint, the CI scope and this folder | 0 issues |
 
 Two failed runs are kept beside their successors:
