@@ -213,8 +213,15 @@ jobs:
           # left out when it is zero, and the command's exact output.
           # tools/check_fly_service_container.py ran the same command against
           # this image before it was published.
-          machine="$(flyctl machine list --app "${FLY_APP}" --json \
-            | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end')"
+          # The replaced Machine can still be starting when the deploy returns (release 28's first run failed here), so the
+          # lookup is read every five seconds for up to two minutes; exactly one started Machine must answer once.
+          machine=""
+          for attempt in $(seq 1 24); do
+            machine="$(flyctl machine list --app "${FLY_APP}" --json \
+              | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end' 2>/dev/null)" && break
+            machine=""
+            sleep 5
+          done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
           applied="$(flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json)"
           printf '%s\n' "${applied}" | jq -e --arg manifest "${PACKAGED_MANIFEST}" '(.exit_code // 0) == 0 and (((.stdout // "") | fromjson?) // null | .record_type == "service_host_grant_application/v1" and .manifest_path == $manifest and .tenants_registered == 0 and .remote_accounts_created == false and (.granted_items_by_tenant | type == "object" and length > 0 and all(.[]; type == "number" and . > 0)))' >/dev/null
@@ -243,8 +250,15 @@ jobs:
           # goes through the Machines API exec call and setpriv like the grant
           # step, and tools/check_fly_service_container.py ran the same command
           # against this image before it was published.
-          machine="$(flyctl machine list --app "${FLY_APP}" --json \
-            | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end')"
+          # The replaced Machine can still be starting when the deploy returns (release 28's first run failed here), so the
+          # lookup is read every five seconds for up to two minutes; exactly one started Machine must answer once.
+          machine=""
+          for attempt in $(seq 1 24); do
+            machine="$(flyctl machine list --app "${FLY_APP}" --json \
+              | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end' 2>/dev/null)" && break
+            machine=""
+            sleep 5
+          done
           [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
           applied="$(flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json)"
           # The record holds record versions, digests and, on a refusal, its
