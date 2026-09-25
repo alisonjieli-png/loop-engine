@@ -1,12 +1,5 @@
 schema: hardcoding_allowlist/v1
 entries:
-  - finding_id: hardcoding.54698e63238b3f8c3bb349a0
-    owner: loop_engine.core.service_runtime.model_directory_pages
-    rationale: The XML namespace name of the sitemap protocol, written as the xmlns of the model directory's
-      site map file at /models/sitemap.xml. It names a document format; nothing fetches it, it selects no
-      provider and it carries no credential. The protocol fixes this exact http address, so it cannot be
-      configured.
-    classification: STRATEGY_OR_PROVIDER_BINDING
   - finding_id: hardcoding.20ea916032835992d349a0b5
     owner: tools.candidate_review.reviewers.command_line:codex_session_root
     rationale: CODEX_HOME is the Codex command line's own documented variable for its home folder. The
