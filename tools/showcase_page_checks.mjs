@@ -32,8 +32,8 @@ const recordedLabel="Real results from the library";
 /* The phrases the owner retired from every page on September 24, 2026, and the few of the same kind removed with them: words that
    describe Baltor's own checks or repeat the navigation instead of telling a visitor something. Keep this list short; it is read in
    the rendered words of every page, so it never pins other copy. */
-export const retiredFiller=["creates your account.","connects your harness.","Bytes match the digest","Recorded from this release's library",
-  "digest checked","typed in by hand","from saved evidence","Seen in the run"];
+import {retiredPhrases} from "./public_wording_rules.mjs";
+export const retiredFiller=retiredPhrases;
 
 export async function runShowcasePageChecks({root,python,browser,context,fixture,check,mutants,output,safeError,words,localOnly}){
   const read=spawnSync(python,["-c",READER],{cwd:root,env:{...process.env,PYTHONPATH:resolve(root,"src")},encoding:"utf8"});

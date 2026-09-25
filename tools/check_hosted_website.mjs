@@ -4,6 +4,7 @@ import {readFileSync,writeFileSync,existsSync} from "node:fs";
 import {spawnSync} from "node:child_process";
 import {resolve} from "node:path";
 import {createHash} from "node:crypto";
+import {internalTerms,invitationWords as liveInvitation,retiredAccessWords as liveRetired,unpublishedTerms,cardStatusWords} from "./public_wording_rules.mjs";
 
 const origin=process.argv[2],output=resolve(process.argv[3]||"");
 if(!origin||new URL(origin).origin!==origin||!origin.startsWith("https://")||!process.argv[3]||existsSync(output))throw new Error("Use an exact HTTPS origin and a new report path.");
@@ -11,10 +12,8 @@ const root=resolve(new URL("..",import.meta.url).pathname);
 const checks=[],errors=[],external=[],navigation=[];
 const check=(name,passed)=>checks.push({name,passed:passed===true});
 /* One plain-word rule for the public pages. tools/check_service_workspace.mjs carries the same line, and a named check there compares the two. */
-const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
 /* The words of an invitation-only service, which the owner retired on September 23, 2026. tools/check_service_workspace.mjs
    carries the same line, and a named check there compares the two. */
-const liveInvitation=/\binvit(?:e|es|ed|ing|ations?)\b|small groups|waiting list|\bsearch(?:ing)? is free\b|being built|being prepared|\bplanned\b/i;
 /* The owner's decisions of September 23, 2026, written once as rules that the journey below and its known-wrong cases share.
    tools/check_service_workspace.mjs holds the same decisions against a local service. */
 const heroHarnesses=["Claude Code","Codex","OpenCode","Pi","Baltor Harness"];
@@ -25,7 +24,6 @@ const heroCheckRejectsItsKnownWrongCases=copy=>{const earlier={headline:"Superch
     &&heroProblems({...copy,text:copy.text+" Each step runs in a fresh harness."}).some(problem=>problem.includes("fresh harness"));};
 const categoryProblems=state=>[...(/^Harness and agent optimized operation\.$/m.test(state.footer)?[]:["the footer does not carry the category line in full"]),...(JSON.stringify(state.harnesses)===JSON.stringify(heroHarnesses)?[]:["the hero names "+JSON.stringify(state.harnesses)])];
 const statesThePlanAndPrice=text=>/^Baltor Pro \$29 a month\b/.test(text)&&!/United States dollars|per month/i.test(text);
-const cardStatusWords=/available now|being built|\bplanned\b|coming soon|packages coming/i;
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
   ...cards.filter(card=>!card.shown||!card.title).map(card=>card.name+" is not shown under its own heading"),...cards.filter(card=>card.tags>0||cardStatusWords.test(card.text)).map(card=>card.name+" carries a status")];
 const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"More efficient operation",learning:"Learning and optimization, built in"};
@@ -229,7 +227,6 @@ try{
   const termsWords=legalWords("docs/legal/TERMS-OF-SERVICE.md"),privacyWords=legalWords("docs/legal/PRIVACY-NOTICE.md");
   const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
   const termsOperator="Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.",termsDate="Last changed: September 23, 2026";
-  const unpublishedTerms=/terms of service:?\s+not yet published|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)/i;
   const deepTerms=await page.request.get(origin+"/terms",{maxRedirects:0});
   check("live_terms_address_is_served_directly",deepTerms.status()===200&&(deepTerms.headers()["content-type"]||"").startsWith("text/html"));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
@@ -325,7 +322,6 @@ try{
   }
   /* The retired trial words, read from the deployed pages themselves. The served assets are already compared byte for
      byte with the tested source above, so this pass covers the markup and anything the deployed service substitutes. */
-  const liveRetired=/\bpilots?\b|\bbetas?\b|early access/i;
   const customerLanguage=text=>text.replaceAll(origin,"<service origin>");
   const liveRetiredProblems=[],liveInvitationProblems=[];
   /* A published legal text keeps the words the owner approved: the approved privacy notice says small groups and planned, and the

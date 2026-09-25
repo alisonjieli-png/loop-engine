@@ -3,6 +3,7 @@
 import {runSignupSessionBoundaries} from "./signup_session_boundary_checks.mjs";
 import {runShowcasePageChecks,showcasePaths,showcaseScreenshotSuffixes} from "./showcase_page_checks.mjs";
 import {runDirectoryChecks} from "./directory_browser_checks.mjs";
+import {internalTerms,publicVocabulary,retiredAccessWords,invitationWords,unpublishedTerms,cardStatusWords,retiredPhrases} from "./public_wording_rules.mjs";
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
@@ -217,25 +218,21 @@ const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,deta
 const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.billing_founding_token,fixture.staff_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
-const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
 /* The Baltor Harness recipe names the command and package a customer types, loop-engine, exactly as written. That lowercase
    name is not prose, so it is taken out before the plain-words rule reads a recipe; Loop Engine in words is still refused. */
 const withoutProgramName=text=>text.replace(/(?<![A-Za-z])loop-engine(?![A-Za-z])/g,"");
 /* Words a customer page may never carry. The first set is the runtime vocabulary, which belongs in the Documentation
    view and in the repository. The second set describes the product as a trial, which the owner retired: who may create
    an account is a matter of configuration, not of copy. Each rule is checked against a known-wrong page of its own. */
-const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles?|\bPractitioner\b/i;
 /* The retired set names all four phrases the style guide retires, so a page that never writes pilot or beta but still
    offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
    drifts between the two is a named failure below rather than a silent disagreement. */
-const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
 /* The words of an invitation-only service, which the owner retired on September 23, 2026: "remove all mentions of invitation
    only, this should be consistent as if it is fully working" and "We also need to get rid of 'search is free'". No page a
    customer can open says invite, invited or invitation, small groups, waiting list, search is free, being built, being prepared
    or planned, in any state the service reports. The privacy notice and the terms of service keep the words the owner approved,
    so the reading leaves out each of them only while it is shown with exactly the approved words. The hosted check reads the
    deployed pages with the same rule, and a named check below compares the two copies. */
-const invitationWords=/\binvit(?:e|es|ed|ing|ations?)\b|small groups|waiting list|\bsearch(?:ing)? is free\b|being built|being prepared|\bplanned\b/i;
 /* The Markdown of a published notice is read as a reader sees it rendered: a code span, strong text or a link is the same
    words without its marks. */
 const markdownWords=text=>text.replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
@@ -258,7 +255,6 @@ const withoutApprovedBlock=(markup,block,approved)=>{const found=markup.match(bl
 const withoutApprovedTerms=(markup,approved=approvedTermsWords)=>withoutApprovedBlock(markup,termsBlock,approved);
 /* A statement that the terms of service are not published. The owner approved and published them on September 23, 2026.
    The hosted check reads the deployed pages with the same rule, and a named check below compares the two copies. */
-const unpublishedTerms=/terms of service:?\s+not yet published|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)/i;
 /* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant"; September 23:
    "I think we need to have 'Get Setup' which is a guide on how to get setup and 'get started' is the sign up and
    registration/pay funnel", and later the same day: "remove all mentions of invitation only". So every link or button that
@@ -442,7 +438,6 @@ const useCaseTitles={overnight:"Solve complex problems overnight",efficiency:"Mo
 const homeCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>({name:node.dataset[key]||"",
   title:node.querySelector("h3")?.textContent.replace(/\s+/g," ").trim()||"",text:node.textContent.replace(/\s+/g," ").trim(),tags:node.querySelectorAll(".status-tag, [data-status]").length,
   links:[...node.querySelectorAll("a[href]")].map(link=>link.getAttribute("href")),shown:node.getClientRects().length>0})),[selector,key]);
-const cardStatusWords=/available now|being built|\bplanned\b|coming soon|packages coming/i;
 const cardProblems=(cards,order)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
   ...cards.filter(card=>!card.shown||!card.title).map(card=>card.name+" is not shown under its own heading"),
   ...cards.filter(card=>card.tags>0||cardStatusWords.test(card.text)).map(card=>card.name+" carries a status: "+JSON.stringify(card.text.slice(0,80)))];
@@ -821,7 +816,7 @@ try {
     &&heroActionProblems({...heroActions,secondary:[]}).length===1&&heroActionProblems({...heroActions,secondary:[["hero-see-step","See one step work","#step-demo"]]}).length===1
     &&heroActionProblems({...heroActions,paths:"Get started creates your account. Get set up connects your harness."}).length===1);
   /* Filler the owner retired on September 24, 2026: lines that repeat the buttons or describe our checks instead of the visitor's benefit. */
-  const retiredFiller=["creates your account.","connects your harness.","Bytes match the digest","Recorded from this release's library"];
+  const retiredFiller=retiredPhrases;
   const fillerProblems=text=>retiredFiller.filter(phrase=>text.includes(phrase));
   const homeText=await page.locator('[data-view="home"]').evaluate(home=>home.textContent.replace(/\s+/g," "));
   check("homepage_carries_no_retired_filler_phrases",fillerProblems(homeText).length===0,{found:fillerProblems(homeText)});
@@ -2015,29 +2010,14 @@ try {
   const wrongMarkup=servedHome.replace(/(id="pricing-payment-state"[^>]*>)[^<]*/,"$1Checking whether payment is open.");
   const wrongFound=await servedDefaults(wrongMarkup);
   check("careful_default_check_rejects_a_served_page_that_never_settles",wrongMarkup!==servedHome&&carefulProblems(wrongFound,wrongMarkup).filter(problem=>/^pricing-payment-state |unsettled/.test(problem)).length===2,{problems:carefulProblems(wrongFound,wrongMarkup)});
-  /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
-  const namedRule=(path,name)=>{const found=readFileSync(resolve(root,path),"utf8").match(new RegExp("^\\s*const "+name+"=(\\/.+\\/i);$","m"));return found?found[1]:"";};
-  const ruleSource=path=>namedRule(path,"internalTerms");
-  const workspaceRule=ruleSource("tools/check_service_workspace.mjs"),hostedRule=ruleSource("tools/check_hosted_website.mjs");
-  check("both_public_page_checks_use_one_plain_word_rule",workspaceRule!==""&&workspaceRule===hostedRule&&workspaceRule===String(internalTerms),{workspace:workspaceRule,hosted:hostedRule});
-  check("plain_word_rule_comparison_rejects_a_drifted_copy",workspaceRule!==workspaceRule.replace("role profile","role profiles")&&workspaceRule!==workspaceRule.replace("| Engine","")&&internalTerms.test("See the role profiles.")&&internalTerms.test("Read the role profile."));
-  /* The retired words are read twice as well, here from the source tree and in the hosted check from the deployed
-     pages. The two rules had drifted: this one carried pilot and beta only while the hosted one also carried early
-     access, so a homepage offering early access passed here and was caught only after a deployment. */
-  const workspaceRetired=namedRule("tools/check_service_workspace.mjs","retiredAccessWords"),hostedRetired=namedRule("tools/check_hosted_website.mjs","liveRetired");
-  check("both_public_page_checks_use_one_retired_word_rule",workspaceRetired!==""&&workspaceRetired===hostedRetired&&workspaceRetired===String(retiredAccessWords),{workspace:workspaceRetired,hosted:hostedRetired});
-  const droppedBranch=workspaceRetired.replace("|early access","");
-  check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
-  /* The words of an invitation-only service are read twice as well: here from the source tree and on the deployed pages. */
-  const workspaceInvitation=namedRule("tools/check_service_workspace.mjs","invitationWords"),hostedInvitation=namedRule("tools/check_hosted_website.mjs","liveInvitation");
-  check("both_public_page_checks_use_one_invitation_word_rule",workspaceInvitation!==""&&workspaceInvitation===hostedInvitation&&workspaceInvitation===String(invitationWords),{workspace:workspaceInvitation,hosted:hostedInvitation});
-  const droppedFreeSearch=workspaceInvitation.replace("|\\bsearch(?:ing)? is free\\b","");
-  check("invitation_word_rule_comparison_rejects_a_drifted_copy",droppedFreeSearch!==workspaceInvitation&&!new RegExp(droppedFreeSearch.slice(1,-2),"i").test("Search is free.")&&invitationWords.test("Search is free."),{dropped:droppedFreeSearch});
-  /* The rule that finds a statement that the terms are not published is read twice too: here and on the deployed pages. */
-  const workspaceUnpublished=namedRule("tools/check_service_workspace.mjs","unpublishedTerms"),hostedUnpublished=namedRule("tools/check_hosted_website.mjs","unpublishedTerms");
-  check("both_public_page_checks_use_one_unpublished_terms_rule",workspaceUnpublished!==""&&workspaceUnpublished===hostedUnpublished&&workspaceUnpublished===String(unpublishedTerms),{workspace:workspaceUnpublished,hosted:hostedUnpublished});
-  const droppedDraft=workspaceUnpublished.replace("|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)","");
-  check("unpublished_terms_rule_comparison_rejects_a_drifted_copy",droppedDraft!==workspaceUnpublished&&!new RegExp(droppedDraft.slice(1,-2),"i").test("The terms are still a draft.")&&unpublishedTerms.test("The terms are still a draft."),{dropped:droppedDraft});
+  /* The wording rules live once, in tools/public_wording_rules.mjs. Both page checks import them there and define no copy
+     of their own, so a rule cannot drift between the local and the hosted reading. */
+  const importsTheRules=text=>/from "\.\/public_wording_rules\.mjs";/.test(text)&&!/^\s*const (?:internalTerms|liveInvitation|liveRetired|invitationWords|retiredAccessWords|unpublishedTerms|cardStatusWords)=\//m.test(text);
+  const sourceOf=path=>readFileSync(resolve(root,path),"utf8");
+  check("both_public_page_checks_import_the_one_wording_rules_file",importsTheRules(sourceOf("tools/check_service_workspace.mjs"))&&importsTheRules(sourceOf("tools/check_hosted_website.mjs")));
+  /* Known-wrong: a page check that keeps a local copy of a rule beside the import, and one that does not import at all. */
+  check("wording_rules_import_check_rejects_a_local_copy",!importsTheRules(sourceOf("tools/check_hosted_website.mjs")+"\n  const liveInvitation=/waiting list/i;\n")
+    &&!importsTheRules("const checks=[];")&&invitationWords.test("Search is free.")&&retiredAccessWords.test("Request early access from your account page.")&&unpublishedTerms.test("The terms are still a draft."));
   await page.goto(fixture.base+"/how-it-works#task-breakdown");
   /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,
      which explains. Both are still shown to a customer, and both are checked where they now live. */
