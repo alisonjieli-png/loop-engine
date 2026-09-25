@@ -1433,7 +1433,7 @@
      "S-6.177"
     ],
     "id": "S-6.180",
-    "next_local_work": "Run .github/workflows/browser-nightly.yml by hand once it is on main, record its run time and result, then let the schedule run it each night.",
+    "next_local_work": "Read the first scheduled run, due September 26, 2026 at 06:23 UTC, and mark the step done when it passes.",
     "phase": 6,
     "status": "building",
     "title": "The browser suite runs every night on main and reports a failure without gating a deploy",
@@ -5019,5 +5019,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:53919668a9cbcd37abfff09f019b08aaa086fbe1390a0d798572285cc7591c18"
+ "source_fingerprint": "sha256:0f86305e220ca038e42bb13c1462a50946fe92b10257cf27525d107b09c42086"
 }

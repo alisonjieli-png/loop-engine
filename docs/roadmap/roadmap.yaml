@@ -4286,8 +4286,8 @@ steps:
       - "the run never changes the deploy setting and never blocks the deploy workflow"
     adversarial: "A night whose suite fails without an issue, an issue left open after a passing run, and a nightly run that switches the deploy setting must each fail a named check."
     acceptance: "A browser check that goes stale is reported within a day instead of waiting for the next local preflight."
-    evidence: "On September 25, 2026 the homepage count check failed from release 30, when the homepage started showing the live count, until release 32, because only the local preflight runs the browser suite; ci.yml does not."
-    next_local_work: "Run .github/workflows/browser-nightly.yml by hand once it is on main, record its run time and result, then let the schedule run it each night."
+    evidence: "On September 25, 2026 the homepage count check failed from release 30, when the homepage started showing the live count, until release 32, because only the local preflight runs the browser suite; ci.yml does not. The first run, started by hand on main 88a76a6a (GitHub Actions run 36181933005, 19:48 to 19:59 UTC), passed 909 of 909 checks, detected 183 of 183 removed-guard controls, kept the report as an artifact and ran the step that closes the issue after a pass. The step that opens an issue after a failure has not run on GitHub; tools/test_browser_nightly_workflow.py checks it with known-wrong workflows."
+    next_local_work: "Read the first scheduled run, due September 26, 2026 at 06:23 UTC, and mark the step done when it passes."
   - id: S-6.119
     phase: 6
     title: "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release"

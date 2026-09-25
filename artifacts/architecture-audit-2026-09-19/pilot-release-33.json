@@ -1,0 +1,67 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 33,
+  "source_revision": "88a76a6a5133de344124935c6ee4856693f0b00c",
+  "continuous_integration_run": 36181920081,
+  "deployment_workflow_run": 36184208923,
+  "image_digest": "sha256:b0c77cc43a8d6075f556d38da3b23a2b5741752976efad65e3e730d3807b0187",
+  "deployed_at": "2026-09-25T20:13:24Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 32,
+  "rollback_image_digest": "sha256:4bf4ca874e9683daaee713b8bd93e6877234cb3428b7834203fc9860dc1c3b32",
+  "rollback_note": "Release 32 serves the same catalogue; its workspace prints the name of the search backend over the retrieval note the service serves.",
+  "changes": [
+    "the workspace keeps the retrieval note the service serves and no longer prints the name of the search backend",
+    "the browser suite checks that no page names the search backend, with a control that restores the old note",
+    "a nightly workflow runs the browser suite on main, keeps its report, and opens or updates one issue when a check fails"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 44,
+        "views": 184,
+        "hostnames": 8,
+        "links_checked": 338,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "browser_suite_on_this_revision": {
+    "where": "GitHub Actions, workflow browser-nightly.yml started by hand",
+    "run": 36181933005,
+    "checks": [
+      909,
+      909
+    ],
+    "mutants_detected": [
+      183,
+      183
+    ]
+  },
+  "evidence_folder": "artifacts/release-33-2026-09-25"
+}
