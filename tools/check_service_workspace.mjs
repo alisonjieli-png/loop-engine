@@ -20,6 +20,10 @@ for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
 const recipeRecord=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/client-recipes.json"),"utf8"));
+/* The review records that the Security page's "How review works" section describes, read from the source tree, so the page is
+   compared with the records and never with itself: the served catalogue's review record and the review panel's policy. */
+const catalogueReviews=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/reviews.json"),"utf8"));
+const reviewPanelPolicy=JSON.parse(readFileSync(resolve(root,"tools/candidate_review/resources/panel.json"),"utf8")).policy;
 /* The catalogue browser is read from the source tree as well, and a named check compares it with the
    bytes the service serves. Every ordinary page in this run loads the module from the service itself.
    A removed-guard control, and only such a control, answers that one address with changed bytes, in
@@ -2841,6 +2845,41 @@ try {
       &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Baltor Pro")
       &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
   };
+  /* Finding 8 of the persona journeys of September 24, 2026: nothing said who vets library items, or how. Security now has a "How
+     review works" section, and the pricing line "New vetted additions" links to it. Every number and rule it states is read from the
+     review records: the panel policy for new items and the review record of the served catalogue's first release, including that
+     one of its reviewers came from the model family of the items' author. */
+  const numberWords=["no","one","two","three","four","five","six","seven","eight","nine","ten"];
+  const reviewClaims=()=>{const totals=catalogueReviews.totals,lenses=catalogueReviews.reviewers.map(item=>item.lens);
+    const sameFamily=catalogueReviews.reviewers.some(item=>/\bclaude\b/i.test(item.label));
+    return ["An item joins the library only after independent reviewers approve its exact bytes.",
+      ...(catalogueReviews.reviewers.every(item=>item.produced_any_item_under_review===false)?["No reviewer judges an item it wrote"]:[]),
+      ...(reviewPanelPolicy.any_rejection_withholds_approval===true?["one written rejection keeps an item out, with the reason recorded."]:[]),
+      "a new item needs approval from at least "+numberWords[reviewPanelPolicy.minimum_approvals]+" reviewers of at least "+numberWords[reviewPanelPolicy.minimum_distinct_families]+" model families",
+      ...(reviewPanelPolicy.exclude_producer_family===true?["none of them from the family of the model that wrote the item."]:[]),
+      ...(reviewPanelPolicy.prechecks.licence?["a licence that is not accepted or that disagrees with the licence the item declares"]:[]),
+      ...(reviewPanelPolicy.prechecks.format?["a missing part"]:[]),...(reviewPanelPolicy.prechecks.safety?["unsafe instructions"]:[]),
+      ...(reviewPanelPolicy.prechecks.effects?["declared effects that do not match its steps"]:[]),...(reviewPanelPolicy.prechecks.secrets?["a value shaped like a credential"]:[]),
+      ...(reviewPanelPolicy.prechecks.duplicates?["a copy of another item"]:[]),
+      "The library's first "+totals.approved+" items were approved on September 21, 2026","three reviewers who wrote none of them",
+      ...lenses.map(lens=>lens==="adversarial"?"one adversarial":"one for "+lens),
+      totals.rejected+" of the "+totals.items_reviewed+" items they judged were rejected.",
+      ...(sameFamily?["One of those reviewers came from the same model family as the model that wrote the items."]:[])];};
+  const reviewExplained=async (target,note)=>{
+    await target.goto(fixture.base+"/security");await settled(target);
+    const section=await target.evaluate(()=>{const node=document.getElementById("how-review-works");
+      return {shown:Boolean(node&&node.getClientRects().length),heading:node?.querySelector("h2")?.textContent||"",words:(node?.innerText||"").replace(/\s+/g," ")};});
+    const missing=reviewClaims().filter(claim=>!section.words.includes(claim));
+    note("how_review_works_states_only_what_the_review_records_hold",catalogueReviews.recorded_at==="2026-09-21"&&section.shown&&section.heading==="How review works"&&missing.length===0,{missing,heading:section.heading});
+    await target.goto(fixture.base+"/pricing");await settled(target);
+    const link=await target.evaluate(()=>{const node=document.querySelector('[data-plan-point="additions"] a');return {href:node?.getAttribute("href")||"",text:node?.textContent||""};});
+    if(link.href)await target.click('[data-plan-point="additions"] a');
+    await target.waitForTimeout(300);
+    const landed=await target.evaluate(()=>{const node=document.getElementById("how-review-works"),box=node?.getBoundingClientRect();
+      return {path:location.pathname,hash:location.hash,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),top:box?Math.round(box.top):-1,viewport:innerHeight};});
+    note("pricing_links_new_vetted_additions_to_how_review_works",link.href==="/security#how-review-works"&&link.text==="pass review"&&landed.path==="/security"&&landed.hash==="#how-review-works"
+      &&JSON.stringify(landed.views)===JSON.stringify(["security"])&&landed.top>=0&&landed.top<landed.viewport,{link,landed});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2874,7 +2913,8 @@ try {
     access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false),
     kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn,
     founding_open:foundingPublic(fixture.signup_base,true),founding_closed:foundingPublic(fixture.confirm_base,false),
-    plan_founding:coveredPlan(fixture.billing_founding_token,"founding_free_monthly"),plan_free_monthly:coveredPlan(fixture.billing_free_monthly_token,"free_monthly")};
+    plan_founding:coveredPlan(fixture.billing_founding_token,"founding_free_monthly"),plan_free_monthly:coveredPlan(fixture.billing_free_monthly_token,"free_monthly"),
+    review_explained:reviewExplained};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2962,6 +3002,12 @@ try {
     {name:"never_state_the_founding_offer",scenario:"founding_open",path:"/assets/service.js",
      find:"const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;",replacement:"const foundingOpen = false;",
      expected:["pricing_and_get_started_state_the_founding_offer_while_places_remain"]},
+    {name:"claim_two_model_families_for_review",scenario:"review_explained",path:"/security",find:"at least three model families",replacement:"at least two model families",
+     expected:["how_review_works_states_only_what_the_review_records_hold"]},
+    {name:"hide_that_a_first_release_reviewer_shared_the_authors_model_family",scenario:"review_explained",path:"/security",
+     find:" One of those reviewers came from the same model family as the model that wrote the items.",replacement:"",expected:["how_review_works_states_only_what_the_review_records_hold"]},
+    {name:"leave_new_vetted_additions_unexplained",scenario:"review_explained",path:"/pricing",
+     find:'<a href="/security#how-review-works" data-page="security" id="pricing-review-link">pass review</a>',replacement:"pass review",expected:["pricing_links_new_vetted_additions_to_how_review_works"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

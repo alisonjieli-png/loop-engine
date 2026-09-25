@@ -65,6 +65,15 @@ creation is closed, that an operator issues or revokes access, or that names
 test tokens, and on one that offers account creation where the service takes
 none.
 
+Security explains how review works, at `/security#how-review-works`, and the
+pricing line "New vetted additions" links there. The section states the rule
+for new items, from `tools/candidate_review/resources/panel.json`, and what
+the review record of the first release, `reviews.json` of the starter
+catalogue, holds: its date, its three reviewers' lenses, its counts and that
+one of its reviewers came from the model family of the items' author. A
+browser check reads both records and fails when the page says anything they
+do not hold.
+
 The guide's connection check runs the protocol handshake with the page's
 token, and it takes a client token, not an email sign-in. A visitor who is not
 signed in sees "Sign in to check access". Signed in with an email address, the
