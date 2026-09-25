@@ -1,10 +1,10 @@
 {
  "counts": {
   "blocked": 3,
-  "done": 47,
+  "done": 48,
   "next": 15,
   "now": 49,
-  "waiting": 141
+  "waiting": 140
  },
  "lanes": {
   "blocked": [
@@ -129,6 +129,23 @@
     "title": "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run",
     "waiting_on": [
      "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "Imported packages reach the Community tier through the same independent panel, and the measured yield sizes the daily review.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.69"
+    ],
+    "id": "S-6.196",
+    "next_local_work": "Measure the four-question Community screen (S-6.199) against the pilot's ten rejections; keep the daily calibration as the first stage of the daily job (S-6.197).",
+    "phase": 6,
+    "status": "live_qualified",
+    "title": "The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.69"
     ]
    },
    {
@@ -1074,7 +1091,7 @@
      "S-6.40"
     ],
     "id": "S-6.119",
-    "next_local_work": "Finish Claude's Community review of the overnight and google-lane candidates, write the folders under /home/username/baltor-library/, review licensed imports as the import store fills, and ask a second calibrated family when one returns.",
+    "next_local_work": "Publish the reviewed folder of tonight's 1,376-package Tactical review as community-release-3, then let the daily job (S-6.197) write, combine, bundle and publish each day's approvals; ask a second calibrated family for the Verified label when one returns.",
     "phase": 6,
     "status": "building",
     "title": "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release",
@@ -1840,23 +1857,6 @@
     ]
    },
    {
-    "acceptance": "Imported packages reach the Community tier through the same independent panel, and the measured yield sizes the daily review.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.63",
-     "S-6.69"
-    ],
-    "id": "S-6.196",
-    "next_local_work": "Merge the import line's two remaining commits, then write the imported-layout reader and its criteria beside the native reader, with the calibration set and the pilot.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot",
-    "waiting_on": [
-     "S-6.63",
-     "S-6.69"
-    ]
-   },
-   {
     "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
     "blocked_on": "",
     "depends_on": [
@@ -1871,8 +1871,7 @@
     "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
     "waiting_on": [
      "S-6.62",
-     "S-6.119",
-     "S-6.196"
+     "S-6.119"
     ]
    },
    {
@@ -1889,7 +1888,6 @@
     "status": "proposed",
     "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
     "waiting_on": [
-     "S-6.196",
      "S-6.197",
      "S-6.62"
     ]
@@ -5038,12 +5036,13 @@
     "D-20",
     "D-22"
    ],
-   "done_steps": 0,
+   "done_steps": 1,
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
     "building": 4,
-    "proposed": 11
+    "live_qualified": 1,
+    "proposed": 10
    },
    "steps": [
     "S-6.69",
@@ -5185,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e881542375d40"
+ "source_fingerprint": "sha256:73dc62e456b1102bdf7789316b30265905c9284c612c3de601e9aba12593bae0"
 }

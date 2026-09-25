@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e881542375d40`.
+Source fingerprint: `sha256:73dc62e456b1102bdf7789316b30265905c9284c612c3de601e9aba12593bae0`.
 
 ## Where things stand
 
@@ -11,9 +11,9 @@ Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e
 |---|---:|
 | Being built now | 49 |
 | Can start next | 15 |
-| Waiting on earlier work | 141 |
+| Waiting on earlier work | 140 |
 | Blocked | 3 |
-| Done | 47 |
+| Done | 48 |
 
 ## Being built now
 
@@ -107,9 +107,8 @@ Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
-| S-6.196 | The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot | proposed | S-6.63, S-6.69 |
-| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | proposed | S-6.62, S-6.119, S-6.196 |
-| S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | proposed | S-6.196, S-6.197, S-6.62 |
+| S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | proposed | S-6.62, S-6.119 |
+| S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | proposed | S-6.197, S-6.62 |
 | S-6.203 | 10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries | proposed | S-6.62, S-6.184, S-6.199 |
 | S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | proposed | S-6.180 |
 | S-6.201 | A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation | proposed | S-6.67, S-6.62 |
@@ -285,7 +284,7 @@ Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 13 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 15 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 1 of 15 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |
@@ -315,13 +314,14 @@ Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (47 steps)
+## Done (48 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
 - S-6.102: A free public directory of MCP servers and agent APIs at /directory (offline_verified)
 - S-6.101: A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run (offline_verified)
+- S-6.196: The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot (live_qualified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)

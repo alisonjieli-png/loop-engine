@@ -4301,8 +4301,8 @@ steps:
       - "library bodies stay outside the public repository, and the release bundle builder accepts the folder and carries the tier into the served attributes"
     adversarial: "An own-family approval, a Community row whose other-family rejection was dropped, a row whose body differs from the reviewed package file, a folder written inside the repository and a verdict from a reviewer that approved a known-wrong control must each fail a named check."
     acceptance: "The main session builds and publishes a release from the folder, and every served item shows Verified or Community with its reviewers."
-    evidence: "September 24, 2026: the owner asked for 1,000 and more harness components fully live and retrievable; the main session recorded the tiers in the AGENTS.md decision table. The overnight lanes of zhipu, openai, moonshot and nvidia hold 274 candidates and the two google lanes 1,019; the writer and its checks are tools/write_reviewed_catalogue.py and tools/test_write_reviewed_catalogue.py; campaign evidence is in artifacts/review-throughput-2026-09-24/README.md."
-    next_local_work: "Finish Claude's Community review of the overnight and google-lane candidates, write the folders under /home/username/baltor-library/, review licensed imports as the import store fills, and ask a second calibrated family when one returns."
+    evidence: "September 24, 2026: the owner asked for 1,000 and more harness components fully live and retrievable; the main session recorded the tiers in the AGENTS.md decision table. The overnight lanes of zhipu, openai, moonshot and nvidia hold 274 candidates and the two google lanes 1,019; the writer and its checks are tools/write_reviewed_catalogue.py and tools/test_write_reviewed_catalogue.py; campaign evidence is in artifacts/review-throughput-2026-09-24/README.md. September 25, 2026, 22:35 UTC: the second Community release c7208dc8 serves 316 packages (42 Verified, 274 Community, 223 of them imported packages approved by the Tactical screen of the 240-package pilot), published without a redeploy after the host licence policy of release 35; the customer retrieval check passed 6 of 6 (artifacts/community-release-2-2026-09-25/README.md)."
+    next_local_work: "Publish the reviewed folder of tonight's 1,376-package Tactical review as community-release-3, then let the daily job (S-6.197) write, combine, bundle and publish each day's approvals; ask a second calibrated family for the Verified label when one returns."
   - id: S-6.181
     phase: 6
     title: "One truth on every public surface: a claims register that feeds a dated evidence page, each harness's recorded state beside its name, and a check over the website, the README, the deck and the capabilities record"
@@ -4536,7 +4536,7 @@ steps:
   - id: S-6.196
     phase: 6
     title: "The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot"
-    status: proposed
+    status: live_qualified
     depends_on: [S-6.63, S-6.69]
     boundary: [tools/candidate_review, tools/licensed_import]
     verify:
@@ -4548,8 +4548,8 @@ steps:
       - "a 240-package pilot at 12 packages a call records the approval yield and the tokens and seconds of each call"
     adversarial: "An imported package whose bytes differ from its digests, one without its licence text, a reviewer counted as the producer's family and a calibration that admits a reviewer after it approved a known-wrong control must each fail a named check."
     acceptance: "Imported packages reach the Community tier through the same independent panel, and the measured yield sizes the daily review."
-    evidence: "Observed on September 25, 2026: 58,787 imported candidates are indexed and 4,000 are exported in the panel's layout, and none has been reviewed. The panel's reader refuses the export with native_sources_invalid, because it requires this repository's licence among the cited sources and rereads each source from this repository, which fits original items only. The import line's last two commits are not on main; its other seven are."
-    next_local_work: "Merge the import line's two remaining commits, then write the imported-layout reader and its criteria beside the native reader, with the calibration set and the pilot."
+    evidence: "Observed on September 25, 2026: 58,787 imported candidates are indexed and 4,000 are exported in the panel's layout, and none has been reviewed. The panel's reader refuses the export with native_sources_invalid, because it requires this repository's licence among the cited sources and rereads each source from this repository, which fits original items only. The import line's last two commits are not on main; its other seven are. Built and released the same day: the imported reader, criteria, instructions, prechecks and six calibration controls are on main 7866df82 (21 reader tests, 3 writer tests) and in Fly release 35; Tactical qualified on the imported controls in batches of 12 with zero false approvals; the 240-package pilot took 21 calls of 52.5 seconds (about 55,000 input tokens each) and approved 223 of 233, 10 rejected; those 223 packages are served in the 316-item Community release c7208dc8 since 22:35 UTC and a customer retrieval check passed 6 of 6."
+    next_local_work: "Measure the four-question Community screen (S-6.199) against the pilot's ten rejections; keep the daily calibration as the first stage of the daily job (S-6.197)."
   - id: S-6.197
     phase: 6
     title: "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback"

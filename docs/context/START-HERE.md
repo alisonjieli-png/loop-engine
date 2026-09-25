@@ -12,7 +12,11 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 25 evening handoff](SESSION-HANDOFF-2026-09-25-EVENING.md). It
+[September 25 night handoff](SESSION-HANDOFF-2026-09-25-NIGHT.md). It records
+release 35, the 316-package Community catalogue release, the ninety-day plan
+and the changed review process, the decision red team, what runs unattended
+and the order of the next steps. The
+[September 25 evening handoff](SESSION-HANDOFF-2026-09-25-EVENING.md) before it
 records release 31, the first Community catalogue release, release 32, what the
 evening found and the order of the next steps. The
 [September 25 afternoon handoff](SESSION-HANDOFF-2026-09-25-AFTERNOON.md) before
