@@ -40,7 +40,7 @@ from loop_engine.core.service_runtime.catalogue_bundle import BUNDLE_ITEM_RECORD
 from loop_engine.core.service_runtime.catalogue_packages import (
     FILE_BODY, PACKAGE_BODY, CataloguePackage, CataloguePackageFile, sha256_hex,
 )
-from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
+from loop_engine.core.service_runtime.catalogue_schema import MAXIMUM_KEYWORD_CHARACTERS, CatalogueAttributeSchema
 from loop_engine.core.service_runtime.http_entrypoint import HostFamilyPolicy, HostLicensePolicy
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
@@ -91,9 +91,29 @@ def _package(folder, row, kind):
     return CataloguePackage(tuple(files), FILE_BODY if single else PACKAGE_BODY), payloads
 
 
+#: The longest keyword a release schema accepts.
+KEYWORD_LIMIT = MAXIMUM_KEYWORD_CHARACTERS
+
+
+def cited_source(source_ref: str) -> str:
+    """The file an item cites, without its revision; a path longer than a keyword keeps its last whole parts."""
+    path = source_ref.split("@", 1)[0]
+    if len(path) <= KEYWORD_LIMIT:
+        return path
+    parts = path.split("/")
+    kept = parts[-1:]
+    for part in reversed(parts[:-1]):
+        if len("/".join([part, *kept])) > KEYWORD_LIMIT:
+            break
+        kept.insert(0, part)
+    return "/".join(kept)[-KEYWORD_LIMIT:]
+
+
 def _attributes(row, review, recorded_at, batch, schema):
-    values = {"cited_source": row["reference"]["source_ref"].split("@", 1)[0], "origin_layer": review["source_layer"],
-              "catalogued_on": recorded_at, "batch": batch}
+    # A combined snapshot keeps each row's own review date; a row without one takes the record's date.
+    catalogued_on = datetime.date.fromisoformat(str(review.get("catalogued_on", recorded_at))[:10]).isoformat()
+    values = {"cited_source": cited_source(row["reference"]["source_ref"]), "origin_layer": review["source_layer"],
+              "catalogued_on": catalogued_on, "batch": batch}
     if "tier" in review and any(item.name == "tier" for item in schema.attributes):
         # The library tier of the decision table (Verified or Community) always travels in the line's approval. It is
         # also a served attribute, shown and filtered on, when the release schema declares one named tier.

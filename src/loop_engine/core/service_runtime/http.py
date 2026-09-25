@@ -21,6 +21,7 @@ from ...loop.loop_role import LoopRole, LoopRoleIdentity
 from ..facets import EFFECTS
 from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding, tierless_answer
+from .catalogue_tiers import DEFAULT_LIBRARY_SETTINGS, narrowed, tier_legend
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
@@ -41,6 +42,24 @@ from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TY
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
 PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v1"
+#: Version 2 knows the library tiers: it is answered in the tiered record shapes, which name each item's tier and
+#: its exact label, and it receives Community items as the account's library setting allows, narrowed by its own
+#: optional `library_tiers` filter. Version 1 predates tiers: its readers check the version 2 answer shapes, so it
+#: is answered with Verified items only.
+TIERED_PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v2"
+PROVISIONING_REQUEST_VERSIONS = (PROVISIONING_REQUEST_VERSION, TIERED_PROVISIONING_REQUEST_VERSION)
+#: The header in which a person's own client configuration says what its harness steps may do, for example
+#: `Baltor-Step-Effects: reads_fs` when the harness reads files in the person's project. A request that states its
+#: own `authority_effects` keeps them. Without the header or the field a step holds no effect, so an item whose
+#: steps read files, write files, run a command or use the network is withheld with its reason: the service
+#: never grants an effect the person's configuration did not state.
+STEP_EFFECTS_HEADER = "baltor-step-effects"
+STEP_EFFECTS = tuple(effect for effect in EFFECTS if effect != "pure")
+#: What a tier-aware request's steps may do when neither the request nor the person's client configuration says:
+#: read files in the person's own project, which every coding harness step does. It lets the service offer items
+#: whose steps read files; it grants the harness nothing, since each harness keeps its own permissions. The
+#: capabilities record names it, and a header or an explicit `authority_effects` replaces it.
+DEFAULT_STEP_EFFECTS = ("reads_fs",)
 # Version 2 adds explicit metadata effect selection. Old readers must refuse
 # this request rather than silently omit its required selection.
 RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v2"
@@ -492,19 +511,56 @@ def http_provisioning_schema(operation):
     return schema
 
 
+LIBRARY_TIERS_SCHEMA = {"type": "array", "items": {"enum": ["verified", "community"]}, "uniqueItems": True,
+                        "minItems": 1, "description": "Narrow the answer: [\"verified\"] leaves Community items out."}
+
+
+def tiered_provisioning_schema(operation):
+    """The version 2 request and protocol tool schema: version 1's fields and the optional library tier filter."""
+    schema = http_provisioning_schema(operation)
+    if operation != DISCOVER_OPERATION:
+        schema["properties"]["library_tiers"] = dict(LIBRARY_TIERS_SCHEMA)
+    return schema
+
+
 def http_retrieval_schema():
     """The protocol tool's closed input schema, sharing the list effect shape.
 
     This selector declares what material the caller wants considered. Tenant
     grants, qualification and scopes still come from the provisioning boundary;
-    the selector never grants execution or body access.
+    the selector never grants execution or body access. `library_tiers` narrows
+    what the account's library setting allows and never widens it.
     """
     effects = http_provisioning_schema(LIST_OPERATION)["properties"]["authority_effects"]
     effects["items"] = {"type": "string", "enum": list(EFFECTS)}
     return {"type": "object", "required": ["query"], "additionalProperties": False,
             "properties": {"query": {"type": "string"}, "mode": {"enum": ["lexical", "hybrid"]},
                            "top_n": {"type": "integer", "minimum": 1},
-                           "filters": {"type": "object"}, "authority_effects": effects}}
+                           "filters": {"type": "object"}, "authority_effects": effects,
+                           "library_tiers": dict(LIBRARY_TIERS_SCHEMA)}}
+
+
+def step_effects(headers) -> tuple:
+    """The effects a person's client configuration says its harness steps may perform, or none.
+
+    Read only from the `Baltor-Step-Effects` header the person wrote into their own client configuration. A name
+    outside the effect vocabulary, a repeated name or an empty value is refused rather than guessed."""
+    raw = headers.get(STEP_EFFECTS_HEADER)
+    if raw is None:
+        return ()
+    names = tuple(part.strip() for part in str(raw).split(","))
+    if not names or any(not name for name in names) or len(set(names)) != len(names) \
+            or any(name not in STEP_EFFECTS for name in names):
+        raise ServiceHttpError("invalid_step_effects")
+    return names
+
+
+def with_step_effects(fields: dict, effects: tuple) -> dict:
+    """The request's own `authority_effects` when it states them, otherwise the ones its client configuration states,
+    otherwise the documented default of a tier-aware request."""
+    if "authority_effects" not in fields:
+        return {**fields, "authority_effects": list(effects or DEFAULT_STEP_EFFECTS)}
+    return fields
 
 
 def _status(error):
@@ -549,6 +605,8 @@ def _status(error):
         return 401, code
     if code == "promotion_redemption_unavailable":
         return 503, code
+    if code in ("invalid_step_effects", "library_tiers_invalid"):
+        return 400, code
     if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
                 "item_withdrawn", "package_file_not_found", "package_files_unavailable", "account_not_found"):
         return 404, code
@@ -682,6 +740,12 @@ class ServiceHttpApplication:
                 "operation_scopes": {"metadata_and_search": "provisioning:metadata",
                                      "body_and_download": "provisioning:read", "usage": "usage:read",
                                      "billing_sessions": BILLING_MANAGE_SCOPE},
+                "library": {"tiers": tier_legend(),
+                            "provisioning_request_record_types": list(PROVISIONING_REQUEST_VERSIONS),
+                            "tiered_provisioning_request_record_type": TIERED_PROVISIONING_REQUEST_VERSION,
+                            "step_effects_header": "Baltor-Step-Effects",
+                            "step_effects": list(STEP_EFFECTS),
+                            "default_step_effects": list(DEFAULT_STEP_EFFECTS)},
                 "retrieval": {"request_record_type": RETRIEVAL_REQUEST_VERSION,
                               "authority_effects": "metadata_eligibility_only",
                               "modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",
@@ -894,11 +958,25 @@ class ServiceHttpApplication:
             waiting.add_done_callback(lambda done: done.exception() if not done.cancelled() else None)
             raise
 
-    def _invoke(self, authentication, operation, fields):
+    def library_settings(self, principal):
+        """The account's library setting. Accounts do not store their own yet, so each has the default of the
+        owner's "Library tiers" decision: every Community item, labelled; a request can narrow it."""
+        return DEFAULT_LIBRARY_SETTINGS
+
+    def community_choice(self, principal, fields):
+        """Which Community items one request receives: the account's setting, narrowed by the request's filter.
+
+        Removes `library_tiers` from the fields, because the provisioning boundary receives the resolved choice."""
+        return narrowed(self.library_settings(principal), fields.pop("library_tiers", None))
+
+    def _invoke(self, authentication, operation, fields, *, tiered=False):
         current = self.authenticator.revalidate(authentication)
         self._require_scope(current, "provisioning:read" if operation == READ_OPERATION else "provisioning:metadata")
         if "path" in fields:
             raise ServiceHttpError("package_file_requires_download")
+        fields = dict(fields)
+        if tiered:
+            fields["community_items"] = self.community_choice(current.principal, fields)
         view = self.provisioning.current_view()
         if operation == READ_OPERATION:
             manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
@@ -914,6 +992,9 @@ class ServiceHttpApplication:
             elif operation == DISCOVER_OPERATION:
                 result = {**result, "bodies_available": False}
         self.authenticator.revalidate(authentication)
+        if tiered:
+            # Version 2 requests and protocol tools name each item's tier and its exact label.
+            return result
         # `service_provisioning_request/v1` predates trust tiers, so it is
         # asked with the default community choice, which offers only verified
         # items, and it is answered in the version 2 shapes its readers check.
@@ -932,9 +1013,12 @@ class ServiceHttpApplication:
         # that authorizes and the references returned all come from it.
         view = self.provisioning.current_view()
 
+        fields = dict(fields)
+        community = self.community_choice(current.principal, fields)
+
         def authorize(candidates):
             listing = self.provisioning.invoke_for_principal(current.principal, LIST_OPERATION, view=view,
-                                                             candidates=candidates,
+                                                             candidates=candidates, community_items=community,
                                                              authority_effects=fields.get("authority_effects", ()))
             return {row["identity"]: row for row in listing["items"]}
         ranked, rows = authorized_hits(view, fields, authorize)
@@ -953,6 +1037,7 @@ class ServiceHttpApplication:
                          "harness_styles": row["styles"],
                          "score": score, "modes": modes,
                          "qualification_basis": row["qualification_basis"],
+                         "library_tier": row["library_tier"], "library_tier_label": row["library_tier_label"],
                          "body_allowed": row["body_allowed"] and "provisioning:read" in current.effective_scopes,
                          "attributes": view.shown_attributes(identity),
                          "package": view.package_summary(identity)})
@@ -1088,8 +1173,8 @@ class ServiceHttpApplication:
     def _validate_search(self, payload, *, versioned=True):
         if not isinstance(payload, dict):
             raise ServiceHttpError("object_required")
-        if set(payload) - ({"record_type", "query", "mode", "top_n", "filters", "authority_effects"} if versioned
-                           else {"query", "mode", "top_n", "filters", "authority_effects"}):
+        allowed = {"query", "mode", "top_n", "filters", "authority_effects", "library_tiers"}
+        if set(payload) - (allowed | {"record_type"} if versioned else allowed):
             raise ServiceHttpError("unknown_request_field")
         if versioned and payload.get("record_type") != RETRIEVAL_REQUEST_VERSION:
             raise ServiceHttpError("unsupported_version")
@@ -1103,29 +1188,32 @@ class ServiceHttpApplication:
             raise ServiceHttpError("invalid_search_limit")
         if "filters" in payload and not isinstance(payload["filters"], dict):
             raise ServiceHttpError("search_filter_invalid")
-        if "authority_effects" in payload:
-            from jsonschema import ValidationError, validate
-            try:
-                validate(payload["authority_effects"], http_retrieval_schema()["properties"]["authority_effects"])
-            except ValidationError:
-                raise ServiceHttpError("invalid_request") from None
+        for name in ("authority_effects", "library_tiers"):
+            if name in payload:
+                from jsonschema import ValidationError, validate
+                try:
+                    validate(payload[name], http_retrieval_schema()["properties"][name])
+                except ValidationError:
+                    raise ServiceHttpError("invalid_request") from None
         return {key: value for key, value in payload.items() if key != "record_type"}
 
     def _validate_provisioning(self, payload):
-        if payload.get("record_type") != PROVISIONING_REQUEST_VERSION:
+        """(operation, fields, tiered) for a version 1 or a tier-aware version 2 request."""
+        if payload.get("record_type") not in PROVISIONING_REQUEST_VERSIONS:
             raise ServiceHttpError("unsupported_version")
+        tiered = payload["record_type"] == TIERED_PROVISIONING_REQUEST_VERSION
         operation = payload.get("operation")
         if operation not in TOOL_OPERATIONS.values():
             raise ServiceHttpError("unsupported_operation")
         fields = {key: value for key, value in payload.items() if key not in ("record_type", "operation")}
         from jsonschema import validate, ValidationError
         try:
-            validate(fields, http_provisioning_schema(operation))
+            validate(fields, tiered_provisioning_schema(operation) if tiered else http_provisioning_schema(operation))
         except ValidationError:
             raise ServiceHttpError("invalid_request") from None
         if operation == READ_OPERATION and not fields.get("request_id"):
             raise ServiceHttpError("request_identity_required")
-        return operation, fields
+        return operation, fields, tiered
 
     def _sdk_server(self):
         """The protocol library's server, bound to exactly the versions this host serves.
@@ -1151,7 +1239,7 @@ class ServiceHttpApplication:
         async def list_tools(ctx, _params):
             self.authenticator.revalidate(ctx.request.scope["service_authentication"])
             tools = [types.Tool(name=name, description="Authorized intelligence " + operation,
-                inputSchema=http_provisioning_schema(operation), annotations=types.ToolAnnotations(
+                inputSchema=tiered_provisioning_schema(operation), annotations=types.ToolAnnotations(
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
                 for name, operation in TOOL_OPERATIONS.items()]
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
@@ -1165,18 +1253,21 @@ class ServiceHttpApplication:
             scope = ctx.request.scope
             try:
                 context = scope["service_authentication"]
+                effects = step_effects(ctx.request.headers)
                 if name == "intelligence_search":
-                    fields = self._validate_search(arguments, versioned=False)
+                    fields = with_step_effects(self._validate_search(arguments, versioned=False), effects)
                     output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
                 else:
                     operation = TOOL_OPERATIONS.get(name)
                     if operation is None:
                         raise ServiceHttpError("unsupported_operation")
-                    validate(arguments, http_provisioning_schema(operation))
+                    validate(arguments, tiered_provisioning_schema(operation))
                     if operation == READ_OPERATION and not arguments.get("request_id"):
                         raise ServiceHttpError("request_identity_required")
+                    arguments = with_step_effects(arguments, effects) if operation != DISCOVER_OPERATION else arguments
+                    # Protocol tools serve harnesses, which read each item's tier and label in the answer.
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                        lambda: self._invoke(context, operation, arguments)))
+                        lambda: self._invoke(context, operation, arguments, tiered=True)))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
                 if len(response.model_dump_json(by_alias=True).encode()) > self.configuration.maximum_response_bytes:
@@ -1589,7 +1680,9 @@ class ServiceHttpApplication:
                     lambda: self._create_billing_session(context, payload)),
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif path in ("/api/v1/provisioning", "/api/v1/download") and method == "POST":
-                operation, fields = self._validate_provisioning(_parse_json(await self._body(request)))
+                operation, fields, tiered = self._validate_provisioning(_parse_json(await self._body(request)))
+                if operation != DISCOVER_OPERATION and tiered:
+                    fields = with_step_effects(fields, step_effects(request.headers))
                 if path.endswith("download"):
                     if operation != READ_OPERATION:
                         raise ServiceHttpError("download_requires_read")
@@ -1597,6 +1690,8 @@ class ServiceHttpApplication:
                     def download():
                         current = self.authenticator.revalidate(context)
                         self._require_scope(current, "provisioning:read")
+                        if tiered:
+                            fields["community_items"] = self.community_choice(current.principal, fields)
                         view = self.provisioning.current_view()
                         manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION,
                             view=view, **{key: value for key, value in fields.items() if key != "request_id"})
@@ -1618,15 +1713,18 @@ class ServiceHttpApplication:
                         return value
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("download", download))
                     value = output["result"]
+                    headers = {"X-Loop-Engine-Record-Type": "service_download/v1",
+                               "X-Content-SHA256": value["digest"],
+                               "Content-Disposition": 'attachment; filename="intelligence.txt"'}
+                    if tiered:
+                        headers["X-Loop-Engine-Library-Tier"] = value.get("library_tier_label", "")
                     return Response(value["file"] if value.get("file") is not None else value["body"].encode("utf-8"),
-                        media_type="application/octet-stream",
-                        headers={"X-Loop-Engine-Record-Type": "service_download/v1",
-                                 "X-Content-SHA256": value["digest"],
-                                 "Content-Disposition": 'attachment; filename="intelligence.txt"'})
+                        media_type="application/octet-stream", headers=headers)
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
-                    lambda: self._invoke(context, operation, fields)))
+                    lambda: self._invoke(context, operation, fields, tiered=tiered)))
             elif path == "/api/v1/retrieval" and method == "POST":
-                fields = self._validate_search(_parse_json(await self._body(request)))
+                fields = with_step_effects(self._validate_search(_parse_json(await self._body(request))),
+                                           step_effects(request.headers))
                 output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
             else:
                 raise ServiceHttpError("route_unavailable", 404)

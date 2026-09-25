@@ -130,19 +130,45 @@ def row_tier(identity: str, row: dict) -> str:
     return tier
 
 
-def _judged(identity: str, row: dict, known: set) -> None:
+def reviewer_groups(record: dict, known: set) -> dict:
+    """The record's named reviewer groups, each a set of named reviewers; none when the record declares none.
+
+    A release is one snapshot of one folder, and its items may come from reviews
+    by different reviewer sets: the starter panel of September 21 and a later
+    panel, for example. A group names the reviewers that together judged a set of
+    verified rows, and each such row names its group."""
+    groups = record.get("reviewer_groups", {})
+    if not isinstance(groups, dict) or any(
+            not isinstance(name, str) or not name or not isinstance(members, list) or not members
+            or len(set(members)) != len(members) or not set(members) <= known for name, members in groups.items()):
+        raise ManifestBuildError("review_record_unsupported",
+            "reviewer groups name non-empty lists of the record's own reviewers")
+    return {name: set(members) for name, members in groups.items()}
+
+
+def _judged(identity: str, row: dict, known: set, groups: "dict | None" = None) -> None:
     """Refuse unless the reviewers the row's tier requires decided this item and every objection has a reason.
 
     A verified row, or a row that names no tier, needs a decision from every
-    named reviewer: the panel rule, unchanged. A community row needs one or more
-    decisions, each from a named reviewer; the reviewers' independence from the
-    producer is the review process's rule, recorded with each reviewer.
+    named reviewer: the panel rule, unchanged. When the record declares reviewer
+    groups, a verified row names its group and needs a decision from every
+    reviewer of that group, and from no one else. A community row needs one or
+    more decisions, each from a named reviewer; the reviewers' independence from
+    the producer is the review process's rule, recorded with each reviewer.
     """
     decided = {decision["reviewer_id"] for decision in row["decisions"]}
+    groups = groups or {}
     if row_tier(identity, row) == "community":
         if not decided or not decided <= known or len(decided) != len(row["decisions"]):
             raise ManifestBuildError("review_record_inconsistent",
                 f"community item {identity!r} names no decision, or a reviewer the record does not name")
+    elif "reviewer_group" in row:
+        if row["reviewer_group"] not in groups:
+            raise ManifestBuildError("review_record_inconsistent",
+                f"item {identity!r} names a reviewer group the record does not declare")
+        if decided != groups[row["reviewer_group"]] or len(decided) != len(row["decisions"]):
+            raise ManifestBuildError("review_record_inconsistent",
+                f"item {identity!r} was not judged by every reviewer of its group")
     elif decided != known:
         raise ManifestBuildError("review_record_inconsistent",
             f"item {identity!r} was not judged by every named reviewer")
@@ -202,6 +228,7 @@ def _review_index(folder: Path):
     known = {row["reviewer_id"] for row in record["reviewers"]}
     if not known or len(known) != len(record["reviewers"]):
         raise ManifestBuildError("review_record_unsupported", "the review record names no distinct reviewers")
+    groups = reviewer_groups(record, known)
     index = {}
     for row in record["rows"]:
         identity = row["identity"]
@@ -213,7 +240,7 @@ def _review_index(folder: Path):
                 f"{row.get('approval_state')!r}; this command reads {list(OUTCOMES)} and "
                 f"{list(APPROVAL_STATES)}")
         if row["outcome"] != NOT_REVIEWED:
-            _judged(identity, row, known)
+            _judged(identity, row, known, groups)
         if row["outcome"] == CARRY_REFUSED \
                 and any(decision["decision"] != "approve" for decision in row["decisions"]):
             raise ManifestBuildError("review_record_inconsistent",
