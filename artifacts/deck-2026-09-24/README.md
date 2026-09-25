@@ -2,7 +2,7 @@
 
 Kind: dated evidence. The owner asked on September 24, 2026 for a deck at
 `deck.baltor.ai`, with content only from public facts that saved evidence in
-this repository backs. Roadmap steps S-6.36 and S-6.100 carry the state.
+this repository backs. Roadmap steps S-6.36 and S-6.121 carry the state.
 
 ## What was built
 

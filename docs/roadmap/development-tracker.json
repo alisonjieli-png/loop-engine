@@ -1,7 +1,7 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 44,
+  "done": 45,
   "next": 13,
   "now": 42,
   "waiting": 87
@@ -82,6 +82,21 @@
     "title": "Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings",
     "waiting_on": [
      "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "The owner can send deck.baltor.ai to anyone, and every number on it traces to a record a reader can open.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.36"
+    ],
+    "id": "S-6.121",
+    "next_local_work": "Merge with the hostname routing of the showcase work: in its version 2 site map give /deck a description, a listing choice and a footer or page link, because version 2 refuses a hostname root that only earlier links reach; keep the deck's own shared-link card, which the version 2 head writer replaces with the site-wide picture unless a page can name its own; copy the merged shared header and footer into deck.html. Then release and check deck.baltor.ai live, and correct the README sentence on model families. The owner supplies any team, funding or contact email slide.",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply",
+    "waiting_on": [
+     "S-6.36"
     ]
    },
    {
@@ -850,7 +865,7 @@
      "S-6.33"
     ],
     "id": "S-6.67",
-    "next_local_work": "Land the documentation pages from the Codex consolidation, write the use-case and status views from the saved patch, generate robots.txt and sitemap.xml from the typed site map, then switch tools/check_website_site_map.py on in continuous integration.",
+    "next_local_work": "Release through the guarded workflow and run the hosted website check on all eight hostnames; add deck.baltor.ai with the /deck page row when the deck line merges (the typed reader refuses a hostname whose root is not a page); run the responsive lab on Chromium, WebKit and Firefox at the declared sizes, which this change did not run.",
     "phase": 6,
     "status": "building",
     "title": "Serve every built page and hostname surface",
@@ -989,7 +1004,7 @@
      "S-6.34"
     ],
     "id": "S-6.36",
-    "next_local_work": "Finish the draft and the fact check; the owner adds personal background, contact details and equity facts.",
+    "next_local_work": "Finish the draft and the fact check; the owner adds personal background, contact details and equity facts, and approves any team, funding or contact email slide for the deck.",
     "phase": 6,
     "status": "building",
     "title": "Y Combinator application package, fact-checked",
@@ -1219,22 +1234,6 @@
     ]
    },
    {
-    "acceptance": "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.85",
-     "S-6.99"
-    ],
-    "id": "S-6.120",
-    "next_local_work": "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service.",
-    "phase": 6,
-    "status": "building",
-    "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
-    "waiting_on": [
-     "S-6.85"
-    ]
-   },
-   {
     "acceptance": "The file-level map, focused-review scope, unresolved relationships, current tests, comparative evidence, and hundreds of review questions remain inspectable and reproducible.",
     "blocked_on": "",
     "depends_on": [
@@ -1277,23 +1276,6 @@
     "status": "building",
     "title": "Maintain sourced competitor, prior-art, funding, and strategic-path research",
     "waiting_on": []
-   },
-   {
-    "acceptance": "At each station a step asks a typed question and binds the answer of the engine its policy declares, or the station's safe default when no engine answers; advisory guidance stays apart, no answer grants authority, every decision is joined to its outcome, and a per-station measurement names the cheapest engine that meets the station's declared accuracy floor.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.30",
-     "S-6.31"
-    ],
-    "id": "S-6.100",
-    "next_local_work": "Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1.",
-    "phase": 6,
-    "status": "building",
-    "title": "Decision stations around the build step: typed judgments with swappable engines, measured",
-    "waiting_on": [
-     "S-6.30",
-     "S-6.31"
-    ]
    },
    {
     "acceptance": "",
@@ -1424,6 +1406,39 @@
     "title": "Billing with metered usage",
     "waiting_on": [
      "S-4.4"
+    ]
+   },
+   {
+    "acceptance": "At each station a step asks a typed question and binds the answer of the engine its policy declares, or the station's safe default when no engine answers; advisory guidance stays apart, no answer grants authority, every decision is joined to its outcome, and a per-station measurement names the cheapest engine that meets the station's declared accuracy floor.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.31"
+    ],
+    "id": "S-6.100",
+    "next_local_work": "Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1.",
+    "phase": 6,
+    "status": "building",
+    "title": "Decision stations around the build step: typed judgments with swappable engines, measured",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.31"
+    ]
+   },
+   {
+    "acceptance": "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.99"
+    ],
+    "id": "S-6.120",
+    "next_local_work": "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service.",
+    "phase": 6,
+    "status": "building",
+    "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
+    "waiting_on": [
+     "S-6.85"
     ]
    }
   ],
@@ -2451,153 +2466,6 @@
     ]
    },
    {
-    "acceptance": "Every showcase page is generated from saved run records, every number links to its record, and a visitor can replay each step and see exactly which files that step's harness received.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.37",
-     "S-6.44"
-    ],
-    "id": "S-6.110",
-    "next_local_work": "Declare the showcase run record, write the trajectory exporter against a saved overnight or data cleanup run, and render one page from it with its removed-guard controls.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger",
-    "waiting_on": [
-     "S-6.37",
-     "S-6.44"
-    ]
-   },
-   {
-    "acceptance": "A visitor reaches each featured work of the owner on its own hostname and sees what Baltor did with it, or plainly that the run is not recorded yet.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.67",
-     "S-6.110"
-    ],
-    "id": "S-6.111",
-    "next_local_work": "Add the papers index page and the showcase group to the typed site map with not-yet-recorded states, and hand the domain name records and certificates to the releasing session.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page",
-    "waiting_on": [
-     "S-6.67",
-     "S-6.110"
-    ]
-   },
-   {
-    "acceptance": "duecare.baltor.ai shows a recorded per-step run with and without Baltor on DueCare's own scorer and judges, including a negative result if that is what the run shows.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.110"
-    ],
-    "id": "S-6.112",
-    "next_local_work": "Write and freeze the moderation lane design, then run its five-item pilot on Ollama Cloud after the weekly allowance resets.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges",
-    "waiting_on": [
-     "S-6.110"
-    ]
-   },
-   {
-    "acceptance": "safety.baltor.ai shows whether the published failure patterns still occur on current models, what a served package changes, and the framework's checks before and after repair.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.110"
-    ],
-    "id": "S-6.113",
-    "next_local_work": "Reproduce the framework's Linux jobs in containers on a local copy and group the failures, with no model call.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The 2025 red-team finding tracked on current models, and the safety framework's checks repaired",
-    "waiting_on": [
-     "S-6.110"
-    ]
-   },
-   {
-    "acceptance": "recreate.baltor.ai shows how much of each tool a small model rebuilds from its README with and without per-step material, and how much work reuse saves.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.110",
-     "S-6.44"
-    ],
-    "id": "S-6.114",
-    "next_local_work": "Pin the 24 commits, label the hidden tests, and run the three-tool pilot on the Tactical server.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests",
-    "waiting_on": [
-     "S-6.110",
-     "S-6.44"
-    ]
-   },
-   {
-    "acceptance": "A page on the papers index shows each arm's search path and best configuration with its measured F1, and the limits of one dataset.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.110"
-    ],
-    "id": "S-6.115",
-    "next_local_work": "Choose the dataset, record its licence, then freeze the design.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Configuration search on the owner's entity resolution pipeline, scored by an exact metric",
-    "waiting_on": [
-     "S-6.110"
-    ]
-   },
-   {
-    "acceptance": "media.baltor.ai shows the owner's media tools making real clips step by step, each clip reproducible from its seed.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.110",
-     "S-6.111"
-    ],
-    "id": "S-6.116",
-    "next_local_work": "Install a static ffmpeg in a folder under the home folder, freeze the M1 design, and render the two-clip pilot on the Tactical server.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "media.baltor.ai: seeded short videos from the owner's media tools, made step by step",
-    "waiting_on": [
-     "S-6.110",
-     "S-6.111"
-    ]
-   },
-   {
-    "acceptance": "The library serves reviewed media packages that the public collections scanned on September 24, 2026 did not offer.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.40",
-     "S-6.63"
-    ],
-    "id": "S-6.117",
-    "next_local_work": "Draft the eight candidates on the Tactical server and queue them for the review panel.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Original first-party media packages from the owner's MIT tools, through the independent review",
-    "waiting_on": [
-     "S-6.40",
-     "S-6.63"
-    ]
-   },
-   {
-    "acceptance": "Baltor's first social posts are produced by its own steps and tools, each approved and posted by a person, and the case study shows how each one was made.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.59",
-     "S-6.116"
-    ],
-    "id": "S-6.118",
-    "next_local_work": "Draft three posts from saved release and case study records once OWNER-19 names the accounts and the approving person.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Baltor's own social posts, made step by step and approved by a person",
-    "waiting_on": [
-     "S-6.59",
-     "S-6.116"
-    ]
-   },
-   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -2839,6 +2707,153 @@
     "title": "Administrator surfaces for system and client administrators",
     "waiting_on": [
      "S-4.8"
+    ]
+   },
+   {
+    "acceptance": "Every showcase page is generated from saved run records, every number links to its record, and a visitor can replay each step and see exactly which files that step's harness received.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.37",
+     "S-6.44"
+    ],
+    "id": "S-6.110",
+    "next_local_work": "Declare the showcase run record, write the trajectory exporter against a saved overnight or data cleanup run, and render one page from it with its removed-guard controls.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger",
+    "waiting_on": [
+     "S-6.37",
+     "S-6.44"
+    ]
+   },
+   {
+    "acceptance": "A visitor reaches each featured work of the owner on its own hostname and sees what Baltor did with it, or plainly that the run is not recorded yet.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67",
+     "S-6.110"
+    ],
+    "id": "S-6.111",
+    "next_local_work": "Add the papers index page and the showcase group to the typed site map with not-yet-recorded states, and hand the domain name records and certificates to the releasing session.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page",
+    "waiting_on": [
+     "S-6.67",
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "duecare.baltor.ai shows a recorded per-step run with and without Baltor on DueCare's own scorer and judges, including a negative result if that is what the run shows.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.112",
+    "next_local_work": "Write and freeze the moderation lane design, then run its five-item pilot on Ollama Cloud after the weekly allowance resets.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "safety.baltor.ai shows whether the published failure patterns still occur on current models, what a served package changes, and the framework's checks before and after repair.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.113",
+    "next_local_work": "Reproduce the framework's Linux jobs in containers on a local copy and group the failures, with no model call.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The 2025 red-team finding tracked on current models, and the safety framework's checks repaired",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "recreate.baltor.ai shows how much of each tool a small model rebuilds from its README with and without per-step material, and how much work reuse saves.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110",
+     "S-6.44"
+    ],
+    "id": "S-6.114",
+    "next_local_work": "Pin the 24 commits, label the hidden tests, and run the three-tool pilot on the Tactical server.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests",
+    "waiting_on": [
+     "S-6.110",
+     "S-6.44"
+    ]
+   },
+   {
+    "acceptance": "A page on the papers index shows each arm's search path and best configuration with its measured F1, and the limits of one dataset.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110"
+    ],
+    "id": "S-6.115",
+    "next_local_work": "Choose the dataset, record its licence, then freeze the design.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Configuration search on the owner's entity resolution pipeline, scored by an exact metric",
+    "waiting_on": [
+     "S-6.110"
+    ]
+   },
+   {
+    "acceptance": "media.baltor.ai shows the owner's media tools making real clips step by step, each clip reproducible from its seed.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.110",
+     "S-6.111"
+    ],
+    "id": "S-6.116",
+    "next_local_work": "Install a static ffmpeg in a folder under the home folder, freeze the M1 design, and render the two-clip pilot on the Tactical server.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "media.baltor.ai: seeded short videos from the owner's media tools, made step by step",
+    "waiting_on": [
+     "S-6.110",
+     "S-6.111"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed media packages that the public collections scanned on September 24, 2026 did not offer.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.63"
+    ],
+    "id": "S-6.117",
+    "next_local_work": "Draft the eight candidates on the Tactical server and queue them for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Original first-party media packages from the owner's MIT tools, through the independent review",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "Baltor's first social posts are produced by its own steps and tools, each approved and posted by a person, and the case study shows how each one was made.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.59",
+     "S-6.116"
+    ],
+    "id": "S-6.118",
+    "next_local_work": "Draft three posts from saved release and case study records once OWNER-19 names the accounts and the approving person.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Baltor's own social posts, made step by step and approved by a person",
+    "waiting_on": [
+     "S-6.59",
+     "S-6.116"
     ]
    }
   ]
@@ -4082,5 +4097,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be731597e465ba8caec"
+ "source_fingerprint": "sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f67cdd32fa726b"
 }
