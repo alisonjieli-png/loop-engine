@@ -4,7 +4,7 @@
   "done": 47,
   "next": 15,
   "now": 48,
-  "waiting": 135
+  "waiting": 142
  },
  "lanes": {
   "blocked": [
@@ -1041,7 +1041,7 @@
      "S-6.62"
     ],
     "id": "S-6.69",
-    "next_local_work": "Review imported packages first: build the panel's imported-layout reader (S-6.196), measure the import yield on 240 packages, qualify a reviewer without an allowance on a larger control set, spend metered allowances on review before generation, and run the daily job from approvals to a checked live release (S-6.197); then size the daily waves to the measured capacity.",
+    "next_local_work": "Publish community-release-2 after release 35, install the daily job (S-6.197), ship the screening profile (S-6.199), measure serving at 1,000, 5,000 and 10,000 (S-6.203), then export 2,000 or more a day until the dated marks are met.",
     "phase": 6,
     "status": "building",
     "title": "The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day",
@@ -1848,7 +1848,7 @@
      "S-6.196"
     ],
     "id": "S-6.197",
-    "next_local_work": "Join the existing commands into one journaled job with the rollback, run it once by hand on the next approvals, then schedule it.",
+    "next_local_work": "Dry-run the job on the next approvals, then install the cron entry every six hours with the Tactical calibration as its first stage.",
     "phase": 6,
     "status": "proposed",
     "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
@@ -1856,6 +1856,110 @@
      "S-6.62",
      "S-6.119",
      "S-6.196"
+    ]
+   },
+   {
+    "acceptance": "Approved packages reach customers within six hours of export without a session, and anything that later proves wrong leaves the library within a minute of the flag, with its record kept.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.196",
+     "S-6.197",
+     "S-6.62"
+    ],
+    "id": "S-6.199",
+    "next_local_work": "Write the screening profile and its control set from the pilot's rejections, measure it against the full review on the same 240 packages, then add the report route, the flag records and the withdrawal rules to the service, and the rescan and upstream check to the daily job.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
+    "waiting_on": [
+     "S-6.196",
+     "S-6.197",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "10,000 packages are live, searchable, retrievable and findable by search engines, with the measurements that sized the service.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.184",
+     "S-6.199"
+    ],
+    "id": "S-6.203",
+    "next_local_work": "Run the three local measurements from the community and imported release folders, then build the item pages and paging.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.184",
+     "S-6.199"
+    ]
+   },
+   {
+    "acceptance": "A checked change reaches the live service in 25 minutes or less, and fewer than one push in twenty fails its first run.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.180"
+    ],
+    "id": "S-6.200",
+    "next_local_work": "Shard the self-test and cache the environment, add the records-only lane, install the hook, and record the run-history medians in the weekly number.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
+    "waiting_on": [
+     "S-6.180"
+    ]
+   },
+   {
+    "acceptance": "A new demo or page goes from its record to a checked live hostname in 60 minutes or less.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67",
+     "S-6.62"
+    ],
+    "id": "S-6.201",
+    "next_local_work": "Generalise the showcase page builder that tools/test_showcase_pages.py already checks into the two generators, then produce the decision red-team page (S-6.198) and the Kaggle and overnight demos from records.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation",
+    "waiting_on": [
+     "S-6.67",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "A developer with any of the seven harnesses connects and retrieves one item in two minutes from the page alone.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.24",
+     "S-6.182"
+    ],
+    "id": "S-6.202",
+    "next_local_work": "Add the three harnesses, write the nightly connection job beside the browser nightly, and wire its result into the page.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint",
+    "waiting_on": [
+     "S-6.24",
+     "S-6.182"
+    ]
+   },
+   {
+    "acceptance": "Every Monday staff read one page with last week's numbers and their trend.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.120",
+     "S-6.6"
+    ],
+    "id": "S-6.204",
+    "next_local_work": "Turn the counts-only script into the command, add the request counter with the retention rule, and schedule the weekly record.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff",
+    "waiting_on": [
+     "S-6.120",
+     "S-6.6"
     ]
    },
    {
@@ -3570,6 +3674,23 @@
     ]
    },
    {
+    "acceptance": "A reader sees, for each decision engine, whether it recognised documented trafficking indicators in business-framed requests and what it decided, on the author's own published scenarios.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.94",
+     "S-6.63"
+    ],
+    "id": "S-6.198",
+    "next_local_work": "Add the request-screening station, the text-model engine and the scoring tool, run it against the rules engine and the Tactical model, and publish the page; Jev runs when the owner places their TypeSafe key in the keyring under the reference typesafe-jev.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page",
+    "waiting_on": [
+     "S-6.94",
+     "S-6.63"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4666,7 +4787,7 @@
    "stage": "initial_service",
    "status_counts": {
     "building": 5,
-    "proposed": 3
+    "proposed": 4
    },
    "steps": [
     "S-6.29",
@@ -4676,10 +4797,11 @@
     "S-6.36",
     "S-6.37",
     "S-6.38",
-    "S-6.39"
+    "S-6.39",
+    "S-6.200"
    ],
    "title": "Ship the September 22 review: one main line, live checks and launch readiness",
-   "total_steps": 8
+   "total_steps": 9
   },
   {
    "acceptance": "Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.",
@@ -4701,7 +4823,7 @@
    "stage": "continued_improvement",
    "status_counts": {
     "building": 4,
-    "proposed": 4
+    "proposed": 5
    },
    "steps": [
     "S-6.30",
@@ -4711,10 +4833,11 @@
     "S-6.41",
     "S-6.42",
     "S-6.60",
-    "S-6.100"
+    "S-6.100",
+    "S-6.198"
    ],
    "title": "Engines behind fixed edges for every functional component",
-   "total_steps": 8
+   "total_steps": 9
   },
   {
    "acceptance": "A client on either protocol revision connects and loads an approved item in its own layout; every served item shows its licence, digest and measured or unmeasured effect; the dated deadlines are met.",
@@ -4882,7 +5005,7 @@
     "building": 4,
     "live_qualified": 1,
     "offline_verified": 1,
-    "proposed": 4
+    "proposed": 7
    },
    "steps": [
     "S-6.65",
@@ -4894,10 +5017,13 @@
     "S-6.46",
     "S-6.89",
     "S-6.99",
-    "S-6.120"
+    "S-6.120",
+    "S-6.201",
+    "S-6.202",
+    "S-6.204"
    ],
    "title": "Go fully live: open registration and self-serve paid onboarding",
-   "total_steps": 10
+   "total_steps": 13
   },
   {
    "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
@@ -4917,12 +5043,14 @@
    "stage": "public_launch",
    "status_counts": {
     "building": 4,
-    "proposed": 9
+    "proposed": 11
    },
    "steps": [
     "S-6.69",
     "S-6.196",
     "S-6.197",
+    "S-6.199",
+    "S-6.203",
     "S-6.70",
     "S-6.81",
     "S-6.82",
@@ -4935,7 +5063,7 @@
     "S-6.88"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 13
+   "total_steps": 15
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -5057,5 +5185,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b0ce892f45afc"
+ "source_fingerprint": "sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b599675fbdccaaa08"
 }

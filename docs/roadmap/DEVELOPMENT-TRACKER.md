@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b0ce892f45afc`.
+Source fingerprint: `sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b599675fbdccaaa08`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b
 |---|---:|
 | Being built now | 48 |
 | Can start next | 15 |
-| Waiting on earlier work | 135 |
+| Waiting on earlier work | 142 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -108,6 +108,12 @@ Source fingerprint: `sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
 | S-6.196 | The review panel reads imported packages: a reader for the imported layout, criteria written for imported material, calibration controls and a yield pilot | proposed | S-6.63, S-6.69 |
 | S-6.197 | One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback | proposed | S-6.62, S-6.119, S-6.196 |
+| S-6.199 | Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules | proposed | S-6.196, S-6.197, S-6.62 |
+| S-6.203 | 10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries | proposed | S-6.62, S-6.184, S-6.199 |
+| S-6.200 | Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight | proposed | S-6.180 |
+| S-6.201 | A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation | proposed | S-6.67, S-6.62 |
+| S-6.202 | Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint | proposed | S-6.24, S-6.182 |
+| S-6.204 | The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff | proposed | S-6.120, S-6.6 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | proposed | S-6.40, S-6.76 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
@@ -211,6 +217,7 @@ Source fingerprint: `sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b
 | S-6.187 | How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed | proposed | S-6.34 |
 | S-6.185 | A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle | proposed | S-6.47, S-6.32 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
+| S-6.198 | Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page | proposed | S-6.94, S-6.63 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
@@ -270,15 +277,15 @@ Source fingerprint: `sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b
 | D-15 | Operate reliability, telemetry and customer data lifecycle | public_launch | 0 of 5 |
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
-| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
-| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 8 |
+| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 9 |
+| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 9 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 1 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 10 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 13 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 13 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 15 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |

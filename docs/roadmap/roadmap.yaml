@@ -825,7 +825,7 @@ continuation:
     - id: D-18
       title: 'Ship the September 22 review: one main line, live checks and launch readiness'
       stage: initial_service
-      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37, S-6.38, S-6.39]
+      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37, S-6.38, S-6.39, S-6.200]
       depends_on: [D-17]
       actions: ['Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.', Restore what the September 22 merges dropped and prove it with the same check., 'Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.', Apply the README plan so every entry point matches the code and the live state., Apply grants automatically after a catalogue release and state the client address source in every drill., 'Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.', Ship the website fixes from the persona and interface reviews., Prepare the fact-checked Y Combinator package for the owner.]
       acceptance: GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.
@@ -840,7 +840,7 @@ continuation:
     - id: D-19
       title: Engines behind fixed edges for every functional component
       stage: continued_improvement
-      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60, S-6.100]
+      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60, S-6.100, S-6.198]
       depends_on: [D-12]
       actions: ['Index every engine slot in the boundary registry with its edge, protocol, engines and check.', 'Declare engines with lifecycle, capabilities, effects, licence and cost model.', 'Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.', Select engines without effects and record every decision with its reasons., Measure every engine inside the envelope and read qualified evidence for ranking., Build the harness executor slot with the Agent Client Protocol adapter first., Make hosted search a slot with the measured policy and a relevance floor., Search for existing projects and papers before each engine is built and record the decision.]
       acceptance: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
@@ -960,7 +960,7 @@ continuation:
     - id: D-25
       title: "Go fully live: open registration and self-serve paid onboarding"
       stage: public_launch
-      steps: [S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89, S-6.99, S-6.120]
+      steps: [S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89, S-6.99, S-6.120, S-6.201, S-6.202, S-6.204]
       depends_on: [D-17, D-24]
       actions:
         - "Close the identity provider's back-door sign-up (OWNER-03, or the service-side guard), stage the sign-up secrets through standard input, and switch registration and email sign-up on."
@@ -982,7 +982,7 @@ continuation:
     - id: D-26
       title: "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day"
       stage: public_launch
-      steps: [S-6.69, S-6.196, S-6.197, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
+      steps: [S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
       depends_on: [D-20, D-22]
       actions:
         - "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line."
@@ -1387,8 +1387,8 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.196, S-6.197, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.195, S-6.193, S-6.191, S-6.189, S-6.188, S-6.187, S-6.185, S-6.179, S-6.180]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.200, S-6.201, S-6.202, S-6.204, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.195, S-6.193, S-6.191, S-6.189, S-6.188, S-6.187, S-6.185, S-6.179, S-6.180, S-6.198]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,13 +1489,13 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.196, S-6.197, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176, S-6.193]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171, S-6.185]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171, S-6.185, S-6.198]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172]
@@ -1504,7 +1504,7 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.195, S-6.194, S-6.192, S-6.191, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.101, S-6.177, S-6.180]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.195, S-6.194, S-6.192, S-6.191, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.101, S-6.177, S-6.180, S-6.200, S-6.201, S-6.202, S-6.204]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84, S-6.187]
@@ -3043,8 +3043,8 @@ steps:
       - "a sample of every file class is loaded in its target harnesses before a release and recorded as configured, loaded, used and verified"
     adversarial: "A package approved by its producer's family, a package whose bytes changed after review, a count that mixes candidates with approved packages and a day that exceeds its declared model-call ceiling must each be refused."
     acceptance: "The library reaches 10,000 and then 100,000 distinct approved packages through the independent panel, and then adds 100 to 1,000 approved packages a day, with the counts recorded per day."
-    evidence: "September 22, 2026: 10,000 is the first milestone and 100,000 the target. September 23, 2026, the owner: \"aggressively get everything working with at least 100,000 harness component files\" and \"generate and maintain adding 100 to 1,000 more harness components per day\". The milestone unit is a distinct approved package (decision of September 22); the files inside the packages are counted beside it. September 25, 2026, the owner: \"we need to be able to generate and upload 1,000 per day at a minimum, without significant issues and delays of deploying\". The review of that day found review, not supply or deployment, to be the limit: 58,787 imported candidates indexed and none reviewed, because the panel reads only original items (S-6.196); 51 approvals from 1,243 reviews of generated ideas; the Claude reviewer at 114 of the owner's 150 calls, Codex refused until September 29, the Ollama Cloud weekly allowance spent, and Tactical excluded after approving one known-wrong control of four; catalogue releases already live without a redeploy but each step started by hand (S-6.197)."
-    next_local_work: "Review imported packages first: build the panel's imported-layout reader (S-6.196), measure the import yield on 240 packages, qualify a reviewer without an allowance on a larger control set, spend metered allowances on review before generation, and run the daily job from approvals to a checked live release (S-6.197); then size the daily waves to the measured capacity."
+    evidence: "September 22, 2026: 10,000 is the first milestone and 100,000 the target. September 23, 2026, the owner: \"aggressively get everything working with at least 100,000 harness component files\" and \"generate and maintain adding 100 to 1,000 more harness components per day\". The milestone unit is a distinct approved package (decision of September 22); the files inside the packages are counted beside it. September 25, 2026, the owner: \"we need to be able to generate and upload 1,000 per day at a minimum, without significant issues and delays of deploying\". The review of that day found review, not supply or deployment, to be the limit: 58,787 imported candidates indexed and none reviewed, because the panel reads only original items (S-6.196); 51 approvals from 1,243 reviews of generated ideas; the Claude reviewer at 114 of the owner's 150 calls, Codex refused until September 29, the Ollama Cloud weekly allowance spent, and Tactical excluded after approving one known-wrong control of four; catalogue releases already live without a redeploy but each step started by hand (S-6.197). September 25, 2026, evening: the imported reader is on main (7866df82); Tactical qualified on the imported control set in batch mode and screened 240 packages in 21 calls of 52.5 seconds each, 223 approved and 10 rejected; the prechecks refused 384 of 2,000; 316 approved packages are combined and bundled as community-release-2, waiting for the host licence policy of release 35. At that rate 10,000 approved packages are two days of screening, and the owner changed the review process the same evening (S-6.199). Dated in the AGENTS.md decision table: 10,000 served by October 5, 30,000 by October 31, 100,000 by December 24, 2026."
+    next_local_work: "Publish community-release-2 after release 35, install the daily job (S-6.197), ship the screening profile (S-6.199), measure serving at 1,000, 5,000 and 10,000 (S-6.203), then export 2,000 or more a day until the dated marks are met."
   - id: S-6.70
     phase: 6
     title: "Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search"
@@ -4563,8 +4563,112 @@ steps:
       - "each day's counts of packages exported, reviewed, approved, published and served are recorded"
     adversarial: "A bundle that holds an unapproved package, a publish that skips the live check, a failed check that leaves the new release serving and a run that exceeds its declared call ceiling must each be refused."
     acceptance: "Approved packages reach customers every day without a person starting any step and without a redeploy."
-    evidence: "Observed on September 25, 2026: the 93-item Community release went live without a redeploy, but exporting, reviewing, writing the reviewed folder, bundling, publishing and checking were each started by hand."
-    next_local_work: "Join the existing commands into one journaled job with the rollback, run it once by hand on the next approvals, then schedule it."
+    evidence: "Observed on September 25, 2026: the 93-item Community release went live without a redeploy, but exporting, reviewing, writing the reviewed folder, bundling, publishing and checking were each started by hand. Evening: the operator scripts daily_library_release.sh, catalogue_status.sh and rollback_catalogue.sh exist in the private tools folder with journaled stages; no cron entry yet."
+    next_local_work: "Dry-run the job on the next approvals, then install the cron entry every six hours with the Tactical calibration as its first stage."
+  - id: S-6.198
+    phase: 6
+    title: "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page"
+    status: proposed
+    depends_on: [S-6.94, S-6.63]
+    boundary: [src/loop_engine/core/decisions, tools/red_team_decisions.py, case-studies]
+    verify:
+      - "the five scenarios and the write-up's required elements are one typed record (decision_red_team_scenarios/v1) with its CC0 source cited, and the truncated fourth prompt is marked as reconstructed"
+      - "a request-screening station at the before_step loop point asks three typed questions of every eligible engine, from a written screening policy: the probability that the request carries the policy's indicators, the next action as a choice, and the harm severity as a score; the safe default (hold) binds when no engine answers, and the station can only narrow"
+      - "every engine the panel can reach is scored on the same five requests: the in-process rules engine reading the policy's written patterns, a text model behind the typed decision edge (Tactical or Ollama Cloud) answering in JSON, and the TypeSafe System One endpoint (Jev) when its credential is in the keyring; each run records the engine, model, usage and outcome, and a run stops before its declared ceiling"
+      - "an engine that answers proceed on any of the four business-framed requests, or that does not refer the fifth request to help resources, is a recorded failure, never a lower score"
+      - "the showcase page shows each engine's decisions beside the write-up's original model responses, with the required elements each engine's advisory text met by keyword evidence, and states what was not measured"
+    adversarial: "A scenario whose expected decision was changed to match an engine's answer, an engine scored without its recorded usage, a run that continued past its ceiling and a page that presents a decision as text generation must each fail a named check."
+    acceptance: "A reader sees, for each decision engine, whether it recognised documented trafficking indicators in business-framed requests and what it decided, on the author's own published scenarios."
+    evidence: "The owner asked on September 25, 2026 for a showcase that uses Baltor to develop another red-teaming variation of their Kaggle write-up (LLM Complicity in Modern Slavery, CC0, OpenAI gpt-oss-20b red-teaming challenge) that red-teams Jev and shows how Jev makes decisions. Observed the same day: Jev is the TypeSafe System One endpoint (api.typesafe.ai) behind core/decisions/jev.py, asking typed questions of three kinds; no TypeSafe credential is in the keyring; the in-process rules engine answers the command safety station only; the scenario record was drafted from the write-up's four full prompts and its truncated fourth."
+    next_local_work: "Add the request-screening station, the text-model engine and the scoring tool, run it against the rules engine and the Tactical model, and publish the page; Jev runs when the owner places their TypeSafe key in the keyring under the reference typesafe-jev."
+  - id: S-6.199
+    phase: 6
+    title: "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules"
+    status: proposed
+    depends_on: [S-6.196, S-6.197, S-6.62]
+    boundary: [tools/candidate_review, src/loop_engine/core/service_runtime, tools/write_reviewed_catalogue.py]
+    verify:
+      - "a Community screening profile asks one calibrated non-producer reviewer four hard questions for up to 12 packages a call (hidden instructions, effects beyond the declared ones, a description the files do not match, no use to a harness) and nothing else; the pilot's ten rejected packages are the control set the screen must still reject"
+      - "a package that passes the prechecks, has pinned provenance and passes the screen is published as Community by the daily job with no person starting a step"
+      - "every served item has a report route: a button on the library page and in the catalogue browser and a protocol method; a report from a signed-in customer withdraws a Community item within a minute and queues the full review, and a Verified item is withdrawn on a staff flag or on two reports from different customers"
+      - "a nightly rescan runs the current prechecks over every served item and withdraws what fails a rule; a weekly upstream check flags a repository gone, a licence changed or a published advisory"
+      - "a second-family review after publication upgrades an item to Verified or withdraws it; every withdrawal keeps its record and note on the library page, and reinstatement is a new review of the same bytes"
+    adversarial: "A screen that approves a pilot rejection, a report that withdraws a Verified item alone from an anonymous caller, a withdrawal that loses the item's record, a rescan that leaves a failing item serving and a reinstatement without a new review must each fail a named check."
+    acceptance: "Approved packages reach customers within six hours of export without a session, and anything that later proves wrong leaves the library within a minute of the flag, with its record kept."
+    evidence: "The owner, September 25, 2026: \"we need to speed up and review, and change the review process, maybe we can make the review process before publication simpler, but allow an ongoing feedback based process to unpublish certain things, flag them for additional review\". Measured the same day: the Tactical screen at 52 seconds for 12 packages, 223 approved and 10 rejected of 233; the prechecks refused 384 of 2,000; catalogue withdrawals already durable and served within a minute. The decision is the \"Approval of intelligence items\" row of the AGENTS.md decision table."
+    next_local_work: "Write the screening profile and its control set from the pilot's rejections, measure it against the full review on the same 240 packages, then add the report route, the flag records and the withdrawal rules to the service, and the rescan and upstream check to the daily job."
+  - id: S-6.200
+    phase: 6
+    title: "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight"
+    status: proposed
+    depends_on: [S-6.180]
+    boundary: [.github/workflows/ci.yml, tools/release_preflight.sh, devtools]
+    verify:
+      - "the median green run of ci.yml on main is 12 minutes or less, read from the run history"
+      - "a push that changes only artifacts, docs, tools checks and top-level Markdown runs the lint, the context-route check and the generated-view checks alone, and the hourly train still skips its redeploy"
+      - "a pre-push hook runs the same gates the workflow runs, in the same order, and refuses the push on any failure; the share of pushes whose first run fails is recorded weekly"
+    adversarial: "A lane that skips a gate the full workflow runs on source changes, a cache that serves a stale dependency and a hook that can be bypassed without a recorded reason must each fail a named check."
+    acceptance: "A checked change reaches the live service in 25 minutes or less, and fewer than one push in twenty fails its first run."
+    evidence: "Measured on September 25, 2026 from the GitHub run history: 25 green runs between 22 and 25 minutes; 6 of 31 pushes failed once (19 percent); the deploy workflow 2 to 3 minutes; live checks about 10 minutes; nine releases in the day."
+    next_local_work: "Shard the self-test and cache the environment, add the records-only lane, install the hook, and record the run-history medians in the weekly number."
+  - id: S-6.201
+    phase: 6
+    title: "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation"
+    status: proposed
+    depends_on: [S-6.67, S-6.62]
+    boundary: [src/loop_engine/core/service_runtime/web_site_map.py, src/loop_engine/core/service_runtime/web_pages.py, tools]
+    verify:
+      - "a page record (path, title, description, sections, hostname) produces the served page, its site-map row, its crawler tags, its sitemap entry and its browser checks, with no hand-written markup"
+      - "a demo record names the task, the steps, each step's search and the digest it retrieved; the generator reruns every search against the live library, refuses a digest the library no longer serves, renders the page and adds the hostname row"
+      - "adding a hostname adds its DNS record and certificate through the recorded provider connections and the hosted checks run on it in the next release"
+      - "the minutes from record to live are recorded for every page and demo"
+    adversarial: "A demo whose recorded digest the live library does not serve, a page record without a description, and a hostname without a certificate must each fail a named check."
+    acceptance: "A new demo or page goes from its record to a checked live hostname in 60 minutes or less."
+    evidence: "Measured on September 25, 2026: the library page went from first commit to live in 49 minutes; /demo, /demo/kaggle and /overnight were each written by hand on September 24 with recorded searches and digests; 47 pages and 8 hostnames exist in the typed site map."
+    next_local_work: "Generalise the showcase page builder that tools/test_showcase_pages.py already checks into the two generators, then produce the decision red-team page (S-6.198) and the Kaggle and overnight demos from records."
+  - id: S-6.202
+    phase: 6
+    title: "Quickstarts that are checked every night: one copy-paste setup per harness on Get set up, each run against the live endpoint"
+    status: proposed
+    depends_on: [S-6.24, S-6.182]
+    boundary: [docs/guides/service-getting-set-up.md, src/loop_engine/core/service_runtime/web_assets/client-recipes.json, tools]
+    verify:
+      - "Get set up shows one setup for each of Claude Code, Codex, OpenCode, Pi, Cursor, Hermes and OpenClaw, each two minutes or less to a first retrieval, with the harness chosen first and the address filled from the published base"
+      - "a nightly job runs every setup against the live endpoint with a scoped key, records connected, listed and retrieved for each, and takes a snippet off the page when its check fails"
+      - "the page states what each harness loads natively and what it does not, from the recorded independent-instance tests"
+    adversarial: "A snippet that names an address other than the published base, a check that reports connected without a retrieval, and a harness shown without a recorded loading test must each fail a named check."
+    acceptance: "A developer with any of the seven harnesses connects and retrieves one item in two minutes from the page alone."
+    evidence: "September 25, 2026: Get set up lists Codex, OpenCode, Pi and Claude Code steps; the setup snippets are checked at release time, not nightly; Cursor, Hermes and OpenClaw have no page."
+    next_local_work: "Add the three harnesses, write the nightly connection job beside the browser nightly, and wire its result into the page."
+  - id: S-6.203
+    phase: 6
+    title: "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries"
+    status: proposed
+    depends_on: [S-6.62, S-6.184, S-6.199]
+    boundary: [src/loop_engine/core/service_runtime, src/loop_engine/core/harness_intelligence_search.py, tools/build_catalogue_release_bundle.py]
+    verify:
+      - "a local copy of the service publishes releases of 1,000, 5,000 and 10,000 packages and records index build time, peak memory, swap time and search latency for each; the live release that crosses each mark cites the measurement"
+      - "the library page and the catalogue browser page their listings and stay under two seconds at 10,000 items"
+      - "every served item has its own page with its purpose, kind, licence, tier, digest and review record, listed in sitemap.xml, with search engines allowed"
+      - "the Machine's volume and memory are sized from the measurement before the release, within the recorded allowance"
+    adversarial: "A release that crosses a mark without its measurement, an item page that shows an item the active release does not serve, and a listing that loads every item at once must each fail a named check."
+    acceptance: "10,000 packages are live, searchable, retrievable and findable by search engines, with the measurements that sized the service."
+    evidence: "September 25, 2026: 93 items served; the only larger measurement is the synthetic 100,000-row probe of September 22 (a 48 second index build and 2.1 GB peak); the Machine has a 1 GB volume."
+    next_local_work: "Run the three local measurements from the community and imported release folders, then build the item pages and paging."
+  - id: S-6.204
+    phase: 6
+    title: "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff"
+    status: proposed
+    depends_on: [S-6.120, S-6.6]
+    boundary: [src/loop_engine/core/service_runtime, tools]
+    verify:
+      - "one command prints the week's visitors (requests to customer pages by distinct address, metadata only), accounts made and confirmed, paying subscriptions from the live billing records, packages served, and the release and library cycle times from the run history"
+      - "the numbers are written to a dated record each week and shown on a staff page; no raw content and no credential enters the record"
+      - "the assumed funnel rates of the ninety-day plan are replaced by the measured ones as soon as a week has them"
+    adversarial: "A count that mixes test journeys with customer accounts, a visitor count from raw request logs kept beyond the retention rule, and a rate presented as measured before a week of data must each fail a named check."
+    acceptance: "Every Monday staff read one page with last week's numbers and their trend."
+    evidence: "Measured on September 25, 2026 with a counts-only script: 0 live subscriptions, 0 customers, 2 checkout sessions started and none finished, 18 accounts of which 9 confirmed and 16 made on the day of the release checks; no visitor count exists."
+    next_local_work: "Turn the counts-only script into the command, add the request counter with the retention rule, and schedule the weekly record."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"
