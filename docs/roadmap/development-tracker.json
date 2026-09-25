@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 47,
-  "waiting": 136
+  "now": 48,
+  "waiting": 135
  },
  "lanes": {
   "blocked": [
@@ -1368,6 +1368,23 @@
     ]
    },
    {
+    "acceptance": "A new customer signs up, confirms, connects a harness and downloads a first item without leaving baltor.ai.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65",
+     "S-6.35"
+    ],
+    "id": "S-6.182",
+    "next_local_work": "Add the staff sign-up link journey to the live checks and fail it when the emailed link host is not baltor.ai; then update the guides and the security page. Back up and move the host file's public base address in the same window as release 28, add the release check, then fix the guides. Focus: serves the first-journey measure.",
+    "phase": 6,
+    "status": "building",
+    "title": "The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release",
+    "waiting_on": [
+     "S-6.65",
+     "S-6.35"
+    ]
+   },
+   {
     "acceptance": "A customer never sees an item in search that the same account is then refused, and every item says whether it is Verified or Community.",
     "blocked_on": "",
     "depends_on": [
@@ -2347,23 +2364,6 @@
     "title": "The front door outside baltor.ai: the GitHub page, a tagged release with a pinned install, and a listing in the official protocol server registry",
     "waiting_on": [
      "S-6.67"
-    ]
-   },
-   {
-    "acceptance": "A new customer signs up, confirms, connects a harness and downloads a first item without leaving baltor.ai.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.65",
-     "S-6.35"
-    ],
-    "id": "S-6.182",
-    "next_local_work": "Back up and move the host file's public base address in the same window as release 28, add the release check, then fix the guides. Focus: serves the first-journey measure.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The whole first journey on baltor.ai: the public base address, the emailed link, the published connection address and a check on every release",
-    "waiting_on": [
-     "S-6.65",
-     "S-6.35"
     ]
    },
    {
@@ -5057,5 +5057,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:6ff6f773a83564bf5e71aef6a787ac86fb0e255cddabf35c75336d02f1e75e4d"
+ "source_fingerprint": "sha256:3f037f819517d81360fb99798e28a46ed4864bcc07dea922a82b0ce892f45afc"
 }

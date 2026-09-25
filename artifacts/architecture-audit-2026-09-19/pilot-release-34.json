@@ -1,0 +1,88 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 34,
+  "source_revision": "ea2bc508e79db2893f9c19b5f3a26c3f6c1c9611",
+  "continuous_integration_run": 36188082095,
+  "deployment_workflow_run": 36190472613,
+  "image_digest": "sha256:a914f340558115a940de44eed8712037f887744867adf3e47517ed5150868936",
+  "deployed_at": "2026-09-25T21:17:10Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 33,
+  "rollback_image_digest": "sha256:b0c77cc43a8d6075f556d38da3b23a2b5741752976efad65e3e730d3807b0187",
+  "rollback_note": "Release 33 serves the same catalogue and answers /library with the address-not-found page; its header and footer Library links scroll the homepage to its library band.",
+  "changes": [
+    "the public library page at /library, rendered from the served catalogue view: every Verified item with its purpose, identity, kind, licence, size, digest and review record, the Community items counted by kind and tier, one item in full, and the served release's additions, changes and withdrawals",
+    "the Library links of the header, for every access state, and of the footer's Product group open /library instead of the homepage band; the site map records the change as dated removal rows",
+    "the packaging metadata gains the Repository project URL, which the library page reads at run time to link review records"
+  ],
+  "failed_first_attempts": [
+    {
+      "revision": "5642c8cfa8c87a6a767dd97d1e1fef10c2ea925f",
+      "continuous_integration_run": 36186189997,
+      "reason": "the self-test's zero-tolerance scan counted urllib.parse in the library page as a network call outside the model gateway; the page now splits the repository address as text. The push had skipped the self-test after its last source change."
+    }
+  ],
+  "host_file_changes": [
+    {
+      "at": "2026-09-25T21:15:40Z",
+      "field": "http.public_base_url",
+      "from": "https://baltor-pilot.fly.dev",
+      "to": "https://baltor.ai",
+      "backup": "/data/host.json.before-public-base-20260925T211540",
+      "loaded_by": "the release 34 restart at 21:17 UTC",
+      "roadmap": "S-6.182",
+      "note": "The service's own HTTP configuration loader accepted the edited file in a dry run before the write. The sign-up and recovery links the service emails, the identity record's redirect address and the protected resource address now name baltor.ai. Every /api and /mcp route keeps answering on every allowed hostname; nothing is redirected."
+    }
+  ],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 45,
+        "views": 188,
+        "hostnames": 8,
+        "links_checked": 310,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "browser_suite_on_this_revision": {
+    "where": "GitHub Actions, workflow browser-nightly.yml started by hand",
+    "run": 36188086164,
+    "checks": [
+      909,
+      909
+    ],
+    "mutants_detected": [
+      183,
+      183
+    ]
+  },
+  "observed_after_the_restart": {
+    "identity_redirect_url": "https://baltor.ai/auth/callback",
+    "library_page": "200, 42 Verified items listed"
+  },
+  "evidence_folder": "artifacts/release-34-2026-09-25"
+}
