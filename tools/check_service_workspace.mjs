@@ -1112,6 +1112,11 @@ try {
   servedFiles.push("/directory","/assets/directory.css","/assets/directory.js","/assets/directory/manifest.json",...directoryRowFiles);
   for(const path of directoryRowFiles)registerListingText(path,{fields:["rows"]});
   registerListingText("/directory",{page:true});
+  /* The model directory's own style and script, and its two indexes, whose rows hold names and descriptions that model
+     publishers wrote, so the strings under their "rows" key are listing text. */
+  const modelIndexFiles=["/assets/model-directory/search-index.json","/assets/model-directory/fit-index.json"];
+  servedFiles.push("/assets/model-directory.css","/assets/model-directory.js",...modelIndexFiles);
+  for(const path of modelIndexFiles)registerListingText(path,{fields:["rows"]});
   check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
   check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];

@@ -186,7 +186,13 @@ def listing_problems(site_map, serve) -> list:
 
 
 def _served(site_map=None):
-    return lambda address, host: served_asset(address, "GET", DISPLAY_NAME, host, site_map)
+    """Serve an address as the service does: its page table first, then the pages the model directory renders."""
+    from .model_directory_pages import rendered_page
+
+    def serve(address, host):
+        answer = served_asset(address, "GET", DISPLAY_NAME, host, site_map)
+        return answer if answer is not None else rendered_page(address, "GET", DISPLAY_NAME, host)
+    return serve
 
 
 def run_checks(check, root):
