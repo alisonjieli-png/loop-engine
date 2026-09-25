@@ -165,3 +165,11 @@
   show(opened >= 0 ? opened : 0);
   if (opened > 0) deck.scrollIntoView({block: "start"});
 })();
+
+// The shared header's phone menu: one button that names the menu and says whether it is open, as on every other page.
+(() => {
+  const menuButton = document.getElementById("menu-button");
+  if (!menuButton) return;
+  const setMenu = open => { menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header")?.classList.toggle("menu-open", open); };
+  menuButton.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+})();
