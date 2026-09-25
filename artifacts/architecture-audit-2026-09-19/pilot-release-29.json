@@ -1,0 +1,65 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 29,
+  "source_revision": "e120cdbdc64ee665010ecf76e33561735e726389",
+  "continuous_integration_run": 36144951643,
+  "deployment_workflow_run": 36148114747,
+  "image_digest": "sha256:3184e7efeb8e165b2476e97cb73b16ea36ebdffb09a229ff4fb06294d82a61f6",
+  "deployed_at": "2026-09-25T14:34:35Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 27,
+  "rollback_image_digest": "sha256:28b246e158312396f20b0c47d5f31553aa6e589eebfa4d0cfa773bf25388021e",
+  "rollback_note": "Fly release 28 is the first attempt of the same revision; the image was replaced, but its catalogue grant and billing policy steps did not run.",
+  "changes": [
+    "the models, endpoints and can-I-run directory at /models, /endpoints and /can-i-run, refreshed daily",
+    "a larger hero example: the working directory of the find-duplicates step with five vetted skills",
+    "the pricing card carries no status badge; the team account question has a plain answer"
+  ],
+  "failed_first_attempts": [
+    {
+      "run": 36141815173,
+      "why": "CI on 171053eb: the model directory line's allowlist entry named only its module, which the gate refuses"
+    },
+    {
+      "run": 36147741222,
+      "fly_release": 28,
+      "why": "the post-deploy catalogue grant step found the replaced Machine still starting; the retry passed, and the workflow now waits up to two minutes for it"
+    }
+  ],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 44,
+        "views": 184,
+        "hostnames": 8,
+        "links_checked": 338,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        8,
+        8
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "evidence_folder": "artifacts/release-29-2026-09-25"
+}

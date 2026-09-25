@@ -47,12 +47,14 @@ from the newest release record, follow the release record and correct this
 section. Update this section in the same change that records a new release.
 It describes a private pilot. It does not describe a qualified paid service.
 
-The latest deployment was checked on September 25, 2026 after Fly release 27
-at 10:24 UTC. Its exact source, image, rollback target, successful workflow,
-host file change and live checks are recorded in
-[`pilot-release-27.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-27.json),
+The latest deployment was checked on September 25, 2026 after Fly release 29
+at 14:34 UTC. Its exact source, image, rollback target, successful workflow
+and live checks are recorded in
+[`pilot-release-29.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-29.json),
 with the reports in
-[the release 27 evidence](../../artifacts/release-27-2026-09-25/README.md).
+[the release 29 evidence](../../artifacts/release-29-2026-09-25/README.md).
+Release 27 of the same morning is recorded in
+[`pilot-release-27.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-27.json).
 Release 26 of the same morning is recorded in
 [`pilot-release-26.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-26.json).
 Release 25 of September 24, 2026 is recorded in
@@ -71,7 +73,7 @@ release check. Public registration is open, through Baltor's own sign-up only.
 | Subject | Current fact | Where to check it |
 |---|---|---|
 | Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. The public capabilities record reports the display name `Baltor`. | [terminology.yaml](../../terminology.yaml), explained by [the developer language guide](../guides/developer-language.md) |
-| Host | Fly.io release 27 is complete on the existing single-Machine deployment. Exact image `sha256:28b246e158312396f20b0c47d5f31553aa6e589eebfa4d0cfa773bf25388021e`, checked main `f902d915bd7f8586762da2962311b6271767e1fd`, continuous integration run 36120351397, deployment run 36123608871. The rollback target is release 26, image `sha256:863bec3ef5294949c9a3567046d6cb2238a54d1ae85e13e7e6c4839a2b8b3a80`. The deploy workflow releases any checked revision on main, even after main moves on. | [`pilot-release-27.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-27.json) |
+| Host | Fly.io release 29 is complete on the existing single-Machine deployment. Exact image `sha256:3184e7efeb8e165b2476e97cb73b16ea36ebdffb09a229ff4fb06294d82a61f6`, checked main `e120cdbdc64ee665010ecf76e33561735e726389`, continuous integration run 36144951643, deployment run 36148114747. The rollback target is release 27, image `sha256:28b246e158312396f20b0c47d5f31553aa6e589eebfa4d0cfa773bf25388021e`. The deploy workflow releases any checked revision on main, even after main moves on. | [`pilot-release-29.json`](../../artifacts/architecture-audit-2026-09-19/pilot-release-29.json) |
 | Hostnames | All nine hostnames returned 200 for fifteen public addresses (135 of 135) and identical capabilities after release 27: `baltor.ai`, `www.baltor.ai`, `app.baltor.ai`, `baltor-pilot.fly.dev`, `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai` and `deck.baltor.ai`. Each hostname opens its own page, and the check of what a person sees found no problem on 41 pages at desktop or phone width, in light or dark. | [the release 27 evidence](../../artifacts/release-27-2026-09-25/README.md) |
 | Host configuration | The file `/data/host.json` on the volume switches features on and off without a new image. It is not in the repository. On September 22, 2026 it gained `http.request_limits` with the client address read from the `Fly-Client-IP` header, after a backup to `/data/host.json.before-request-limits-20260922T181740`, and the Machine restarted at 18:17 UTC. Releases built after revision `e505eca` refuse a public binding without that setting. Every hostname above is listed in its `allowed_hosts` and `allowed_origins`; a hostname missing from those lists answers 421. On September 23, 2026 at 01:39 UTC, just before Fly release 15, it was backed up to `/data/host.json.before-release-15-20260923T013913` and its `http` block moved to the record `service_http_configuration/v2` with `protocol_versions` `2025-11-25` and `2026-07-28` (release 15 refuses the version 1 record and release 14 refuses version 2), and a `waitlist` block was added that names the Fly secret `BALTOR_WAITLIST_SOURCE_SECRET`, which keys the flood guard's source digest. Fly release 16 needed no host file change. On September 23 at 06:17 UTC, after a backup to `/data/host.json.before-catalogue-20260923T061642`, it gained a `catalogue` section (`service_catalogue_source/v1`, body store `/data/catalogue-bodies`), whose source moved from `image` to `store` at 06:20 UTC after the first catalogue release was published. | The release record, and the [September 21 handoff](../context/SESSION-HANDOFF-2026-09-21.md) for the hostname lists |
 | Product service | The command `loop-engine service serve`, from `src/loop_engine/core/service_runtime/`, built by [`Dockerfile.service`](../../Dockerfile.service). One process serves the website, the workspace, the `/api/v1/` interface and the Model Context Protocol endpoint `/mcp` from one origin. | [Two service commands](#two-service-commands) |
