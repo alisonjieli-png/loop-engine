@@ -12,10 +12,14 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 25 session handoff](SESSION-HANDOFF-2026-09-25.md). It records
-releases 26 and 27 with the new interface live, the flexible release checks, the
-weekly usage limit that paused every line until October 1, and the order of
-the next steps. The
+[September 25 afternoon handoff](SESSION-HANDOFF-2026-09-25-AFTERNOON.md). It
+records releases 29 and 30, the version 1 clients that refused what search
+offered, the first catalogue's missing two-family review and how the published
+meaning of Verified now states it, the state of every library source, and the
+order of the next steps. The
+[September 25 session handoff](SESSION-HANDOFF-2026-09-25.md) of the morning
+records releases 26 and 27 with the new interface live, the flexible release
+checks and the weekly usage limit that paused every line until October 1. The
 [September 24 session handoff](SESSION-HANDOFF-2026-09-24.md) before it records the
 live state after release 24 with public registration open, the owner's
 requests of September 24 with the decisions made and why, every line of work

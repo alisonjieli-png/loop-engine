@@ -1,0 +1,121 @@
+{
+  "record_type": "hosted_catalogue_disclosure_check/v1",
+  "checked_at": "2026-09-25T15:36:36.374015+00:00",
+  "origin": "https://baltor.ai",
+  "account": "pilot-owner",
+  "credential_host": "baltor-pilot.fly.dev",
+  "queries": [
+    "split address lines",
+    "find duplicate records"
+  ],
+  "approved_items": 43,
+  "rejected_items": 6,
+  "offered_items": 34,
+  "withheld_for_undeclared_authority": 9,
+  "rejected_identities": [
+    "ask_a_model_with_a_declared_answer_shape",
+    "check_a_table_join_before_trusting_it",
+    "make_a_data_pipeline_safe_to_run_again",
+    "package_one_skill_for_two_coding_harnesses",
+    "questions_to_ask_before_starting_work",
+    "refuse_secrets_and_unsafe_paths_in_generated_files"
+  ],
+  "refusals": {
+    "ask_a_model_with_a_declared_answer_shape": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "check_a_table_join_before_trusting_it": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "make_a_data_pipeline_safe_to_run_again": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "package_one_skill_for_two_coding_harnesses": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "questions_to_ask_before_starting_work": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "refuse_secrets_and_unsafe_paths_in_generated_files": {
+      "status": 404,
+      "code": "item_unavailable"
+    }
+  },
+  "search_hits": {
+    "split address lines": [
+      "find_duplicate_records_with_blocking_keys",
+      "normalize_whitespace_and_unicode_text",
+      "plan_and_split_work_with_explicit_joins",
+      "score_duplicate_pairs_by_weakest_signal",
+      "split_address_lines_into_components"
+    ],
+    "find duplicate records": [
+      "decide_whether_a_step_needs_a_model",
+      "detect_malformed_values_by_dominant_pattern",
+      "find_duplicate_records_with_blocking_keys",
+      "look_for_structure_the_model_missed",
+      "profile_text_column_before_cleaning",
+      "propose_a_dedupe_without_deleting_rows",
+      "score_duplicate_pairs_by_weakest_signal"
+    ]
+  },
+  "checker_sha256": "041ac680f317fae382600d5f7ef5b4d5d8df0e326cfd32ec9a61038d59819d68",
+  "review_record": "examples/29_intelligence_service/starter-catalogue/reviews.json",
+  "release_manifest": "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json",
+  "checks": [
+    {
+      "name": "the_release_manifest_carries_exactly_the_approved_items",
+      "passed": true,
+      "detail": "43 packaged, 43 approved"
+    },
+    {
+      "name": "the_service_registered_only_approved_items_less_withdrawals",
+      "passed": true,
+      "detail": "34 offered, 9 withheld for undeclared authority, 0 withdrawn"
+    },
+    {
+      "name": "no_rejected_item_is_registered",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "every_search_returns_approved_items_and_loads_no_body",
+      "passed": true,
+      "detail": "10 distinct items over 2 queries"
+    },
+    {
+      "name": "no_search_returns_a_rejected_item",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "every_rejected_item_is_refused_by_direct_address",
+      "passed": true,
+      "detail": "[\"item_unavailable\"]"
+    },
+    {
+      "name": "the_demonstration_page_prints_the_digests_the_service_serves_demo",
+      "passed": false,
+      "detail": "{\"layer_exception_catalogs_with_precedence\": {\"shown\": \"0a8cc8cd\", \"served\": \"\"}}"
+    },
+    {
+      "name": "the_demonstration_page_prints_the_digests_the_service_serves_demo_kaggle",
+      "passed": false,
+      "detail": "{\"check_for_existing_work_before_building\": {\"shown\": \"b710af36\", \"served\": \"\"}}"
+    }
+  ],
+  "passed": 6,
+  "executed": 8,
+  "planned_checks": 8,
+  "all_passed": false,
+  "http_calls": 25,
+  "body_reads": 0,
+  "usage_records_added": 0,
+  "physical_model_calls": 0,
+  "credential_printed": false
+}

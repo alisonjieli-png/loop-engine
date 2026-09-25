@@ -3,16 +3,16 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d245202854f8eb2e0`.
+Source fingerprint: `sha256:98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d36357fade74cd`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 42 |
+| Being built now | 43 |
 | Can start next | 15 |
-| Waiting on earlier work | 120 |
-| Blocked | 2 |
+| Waiting on earlier work | 121 |
+| Blocked | 3 |
 | Done | 47 |
 
 ## Being built now
@@ -48,6 +48,7 @@ Source fingerprint: `sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d2452
 | S-6.24 | Deliver client, authentication, endpoint-based model and native-harness onboarding | building | S-6.5, S-6.9, S-6.12 |
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
 | S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85 |
+| S-6.177 | Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download | building | S-6.63 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
@@ -190,6 +191,7 @@ Source fingerprint: `sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d2452
 | S-6.174 | An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records | proposed | S-6.33 |
 | S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
 | S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
+| S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
@@ -211,6 +213,7 @@ Source fingerprint: `sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d2452
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.178 | Two other model families review the first catalogue, whose September 21 approvals do not show them | blocked | S-6.63, S-6.177 |
 | S-3.5 | Unseen tasks on an authorized frontier model and Kaggle export | blocked | S-3.3 |
 | S-4.6 | Package index publication | blocked | the owner's package index account |
 

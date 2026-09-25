@@ -1,13 +1,30 @@
 {
  "counts": {
-  "blocked": 2,
+  "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 42,
-  "waiting": 120
+  "now": 43,
+  "waiting": 121
  },
  "lanes": {
   "blocked": [
+   {
+    "acceptance": "Every item labelled Verified has reviewers of two model families that did not produce it, as the label says.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.177"
+    ],
+    "id": "S-6.178",
+    "next_local_work": "On September 29 after 17:24 Eastern, run the Codex panel over the 42 items in batches of 12, then an Ollama Cloud family when its allowance returns.",
+    "phase": 6,
+    "status": "blocked",
+    "title": "Two other model families review the first catalogue, whose September 21 approvals do not show them",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.177"
+    ]
+   },
    {
     "acceptance": "",
     "blocked_on": "a frontier model key the owner authorizes",
@@ -1299,6 +1316,21 @@
     "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
     "waiting_on": [
      "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "A customer never sees an item in search that the same account is then refused, and every item says whether it is Verified or Community.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63"
+    ],
+    "id": "S-6.177",
+    "next_local_work": "Move the catalogue browser to version 2 with tier labels, and change its browser checks that pin provisioning_list/v2 and provisioning_manifest/v2.",
+    "phase": 6,
+    "status": "building",
+    "title": "Every Baltor client asks with version 2 of the provisioning request, so an item a search offers is never refused on download",
+    "waiting_on": [
+     "S-6.63"
     ]
    },
    {
@@ -3215,6 +3247,21 @@
     ]
    },
    {
+    "acceptance": "Generation spends calls on candidates that independent reviewers approve.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40"
+    ],
+    "id": "S-6.179",
+    "next_local_work": "Record the per-source approval rate in the review summaries and stop the grid lanes in the overnight batch.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains",
+    "waiting_on": [
+     "S-6.40"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4699,5 +4746,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d245202854f8eb2e0"
+ "source_fingerprint": "sha256:98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d36357fade74cd"
 }

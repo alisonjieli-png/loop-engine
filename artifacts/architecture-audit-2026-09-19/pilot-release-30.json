@@ -1,0 +1,66 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 30,
+  "source_revision": "2502556760981e536f838fa3456d0aebf5e883d0",
+  "continuous_integration_run": 36151852734,
+  "deployment_workflow_run": 36154237825,
+  "image_digest": "sha256:c075f297d8c1717cd462d84151c0496bad89b751586e4726dc5a4606c9352de6",
+  "deployed_at": "2026-09-25T15:29:37Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 29,
+  "rollback_image_digest": "sha256:3184e7efeb8e165b2476e97cb73b16ea36ebdffb09a229ff4fb06294d82a61f6",
+  "rollback_note": "Rolling back to release 29 removes the version 2 provisioning request and the default step effects; do it only before a catalogue release with Community items is published, because release 29 predates the tiers.",
+  "changes": [
+    "tier-aware provisioning requests (service_provisioning_request/v2), the account's library setting and the Baltor-Step-Effects header, with reading files as the default step effect; protocol tools use them",
+    "the homepage shows the live number of served library items from the capabilities record",
+    "two demonstration steps show the search results a harness now receives",
+    "the release preflight lives with the operator tools, and the post-deploy steps wait for the started Machine",
+    "the live catalogue check accepts deliberate withdrawals and published additions"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 44,
+        "views": 184,
+        "hostnames": 8,
+        "links_checked": 338,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        6,
+        8
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "deciding_check_failure": {
+    "checks": [
+      "the_demonstration_page_prints_the_digests_the_service_serves_demo",
+      "the_demonstration_page_prints_the_digests_the_service_serves_demo_kaggle"
+    ],
+    "what_failed": "The check asked for each printed item with a version 1 manifest request, which holds no step effect, and both items declare reads_fs, so the service answered 400 item_withheld. A version 2 request, which every protocol tool sends, answered 200 with the printed digests 0a8cc8cd and b710af36.",
+    "classification": "The check was wrong for the pages, and the check found a real gap: the website's download and the Pi extension still sent version 1 after a version 2 search, so an item that reads files was offered by search and refused on download. Three starter items, the ones that declare only reading files, were affected, and every Community item would have been; the six starter items that also write files, run a process or use the network are withheld by both versions unless the header allows them.",
+    "decision": "Release 30 stays live: rolling back would also remove version 2 from every protocol client. The website's download, the Pi extension, the documentation examples and the check move to version 2 in the next release, and the Community catalogue is published only after that release is live."
+  },
+  "evidence_folder": "artifacts/release-30-2026-09-25"
+}
