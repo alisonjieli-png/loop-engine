@@ -1,0 +1,79 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 26,
+  "source_revision": "f371ef2c47ea99337c0a1b931288992120cfb7a6",
+  "continuous_integration_run": 36112660683,
+  "deployment_workflow_run": 36114550607,
+  "image_digest": "sha256:863bec3ef5294949c9a3567046d6cb2238a54d1ae85e13e7e6c4839a2b8b3a80",
+  "deployed_at": "2026-09-25T08:46:47Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 25,
+  "rollback_image_digest": "sha256:f129ea56bb45aa2eceea39b3e3b691299e87560fbd84c45e1226ed412e3e1d7b",
+  "rollback_note": "Release 25 reads the same host file; release 26 added no host setting.",
+  "changes": [
+    "the functional component standard, its words and rule 6, and the four library ingestion slots (S-6.84)",
+    "decision stations beside the build step with swappable engines (S-6.100)",
+    "three-family review engines, batched review, the two-family quorum and the reviewed catalogue writer with library tiers (S-6.63)",
+    "licensed import of harness files as review candidates with a per-file licence gate and parallel scanners (S-6.81)",
+    "library tiers Verified and Community carried through approvals, releases and provisioning answers; new accounts can follow catalogue releases once the host setting is switched on (S-6.69, S-6.70)",
+    "the homepage filler the owner retired is gone, with a check that keeps it from returning",
+    "the deploy workflow releases any checked revision on main, even after main moves on (the owner, September 25, 2026)",
+    "research record: referral income from infrastructure and AI services"
+  ],
+  "held_for_their_own_release": [
+    "engine selector, custom harnesses and the custom Loop engine (37 new high hardcoding findings between them and the staff tools)",
+    "staff tools at /admin/mcp (its change to http_entrypoint.py broke the starter catalogue's pinned source bytes); S-6.120 back to building"
+  ],
+  "failed_first_attempts": [
+    {
+      "why": "the first local verification of the release tree failed 45 tests: 37 were /tmp disk quota errors, and the rest came from the two held lines and a tier attribute the release schema did not declare; all fixed before the push"
+    }
+  ],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 33,
+        "views_desktop_and_phone_light_and_dark": 139,
+        "links_checked": 29,
+        "hostnames": 7,
+        "problems_on_built_pages": 0,
+        "known_unbuilt_pages_answering_404": [
+          "/for/coding-agents",
+          "/for/comparing-tools",
+          "/for/engineering-teams",
+          "/for/protocol-and-client",
+          "/status"
+        ],
+        "note": "main's site map has listed these pages since September 23 without building them; release 27 builds them"
+      },
+      "catalogue_with_homepage_digest_guard": [
+        7,
+        7
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "hostnames": 9,
+      "same_capabilities": true,
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        161,
+        163
+      ],
+      "detailed_browser_failures": "the two hero-action rules still expect the line under the hero buttons that the owner retired on September 24; release 27 updates them"
+    },
+    "physical_model_calls": 0
+  },
+  "evidence_folder": "artifacts/release-26-2026-09-25"
+}
