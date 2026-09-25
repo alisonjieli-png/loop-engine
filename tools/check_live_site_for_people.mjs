@@ -7,7 +7,7 @@
    light and dark for a person to look at. It does not compare copy word for word; tools/check_hosted_website.mjs keeps those
    detailed rules and runs beside this one as advice.
 
-   Usage: node tools/check_live_site_for_people.mjs https://baltor.ai <new report folder> */
+   Usage: node tools/check_live_site_for_people.mjs <the site's exact secure origin> <new report folder> */
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {readFileSync,writeFileSync,existsSync,mkdirSync} from "node:fs";
 import {resolve} from "node:path";
@@ -72,7 +72,7 @@ const hostContext=await browser.newContext({viewport:sizes.desktop});
 for(const hostname of hostnames){
   const page=await hostContext.newPage();
   let status=0;
-  try{status=(await page.goto(`https://${hostname}/`,{waitUntil:"networkidle",timeout:45000}))?.status()||0;}catch{status=0;}
+  try{status=(await page.goto(new URL("/",`${new URL(origin).protocol}//${hostname}`).href,{waitUntil:"networkidle",timeout:45000}))?.status()||0;}catch{status=0;}
   const heading=await page.evaluate(()=>document.querySelector("h1")?.textContent.trim()||"").catch(()=>"");
   if(status!==200||!heading)note(hostname,`root answered ${status}${heading?"":" with no main heading"}`);
   rows.push({hostname,status,heading:heading.slice(0,120)});

@@ -217,3 +217,6 @@ main.deck-main{max-width:none;margin:0;padding:0}
   .deck-slide{display:flex!important;min-height:0;break-after:page;border:0}
   .deck-slide[hidden]{display:flex!important}
 }
+
+/* Short desktop windows (a 1366 by 900 laptop): tighter slide spacing keeps every slide and the controls in view. */
+@media (min-width:900px) and (max-height:960px){.deck-on .deck-slide{padding-block:20px}.deck-on .deck-slide-inner{gap:1.25rem}}

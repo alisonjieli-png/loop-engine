@@ -261,8 +261,12 @@ export async function runShowcasePageChecks({root,python,browser,context,fixture
     await opened.close();
   };
   await hostnameScenario(check);
+  const appViews=new Set([...readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/index.html"),"utf8").matchAll(/data-view="([a-z0-9-]+)"/g)].map(match=>match[1]));
   const hostnameControls=[{name:"forget_the_root_address_the_service_names",find:'const rootAddress = document.querySelector(\'meta[name="baltor-root-address"]\')?.getAttribute("content") || "/";',
-    replacement:'const rootAddress = "/";',expected:siteMap.hostnames.filter(item=>item.address!=="/").map(item=>"hostname_root_opens_its_own_page_"+item.hostname)}];
+    /* The control changes the one-page application's script, so only a hostname whose page is a view of that application can
+       notice it; a page served as its own file, the deck, opens at its hostname's root without the script. */
+    replacement:'const rootAddress = "/";',expected:siteMap.hostnames.filter(item=>item.address!=="/"&&appViews.has(pageAt(item.address)?.view))
+      .map(item=>"hostname_root_opens_its_own_page_"+item.hostname)}];
   for(const control of hostnameControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},tracker={applied:false};let problem="";
     try{await hostnameScenario(note,{path:"/assets/service.js",find:control.find,replacement:control.replacement},tracker);}catch(error){problem=safeError(error);}
