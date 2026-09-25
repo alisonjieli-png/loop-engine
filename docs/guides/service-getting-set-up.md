@@ -15,8 +15,7 @@ twice on the confirmation page. Signup never asks you to send a password to the
 service's email endpoint. The confirmation page opens your account only after
 the identity provider accepts the password.
 
-When registration is closed, follow the invitation link if the service offers
-one, or sign in to an existing account. Once signed in, open `/account` and
+Once signed in, open `/account` and
 Your client tokens. Read the terms and privacy notice linked beside account
 creation before submitting.
 

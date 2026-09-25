@@ -130,15 +130,21 @@ page which drops one way of reaching a detail fails a named check.
 ### The retired trial words
 
 The words pilot, beta, private beta and early access do not appear on any page
-a customer reads. Being invited changes only who can create an account. It
-does not change how the product looks or how carefully it is built.
+a customer reads. Registration has been open to anyone with an email address
+since September 24, 2026, and the owner retired the words of an
+invitation-only service with them on September 23: invitation, small groups,
+waiting list, "search is free", and the status words being built, being
+prepared and planned. A customer page describes the product as it works and
+sends a visitor to create an account. The rules that hold this are in
+`tools/public_wording_rules.mjs`, and every term carries its status in
+terminology.yaml.
 
 | Do not write | Write |
 |---|---|
-| private pilot, beta, early access programme | accounts open in small groups |
-| pilot user, beta tester | invited member |
-| join the beta | join the waiting list |
-| the pilot does not support X yet | X is being built |
+| private pilot, beta, early access programme | nothing; describe the product as it works |
+| pilot user, beta tester | customer, or a person with an account |
+| join the beta, join the waiting list, request an invitation | create an account |
+| the pilot does not support X yet; X is being built | built to X, when X is design intent; otherwise leave X out |
 
 The scan that holds this rule carries no exception. One sentence used to need
 one, "Your operator manages pilot access." in
@@ -179,14 +185,17 @@ Get started is the single public access action in the header. It opens the
 served `/get-started` funnel. Get set up is the separate connection guide at
 `/setup`; `/connect` remains an alias for that guide.
 
-The funnel shows five steps: create an account or use an invitation, confirm
-the email, choose a password, subscribe when needed, and get set up. While
-registration is open, the form asks only for an email address and carries the
-approved terms and privacy consent sentence. The service sends its own link.
-The person chooses a password on `/auth/confirm`, and the page verifies the
-link and sets that password before activating the service account.
+The funnel shows five steps: create an account, confirm the email, choose a
+password, subscribe, and get set up. The form asks only for an email address
+and carries the approved terms and privacy consent sentence. The service
+sends its own link. The person chooses a password on `/auth/confirm`, and the
+page verifies the link and sets that password before activating the service
+account.
 
-While registration is closed, the funnel offers the waiting list only when
+Registration is open on the live service. The closed state below stays in the
+page for a self-hosted service that closes registration; it is not the live
+configuration, and no customer page of baltor.ai shows it. While registration
+is closed, the funnel offers the waiting list only when
 `website.waitlist_available` says the service keeps one. Otherwise it offers
 sign-in for an existing account. An unanswered or unsupported capabilities
 record never opens account creation. Signed-in accounts read the recorded

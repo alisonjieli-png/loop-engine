@@ -974,6 +974,46 @@ vocabulary:
     must_not_appear:
     - public_website_pages
     status: decided_by_the_owner_2026_09_21
+  Verified:
+    kind: customer_word
+    definition: >-
+      The library tier of an item that independent reviewers of at least two
+      model families that did not produce it approved, with every automated
+      check passing. It is one of the two labels every search answer, the
+      catalogue browser and the public library page show beside an item, in
+      the words that the service publishes in its capabilities record
+      (catalogue_tiers.TIER_MEANINGS). Written with a capital letter when it
+      names the tier.
+    pattern: '\bVerified\b'
+    case_sensitive: true
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: decided_by_engineering_2026_09_24
+  Community:
+    kind: customer_word
+    definition: >-
+      The library tier of an item that passed every automated check (licence
+      allowlist, provenance, secret and safety scanners, and its own tests
+      where it has code) and one independent review by a model family that
+      did not produce it. Shown beside every such item wherever an account
+      searches, and an account can leave Community items out. Written with a
+      capital letter when it names the tier; the ordinary word community keeps
+      its ordinary meaning.
+    pattern: '\bCommunity\b'
+    case_sensitive: true
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: decided_by_engineering_2026_09_24
   Intelligence Library:
     kind: technical_word
     definition: >-
@@ -1082,7 +1122,12 @@ vocabulary:
       how the product looks or how carefully it is built. Technical documents
       and dated records keep their original wording, and the deployed
       application is still named baltor-pilot by its host.
-    replacement: accounts open in small groups, invited member, or X is being built.
+    replacement: >-
+      Nothing. Registration has been open since September 24, 2026, so a
+      customer page describes the product as it works and sends a visitor to
+      create an account. Design intent that is not built yet is written as
+      "built to X"; the earlier replacements "accounts open in small groups",
+      "invited member" and "join the waiting list" are themselves retired.
     pattern: '\bpilots?\b'
     case_sensitive: false
     may_appear:
@@ -1098,7 +1143,10 @@ vocabulary:
       A retired word that describes the product to a customer as a trial. The
       tenant identifiers alpha and beta in the check fixtures are test names,
       not customer copy, and they live in source code.
-    replacement: accounts open in small groups, or invited member.
+    replacement: >-
+      Nothing. Describe the product as it works and send a visitor to create
+      an account; "accounts open in small groups" and "invited member" are
+      themselves retired.
     pattern: '\bbetas?\b'
     case_sensitive: false
     may_appear:
@@ -1114,7 +1162,10 @@ vocabulary:
     definition: >-
       A retired phrase for closed registration. Who may create an account is a
       matter of configuration, not of copy.
-    replacement: accounts open in small groups, or join the waiting list.
+    replacement: >-
+      Nothing. Registration is open; write "create an account". The phrases
+      "accounts open in small groups" and "join the waiting list" are
+      themselves retired.
     pattern: '\bprivate betas?\b'
     case_sensitive: false
     may_appear:
@@ -1130,7 +1181,9 @@ vocabulary:
       A retired phrase that offers a customer a trial rather than the product.
       It carries neither the word pilot nor the word beta, so a rule written
       for those two words alone lets it through.
-    replacement: join the waiting list.
+    replacement: >-
+      Nothing. Write "create an account"; "join the waiting list" is itself
+      retired.
     pattern: '\bearly access\b'
     case_sensitive: false
     may_appear:
