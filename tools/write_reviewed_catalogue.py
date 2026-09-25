@@ -1,8 +1,10 @@
 """Write a reviewed catalogue folder that the release tools accept, from review ledgers and one candidate catalogue.
 
 The candidate catalogue is a native candidate folder from the factory
-(``tools/prepare_harness_candidates.py``, version three). The review ledgers
-are the panel's own (``tools/candidate_review``). The output is one new folder,
+(``tools/prepare_harness_candidates.py``, version three) or a licensed import
+review export (``tools/licensed_import/review_export.py``), which the panel's
+imported reader and profile read (roadmap S-6.196). The review ledgers are
+the panel's own (``tools/candidate_review``). The output is one new folder,
 outside this public repository, that ``tools/build_catalogue_release_bundle.py``
 and ``tools/build_host_catalogue_manifest.py`` read: ``items.json``
 (``starter_catalogue_candidate_items/v2``), ``reviews.json``
@@ -59,7 +61,7 @@ for entry in (str(HERE), str(REPOSITORY / "src"), str(REPOSITORY)):
         sys.path.insert(0, entry)
 
 from candidate_review import configuration as config  # noqa: E402
-from candidate_review import engines, native, native_profile  # noqa: E402
+from candidate_review import engines, imported, imported_profile, native, native_profile  # noqa: E402
 from candidate_review.configuration import PERMISSIVE_LICENCES  # noqa: E402
 from candidate_review.ledger import ReviewLedger  # noqa: E402
 from candidate_review.panel import review_key, review_key_for  # noqa: E402
@@ -156,9 +158,13 @@ def write(options) -> dict:
         refuse("reviewer_set_invalid", "a Community folder names exactly one reviewing family")
     if options.tier == VERIFIED and len(reviewers) < 2:
         refuse("reviewer_set_invalid", "a Verified folder names at least two reviewing families")
-    catalogue = native.NativeCatalogue.load(Path(options.catalogue).resolve(), repository)
-    configuration = native_profile.configuration(panel, population_size=len(catalogue.identities()))
-    criteria, instructions = native_profile.resources()
+    # A licensed import export is read with the imported reader and judged under the imported profile; an
+    # original catalogue with the original ones. Each profile's verdicts are keyed by its own request.
+    is_import = imported.is_imported_catalogue(Path(options.catalogue))
+    reader, profile = (imported.ImportedCatalogue, imported_profile) if is_import else (native.NativeCatalogue, native_profile)
+    catalogue = reader.load(Path(options.catalogue).resolve(), repository)
+    configuration = profile.configuration(panel, population_size=len(catalogue.identities()))
+    criteria, instructions = profile.resources()
     checks = engines.build_precheck_engines(configuration)
     context = PrecheckContext(configuration.policy, catalogue.population_bodies())
     ledgers = []
@@ -175,7 +181,15 @@ def write(options) -> dict:
             if record.get("record_type") != "package_safety_scan/v1":
                 refuse("scan_record_unsupported", "a scan record is package_safety_scan/v1")
             scans.update(record["packages"])
-    for identity in catalogue.identities():
+    selected = list(catalogue.identities())
+    identities_file = getattr(options, "identities_file", None)
+    if identities_file:
+        named = [line.strip() for line in Path(identities_file).read_text().splitlines() if line.strip()]
+        unknown = sorted(set(named) - set(selected))
+        if unknown:
+            refuse("identity_unknown", f"the identities file names items absent from the catalogue: {unknown[:5]}")
+        selected = [identity for identity in selected if identity in set(named)]
+    for identity in selected:
         request = catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
         producer = request.producer
         reference = request.item["reference"]
@@ -236,10 +250,22 @@ def write(options) -> dict:
         rejected = any(decision["decision"] != "approve" for decision in decisions)
         spec = catalogue._specifications[identity]
         body_path = f"bodies/{identity}.md"
+        provenance = {"producer": dict(catalogue.item(identity)["producer"]),
+                      "source_revision": catalogue.source_revision, "sources": spec["sources"],
+                      "reviewed_package_digest": package.package_digest}
+        if is_import:
+            # The upstream facts the reviewers judged travel with the row: repository, revision, path, the
+            # licence texts and attribution inside the package, and the licence decision.
+            outside = spec["provenance"]["outside_provenance"]
+            provenance.update({"authoring": spec["provenance"]["authoring"], "license": spec["provenance"]["license"],
+                               "upstream": {key: outside[key] for key in ("origin", "origin_host", "repository", "path",
+                                                                           "immutable_revision", "source_digest")},
+                               "licence_decision": outside["licence_evidence"]["decision"],
+                               "harness_kind": spec["provenance"]["harness_kind"]})
+        else:
+            provenance["authoring"] = "original_model_authored"
         row_item = {"lifecycle": "candidate", "license_state": "declared", "tier": options.tier,
-                    "provenance": {"authoring": "original_model_authored", "producer": dict(catalogue.item(identity)["producer"]),
-                                   "source_revision": catalogue.source_revision, "sources": spec["sources"],
-                                   "reviewed_package_digest": package.package_digest}}
+                    "provenance": provenance}
         if form["single"]:
             placement = KIND_PLACEMENT.get(reference["kind"])
             if placement is None or placement != (form["path"], form["role"]):
@@ -338,6 +364,9 @@ def main(argv=None) -> int:
     parser.add_argument("--scan-record", action="append", default=[],
                         help="A package safety scan record; when given, every item needs a passing result in one.")
     parser.add_argument("--allow-fixture", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--identities-file", type=Path,
+                        help="Write only the catalogue items this file names, one identity a line; the rest are "
+                             "neither judged nor listed.")
     options = parser.parse_args(argv)
     try:
         summary = write(options)

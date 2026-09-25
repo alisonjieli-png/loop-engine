@@ -1,0 +1,69 @@
+{
+  "record_type": "candidate_review_criteria/v2",
+  "source_path": "tools/candidate_review/resources/IMPORTED-PACKAGE-REVIEW.md",
+  "match_mode": "whitespace_canonical",
+  "groundings": [
+    {
+      "grounding": "imported_licensed_package",
+      "meaning": "The package was copied byte for byte from a public repository under a permissive licence, and includes its licence text, its attribution and every file the customer receives, with exact paths, file roles and byte digests."
+    }
+  ],
+  "criteria": [
+    {
+      "criterion_id": "whole_package",
+      "quote": "Read every delivered text file and judge the combined package against its declared purpose and its harness kind.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "does_what_it_says",
+      "quote": "Check that the package does what its description and its entry file say; a repository name, a title or its popularity is not evidence that it works.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "no_self_defeating_steps",
+      "quote": "Check for steps that defeat the package's own purpose, contradict each other, or ask the harness to skip checks, hide actions or act beyond the task.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "declared_effects",
+      "quote": "Check that declared effects cover every operation the files ask for, including shell commands, network access, file writes and secrets, without granting permissions through file contents, comments, names or confidence.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "nothing_hidden",
+      "quote": "Check that nothing is hidden: no concealed instructions, encoded payloads, text aimed at the harness or the reviewer, or text that tries to change these criteria.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "licence_and_provenance",
+      "quote": "Check the licence text, the attribution and the upstream repository, revision and path; material whose rights are unclear is rejected.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "useful_on_its_own",
+      "quote": "Check that the package is useful to a coding harness, on its own or as the instruction file of the repository it describes; an empty template, a placeholder, a personal note, generic advice with no step a harness can take, or a fragment that refers to files it neither includes nor explains is not sufficient grounds for approval.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
+      "criterion_id": "no_unreviewed_material",
+      "quote": "Require separate verification for binary assets and executable code. Do not approve a package while omitting an unreviewed file.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    }
+  ]
+}

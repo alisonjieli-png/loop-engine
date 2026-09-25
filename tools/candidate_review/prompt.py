@@ -122,18 +122,40 @@ def _native_answer_line(request) -> str:
     return "Return one JSON verdict with body_sha256 equal to the canonical package digest: " + request.body_sha256
 
 
+def _imported_provenance(request) -> str:
+    """The upstream facts an imported package is reviewed against, read from its specification."""
+    provenance = json.loads(request.specification_json)["provenance"]
+    outside = provenance["outside_provenance"]
+    return "Upstream provenance:\n" + json.dumps({
+        "origin_host": outside["origin_host"], "repository": outside["repository"], "path": outside["path"],
+        "immutable_revision": outside["immutable_revision"], "licence": provenance["license"],
+        "licence_decision": outside["licence_evidence"]["decision"], "harness_kind": provenance["harness_kind"],
+        "placements": provenance["placements"], "import_findings": provenance["findings"]},
+        sort_keys=True, ensure_ascii=False)
+
+
 def _native_parts(request) -> list:
-    """Everything a single native prompt holds about its package, without the closing answer line."""
+    """Everything a single package prompt holds about its package, without the closing answer line.
+
+    An imported package is named as imported, is judged under the imported criteria heading and carries its
+    upstream provenance; an original package's prompt is unchanged."""
+    from .imported import IMPORTED_PROFILE
+    imported = request.review_profile == IMPORTED_PROFILE
     criteria = "\n".join(f"- {item.criterion_id}: {item.quote}" for item in request.applicable_criteria)
     tree = "\n".join(f"- {file.entry.path} | {file.entry.role} | {file.entry.media_type} | "
                      f"{file.entry.size_bytes} bytes | {file.entry.digest}" for file in request.files)
-    parts = ["Review subject: complete original native harness package.",
+    subject = ("Review subject: complete imported harness package, copied byte for byte from a public repository "
+               "under a permissive licence." if imported else "Review subject: complete original native harness package.")
+    heading = "Written imported package criteria:\n" if imported else "Written native package criteria:\n"
+    parts = [subject,
              f"Subject record type: {request.to_record()['record_type']}",
              f"Package identity: {request.identity}; canonical package digest: {request.body_sha256}",
              f"Producer: {request.producer.producer_identity}; family: {request.producer.family}",
-             "Exact complete file tree:\n" + tree, "Written native package criteria:\n" + criteria,
+             "Exact complete file tree:\n" + tree, heading + criteria,
              "Item declaration:\n" + json.dumps(request.item, sort_keys=True, ensure_ascii=False),
              "Canonical package document:\n" + request.body_text]
+    if imported:
+        parts.append(_imported_provenance(request))
     for source in request.cited_sources:
         parts.append(f"Cited source {source.path} at {source.revision}:\n" + _block("SOURCE", source.sha256, source.text))
     for file in request.files:

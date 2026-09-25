@@ -36,12 +36,13 @@ PRECHECK_KINDS = ("licence", "format", "safety", "effects", "secrets", "duplicat
 #: The engines each kind may name, in the only vocabulary a policy can use. The factory table in
 #: ``engines`` builds exactly these; a check keeps the two lists equal.
 PRECHECK_ENGINES = MappingProxyType({
-    "licence": ("builtin_licence_rules", "native_licence_rules"),
-    "format": ("builtin_format_rules", "agent_skills_reference", "native_format_rules"),
-    "safety": ("builtin_static_rules", "skillspector_static", "native_safety_rules"),
-    "effects": ("builtin_effect_rules", "native_effects_rules"),
-    "secrets": ("builtin_secret_patterns", "native_secret_rules"),
-    "duplicates": ("exact_shingle_jaccard", "datasketch_minhash_lsh", "native_duplicate_rules", "native_minhash_rules"),
+    "licence": ("builtin_licence_rules", "native_licence_rules", "imported_licence_rules"),
+    "format": ("builtin_format_rules", "agent_skills_reference", "native_format_rules", "imported_format_rules"),
+    "safety": ("builtin_static_rules", "skillspector_static", "native_safety_rules", "imported_safety_rules"),
+    "effects": ("builtin_effect_rules", "native_effects_rules", "imported_effects_rules"),
+    "secrets": ("builtin_secret_patterns", "native_secret_rules", "imported_secret_rules"),
+    "duplicates": ("exact_shingle_jaccard", "datasketch_minhash_lsh", "native_duplicate_rules", "native_minhash_rules",
+                   "imported_duplicate_rules", "imported_minhash_rules"),
 })
 #: The licences that allow verbatim copy with attribution (the owner's September 22 list, as
 #: SPDX identifiers). A policy may accept fewer, never another identifier.

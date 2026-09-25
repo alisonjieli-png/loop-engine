@@ -41,6 +41,10 @@ class NativeCalibrationSet:
     package_digests: MappingProxyType
     source_package_identity: str
     source_package_digest: str
+    #: The record type a set of this kind carries, and the reader for its control catalogue. A set for imported
+    #: packages (`imported_calibration`) names its own; the rules below are the same for both.
+    RECORD_TYPE = NATIVE_CALIBRATION_SET
+    CATALOGUE = NativeCatalogue
 
     @classmethod
     def load(cls, path: Path, repository: Path, criteria):
@@ -49,14 +53,14 @@ class NativeCalibrationSet:
             relative = Path(path).absolute().relative_to(repository).as_posix()
         except ValueError:
             refuse("native_calibration_path_invalid", "a calibration set is a repository-bound reviewed resource")
-        value = read_record(json_document(regular_bytes(repository, relative, 1024 * 1024)), NATIVE_CALIBRATION_SET,
+        value = read_record(json_document(regular_bytes(repository, relative, 1024 * 1024)), cls.RECORD_TYPE,
             ("purpose", "catalogue_path", "catalogue_items_sha256", "source_package_identity", "source_package_digest", "items"))
         # regular_bytes owns traversal and symlink refusal, including every parent.
         catalogue_path = text_field(value["catalogue_path"], "control catalogue path", limit=200)
         inventory = regular_bytes(repository, catalogue_path + "/items.json", 1024 * 1024)
         if sha256_hex(inventory) != value["catalogue_items_sha256"]:
             refuse("native_calibration_inventory_changed", "the frozen control inventory changed")
-        catalogue = NativeCatalogue.load(repository / catalogue_path, repository)
+        catalogue = cls.CATALOGUE.load(repository / catalogue_path, repository)
         raw_items = value["items"]
         if type(raw_items) is not list or not 2 <= len(raw_items) <= 32:
             refuse("native_calibration_population_invalid", "a calibration set needs two to 32 declared controls")

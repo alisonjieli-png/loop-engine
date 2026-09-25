@@ -1,0 +1,661 @@
+{
+ "population": 1,
+ "populations": 1,
+ "record_type": "candidate_intelligence_specifications/v3",
+ "specifications": [
+  {
+   "body_path": "bodies/control_good_skill.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_good_skill",
+   "kind": "skill",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "f2bfb07588cf2aa17f31df5457c39c88187eb4d198698ba408eaff29282d0b59",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1368
+     }
+    ]
+   },
+   "package_digest": "0c57de75d6ce715764374fef2e5c28a7da58bfcfd2c0f6a4744bd01fe3c0ba2b",
+   "package_root": "packages/control_good_skill",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "skill",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "f2bfb07588cf2aa17f31df5457c39c88187eb4d198698ba408eaff29282d0b59",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "f9956289725c3dcd083449874835b225a442b160",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_good_skill/SKILL.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "0d419a79dec3b2f44afc831ce7c2f72d157b8fe69c71f16f0468a6ccc0a95a20",
+     "source_digest": "f2bfb07588cf2aa17f31df5457c39c88187eb4d198698ba408eaff29282d0b59",
+     "source_size_bytes": 1368
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_good_skill/SKILL.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_good_skill"
+   },
+   "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "skill"
+   ],
+   "text": "",
+   "title": "control_good_skill"
+  },
+  {
+   "body_path": "bodies/control_hidden_note.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_hidden_note",
+   "kind": "skill",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "1604614c214f2f6d072bd951443ea7f5d5a8524b8825f295d522d75e43243abc",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1591
+     }
+    ]
+   },
+   "package_digest": "c5944d559a01c84eb952198bfd2212df90b68a53b41364513b81588cc6e5f4b2",
+   "package_root": "packages/control_hidden_note",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "skill",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "1604614c214f2f6d072bd951443ea7f5d5a8524b8825f295d522d75e43243abc",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "87e8bd87eb99add10a6aab4ecb00d9f26b939e88",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_hidden_note/SKILL.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "3fdea7f111d147caf18286dba85e9f15ca9ff741478091a34399f92f9ca0ddb8",
+     "source_digest": "1604614c214f2f6d072bd951443ea7f5d5a8524b8825f295d522d75e43243abc",
+     "source_size_bytes": 1591
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_hidden_note/SKILL.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_hidden_note"
+   },
+   "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "skill"
+   ],
+   "text": "",
+   "title": "control_hidden_note"
+  },
+  {
+   "body_path": "bodies/control_self_defeating.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_self_defeating",
+   "kind": "skill",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "e5103d2e4349b5496e2b2fdbe4cfa981108a8010bb613f9844a58a09464fccf0",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1403
+     }
+    ]
+   },
+   "package_digest": "e2c96a1cb2601628d4eff2638ed972ccb1f275e8f52a2eb5ead755926a894974",
+   "package_root": "packages/control_self_defeating",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "skill",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "e5103d2e4349b5496e2b2fdbe4cfa981108a8010bb613f9844a58a09464fccf0",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "48bff914aeff8127fbbe4658f508faff86c8fe96",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_self_defeating/SKILL.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "e68c7656af0e7966ee82774fe2d2d6e442cc3ede46fb7fcdf7f60ea585d91ccb",
+     "source_digest": "e5103d2e4349b5496e2b2fdbe4cfa981108a8010bb613f9844a58a09464fccf0",
+     "source_size_bytes": 1403
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_self_defeating/SKILL.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_self_defeating"
+   },
+   "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "skill"
+   ],
+   "text": "",
+   "title": "control_self_defeating"
+  },
+  {
+   "body_path": "bodies/control_says_one_thing.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_says_one_thing",
+   "kind": "skill",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "d1cf34375f57bae19bc81ef47632d32af8a293c83ffc32df643fea2e248c3306",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 536
+     }
+    ]
+   },
+   "package_digest": "d3ff32352251051a2a56db1d107e1ec1135b45c926a830d88b687c8158f3a060",
+   "package_root": "packages/control_says_one_thing",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "skill",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "d1cf34375f57bae19bc81ef47632d32af8a293c83ffc32df643fea2e248c3306",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "9df746d4849d7110914c736aa2acc6875bf0acaf",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_says_one_thing/SKILL.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "d63911af26e18ad3f95c8e4773d239ca7fea5027e6d6701a4e953c4fb28566fc",
+     "source_digest": "d1cf34375f57bae19bc81ef47632d32af8a293c83ffc32df643fea2e248c3306",
+     "source_size_bytes": 536
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_says_one_thing/SKILL.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_says_one_thing"
+   },
+   "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "skill"
+   ],
+   "text": "",
+   "title": "control_says_one_thing"
+  },
+  {
+   "body_path": "bodies/control_generic_filler.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_generic_filler",
+   "kind": "skill",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "0da3eb9828553cae94b6792436eab699e62ee86e8b1e93736fe6d7f70901ceed",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 559
+     }
+    ]
+   },
+   "package_digest": "ebdcf804d820f13799bc9cdf1516d1cdab43138dc935791bd1f203d9487aa0ab",
+   "package_root": "packages/control_generic_filler",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "skill",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "0da3eb9828553cae94b6792436eab699e62ee86e8b1e93736fe6d7f70901ceed",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "0b92d3c7adef1904e46d10e43cf5e10e2a7042da",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_generic_filler/SKILL.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "9453b00b149db6545e3fd1e2157c3aa175854968465d6e8e9857628f05f9f521",
+     "source_digest": "0da3eb9828553cae94b6792436eab699e62ee86e8b1e93736fe6d7f70901ceed",
+     "source_size_bytes": 559
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_generic_filler/SKILL.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_generic_filler"
+   },
+   "purpose": "Best practices for handling configuration files in any project.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "skill"
+   ],
+   "text": "",
+   "title": "control_generic_filler"
+  },
+  {
+   "body_path": "bodies/control_good_instructions.package.json",
+   "declared_effects": [
+    "pure"
+   ],
+   "dependencies": [],
+   "family": "harness",
+   "id": "control_good_instructions",
+   "kind": "instruction_file",
+   "layer": "context",
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "dc7590972147492125d7d1051cf16deae616bdd5e39067f3dab8ce6f8f3cdbe8",
+      "media_type": "text/markdown",
+      "path": "AGENTS.md",
+      "role": "instruction_file",
+      "size_bytes": 1031
+     },
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     }
+    ]
+   },
+   "package_digest": "73382f9060a256008b7108e6f572485f721759039354af7a4ffbb3a22b3c48c7",
+   "package_root": "packages/control_good_instructions",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "provenance": {
+    "authoring": "imported_verbatim_under_permissive_licence",
+    "findings": [],
+    "harness_kind": "instruction_file",
+    "license": {
+     "attribution": "ATTRIBUTION.md",
+     "expression": "MIT",
+     "texts": [
+      "LICENSE"
+     ]
+    },
+    "merged_sources": [],
+    "outside_provenance": {
+     "fetch_digest": "dc7590972147492125d7d1051cf16deae616bdd5e39067f3dab8ce6f8f3cdbe8",
+     "fetched_at": "2026-09-25T21:00:00Z",
+     "git_blob_sha": "b7d01fd59662daf158a186c4fdf8cd97b2649a66",
+     "immutable_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+     "licence_evidence": {
+      "decision": "verbatim_permitted",
+      "detector": "calibration fixture: the licence is the repository's own MIT text",
+      "file_level_notices": [],
+      "governing_file": {
+       "matched_spdx": "MIT",
+       "path": "LICENSE",
+       "sha256": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+       "similarity": 1.0
+      },
+      "reason": "repository_licence_accepted",
+      "record_type": "outside_licence_evidence/v1",
+      "repository_licence": {},
+      "spdx_expression": "MIT"
+     },
+     "origin": "calibration_fixture",
+     "origin_host": "calibration.invalid",
+     "path": "controls/control_good_instructions/AGENTS.md",
+     "record_type": "outside_source_provenance/v1",
+     "repository": "baltor/imported-calibration",
+     "request_digest": "17a5860bfb1d2f7cfd5ee10c8cb2794e07bfbd115b8a9aaa57772ae513227e00",
+     "source_digest": "dc7590972147492125d7d1051cf16deae616bdd5e39067f3dab8ce6f8f3cdbe8",
+     "source_size_bytes": 1031
+    },
+    "placements": [
+     {
+      "basis": "calibration_fixture",
+      "harness": "upstream",
+      "path": "controls/control_good_instructions/AGENTS.md",
+      "scope": "upstream",
+      "support": "unverified"
+     }
+    ],
+    "profile": "imported_licensed_package/v1",
+    "store_record_id": "calibration.control_good_instructions"
+   },
+   "purpose": "Instructions for a small Python order service: tests first, recorded decisions, pinned dependencies, integer cents.",
+   "sources": [],
+   "styles": [
+    "claude_code",
+    "codex"
+   ],
+   "symbols": [],
+   "tags": [
+    "instruction_file"
+   ],
+   "text": "",
+   "title": "control_good_instructions"
+  }
+ ]
+}

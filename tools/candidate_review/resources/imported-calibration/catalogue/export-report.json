@@ -1,0 +1,29 @@
+{
+ "by_first_source_and_licence": {
+  "calibration_fixture": {
+   "MIT": 6
+  }
+ },
+ "code_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8",
+ "differs_from_original_profile": [
+  "every control is an engineering-authored fixture in the imported layout; none is a library item"
+ ],
+ "files": 18,
+ "items": 6,
+ "items_digest": "12c54eaabc585fdd8bf86fd46746dfd900fe9d6985931d2ab2f3de86c495c6b3",
+ "kinds": {
+  "instruction_file": 1,
+  "skill": 5
+ },
+ "licences": {
+  "MIT": 6
+ },
+ "populations": 1,
+ "profile": "imported_licensed_package/v1",
+ "record_type": "licensed_import_review_export/v1",
+ "repositories": 1,
+ "selection": {
+  "rule": "the frozen calibration controls"
+ },
+ "written_at": "2026-09-25T21:00:00Z"
+}

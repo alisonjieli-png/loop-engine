@@ -154,26 +154,12 @@ class NativeCatalogue:
         revision = record["source_revision"]
         if type(revision) is not str or re.fullmatch(r"[0-9a-f]{40}", revision) is None:
             refuse("native_source_revision_invalid", "sources require an exact committed revision")
-        sources = record["source_digests"]
-        if type(sources) is not dict or "LICENSE" not in sources or len(sources) > MAX_SOURCES:
-            refuse("native_sources_invalid", "source digests include the original licence and stay within the bound")
         instance = cls()
         instance.folder, instance.repository = root, repository
-        instance.source_revision, instance.source_digests = revision, dict(sources)
+        instance.source_revision = revision
         instance.items_record_type, instance.review_record_sha256 = NATIVE_ITEMS, ""
         instance._rows, instance._specifications, instance._payloads, instance._sources = {}, {}, {}, {}
-        for path, expected in sources.items():
-            payload = regular_bytes(repository, path, MAX_SOURCE_BYTES)
-            if sha256_hex(payload) != expected:
-                refuse("native_source_binding_invalid", "the cited source snapshot differs from its declared digest")
-            try:
-                _checked_source(repository, revision, path, expected)
-            except PreparationError:
-                refuse("native_source_binding_invalid", "a source differs from its committed declared bytes")
-            try:
-                instance._sources[path] = CitedSource(path, revision, sha256_hex(payload), payload.decode("utf-8"))
-            except UnicodeError:
-                refuse("native_source_not_text", "a cited source is not UTF-8 text")
+        instance._read_sources(record["source_digests"])
         names = sorted(path.name for path in root.glob("specifications-[0-9][0-9][0-9].json"))
         if not names:
             refuse("native_specifications_missing", "the catalogue has no native specification populations")
@@ -201,6 +187,50 @@ class NativeCatalogue:
             refuse("native_population_inconsistent", "items and specifications must name the same population")
         return instance
 
+    def _read_sources(self, sources):
+        """Original items cite files of this repository at the pinned revision, its licence among them."""
+        if type(sources) is not dict or "LICENSE" not in sources or len(sources) > MAX_SOURCES:
+            refuse("native_sources_invalid", "source digests include the original licence and stay within the bound")
+        self.source_digests = dict(sources)
+        for path, expected in sources.items():
+            payload = regular_bytes(self.repository, path, MAX_SOURCE_BYTES)
+            if sha256_hex(payload) != expected:
+                refuse("native_source_binding_invalid", "the cited source snapshot differs from its declared digest")
+            try:
+                _checked_source(self.repository, self.source_revision, path, expected)
+            except PreparationError:
+                refuse("native_source_binding_invalid", "a source differs from its committed declared bytes")
+            try:
+                self._sources[path] = CitedSource(path, self.source_revision, sha256_hex(payload), payload.decode("utf-8"))
+            except UnicodeError:
+                refuse("native_source_not_text", "a cited source is not UTF-8 text")
+
+    def _check_provenance(self, row, spec, package):
+        """Original MIT authorship bound to the pinned sources of this repository."""
+        reference = row["reference"]
+        provenance = read_part(spec["provenance"], "native provenance",
+                               ("authoring", "source_revision", "source_digests", "license"))
+        licence = read_part(provenance["license"], "native licence", ("expression", "path", "sha256"))
+        if (provenance["authoring"] != "original_assistant_authored" or provenance["source_revision"] != self.source_revision
+                or licence != {"expression": "MIT", "path": "LICENSE", "sha256": self.source_digests["LICENSE"]}
+                or reference.get("license") != "MIT"):
+            refuse("native_provenance_invalid", "only source-bound original MIT candidates use this profile")
+        paths = spec["sources"]
+        if (type(paths) is not list or not paths or any(type(path) is not str for path in paths)
+                or len(set(paths)) != len(paths) or "LICENSE" not in paths
+                or any(path not in self._sources for path in paths)
+                or provenance["source_digests"] != {path: self.source_digests[path] for path in paths if path != "LICENSE"}
+                or reference.get("source_ref") != f"{paths[0]}@{self.source_revision}"):
+            refuse("native_source_binding_invalid", "the native source inventory must match its pinned declarations")
+
+    def _check_producer(self, row):
+        producer = read_part(row["producer"], "native producer", ("producer_identity", "family", "method_identity"))
+        if (any(type(value) is not str or not value.strip() or len(value) > 160
+                or any(ord(character) < 32 for character in value) for value in producer.values())
+                or re.fullmatch(r"[a-z][a-z0-9_.-]*(?:/[a-z0-9_.-]+)*/v[1-9][0-9]*", producer["method_identity"]) is None):
+            refuse("native_producer_invalid", "a native producer declares identity, family and versioned method")
+        return producer
+
     def _verified_files(self, identity, row, spec):
         try:
             package = CataloguePackage.from_dict(row["package"])
@@ -222,25 +252,8 @@ class NativeCatalogue:
         expected_root, expected_body = f"packages/{identity}", f"bodies/{identity}.package.json"
         if row["package_root"] != expected_root or row["body_path"] != expected_body:
             refuse("native_package_path_invalid", "the native package paths must bind the selected identity")
-        provenance = read_part(spec["provenance"], "native provenance",
-                               ("authoring", "source_revision", "source_digests", "license"))
-        licence = read_part(provenance["license"], "native licence", ("expression", "path", "sha256"))
-        if (provenance["authoring"] != "original_assistant_authored" or provenance["source_revision"] != self.source_revision
-                or licence != {"expression": "MIT", "path": "LICENSE", "sha256": self.source_digests["LICENSE"]}
-                or reference.get("license") != "MIT"):
-            refuse("native_provenance_invalid", "only source-bound original MIT candidates use this profile")
-        paths = spec["sources"]
-        if (type(paths) is not list or not paths or any(type(path) is not str for path in paths)
-                or len(set(paths)) != len(paths) or "LICENSE" not in paths
-                or any(path not in self._sources for path in paths)
-                or provenance["source_digests"] != {path: self.source_digests[path] for path in paths if path != "LICENSE"}
-                or reference.get("source_ref") != f"{paths[0]}@{self.source_revision}"):
-            refuse("native_source_binding_invalid", "the native source inventory must match its pinned declarations")
-        producer = read_part(row["producer"], "native producer", ("producer_identity", "family", "method_identity"))
-        if (any(type(value) is not str or not value.strip() or len(value) > 160
-                or any(ord(character) < 32 for character in value) for value in producer.values())
-                or re.fullmatch(r"[a-z][a-z0-9_.-]*(?:/[a-z0-9_.-]+)*/v[1-9][0-9]*", producer["method_identity"]) is None):
-            refuse("native_producer_invalid", "a native producer declares identity, family and versioned method")
+        self._check_provenance(row, spec, package)
+        self._check_producer(row)
         if (type(row["dependencies"]) is not list or len(row["dependencies"]) > 64
                 or any(type(value) is not str or not value.strip() or len(value) > 200 for value in row["dependencies"])):
             refuse("native_dependencies_invalid", "dependencies are a bounded explicit string list")

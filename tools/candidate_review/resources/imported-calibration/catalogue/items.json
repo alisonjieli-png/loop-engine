@@ -1,0 +1,374 @@
+{
+ "items": [
+  {
+   "body_path": "bodies/control_good_skill.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "f2bfb07588cf2aa17f31df5457c39c88187eb4d198698ba408eaff29282d0b59",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1368
+     }
+    ]
+   },
+   "package_root": "packages/control_good_skill",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "0c57de75d6ce715764374fef2e5c28a7da58bfcfd2c0f6a4744bd01fe3c0ba2b",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_good_skill",
+    "kind": "skill",
+    "license": "MIT",
+    "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 534,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_good_skill/SKILL.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  },
+  {
+   "body_path": "bodies/control_hidden_note.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "1604614c214f2f6d072bd951443ea7f5d5a8524b8825f295d522d75e43243abc",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1591
+     }
+    ]
+   },
+   "package_root": "packages/control_hidden_note",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "c5944d559a01c84eb952198bfd2212df90b68a53b41364513b81588cc6e5f4b2",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_hidden_note",
+    "kind": "skill",
+    "license": "MIT",
+    "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 534,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_hidden_note/SKILL.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  },
+  {
+   "body_path": "bodies/control_self_defeating.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "e5103d2e4349b5496e2b2fdbe4cfa981108a8010bb613f9844a58a09464fccf0",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 1403
+     }
+    ]
+   },
+   "package_root": "packages/control_self_defeating",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "e2c96a1cb2601628d4eff2638ed972ccb1f275e8f52a2eb5ead755926a894974",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_self_defeating",
+    "kind": "skill",
+    "license": "MIT",
+    "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 534,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_self_defeating/SKILL.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  },
+  {
+   "body_path": "bodies/control_says_one_thing.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "d1cf34375f57bae19bc81ef47632d32af8a293c83ffc32df643fea2e248c3306",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 536
+     }
+    ]
+   },
+   "package_root": "packages/control_says_one_thing",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "d3ff32352251051a2a56db1d107e1ec1135b45c926a830d88b687c8158f3a060",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_says_one_thing",
+    "kind": "skill",
+    "license": "MIT",
+    "purpose": "Move a configuration file to a new format with a backup, a dry run and a rollback.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 533,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_says_one_thing/SKILL.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  },
+  {
+   "body_path": "bodies/control_generic_filler.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     },
+     {
+      "digest": "0da3eb9828553cae94b6792436eab699e62ee86e8b1e93736fe6d7f70901ceed",
+      "media_type": "text/markdown",
+      "path": "SKILL.md",
+      "role": "skill_definition",
+      "size_bytes": 559
+     }
+    ]
+   },
+   "package_root": "packages/control_generic_filler",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "ebdcf804d820f13799bc9cdf1516d1cdab43138dc935791bd1f203d9487aa0ab",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_generic_filler",
+    "kind": "skill",
+    "license": "MIT",
+    "purpose": "Best practices for handling configuration files in any project.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 533,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_generic_filler/SKILL.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  },
+  {
+   "body_path": "bodies/control_good_instructions.package.json",
+   "dependencies": [],
+   "package": {
+    "body_form": "package",
+    "files": [
+     {
+      "digest": "dc7590972147492125d7d1051cf16deae616bdd5e39067f3dab8ce6f8f3cdbe8",
+      "media_type": "text/markdown",
+      "path": "AGENTS.md",
+      "role": "instruction_file",
+      "size_bytes": 1031
+     },
+     {
+      "digest": "23fabad1a6d8ff71e82818262e1786511c814f50e648c9c39d0b7705ff247e07",
+      "media_type": "text/markdown",
+      "path": "ATTRIBUTION.md",
+      "role": "other",
+      "size_bytes": 221
+     },
+     {
+      "digest": "26f383fb17bd19aeb2a61cbd0e347567408614a6720ef1aa4b77bf927db08736",
+      "media_type": "text/plain",
+      "path": "LICENSE",
+      "role": "other",
+      "size_bytes": 1066
+     }
+    ]
+   },
+   "package_root": "packages/control_good_instructions",
+   "producer": {
+    "family": "upstream_author",
+    "method_identity": "licensed_import/calibration_fixture/v1",
+    "producer_identity": "baltor:engineering-calibration"
+   },
+   "reference": {
+    "availability": "remote",
+    "body_included": false,
+    "declared_effects": [
+     "pure"
+    ],
+    "digest": "73382f9060a256008b7108e6f572485f721759039354af7a4ffbb3a22b3c48c7",
+    "exposure": "metadata_only",
+    "family": "harness",
+    "identity": "control_good_instructions",
+    "kind": "instruction_file",
+    "license": "MIT",
+    "purpose": "Instructions for a small Python order service: tests first, recorded decisions, pinned dependencies, integer cents.",
+    "record_type": "harness_intelligence_item/v1",
+    "size_bytes": 535,
+    "source_layer": "harness_local",
+    "source_ref": "calibration.invalid/baltor/imported-calibration/controls/control_good_instructions/AGENTS.md@eabd262c471c8af60314ddc930f8ad877fa293c8",
+    "styles": [
+     "claude_code",
+     "codex"
+    ],
+    "tags": {
+     "record_type": "intelligence_tags/v1"
+    }
+   }
+  }
+ ],
+ "publication": "not_published",
+ "record_type": "starter_catalogue_candidate_items/v3",
+ "source_digests": {},
+ "source_revision": "eabd262c471c8af60314ddc930f8ad877fa293c8"
+}

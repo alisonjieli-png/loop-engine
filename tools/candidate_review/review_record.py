@@ -519,8 +519,11 @@ def _read_subject(row):
     from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
     from loop_engine.core.service_runtime.records import ServiceRuntimeError
 
+    from .imported import IMPORTED_GROUNDING, IMPORTED_PROFILE, IMPORTED_REQUEST
     from .native import NATIVE_GROUNDING, NATIVE_PROFILE, NATIVE_REQUEST
     from .records import REQUEST_RECORD
+    package_subjects = {NATIVE_REQUEST: (NATIVE_PROFILE, NATIVE_GROUNDING),
+                        IMPORTED_REQUEST: (IMPORTED_PROFILE, IMPORTED_GROUNDING)}
     subject = read_part(row["subject"], "review subject", ("record_type", "review_profile", "request_sha256",
         "package", "producer_method", "specification_sha256", "specification", "item", "producer",
         "cited_sources", "criteria_sha256", "instructions_sha256"))
@@ -530,14 +533,15 @@ def _read_subject(row):
         if (subject["review_profile"] != "starter_catalogue/v1" or subject["package"] is not None
                 or subject["producer_method"] or subject["specification_sha256"] or subject["specification"] is not None):
             refuse("review_subject_invalid", "a single-body review cannot carry a native package subject")
-    elif subject["record_type"] == NATIVE_REQUEST:
+    elif subject["record_type"] in package_subjects:
+        profile, grounding = package_subjects[subject["record_type"]]
         try:
             package = CataloguePackage.from_dict(subject["package"])
         except (ServiceRuntimeError, ValueError, TypeError):
-            refuse("review_subject_invalid", "a native review needs the exact typed package inventory")
-        if (subject["review_profile"] != NATIVE_PROFILE or package.body_form != "package"
+            refuse("review_subject_invalid", "a package review needs the exact typed package inventory")
+        if (subject["review_profile"] != profile or package.body_form != "package"
                 or package.package_digest != row["body_sha256"] or package.served_size != row["body_size_bytes"]
-                or row["grounding"] != NATIVE_GROUNDING or not subject["producer_method"]
+                or row["grounding"] != grounding or not subject["producer_method"]
                 or type(subject["specification_sha256"]) is not str or not SHA256.fullmatch(subject["specification_sha256"])):
             refuse("review_subject_invalid", "the native review subject differs from the exact package or profile")
         spec = subject["specification"]
@@ -551,9 +555,9 @@ def _read_subject(row):
     base = digest({"identity": row["identity"], "body_sha256": row["body_sha256"], "item": subject["item"],
                    "cited_sources": subject["cited_sources"], "producer": subject["producer"],
                    "criteria_sha256": subject["criteria_sha256"], "instructions_sha256": subject["instructions_sha256"]})
-    expected = (digest({"record_type": NATIVE_REQUEST, "base": base, "package": subject["package"],
+    expected = (digest({"record_type": subject["record_type"], "base": base, "package": subject["package"],
                         "profile": subject["review_profile"], "specification": subject["specification"]})
-                if subject["record_type"] == NATIVE_REQUEST else base)
+                if subject["record_type"] in package_subjects else base)
     if expected != subject["request_sha256"]:
         refuse("review_subject_invalid", "the serialized material does not reproduce the reviewed request identity")
 

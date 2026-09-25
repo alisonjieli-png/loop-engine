@@ -29,8 +29,9 @@ sys.path[:0] = [str(ROOT / "tools"), str(ROOT / "src"), str(ROOT)]
 
 from candidate_review import calibration as calibration_module  # noqa: E402
 from candidate_review import configuration as config  # noqa: E402
-from candidate_review import engines, native, native_profile  # noqa: E402
+from candidate_review import engines, imported, imported_profile, native, native_profile  # noqa: E402
 from candidate_review.ledger import ReviewLedger  # noqa: E402
+from candidate_review.imported_calibration import IMPORTED_DEFAULT_SET, ImportedCalibrationSet  # noqa: E402
 from candidate_review.native_calibration import DEFAULT_SET, NativeCalibrationSet  # noqa: E402
 from candidate_review.panel import PanelRunRequest, ReviewPanel  # noqa: E402
 from candidate_review.prechecks import PrecheckContext, run_prechecks  # noqa: E402
@@ -40,11 +41,19 @@ REVIEWER = "claude_code.subscription"
 BATCH = 12
 
 
+def _profile(catalogue_folder: Path):
+    """The imported reader and profile for a licensed import review export, the original ones otherwise."""
+    if imported.is_imported_catalogue(catalogue_folder):
+        return imported.ImportedCatalogue, imported_profile
+    return native.NativeCatalogue, native_profile
+
+
 def _build(catalogue_folder: Path, ledger: Path, authorized: bool, population_size: int):
     base = config.PanelConfiguration.from_dict(json.loads(
         (ROOT / "tools/candidate_review/resources/panel.json").read_text(encoding="utf-8")))
-    configuration = native_profile.configuration(base, population_size=population_size)
-    criteria, instructions = native_profile.resources()
+    profile = _profile(catalogue_folder)[1]
+    configuration = profile.configuration(base, population_size=population_size)
+    criteria, instructions = profile.resources()
     resolver = None
     if authorized:
         from tools import operator_credentials
@@ -74,7 +83,7 @@ def _identities(options, catalogue) -> list:
 
 
 def prechecks(options) -> dict:
-    catalogue = native.NativeCatalogue.load(options.catalogue, ROOT)
+    catalogue = _profile(options.catalogue)[0].load(options.catalogue, ROOT)
     configuration, criteria, instructions, _panel_unused = _build(options.catalogue, options.scratch_ledger, False,
                                                                   len(catalogue.identities()))
     engine_map = engines.build_precheck_engines(configuration)
@@ -96,11 +105,18 @@ def prechecks(options) -> dict:
 
 
 def calibrate(options) -> dict:
-    """Controls asked one at a time, then in one batch of 12 with seven real candidates between them."""
-    catalogue = native.NativeCatalogue.load(options.catalogue, ROOT)
+    """Controls asked one at a time, then in one batch of 12 with seven real candidates between them.
+
+    An imported catalogue is calibrated on the imported controls, under the imported criteria; an original one on
+    the original controls. The rule is the same: a reviewer that approves a known-wrong control is excluded."""
+    reader, _content_profile = _profile(options.catalogue)
+    catalogue = reader.load(options.catalogue, ROOT)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
                                                           options.authorize_model_calls, len(catalogue.identities()))
-    controls = NativeCalibrationSet.load(DEFAULT_SET, ROOT, criteria)
+    if imported.is_imported_catalogue(options.catalogue):
+        controls = ImportedCalibrationSet.load(IMPORTED_DEFAULT_SET, ROOT, criteria)
+    else:
+        controls = NativeCalibrationSet.load(DEFAULT_SET, ROOT, criteria)
     pairs = controls.requests(catalogue, None, criteria, instructions.sha256)
     control_requests = [request for _item, request in pairs]
     real = [catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
@@ -128,9 +144,11 @@ def calibrate(options) -> dict:
                                       "label_refusals": row["false_refusals"], "decisions": row["decisions"]}
                        for installation, row in report["installations"].items() if installation == options.reviewer}
                 for mode, report in reports.items()}
-    # Controls at positions 1, 4, 7, 10 and 12, real candidates between them.
-    order = [control_requests[0], real[0], real[1], control_requests[1], real[2], real[3], control_requests[2],
-             real[4], real[5], control_requests[3], real[6], control_requests[4]]
+    # Controls spread evenly through the batch, the first and the last slot among them (for five controls:
+    # positions 1, 4, 7, 9 and 12), real candidates in the slots between.
+    slots = [round(index * (BATCH - 1) / (len(control_requests) - 1)) for index in range(len(control_requests))]
+    controls_left, reals_left = iter(control_requests), iter(real)
+    order = [next(controls_left) if position in slots else next(reals_left) for position in range(BATCH)]
     mixed = panel.run(PanelRunRequest(
         run_id=f"calibration-mixed-{stamp}", requests=tuple(order), population=population, call_ceiling=1,
         token_ceiling=2_000_000, model_calls_authorized=options.authorize_model_calls,
@@ -150,7 +168,7 @@ def calibrate(options) -> dict:
 
 def review(options) -> dict:
     """Every eligible candidate that passed the prechecks, asked of the reachable family in batches of 12."""
-    catalogue = native.NativeCatalogue.load(options.catalogue, ROOT)
+    catalogue = _profile(options.catalogue)[0].load(options.catalogue, ROOT)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
                                                           options.authorize_model_calls, len(catalogue.identities()))
     identities = _identities(options, catalogue)

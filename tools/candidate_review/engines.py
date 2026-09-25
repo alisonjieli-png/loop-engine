@@ -8,6 +8,15 @@ A named check keeps this table and the configuration's vocabulary equal.
 from __future__ import annotations
 
 from .configuration import FIXTURE_ENGINE_KIND
+from .imported_prechecks import (
+    ImportedDuplicateRules,
+    ImportedEffectsRules,
+    ImportedFormatRules,
+    ImportedLicenceRules,
+    ImportedMinHashRules,
+    ImportedSafetyRules,
+    ImportedSecretRules,
+)
 from .native_prechecks import (
     NativeDuplicateRules,
     NativeEffectsRules,
@@ -48,6 +57,13 @@ PRECHECK_ENGINE_FACTORIES = {
     "native_secret_rules": NativeSecretRules,
     "native_duplicate_rules": NativeDuplicateRules,
     "native_minhash_rules": NativeMinHashRules,
+    "imported_licence_rules": ImportedLicenceRules,
+    "imported_format_rules": ImportedFormatRules,
+    "imported_safety_rules": ImportedSafetyRules,
+    "imported_effects_rules": ImportedEffectsRules,
+    "imported_secret_rules": ImportedSecretRules,
+    "imported_duplicate_rules": ImportedDuplicateRules,
+    "imported_minhash_rules": ImportedMinHashRules,
 }
 #: The engines that need no external program and no optional library, so they are always available.
 BUILTIN_PRECHECK_ENGINES = frozenset({"builtin_licence_rules", "builtin_format_rules", "builtin_static_rules",

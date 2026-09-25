@@ -68,7 +68,8 @@ BATCH_CALL_FIELDS = ("run_id", "sequence", "batch_key", "installation_id", "inst
 ROW_FIELDS = {RUN_RECORD: RUN_FIELDS, RUN_END_RECORD: RUN_END_FIELDS, DISPATCH_RECORD: DISPATCH_FIELDS,
               CALL_RECORD: CALL_FIELDS, VERDICT_RECORD: VERDICT_FIELDS, BATCH_DISPATCH_RECORD: BATCH_DISPATCH_FIELDS,
               BATCH_CALL_RECORD: BATCH_CALL_FIELDS}
-REVIEW_SUBJECTS = ("candidate_review_request/v1", "candidate_native_package_review_request/v1")
+REVIEW_SUBJECTS = ("candidate_review_request/v1", "candidate_native_package_review_request/v1",
+                   "candidate_imported_package_review_request/v1")
 #: What one candidate of a batch call came to: a verdict, an answer that was not a valid verdict for it, or
 #: nothing because the call itself failed.
 MEMBER_OUTCOMES = ("verdict", "invalid_response", "not_answered")
