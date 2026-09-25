@@ -84,7 +84,8 @@ def read_head(body: bytes) -> dict:
     return {"titles": reader.titles, "descriptions": named("name", "description", "content"),
             "canonical": named("rel", "canonical", "href"), "og_url": named("property", "og:url", "content"),
             "og_title": named("property", "og:title", "content"), "twitter": named("name", "twitter:card", "content"),
-            "robots": named("name", "robots", "content"), "root": named("name", "baltor-root-address", "content")}
+            "robots": named("name", "robots", "content"), "root": named("name", "baltor-root-address", "content"),
+            "og_image": named("property", "og:image", "content")}
 
 
 def head_problems(site_map, serve) -> list:
@@ -101,7 +102,10 @@ def head_problems(site_map, serve) -> list:
         head, canonical = read_head(answer[0]), site_map.canonical_origin + page.address
         expected = {"titles": [DISPLAY_NAME + " | " + page.title], "descriptions": [page.description],
                     "canonical": [canonical], "og_url": [canonical], "og_title": [DISPLAY_NAME + " | " + page.title],
-                    "twitter": ["summary"], "robots": [] if page.indexed else ["noindex"]}
+                    # A page file with its own shared-link picture (the deck's card) keeps it and shows it as a large card.
+                    "twitter": ["summary" if head["og_image"] == [site_map.canonical_origin + site_map.social_image]
+                                else "summary_large_image"],
+                    "robots": [] if page.indexed else ["noindex"]}
         for field, value in expected.items():
             if head[field] != value:
                 problems.append(f"{page.address}: {field} is {head[field]!r}, and the site map gives {value!r}")
