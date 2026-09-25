@@ -7,13 +7,19 @@ window.BaltorCatalogueBrowser = {
   create({request, element, message, current}) {
     const $ = id => document.getElementById(id);
     const path = "/api/v1/provisioning", downloadPath = "/api/v1/download";
-    const requestVersion = "service_provisioning_request/v1";
+    /* Version 2, as search asks: the same default step effects and the account's library setting, so this
+       view lists what search can find and every answer names each item's library tier. Version 1 predates
+       the tiers and lists Verified items only (September 25, 2026). */
+    const requestVersion = "service_provisioning_request/v2";
     /* The exact record versions this file was written against. Another version may rename a field or
        give an existing field a different meaning, so a reply that carries one is refused as a whole and
        nothing from it is displayed. A newer service therefore needs a newer page, not a page that
        guesses. */
-    const listVersion = "provisioning_list/v2", manifestVersion = "provisioning_manifest/v2";
+    const listVersion = "provisioning_list/v3", manifestVersion = "provisioning_manifest/v3";
     const itemVersion = "harness_intelligence_item/v1";
+    /* Every item names its library tier and the exact label to show for it. An item without one is a record
+       this page was not written for, never an item shown without its label. */
+    const knownTiers = new Set(["verified", "community"]);
     const metadataScope = "provisioning:metadata";
     /* The four groups, with the plain name each one carries in this view, and before them the files a
        development tool reads as they are: skills, agent instructions and similar drop-in files. Those
@@ -56,6 +62,7 @@ window.BaltorCatalogueBrowser = {
       if (!Number.isInteger(row.size_bytes) || row.size_bytes < 0) return "an unreadable size";
       if (!Array.isArray(row.declared_effects) || !Array.isArray(row.styles)) return "an unreadable list of declared values";
       if (typeof row.body_allowed !== "boolean") return "no plain answer about downloading";
+      if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";
       return "";
     };
     /* One item, asked for by name. It carries the same facts as a list entry under its own record
@@ -68,6 +75,7 @@ window.BaltorCatalogueBrowser = {
       if (!Number.isInteger(value.size_bytes) || value.size_bytes < 0) return "an unreadable size";
       if (!Array.isArray(value.declared_effects) || !Array.isArray(value.styles)) return "an unreadable list of declared values";
       if (typeof value.body_allowed !== "boolean") return "no plain answer about downloading";
+      if (!knownTiers.has(value.library_tier) || !stated(value.library_tier_label)) return "no library tier";
       return "";
     };
     const refused = "This service answered with a catalogue record this page was not written for, so nothing is shown.";
@@ -147,7 +155,7 @@ window.BaltorCatalogueBrowser = {
             button.type = "button"; button.dataset.identity = row.identity;
             button.setAttribute("aria-current", row.identity === selected ? "true" : "false");
             button.append(element("span", row.purpose, "browse-item-name"),
-              element("span", (kindNames[row.kind] || row.kind) + " · " + row.size_bytes + " bytes · "
+              element("span", row.library_tier_label + " · " + (kindNames[row.kind] || row.kind) + " · " + row.size_bytes + " bytes · "
                 + (row.body_allowed ? "download permitted" : "details only"), "browse-item-facts"));
             button.addEventListener("click", () => choose(row));
             line.append(button); list.append(line);
@@ -189,6 +197,7 @@ window.BaltorCatalogueBrowser = {
         }
         const note = showDetail(row, [
           ["What it is for", row.purpose],
+          ["Library tier", value.library_tier_label],
           ["Exact reference", row.identity],
           ["Where it comes from", value.source_ref],
           ["Licence", stated(value.license) ? value.license : "Not stated"],
@@ -241,8 +250,9 @@ window.BaltorCatalogueBrowser = {
       } finally { if (epoch === current().generation) button.disabled = false; }
     }
     /* The service applies the filters, because it owns the rule about which material a request may see.
-       The page sends no authority over effects, so material that declares an effect is never offered
-       here. The choices themselves come from an unfiltered load, so a filter can always be undone. */
+       The page sends no authority over effects, so the service applies its default step effect, reading
+       files, and material that declares any other effect is not offered here. The choices themselves come
+       from an unfiltered load, so a filter can always be undone. */
     async function load(fresh) {
       if (!eligible() || active) return;
       const epoch = current().generation, kind = fresh ? "" : $("browse-kind").value, style = fresh ? "" : $("browse-style").value;

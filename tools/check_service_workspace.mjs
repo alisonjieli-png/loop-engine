@@ -902,11 +902,17 @@ try {
   /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
   const moving=await page.evaluate(()=>[...document.querySelectorAll('[data-view="home"], [data-view="home"] *')].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);
   check("homepage_has_no_motion_of_its_own",moving===0,{moving});
-  /* The library count is this release's: the number of items in the packaged manifest. */
+  /* The library count is the live one: the number of served items the service reports in its capabilities record, so a
+     catalogue release published without a redeploy changes it at once. Until release 30 (September 25, 2026) the page
+     printed the packaged manifest's count, and this check compared it with that manifest; it failed once the page went
+     live, because this fixture serves fewer items than the manifest holds. */
+  const servedCount=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result?.library?.served_items;
   const shownCount=await page.locator("[data-library-count]").innerText();
-  const countAgrees=shown=>shown.trim()===String(releasedItemCount);
-  check("library_count_agrees_with_this_release_manifest",countAgrees(shownCount),{shown:shownCount,released:releasedItemCount});
-  check("library_count_check_rejects_a_count_this_release_does_not_hold",!countAgrees(String(releasedItemCount+1))&&!countAgrees("10,000")&&countAgrees(String(releasedItemCount)));
+  const countAgrees=shown=>Number.isInteger(servedCount)&&shown.trim()===String(servedCount);
+  check("library_count_agrees_with_the_served_library",countAgrees(shownCount),{shown:shownCount,served:servedCount});
+  check("library_count_check_rejects_a_count_the_service_does_not_serve",countAgrees(String(servedCount))
+    &&!countAgrees(String(servedCount+1))&&!countAgrees("10,000")
+    &&(releasedItemCount===servedCount||!countAgrees(String(releasedItemCount))),{served:servedCount,released:releasedItemCount});
   /* The six kinds of harness material and the three use cases, in the design's order, each under its own heading and none with a
      status word, as the owner decided on September 23, 2026. */
   const kindCards=await homeCards(page,"[data-kind]","kind"),useCaseCards=await homeCards(page,'[data-view="home"] [data-use-case]',"useCase");
@@ -3215,7 +3221,7 @@ try {
   await plainContext.close();
   const browseList=async (target,fields={})=>(await (await target.request.post(fixture.browse_base+"/api/v1/provisioning",
     {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
-     data:{record_type:"service_provisioning_request/v1",operation:"list",...fields}})).json()).result;
+     data:{record_type:"service_provisioning_request/v2",operation:"list",...fields}})).json()).result;
   /* The harness family comes first and is named for what it is: files a development tool reads as they are.
      It was named "Already on your own machine" until September 22, 2026, which was not true of a delivered file. */
   const layerNames=[["harness_local","Files for your development tools"],["context_intelligence","Guidance and methods"],
@@ -3270,6 +3276,12 @@ try {
         {shown:groups.map(item=>item.name)});
       note("browse_counts_and_membership_match_the_service_reply",JSON.stringify(groups)===JSON.stringify(want)
         &&await opened.locator("#browse-count").innerText()==="6 items",{groups,want});
+      /* Every row shows the item's library tier first, in the exact words the service sent (September 25, 2026). */
+      const rowFacts=await opened.locator("#browse-groups .browse-item").evaluateAll(items=>items.map(item=>
+        [item.dataset.identity,item.querySelector(".browse-item-facts").textContent]));
+      note("browse_shows_each_item_s_library_tier",rowFacts.length===reply.items.length&&rowFacts.every(([identity,text])=>{
+        const row=reply.items.find(item=>item.identity===identity);
+        return Boolean(row?.library_tier_label)&&text.startsWith(row.library_tier_label+" · ");}),{rowFacts});
       const emptyGroup=groups.find(item=>item.layer==="user_feedback_intelligence");
       note("browse_says_plainly_when_a_group_holds_nothing",emptyGroup!==undefined&&emptyGroup.count==="0 items"
         &&emptyGroup.identities.length===0&&emptyGroup.empty==="Nothing is published in this group yet.",{group:emptyGroup});
@@ -3288,6 +3300,8 @@ try {
         &&detail.Size===listed.size_bytes+" bytes"&&detail.Digest===listed.digest&&/^[0-9a-f]{64}$/.test(detail.Digest)
         &&detail["Declared effects"]==="None declared"&&detail["Written for"]==="claude-code"
         &&detail["The file itself"].startsWith("You may fetch it"),{detail});
+      note("browse_detail_states_the_library_tier",Boolean(listed.library_tier_label)
+        &&detail["Library tier"]===listed.library_tier_label,{detail,tier:listed.library_tier_label});
       const saving=opened.waitForEvent("download");
       await opened.click("#browse-download");
       const saved=await saving,stream=await saved.createReadStream(),chunks=[];
@@ -3382,7 +3396,7 @@ try {
       const staleDigest="0".repeat(64);
       const direct=await opened.request.post(fixture.browse_base+"/api/v1/provisioning",
         {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
-         data:{record_type:"service_provisioning_request/v1",operation:"manifest",identity:"context.review",expected_digest:staleDigest}});
+         data:{record_type:"service_provisioning_request/v2",operation:"manifest",identity:"context.review",expected_digest:staleDigest}});
       const code=(await direct.json())?.error?.code||"";
       await opened.route("**/api/v1/provisioning",async route=>{
         const sent=route.request().postDataJSON();
@@ -3458,7 +3472,7 @@ try {
         const sent=route.request().postDataJSON();
         if(sent?.operation!=="manifest")return route.continue();
         const response=await route.fetch(),value=await response.json();
-        value.result.record_type="provisioning_manifest/v3";
+        value.result.record_type="provisioning_manifest/v4";
         await route.fulfill({response,json:value});});
       await openItem(opened,"context.review");
       note("browse_refuses_an_item_record_version_it_was_not_written_for",
@@ -3472,7 +3486,7 @@ try {
         const sent=route.request().postDataJSON();
         if(sent?.operation!=="list")return route.continue();
         const response=await route.fetch(),value=await response.json();
-        value.result.record_type="provisioning_list/v3";
+        value.result.record_type="provisioning_list/v4";
         await route.fulfill({response,json:value});});
       await loadBrowse(opened);
       await refusedBrowse(opened,note,"browse_refuses_a_catalogue_record_version_it_was_not_written_for","context.review");
@@ -3488,6 +3502,19 @@ try {
       await loadBrowse(opened);
       await refusedBrowse(opened,note,"browse_refuses_a_catalogue_that_names_a_group_it_does_not_know","context.review");
       note("browse_names_the_reason_it_refused_a_catalogue",(await opened.locator("#browse-message").innerText()).includes("a group this page does not know"));
+      await opened.unroute("**/api/v1/provisioning");
+    },
+    /* Every item names its library tier (September 25, 2026). A reply whose item has no label is a record this
+       page was not written for, so nothing of it is shown, rather than an item shown without its label. */
+    missing_tier:async (opened,note)=>{
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="list")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        delete value.result.items[0].library_tier_label;
+        await route.fulfill({response,json:value});});
+      await loadBrowse(opened);
+      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_item_without_its_library_tier","context.review");
       await opened.unroute("**/api/v1/provisioning");
     },
     /* The count of held-back material is read out of the reply, so its shape is checked like every other
@@ -3604,7 +3631,16 @@ try {
     {name:"ignore_the_kind_filter",scenario:"kind_filter",find:"kind ? {kinds:[kind]} : {}",replacement:"{}",
      expected:["browse_filters_by_kind_through_the_service","browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished"]},
     {name:"ignore_the_development_tool_filter",scenario:"tool_filter",find:"style ? {style} : {}",replacement:"{}",
-     expected:["browse_filters_by_development_tool_through_the_service"]}];
+     expected:["browse_filters_by_development_tool_through_the_service"]},
+    {name:"leave_the_library_tier_off_the_list",scenario:"catalogue",
+     find:'row.library_tier_label + " · " + (kindNames',replacement:"(kindNames",
+     expected:["browse_shows_each_item_s_library_tier"]},
+    {name:"leave_the_library_tier_out_of_the_detail",scenario:"catalogue",
+     find:'["Library tier", value.library_tier_label],',replacement:"",
+     expected:["browse_detail_states_the_library_tier"]},
+    {name:"accept_an_item_without_a_library_tier",scenario:"missing_tier",
+     find:'if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";',replacement:"",
+     expected:["browse_refuses_a_catalogue_item_without_its_library_tier"]}];
   for(const control of browseControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
