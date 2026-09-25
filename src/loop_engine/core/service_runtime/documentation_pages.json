@@ -3,13 +3,13 @@
  "pages": {
   "searching-and-retrieving": {
    "body_address": "/assets/docs/searching-and-retrieving.html",
-   "body_digest": "b0fc654fa1585ce1af3945210ed846d071a774ea4d1c8a55aa9e7ab7fb69195b",
+   "body_digest": "bb4f78e401295b0a681da78367fa5830bfc9eb6adfaedd7adfe247f87a547990",
    "heading": "Searching and retrieving",
    "id": "searching-and-retrieving",
    "kind_line": "Kind: customer guide to selection, references, manifests and exact-byte downloads.",
    "record_type": "website_documentation_page/v1",
    "repository_path": "docs/guides/service-searching-and-retrieving.md",
-   "source_digest": "eb547489f54dcc873a37b073bcfd55e715d2bda1ca89e32363c88dd53f6e1eac",
+   "source_digest": "5c45d0b15a621c62390747a0b33ca3ba69d83f2093fee0e229e3f5683a53dd77",
    "title": "Searching and retrieving"
   },
   "serving-and-connections": {

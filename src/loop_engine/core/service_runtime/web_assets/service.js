@@ -591,7 +591,10 @@ const applyPaymentState = name => {
     if (!downloads.has(identity)) downloads.set(identity, crypto.randomUUID());
     button.disabled = true; status.textContent = "Fetching the selected revision…";
     try {
-      const result = await request("/api/v1/download", {record_type:"service_provisioning_request/v1", operation:"read", identity:hit.reference.identity,
+      /* Version 2, like the search that found the item: both ask with the same default step effects and the account's library
+         setting, so an item the search offered is not refused here. Version 1 predates both and was refused for every item that
+         reads files (the release 30 live check, September 25, 2026). */
+      const result = await request("/api/v1/download", {record_type:"service_provisioning_request/v2", operation:"read", identity:hit.reference.identity,
         expected_digest:hit.reference.body_digest, request_id:downloads.get(identity)}, true, true);
       const actual = [...new Uint8Array(await crypto.subtle.digest("SHA-256", result.bytes))].map(n => n.toString(16).padStart(2, "0")).join("");
       if (actual !== hit.reference.body_digest || actual !== result.digest) throw new Error("Downloaded bytes do not match the selected reference. Nothing was saved.");
@@ -607,9 +610,11 @@ const applyPaymentState = name => {
     if (!hits.length) { $("results").append(element("p", "No permitted matches. Try a different description.", "empty")); return; }
     for (const hit of hits) {
       const card = element("article", "", "result"); card.append(element("h3", hit.purpose), element("p", hit.reference.identity), element("span", hit.kind, "badge"));
+      // Every item shows its library tier, Verified or Community, in the exact words the service sends.
+      if (hit.library_tier_label) { const tier = element("span", hit.library_tier_label, "badge"); tier.dataset.libraryTier = hit.library_tier || ""; card.append(tier); }
       const detail = document.createElement("details"), list = document.createElement("dl");
       detail.append(element("summary", "Source, integrity and access"));
-      facts(list, [["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
+      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
       const button = element("button", "Fetch exact revision", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
       button.addEventListener("click", () => download(hit, button, status)); card.append(button, status); $("results").append(card);
     }

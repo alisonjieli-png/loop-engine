@@ -186,9 +186,12 @@ def main():
         # Each check reads the view of the page that printed the digests, from that page's own address.
         shown = {address: demonstration_page_digests(public_page(address), view) for address, view in DEMONSTRATION_PAGES}
         served_digests = {}
+        # The pages print what a harness receives today, which asks with version 2: the default step effects and the
+        # account's library setting. Release 30 printed two items that read files, which a version 1 request, holding no
+        # effect, is refused; this check asked with version 1 and failed although every harness received them.
         for identity in sorted(set().union(*shown.values())):
             status, manifest = request("/api/v1/provisioning",
-                {"record_type": "service_provisioning_request/v1", "operation": "manifest",
+                {"record_type": "service_provisioning_request/v2", "operation": "manifest",
                  "identity": identity})
             served_digests[identity] = str(manifest.get("result", {}).get("digest", "")) if status == 200 else ""
         for address, view in DEMONSTRATION_PAGES:

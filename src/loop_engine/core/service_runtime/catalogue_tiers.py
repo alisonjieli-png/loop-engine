@@ -23,6 +23,15 @@ the exact label `library_tier_label`. No retrieval count, score or model
 confidence sets a tier, and a community item becomes verified only through the
 full review.
 
+The first catalogue does not meet the family rule, and the published meaning of
+Verified says so. Its items were approved on September 21, 2026, before the
+rule, by three reviewers that did not write them; the items were written with
+Claude Code and the one reviewer whose model is recorded is a Claude model
+(`examples/29_intelligence_service/starter-catalogue/reviews.json`). The release
+30 live check on September 25, 2026 found the meaning claiming two families for
+them. They keep the Verified label, with that sentence, until reviewers of two
+other families approve them; no other family could review on that day.
+
 What a request may be offered is narrowed in two places. An account setting
 chooses which community items the account receives; its default is every
 community item, labelled. A request can narrow further with a `library_tiers`
@@ -46,7 +55,10 @@ LIBRARY_SETTINGS_RECORD_TYPE = "account_library_settings/v1"
 LEGEND_RECORD_TYPE = "catalogue_library_tiers/v1"
 TIER_MEANINGS = {
     VERIFIED_TIER: ("Approved by independent reviewers of at least two model families that did not produce it, "
-                    "with every automated check passing."),
+                    "with every automated check passing. The first catalogue, approved on September 21, 2026 before "
+                    "this rule, is the exception: its items were written with Claude models and approved by three "
+                    "reviewers that did not write them, and those reviews do not show two other model families. They "
+                    "are reviewed again by two other model families as soon as those reviewers are available."),
     COMMUNITY_TIER: ("Passed every automated check (licence allowlist, provenance, secret and safety scanners, and "
                      "its own tests where it has code) and one independent review by a model family that did not "
                      "produce it.")}
@@ -64,7 +76,10 @@ def _refuse(code, message):
 
 
 def tier_of_review(value):
-    """The library tier a reviewed catalogue row names; a row that names none is a panel approval, so verified."""
+    """The library tier a reviewed catalogue row names; a row that names none is verified.
+
+    A row without a tier is an approval of the first catalogue, September 21, 2026, which the published meaning of
+    Verified names as its exception until two other model families have reviewed it."""
     if value is None:
         return VERIFIED_TIER
     if value not in LIBRARY_TIERS:

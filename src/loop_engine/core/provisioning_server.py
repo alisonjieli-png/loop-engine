@@ -28,6 +28,11 @@ Library tier of an approved item   label
 A request states which community items it may be offered. The default offers
 none, so a caller that says nothing, or reads a record version without tiers,
 receives verified items only. Verified items are listed before community items.
+
+The first catalogue, approved on September 21, 2026 before the family rule, is
+verified by its record but does not show two other model families; the
+published meaning of Verified names that exception
+(`service_runtime/catalogue_tiers.py`).
 """
 from __future__ import annotations
 
@@ -155,11 +160,12 @@ class ProvisioningItemBinding:
 class ProvisioningQualification:
     """Exact resolver decision, never approval inferred from catalogue tags.
 
-    Every approval has a library tier. An approval that names none came
-    through the independent review panel, the only approval path before the
-    community tier existed, so it is `verified`. A community approval always
-    names its tier: only a release whose item version records the community
-    tier produces one. A decision that is not an approval has no tier.
+    Every approval has a library tier. An approval that names none predates the
+    community tier and is `verified`; in the served catalogue it is an approval
+    of the first catalogue, September 21, 2026, whose reviews do not show two
+    other model families, as the published meaning of Verified says. A community approval always names
+    its tier: only a release whose item version records the community tier
+    produces one. A decision that is not an approval has no tier.
     """
 
     binding: ProvisioningItemBinding

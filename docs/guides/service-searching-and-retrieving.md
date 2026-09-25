@@ -20,7 +20,7 @@ current catalogue and the query; this example does not assume a particular hit.
 | --- | --- |
 | `record_type` | Exactly `service_retrieval_request/v2`. |
 | `query` | Nonempty search text, at most 4096 UTF-8 bytes. |
-| `authority_effects` | Optional unique array of declared effect names already permitted for your step. Omitted or empty means no declared effects. This selects metadata, not execution permission. |
+| `authority_effects` | Optional unique array of declared effect names already permitted for your step. Omitted means the effects your client configuration states in the `Baltor-Step-Effects` header, or reading files (`reads_fs`) when it states none. An empty array means no declared effects. This selects metadata, not execution permission. |
 | `mode` | `lexical` or `hybrid`; default `lexical`. |
 | `top_n` | Positive whole number within the advertised `search_results` limit; default 10. |
 | `filters` | Up to eight declared, public, filterable catalogue attributes. Conditions include `equals`, `any_of`, `at_least` and `at_most`. |
@@ -33,9 +33,10 @@ answer. It is not a correctness score or a cross-query quality measurement.
 ### Material that declares effects
 
 A search can name `authority_effects` to include material whose declared effects
-fit the step's existing permissions. Omit it or send an empty array to consider
-only material with no declared effects. For example, a step already authorized
-to read files and run a local process can search with:
+fit the step's existing permissions. Omit it to use your client configuration's
+`Baltor-Step-Effects` header, or reading files when there is none. Send an empty
+array to consider only material with no declared effects. For example, a step
+already authorized to read files and run a local process can search with:
 
 ```json
 {"record_type":"service_retrieval_request/v2","query":"validate a local data file","mode":"lexical","authority_effects":["reads_fs","spawns_process"]}
@@ -78,10 +79,18 @@ changed body is refused rather than substituted. The following is a request
 shape: replace the two example strings with values from your search.
 
 ```json
-{"record_type":"service_provisioning_request/v1","operation":"manifest","identity":"item-identity","expected_digest":"selected-digest"}
+{"record_type":"service_provisioning_request/v2","operation":"manifest","identity":"item-identity","expected_digest":"selected-digest"}
 ```
 
-The manifest reports the digest, licence, size, `body_allowed`,
+Use version 2, as the search does. It asks with the same step effects and your
+account's library setting, so an item the search offered is not refused here,
+and every answer names the item's library tier in `library_tier` and its label,
+Verified or Community, in `library_tier_label`. Add
+`"library_tiers":["verified"]` to leave Community items out. Version 1 is still
+answered, with Verified items only; without `authority_effects` it receives no
+item that declares an effect, not even reading files.
+
+The manifest reports the digest, licence, size, library tier, `body_allowed`,
 `metering_policy` and `verify_before_use`. A manifest is not a body download and
 is not metered. Permission is checked again when the body is requested.
 
@@ -102,7 +111,7 @@ entry names `path`, `digest`, `size_bytes`, `media_type` and `role`. Retrieve on
 file through `/api/v1/download` by adding that exact `path` to the read request.
 
 ```json
-{"record_type":"service_provisioning_request/v1","operation":"read","identity":"item-identity","expected_digest":"selected-digest","request_id":"one-package-read","path":"scripts/tool.py"}
+{"record_type":"service_provisioning_request/v2","operation":"read","identity":"item-identity","expected_digest":"selected-digest","request_id":"one-package-read","path":"scripts/tool.py"}
 ```
 
 These are example identity and path values, not a promise that such an item is
@@ -114,7 +123,8 @@ item-level metering unit. A missing path returns `package_file_not_found`.
 ### Inline reads
 
 An inline `read` through `/api/v1/provisioning` returns the body inside
-`provisioning_body/v2`, with metering fields. Bodies above `inline_body_bytes`
+`provisioning_body/v3` for a version 2 request (`provisioning_body/v2` for
+version 1), with metering fields. Bodies above `inline_body_bytes`
 require the download endpoint. Package file paths also require that endpoint;
 they are not accepted as inline reads.
 

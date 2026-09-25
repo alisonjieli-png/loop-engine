@@ -35,8 +35,11 @@ const RESULT_RECORD = "service_http_result/v1";
 const ERROR_RECORD = "service_http_error/v1";
 const CAPABILITIES_RECORD = "service_capabilities/v1";
 const RETRIEVAL_RESULT_RECORD = "service_retrieval_result/v1";
-const PROVISIONING_REQUEST = "service_provisioning_request/v1";
-const MANIFEST_RECORD = "provisioning_manifest/v2";
+// Version 2, like the search: the manifest and the download ask with the same default step effects and library
+// setting as the search that found the item, so an item the search offered is not refused. Version 1 was refused
+// for every item that reads files (September 25, 2026). A version 2 manifest answers as provisioning_manifest/v3.
+const PROVISIONING_REQUEST = "service_provisioning_request/v2";
+const MANIFEST_RECORD = "provisioning_manifest/v3";
 const DOWNLOAD_RECORD = "service_download/v1";
 const DIGEST_HEADER = "x-content-sha256";
 const RECORD_TYPE_HEADER = "x-loop-engine-record-type";

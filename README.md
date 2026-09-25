@@ -97,9 +97,9 @@ Use cases we are building demonstrations for, each with and without Baltor:
   transformations;
 - a data science competition taken from task to submission.
 
-## Status on September 24, 2026
+## Status on September 25, 2026
 
-Working on the live service today (Fly release 24):
+Working on the live service today:
 
 - public sign-up at <https://baltor.ai/get-started>: your email address, then
   the link we send you, then a password you choose. The first 10 accounts
@@ -112,8 +112,16 @@ Working on the live service today (Fly release 24):
 - the Model Context Protocol endpoint, speaking protocol revisions
   `2025-11-25` and `2026-07-28`, with search that returns references and
   downloads that check access and bytes;
-- a reviewed library of 43 skills, each approved by three independent
-  reviewers from model families other than the one that wrote it;
+- a reviewed library in two labelled tiers, published without a redeploy.
+  **Community** items were each approved by one model family that did not
+  write them, with every automated check passing. **Verified** is for items
+  approved by reviewers of at least two such families. Today's Verified items
+  are the first catalogue of September 21, 2026, which predates that rule: its
+  skills were written with Claude Code and approved by three reviewers that did
+  not write them, and those reviews do not show two other model families, so
+  they are reviewed again by two other families as soon as those reviewers are
+  available. The service's `/api/v1/capabilities` record gives the live count
+  and the published meaning of each tier;
 - an Administration view where a superadmin sees every account and can grant
   or revoke free monthly Baltor Pro and switch an account off or on. Staff
   roles are fixed in code: superadmin, developer and analytics.
@@ -123,8 +131,7 @@ Not open yet:
 - items with more than one file, placed as a package in your harness working
   directory;
 - the engine starting a fresh standard harness for each step, and searching
-  the library by itself;
-- a separate page for each of the demo, docs, status and examples hostnames.
+  the library by itself.
 
 The [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section records the running release. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
