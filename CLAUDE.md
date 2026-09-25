@@ -6,7 +6,8 @@
 
 Start with the [context route](docs/context/START-HERE.md). It names the
 newest dated handoff, now the
-[September 24 session handoff](docs/context/SESSION-HANDOFF-2026-09-24.md):
+[September 25 session handoff](docs/context/SESSION-HANDOFF-2026-09-25.md),
+which follows the [September 24 session handoff](docs/context/SESSION-HANDOFF-2026-09-24.md):
 what is live after release 24 with registration open, the owner's requests
 of that day, the decisions made and why, every line of work in flight with
 its worktree, the scheduled jobs and the ordered work that remains. The

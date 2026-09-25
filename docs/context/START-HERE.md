@@ -12,7 +12,11 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 24 session handoff](SESSION-HANDOFF-2026-09-24.md). It records the
+[September 25 session handoff](SESSION-HANDOFF-2026-09-25.md). It records
+releases 26 and 27 with the new interface live, the flexible release checks, the
+weekly usage limit that paused every line until October 1, and the order of
+the next steps. The
+[September 24 session handoff](SESSION-HANDOFF-2026-09-24.md) before it records the
 live state after release 24 with public registration open, the owner's
 requests of September 24 with the decisions made and why, every line of work
 in flight with its worktree, the scheduled jobs, how to re-arm the research

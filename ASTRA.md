@@ -12,7 +12,7 @@ authority, and only the owner widens it.
 
 ## Current work and evidence
 
-The [September 24 session handoff](docs/context/SESSION-HANDOFF-2026-09-24.md)
+The [September 25 session handoff](docs/context/SESSION-HANDOFF-2026-09-25.md)
 is the newest dated record of what is live, what the owner asked for, what is
 in flight and what remains. The
 [September 23 session handoff](docs/context/SESSION-HANDOFF-2026-09-23.md),
