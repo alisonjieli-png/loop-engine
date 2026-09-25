@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 48,
-  "waiting": 142
+  "now": 49,
+  "waiting": 141
  },
  "lanes": {
   "blocked": [
@@ -1473,6 +1473,23 @@
     "title": "The browser suite runs every night on main and reports a failure without gating a deploy",
     "waiting_on": [
      "S-6.177"
+    ]
+   },
+   {
+    "acceptance": "A reader sees, for each decision engine, whether it recognised documented trafficking indicators in business-framed requests and what it decided, on the author's own published scenarios.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.94",
+     "S-6.63"
+    ],
+    "id": "S-6.198",
+    "next_local_work": "Publish the showcase page on its own hostname through the page generator (S-6.201); run Jev when the owner places their TypeSafe key in the environment or keyring under the reference env:TYPESAFE_API_KEY; ask an Ollama Cloud model when the weekly allowance returns.",
+    "phase": 6,
+    "status": "building",
+    "title": "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page",
+    "waiting_on": [
+     "S-6.94",
+     "S-6.63"
     ]
    },
    {
@@ -3674,23 +3691,6 @@
     ]
    },
    {
-    "acceptance": "A reader sees, for each decision engine, whether it recognised documented trafficking indicators in business-framed requests and what it decided, on the author's own published scenarios.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.94",
-     "S-6.63"
-    ],
-    "id": "S-6.198",
-    "next_local_work": "Add the request-screening station, the text-model engine and the scoring tool, run it against the rules engine and the Tactical model, and publish the page; Jev runs when the owner places their TypeSafe key in the keyring under the reference typesafe-jev.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page",
-    "waiting_on": [
-     "S-6.94",
-     "S-6.63"
-    ]
-   },
-   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4822,8 +4822,8 @@
    "id": "D-19",
    "stage": "continued_improvement",
    "status_counts": {
-    "building": 4,
-    "proposed": 5
+    "building": 5,
+    "proposed": 4
    },
    "steps": [
     "S-6.30",
@@ -5185,5 +5185,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b599675fbdccaaa08"
+ "source_fingerprint": "sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e881542375d40"
 }

@@ -50,7 +50,7 @@ STATION_RESULT_VERSION = "decision_station_result/v1"
 LOOP_POINTS = ("before_step", "before_command", "after_step", "at_compaction")
 #: The engine kinds of the typed_decision slot in data/engine_slots.yaml; a
 #: check keeps the two lists equal.
-STATION_ENGINE_KINDS = ("decision_endpoint", "deterministic_rules")
+STATION_ENGINE_KINDS = ("decision_endpoint", "deterministic_rules", "text_model_json")
 #: Proof levels (core.engines.records.PROOF_LEVELS) that serve an engine by
 #: default. Deterministic code is served on its contract checks; an engine
 #: whose answers come from a model needs a measured comparison first.

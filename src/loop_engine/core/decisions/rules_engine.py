@@ -14,9 +14,10 @@ from __future__ import annotations
 
 from .contracts import (
     BOOLEAN_PROBABILITY, DecisionGuidance, DecisionProtocolError, DecisionProviderResult, PROVIDER_CAPABILITY,
-    strict_json,
+    QUESTION_KINDS, strict_json,
 )
 from .command_risk_policy import EXECUTE, POLICY_VERSION, CommandRiskPolicyError, assess_command, safe_under
+from .screening_station import STATION_ID as SCREENING_STATION, screening_answers
 
 RULES_ENGINE_MODEL = "rules." + POLICY_VERSION.replace("/", ".")
 _STATE_VERSION = "decision_station_state/v1"
@@ -38,7 +39,10 @@ def _command_answers(state, request):
     return answers, guidance
 
 
-_ANSWERERS = {"command_safety": _command_answers}
+#: The stations this engine answers and what it reads for each: the command
+#: risk policy for command safety, the written patterns of the screening
+#: policy carried in the state for request screening.
+_ANSWERERS = {"command_safety": _command_answers, SCREENING_STATION: screening_answers}
 
 
 class RulesDecisionEngine:
@@ -50,7 +54,7 @@ class RulesDecisionEngine:
     STATIONS = tuple(sorted(_ANSWERERS))
 
     def decision_capabilities(self):
-        return {"protocol": PROVIDER_CAPABILITY, "kinds": [BOOLEAN_PROBABILITY], "engine": "rules",
+        return {"protocol": PROVIDER_CAPABILITY, "kinds": list(QUESTION_KINDS), "engine": "rules",
                 "model": self.DEFAULT_MODEL, "stations": list(self.STATIONS), "in_process": True,
                 "available": True, "answers_from_model": False, "generates_text": False,
                 "policies": [POLICY_VERSION]}

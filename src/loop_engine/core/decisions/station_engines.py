@@ -10,10 +10,12 @@ from __future__ import annotations
 from .configuration import ADAPTER_FACTORIES
 from .rules_engine import RulesDecisionEngine
 from .stations import StationEngine
+from .text_model_engine import TextModelDecisionEngine
 
 STATION_ENGINE_FACTORIES = {
     "decision_endpoint": tuple(dict.fromkeys(factory for _settings, factory in ADAPTER_FACTORIES.values())),
     "deterministic_rules": (RulesDecisionEngine,),
+    "text_model_json": (TextModelDecisionEngine,),
 }
 
 

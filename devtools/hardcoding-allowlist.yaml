@@ -1,5 +1,15 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.bb9e87ced4a289932ef9b7ba
+    owner: case-studies.decision-red-team-modern-slavery.scenarios.json:source.url
+    rationale: The citation address of the CC0 Kaggle write-up whose prompts the frozen scenario record
+      restates (roadmap S-6.198). It is a source reference a reader follows, kept beside the citation and
+      the licence in the record; no code reads it, binds to it or fetches it, and the run record copies it
+      only as the study's source. The record's digest is pinned in tools/red_team_decisions.py, so a changed
+      record is scanned and reviewed again.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: '2026-09-25'
+    expires_on: '2027-09-25'
   - finding_id: hardcoding.04dd1a45335f78d34b107c8a
     owner: pyproject.toml:project.urls.Repository
     rationale: The packaging metadata is the one owner of the public repository address. An installed

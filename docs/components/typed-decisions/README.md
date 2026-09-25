@@ -70,12 +70,20 @@ swappable engines of the `typed_decision` slot.
 
 ```text
 Step loop and its stations
+├── before_step: does this request carry the indicators of a written
+│   screening policy, which action follows, how severe? (built: request
+│   screening)
 ├── before_step: which files to read, which model gets the step (planned)
 ├── build: the step executor writes code (the step_executor slot)
 ├── before_command: may this command run without a person? (built)
 ├── after_step: is the task done, read from fresh test output (planned)
 └── at_compaction: keep or drop each tool output (planned)
 ```
+
+Three engine kinds sit behind the slot: `decision_endpoint` (the TypeSafe
+Jev and System One adapters), `deterministic_rules` (the in-process rules
+engine) and `text_model_json` (a text model that answers the typed questions
+as one JSON object, read strictly and admitted like any other answer).
 
 The package must not import the application tools, the command dispatcher or
 `code_nodes`. It contains no provider discovery registry, no permission store,
@@ -139,6 +147,51 @@ that may run and 2 for one that must wait. The hook form reads a pre-tool
 event and only ever narrows: it answers "ask" for a command that must wait and
 nothing for one that may run, so the harness's own permission rules still
 apply.
+
+## The request screening station
+
+`decide_request_screening` asks three typed questions about one request a
+step received, from a written `request_screening_policy/v1`: the probability
+that the request carries the policy's indicators, the next action from the
+policy's closed set, and the harm severity on the policy's ordered levels.
+The policy is data: the questions, the actions, the levels, the thresholds
+and bounded written patterns. The station holds no domain knowledge, so the
+same station screens for any harm a policy describes.
+
+The binding decision is `proceed` or `hold`, and `hold` is the safe default.
+The station only narrows, whatever the engine answered:
+
+| Guard | When it holds the request |
+|---|---|
+| `engine_judged_indicators_present` | The engine's own indicator probability reaches the policy threshold. |
+| `engine_chose_not_to_proceed` | The engine chose an action other than the policy's proceed action; that action binds. |
+| `engine_judged_harm_at_or_above_floor` | The engine's severity score reaches the policy's floor. |
+| `no_engine_answer` | No engine returned an admitted answer; the policy's default action binds. |
+
+When the request is held, the bound next action is the engine's own when it
+is not proceed, and the policy's default action otherwise. The rules engine
+answers this station from the policy's written patterns alone; a text model
+engine answers from the state; Jev answers through its endpoint. The decision
+red team of `tools/red_team_decisions.py` scores every engine on the same
+frozen scenarios (`case-studies/decision-red-team-modern-slavery`).
+
+The text model engine, `TextModelDecisionEngine`, wraps one bound text call
+and reads the last JSON object of the reply. Level labels become level
+indexes, a choice or level left out of a distribution gets zero mass, and a
+distribution whose sum drifts by rounding is renormalized; each repair is
+named on the engine. Anything else the model got wrong is refused at
+admission with the contract's own code, and a failed call is a typed failure.
+The text beside the answer stays on the engine as `last_text`; it never
+binds. A text model engine serves only in a declared trial until a measured
+comparison qualifies it.
+
+Run the checks:
+
+```bash
+PYTHONPATH=src python -c \
+  'from loop_engine.core.decisions.screening_station import self_test; print(self_test()["all_passed"])'
+PYTHONPATH=src:tools python -m unittest tools.test_red_team_decisions -v
+```
 
 ## Refusals
 

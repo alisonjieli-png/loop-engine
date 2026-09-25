@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b599675fbdccaaa08`.
+Source fingerprint: `sha256:9d8520cfb090f6d7f5f733b551913c1e5f58cba8af72dc98ad4e881542375d40`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 48 |
+| Being built now | 49 |
 | Can start next | 15 |
-| Waiting on earlier work | 142 |
+| Waiting on earlier work | 141 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -58,6 +58,7 @@ Source fingerprint: `sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b5996
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
 | S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
 | S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | building | S-6.177 |
+| S-6.198 | Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page | building | S-6.94, S-6.63 |
 | S-1.4 | Evaluation product command over a frozen suite | building |  |
 | S-1.7 | Runnable prompt and harness optimization command | building | S-1.4 |
 | S-2.15 | Noise injection and explorative optimization over the evaluation product | building | S-1.7 |
@@ -217,7 +218,6 @@ Source fingerprint: `sha256:f4d7b60822f4342c74b96c762d0bbe42b575a918f8a51b8b5996
 | S-6.187 | How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed | proposed | S-6.34 |
 | S-6.185 | A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle | proposed | S-6.47, S-6.32 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
-| S-6.198 | Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page | proposed | S-6.94, S-6.63 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

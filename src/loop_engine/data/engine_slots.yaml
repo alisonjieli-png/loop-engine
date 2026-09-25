@@ -406,7 +406,7 @@ slots:
     joined_with: []
     engine_protocol: core.decisions.contracts.DecisionProvider
     engine_protocol_version: typed_decisions/v1
-    engine_kinds: [decision_endpoint, deterministic_rules]
+    engine_kinds: [decision_endpoint, deterministic_rules, text_model_json]
     engine_kind_groups: {}
     native_registry: core.decisions.configuration.configured_engines
     native_declaration: core.decisions.configuration.ConfiguredDecisionEngine

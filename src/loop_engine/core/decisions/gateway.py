@@ -23,8 +23,10 @@ NO_ELIGIBLE_ROUTE = "no_eligible_route"
 PREFLIGHT_REFUSED = "decision_provider_preflight_refused"
 RESPONSE_REFUSED = "decision_response_refused"
 PROVIDER_FAILED = "decision_provider_failed"
-#: Provider codes the gateway passes through: the provider could not be used.
-PROVIDER_ACCESS_FAILURES = ("authentication_failed", "rate_limited", "payment_required", "provider_unavailable")
+#: Provider codes the gateway passes through: the provider could not be used, including when its configured
+#: credential is absent, so a station records the reason instead of a generic failure.
+PROVIDER_ACCESS_FAILURES = ("authentication_failed", "rate_limited", "payment_required", "provider_unavailable",
+                            "configured_secret_unavailable")
 
 
 def _refused_as_provider_result(observed, model):
