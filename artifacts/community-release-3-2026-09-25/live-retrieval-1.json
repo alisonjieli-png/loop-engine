@@ -1,0 +1,24 @@
+{
+ "account": "pilot-owner",
+ "body_text_kept": false,
+ "checks": {
+  "a_verified_only_search_leaves_it_out": true,
+  "download_digest_matches": true,
+  "search_finds_the_community_item": true,
+  "the_download_names_the_community_tier": true,
+  "the_hit_shows_the_community_tier": true,
+  "the_withdrawn_item_is_not_served": true
+ },
+ "community": "import_command_cloud_recon_6ca8b0cce02a",
+ "credential_printed": false,
+ "download_tier_header": "Community",
+ "expected_digest": "e71445cefdebaa26e6059170dcea45b6a02a1c8a643e0459769d4fe515e52beb",
+ "hit_labels": {
+  "library_tier": "community",
+  "library_tier_label": "Community"
+ },
+ "origin": "https://baltor.ai",
+ "passed": true,
+ "record_type": "live_community_retrieval_check/v2",
+ "withdrawn": "normalize_phone_numbers"
+}

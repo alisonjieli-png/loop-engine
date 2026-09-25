@@ -1058,7 +1058,7 @@
      "S-6.62"
     ],
     "id": "S-6.69",
-    "next_local_work": "Publish community-release-2 after release 35, install the daily job (S-6.197), ship the screening profile (S-6.199), measure serving at 1,000, 5,000 and 10,000 (S-6.203), then export 2,000 or more a day until the dated marks are met.",
+    "next_local_work": "Publish the daily job's batch 2 result after a look at its counts and install the cron entry (S-6.197); measure serving at 1,000, 5,000 and 10,000 (S-6.203); export 2,000 or more a day until the dated marks are met.",
     "phase": 6,
     "status": "building",
     "title": "The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day",
@@ -1091,7 +1091,7 @@
      "S-6.40"
     ],
     "id": "S-6.119",
-    "next_local_work": "Publish the reviewed folder of tonight's 1,376-package Tactical review as community-release-3, then let the daily job (S-6.197) write, combine, bundle and publish each day's approvals; ask a second calibrated family for the Verified label when one returns.",
+    "next_local_work": "Let the daily job (S-6.197) write, combine, bundle and publish each day's approvals, starting with batch 2 tonight; ask a second calibrated family for the Verified label when one returns.",
     "phase": 6,
     "status": "building",
     "title": "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release",
@@ -5184,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:ceaae3957fdc9c222a7b07937b0c3d312944e5f8a394241337686aaff7952991"
+ "source_fingerprint": "sha256:d6656b1eba8d7c0626926ac917fd721c096e30e0d11aa4297f6f7837c736865b"
 }
