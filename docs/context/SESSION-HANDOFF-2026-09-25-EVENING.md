@@ -34,16 +34,23 @@ Findings, September 25 evening
 
 ## Next, in order
 
-1. An attribution adapter for the Claude Code lane
+1. Close the open worktrees in the
+   [worktree audit](WORKTREE-AUDIT-2026-09-25.md), starting with those no line
+   tracks. On September 25 the review campaign's commits `72148011` and
+   `91009c36` were found outside main and restored as `9830e1f7` and
+   `f77a7e93`: a Claude session limit now stops its quota group, a
+   calibration-only run selects no candidate, and a verdict from an unnamed
+   reviewer leaves the item out.
+2. An attribution adapter for the Claude Code lane
    (`/home/username/baltor-library/claude-code-lane`, 607 candidates), after
    `tools/native_proposals_from_overnight_candidates.py`: lane, model, the
    declared family `anthropic`, the idea record of each candidate as a
    committed source, and the file kind. Only skills and instruction files have
    qualified native placements today; the other kinds wait for theirs.
-2. September 29 after 17:24 Eastern: Codex reviews the 42 first-catalogue items
+3. September 29 after 17:24 Eastern: Codex reviews the 42 first-catalogue items
    (S-6.178), then the Claude Code lane. Ollama Cloud joins when its allowance
    returns; the daily probe runs at 06:17 Eastern.
-3. A nightly run of the browser suite on main that reports failures without
+4. A nightly run of the browser suite on main that reports failures without
    gating a deploy (S-6.180).
-4. The held lines of the morning handoff: the engine selector and staff
+5. The held lines of the morning handoff: the engine selector and staff
    tools, the stack starters, and the move of `http.public_base_url`.
