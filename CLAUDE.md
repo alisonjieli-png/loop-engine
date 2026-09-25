@@ -6,9 +6,12 @@
 
 Start with the [context route](docs/context/START-HERE.md). It names the
 newest dated handoff, now the
+[September 25 evening handoff](docs/context/SESSION-HANDOFF-2026-09-25-EVENING.md)
+(release 31, the first Community catalogue release, release 32 and the next
+steps), which follows the
 [September 25 afternoon handoff](docs/context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md)
 (releases 29 and 30, the first catalogue's missing two-family review, every
-library source and the next steps), which follows the
+library source), the
 [September 25 session handoff](docs/context/SESSION-HANDOFF-2026-09-25.md)
 of the morning and the [September 24 session handoff](docs/context/SESSION-HANDOFF-2026-09-24.md):
 what is live after release 24 with registration open, the owner's requests

@@ -12,9 +12,10 @@ authority, and only the owner widens it.
 
 ## Current work and evidence
 
+The [September 25 evening handoff](docs/context/SESSION-HANDOFF-2026-09-25-EVENING.md)
+is the newest dated record of what is live, what is in flight and what remains.
 The [September 25 afternoon handoff](docs/context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md)
-is the newest dated record of what is live, what the owner asked for, what is
-in flight and what remains. The
+records what the owner asked for that day. The
 [September 25 session handoff](docs/context/SESSION-HANDOFF-2026-09-25.md) of
 the morning, the
 [September 23 session handoff](docs/context/SESSION-HANDOFF-2026-09-23.md),

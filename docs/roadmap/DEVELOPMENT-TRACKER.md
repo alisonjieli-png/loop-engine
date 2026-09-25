@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d36357fade74cd`.
+Source fingerprint: `sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b196868f05b9d9f29`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d3
 |---|---:|
 | Being built now | 43 |
 | Can start next | 15 |
-| Waiting on earlier work | 121 |
+| Waiting on earlier work | 122 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -192,6 +192,7 @@ Source fingerprint: `sha256:98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d3
 | S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
 | S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
+| S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | proposed | S-6.177 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

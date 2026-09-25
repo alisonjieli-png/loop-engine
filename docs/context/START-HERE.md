@@ -12,8 +12,11 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 25 afternoon handoff](SESSION-HANDOFF-2026-09-25-AFTERNOON.md). It
-records releases 29 and 30, the version 1 clients that refused what search
+[September 25 evening handoff](SESSION-HANDOFF-2026-09-25-EVENING.md). It
+records release 31, the first Community catalogue release, release 32, what the
+evening found and the order of the next steps. The
+[September 25 afternoon handoff](SESSION-HANDOFF-2026-09-25-AFTERNOON.md) before
+it records releases 29 and 30, the version 1 clients that refused what search
 offered, the first catalogue's missing two-family review and how the published
 meaning of Verified now states it, the state of every library source, and the
 order of the next steps. The

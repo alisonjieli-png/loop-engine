@@ -1,0 +1,65 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 32,
+  "source_revision": "0d2b1da3e724ae296e20e51420306e0ca4a8b55f",
+  "continuous_integration_run": 36167480569,
+  "deployment_workflow_run": 36170064918,
+  "image_digest": "sha256:4bf4ca874e9683daaee713b8bd93e6877234cb3428b7834203fc9860dc1c3b32",
+  "deployed_at": "2026-09-25T17:57:01Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 31,
+  "rollback_image_digest": "sha256:bf5ab28b2383601787a464d1b2978b6bb91a3d434926b4f1db30220d0cc68942",
+  "rollback_note": "Release 31 serves the same catalogue; its catalogue browser lists Verified items only.",
+  "changes": [
+    "the signed-in catalogue browser asks with version 2 and lists Community items, each row and detail showing its library tier",
+    "the browser suite's homepage count check follows the live count the service reports",
+    "the live catalogue check asks each query narrowed to Verified and with the account's own setting (9 checks)"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 44,
+        "views": 184,
+        "hostnames": 8,
+        "links_checked": 338,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "local_browser_suite_before_push": {
+    "checks": [
+      907,
+      907
+    ],
+    "mutants_detected": [
+      183,
+      183
+    ]
+  },
+  "evidence_folder": "artifacts/release-32-2026-09-25"
+}

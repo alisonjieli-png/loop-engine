@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `98f05e8685be727edfc22af31a119f4cdcba64cb4fc845abe6d36357fade74cd`.
+Plan fingerprint: `2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b196868f05b9d9f29`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -1219,6 +1219,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
 | S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
+| S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | proposed | S-6.177 |
 
 ## Every retained initiative
 
@@ -1232,7 +1233,7 @@ Legacy statuses remain historical component claims until current integration evi
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13, S-6.57 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.101, S-6.177 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.101, S-6.177, S-6.180 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84 |
 | Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173 |
 

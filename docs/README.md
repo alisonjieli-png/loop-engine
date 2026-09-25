@@ -19,9 +19,10 @@ and what still needs the owner, are in the
 [commit, push and release authority](../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md. No other document restates them.
 
-The [September 25 afternoon handoff](context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md)
+The [September 25 evening handoff](context/SESSION-HANDOFF-2026-09-25-EVENING.md)
 is the newest dated record of the live state and the work in flight; the
-[September 25 session handoff](context/SESSION-HANDOFF-2026-09-25.md) of the
+[September 25 afternoon handoff](context/SESSION-HANDOFF-2026-09-25-AFTERNOON.md),
+the [September 25 session handoff](context/SESSION-HANDOFF-2026-09-25.md) of the
 morning and the
 [September 23 session handoff](context/SESSION-HANDOFF-2026-09-23.md) are the
 ones before it. The
