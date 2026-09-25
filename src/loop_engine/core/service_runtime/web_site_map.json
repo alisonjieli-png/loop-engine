@@ -378,6 +378,51 @@
       "indexed": true
     },
     {
+      "address": "/models",
+      "view": "models",
+      "title": "Models, open and hosted",
+      "description": "Context windows, prices, licences, quantizations and hardware needs for open and hosted models, each fact with its source and the day it was read.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/endpoints",
+      "view": "endpoints",
+      "title": "Endpoints and local runtimes",
+      "description": "Hosted model services and local runtimes: the API each speaks, how it takes a key, its rate limits, prices and data rules, and harness setup.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
+      "address": "/can-i-run",
+      "view": "can-i-run",
+      "title": "Can I run it?",
+      "description": "Enter a GPU, unified memory or computer memory and see which open models and quantizations fit, at which context length, with a speed estimate.",
+      "group": "Documentation",
+      "linked_from": [
+        "footer",
+        "page"
+      ],
+      "unlinked_reason": "",
+      "scroll_budget": "documentation",
+      "price_in_first_screen": false,
+      "indexed": true
+    },
+    {
       "address": "/docs/what-baltor-is",
       "view": "docs",
       "title": "What Baltor is",
@@ -880,6 +925,21 @@
             "role": "link",
             "label": "Status",
             "href": "/status"
+          },
+          {
+            "role": "link",
+            "label": "Models",
+            "href": "/models"
+          },
+          {
+            "role": "link",
+            "label": "Endpoints",
+            "href": "/endpoints"
+          },
+          {
+            "role": "link",
+            "label": "Can I run it?",
+            "href": "/can-i-run"
           }
         ]
       },

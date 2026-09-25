@@ -142,6 +142,13 @@ WEB_ASSETS = {
     "/assets/directory/rows-5.json": ("directory/rows-5.json", "application/json"),
     "/assets/directory/rows-6.json": ("directory/rows-6.json", "application/json"),
     "/assets/directory/rows-7.json": ("directory/rows-7.json", "application/json"),
+    # The model directory at /models, /endpoints and /can-i-run: its stylesheet, its script and the two compact indexes
+    # that its search and its hardware check read. The pages themselves, and one page for each model and endpoint, are
+    # rendered by model_directory_pages.py from the records in model-directory/; the transport asks it for them.
+    "/assets/model-directory.css": ("model-directory.css", "text/css"),
+    "/assets/model-directory.js": ("model-directory.js", "text/javascript"),
+    "/assets/model-directory/search-index.json": ("model-directory/search-index.json", "application/json"),
+    "/assets/model-directory/fit-index.json": ("model-directory/fit-index.json", "application/json"),
 }
 #: Files written from the site map rather than packaged, with their media types.
 #: Each answers GET and HEAD like a packaged file, with a strong validator.
@@ -154,6 +161,9 @@ GENERATED_WEB_FILES = {
 #: the counted links of the public lists at /out/ (public_links.py), which only
 #: redirect to other sites.
 ROBOTS_DISALLOWED_PREFIXES = ("/api/", "/mcp", "/.well-known/", "/out/")
+#: Site map files written elsewhere that robots.txt names beside /sitemap.xml: the model directory's list of its model
+#: and endpoint pages, which are rendered from records rather than listed in the site map record.
+EXTRA_SITEMAPS = ("/models/sitemap.xml",)
 # Only declared non-page files, packaged or generated, are public cache
 # entries. Browser account pages and every API response retain the transport's
 # no-store rule.
@@ -301,6 +311,7 @@ def robots_text(site_map: SiteMap) -> bytes:
     lines += ["Disallow: " + prefix for prefix in ROBOTS_DISALLOWED_PREFIXES]
     lines += ["Disallow: " + page.address for page in site_map.pages if not page.indexed]
     lines += ["", "Sitemap: " + site_map.canonical_origin + "/sitemap.xml"]
+    lines += ["Sitemap: " + site_map.canonical_origin + address for address in EXTRA_SITEMAPS]
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 

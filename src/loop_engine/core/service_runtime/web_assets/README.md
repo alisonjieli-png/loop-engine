@@ -313,3 +313,23 @@ a word of an invitation-only service or a runtime word. The browser checks in
 `tools/deck_checks.mjs` read the rendered page the same way and drive the deck
 with the keyboard, a swipe and the overview. Without the page script every
 slide shows one after another.
+
+## The model directory pages
+
+`/models`, `/endpoints` and `/can-i-run`, and one page for each model at
+`/models/<slug>` and each endpoint at `/endpoints/<slug>`, are rendered by the
+service from the packaged records in `model-directory/`, not written by hand.
+The transport, `http.py`, asks `model_directory_pages.render` for them before
+the served address table, and `model-directory/page.html` is their template.
+Their header and footer are the ones `index.html` serves, copied through
+`web_chrome.py`, and `web_pages` writes the three list pages' head from the
+site map as it does for every page. Only the two compact indexes, `model-directory.css` and
+`model-directory.js` are served as files; `models.json`, `endpoints.json`,
+`hardware.json` and `manifest.json` stay inside the service.
+
+`tools/build_model_directory.py` writes the records daily from the sources
+in `tools/model_directory/SOURCES.md`. Every row keeps each source address and
+the day it was read, and carries a `commercial_relationship` of kind none
+that no order, filter or hardware fit reads. `model_directory_fit.py` holds the
+memory formula, which the page script repeats and
+`tools/model_directory_browser_checks.mjs` compares for every hardware preset.

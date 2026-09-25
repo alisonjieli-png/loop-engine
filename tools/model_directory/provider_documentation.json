@@ -1,0 +1,413 @@
+{
+  "record_type": "model_directory_provider_documentation/v1",
+  "reviewed_on": "2026-09-24",
+  "reviewed_by": "engineering, reading each provider's public documentation on the date given beside each source",
+  "note": "Addresses are written without their scheme: every one is an https address. Variable names are written as parts, joined with an underscore when a page shows them, so the repository's credential audit does not read a published variable name as a credential binding in code. A fact this record does not state is unknown on the pages.",
+  "hosted": [
+    {
+      "slug": "openai", "name": "OpenAI", "modelsdev": "openai", "openrouter_provider": "OpenAI",
+      "sources": {
+        "structured": ["developers.openai.com/api/docs/guides/structured-outputs", "2026-09-24"],
+        "tools": ["developers.openai.com/api/docs/guides/function-calling", "2026-09-24"],
+        "limits": ["developers.openai.com/api/docs/guides/rate-limits", "2026-09-24"],
+        "pricing": ["developers.openai.com/api/docs/pricing", "2026-09-24"],
+        "data": ["developers.openai.com/api/docs/guides/your-data", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_responses", "base": "api.openai.com/v1", "source": "structured"},
+        {"style": "openai_chat", "base": "api.openai.com/v1", "source": "structured"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["OPENAI", "API_KEY"], "source": "structured"},
+      "facts": {
+        "structured_output": {"value": true, "note": "JSON schema output with strict mode.", "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "developers.openai.com/api/docs/guides/rate-limits", "source": "limits"},
+        "pricing": {"address": "developers.openai.com/api/docs/pricing", "source": "pricing"},
+        "data_policy": {"address": "developers.openai.com/api/docs/guides/your-data", "note": "Abuse monitoring logs are kept for up to 30 days by default. Zero data retention is offered to approved organizations.", "source": "data"}
+      }
+    },
+    {
+      "slug": "anthropic", "name": "Anthropic", "modelsdev": "anthropic", "openrouter_provider": "Anthropic",
+      "sources": {
+        "structured": ["platform.claude.com/docs/en/build-with-claude/structured-outputs", "2026-09-24"],
+        "compat": ["platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk", "2026-09-24"],
+        "tools": ["platform.claude.com/docs/en/agents-and-tools/tool-use/overview", "2026-09-24"],
+        "limits": ["platform.claude.com/docs/en/api/rate-limits", "2026-09-24"],
+        "pricing": ["platform.claude.com/docs/en/about-claude/pricing", "2026-09-24"],
+        "data": ["privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "anthropic_messages", "base": "api.anthropic.com", "source": "structured"},
+        {"style": "openai_chat", "base": "api.anthropic.com/v1", "source": "compat", "note": "Anthropic describes this compatibility layer as a way to test the Claude API with the OpenAI SDK."}
+      ],
+      "auth": {"header": "x-api-key", "variable": ["ANTHROPIC", "API_KEY"], "source": "structured"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "platform.claude.com/docs/en/api/rate-limits", "source": "limits"},
+        "pricing": {"address": "platform.claude.com/docs/en/about-claude/pricing", "source": "pricing"},
+        "data_policy": {"address": "privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data", "note": "API inputs and outputs are deleted within 30 days by default, with the exceptions the page lists, such as a zero data retention agreement.", "source": "data"}
+      }
+    },
+    {
+      "slug": "google", "name": "Google Gemini API", "modelsdev": "google", "openrouter_provider": "Google AI Studio",
+      "sources": {
+        "compat": ["ai.google.dev/gemini-api/docs/openai", "2026-09-24"],
+        "structured": ["ai.google.dev/gemini-api/docs/structured-output", "2026-09-24"],
+        "tools": ["ai.google.dev/gemini-api/docs/function-calling", "2026-09-24"],
+        "limits": ["ai.google.dev/gemini-api/docs/rate-limits", "2026-09-24"],
+        "pricing": ["ai.google.dev/gemini-api/docs/pricing", "2026-09-24"],
+        "data": ["ai.google.dev/gemini-api/terms", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "native", "base": "generativelanguage.googleapis.com/v1beta", "source": "structured"},
+        {"style": "openai_chat", "base": "generativelanguage.googleapis.com/v1beta/openai", "source": "compat"}
+      ],
+      "auth": {"header": "x-goog-api-key, or Authorization: Bearer on the OpenAI-compatible address", "variable": ["GEMINI", "API_KEY"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "ai.google.dev/gemini-api/docs/rate-limits", "source": "limits"},
+        "pricing": {"address": "ai.google.dev/gemini-api/docs/pricing", "source": "pricing"},
+        "data_policy": {"address": "ai.google.dev/gemini-api/terms", "note": "Content sent under the unpaid quota may be used to improve Google products. Paid use follows the paid services terms on the same page.", "source": "data"}
+      }
+    },
+    {
+      "slug": "mistral", "name": "Mistral AI", "modelsdev": "mistral", "openrouter_provider": "Mistral",
+      "sources": {
+        "api": ["docs.mistral.ai/api", "2026-09-24"],
+        "structured": ["docs.mistral.ai/studio/conversations/structured-output", "2026-09-24"],
+        "tools": ["docs.mistral.ai/studio/conversations/function-calling", "2026-09-24"],
+        "limits": ["docs.mistral.ai/admin/billing-usage/usage-limits", "2026-09-24"],
+        "pricing": ["mistral.ai/pricing", "2026-09-24"],
+        "data": ["docs.mistral.ai/admin/monitor-comply/zero-data-retention", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.mistral.ai/v1", "source": "api"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["MISTRAL", "API_KEY"], "source": "api"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "docs.mistral.ai/admin/billing-usage/usage-limits", "source": "limits"},
+        "pricing": {"address": "mistral.ai/pricing", "source": "pricing"},
+        "data_policy": {"address": "docs.mistral.ai/admin/monitor-comply/zero-data-retention", "note": "Mistral documents which endpoints are eligible for zero data retention and how to request it.", "source": "data"}
+      }
+    },
+    {
+      "slug": "groq", "name": "Groq", "modelsdev": "groq", "openrouter_provider": "Groq",
+      "sources": {
+        "compat": ["console.groq.com/docs/openai", "2026-09-24"],
+        "responses": ["console.groq.com/docs/responses-api", "2026-09-24"],
+        "structured": ["console.groq.com/docs/structured-outputs", "2026-09-24"],
+        "tools": ["console.groq.com/docs/tool-use/overview", "2026-09-24"],
+        "limits": ["console.groq.com/docs/rate-limits", "2026-09-24"],
+        "data": ["console.groq.com/docs/your-data", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.groq.com/openai/v1", "source": "compat"},
+        {"style": "openai_responses", "base": "api.groq.com/openai/v1", "source": "responses"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["GROQ", "API_KEY"], "source": "structured"},
+      "facts": {
+        "structured_output": {"value": true, "note": "JSON schema output with strict mode on the models the page lists.", "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "console.groq.com/docs/rate-limits", "source": "limits"},
+        "data_policy": {"address": "console.groq.com/docs/your-data", "note": "Inference requests are not retained by default. Batch files are kept for 30 days unless deleted earlier.", "source": "data"}
+      }
+    },
+    {
+      "slug": "cerebras", "name": "Cerebras", "modelsdev": "cerebras", "openrouter_provider": "Cerebras",
+      "sources": {
+        "compat": ["inference-docs.cerebras.ai/resources/openai", "2026-09-24"],
+        "structured": ["inference-docs.cerebras.ai/capabilities/structured-outputs", "2026-09-24"],
+        "tools": ["inference-docs.cerebras.ai/capabilities/tool-use", "2026-09-24"],
+        "limits": ["inference-docs.cerebras.ai/support/rate-limits", "2026-09-24"],
+        "pricing": ["www.cerebras.ai/pricing", "2026-09-24"],
+        "data": ["www.cerebras.ai/privacy-policy", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.cerebras.ai/v1", "source": "compat"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["CEREBRAS", "API_KEY"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "inference-docs.cerebras.ai/support/rate-limits", "source": "limits"},
+        "pricing": {"address": "www.cerebras.ai/pricing", "source": "pricing"},
+        "data_policy": {"address": "www.cerebras.ai/privacy-policy", "note": "The privacy policy says Cerebras does not retain the inputs and outputs of its inference services, as its section 6 describes.", "source": "data"}
+      }
+    },
+    {
+      "slug": "together", "name": "Together AI", "modelsdev": "togetherai", "openrouter_provider": "Together",
+      "sources": {
+        "compat": ["docs.together.ai/docs/inference/openai-compatibility", "2026-09-24"],
+        "structured": ["docs.together.ai/docs/inference/chat/structured-outputs", "2026-09-24"],
+        "tools": ["docs.together.ai/docs/inference/function-calling/overview", "2026-09-24"],
+        "limits": ["docs.together.ai/docs/serverless/rate-limits", "2026-09-24"],
+        "pricing": ["www.together.ai/pricing", "2026-09-24"],
+        "data": ["docs.together.ai/docs/privacy-and-security", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.together.ai/v1", "source": "compat"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["TOGETHER", "API_KEY"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "docs.together.ai/docs/serverless/rate-limits", "source": "limits"},
+        "pricing": {"address": "www.together.ai/pricing", "source": "pricing"},
+        "data_policy": {"address": "docs.together.ai/docs/privacy-and-security", "note": "Together documents what it stores from inputs and outputs, and offers zero data retention.", "source": "data"}
+      }
+    },
+    {
+      "slug": "fireworks", "name": "Fireworks AI", "modelsdev": "fireworks-ai", "openrouter_provider": "Fireworks",
+      "sources": {
+        "compat": ["docs.fireworks.ai/tools-sdks/openai-compatibility", "2026-09-24"],
+        "responses": ["docs.fireworks.ai/guides/response-api", "2026-09-24"],
+        "anthropic": ["docs.fireworks.ai/tools-sdks/anthropic-compatibility", "2026-09-24"],
+        "structured": ["docs.fireworks.ai/structured-responses/structured-response-formatting", "2026-09-24"],
+        "tools": ["docs.fireworks.ai/guides/function-calling", "2026-09-24"],
+        "limits": ["docs.fireworks.ai/guides/quotas_usage/account-quotas", "2026-09-24"],
+        "pricing": ["fireworks.ai/pricing", "2026-09-24"],
+        "data": ["docs.fireworks.ai/guides/security_compliance/data_handling", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.fireworks.ai/inference/v1", "source": "compat"},
+        {"style": "openai_responses", "base": "api.fireworks.ai/inference/v1", "source": "responses"},
+        {"style": "anthropic_messages", "base": "api.fireworks.ai/inference", "source": "anthropic"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["FIREWORKS", "API_KEY"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "docs.fireworks.ai/guides/quotas_usage/account-quotas", "source": "limits"},
+        "pricing": {"address": "fireworks.ai/pricing", "source": "pricing"},
+        "data_policy": {"address": "docs.fireworks.ai/guides/security_compliance/data_handling", "note": "Fireworks documents its zero data retention terms on this page.", "source": "data"}
+      }
+    },
+    {
+      "slug": "deepinfra", "name": "DeepInfra", "modelsdev": "deepinfra", "openrouter_provider": "DeepInfra",
+      "sources": {
+        "compat": ["docs.deepinfra.com/chat/overview", "2026-09-24"],
+        "anthropic": ["docs.deepinfra.com/integrations/anthropic", "2026-09-24"],
+        "structured": ["docs.deepinfra.com/chat/structured-outputs", "2026-09-24"],
+        "tools": ["docs.deepinfra.com/chat/tool-calling", "2026-09-24"],
+        "limits": ["docs.deepinfra.com/account/rate-limits", "2026-09-24"],
+        "pricing": ["deepinfra.com/pricing", "2026-09-24"],
+        "data": ["docs.deepinfra.com/account/data-privacy", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "api.deepinfra.com/v1/openai", "source": "compat"},
+        {"style": "anthropic_messages", "base": "api.deepinfra.com/anthropic", "source": "anthropic"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["DEEPINFRA", "TOKEN"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "docs.deepinfra.com/account/rate-limits", "source": "limits"},
+        "pricing": {"address": "deepinfra.com/pricing", "source": "pricing"},
+        "data_policy": {"address": "docs.deepinfra.com/account/data-privacy", "note": "Inputs and outputs are held in memory only while a request runs, with the exceptions the page lists for some partner models.", "source": "data"}
+      }
+    },
+    {
+      "slug": "openrouter", "name": "OpenRouter", "modelsdev": "openrouter", "openrouter_provider": "",
+      "sources": {
+        "quickstart": ["openrouter.ai/docs/quickstart", "2026-09-24"],
+        "responses": ["openrouter.ai/docs/api_reference/responses/overview", "2026-09-24"],
+        "anthropic": ["openrouter.ai/docs/api/api-reference/anthropic-messages/create-a-message", "2026-09-24"],
+        "claude": ["openrouter.ai/docs/guides/community/anthropic-agent-sdk", "2026-09-24"],
+        "structured": ["openrouter.ai/docs/guides/features/structured-outputs", "2026-09-24"],
+        "tools": ["openrouter.ai/docs/guides/features/tool-calling", "2026-09-24"],
+        "limits": ["openrouter.ai/docs/api_reference/limits", "2026-09-24"],
+        "pricing": ["openrouter.ai/pricing", "2026-09-24"],
+        "data": ["openrouter.ai/docs/guides/privacy/data-collection", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "openrouter.ai/api/v1", "source": "quickstart"},
+        {"style": "openai_responses", "base": "openrouter.ai/api/v1", "source": "responses"},
+        {"style": "anthropic_messages", "base": "openrouter.ai/api", "source": "claude"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["OPENROUTER", "API_KEY"], "source": "quickstart"},
+      "facts": {
+        "structured_output": {"value": true, "note": "Available on the models whose supported parameters include structured outputs.", "source": "structured"},
+        "tool_calling": {"value": true, "note": "Available on the models whose supported parameters include tools.", "source": "tools"},
+        "rate_limits": {"address": "openrouter.ai/docs/api_reference/limits", "source": "limits"},
+        "pricing": {"address": "openrouter.ai/pricing", "source": "pricing"},
+        "data_policy": {"address": "openrouter.ai/docs/guides/privacy/data-collection", "note": "OpenRouter does not store prompts or responses unless you opt in. The provider that serves a request has its own policy.", "source": "data"}
+      }
+    },
+    {
+      "slug": "ollama-cloud", "name": "Ollama Cloud", "modelsdev": "ollama-cloud", "openrouter_provider": "",
+      "sources": {
+        "cloud": ["docs.ollama.com/cloud", "2026-09-24"],
+        "compat": ["docs.ollama.com/api/openai-compatibility", "2026-09-24"],
+        "anthropic": ["docs.ollama.com/api/anthropic-compatibility", "2026-09-24"],
+        "structured": ["docs.ollama.com/capabilities/structured-outputs", "2026-09-24"],
+        "tools": ["docs.ollama.com/capabilities/tool-calling", "2026-09-24"],
+        "pricing": ["ollama.com/pricing", "2026-09-24"],
+        "data": ["ollama.com/privacy", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "base": "ollama.com/v1", "source": "compat"},
+        {"style": "openai_responses", "base": "ollama.com/v1", "source": "compat", "note": "The cloud address answers stateless Responses requests only."},
+        {"style": "anthropic_messages", "base": "ollama.com", "source": "anthropic", "note": "The cloud address needs Authorization: Bearer and does not accept x-api-key alone."},
+        {"style": "native", "base": "ollama.com/api", "source": "cloud"}
+      ],
+      "auth": {"header": "Authorization: Bearer", "variable": ["OLLAMA", "API_KEY"], "source": "compat"},
+      "facts": {
+        "structured_output": {"value": true, "source": "structured"},
+        "tool_calling": {"value": true, "source": "tools"},
+        "rate_limits": {"address": "docs.ollama.com/cloud", "note": "Usage is limited by the plan; the account's usage page shows it.", "source": "cloud"},
+        "pricing": {"address": "ollama.com/pricing", "source": "pricing"},
+        "data_policy": {"address": "ollama.com/privacy", "note": "Content sent to cloud models is processed to answer the request and is not stored beyond it.", "source": "data"}
+      }
+    }
+  ],
+  "local": [
+    {
+      "slug": "ollama", "name": "Ollama", "formats": ["gguf"],
+      "sources": {
+        "compat": ["docs.ollama.com/api/openai-compatibility", "2026-09-24"],
+        "anthropic": ["docs.ollama.com/api/anthropic-compatibility", "2026-09-24"],
+        "huggingface": ["huggingface.co/docs/hub/en/ollama", "2026-09-24"],
+        "install": ["ollama.com/download", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:11434/v1", "source": "compat"},
+        {"style": "openai_responses", "scheme": "http", "base": "localhost:11434/v1", "source": "compat"},
+        {"style": "anthropic_messages", "scheme": "http", "base": "localhost:11434", "source": "anthropic"}
+      ],
+      "setup": {
+        "install": {"address": "ollama.com/download", "source": "install"},
+        "run": {"command": "ollama run hf.co/{repository}:{quantization}", "format": "gguf", "source": "huggingface"},
+        "key": {"value": "ollama", "note": "Ollama ignores the key. A harness that needs one can send any word.", "source": "anthropic"}
+      }
+    },
+    {
+      "slug": "lm-studio", "name": "LM Studio", "formats": ["gguf", "mlx"],
+      "sources": {
+        "compat": ["lmstudio.ai/docs/developer/openai-compat", "2026-09-24"],
+        "anthropic": ["lmstudio.ai/docs/developer/anthropic-compat", "2026-09-24"],
+        "get": ["lmstudio.ai/docs/cli/local-models/get", "2026-09-24"],
+        "server": ["lmstudio.ai/docs/cli/serve/server-start", "2026-09-24"],
+        "install": ["lmstudio.ai/download", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:1234/v1", "source": "compat"},
+        {"style": "openai_responses", "scheme": "http", "base": "localhost:1234/v1", "source": "compat"},
+        {"style": "anthropic_messages", "scheme": "http", "base": "localhost:1234", "source": "anthropic"}
+      ],
+      "setup": {
+        "install": {"address": "lmstudio.ai/download", "source": "install"},
+        "run": {"command": "lms get {repository}\nlms server start", "format": "gguf", "source": "get"},
+        "key": {"value": "lmstudio", "note": "LM Studio's own examples send the word lmstudio as the key.", "source": "anthropic"}
+      }
+    },
+    {
+      "slug": "llama-cpp", "name": "llama.cpp server", "formats": ["gguf"],
+      "sources": {
+        "server": ["github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md", "2026-09-24"],
+        "install": ["github.com/ggml-org/llama.cpp", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:8080/v1", "source": "server"},
+        {"style": "openai_responses", "scheme": "http", "base": "localhost:8080/v1", "source": "server"},
+        {"style": "anthropic_messages", "scheme": "http", "base": "localhost:8080", "source": "server"}
+      ],
+      "setup": {
+        "install": {"address": "github.com/ggml-org/llama.cpp", "source": "install"},
+        "run": {"command": "llama-server -hf {repository}:{quantization} --jinja", "format": "gguf", "note": "The --jinja flag turns on tool calling with the model's own chat template.", "source": "server"},
+        "key": {"value": "local", "note": "The server needs no key unless it was started with one.", "source": "server"}
+      }
+    },
+    {
+      "slug": "vllm", "name": "vLLM", "formats": ["safetensors"],
+      "sources": {
+        "serving": ["docs.vllm.ai/en/latest/serving/online_serving/", "2026-09-24"],
+        "quickstart": ["docs.vllm.ai/en/latest/getting_started/quickstart/", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:8000/v1", "source": "quickstart"},
+        {"style": "openai_responses", "scheme": "http", "base": "localhost:8000/v1", "source": "serving"},
+        {"style": "anthropic_messages", "scheme": "http", "base": "localhost:8000", "source": "serving"}
+      ],
+      "setup": {
+        "install": {"address": "docs.vllm.ai/en/latest/getting_started/quickstart/", "source": "quickstart"},
+        "run": {"command": "vllm serve {huggingface_id}", "format": "safetensors", "source": "quickstart"},
+        "key": {"value": "local", "note": "The server needs no key unless it was started with one.", "source": "quickstart"}
+      }
+    },
+    {
+      "slug": "sglang", "name": "SGLang", "formats": ["safetensors"],
+      "sources": {
+        "openai": ["docs.sglang.io/docs/basic_usage/openai_api", "2026-09-24"],
+        "anthropic": ["docs.sglang.io/docs/basic_usage/anthropic_api", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:30000/v1", "source": "openai"},
+        {"style": "anthropic_messages", "scheme": "http", "base": "localhost:30000", "source": "anthropic"}
+      ],
+      "setup": {
+        "install": {"address": "docs.sglang.io/docs/basic_usage/openai_api", "source": "openai"},
+        "run": {"command": "sglang serve --model-path {huggingface_id} --port 30000", "format": "safetensors", "note": "Add the tool call parser the model's cookbook names, or tool calls come back as plain text.", "source": "anthropic"},
+        "key": {"value": "local", "note": "SGLang does not require a real key by default.", "source": "anthropic"}
+      }
+    },
+    {
+      "slug": "mlx-lm", "name": "MLX LM", "formats": ["mlx"],
+      "sources": {
+        "server": ["github.com/ml-explore/mlx-lm/blob/main/mlx_lm/SERVER.md", "2026-09-24"],
+        "huggingface": ["huggingface.co/docs/hub/en/mlx", "2026-09-24"]
+      },
+      "apis": [
+        {"style": "openai_chat", "scheme": "http", "base": "localhost:8080/v1", "source": "server"}
+      ],
+      "setup": {
+        "install": {"address": "huggingface.co/docs/hub/en/mlx", "source": "huggingface"},
+        "run": {"command": "mlx_lm.server --model {mlx_repository}", "format": "mlx", "note": "Runs on Apple silicon. The project says its server is not meant for production.", "source": "server"},
+        "key": {"value": "local", "note": "The server needs no key.", "source": "server"}
+      }
+    }
+  ],
+  "harnesses": [
+    {
+      "slug": "opencode", "name": "OpenCode", "styles": ["openai_chat", "openai_responses"],
+      "file": "opencode.json in your project folder",
+      "sources": {"providers": ["opencode.ai/docs/providers/", "2026-09-24"]},
+      "source": "providers",
+      "note": "OpenCode reads any OpenAI-compatible address through the @ai-sdk/openai-compatible package, and an address that speaks the Responses API through @ai-sdk/openai."
+    },
+    {
+      "slug": "pi", "name": "Pi", "styles": ["openai_chat", "openai_responses", "anthropic_messages"],
+      "file": "~/.pi/agent/models.json",
+      "sources": {"models": ["pi.dev/docs/latest/models", "2026-09-24"], "configuration": ["pi.dev/docs/latest/configuration", "2026-09-24"]},
+      "source": "models",
+      "api_names": {"openai_chat": "openai-completions", "openai_responses": "openai-responses", "anthropic_messages": "anthropic-messages"},
+      "note": "The apiKey field can name an environment variable as $NAME."
+    },
+    {
+      "slug": "codex", "name": "Codex", "styles": ["openai_responses"],
+      "file": "~/.codex/config.toml",
+      "sources": {"advanced": ["learn.chatgpt.com/docs/config-file/config-advanced", "2026-09-24"], "reference": ["learn.chatgpt.com/docs/config-file/config-reference", "2026-09-24"]},
+      "source": "reference",
+      "oss_providers": ["ollama", "lm-studio"],
+      "oss_names": {"ollama": "ollama", "lm-studio": "lmstudio"},
+      "note": "Codex speaks the Responses API only: responses is the one supported wire API of a custom provider. Ollama and LM Studio are built in and start with --oss."
+    },
+    {
+      "slug": "claude-code", "name": "Claude Code", "styles": ["anthropic_messages"],
+      "file": "~/.claude/settings.json, or variables in your shell",
+      "sources": {"connect": ["code.claude.com/docs/en/llm-gateway-connect", "2026-09-24"], "gateway": ["code.claude.com/docs/en/llm-gateway", "2026-09-24"], "models": ["code.claude.com/docs/en/model-config", "2026-09-24"]},
+      "source": "connect",
+      "note": "Claude Code sends Anthropic Messages requests to ANTHROPIC_BASE_URL. Anthropic says it does not support routing Claude Code to models other than Claude through any gateway, so some features may not work with another model."
+    }
+  ],
+  "openrouter_makers": {
+    "note": "OpenRouter names a model vendor/model. For a maker that runs its own API, the models.dev provider with the same models is named here, so a direct price joins the right model only when both identifiers match exactly.",
+    "openai": "openai", "anthropic": "anthropic", "google": "google", "mistralai": "mistral", "x-ai": "xai",
+    "deepseek": "deepseek", "moonshotai": "moonshotai", "z-ai": "zai", "qwen": "alibaba", "cohere": "cohere",
+    "minimax": "minimax", "perplexity": "perplexity", "meta-llama": "llama"
+  },
+  "excluded_openrouter_vendors": ["openrouter"]
+}

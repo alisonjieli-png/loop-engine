@@ -1387,7 +1387,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1504,7 +1504,7 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.102, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174, S-6.101]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
@@ -4233,3 +4233,19 @@ steps:
     acceptance: "Baltor's own harness path starts from the techniques with the best evidence, each one switchable and measured."
     evidence: "Research, techniques 5, 15, 17 and 20: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Read in source: Strands harness offloads results over 1,500 tokens with a 750-token preview (7ae759d3); Unreal Agent returns a running placeholder, wakes on completion and bounds output at 40,000 characters with a path to the full stream (1b9f7784). A feed post reports llama3.2 passing 0 of 3 search runs prompted and 3 of 3 with a constrained grammar."
     next_local_work: "Add the provider capability record for structured output with the Ollama Cloud case, then the file offload option with its fixture."
+  - id: S-6.101
+    phase: 6
+    title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"
+    status: offline_verified
+    depends_on: [S-6.67]
+    boundary: [tools/build_model_directory.py, tools/model_directory, src/loop_engine/core/service_runtime/model_directory.py, src/loop_engine/core/service_runtime/model_directory_fit.py, src/loop_engine/core/service_runtime/model_directory_pages.py, src/loop_engine/core/service_runtime/web_chrome.py]
+    verify:
+      - "one page for each model with its maker, release date, licence, parameters, context window, modalities, tool calling, structured output and reasoning controls, quantizations with file sizes, providers with dated prices, sourced use cases, harness setup for OpenCode, Pi, Codex and Claude Code, where it runs locally and links to published results"
+      - "one page for each hosted service and local runtime with its API styles, authentication, structured output and tool calling, rate-limit, price and data-retention pages, and the setup of each harness"
+      - "the hardware check takes a GPU and its memory, unified memory or computer memory alone, runs in the page, sends nothing about the hardware, and gives the same answer as the Python formula for every preset"
+      - "every row keeps each source address and the day it was read, an unknown fact shows Unknown, a price older than 30 days shows its date and a mark, and the builder refuses a row or fact without a source"
+      - "every row carries a commercial_relationship with kind none; ordering, filtering, inclusion and the hardware fit never read it; each list says in words how it is ordered"
+    adversarial: "A formula that drops the factor for keys and values, a builder that guesses a licence, a price without a date, a row without a source, an order that reads a commercial field, a page script whose formula or search order differs from the Python one must each fail a named check with its removed-guard control."
+    acceptance: "Anyone can open baltor.ai/models, /endpoints and /can-i-run without an account, compare models and services on sourced and dated facts, see what their own hardware can run, and copy a working harness setup."
+    evidence: "September 24, 2026, the owner asked for a public list of services that support agent MCP or API setup, an ongoing list of hosted endpoints and local runtimes, and a page like canirun.ai that takes computer information and outputs the models that can run, with more detail than Hugging Face; on September 22 the owner asked for a hardware picker. S-6.67 found /models answering 404. Built and checked locally the same day: 2,153 models and 190 endpoints and runtimes from OpenRouter, Hugging Face, models.dev, Baltor's provider records and reviewed documentation; see tools/model_directory/SOURCES.md."
+    next_local_work: "Release the committed revision, check the three pages and a sample of detail pages on the live hostnames, add the footer links and a Get set up link in index.html once the session editing it has merged, and turn on the daily refresh workflow's first run."

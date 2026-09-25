@@ -34,6 +34,7 @@ from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
+from .model_directory_pages import rendered_page
 from .web_pages import (CACHEABLE_WEB_ASSETS, GENERATED_WEB_FILES, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL,
                         WEB_ASSETS, asset_etag, missing_address_page, served_asset, validator_matches)
 
@@ -1394,6 +1395,9 @@ class ServiceHttpApplication:
         # The Host was checked against the allowed hosts before this route ran,
         # so it only chooses which page a hostname shows at its root address.
         asset = served_asset(path, method, self.configuration.display_name, request.headers.get("host"))
+        if asset is None:
+            # The model directory's pages are rendered from packaged records rather than listed as files.
+            asset = rendered_page(path, method, self.configuration.display_name, request.headers.get("host"))
         if asset is not None:
             body, media_type = asset
             headers = self._page_headers()

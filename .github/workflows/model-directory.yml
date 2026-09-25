@@ -1,0 +1,91 @@
+name: Model directory refresh
+
+# Refreshes the public model and endpoint directory at /models, /endpoints and /can-i-run once a day. It reads the
+# OpenRouter Models API and its per-model endpoints API, the Hugging Face Hub API, model configurations and GGUF file
+# lists, and the models.dev database, keeps Baltor's own provider records and the reviewed provider documentation, and
+# rebuilds the packaged data files. Every row keeps its source addresses and the day each was read; the builder exits 1
+# when it refused a row, so an unsourced row is never committed. It then runs the directory's checks and, when the data
+# changed, commits the files to main and starts the CI workflow for that commit. A release carries the new data only
+# after that CI run passes.
+#
+# The state folder lives in the Actions cache, so a stopped run resumes where it stopped and answers younger than their
+# maximum age are reused. Set the repository variable MODEL_DIRECTORY_COMMIT to "off" to keep the refreshed files as a
+# workflow artifact without committing them. The Ollama library is linked from the pages and never read: its terms
+# refuse automated access. tools/model_directory/SOURCES.md records each source's terms.
+on:
+  schedule:
+    - cron: "23 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: model-directory
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install -e .
+
+      - name: Restore the directory state
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/model-directory-state
+          key: model-directory-state-${{ github.run_id }}
+          restore-keys: model-directory-state-
+
+      - name: Read the sources and build the data files
+        run: >-
+          PYTHONPATH=src:tools python tools/build_model_directory.py
+          --state "$RUNNER_TEMP/model-directory-state" --max-requests 7000
+
+      - name: Save the directory state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/model-directory-state
+          key: model-directory-state-${{ github.run_id }}
+
+      - name: Check the data files
+        run: PYTHONPATH=src:tools python -m unittest tools/test_model_directory.py
+
+      - name: Keep the request log and the data files
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: model-directory
+          path: |
+            ${{ runner.temp }}/model-directory-state/requests.jsonl
+            src/loop_engine/core/service_runtime/web_assets/model-directory
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit changed data to main
+        if: vars.MODEL_DIRECTORY_COMMIT != 'off'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          data="src/loop_engine/core/service_runtime/web_assets/model-directory"
+          if git diff --quiet -- $data; then
+            echo "The model directory data did not change."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $data
+          git commit -m "Refresh the model directory data" -m "Written by the model directory refresh workflow from its sources."
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run ci.yml --ref main

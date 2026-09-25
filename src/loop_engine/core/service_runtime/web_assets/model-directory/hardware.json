@@ -1,0 +1,442 @@
+{
+ "formula": {
+  "context_steps": [
+   2048,
+   4096,
+   8192,
+   16384,
+   32768,
+   65536,
+   131072,
+   262144,
+   524288,
+   1048576
+  ],
+  "cpu_usable_fraction": 0.8,
+  "kv_bytes_per_value": {
+   "f16": 2.0,
+   "q4_0": 0.5625,
+   "q8_0": 1.0625
+  },
+  "overhead_fixed_bytes": 536870912,
+  "overhead_weight_fraction": 0.05,
+  "speed_high_fraction": 0.8,
+  "speed_low_fraction": 0.5
+ },
+ "presets": [
+  {
+   "bandwidth_gbps": 1792,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5090",
+   "kind": "gpu",
+   "memory_gib": 32,
+   "name": "GeForce RTX 5090, 32 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 960,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5080",
+   "kind": "gpu",
+   "memory_gib": 16,
+   "name": "GeForce RTX 5080, 16 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 896,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5070-ti",
+   "kind": "gpu",
+   "memory_gib": 16,
+   "name": "GeForce RTX 5070 Ti, 16 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 672,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5070",
+   "kind": "gpu",
+   "memory_gib": 12,
+   "name": "GeForce RTX 5070, 12 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 448,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5060-ti-16",
+   "kind": "gpu",
+   "memory_gib": 16,
+   "name": "GeForce RTX 5060 Ti, 16 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 448,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-5060",
+   "kind": "gpu",
+   "memory_gib": 8,
+   "name": "GeForce RTX 5060, 8 GB",
+   "source": 9,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": null,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-4090",
+   "kind": "gpu",
+   "memory_gib": 24,
+   "name": "GeForce RTX 4090, 24 GB",
+   "source": 7,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": null,
+   "group": "NVIDIA GeForce",
+   "id": "rtx-3090",
+   "kind": "gpu",
+   "memory_gib": 24,
+   "name": "GeForce RTX 3090, 24 GB",
+   "source": 6,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 960,
+   "group": "AMD Radeon",
+   "id": "rx-7900-xtx",
+   "kind": "gpu",
+   "memory_gib": 24,
+   "name": "Radeon RX 7900 XTX, 24 GB",
+   "source": 1,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 1792,
+   "group": "Workstation and data center",
+   "id": "rtx-pro-6000",
+   "kind": "gpu",
+   "memory_gib": 96,
+   "name": "RTX PRO 6000 Blackwell, 96 GB",
+   "source": 12,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 864,
+   "group": "Workstation and data center",
+   "id": "l40s",
+   "kind": "gpu",
+   "memory_gib": 48,
+   "name": "L40S, 48 GB",
+   "source": 11,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 2039,
+   "group": "Workstation and data center",
+   "id": "a100-80-sxm",
+   "kind": "gpu",
+   "memory_gib": 80,
+   "name": "A100 SXM, 80 GB",
+   "source": 8,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 3350,
+   "group": "Workstation and data center",
+   "id": "h100-sxm",
+   "kind": "gpu",
+   "memory_gib": 80,
+   "name": "H100 SXM, 80 GB",
+   "source": 10,
+   "usable_fraction": 1.0
+  },
+  {
+   "bandwidth_gbps": 273,
+   "group": "Unified memory",
+   "id": "dgx-spark",
+   "kind": "unified",
+   "memory_gib": 128,
+   "name": "DGX Spark, 128 GB",
+   "source": 13,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_basis": "computed from the 256-bit LPDDR5x-8000 memory the vendor lists: 32 bytes x 8,000 million transfers a second",
+   "bandwidth_gbps": 256,
+   "group": "Unified memory",
+   "id": "ryzen-ai-max-395",
+   "kind": "unified",
+   "memory_gib": 128,
+   "name": "Ryzen AI Max+ 395, 128 GB",
+   "source": 0,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 153,
+   "group": "Apple",
+   "id": "m5-16",
+   "kind": "unified",
+   "memory_gib": 16,
+   "name": "MacBook Air or MacBook Pro, M5, 16 GB",
+   "source": 4,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 153,
+   "group": "Apple",
+   "id": "m5-24",
+   "kind": "unified",
+   "memory_gib": 24,
+   "name": "MacBook Air or MacBook Pro, M5, 24 GB",
+   "source": 4,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 153,
+   "group": "Apple",
+   "id": "m5-32",
+   "kind": "unified",
+   "memory_gib": 32,
+   "name": "MacBook Air or MacBook Pro, M5, 32 GB",
+   "source": 2,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 170,
+   "group": "Apple",
+   "id": "mini-m5-32",
+   "kind": "unified",
+   "memory_gib": 32,
+   "name": "Mac mini, M5, 32 GB",
+   "source": 3,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 307,
+   "group": "Apple",
+   "id": "m5-pro-24",
+   "kind": "unified",
+   "memory_gib": 24,
+   "name": "M5 Pro, 24 GB",
+   "source": 4,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 307,
+   "group": "Apple",
+   "id": "m5-pro-48",
+   "kind": "unified",
+   "memory_gib": 48,
+   "name": "M5 Pro, 48 GB",
+   "source": 4,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 307,
+   "group": "Apple",
+   "id": "m5-pro-64",
+   "kind": "unified",
+   "memory_gib": 64,
+   "name": "M5 Pro, 64 GB",
+   "source": 4,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 460,
+   "group": "Apple",
+   "id": "m5-max-36",
+   "kind": "unified",
+   "memory_gib": 36,
+   "name": "M5 Max, 32-core GPU, 36 GB",
+   "source": 4,
+   "usable_fraction": 0.67
+  },
+  {
+   "bandwidth_gbps": 614,
+   "group": "Apple",
+   "id": "m5-max-48",
+   "kind": "unified",
+   "memory_gib": 48,
+   "name": "M5 Max, 40-core GPU, 48 GB",
+   "source": 4,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 614,
+   "group": "Apple",
+   "id": "m5-max-64",
+   "kind": "unified",
+   "memory_gib": 64,
+   "name": "M5 Max, 40-core GPU, 64 GB",
+   "source": 4,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 614,
+   "group": "Apple",
+   "id": "m5-max-128",
+   "kind": "unified",
+   "memory_gib": 128,
+   "name": "M5 Max, 40-core GPU, 128 GB",
+   "source": 4,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 1200,
+   "group": "Apple",
+   "id": "m5-ultra-96",
+   "kind": "unified",
+   "memory_gib": 96,
+   "name": "Mac Studio, M5 Ultra, 96 GB",
+   "source": 5,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 1200,
+   "group": "Apple",
+   "id": "m5-ultra-256",
+   "kind": "unified",
+   "memory_gib": 256,
+   "name": "Mac Studio, M5 Ultra, 256 GB",
+   "source": 5,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_gbps": 1200,
+   "group": "Apple",
+   "id": "m5-ultra-512",
+   "kind": "unified",
+   "memory_gib": 512,
+   "name": "Mac Studio, M5 Ultra, 512 GB",
+   "source": 5,
+   "usable_fraction": 0.75
+  },
+  {
+   "bandwidth_basis": "computed: two 64-bit channels are 16 bytes x 3,200 million transfers a second",
+   "bandwidth_gbps": 51.2,
+   "group": "Computer memory only",
+   "id": "cpu-16-ddr4",
+   "kind": "cpu",
+   "memory_gib": 16,
+   "name": "No GPU, 16 GB DDR4-3200, two channels",
+   "source": -1,
+   "usable_fraction": 0.8
+  },
+  {
+   "bandwidth_basis": "computed: two 64-bit channels are 16 bytes x 5,600 million transfers a second",
+   "bandwidth_gbps": 89.6,
+   "group": "Computer memory only",
+   "id": "cpu-32-ddr5",
+   "kind": "cpu",
+   "memory_gib": 32,
+   "name": "No GPU, 32 GB DDR5-5600, two channels",
+   "source": -1,
+   "usable_fraction": 0.8
+  },
+  {
+   "bandwidth_basis": "computed: two 64-bit channels are 16 bytes x 5,600 million transfers a second",
+   "bandwidth_gbps": 89.6,
+   "group": "Computer memory only",
+   "id": "cpu-64-ddr5",
+   "kind": "cpu",
+   "memory_gib": 64,
+   "name": "No GPU, 64 GB DDR5-5600, two channels",
+   "source": -1,
+   "usable_fraction": 0.8
+  },
+  {
+   "bandwidth_basis": "computed: eight 64-bit channels are 64 bytes x 4,800 million transfers a second",
+   "bandwidth_gbps": 307.2,
+   "group": "Computer memory only",
+   "id": "cpu-256-server",
+   "kind": "cpu",
+   "memory_gib": 256,
+   "name": "Server, 256 GB DDR5-4800, eight channels",
+   "source": -1,
+   "usable_fraction": 0.8
+  }
+ ],
+ "record_type": "model_directory_hardware/v1",
+ "reviewed_on": "2026-09-24",
+ "sources": [
+  {
+   "address": "www.amd.com/en/products/processors/laptop/ryzen/ai-300-series/amd-ryzen-ai-max-plus-395.html",
+   "id": "amd_395",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.amd.com/en/products/graphics/desktops/radeon/7000-series/amd-radeon-rx-7900xtx.html",
+   "id": "amd_7900xtx",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.apple.com/macbook-air/specs/",
+   "id": "apple_air",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.apple.com/mac-mini/specs/",
+   "id": "apple_mini",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.apple.com/macbook-pro/specs/",
+   "id": "apple_pro",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.apple.com/mac-studio/specs/",
+   "id": "apple_studio",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3090-3090ti/",
+   "id": "nvidia_3090",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/",
+   "id": "nvidia_4090",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/data-center/a100/",
+   "id": "nvidia_a100",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/geforce/graphics-cards/compare/",
+   "id": "nvidia_compare",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/data-center/h100/",
+   "id": "nvidia_h100",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/data-center/l40s/",
+   "id": "nvidia_l40s",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000/",
+   "id": "nvidia_pro6000",
+   "read": "2026-09-24"
+  },
+  {
+   "address": "www.nvidia.com/en-us/products/workstations/dgx-spark/",
+   "id": "nvidia_spark",
+   "read": "2026-09-24"
+  }
+ ],
+ "system_memory_default": {
+  "bandwidth_gbps": 89.6,
+  "basis": "an assumed computer beside a GPU, 32 GB of DDR5-5600 in two channels, used only when layers do not fit on the GPU; a person can change it",
+  "memory_gib": 32
+ }
+}

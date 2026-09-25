@@ -1,0 +1,228 @@
+{
+ "built_at": "2026-09-24T22:49:23Z",
+ "commercial_relationship_schema": "directory_commercial_relationship/v1",
+ "counts": {
+  "endpoints": 184,
+  "fit_rows": 1230,
+  "models": 2153,
+  "runtimes": 6,
+  "search_rows": 2153
+ },
+ "files": {
+  "endpoints.json": {
+   "bytes": 1342149,
+   "sha256": "200cb0418159d44ad17cf3890566c0fb904c09b31bb4b039fcc1b4c036b5e4d6"
+  },
+  "fit-index.json": {
+   "bytes": 250070,
+   "sha256": "163c8c6e5bff90eecccd56bd4a2ee6079cf739fd18eb68ec55149cac23740788"
+  },
+  "hardware.json": {
+   "bytes": 10009,
+   "sha256": "5cef471389acea1215e70c060b47653ec79f37d9a723f859b1ab07b803f343c6"
+  },
+  "models.json": {
+   "bytes": 5985447,
+   "sha256": "af16db9d19ab297116246c00f4b01a37bf1428d75c89a9bd0a8262941368fda7"
+  },
+  "search-index.json": {
+   "bytes": 268522,
+   "sha256": "44b1b9d33e1ef83640a124ece5e968cab34d33bfac81f609e11573d992e6841b"
+  }
+ },
+ "linked_only": [
+  {
+   "address": "ollama.com/library",
+   "name": "Ollama library",
+   "terms_address": "ollama.com/terms",
+   "use": "Linked only. Ollama's terms refuse automated access without permission, so no data is copied from it."
+  }
+ ],
+ "model_rows_by_source": {
+  "baltor_records": 4,
+  "huggingface": 1783,
+  "huggingface_config": 953,
+  "huggingface_gguf": 712,
+  "modelsdev": 469,
+  "openrouter": 341,
+  "openrouter_endpoints": 341
+ },
+ "record_type": "model_directory_manifest/v1",
+ "report": {
+  "configurations": 953,
+  "gguf_repositories": 712,
+  "lists": [
+   {
+    "added": 477,
+    "limit": 1000,
+    "read": "2026-09-24",
+    "sort": "downloads",
+    "state": "cached",
+    "task": "text-generation"
+   },
+   {
+    "added": 565,
+    "limit": 1000,
+    "read": "2026-09-24",
+    "sort": "likes",
+    "state": "cached",
+    "task": "text-generation"
+   },
+   {
+    "added": 103,
+    "limit": 500,
+    "read": "2026-09-24",
+    "sort": "trendingScore",
+    "state": "cached",
+    "task": "text-generation"
+   },
+   {
+    "added": 146,
+    "limit": 400,
+    "read": "2026-09-24",
+    "sort": "downloads",
+    "state": "cached",
+    "task": "image-text-to-text"
+   },
+   {
+    "added": 66,
+    "limit": 200,
+    "read": "2026-09-24",
+    "sort": "likes",
+    "state": "cached",
+    "task": "image-text-to-text"
+   },
+   {
+    "added": 186,
+    "limit": 250,
+    "read": "2026-09-24",
+    "sort": "downloads",
+    "state": "cached",
+    "task": "feature-extraction"
+   },
+   {
+    "added": 128,
+    "limit": 250,
+    "read": "2026-09-24",
+    "sort": "downloads",
+    "state": "cached",
+    "task": "sentence-similarity"
+   },
+   {
+    "added": 66,
+    "limit": 120,
+    "read": "2026-09-24",
+    "sort": "downloads",
+    "state": "cached",
+    "task": "text-ranking"
+   }
+  ],
+  "reader": {
+   "answers": {
+    "cached": 3219,
+    "kept": 0,
+    "missing": 70,
+    "read": 0
+   },
+   "requests": {
+    "by_outcome": {},
+    "bytes": 0,
+    "requests": 0
+   },
+   "stopped_by": null
+  },
+  "refused": []
+ },
+ "sources": [
+  {
+   "address": "openrouter.ai/api/v1/models",
+   "id": "openrouter",
+   "name": "OpenRouter Models API",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 341,
+   "terms_address": "openrouter.ai/docs/guides/overview/models",
+   "use": "Context length, output limit, supported parameters and benchmark indexes of hosted models. OpenRouter's documentation says its Models API makes this information freely available; the build reads only that documented interface."
+  },
+  {
+   "address": "openrouter.ai/api/v1/models",
+   "id": "openrouter_endpoints",
+   "name": "OpenRouter model endpoints API",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 341,
+   "terms_address": "openrouter.ai/docs/guides/overview/models",
+   "use": "The providers that serve each model through OpenRouter, with the prices OpenRouter lists for each route."
+  },
+  {
+   "address": "huggingface.co/api/models",
+   "id": "huggingface",
+   "name": "Hugging Face Hub API",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 1783,
+   "terms_address": "huggingface.co/terms-of-service",
+   "use": "Licence, parameter count, publication date, downloads and task of open models, read within the API's published request limit."
+  },
+  {
+   "address": "huggingface.co",
+   "id": "huggingface_config",
+   "name": "Hugging Face model configurations",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 953,
+   "terms_address": "huggingface.co/terms-of-service",
+   "use": "Layers, key and value heads, head size and context length, the numbers the memory formula needs."
+  },
+  {
+   "address": "huggingface.co",
+   "id": "huggingface_gguf",
+   "name": "Hugging Face GGUF file lists",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 712,
+   "terms_address": "huggingface.co/terms-of-service",
+   "use": "The quantized files of a model and their sizes, from the GGUF copy its maker or the most downloaded copier publishes."
+  },
+  {
+   "address": "models.dev/api.json",
+   "id": "modelsdev",
+   "name": "models.dev",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 653,
+   "terms_address": "github.com/sst/models.dev/blob/dev/LICENSE",
+   "use": "Direct provider prices, limits and capabilities, from a public database under the MIT licence."
+  },
+  {
+   "address": "github.com/alisonjieli-png/loop-engine",
+   "id": "baltor_records",
+   "name": "Baltor provider client records",
+   "newest_read": "2026-09-04",
+   "oldest_read": "2026-08-25",
+   "rows": 7,
+   "terms_address": "github.com/alisonjieli-png/loop-engine",
+   "use": "Output limits that Baltor's own provider clients declare or observed, each with its day."
+  },
+  {
+   "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
+   "id": "provider_documentation",
+   "name": "Provider and runtime documentation",
+   "newest_read": "2026-09-24",
+   "oldest_read": "2026-09-24",
+   "rows": 17,
+   "terms_address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/SOURCES.md",
+   "use": "API styles, authentication, rate-limit, pricing and data-policy pages, read by a person on the day each fact names."
+  },
+  {
+   "address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/provider_documentation.json",
+   "id": "harness_documentation",
+   "name": "Harness documentation",
+   "newest_read": "",
+   "oldest_read": "",
+   "rows": 0,
+   "terms_address": "github.com/alisonjieli-png/loop-engine/blob/main/tools/model_directory/SOURCES.md",
+   "use": "How OpenCode, Pi, Codex and Claude Code read a model provider, from each harness's own documentation."
+  }
+ ]
+}

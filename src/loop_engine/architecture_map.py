@@ -67,6 +67,8 @@ MODULE_MAP = {
         "account_administration_checks", "free_monthly", "staff_sign_up_links", "staff_sign_up_link_checks",
         "observability", "observability_checks",
         "waitlist", "waitlist_checks",
+        "model_directory", "model_directory_fit", "model_directory_format", "model_directory_hub",
+        "model_directory_pages", "model_directory_setup", "model_directory_views", "web_chrome",
         "protocol_checks",
         "retention", "retention_checks", "waitlist_source_checks",
         "catalogue_packages", "catalogue_schema", "catalogue_bundle", "catalogue_releases",
