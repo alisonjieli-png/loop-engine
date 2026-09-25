@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1486,31 +1486,31 @@ continuation:
   workstreams:
     - title: Reusable capabilities and detection
       legacy_steps: [S-0.5, S-1.10]
-      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
+      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.121, S-6.153, S-6.154, S-6.173]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -3670,3 +3670,550 @@ steps:
     acceptance: "The owner can send deck.baltor.ai to anyone, and every number on it traces to a record a reader can open."
     evidence: "September 24, 2026: the page, its checks and the evidence in artifacts/deck-2026-09-24. tools/test_deck_page.py passes 17 of 17 with a mutant control for each rule, and the browser suite passed 707 of 707 with 135 of 135 removed-guard controls detected; the hardcoding gate finds no new high finding. The fact check replaced the README's three model families with three independent reviewers, which reviews.json supports."
     next_local_work: "Merge with the hostname routing of the showcase work: in its version 2 site map give /deck a description, a listing choice and a footer or page link, because version 2 refuses a hostname root that only earlier links reach; keep the deck's own shared-link card, which the version 2 head writer replaces with the site-wide picture unless a page can name its own; copy the merged shared header and footer into deck.html. Then release and check deck.baltor.ai live, and correct the README sentence on model families. The owner supplies any team, funding or contact email slide."
+  - id: S-6.140
+    phase: 6
+    title: "Author namespaces and a publish scope that a download key never carries"
+    status: proposed
+    depends_on: [S-6.85, S-6.89]
+    boundary: [src/loop_engine/core/service_runtime/records.py, src/loop_engine/core/service_runtime/runtime.py]
+    verify:
+      - "an account from Baltor's own sign-up claims one personal namespace, @handle, of 2 to 39 lowercase letters, digits and single inner hyphens, recorded as author_namespace/v1 and never issued again after the account closes"
+      - "reserved names (Baltor's own names and service words, and the names of model vendors, harnesses and registries) and every other spelling of a reserved or existing handle (hyphens, dots or underscores moved, case folded, or a look-alike character such as 0 for o or rn for m) are refused before the claim"
+      - "the new key scope library:publish sits outside DEFAULT_SCOPES, as billing:manage does, so a download or search key can never stage a submission"
+      - "a namespace proves a domain with a DNS TXT record or the same token at an HTTPS well-known address, the proof is checked again weekly, the verified-domain mark disappears with the proof, and a vendor's name is released only to a namespace that proves the vendor's domain"
+      - "a namespace is never moved away from an owner Baltor can reach; a namespace with no released package after 180 days can be released on request"
+    adversarial: "A download-scoped key that stages a submission, a handle that differs from a reserved name only by punctuation, case or a look-alike character, a second personal namespace for one account, a closed account's handle claimed by a new account, and a verified-domain mark that stays after its record is removed must each fail a named check with its removed-guard control."
+    acceptance: "Every published package names an author namespace that one account owns, no author can pass as Baltor, a vendor or another author, and no download credential can publish."
+    evidence: "September 24, 2026, the owner's pasted note: 'We may also want the ability for people to publish skills, tools, python scripts, etc into our platform'. Research read on September 25, 2026 in docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md: the MCP Registry ties a namespace to a GitHub account or a domain proven by DNS or HTTPS; npm and Hugging Face tie scopes to user and organization names; Claude Code refuses marketplace names that imitate or respell a reserved one; the registry survey of September 24 records that a download credential must never authorize publishing."
+    next_local_work: "Write author_namespace/v1 with the reserved list and the other-spelling rule, and add the library:publish scope outside the defaults, both with removed-guard controls."
+  - id: S-6.141
+    phase: 6
+    title: "Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it"
+    status: proposed
+    depends_on: [S-6.140, S-6.62]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_packages.py, src/loop_engine/core/service_runtime/http.py]
+    verify:
+      - "a library_submission/v1 manifest names the namespace, package name, semantic version, summary, kind, files with roles, media types, digests and sizes, one licence from the allowlist with its licence file, declared effects and network hosts, secret names needed, tests for any executable file, a contract for an executable tool, declared model assistance (none, named panel families, another family or unknown), an optional source repository at a full commit, the changelog and the contributor terms version"
+      - "the web form at /publish and the interface under /api/v1/publish upload files by digest in bounded requests, reuse the catalogue_package/v1 limits (64 files, 8 MiB a file, 32 MiB a package, safe paths), and refuse symbolic links, archives inside the package, compiled bytecode, executable binaries and media types outside a closed list"
+      - "a key can only stage; a staged submission enters the checks only after its author confirms it in a signed-in browser session, the confirmation binds the exact manifest digest, and authors get a daily digest of state changes within the free email allowance"
+      - "bodies go to a quarantine store behind the body store edge with its own root, which no search, listing, download or release reads"
+      - "the service runs structural checks only and never starts a process on, imports or interprets submitted bytes"
+      - "each account has limits on submissions a day, open submissions and stored bytes, and each network address has a request limit, with the first choices of 10, 3, 100 MiB and 30 an hour measured and adjusted on evidence"
+      - "the feature stays behind a host setting that is off for outside authors until S-6.147 records the owner's approval of the contributor terms"
+    adversarial: "A key that confirms its own staged submission, a body served or searchable before approval, a path that escapes, a symbolic link, a .pyc file, an archive inside the package, a version string reused after withdrawal, a submission past its daily limit and a service code path that executes submitted bytes must each fail a named check with its removed-guard control."
+    acceptance: "An author can submit a multi-file package from the web, the interface or the command line, see it staged and then confirmed, and nothing from it reaches a customer or runs on the service."
+    evidence: "npm's stage-only tokens stage a version that only a maintainer with two-factor authentication can approve (npm 12.1.0 documentation, edited September 24, 2026). GitGuardian reported that Smithery's hosted build let a submitted setting read a Fly.io token with machine rights in an organization of more than 3,000 apps (June 2025); Baltor also runs on Fly.io. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write library_submission/v1 and the staged submission records, the upload by digest, the confirmation page and the quarantine root, with the host setting off."
+  - id: S-6.142
+    phase: 6
+    title: "Automated checks on every submission on a worker, and the same deterministic checks on the author's machine"
+    status: proposed
+    depends_on: [S-6.141, S-6.40, S-6.45]
+    boundary: [src/loop_engine/core/library_ingestion/engines.py, tools/ingest_outside_material.py]
+    verify:
+      - "a source engine author_submission in the library_ingestion_source slot reads confirmed submissions through a staff scope, library:review, and yields library_source_candidate records with author_submission_provenance/v1, so the format, licence, safety, effect and duplicate engines run unchanged"
+      - "new engines behind the existing library_safety_scan slot run offline in the scanner sandbox, each pinned by source revision and licence: gitleaks for secrets, GuardDog for malicious code patterns, and Bandit for Python weaknesses as caution notes only"
+      - "each adopted project has a Baltor-native engine beside it or a recorded reason, as rule 6 of AGENTS.md requires: the repository's own secret patterns beside gitleaks, new built-in code rules beside GuardDog, and a recorded reason for Bandit's caution-only notes; every new engine is recorded in engine_slots.yaml and passes the slot's conformance kit alone"
+      - "the declared licence must match the licence file by the existing matcher, every file notice must agree, and each file written by someone else carries its own allowlisted licence and notice"
+      - "detected effects must be a subset of declared effects; an executable role without spawns_process, or network use without a declared host, holds the submission"
+      - "an exact or near duplicate of another author's package or of refused or outline-only source material is refused or held for a superadmin, and a package name one edit away from a package that at least 25 accounts fetched in another namespace is held"
+      - "every engine writes submission_check_result/v1 with its engine and version, finding code, severity, file and line and never the matched text, and nothing found, not scanned and scanner failed stay distinct"
+      - "a Baltor key found in a submission is revoked at once and its owner is told; any other secret holds the submission, and Baltor never tests a found secret against its provider"
+      - "loop-engine publish check runs the deterministic engines offline on a folder, with the versions and codes the worker uses"
+    adversarial: "A malicious item from the regression set, a secret in a skill script, a licence file that does not match the declared licence, a GPL-3.0 file inside an MIT package, an undeclared network call, a duplicate of an existing package under a new name, a scanner crash read as clean and a finding that copies the secret must each fail a named check."
+    acceptance: "Every submission gets the checks imported material gets, plus code checks, each result is typed and shown to the author, and an author can run the deterministic checks before submitting."
+    evidence: "Hugging Face runs ClamAV at each commit and TruffleHog on each push; ClawHub runs SkillSpector, A.I.G and ClawScan on each release, refuses compiled Python its scanner cannot read, and rescans daily with VirusTotal (OpenClaw, February 7, 2026); skills.sh shows three scanners whose results are not tied to a version. Baltor's ingestion already runs builtin_static_rules and SkillSpector without network. GuardDog and Bandit are Apache-2.0 and gitleaks is MIT (GitHub, September 25, 2026). Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Add the author_submission source engine and the gitleaks, GuardDog and Bandit engines with their regression cases, then the local check command."
+  - id: S-6.143
+    phase: 6
+    title: "A package's own tests in an offline sandbox on a worker that holds no Baltor secret"
+    status: proposed
+    depends_on: [S-6.142]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/library_ingestion/engines.py]
+    verify:
+      - "a new slot library_package_tests, recorded in engine_slots.yaml with its conformance kit, owns the test contract and the result, and nests the existing process_confinement slot, whose linux_namespace_sandbox kind runs the tests with no network, the package mounted read only, one scratch folder, no inherited environment or home folder, and bounded processor time, memory, processes, file size and output; the choice never moves to a weaker isolation"
+      - "a package with a skill script, a hook or an executable tool must declare tests (runtime, command and a time limit of at most 120 seconds); at launch the runtimes are Python 3.12 and Node.js 22 with the standard library only"
+      - "a package_test_result/v1 record binds the package digest, the sandbox profile digest, the command, the exit status, the counts and the time, and a failed or timed-out run holds the submission with the end of its output"
+      - "the worker's own reporting key is outside the sandbox's view"
+    adversarial: "A test that opens a socket, reads the home folder, reads an environment variable of the worker, writes outside its scratch folder, forks without bound or runs past its limit, and a package with executable files and no tests, must each fail a named check."
+    acceptance: "Every executable package that reaches review has passed its own tests in a sandbox that could reach neither the network nor any Baltor secret."
+    evidence: "The Community tier in the AGENTS.md decision table requires 'its own tests where it has code'. PyPI's trusted publishing security model says to treat a publisher as an API token, and GitGuardian's Smithery report shows what a build holding a broad token can reach. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Declare the slot in engine_slots.yaml, write the declared test runner over the process_confinement slot's namespace sandbox, and hold each escape case as a removed-guard control."
+  - id: S-6.144
+    phase: 6
+    title: "Independent review of submissions into the Community tier, never by the author or a declared model family"
+    status: proposed
+    depends_on: [S-6.143, S-6.63]
+    boundary: [tools/candidate_review, tools/review_catalogue_candidates.py]
+    verify:
+      - "the producer families of a submission are the panel families its author declared; reviewers from those families, and anyone who owns or maintains the namespace, never review it"
+      - "Community needs every automated check and the package's own tests passing, plus one approving family outside the producer families; unknown assistance needs two approving families; Verified keeps its rule of two approving families"
+      - "the first executable package of a new namespace also waits for a second approving family or a superadmin"
+      - "reviewers read package text as quoted material under the written criteria, and a verdict binds the exact package digest"
+      - "a refusal returns the failed criteria in plain words to the author, an appeal goes to a family that has not seen the package or to a superadmin, and a submission waits when no eligible family is reachable"
+      - "an approved submission is written as a reviewed catalogue folder with its tier, author, reviewers and digests, for the next catalogue release"
+    adversarial: "An approval from a declared assistance family, an approval by a namespace member, an approval for bytes other than the submitted digest, a Community approval with a failing test, and a package with unknown assistance approved by one family must each fail a named check."
+    acceptance: "Authors get a decision with reasons, and every submitted package served as Community names an independent reviewer family that did not produce it."
+    evidence: "The Library tiers row of the AGENTS.md decision table, September 24, 2026. The review panel declares families and never infers them from a model name (tools/candidate_review/README.md). Tessl lints and reviews on publish and blocks a version below a minimum score, according to its own documentation read on September 25, 2026. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Derive the producer families from the submission record, extend the reviewed catalogue writer for authored packages, and return refusal reasons to the author."
+  - id: S-6.145
+    phase: 6
+    title: "Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown"
+    status: proposed
+    depends_on: [S-6.144, S-6.83]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_releases.py, src/loop_engine/core/service_runtime/account_administration.py]
+    verify:
+      - "a version string is used once for each package, forever, its bytes never change, and the latest version is the highest released one that is not a prerelease and is not yanked, withdrawn or quarantined"
+      - "an author deprecates a version or a package with a message (still served with the message), yanks a version (served only to an exact pin) and withdraws a version within 72 hours of release when no account fetched it; a later withdrawal needs a security, legal or personal data reason and a superadmin"
+      - "a signed-in reader reports a package as malware, exposed secret, licence or copyright, personal data, impersonation, spam or broken, and reports reach a staff queue in the Administration view"
+      - "a superadmin or developer quarantines a version at once with a catalogue_quarantine/v1 record that download and search honour before the next release, the catalogue state marker changes so an older image refuses to serve, and a superadmin clears the quarantine or turns it into a durable withdrawal"
+      - "accounts that fetched a quarantined or withdrawn version are told by email, and each security withdrawal publishes a package_advisory/v1 record"
+      - "every active submitted package is rescanned when a scanner or its rules change and at least weekly, and a new blocking finding quarantines it"
+    adversarial: "A reused version after withdrawal, a changed body under an existing version, a quarantined version served or listed, a rollback that revives a withdrawal, an older image that ignores quarantine records, an author who withdraws a fetched version after 72 hours without a superadmin, and a report that reaches no queue must each fail a named check."
+    acceptance: "A harmful package stops being served after one staff action, authors can retire their work safely, and customers who fetched a withdrawn version are told."
+    evidence: "npm never reuses a package@version, allows unpublishing for 72 hours when nothing depends on a package, and warns on every install of a deprecated version; PEP 792 (final, July 8, 2025) defines active, archived, quarantined and deprecated; PEP 592 defines yanking; PyPI quarantined about 140 projects from August to December 2024 and one returned; the MCP Registry keeps a removed entry readable with the status deleted. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write the version, quarantine, report and advisory records and the author and staff actions, with the catalogue state marker changed."
+  - id: S-6.146
+    phase: 6
+    title: "Author pages, package pages and the publishing dashboard"
+    status: proposed
+    depends_on: [S-6.145, S-6.67]
+    boundary: [src/loop_engine/core/service_runtime/web_site_map.json, src/loop_engine/core/service_runtime/web_pages.py]
+    verify:
+      - "/authors/<handle> shows the handle, an optional display name, a verified domain when proven, and each package with its tier, latest version, licence, kinds and deprecation notes, and shows no email address and nothing about any customer's use"
+      - "each package page shows its versions with dates and states, reviewers by family, the licence, files with digests, declared effects, test and scan summaries, the source link and whether it was verified, and how to install it"
+      - "the signed-in dashboard lists the author's submissions with states, held findings, review reasons and actions, the staged submissions to confirm, and the keys with the publish scope"
+      - "the pages use plain product words and no runtime terms, and the typed site map, header and footer checks cover them behind the publishing host setting"
+    adversarial: "An author page that shows an email address, a package page that shows a tier the active release does not hold, a dashboard action that works on another account's package and a runtime term on a public page must each fail a named check."
+    acceptance: "Anyone can see who wrote a package and how it was checked, and an author manages every submission from one page."
+    evidence: "npm, Hugging Face and Smithery show packages under user and organization names, and ClawHub shows a scan summary before install. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Add the three pages to the typed site map behind the publishing host setting and render them from the records."
+  - id: S-6.147
+    phase: 6
+    title: "Contributor terms and the privacy notice addition, published with the feature"
+    status: proposed
+    depends_on: [S-6.141]
+    boundary: [docs/legal/README.md, src/loop_engine/core/service_runtime/web_assets/index.html]
+    verify:
+      - "the contributor terms drafted in docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md move to docs/legal/CONTRIBUTOR-TERMS.md, and /contributor-terms serves the same words, held word for word by a browser check as the terms of service are"
+      - "every submission records the version of the contributor terms its author accepted, and a submission under an older version is refused until the author accepts the current one"
+      - "the privacy notice gains the drafted rows on author handles, published packages, review records and reports, and the sentence naming the review providers, served word for word"
+      - "the publishing host setting stays off for outside authors until the owner's approval of both texts is recorded in the AGENTS.md legal paragraph"
+    adversarial: "A served terms page that differs from the approved text, a submission without a terms version, a submission under an outdated version, and publishing opened to outside authors without the recorded approval must each fail a named check."
+    acceptance: "Every author accepts plain terms that say what they grant, what Baltor does with their package and what Baltor never does, and the privacy notice says what publishing shows in public."
+    evidence: "Contributor terms compared on September 25, 2026: GitHub's terms (effective April 27, 2026) license contributions inbound equals outbound and include training AI features in the grant to GitHub; PyPI's Terms of Use (effective February 25, 2025) grant the Python Software Foundation and all users an irrevocable licence to distribute; Hugging Face's terms (effective September 15, 2022) grant a licence to provide the services; npm's open-source terms (March 10, 2022) license npm to provide content to its users. The AGENTS.md authority section keeps legal commitments with the owner."
+    next_local_work: "Copy the drafted terms and privacy rows into docs/legal as drafts, add the served view and its word-for-word browser check, and record the owner's approval before opening the setting to outside authors."
+  - id: S-6.148
+    phase: 6
+    title: "Provenance for submitted packages: verified source links, trusted publishing and a signed publish record"
+    status: proposed
+    depends_on: [S-6.144]
+    boundary: [src/loop_engine/core/library_ingestion/provenance.py, src/loop_engine/core/service_runtime/catalogue_releases.py]
+    verify:
+      - "an optional source repository at a full commit is fetched by the worker, and the source link is marked verified only when every submitted file equals the file at that commit"
+      - "GitHub Actions can stage a submission with a short-lived OpenID Connect token checked for issuer, audience, repository and owner identifiers, workflow and environment, with no stored key, and a person still confirms it"
+      - "each released version gets a publish_record/v1 statement in the in-toto form, naming the package digest, namespace, version, tier, review record digest and release, signed with a Baltor Ed25519 key whose public half is served at a well-known address"
+      - "loop-engine checks a fetched package against its signed publish record before placing it"
+    adversarial: "A source link whose commit differs from the upload, a token from another repository or from a recreated owner, a publish record for another digest and a tampered package must each fail a named check."
+    acceptance: "A customer can check that a served package is the exact one that was reviewed and released, and an author can publish from continuous integration without a stored key."
+    evidence: "npm and PyPI mint short-lived publishing credentials from continuous integration identity tokens and publish Sigstore-signed provenance; PyPI's security model warns that anyone who can change a publishing workflow can publish and that a recreated account can inherit trust; Hugging Face marks GPG-signed commits as verified. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write author_submission_provenance/v1 with the source check, then the signed publish record and its verifier, then trusted publishing from GitHub Actions."
+  - id: S-6.149
+    phase: 6
+    title: "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance"
+    status: proposed
+    depends_on: [S-6.39]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_search.py, src/loop_engine/core/service_runtime/request_limits.py, src/loop_engine/core/service_runtime/http.py, src/loop_engine/core/boundary_registry.py]
+    verify:
+      - "public_recipe_search_request/v1 takes a query of at most 300 characters, a result count of at most 3 and a channel name, and public_recipe_search_result/v1 answers with identity, kind, purpose, tier label, licence, declared effects, file count and placement and a public page address, or with an abstention below the relevance floor"
+      - "the edge fixes the Verified tier; a qualified recipe needs complete card fields (purpose, kind, files with placement for at least one harness, licence, declared effects and the review record identity), and an item without them is never returned"
+      - "bodies, scores, backend names, paging cursors, internal attributes and commercial relationship fields never appear in a result"
+      - "each call counts against the published S-6.39 allowance per caller and per address, and the edge is registered in core.boundary_registry as a Starting Intelligence Loop with profile intelligence.search@1.0.0"
+      - "a public recipe page at /r/<identity> shows the same card fields for Verified items only, with no body and no download without signing in"
+    adversarial: "A fourth result, a paging cursor, a Community tier item, an item with incomplete card fields, a score or a backend name in a result, a body byte on a recipe page, and a client that walks the library through repeated queries past its allowance must each be refused by a named check with its removed-guard control."
+    acceptance: "Any client, including the chat helpers, can ask for a recipe in words and get at most three Verified recipe cards or an honest abstention, and nobody can reconstruct the library through it."
+    evidence: "September 25, 2026 research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md. Search on main needs a service token (/api/v1/retrieval) and answers up to 50 results; S-6.39 already requires a bounded free search. Release 25 served 43 items, all approved through the review panel."
+    next_local_work: "Write the request and result contracts and the projection from the served catalogue view with their checks, behind a host setting that is off."
+  - id: S-6.150
+    phase: 6
+    title: "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off"
+    status: proposed
+    depends_on: [S-6.149]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/boundary_registry.py, src/loop_engine/core/service_runtime]
+    verify:
+      - "a chat_request_channel engine slot with a fixed edge: a platform update in and recipe_rescue_request/v1 out, recipe_rescue_answer/v1 in and one platform reply out; a new platform is a new engine and changes no caller"
+      - "each answer is one Starting Intelligence Loop with profile intelligence.search@1.0.0 in deterministic mode: one public recipe search and one reply, with no model, no file, no outbound fetch and no spending"
+      - "the request gate runs before any search: platform authenticity, explicit invocation only, bot senders ignored, one reply per request, the host setting, the stage allowlist and blocklist, per requester, per conversation and global limits, and refusal of key-shaped text"
+      - "recipe_rescue_event/v1 records the channel, invocation kind, outcome, item identities, keyed hashes of requester and conversation, the hour, the catalogue release and the policy version, and has no field that can hold message text"
+      - "Useful and Not useful presses become User Feedback Intelligence records tied to the answer"
+      - "a failed search gives a plain failure reply, never a stored or invented recipe"
+      - "outside staff test chats the helper answers only after the owner approves the privacy notice addition, recorded in AGENTS.md"
+    adversarial: "A reply to an uninvoked message, a reply to a bot, a second reply to one request, a search run with the host setting off, a message text field in the event record, a key-shaped request that is echoed or stored, an invented recipe after a failed search, and a reply that carries a price, a code or a sponsored link must each fail a named check with its removed-guard control."
+    acceptance: "A recorded platform request produces exactly one answer, either Verified recipe cards or an honest abstention, with a text-free record, and nothing happens when the host setting is off."
+    evidence: "September 25, 2026 research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md. The owner approved the privacy notice drafts of September 24 and no other use of personal data, and a chat helper processes platform user identifiers and message text."
+    next_local_work: "Declare the slot, the three records and the gate, with loopback checks over recorded Telegram and Discord payloads."
+  - id: S-6.151
+    phase: 6
+    title: "Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group"
+    status: proposed
+    depends_on: [S-6.150, S-6.153]
+    boundary: [src/loop_engine/core/service_runtime, tools/operator_credentials.json]
+    verify:
+      - "the webhook refuses any request without the X-Telegram-Bot-Api-Secret-Token value and subscribes only to message, guest_message and callback_query updates"
+      - "a guest_message becomes one answerGuestQuery reply carrying the recipe card as an inline query result; the adapter uses no history or member list, which guest mode does not provide"
+      - "in the owned group the bot is a member without admin rights, with group privacy on, and answers /recipe with an ephemeral message visible only to the asker"
+      - "bot-to-bot communication and inline mode stay off, and no payment method is called"
+      - "the bot token stays in the system keyring under a declared reference, reaches the service only as a release secret and never appears in a log or a record"
+      - "the rate guidance holds: at most one message per second in a chat and 20 a minute in a group"
+    adversarial: "An update with a wrong secret header, a guest query answered twice, a reply to a message sent by a bot, the bot made an admin, a payment call, and the token in a log line must each be refused by a named check."
+    acceptance: "In a staff test chat, mentioning the bot returns one Verified recipe card answer or an abstention, and /recipe in the owned group answers only the asker."
+    evidence: "Telegram Bot API 10.0 (May 8, 2026) added guest mode, and Bot API 10.2 (July 14, 2026) added ephemeral messages and Communities. The bot features page documents one reply per mention, no history, no member list and loop prevention for bot-to-bot mode. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the adapter against recorded guest_message payloads; the owner creates the bot in @BotFather and stores its token with the keyring tool."
+  - id: S-6.152
+    phase: 6
+    title: "Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first"
+    status: proposed
+    depends_on: [S-6.150, S-6.153]
+    boundary: [src/loop_engine/core/service_runtime, tools/operator_credentials.json]
+    verify:
+      - "an HTTP interactions endpoint answers PING and refuses with status 401 any request whose X-Signature-Ed25519 and X-Signature-Timestamp do not verify"
+      - "global commands /recipe and the message command Find a recipe for this declare integration_types USER_INSTALL and GUILD_INSTALL and contexts GUILD, BOT_DM and PRIVATE_CHANNEL, with no age-restricted command"
+      - "in a server the first answer is ephemeral; a Share button posts the card publicly only when the asker presses it, and says plainly when Use External Apps or the asker's send permission does not allow it"
+      - "the first response goes out within 3 seconds, deferred when the search is slow, and one followup at most is used, inside the limit of 5 for user-installed apps"
+      - "no gateway connection and no privileged intent; the message command reads only the message the user selected"
+      - "the server install uses the applications.commands scope without the bot scope where Discord accepts it"
+    adversarial: "A request with a bad signature, a public answer before the asker presses Share, a Share that bypasses a server's Use External Apps setting, a response after 3 seconds without a deferral, and a request for the Message Content intent must each fail a named check."
+    acceptance: "In a test server and in a direct message, /recipe and the message command return one private answer with Verified recipe cards or an abstention, and only the asker decides whether it is shared."
+    evidence: "Discord documents user installation, interaction contexts, the Use External Apps permission, the 3-second first response, the 15-minute token and the 5-followup limit for user-installed apps (discord/discord-api-docs at 30017dee). Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the adapter against recorded interaction payloads with signature checks; the owner creates the Discord team and application and stores the token with the keyring tool."
+  - id: S-6.153
+    phase: 6
+    title: "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log"
+    status: proposed
+    depends_on: []
+    boundary: [tools/operator_credentials.json, tools/operator_credentials.py]
+    verify:
+      - "three credential references are declared with format checks, discord-community-setup, discord-recipe-rescue and telegram-recipe-rescue, and are stored only through the interactive store command"
+      - "a setup tool applies the Discord layout from the private community spec: roles, categories, channels, forum tags and guidelines, onboarding with at least 7 default channels of which at least 5 let everyone view and send, and the AutoMod rules; it creates only what is missing, records every call and never deletes"
+      - "the setup app leaves the server once the checks pass, and its credential is marked retired"
+      - "ordinary member checks run from an account that holds only the member role: staff channels hidden, a key-shaped message blocked, mention spam blocked, @everyone inert, invites to other servers blocked and onboarding roles assigned"
+      - "a community measures log keeps counts with their denominators: first useful result within 7 days, repeat useful use on days 8 to 14, resolution, peer help, steward minutes and helper answers, and never joins identities across platforms"
+    adversarial: "A layout run that deletes or changes a channel it did not create, onboarding enabled with fewer than 5 open channels, a check run from the owner account, a setup app left installed, and a measure reported as a percentage without its count must each be refused."
+    acceptance: "After the owner creates the server and authorizes the setup app, the whole layout exists and passes the ordinary member checks, the setup app is gone, and every call is recorded."
+    evidence: "Discord's Community Onboarding needs at least 7 default channels, 5 of them open to everyone; AutoMod exempts Administrator and Manage Server; a server has at most 6 keyword rules of 10 regular expressions each. The private setup kit is in /home/username/baltor-private/community-2026-09-24/. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit."
+  - id: S-6.154
+    phase: 6
+    title: "Solution cards: consented write-ups of solved community threads on Baltor's own pages"
+    status: proposed
+    depends_on: [S-6.153]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_site_map.json]
+    verify:
+      - "a solved help thread becomes a draft card: the problem, tools and versions, what was tried, the fix, the observed result, limits, and files with their licence"
+      - "every person quoted approves the draft and a steward checks attribution and private data before anything is published"
+      - "publication, library reuse and model training are three separate consents, and each card records which were given"
+      - "files meant for the library go through the author submission path of S-6.141 and its review, never copied into the library from a card"
+      - "Answer Overflow stays off until the help forum holds 50 consented solved posts, and if it is added it treats messages as private unless consented"
+    adversarial: "A card published without every quoted person's approval, a card that holds a key, an address or a private link, a card that reads library or training consent into publication consent, and Answer Overflow installed with its public default must each be refused."
+    acceptance: "Solved community problems become findable pages on Baltor with the consent of the people who solved them."
+    evidence: "Answer Overflow (MIT, 80b1dceb) treats messages in indexed channels as public unless a member opts out; indexed pages stay up to 7 days after indexing is disabled and in Google for an unknown time. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Write the card record and the consent flow, and render the first card from a staff example."
+  - id: S-6.155
+    phase: 6
+    title: "Unmet recipe requests become consented demand records that feed the package factory"
+    status: proposed
+    depends_on: [S-6.150, S-6.40]
+    boundary: [tools/harness_idea_matrix.py, tools/overnight_candidate_batch.py]
+    verify:
+      - "only the Ask Baltor to make this recipe button keeps request text, after a key-shaped text check, as a recipe_demand/v1 record with channel and time and no requester identity"
+      - "demand records are grouped by meaning and counted, and each group is offered to the idea matrix as a brief that keeps its count"
+      - "a package made from a brief is a candidate like any other and goes through the independent review; demand never approves anything"
+      - "a public count of open requests and of the recipes made from them is published without request text"
+    adversarial: "Request text kept without the button, a demand record that holds a requester identity, a brief that skips the review, and published request text must each be refused."
+    acceptance: "What people ask for and cannot find becomes the factory's next work, with their consent."
+    evidence: "Release 25 served 43 approved items, mostly data work and task planning methods and no creative recipes, so most creative requests will abstain at first. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Declare recipe_demand/v1 and the grouping step, and feed one staff-made demand record into a dry run of the idea matrix."
+  - id: S-6.156
+    phase: 6
+    title: "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified"
+    status: proposed
+    depends_on: [S-6.151, S-6.152]
+    boundary: [src/loop_engine/core/service_runtime/billing_policy.py, src/loop_engine/core/service_runtime]
+    verify:
+      - "the helpers call no payment method until this step is verified"
+      - "a Telegram sale of a digital good uses Stars only, answers /paysupport, handles refunds deducted from the bot balance, and records Stars apart from dollar subscription revenue"
+      - "a Discord sale uses Premium Apps in the supported regions at a price no higher than Baltor's own checkout, and checks the entitlement on every interaction"
+      - "accounting records collected revenue, platform and payment fees, refunds, execution cost and support cost as separate facts"
+    adversarial: "A Stripe link used to sell a digital good inside a Telegram bot, a Discord price above the website price, an entitlement assumed without a check, and Stars counted as dollars must each be refused."
+    acceptance: "Any paid capability inside Telegram or Discord follows each platform's rules and shows its real net revenue."
+    evidence: "Telegram's Bot Developer Terms, section 6.2, require Stars for digital goods. Discord's Developer Policy requires Premium Apps and price parity since October 7, 2024; Premium Apps pay 6 percent processing and a 15 percent Growth Tier platform fee up to 1,000,000 dollars, then 30 percent, with no mobile transactions. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Keep the no-payment checks in the helper steps; build this gate only when a paid chat capability is chosen."
+  - id: S-6.157
+    phase: 6
+    title: "Research watch sources for the chat platforms"
+    status: proposed
+    depends_on: []
+    boundary: [tools/research_source_watch.json, tools/refresh_research_sources.py]
+    verify:
+      - "the watch adds the Telegram Bot API changelog, the Discord developer change log in discord/discord-api-docs, the Answer Overflow repository and the Meta newsroom"
+      - "the watch tool's allowed page hosts and online source limit are raised, with their tests"
+      - "a change in a watched source opens or updates the research watch issue, and the next research digest reviews it against this record"
+    adversarial: "A watched page on a host outside the allowlist, a redirect followed to another host, and a source added without a roadmap step must each be refused by the watch tool's checks."
+    acceptance: "A change to Telegram's or Discord's bot platform reaches the next research digest within a day."
+    evidence: "The daily research watch holds 17 sources, with an online limit of 20 and a page host allowlist that includes neither core.telegram.org nor discord.com. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
+    next_local_work: "Add the four sources and raise the limits, with tests."
+  - id: S-6.160
+    phase: 6
+    title: "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine"
+    status: proposed
+    depends_on: [S-6.44, S-6.75]
+    boundary: [tools/install_selected_material.py, src/loop_engine/data/engine_slots.yaml, artifacts/agent-stack-landscape-2026-09-24/e01]
+    verify:
+      - "the native engine places multi-file packages through the confined writer, keeps each declared mode (0644 or 0755, taken from the package manifest) and records every file digest"
+      - "every engine behind material_install_layout, native or upstream, passes the E01 rule on the frozen four-package population: bytes, declared modes and identity metadata kept, the same normalized tree in four roots, nothing written outside the project and the step's own home folder, no network for a local package, the item listed by Codex, Claude Code, OpenCode and Pi, and the path-escape package refused"
+      - "Microsoft APM 0.31.0 runs as a pinned wrapper engine with the step's own home folder, and its lockfile is kept as evidence with the absolute source path normalized"
+      - "an in-project link between two native roots, such as the one Sentry dotagents makes, is reported as one shared root and never followed out of the project"
+    adversarial: "The Rulesync and OpenPackage SKILL.md outputs of September 25, 2026, a script placed with mode 0644, a Codex copy without the identity metadata, an engine that writes into a second home folder and a link that leaves the project must each fail a named check with its removed-guard control."
+    acceptance: "A step's working directory holds the same bytes, modes and identity in every supported harness and on every run, whichever eligible engine placed it."
+    evidence: "September 25, 2026 pilot with no model call, two packages, five engines, four roots: only the native confined writer, Microsoft APM 0.31.0 and dotagents 3.1.0 kept every byte; Rulesync 18.0.0 and OpenPackage 0.11.3 rewrote every SKILL.md and Rulesync removed the identity metadata from the Codex copy; the native writer dropped the script's executable mode; dotagents' init needed the network and wrote 284 files into the home folder; every engine gave the same tree in all four roots; Codex 0.155.1 and Claude Code 2.1.282 listed all 20 placements and neither known-wrong control; the native writer refused dotagents' linked folder. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md; evidence: artifacts/agent-stack-landscape-2026-09-24/e01."
+    next_local_work: "Extend the confined writer with declared modes and package walking, add the named checks with the pilot outputs as fixtures, wrap Microsoft APM, then run the four-package population."
+  - id: S-6.161
+    phase: 6
+    title: "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion"
+    status: proposed
+    depends_on: [S-6.160, S-6.47]
+    boundary: [case-studies/data-cleanup-with-and-without-baltor/runner, docs/research]
+    verify:
+      - "a design frozen before any counted call: the 143-row data cleanup population and its scorer, its five approved items by digest, the arms none, native skill, forced AGENTS.md inclusion and native skill with three decoy skills, Pi 0.73.1 and OpenCode 1.18.32 behind the counting proxy, three repetitions"
+      - "listed, loaded and used come from recorded request bodies and step outputs by rules fixed before the run: name and description in the first request, a pre-declared body sentinel in any request, and a pre-declared output fingerprint for each item"
+      - "useful is the scorer's primary metric under the September 22 claim rule; cost is requests, prompt, cached and output tokens and seconds per step, with unknown usage kept unknown"
+      - "glm-5.3-flash:cloud on Ollama Cloud under a ceiling of 800 physical requests, a step cap of 8, one allowance probe and an eight-step pilot; the Tactical gemma-4-coding-abliterated route only after an operability pre-check, under its own ceiling of 800"
+    adversarial: "A skill at a wrong root counted as listed, an item with a mismatched digest that reaches a step, a loaded count taken from file presence, a benefit claim without the claim rule and a run past its ceiling must each be refused."
+    acceptance: "For each harness and model, the record shows how often a served skill is listed, loaded, used and useful, and what it costs compared with forcing it into the instruction file."
+    evidence: "The September 22 data cleanup run forced items into AGENTS.md, so loading was never the model's choice: the cheap model was clearly worse with the phone item (0.842 against 0.991) and spent 45 to 446 percent more prompt tokens per step. On September 25 Codex and Claude Code listed every E01 placement and neither control. Without material the cheap model scored 0.948 to 1.000, so usefulness may not separate on this population; the record must say so if it does not. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 7.3."
+    next_local_work: "Write the sentinels and fingerprints, add the native skill arms and the OpenCode recipe to the runner, freeze the design, then run the pilot after the Ollama allowance probe."
+  - id: S-6.162
+    phase: 6
+    title: "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run"
+    status: proposed
+    depends_on: [S-6.161, S-6.54]
+    boundary: [case-studies/data-cleanup-with-and-without-baltor, examples/29_intelligence_service/starter-catalogue]
+    verify:
+      - "four code packages, one per data cleanup family, with typed command line contracts, their own tests, held-out tests written by a different model family, licence records (phonenumbers Apache-2.0, email-validator Unlicense, rapidfuzz MIT) and digests, staged as candidates for the review panel"
+      - "arms: the model writes the transformation, the skill text only, the code package placed with its skill, and a deterministic Solution run of the package with no model"
+      - "the frozen 143-row population and a held-out population from the same generator with a new seed, both frozen before any call and scored by the same scorer"
+      - "the deterministic arm runs first with no model call; each model arm runs under a ceiling of 600 physical requests per route, a step cap of 8 and a three-step pilot"
+    adversarial: "A package that reads the held-out truth, a reuse step whose package never ran counted as reuse, a claim drawn from the frozen population alone and a package approved by its own author must each be refused."
+    acceptance: "For each family the record shows whether handing over verified code beats having the model rewrite it, on accepted results, tokens, time and new code, and whether the step needs a model at all."
+    evidence: "Paying to rewrite code that already exists is one of the six customer problems in AGENTS.md. The September 22 phone item failed on trunk and exit prefixes; phonenumbers 9.0.40 (Apache-2.0) is maintained code for that parsing. Roadmap step S-6.114 applies the same protocol to the owner's 24 tools. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 7.4."
+    next_local_work: "Build the phones package, run its deterministic arm on both populations with no model call, and have another family write its held-out tests."
+  - id: S-6.163
+    phase: 6
+    title: "A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection"
+    status: proposed
+    depends_on: [S-6.22, S-6.74]
+    boundary: [tools/research_source_watch.json, tools/refresh_research_sources.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "every engine candidate named in engine_slots.yaml or in a research catalogue has a watch entry with its repository, package and homepage addresses"
+      - "a weekly read-only run writes a new dated report with the archived flag, licence, last push, latest release, redirects and notice text of each entry"
+      - "a fired signal marks the candidate held with its evidence, and engine selection refuses a held candidate until a person reviews it"
+    adversarial: "An archived repository, a licence change, a redirect to a discontinuation notice and a page announcing a new owner must each hold the candidate, and a watch report used as runtime authority must fail."
+    acceptance: "An outside project that is archived, relicensed, sold or shut down can no longer be selected silently."
+    evidence: "September 25, 2026: of the 30 priority entries, five had changed status with no watch noticing: TensorZero archived and no longer maintained, Daytona's core moved to a private codebase, Agentuity discontinued, Smithery acquired by Arcade, and mcp.run moved to Turbo MCP with a next chapter announced. The existing watch holds 17 sources. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 3."
+    next_local_work: "Add lifecycle fields to the watch manifest for the catalogue's engine candidates, run the watch once and compare its report with the research record."
+  - id: S-6.164
+    phase: 6
+    title: "Original harness packages from the agent stack research, through independent review"
+    status: proposed
+    depends_on: [S-6.69, S-6.63]
+    boundary: [tools/candidate_review, docs/research]
+    verify:
+      - "five candidates written from the research record's checked facts, never copied from vendor text: checking a model-merged edit before accepting it, making an interrupted step safe to retry, choosing where untrusted code runs, writing a with-and-without evaluation for one skill, and pinning and verifying an agent package install"
+      - "each carries its sources with fetch dates, its declared effects, a known-wrong case and digests, and stays a candidate until reviewers from other model families approve it"
+      - "every vendor fact in a package carries its date, and the lifecycle watch rechecks it"
+    adversarial: "A package that copies vendor documentation, a vendor fact without a date, a self-reported vendor number presented as measured and an approval by the package's own producer must each be refused."
+    acceptance: "The library serves reviewed packages that turn the record's checked facts into steps a harness can follow."
+    evidence: "docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md sections 6 to 8, the DBOS retry trial of September 23, 2026 and the E01 pilot of September 25, 2026."
+    next_local_work: "Draft the five candidates on the Tactical server and queue them for the review panel."
+  - id: S-6.165
+    phase: 6
+    title: "Token accounting by billing class, dated prices and price-weighted cost per accepted step"
+    status: proposed
+    depends_on: [S-6.6, S-6.41]
+    boundary: [src/loop_engine/core/run_history_usage.py, src/loop_engine/core/opencode_harness_adapter.py, src/loop_engine/core/openai_responses_client.py]
+    verify:
+      - "a provider_token_totals/v2 record keeps uncached input, cache read, cache write, output and reasoning tokens as separate counts, each known or unknown, and a version 1 reader refuses it"
+      - "every adapter that sees cache or reasoning counts keeps them apart: the OpenCode adapter stops adding cache reads into input tokens, and the OpenAI Responses client carries cached input and reasoning tokens into Run History"
+      - "a price record for each exact provider and model gives the price of each billing class with its source and observation date, following the shape of AstraPricingSpec; a missing price makes the cost unknown, never zero"
+      - "each step record reports price-weighted cost, turns, cache read share and tool errors, and each task reports cost per accepted step and per accepted task, with the cost of rejected steps counted in the total and only accepted steps counted in the denominator"
+    adversarial: "A cache read counted as uncached input, a missing class counted as zero, a cost priced with another model's rates, a version 2 record read by a version 1 reader and a cost per accepted task that leaves out the cost of rejected steps must each fail a named check with its removed-guard control."
+    acceptance: "For any run, a reader can see what each step cost by billing class and what each accepted result cost, which is the baseline every later efficiency change is measured against."
+    evidence: "Research, technique 1: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Cursor's audit prompt of September 23, 2026 makes token and cache telemetry its first change and ranks changes by price-weighted cost per completed task. Read on main at dbf2389c: TokenUsageTotals keeps prompt and output counts only; opencode_harness_adapter.py adds cache reads into input tokens; openai_responses_client.py reads cached and reasoning tokens that Run History does not carry; AstraPricingSpec prices cached input and cache writes for one route, for a worst-case bound only."
+    next_local_work: "Declare provider_token_totals/v2 with fixtures for each billing class and each unknown case, then change the OpenCode adapter and the Responses client, each with its removed-guard control."
+  - id: S-6.166
+    phase: 6
+    title: "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends"
+    status: proposed
+    depends_on: [S-6.44, S-6.165]
+    boundary: [src/loop_engine/core/instance_instructions.py, src/loop_engine/core/node_provisioning.py]
+    verify:
+      - "a second composition engine behind the same edge orders instruction file sections from most shared to least shared: rules and authority text that all steps of a task share first, the step's own assignment last"
+      - "no timestamp, run identity, step identity or random value appears before the last shared section, and skill, tool, capability and protocol server lists are sorted and serialized deterministically"
+      - "for two steps of one task with the same shared material, the shared byte prefix of their files is recorded, and the new engine shares every byte of the shared sections"
+      - "a comparison on a frozen task set records cache read share, cost per accepted step and acceptance for both engines through the S-6.165 records; the current engine stays the default until the comparison favors the new one"
+    adversarial: "A timestamp or run identity placed before the shared sections, a skill list whose order changes between identical inputs, a composition that drops or weakens the authority section to gain prefix bytes and a default switched without the comparison must each fail a named check."
+    acceptance: "Steps of one task give the provider the longest byte-identical prefix their material allows, and the effect on cost is measured rather than assumed."
+    evidence: "Research, technique 2: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Cursor's prompt reports that explicit cache breakpoints plus moving per-request setup after them cut cold cache misses 20 percent (self-reported). Strands harness injects the date after the cached prefix (read in source at 7ae759d3). instance_instructions.py writes the step's assignment first, so two steps of one task share only the title and the first heading, and tool and skill lists keep request order."
+    next_local_work: "Measure the shared prefix of two sibling steps with the current engine, then write the stable-first engine and its fixtures."
+  - id: S-6.167
+    phase: 6
+    title: "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items"
+    status: proposed
+    depends_on: [S-6.61]
+    boundary: [src/loop_engine/core/harness_process.py, src/loop_engine/core/harness_process_relay.py, src/loop_engine/core/harness_model_authority.py]
+    verify:
+      - "every model exchange of a step, and each streamed chunk, is appended to a log outside the step's sandbox before it is forwarded; a failed write stops forwarding and ends the step with a typed reason"
+      - "the model call, token and cost limits of HarnessBudget are enforced while the step runs, at the broker or proxy, and a limit reached ends the step with a typed exit reason instead of only failing post-run acceptance"
+      - "reasoning items, including encrypted ones, pass through the relay and proxy unchanged in both directions, and a reasoning item missing from a later request writes an alert record"
+      - "acceptance never uses a harness's own transcript as evidence that an action happened; actions come from host-side observations: the exchange log, workspace digests and commands the engine ran itself"
+    adversarial: "A step that deletes or edits its harness's trace file, a skill that tells the agent to delete its session trace, a forward after a failed log write, a model call past max_model_calls that reaches the provider, a dropped encrypted reasoning item and an acceptance that cites only the harness transcript must each fail a named check."
+    acceptance: "What a step's harness sent to its model and how much it used are recorded where the harness cannot change them, and a step cannot spend past its limits while it runs."
+    evidence: "Research, techniques 13, 18 and 19: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. arXiv 2609.30266 (September 24, 2026) reports that every tested local harness except Muse Code let agents delete their traces, including through a malicious skill file, and recommends an interception server outside the agent's control that records before forwarding and fails closed. harness_process.py already records each exchange before calling the broker; HarnessBudget describes its limits as post-run acceptance bounds."
+    next_local_work: "Write the append-only log fixture and the fail-closed control on the existing broker loop, then the live call limit."
+  - id: S-6.168
+    phase: 6
+    title: "Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call"
+    status: proposed
+    depends_on: [S-6.61, S-6.93]
+    boundary: [src/loop_engine/core/harness_confinement.py, src/loop_engine/core/credential_leases.py, src/loop_engine/core/harness_fresh_instances.py]
+    verify:
+      - "a fixture step process that reads its environment, any process memory it can see, credential files and its working folder obtains no provider secret, and a call it sends through the broker socket gets no more than the step's grant: the same route and the same ceilings"
+      - "a harness's built-in tools, such as a shell or file tool, count as tools in the step menu; a step whose menu omits the shell starts its harness with the shell turned off, and the loading check proves it"
+      - "network access for a step is denied by default with a per-step allowlist; a refused destination, a literal address inside an allowed range and a host name that differs from the announced server name are refused and written to Run History as security events"
+      - "a data policy engine at the tool gateway checks each call against the verified customer, the step and the requested fields and returns only permitted fields; a deny-all engine is the default and Cedar is evaluated as the first policy engine"
+    adversarial: "The Unit 42 pattern (an injected instruction that makes a shell read memory or the environment and post a token to an outside address), a shell left on in a step whose menu has none, a request to a literal address inside an allowed range, a domain-fronted request and a tool call that returns a field its policy withholds must each fail a named check."
+    acceptance: "A step can reach only the credentials, tools, destinations and data fields it was granted, and an attempt to reach more is refused and recorded."
+    evidence: "Research, techniques 21 to 24: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Unit 42 (September 18, 2026) showed an AgentCore Harness shell running as root read a vault credential from the harness process's memory. Anthropic keeps tokens out of the sandbox with a vault and a proxy; Vercel's sandbox firewall injects credentials at egress and documents its limits. On the isolated path Baltor already starts bubblewrap with --unshare-all and --clearenv, and the relay reaches the broker over a Unix socket."
+    next_local_work: "Write the Unit 42 fixture against the isolated path first, then the built-in tool check in the fresh instance loading test."
+  - id: S-6.169
+    phase: 6
+    title: "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure"
+    status: proposed
+    depends_on: [S-6.96]
+    boundary: [src/loop_engine/core/independent_failure_review.py, src/loop_engine/core/provider_failure_classes.py]
+    verify:
+      - "failure_fingerprint/v1 gains an interaction edge between two components from a fixed vocabulary (owner, model, check, third party, context, memory, tool, local environment, external environment, another step), a fault side and a repair owner (model route, harness configuration, library item, tool, environment or check)"
+      - "the label goes to the earliest failure from which the step never recovered, and later errors are recorded as its consequences"
+      - "a fault on the check side goes to the review of the check under the persistent solving rules, never to a model or library change"
+      - "labels written by a reviewing model are candidates; their agreement with human labels is measured on a frozen set before any label feeds engine selection"
+    adversarial: "A failure labelled at a later symptom, a check fault sent to model repair, an instruction lost in compaction labelled as a model fault, a tool wrapper that reported success on a partial failure labelled as a model fault and a model-written label used before its agreement is measured must each fail a named check."
+    acceptance: "Every recorded failure says where it started and who owns the repair, so that repeated failures lead to the right change."
+    evidence: "Research, techniques 7 and 27: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. arXiv 2607.28802 (Scale AI, July 30, 2026) places 41 failure modes on interaction edges with a fault side, labels the earliest unrecovered failure, and reports Cohen's kappa up to 0.76 between reasoning-agent judges and human labels."
+    next_local_work: "Add the three fields to the fingerprint record with one fixture for each fault side, using the paper's worked examples as test descriptions."
+  - id: S-6.170
+    phase: 6
+    title: "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival"
+    status: proposed
+    depends_on: [S-6.31, S-6.165]
+    boundary: [src/loop_engine/core/context_budget.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a compaction policy slot declares four engines: the harness's native compaction (the default), a drop-only proxy with CliffCompaction under MIT as its upstream engine, a model summary that carries plan state and remaining tasks, and a fresh step seeded with the typed step result"
+      - "every engine keeps the owner's and the engine's instruction text verbatim, and a fixture set with instructions and their reasons placed early in long histories checks that each survives"
+      - "the full history before any compaction stays searchable in a file or in Run History, and every dropped span is recorded with its byte count and digest"
+      - "a comparison on long steps records cost, acceptance and instruction survival for each engine through the S-6.165 records, and the default changes only on that evidence"
+    adversarial: "A summary that drops a do-not-act instruction or its reason, a compaction of an earlier compaction, a dropped span without a digest record, a proxy engine running while the harness's own compaction is still on and a default switched without the comparison must each fail a named check."
+    acceptance: "Long steps stay within their context budget without losing the instructions that govern them, and the chosen compaction engine is the one the evidence favors."
+    evidence: "Research, techniques 8 and 9: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. CliffCompaction (arXiv 2609.26779) only truncates or drops and never compacts a compaction, reporting up to 50 percent lower cost under a bounded context. The Australian Signals Directorate guidance of September 11, 2026 says to delete stale content rather than summarize it. Strands harness summarizes at 85 percent context use. Scale AI's worked examples show summaries that dropped an instruction and the reason for it."
+    next_local_work: "Declare the slot with the native engine, write the instruction-survival fixtures, then add the drop-only proxy engine in shadow mode."
+  - id: S-6.171
+    phase: 6
+    title: "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives"
+    status: proposed
+    depends_on: [S-6.58, S-6.93]
+    boundary: [src/loop_engine/core/opencode_step_provision.py, src/loop_engine/core/decisions/system_one.py]
+    verify:
+      - "a third provisioning engine beside the trigger-word layer and the model-led provisioner asks closed questions through the typed_decision slot over a shortlist from search: include this item or not, and which of these few"
+      - "it only requests items; the engine still admits each request against the registered catalogue and library, as it does for the model-led provisioner"
+      - "a none-applies answer is allowed, and an answer below a declared confidence floor falls back to the model-led provisioner"
+      - "a frozen set of steps measures recall of needed items, wrong-item rate, bytes placed, time and cost against both existing engines, and the engine is selected only when it beats them"
+    adversarial: "A decision that grants an item outside the catalogue, a low-confidence answer acted on without the fallback, a shortlist that includes another customer's item and an engine selected without beating the existing engines must each fail a named check."
+    acceptance: "Deciding what a step receives costs a fast closed decision instead of a full model call, and only where the measurement shows it chooses as well."
+    evidence: "Research, technique 12: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. InfoWorld reported on September 17, 2026 that Jev returns a typed decision with its probability in 70 to 500 milliseconds; a feed post reports a 95 percent cut in input tokens from a decision model in front of skills, tools and context (one user, no method). opencode_step_provision.py spends one extra model call of about 7,800 input tokens per step. The Jev adapter has local contract checks and no live quality evidence."
+    next_local_work: "Build the frozen step set from recorded provisioning decisions, then the engine against a local typed-decision fixture before any live endpoint."
+  - id: S-6.172
+    phase: 6
+    title: "Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning"
+    status: proposed
+    depends_on: [S-6.63, S-6.77]
+    boundary: [src/loop_engine/data/engine_slots.yaml, tools/candidate_review]
+    verify:
+      - "an improvement Loop that proposes edits to harness configuration, instruction files or library items records for each candidate its declared edits, component, hypothesis, diff, score change, cost change and decision"
+      - "an edit budget per candidate shrinks over the rounds of a run; a noise band measured by rerunning the unchanged baseline sets an acceptance floor; a cost rule rejects cost growth that measured gain does not pay for"
+      - "before any evaluation, deterministic pre-checks (task names, answers, grader paths, secrets) and a reviewer from a model family other than the proposer's apply six rules adapted from RRSI's Apache 2.0 critic, with its notice"
+      - "components that stop earning measured gain over a declared window are proposed for removal, and held-out and out-of-distribution sets never tune these settings"
+    adversarial: "An edit that names an evolve-set task, an edit that reads the grader, a costlier candidate inside the noise band, an undeclared bundled edit, a memory mechanism that persists task-specific answers, an unbounded retry loop and a reviewer from the proposer's family must each be refused before evaluation or at selection."
+    acceptance: "Self-improvement keeps only changes that transfer beyond the tasks they were tuned on and that pay for their cost, and each accepted change can be traced to its evidence."
+    evidence: "Research, technique 25: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. RRSI (arXiv 2609.24972, code google-research/rrsi at be50316e, Apache 2.0) reports the smallest in-distribution gain but the best out-of-distribution average (43.6 against 39.7 for the starting harness), and 2.42 million policy tokens per trial against 3.80 million for unregularized evolution. Its critic shared the proposer's model family, which Baltor's review rule refuses."
+    next_local_work: "Model the candidate record and the noise-band measurement on the daily state review Loop of S-6.77, then adapt the six critic rules with their notice."
+  - id: S-6.173
+    phase: 6
+    title: "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first"
+    status: proposed
+    depends_on: [S-6.31, S-6.110, S-6.165]
+    boundary: [benchmarks, case-studies]
+    verify:
+      - "a design frozen before any counted call: a random sample of tasks from a public suite run through Harbor, starting with Terminal-Bench 2.1, three attempts per task, an attempt cap, one price list dated before the run and 95 percent bootstrap intervals over task means"
+      - "arms on the same model route: one native harness session, the same harness with the drop-only compaction proxy, Baltor per step with a fresh harness and only its files, and optionally a long-context runtime such as Subconscious as a separate route"
+      - "Gemma 4 on Ollama Cloud first, within the owner's model authority, with a call ceiling and a pilot of a few tasks"
+      - "the showcase run record of S-6.110 holds each arm's step files, cost by billing class, turns and failures, and a negative result is published as recorded"
+    adversarial: "Arms that differ in tasks, model route or checker, a price list dated after the run, an unknown cost shown as zero, a vendor number shown as a Baltor result and an attempt that can read the hidden verifier must each fail a named check."
+    acceptance: "Baltor can state, with its own records and intervals, what running each step in a fresh harness costs and gains against one long session on the same model."
+    evidence: "Research, techniques 11, 14 and 30: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. HarnessTax (UC Berkeley and Arena Intelligence) measured 21 model and harness pairs on 30 sampled tasks per suite with three attempts and bootstrap intervals, and found cost ratios of 1.5 to 2.0 at success differences within about 2 to 5 points. The vendor comparisons in the feed use single runs, leaderboard values or their own evaluations."
+    next_local_work: "Write the frozen design and the price list, then run a five-task pilot on Ollama Cloud when the weekly allowance allows."
+  - id: S-6.174
+    phase: 6
+    title: "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records"
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, docs/guides/launch-benefits-and-evidence.md]
+    verify:
+      - "the efficiency page gains a short section that cites HarnessTax's cost differences at similar success, the Australian Signals Directorate's guidance to give each sub-agent only the tools, permissions and context its part needs and to start fresh sessions instead of summarizing, and Harness-Zero's finding that generic harnesses lowered a small model's score, each with its population, date and limits"
+      - "vendor numbers (Strands harness, Unreal Agent, Teradata, Subconscious, Cursor) are not presented as evidence of Baltor's benefit"
+      - "each statement links its source, and a Baltor number appears only from a showcase run record"
+      - "the text follows the product style guide and uses no runtime terms on the public page"
+    adversarial: "A vendor percentage presented as a Baltor result, an outside figure without its task population and limits, a Baltor number without a run record and an evaluative sentence presented as a measurement must each fail a named check."
+    acceptance: "A visitor to the efficiency page sees why fresh, focused steps should help, with outside evidence stated precisely and no number Baltor cannot support."
+    evidence: "Research, techniques 10 and 11: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. AGENTS.md allows outside results only with their task population, model, harness version, evaluator, source and limits. The site already says that each step carries only the context it needs."
+    next_local_work: "Draft the section against the product style guide, then add its named check to the page checks."
+  - id: S-6.175
+    phase: 6
+    title: "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items"
+    status: proposed
+    depends_on: [S-6.45, S-6.63, S-6.69]
+    boundary: [tools/candidate_review, docs/research]
+    verify:
+      - "ten candidates are drafted: a harness cost audit skill with a request-rendering script, a cache-stable prefix checker, a large-output wrapper, a drop-only compaction proxy setup, a leakage review skill, a credential and egress probe, a trace integrity setup, a failure localization skill, a tool error classifier and a long-running command wrapper"
+      - "each candidate records its licence basis: adapted text only from Apache 2.0 or MIT sources (RRSI's critic, CliffCompaction) with notices and pinned commits, and original work where the source carries no copying licence (Cursor's prompt, the papers' text)"
+      - "each candidate carries its tests and declared effects, passes the deterministic prechecks, and is labelled Community or Verified by the tier rule, with the harnesses it was tested in and offered, loaded, used and verified kept apart"
+      - "review criteria for every package gain four rules: tools accept batches where the work is independent, scripts print plain output when not attached to a terminal, tools declare their output bound and what happens beyond it, and wrappers pass partial failures through"
+      - "the malicious-skill regression set of S-6.45 gains cases for a skill that asks the agent to delete its trace, a skill or script that reads process memory, the environment or credential files, a harness edit that names tasks or reads a grader, and a loop without an exit"
+    adversarial: "A package that copies text from a source without a copying licence, a package without its tests, a wrapper that silently truncates output, a leakage review that approves an edit naming a task, a Community label without one independent review and a published skill that asks for trace deletion must each be refused."
+    acceptance: "The library serves reviewed harness engineering packages that no served item covered on September 24, 2026, and every published item faces the checks these sources call for."
+    evidence: "Research, techniques 3, 5, 6, 16, 25 and 31: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. The September 24 library inventory found no unit on cache layout, tool offloading, token audits, compaction policy or trace integrity. arXiv 2609.30266 induced trace deletion with a skill file framed as privacy protection."
+    next_local_work: "Draft the large-output wrapper and the credential and egress probe first, since both are deterministic and testable offline, then queue all ten for the review panel."
+  - id: S-6.176
+    phase: 6
+    title: "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound"
+    status: proposed
+    depends_on: [S-6.50, S-6.94, S-6.165]
+    boundary: [src/loop_engine/core/harness_recipes.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a tool result above a declared size is written to a file, and the model sees a preview, the size and the path; the threshold is a setting per model family chosen from recorded comparisons"
+      - "a long tool returns an in-progress result at once and delivers its final result on a later turn, following the run contracts of S-6.94, and independent tool calls are issued in one turn"
+      - "small models use schema-constrained output only where a provider capability record says the provider supports it (Ollama's documentation of September 24, 2026 says local Ollama accepts a JSON schema format and that Ollama Cloud does not support structured outputs); elsewhere output is validated and repaired within a bounded number of attempts"
+      - "a step ends or changes approach after a declared number of turns with no new host-observed evidence (no changed file, no new test result, no new source), recorded as a typed exit reason"
+      - "each default is an option with its comparison record, and none becomes the default without the benchmark of S-6.173"
+    adversarial: "A tool result truncated without a file, a long tool that blocks the turn, a schema-constrained request sent to Ollama Cloud without the fallback, a step that runs past its progress bound and a default switched on without its comparison must each fail a named check."
+    acceptance: "Baltor's own harness path starts from the techniques with the best evidence, each one switchable and measured."
+    evidence: "Research, techniques 5, 15, 17 and 20: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Read in source: Strands harness offloads results over 1,500 tokens with a 750-token preview (7ae759d3); Unreal Agent returns a running placeholder, wakes on completion and bounds output at 40,000 characters with a path to the full stream (1b9f7784). A feed post reports llama3.2 passing 0 of 3 search runs prompted and 3 of 3 with a constrained grammar."
+    next_local_work: "Add the provider capability record for structured output with the Ollama Cloud case, then the file offload option with its fixture."

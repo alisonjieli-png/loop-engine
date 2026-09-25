@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:85c38b191611b8d8bc3436d936f8ef93f0fe00a78f71f39a2dc8f83157e36a1c`.
+Source fingerprint: `sha256:76b189b57b5ba5416e91bc0073826a1f563c86424c92c48857c07845efc37522`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
 | Being built now | 42 |
-| Can start next | 13 |
-| Waiting on earlier work | 87 |
+| Can start next | 15 |
+| Waiting on earlier work | 120 |
 | Blocked | 2 |
 | Done | 45 |
 
@@ -68,6 +68,8 @@ Source fingerprint: `sha256:85c38b191611b8d8bc3436d936f8ef93f0fe00a78f71f39a2dc8
 |---|---|---|---|
 | S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep co |
 | S-6.76 | Reusable development workflows and recurring reviews with declared effect policies | ready | Choose a scheduler that can run the workflows against this machine (a timer that starts a headless harness, or a hosted routine for read-only jobs) and record the first scheduled runs. |
+| S-6.153 | Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log | proposed | Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit. |
+| S-6.157 | Research watch sources for the chat platforms | proposed | Add the four sources and raise the limits, with tests. |
 | S-2.10 | Intelligence access contract and no-direct-edit conformance rule | proposed |  |
 | S-2.18 | Relayer each declared boundary package from core one boundary at a time | proposed |  |
 | S-2.19 | Move the specifications at the docs root into their kind folders with redirect stubs | proposed |  |
@@ -155,6 +157,39 @@ Source fingerprint: `sha256:85c38b191611b8d8bc3436d936f8ef93f0fe00a78f71f39a2dc8
 | S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
 | S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
 | S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
+| S-6.140 | Author namespaces and a publish scope that a download key never carries | proposed | S-6.85 |
+| S-6.141 | Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it | proposed | S-6.140, S-6.62 |
+| S-6.142 | Automated checks on every submission on a worker, and the same deterministic checks on the author's machine | proposed | S-6.141, S-6.40, S-6.45 |
+| S-6.143 | A package's own tests in an offline sandbox on a worker that holds no Baltor secret | proposed | S-6.142 |
+| S-6.144 | Independent review of submissions into the Community tier, never by the author or a declared model family | proposed | S-6.143, S-6.63 |
+| S-6.145 | Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown | proposed | S-6.144, S-6.83 |
+| S-6.146 | Author pages, package pages and the publishing dashboard | proposed | S-6.145, S-6.67 |
+| S-6.147 | Contributor terms and the privacy notice addition, published with the feature | proposed | S-6.141 |
+| S-6.148 | Provenance for submitted packages: verified source links, trusted publishing and a signed publish record | proposed | S-6.144 |
+| S-6.149 | A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance | proposed | S-6.39 |
+| S-6.150 | Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off | proposed | S-6.149 |
+| S-6.151 | Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group | proposed | S-6.150, S-6.153 |
+| S-6.152 | Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first | proposed | S-6.150, S-6.153 |
+| S-6.154 | Solution cards: consented write-ups of solved community threads on Baltor's own pages | proposed | S-6.153 |
+| S-6.155 | Unmet recipe requests become consented demand records that feed the package factory | proposed | S-6.150, S-6.40 |
+| S-6.156 | Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified | proposed | S-6.151, S-6.152 |
+| S-6.160 | Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine | proposed | S-6.44, S-6.75 |
+| S-6.161 | Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion | proposed | S-6.160, S-6.47 |
+| S-6.162 | Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run | proposed | S-6.161, S-6.54 |
+| S-6.163 | A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection | proposed | S-6.22, S-6.74 |
+| S-6.164 | Original harness packages from the agent stack research, through independent review | proposed | S-6.69, S-6.63 |
+| S-6.165 | Token accounting by billing class, dated prices and price-weighted cost per accepted step | proposed | S-6.6, S-6.41 |
+| S-6.166 | Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends | proposed | S-6.44, S-6.165 |
+| S-6.167 | The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items | proposed | S-6.61 |
+| S-6.168 | Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call | proposed | S-6.61, S-6.93 |
+| S-6.169 | Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure | proposed | S-6.96 |
+| S-6.170 | A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival | proposed | S-6.31, S-6.165 |
+| S-6.171 | A typed-decision provisioning engine that decides which skills, tools and context files the next step receives | proposed | S-6.58, S-6.93 |
+| S-6.172 | Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning | proposed | S-6.63, S-6.77 |
+| S-6.173 | A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first | proposed | S-6.31, S-6.110, S-6.165 |
+| S-6.174 | An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records | proposed | S-6.33 |
+| S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
+| S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

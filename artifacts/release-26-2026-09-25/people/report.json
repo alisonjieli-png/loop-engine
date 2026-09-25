@@ -1,0 +1,1265 @@
+{
+ "record_type": "live_site_for_people_check/v1",
+ "origin": "https://baltor.ai",
+ "checked_at": "2026-09-25T08:49:33.438Z",
+ "pages": 33,
+ "hostnames": 7,
+ "views": 139,
+ "links_checked": 29,
+ "problems": [
+  {
+   "where": "/for/coding-agents (desktop, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/coding-agents (desktop, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/engineering-teams (desktop, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/engineering-teams (desktop, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/comparing-tools (desktop, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/comparing-tools (desktop, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/protocol-and-client (desktop, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/protocol-and-client (desktop, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/status (desktop, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/status (desktop, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/coding-agents (desktop, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/coding-agents (desktop, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/engineering-teams (desktop, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/engineering-teams (desktop, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/comparing-tools (desktop, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/comparing-tools (desktop, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/protocol-and-client (desktop, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/protocol-and-client (desktop, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/status (desktop, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/status (desktop, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/coding-agents (phone, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/coding-agents (phone, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/engineering-teams (phone, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/engineering-teams (phone, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/comparing-tools (phone, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/comparing-tools (phone, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/protocol-and-client (phone, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/protocol-and-client (phone, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/status (phone, light)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/status (phone, light)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/coding-agents (phone, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/coding-agents (phone, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/engineering-teams (phone, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/engineering-teams (phone, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/comparing-tools (phone, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/comparing-tools (phone, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/for/protocol-and-client (phone, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/for/protocol-and-client (phone, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  },
+  {
+   "where": "/status (phone, dark)",
+   "problem": "answered 404"
+  },
+  {
+   "where": "/status (phone, dark)",
+   "problem": "script errors: Applying inline style violates the following Content Security Policy directive 'style-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-LQ7gl2z3A94XKAOIg8SvsBKV/9jV4FkHTH0oSACC+n4='), o"
+  }
+ ],
+ "passed": false,
+ "rows": [
+  {
+   "address": "/",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The perfect harness setup for every task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Inspect first.Fetch only what you need.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Solve complex problems overnight.",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "More efficient operation.",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Learning and optimization, built in.",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Know what you share.Control what can run.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Access and usage.",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "desktop",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Accounts and access.",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The perfect harness setup for every task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Inspect first.Fetch only what you need.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Solve complex problems overnight.",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "More efficient operation.",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Learning and optimization, built in.",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Know what you share.Control what can run.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Access and usage.",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "desktop",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Accounts and access.",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "The perfect harness setup for every task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Inspect first.Fetch only what you need.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Solve complex problems overnight.",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "More efficient operation.",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Learning and optimization, built in.",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "phone",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "phone",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "phone",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "phone",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Know what you share.Control what can run.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "phone",
+   "scheme": "light",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Access and usage.",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "phone",
+   "scheme": "light",
+   "status": 200,
+   "heading": "Accounts and access.",
+   "script_errors": 0
+  },
+  {
+   "address": "/",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "The perfect harness setup for every task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/get-started",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/setup",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/connect",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/how-it-works",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Big problems.Clear steps.",
+   "script_errors": 0
+  },
+  {
+   "address": "/pricing",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "One plan.The whole library.",
+   "script_errors": 0
+  },
+  {
+   "address": "/examples",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Inspect first.Fetch only what you need.",
+   "script_errors": 0
+  },
+  {
+   "address": "/use-cases",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What teams do with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/overnight",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Solve complex problems overnight.",
+   "script_errors": 0
+  },
+  {
+   "address": "/efficiency",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "More efficient operation.",
+   "script_errors": 0
+  },
+  {
+   "address": "/learning",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Learning and optimization, built in.",
+   "script_errors": 0
+  },
+  {
+   "address": "/for/coding-agents",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/engineering-teams",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/comparing-tools",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/for/protocol-and-client",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Set up, search and download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/getting-set-up",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Three steps to your first download.",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/searching-and-retrieving",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Searching and retrieving",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/serving-and-connections",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Serving and connections",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/troubleshooting",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Troubleshooting",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/your-account",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Your account",
+   "script_errors": 0
+  },
+  {
+   "address": "/docs/usage-and-what-you-pay-for",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Usage and what you pay for",
+   "script_errors": 0
+  },
+  {
+   "address": "/security",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Know what you share.Control what can run.",
+   "script_errors": 0
+  },
+  {
+   "address": "/status",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 404,
+   "heading": "This service has no page at that address.",
+   "script_errors": 1
+  },
+  {
+   "address": "/docs/what-baltor-is",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "What Baltor is",
+   "script_errors": 0
+  },
+  {
+   "address": "/waitlist",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Get started with Baltor.",
+   "script_errors": 0
+  },
+  {
+   "address": "/login",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Welcome back.",
+   "script_errors": 0
+  },
+  {
+   "address": "/privacy",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor privacy notice",
+   "script_errors": 0
+  },
+  {
+   "address": "/terms",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Baltor terms of service",
+   "script_errors": 0
+  },
+  {
+   "address": "/signup",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Create your Baltor account.",
+   "script_errors": 0
+  },
+  {
+   "address": "/app",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Find material for your next task.",
+   "script_errors": 0
+  },
+  {
+   "address": "/account",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Access and usage.",
+   "script_errors": 0
+  },
+  {
+   "address": "/admin",
+   "size": "phone",
+   "scheme": "dark",
+   "status": 200,
+   "heading": "Accounts and access.",
+   "script_errors": 0
+  },
+  {
+   "hostname": "baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "www.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "docs.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "status.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "examples.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "demo.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  },
+  {
+   "hostname": "app.baltor.ai",
+   "status": 200,
+   "heading": "The perfect harness setup for every task."
+  }
+ ]
+}

@@ -1,0 +1,177 @@
+{
+ "claude_code": "2.1.282 (Claude Code)",
+ "codex": "0.155.1",
+ "probes": {
+  "apm/P1-single-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:05.717Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13762
+   }
+  },
+  "apm/P2-multi-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:06.407Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13777
+   }
+  },
+  "dotagents/P1-single-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:07.050Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13786
+   }
+  },
+  "dotagents/P2-multi-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:07.758Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13806
+   }
+  },
+  "native/P1-single-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:08.428Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13775
+   }
+  },
+  "native/P2-multi-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:09.124Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13794
+   }
+  },
+  "opkg/P1-single-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:09.788Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13767
+   }
+  },
+  "opkg/P2-multi-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:10.441Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13786
+   }
+  },
+  "rulesync/P1-single-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:11.099Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13782
+   }
+  },
+  "rulesync/P2-multi-file": {
+   "claude_code": {
+    "debug_skill_lines": [
+     "2026-09-25T08:29:11.828Z [DEBUG] Loaded 1 unique skills (1 unconditional, 0 conditional, managed: 0, user: 0, project: 1, additional: 0, legacy commands: 0)"
+    ],
+    "listed": true,
+    "rc": 1,
+    "requests_captured": 1,
+    "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+   },
+   "codex": {
+    "listed": true,
+    "rc": 0,
+    "stderr_tail": "",
+    "stdout_bytes": 13802
+   }
+  }
+ },
+ "record_type": "e01_listing_probe/v1"
+}

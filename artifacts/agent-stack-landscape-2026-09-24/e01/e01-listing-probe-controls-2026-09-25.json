@@ -1,0 +1,36 @@
+{
+ "empty-project": {
+  "claude_code": {
+   "debug_skill_lines": [
+    "2026-09-25T08:29:13.126Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)"
+   ],
+   "listed": false,
+   "rc": 1,
+   "requests_captured": 1,
+   "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+  },
+  "codex": {
+   "listed": false,
+   "rc": 0,
+   "stderr_tail": "",
+   "stdout_bytes": 13433
+  }
+ },
+ "wrong-root": {
+  "claude_code": {
+   "debug_skill_lines": [
+    "2026-09-25T08:29:13.756Z [DEBUG] Loaded 0 unique skills (0 unconditional, 0 conditional, managed: 0, user: 0, project: 0, additional: 0, legacy commands: 0)"
+   ],
+   "listed": false,
+   "rc": 1,
+   "requests_captured": 1,
+   "stdout_tail": "API Error: 400 capture stub: no model behind this endpoint\n"
+  },
+  "codex": {
+   "listed": false,
+   "rc": 0,
+   "stderr_tail": "",
+   "stdout_bytes": 13425
+  }
+ }
+}

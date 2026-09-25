@@ -1,0 +1,1861 @@
+{
+ "record_type": "agent_stack_source_register/v1",
+ "fetched": "2026-09-25 (UTC times per page)",
+ "method": "urllib fetch with redirects followed; GitHub REST metadata through the GitHub command line; PyPI JSON and npm registry metadata",
+ "pages": [
+  {
+   "bytes": 441725,
+   "ctype": "text/html",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://tessl.io/",
+   "sha256_16": "4e97ec6e7d0b26ab",
+   "status": 200,
+   "text_chars": 8694,
+   "url": "https://tessl.io/"
+  },
+  {
+   "bytes": 368656,
+   "ctype": "text/html",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://tessl.io/pricing",
+   "sha256_16": "167a168e1d4c57ba",
+   "status": 200,
+   "text_chars": 7067,
+   "url": "https://tessl.io/pricing"
+  },
+  {
+   "bytes": 13917,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/llms.txt",
+   "sha256_16": "48ec43e141dd9521",
+   "status": 200,
+   "text_chars": 13917,
+   "url": "https://docs.tessl.io/llms.txt"
+  },
+  {
+   "bytes": 7155,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/overview/readme.md",
+   "sha256_16": "fe23158a340c62b6",
+   "status": 200,
+   "text_chars": 7143,
+   "url": "https://docs.tessl.io/overview/readme.md"
+  },
+  {
+   "bytes": 22231,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/use/using-the-tessl-agent.md",
+   "sha256_16": "559302a9a7839bad",
+   "status": 200,
+   "text_chars": 22223,
+   "url": "https://docs.tessl.io/use/using-the-tessl-agent.md"
+  },
+  {
+   "bytes": 20542,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/improving-your-skills/evaluate-skill-quality-using-scenarios.md",
+   "sha256_16": "d2b228199d154686",
+   "status": 200,
+   "text_chars": 20480,
+   "url": "https://docs.tessl.io/improving-your-skills/evaluate-skill-quality-using-scenarios.md"
+  },
+  {
+   "bytes": 8811,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/creating-skills-and-plugins/publish-and-update.md",
+   "sha256_16": "860714b51883b9f9",
+   "status": 200,
+   "text_chars": 8811,
+   "url": "https://docs.tessl.io/creating-skills-and-plugins/publish-and-update.md"
+  },
+  {
+   "bytes": 4038,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/distribute/sharing-plugins-publicly.md",
+   "sha256_16": "b833f269bd48c4d1",
+   "status": 200,
+   "text_chars": 4038,
+   "url": "https://docs.tessl.io/distribute/sharing-plugins-publicly.md"
+  },
+  {
+   "bytes": 3614,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/use/understand-your-skill-estate.md",
+   "sha256_16": "f360d9d98622db21",
+   "status": 200,
+   "text_chars": 3614,
+   "url": "https://docs.tessl.io/use/understand-your-skill-estate.md"
+  },
+  {
+   "bytes": 5058,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/reference/glossary.md",
+   "sha256_16": "51f49bc5236e36cc",
+   "status": 200,
+   "text_chars": 5058,
+   "url": "https://docs.tessl.io/reference/glossary.md"
+  },
+  {
+   "bytes": 8934,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/support/faqs.md",
+   "sha256_16": "cf93687e97781a49",
+   "status": 200,
+   "text_chars": 8919,
+   "url": "https://docs.tessl.io/support/faqs.md"
+  },
+  {
+   "bytes": 9330,
+   "ctype": "text/markdown",
+   "entry": "tessl",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.tessl.io/reference/skill-schemas.md",
+   "sha256_16": "99c0ef773e8100f3",
+   "status": 200,
+   "text_chars": 9300,
+   "url": "https://docs.tessl.io/reference/skill-schemas.md"
+  },
+  {
+   "bytes": 330592,
+   "ctype": "text/html",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://composio.dev/",
+   "sha256_16": "570503de961021d4",
+   "status": 200,
+   "text_chars": 13822,
+   "url": "https://composio.dev/"
+  },
+  {
+   "bytes": 760642,
+   "ctype": "text/html",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://composio.dev/pricing",
+   "sha256_16": "dc4381f0098f4f22",
+   "status": 200,
+   "text_chars": 19729,
+   "url": "https://composio.dev/pricing"
+  },
+  {
+   "bytes": 4445,
+   "ctype": "text/plain",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.composio.dev/llms.txt",
+   "sha256_16": "8e081a7814f865b6",
+   "status": 200,
+   "text_chars": 4445,
+   "url": "https://docs.composio.dev/llms.txt"
+  },
+  {
+   "bytes": 15175,
+   "ctype": "text/markdown",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.composio.dev/docs/how-composio-works.md",
+   "sha256_16": "147f27e5263a966d",
+   "status": 200,
+   "text_chars": 15148,
+   "url": "https://docs.composio.dev/docs/how-composio-works.md"
+  },
+  {
+   "bytes": 52071,
+   "ctype": "text/markdown",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.composio.dev/docs/configuring-sessions.md",
+   "sha256_16": "d9980cf4194623fb",
+   "status": 200,
+   "text_chars": 52022,
+   "url": "https://docs.composio.dev/docs/configuring-sessions.md"
+  },
+  {
+   "bytes": 10871,
+   "ctype": "text/markdown",
+   "entry": "composio",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.composio.dev/docs/skills.md",
+   "sha256_16": "360db3276f55aa53",
+   "status": 200,
+   "text_chars": 10846,
+   "url": "https://docs.composio.dev/docs/skills.md"
+  },
+  {
+   "bytes": 79363,
+   "ctype": "text/markdown",
+   "entry": "deepagents",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.langchain.com/oss/python/deepagents/overview.md",
+   "sha256_16": "c337bee653466956",
+   "status": 200,
+   "text_chars": 79353,
+   "url": "https://docs.langchain.com/oss/python/deepagents/overview.md"
+  },
+  {
+   "bytes": 13356,
+   "ctype": "text/markdown",
+   "entry": "deepagents",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.langchain.com/oss/python/deepagents/permissions.md",
+   "sha256_16": "c0c0cb15d6810d4c",
+   "status": 200,
+   "text_chars": 13356,
+   "url": "https://docs.langchain.com/oss/python/deepagents/permissions.md"
+  },
+  {
+   "bytes": 85068,
+   "ctype": "text/markdown",
+   "entry": "deepagents",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.langchain.com/oss/python/deepagents/skills.md",
+   "sha256_16": "e7da71f070271350",
+   "status": 200,
+   "text_chars": 85066,
+   "url": "https://docs.langchain.com/oss/python/deepagents/skills.md"
+  },
+  {
+   "bytes": 9749,
+   "ctype": "text/markdown",
+   "entry": "deepagents",
+   "fetched_utc": "2026-09-25T08:06:33Z",
+   "final": "https://docs.langchain.com/oss/python/deepagents/acp.md",
+   "sha256_16": "b44b288eb210727d",
+   "status": 200,
+   "text_chars": 9749,
+   "url": "https://docs.langchain.com/oss/python/deepagents/acp.md"
+  },
+  {
+   "bytes": 3569,
+   "ctype": "text/plain",
+   "entry": "deepagents",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.langchain.com/oss/python/deepagents/llms.txt",
+   "sha256_16": "7f44424040e19eb4",
+   "status": 200,
+   "text_chars": 3569,
+   "url": "https://docs.langchain.com/oss/python/deepagents/llms.txt"
+  },
+  {
+   "bytes": 422437,
+   "ctype": "text/html",
+   "entry": "relace",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://relace.ai/",
+   "sha256_16": "7863323d368bb7b5",
+   "status": 200,
+   "text_chars": 4678,
+   "url": "https://www.relace.ai/"
+  },
+  {
+   "bytes": 5732,
+   "ctype": "text/plain",
+   "entry": "relace",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.relace.ai/llms.txt",
+   "sha256_16": "f16bc16d5de2c661",
+   "status": 200,
+   "text_chars": 5730,
+   "url": "https://docs.relace.ai/llms.txt"
+  },
+  {
+   "bytes": 476382,
+   "ctype": "text/html",
+   "entry": "relace",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://relace.ai/pricing",
+   "sha256_16": "502f1b5629a50ebb",
+   "status": 200,
+   "text_chars": 4384,
+   "url": "https://www.relace.ai/pricing"
+  },
+  {
+   "bytes": 6721,
+   "ctype": "text/markdown",
+   "entry": "morph",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://www.morphllm.com/",
+   "sha256_16": "2ff48830b8543ad9",
+   "status": 200,
+   "text_chars": 6677,
+   "url": "https://www.morphllm.com/"
+  },
+  {
+   "bytes": 23809,
+   "ctype": "text/plain",
+   "entry": "morph",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://docs.morphllm.com/llms.txt",
+   "sha256_16": "c8349829d1a37a50",
+   "status": 200,
+   "text_chars": 23793,
+   "url": "https://docs.morphllm.com/llms.txt"
+  },
+  {
+   "bytes": 33945,
+   "ctype": "text/html",
+   "entry": "morph",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://www.morphllm.com/pricing",
+   "sha256_16": "3d3cb10a192a47de",
+   "status": 429,
+   "text_chars": 167,
+   "url": "https://www.morphllm.com/pricing"
+  },
+  {
+   "bytes": 325344,
+   "ctype": "text/html",
+   "entry": "codemode",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://blog.cloudflare.com/code-mode/",
+   "sha256_16": "4fba5a0f56cfe77b",
+   "status": 200,
+   "text_chars": 29824,
+   "url": "https://blog.cloudflare.com/code-mode/"
+  },
+  {
+   "bytes": 24319,
+   "ctype": "text/plain",
+   "entry": "codemode",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://developers.cloudflare.com/agents/llms.txt",
+   "sha256_16": "13e6da9c411ce29b",
+   "status": 200,
+   "text_chars": 24309,
+   "url": "https://developers.cloudflare.com/agents/llms.txt"
+  },
+  {
+   "bytes": 285609,
+   "ctype": "text/html",
+   "entry": "codemode",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://developers.cloudflare.com/agents/tools/codemode/api-reference/",
+   "sha256_16": "e140bd70b4f114bd",
+   "status": 200,
+   "text_chars": 34902,
+   "url": "https://developers.cloudflare.com/agents/api-reference/codemode/"
+  },
+  {
+   "bytes": 43165,
+   "ctype": "text/html",
+   "entry": "apm",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://microsoft.github.io/apm/",
+   "sha256_16": "7bfde814fec67efb",
+   "status": 200,
+   "text_chars": 3469,
+   "url": "https://microsoft.github.io/apm/"
+  },
+  {
+   "bytes": 34660,
+   "ctype": "text/html",
+   "entry": "dotagents",
+   "fetched_utc": "2026-09-25T08:06:34Z",
+   "final": "https://dotagents.sentry.dev/",
+   "sha256_16": "0e84a4f4ff84546d",
+   "status": 200,
+   "text_chars": 3457,
+   "url": "https://dotagents.sentry.dev/"
+  },
+  {
+   "bytes": 437259,
+   "ctype": "text/html",
+   "entry": "rulesync",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://github.com/dyoshikawa/rulesync",
+   "sha256_16": "89bf7d0736c00dae",
+   "status": 200,
+   "text_chars": 12499,
+   "url": "https://github.com/dyoshikawa/rulesync"
+  },
+  {
+   "bytes": 61068,
+   "ctype": "text/html",
+   "entry": "openpackage",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://openpackage.dev/",
+   "sha256_16": "8dd308a7e38132a5",
+   "status": 200,
+   "text_chars": 1092,
+   "url": "https://openpackage.dev/"
+  },
+  {
+   "bytes": 2419,
+   "ctype": "text/markdown",
+   "entry": "dockermcp",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://docs.docker.com/ai/mcp-catalog-and-toolkit/",
+   "sha256_16": "c7fec46d4d9dae1a",
+   "status": 200,
+   "text_chars": 2419,
+   "url": "https://docs.docker.com/ai/mcp-catalog-and-toolkit/"
+  },
+  {
+   "bytes": 5149,
+   "ctype": "text/markdown",
+   "entry": "dockermcp",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://docs.docker.com/ai/mcp-catalog-and-toolkit/catalog/",
+   "sha256_16": "293ba28775e980bb",
+   "status": 200,
+   "text_chars": 5149,
+   "url": "https://docs.docker.com/ai/mcp-catalog-and-toolkit/catalog/"
+  },
+  {
+   "bytes": 5889,
+   "ctype": "text/markdown",
+   "entry": "dockermcp",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://docs.docker.com/llms.txt",
+   "sha256_16": "df2de4e3594d0f2d",
+   "status": 200,
+   "text_chars": 5887,
+   "url": "https://docs.docker.com/llms.txt"
+  },
+  {
+   "bytes": 321585,
+   "ctype": "text/html",
+   "entry": "smithery",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://smithery.ai/",
+   "sha256_16": "28f95539f97ecb8e",
+   "status": 200,
+   "text_chars": 29759,
+   "url": "https://smithery.ai/"
+  },
+  {
+   "bytes": 297287,
+   "ctype": "text/html",
+   "entry": "smithery",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://smithery.ai/docs",
+   "sha256_16": "341c9b9b72168722",
+   "status": 200,
+   "text_chars": 3378,
+   "url": "https://smithery.ai/docs"
+  },
+  {
+   "bytes": 112209,
+   "ctype": "text/html",
+   "entry": "smithery",
+   "fetched_utc": "2026-09-25T08:06:35Z",
+   "final": "https://smithery.ai/llms.txt",
+   "sha256_16": "9ac0e345a3d43fea",
+   "status": 404,
+   "text_chars": 1220,
+   "url": "https://smithery.ai/llms.txt"
+  },
+  {
+   "bytes": 99462,
+   "ctype": "text/html",
+   "entry": "smithery",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://www.arcade.dev/blog/smithery-joins-arcade/",
+   "sha256_16": "4dfdd755d7cb9fe3",
+   "status": 200,
+   "text_chars": 5430,
+   "url": "https://www.arcade.dev/blog/smithery-joins-arcade"
+  },
+  {
+   "bytes": 36089,
+   "ctype": "text/plain",
+   "entry": "e2b",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://docs.e2b.dev/llms.txt",
+   "sha256_16": "b7de2047e3a9b9ff",
+   "status": 200,
+   "text_chars": 36085,
+   "url": "https://e2b.dev/docs/llms.txt"
+  },
+  {
+   "bytes": 186285,
+   "ctype": "text/html",
+   "entry": "e2b",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://e2b.dev/pricing",
+   "sha256_16": "4dfcaf3ed372a65d",
+   "status": 200,
+   "text_chars": 3259,
+   "url": "https://e2b.dev/pricing"
+  },
+  {
+   "bytes": 211307,
+   "ctype": "text/plain",
+   "entry": "daytona",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://www.daytona.io/docs/llms.txt",
+   "sha256_16": "49b6eeb12e9127b3",
+   "status": 200,
+   "text_chars": 211302,
+   "url": "https://www.daytona.io/docs/llms.txt"
+  },
+  {
+   "bytes": 3697,
+   "ctype": "text/markdown",
+   "entry": "daytona",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://www.daytona.io/pricing",
+   "sha256_16": "663293d36d4450f2",
+   "status": 200,
+   "text_chars": 3696,
+   "url": "https://www.daytona.io/pricing"
+  },
+  {
+   "bytes": 147315,
+   "ctype": "text/html",
+   "entry": "runloop",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://runloop.ai/",
+   "sha256_16": "3c0e8768cc04edc9",
+   "status": 200,
+   "text_chars": 12178,
+   "url": "https://www.runloop.ai/"
+  },
+  {
+   "bytes": 22267,
+   "ctype": "text/plain",
+   "entry": "runloop",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://docs.runloop.ai/llms.txt",
+   "sha256_16": "4ddcd928d3a64136",
+   "status": 200,
+   "text_chars": 22048,
+   "url": "https://docs.runloop.ai/llms.txt"
+  },
+  {
+   "bytes": 63573,
+   "ctype": "text/html",
+   "entry": "dbos",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://docs.dbos.dev/",
+   "sha256_16": "317ae78beec8884e",
+   "status": 200,
+   "text_chars": 3587,
+   "url": "https://docs.dbos.dev/"
+  },
+  {
+   "bytes": 30646,
+   "ctype": "text/plain",
+   "entry": "dbos",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://docs.dbos.dev/llms.txt",
+   "sha256_16": "167fc2b01179157a",
+   "status": 200,
+   "text_chars": 30646,
+   "url": "https://docs.dbos.dev/llms.txt"
+  },
+  {
+   "bytes": 33290,
+   "ctype": "text/plain",
+   "entry": "restate",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://docs.restate.dev/llms.txt",
+   "sha256_16": "b0fc8c7d4f8b13d3",
+   "status": 200,
+   "text_chars": 33282,
+   "url": "https://docs.restate.dev/llms.txt"
+  },
+  {
+   "bytes": 4149,
+   "ctype": "text/markdown",
+   "entry": "restate",
+   "fetched_utc": "2026-09-25T08:06:36Z",
+   "final": "https://restate.dev/",
+   "sha256_16": "4dfebe423561f1af",
+   "status": 200,
+   "text_chars": 4129,
+   "url": "https://restate.dev/"
+  },
+  {
+   "bytes": 44454,
+   "ctype": "text/plain",
+   "entry": "mem0",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://docs.mem0.ai/llms.txt",
+   "sha256_16": "f1ff6c11b78ce074",
+   "status": 200,
+   "text_chars": 44454,
+   "url": "https://docs.mem0.ai/llms.txt"
+  },
+  {
+   "bytes": 587968,
+   "ctype": "text/html",
+   "entry": "mem0",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://mem0.ai/pricing",
+   "sha256_16": "6852a53e71f3c790",
+   "status": 200,
+   "text_chars": 4562,
+   "url": "https://mem0.ai/pricing"
+  },
+  {
+   "bytes": 261062,
+   "ctype": "text/html",
+   "entry": "zep",
+   "fetched_utc": "2026-09-25T08:06:38Z",
+   "final": "https://www.getzep.com/",
+   "sha256_16": "610db65828ef3397",
+   "status": 200,
+   "text_chars": 11923,
+   "url": "https://www.getzep.com/"
+  },
+  {
+   "bytes": 2878,
+   "ctype": "text/markdown",
+   "entry": "zep",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://help.getzep.com/llms.txt",
+   "sha256_16": "78efe2415fa39ef2",
+   "status": 200,
+   "text_chars": 2876,
+   "url": "https://help.getzep.com/llms.txt"
+  },
+  {
+   "bytes": 145162,
+   "ctype": "text/html",
+   "entry": "gepa",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://gepa-ai.github.io/gepa/",
+   "sha256_16": "59aef5002debbcc4",
+   "status": 200,
+   "text_chars": 11715,
+   "url": "https://gepa-ai.github.io/gepa/"
+  },
+  {
+   "bytes": 37759,
+   "ctype": "text/html",
+   "entry": "harbor",
+   "fetched_utc": "2026-09-25T08:06:38Z",
+   "final": "https://www.harborframework.com/",
+   "sha256_16": "c03184522d52b6d9",
+   "status": 200,
+   "text_chars": 325,
+   "url": "https://harborframework.com/"
+  },
+  {
+   "bytes": 297078,
+   "ctype": "text/html",
+   "entry": "harbor",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://docs.harborframework.com/",
+   "sha256_16": "0f6f0283ae7939df",
+   "status": 200,
+   "text_chars": 2053,
+   "url": "https://harborframework.com/docs"
+  },
+  {
+   "bytes": 12556,
+   "ctype": "text/plain",
+   "entry": "inspect",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://inspect.aisi.org.uk/llms.txt",
+   "sha256_16": "059663efb4f45cbf",
+   "status": 200,
+   "text_chars": 12548,
+   "url": "https://inspect.aisi.org.uk/llms.txt"
+  },
+  {
+   "bytes": 92017,
+   "ctype": "text/html",
+   "entry": "inspect",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://inspect.aisi.org.uk/agent-bridge.html",
+   "sha256_16": "0a077bfaa94fc952",
+   "status": 200,
+   "text_chars": 15393,
+   "url": "https://inspect.aisi.org.uk/agent-bridge.html"
+  },
+  {
+   "bytes": 298982,
+   "ctype": "text/html",
+   "entry": "tensorzero",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://github.com/tensorzero/tensorzero/tree/main/docs",
+   "sha256_16": "356bb73c1072534b",
+   "status": 200,
+   "text_chars": 4142,
+   "url": "https://www.tensorzero.com/docs"
+  },
+  {
+   "bytes": 298977,
+   "ctype": "text/html",
+   "entry": "tensorzero",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://github.com/tensorzero/tensorzero/tree/main/docs",
+   "sha256_16": "a06025af6d176516",
+   "status": 200,
+   "text_chars": 4142,
+   "url": "https://www.tensorzero.com/docs/llms.txt"
+  },
+  {
+   "bytes": 5289,
+   "ctype": "text/html",
+   "entry": "tensorzero",
+   "fetched_utc": "2026-09-25T08:06:37Z",
+   "final": "https://www.tensorzero.com/",
+   "sha256_16": "228df4cd6e3e94b1",
+   "status": 200,
+   "text_chars": 147,
+   "url": "https://www.tensorzero.com/"
+  },
+  {
+   "bytes": 48711,
+   "ctype": "text/plain",
+   "entry": "mcp",
+   "fetched_utc": "2026-09-25T08:06:38Z",
+   "final": "https://modelcontextprotocol.io/llms.txt",
+   "sha256_16": "c228f2c8f26c0f80",
+   "status": 200,
+   "text_chars": 48709,
+   "url": "https://modelcontextprotocol.io/llms.txt"
+  },
+  {
+   "bytes": 325292,
+   "ctype": "text/html",
+   "entry": "mcp",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://modelcontextprotocol.io/specification/2026-07-28/changelog",
+   "sha256_16": "5c6e50367ad5a30c",
+   "status": 200,
+   "text_chars": 10028,
+   "url": "https://modelcontextprotocol.io/specification/2026-07-28/changelog"
+  },
+  {
+   "bytes": 289238,
+   "ctype": "text/html",
+   "entry": "mcp",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://modelcontextprotocol.io/docs/2026-07-28/learn/versioning",
+   "sha256_16": "80fbddce94ea6f84",
+   "status": 200,
+   "text_chars": 3406,
+   "url": "https://modelcontextprotocol.io/specification/versioning"
+  },
+  {
+   "bytes": 15679,
+   "ctype": "text/plain",
+   "entry": "acp",
+   "fetched_utc": "2026-09-25T08:06:38Z",
+   "final": "https://agentclientprotocol.com/llms.txt",
+   "sha256_16": "fe12726432e78485",
+   "status": 200,
+   "text_chars": 15679,
+   "url": "https://agentclientprotocol.com/llms.txt"
+  },
+  {
+   "bytes": 89423,
+   "ctype": "text/markdown",
+   "entry": "acp",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://agentclientprotocol.com/get-started/registry.md",
+   "sha256_16": "0dd1126cd46a0651",
+   "status": 200,
+   "text_chars": 89412,
+   "url": "https://agentclientprotocol.com/get-started/registry.md"
+  },
+  {
+   "bytes": 2508,
+   "ctype": "text/markdown",
+   "entry": "acp",
+   "fetched_utc": "2026-09-25T08:06:38Z",
+   "final": "https://agentclientprotocol.com/protocol/v1/transports.md",
+   "sha256_16": "43398f57a2336424",
+   "status": 200,
+   "text_chars": 2508,
+   "url": "https://agentclientprotocol.com/protocol/v1/transports.md"
+  },
+  {
+   "bytes": 13761,
+   "ctype": "text/markdown",
+   "entry": "acp",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://agentclientprotocol.com/rfds/v2/overview.md",
+   "sha256_16": "65807f6897290612",
+   "status": 200,
+   "text_chars": 13761,
+   "url": "https://agentclientprotocol.com/rfds/v2/overview.md"
+  },
+  {
+   "bytes": 92841,
+   "ctype": "text/html",
+   "entry": "a2a",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://a2a-protocol.org/latest/",
+   "sha256_16": "cd8978404ffbc88a",
+   "status": 200,
+   "text_chars": 6821,
+   "url": "https://a2a-protocol.org/latest/"
+  },
+  {
+   "bytes": 617214,
+   "ctype": "text/html",
+   "entry": "a2a",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://a2a-protocol.org/latest/specification/",
+   "sha256_16": "4805254c10d8cbde",
+   "status": 200,
+   "text_chars": 182823,
+   "url": "https://a2a-protocol.org/latest/specification/"
+  },
+  {
+   "bytes": 11933,
+   "ctype": "text/plain",
+   "entry": "agui",
+   "fetched_utc": "2026-09-25T08:06:39Z",
+   "final": "https://docs.ag-ui.com/llms.txt",
+   "sha256_16": "95e3b72f69dc72cf",
+   "status": 200,
+   "text_chars": 11873,
+   "url": "https://docs.ag-ui.com/llms.txt"
+  },
+  {
+   "bytes": 34622,
+   "ctype": "text/markdown",
+   "entry": "agui",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://docs.ag-ui.com/introduction.md",
+   "sha256_16": "f2a988bd40b5481d",
+   "status": 200,
+   "text_chars": 34580,
+   "url": "https://docs.ag-ui.com/introduction.md"
+  },
+  {
+   "bytes": 1374,
+   "ctype": "text/plain",
+   "entry": "agentskills",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://agentskills.io/llms.txt",
+   "sha256_16": "d9b01a3a13b79bb0",
+   "status": 200,
+   "text_chars": 1374,
+   "url": "https://agentskills.io/llms.txt"
+  },
+  {
+   "bytes": 8157,
+   "ctype": "text/markdown",
+   "entry": "agentskills",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://agentskills.io/specification.md",
+   "sha256_16": "2b1dbb4fd80c3174",
+   "status": 200,
+   "text_chars": 8127,
+   "url": "https://agentskills.io/specification.md"
+  },
+  {
+   "bytes": 25457,
+   "ctype": "text/markdown",
+   "entry": "agentskills",
+   "fetched_utc": "2026-09-25T08:06:40Z",
+   "final": "https://agentskills.io/clients.md",
+   "sha256_16": "d11e7259d6a9f017",
+   "status": 200,
+   "text_chars": 25443,
+   "url": "https://agentskills.io/clients.md"
+  },
+  {
+   "bytes": 199355,
+   "ctype": "text/html",
+   "entry": "agentuity",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://agentuity.com/",
+   "sha256_16": "a3fda15ce11e8dd3",
+   "status": 200,
+   "text_chars": 5401,
+   "url": "https://agentuity.com/"
+  },
+  {
+   "bytes": 45198,
+   "ctype": "text/html",
+   "entry": "agentuity",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://agentuity.com/docs",
+   "sha256_16": "a3fbc387f00b4ff2",
+   "status": 404,
+   "text_chars": 665,
+   "url": "https://agentuity.com/docs"
+  },
+  {
+   "bytes": 23968,
+   "ctype": "text/html",
+   "entry": "agentuity",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://agentcompany.com/agentuity",
+   "sha256_16": "1fd277924d2e2f26",
+   "status": 200,
+   "text_chars": 573,
+   "url": "https://agentuity.dev/"
+  },
+  {
+   "bytes": 412445,
+   "ctype": "text/html",
+   "entry": "mcprun",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://turbomcp.ai/",
+   "sha256_16": "eaef34e31f875f94",
+   "status": 200,
+   "text_chars": 6691,
+   "url": "https://mcp.run/"
+  },
+  {
+   "bytes": 412445,
+   "ctype": "text/html",
+   "entry": "mcprun",
+   "fetched_utc": "2026-09-25T08:06:41Z",
+   "final": "https://turbomcp.ai/",
+   "sha256_16": "eaef34e31f875f94",
+   "status": 200,
+   "text_chars": 6691,
+   "url": "https://turbomcp.ai/"
+  }
+ ],
+ "repositories": [
+  {
+   "requested": "ArcadeAI/arcade-mcp",
+   "full_name": "ArcadeAI/arcade-mcp",
+   "licence": "MIT",
+   "stars": 1033,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "ComposioHQ/composio",
+   "full_name": "ComposioHQ/composio",
+   "licence": "MIT",
+   "stars": 30313,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "@composio/slim@0.21.0",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "NangoHQ/nango",
+   "full_name": "NangoHQ/nango",
+   "licence": "NOASSERTION",
+   "stars": 12328,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.71.10",
+    "published": "2026-09-21"
+   }
+  },
+  {
+   "requested": "PipedreamHQ/pipedream",
+   "full_name": "PipedreamHQ/pipedream",
+   "licence": "NOASSERTION",
+   "stars": 11708,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "UKGovernmentBEIS/inspect_ai",
+   "full_name": "UKGovernmentBEIS/inspect_ai",
+   "licence": "MIT",
+   "stars": 2855,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "a2aproject/A2A",
+   "full_name": "a2aproject/A2A",
+   "licence": "Apache-2.0",
+   "stars": 25929,
+   "pushed": "2026-09-22",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.0.1",
+    "published": "2026-05-28"
+   }
+  },
+  {
+   "requested": "ag-ui-protocol/ag-ui",
+   "full_name": "ag-ui-protocol/ag-ui",
+   "licence": "MIT",
+   "stars": 16032,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "release/2026-09-23",
+    "published": "2026-09-23"
+   }
+  },
+  {
+   "requested": "agentclientprotocol/agent-client-protocol",
+   "full_name": "agentclientprotocol/agent-client-protocol",
+   "licence": "Apache-2.0",
+   "stars": 4324,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "schema-v1.23.0",
+    "published": "2026-09-18"
+   }
+  },
+  {
+   "requested": "agentgateway/agentgateway",
+   "full_name": "agentgateway/agentgateway",
+   "licence": "Apache-2.0",
+   "stars": 5038,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.5.0",
+    "published": "2026-08-27"
+   }
+  },
+  {
+   "requested": "agentskills/agentskills",
+   "full_name": "agentskills/agentskills",
+   "licence": "Apache-2.0",
+   "stars": 25673,
+   "pushed": "2026-08-09",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "agentuity/sdk",
+   "full_name": "agentuity/sdk",
+   "licence": "NOASSERTION",
+   "stars": 19,
+   "pushed": "2026-08-01",
+   "archived": false,
+   "latest_release": {
+    "tag": "v3.1.18",
+    "published": "2026-08-01"
+   }
+  },
+  {
+   "requested": "agno-agi/agno",
+   "full_name": "agno-agi/agno",
+   "licence": "Apache-2.0",
+   "stars": 42334,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v3.0.11",
+    "published": "2026-09-23"
+   }
+  },
+  {
+   "requested": "arcadeai-labs/smithery-cli",
+   "full_name": "arcadeai-labs/smithery-cli",
+   "licence": "AGPL-3.0",
+   "stars": 836,
+   "pushed": "2026-05-31",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.2.0",
+    "published": "2026-05-31"
+   }
+  },
+  {
+   "requested": "badlogic/pi-mono",
+   "full_name": "earendil-works/pi",
+   "licence": "MIT",
+   "stars": 109241,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.87.1",
+    "published": "2026-09-22"
+   }
+  },
+  {
+   "requested": "blaxel-ai/sandbox",
+   "full_name": "blaxel-ai/sandbox",
+   "licence": "MIT",
+   "stars": 28,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.2.61",
+    "published": "2026-09-22"
+   }
+  },
+  {
+   "requested": "browserbase/stagehand",
+   "full_name": "browserbase/stagehand",
+   "licence": "MIT",
+   "stars": 25368,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "@browserbasehq/stagehand@3.7.3",
+    "published": "2026-08-28"
+   }
+  },
+  {
+   "requested": "cloudflare/agents",
+   "full_name": "cloudflare/agents",
+   "licence": "MIT",
+   "stars": 5658,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "@cloudflare/worker-bundler@0.2.4",
+    "published": "2026-09-18"
+   }
+  },
+  {
+   "requested": "cloudflare/codemode",
+   "result": "Not Found"
+  },
+  {
+   "requested": "daytona/clients",
+   "full_name": "daytona/clients",
+   "licence": "NOASSERTION",
+   "stars": 12,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.217.0",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "daytonaio/daytona",
+   "full_name": "daytonaio/daytona",
+   "licence": null,
+   "stars": 71714,
+   "pushed": "2026-07-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.190.0",
+    "published": "2026-06-23"
+   }
+  },
+  {
+   "requested": "dbos-inc/dbos-transact-py",
+   "full_name": "dbos-inc/dbos-transact-py",
+   "licence": "MIT",
+   "stars": 1586,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "3.1.0",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "denoland/deno",
+   "full_name": "denoland/deno",
+   "licence": "MIT",
+   "stars": 108503,
+   "pushed": "2026-09-22",
+   "archived": false,
+   "latest_release": {
+    "tag": "v2.9.7",
+    "published": "2026-09-17"
+   }
+  },
+  {
+   "requested": "docker/mcp-gateway",
+   "full_name": "docker/mcp-gateway",
+   "licence": "MIT",
+   "stars": 1583,
+   "pushed": "2026-09-23",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "dylibso/mcpx",
+   "result": "Not Found"
+  },
+  {
+   "requested": "dyoshikawa/rulesync",
+   "full_name": "dyoshikawa/rulesync",
+   "licence": "MIT",
+   "stars": 1471,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v18.0.0",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "e2b-dev/E2B",
+   "full_name": "e2b-dev/E2B",
+   "licence": "Apache-2.0",
+   "stars": 13961,
+   "pushed": "2026-09-22",
+   "archived": false,
+   "latest_release": {
+    "tag": "e2b@2.51.0",
+    "published": "2026-09-18"
+   }
+  },
+  {
+   "requested": "enulus/OpenPackage",
+   "full_name": "enulus/OpenPackage",
+   "licence": "Apache-2.0",
+   "stars": 616,
+   "pushed": "2026-05-29",
+   "archived": false,
+   "latest_release": {
+    "tag": "0.11.3",
+    "published": "2026-05-11"
+   }
+  },
+  {
+   "requested": "extism/extism",
+   "full_name": "extism/extism",
+   "licence": "BSD-3-Clause",
+   "stars": 5775,
+   "pushed": "2026-09-02",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.30.0",
+    "published": "2026-06-04"
+   }
+  },
+  {
+   "requested": "gepa-ai/gepa",
+   "full_name": "gepa-ai/gepa",
+   "licence": "MIT",
+   "stars": 6731,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.1.4",
+    "published": "2026-07-15"
+   }
+  },
+  {
+   "requested": "getsentry/dotagents",
+   "full_name": "getsentry/dotagents",
+   "licence": "MIT",
+   "stars": 238,
+   "pushed": "2026-09-21",
+   "archived": false,
+   "latest_release": {
+    "tag": "3.1.0",
+    "published": "2026-09-09"
+   }
+  },
+  {
+   "requested": "getzep/graphiti",
+   "full_name": "getzep/graphiti",
+   "licence": "Apache-2.0",
+   "stars": 31146,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.30.2",
+    "published": "2026-09-08"
+   }
+  },
+  {
+   "requested": "harbor-framework/harbor",
+   "full_name": "harbor-framework/harbor",
+   "licence": "Apache-2.0",
+   "stars": 5595,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.23.0",
+    "published": "2026-09-12"
+   }
+  },
+  {
+   "requested": "inngest/inngest",
+   "full_name": "inngest/inngest",
+   "licence": "NOASSERTION",
+   "stars": 5884,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.45.1",
+    "published": "2026-09-17"
+   }
+  },
+  {
+   "requested": "langchain-ai/deepagents",
+   "full_name": "langchain-ai/deepagents",
+   "licence": "MIT",
+   "stars": 29755,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "deepagents==0.7.19",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "langwatch/langwatch",
+   "full_name": "langwatch/langwatch",
+   "licence": "Apache-2.0",
+   "stars": 4872,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "typescript-sdk@v1.18.0",
+    "published": "2026-09-22"
+   }
+  },
+  {
+   "requested": "laude-institute/harbor",
+   "full_name": "harbor-framework/harbor",
+   "licence": "Apache-2.0",
+   "stars": 5595,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.23.0",
+    "published": "2026-09-12"
+   }
+  },
+  {
+   "requested": "letta-ai/letta",
+   "full_name": "letta-ai/letta",
+   "licence": "Apache-2.0",
+   "stars": 24876,
+   "pushed": "2026-09-10",
+   "archived": false,
+   "latest_release": {
+    "tag": "0.16.8",
+    "published": "2026-05-14"
+   }
+  },
+  {
+   "requested": "mastra-ai/mastra",
+   "full_name": "mastra-ai/mastra",
+   "licence": "NOASSERTION",
+   "stars": 28324,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "@mastra/core@1.69.0",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "mem0ai/mem0",
+   "full_name": "mem0ai/mem0",
+   "licence": "Apache-2.0",
+   "stars": 65967,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "deepseek-plugin-v0.3.2",
+    "published": "2026-09-23"
+   }
+  },
+  {
+   "requested": "microsoft/apm",
+   "full_name": "microsoft/apm",
+   "licence": "MIT",
+   "stars": 3894,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.31.0",
+    "published": "2026-09-15"
+   }
+  },
+  {
+   "requested": "modal-labs/modal-client",
+   "full_name": "modal-labs/modal-client",
+   "licence": "Apache-2.0",
+   "stars": 517,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": null
+   }
+  },
+  {
+   "requested": "modelcontextprotocol/modelcontextprotocol",
+   "full_name": "modelcontextprotocol/modelcontextprotocol",
+   "licence": "NOASSERTION",
+   "stars": 9300,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "2026-07-28",
+    "published": "2026-07-28"
+   }
+  },
+  {
+   "requested": "pydantic/pydantic-ai",
+   "full_name": "pydantic/pydantic-ai",
+   "licence": "MIT",
+   "stars": 20164,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v2.50.0",
+    "published": "2026-09-25"
+   }
+  },
+  {
+   "requested": "restatedev/restate",
+   "full_name": "restatedev/restate",
+   "licence": "NOASSERTION",
+   "stars": 4470,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.7.12",
+    "published": "2026-09-22"
+   }
+  },
+  {
+   "requested": "riza-io/riza",
+   "result": "Not Found"
+  },
+  {
+   "requested": "runloopai/api-client-python",
+   "full_name": "runloopai/api-client-python",
+   "licence": "MIT",
+   "stars": 28,
+   "pushed": "2026-09-23",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.32.0",
+    "published": "2026-09-08"
+   }
+  },
+  {
+   "requested": "smithery-ai/cli",
+   "full_name": "arcadeai-labs/smithery-cli",
+   "licence": "AGPL-3.0",
+   "stars": 836,
+   "pushed": "2026-05-31",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.2.0",
+    "published": "2026-05-31"
+   }
+  },
+  {
+   "requested": "supermemoryai/supermemory",
+   "full_name": "supermemoryai/supermemory",
+   "licence": "MIT",
+   "stars": 30885,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "server-v0.0.8",
+    "published": "2026-08-17"
+   }
+  },
+  {
+   "requested": "tensorzero/tensorzero",
+   "full_name": "tensorzero/tensorzero",
+   "licence": "Apache-2.0",
+   "stars": 11716,
+   "pushed": "2026-06-11",
+   "archived": true,
+   "latest_release": {
+    "tag": "2026.6.0",
+    "published": "2026-06-04"
+   }
+  },
+  {
+   "requested": "topoteretes/cognee",
+   "full_name": "topoteretes/cognee",
+   "licence": "Apache-2.0",
+   "stars": 30971,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v1.6.1",
+    "published": "2026-09-24"
+   }
+  },
+  {
+   "requested": "triggerdotdev/trigger.dev",
+   "full_name": "triggerdotdev/trigger.dev",
+   "licence": "Apache-2.0",
+   "stars": 16404,
+   "pushed": "2026-09-24",
+   "archived": false,
+   "latest_release": {
+    "tag": "v4.6.4",
+    "published": "2026-09-22"
+   }
+  },
+  {
+   "requested": "tursodatabase/agentfs",
+   "full_name": "tursodatabase/agentfs",
+   "licence": null,
+   "stars": 3423,
+   "pushed": "2026-06-03",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.6.4",
+    "published": "2026-03-25"
+   }
+  },
+  {
+   "requested": "vectorize-io/hindsight",
+   "full_name": "vectorize-io/hindsight",
+   "licence": "MIT",
+   "stars": 28350,
+   "pushed": "2026-09-25",
+   "archived": false,
+   "latest_release": {
+    "tag": "v0.10.1",
+    "published": "2026-09-21"
+   }
+  }
+ ],
+ "repository_notes": [
+  {
+   "full_name": "daytonaio/daytona",
+   "note": "README notice: core development moved to a private codebase as of June 2026; contents now README.md and assets only; last public release v0.190.0 under AGPL-3.0"
+  },
+  {
+   "full_name": "tensorzero/tensorzero",
+   "note": "archived; homepage says no longer maintained"
+  }
+ ],
+ "packages": [
+  {
+   "registry": "pypi",
+   "name": "a2a-sdk",
+   "version": "1.1.5",
+   "uploaded": "2026-09-21",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "ag-ui-protocol",
+   "version": "1.0.0",
+   "uploaded": "2026-09-17",
+   "licence": "MIT"
+  },
+  {
+   "registry": "pypi",
+   "name": "agent-client-protocol",
+   "version": "0.12.1",
+   "uploaded": "2026-08-16",
+   "licence": null
+  },
+  {
+   "registry": "pypi",
+   "name": "apm-cli",
+   "version": "0.31.0",
+   "uploaded": "2026-09-15",
+   "licence": "MIT License"
+  },
+  {
+   "registry": "pypi",
+   "name": "composio",
+   "version": "0.24.0",
+   "uploaded": "2026-09-24",
+   "licence": null
+  },
+  {
+   "registry": "pypi",
+   "name": "daytona",
+   "version": "0.217.0",
+   "uploaded": "2026-09-24",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "dbos",
+   "version": "3.1.0",
+   "uploaded": "2026-09-24",
+   "licence": "MIT"
+  },
+  {
+   "registry": "pypi",
+   "name": "deepagents",
+   "version": "0.7.19",
+   "uploaded": "2026-09-24",
+   "licence": "MIT"
+  },
+  {
+   "registry": "pypi",
+   "name": "e2b",
+   "version": "2.51.0",
+   "uploaded": "2026-09-18",
+   "licence": "MIT"
+  },
+  {
+   "registry": "pypi",
+   "name": "gepa",
+   "version": "0.1.4",
+   "uploaded": "2026-07-15",
+   "licence": "MIT"
+  },
+  {
+   "registry": "pypi",
+   "name": "graphiti-core",
+   "version": "0.30.2",
+   "uploaded": "2026-09-08",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "harbor",
+   "version": "0.23.0",
+   "uploaded": "2026-09-12",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "inspect-ai",
+   "version": "0.3.268",
+   "uploaded": "2026-09-22",
+   "licence": "MIT License"
+  },
+  {
+   "registry": "pypi",
+   "name": "mem0ai",
+   "version": "2.2.0",
+   "uploaded": "2026-09-23",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "restate-sdk",
+   "version": "1.0.5",
+   "uploaded": "2026-09-02",
+   "licence": null
+  },
+  {
+   "registry": "pypi",
+   "name": "skills-ref",
+   "version": "0.1.1",
+   "uploaded": "2026-01-10",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "pypi",
+   "name": "tensorzero",
+   "version": "2026.6.0",
+   "uploaded": "2026-06-04",
+   "licence": null
+  },
+  {
+   "registry": "npm",
+   "name": "@cloudflare/codemode",
+   "version": "0.5.2",
+   "published": "2026-09-11",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "@composio/core",
+   "version": "0.21.0",
+   "published": "2026-09-24",
+   "licence": "ISC"
+  },
+  {
+   "registry": "npm",
+   "name": "@daytonaio/sdk",
+   "version": "0.217.0",
+   "published": "2026-09-24",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "npm",
+   "name": "@e2b/code-interpreter",
+   "version": "2.8.0",
+   "published": "2026-09-09",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "@mastra/core",
+   "version": "1.71.0",
+   "published": "2026-09-24",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "npm",
+   "name": "@runloop/api-client",
+   "version": "1.32.0",
+   "published": "2026-09-08",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "@sentry/dotagents",
+   "version": "3.1.0",
+   "published": "2026-09-09",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "@smithery/cli",
+   "version": "4.11.1",
+   "published": "2026-04-30",
+   "licence": null
+  },
+  {
+   "registry": "npm",
+   "name": "@tessl/cli",
+   "version": "0.111.0",
+   "published": "2026-09-24",
+   "licence": "SEE LICENSE.md"
+  },
+  {
+   "registry": "npm",
+   "name": "agents",
+   "version": "0.24.0",
+   "published": "2026-09-18",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "opkg",
+   "version": "0.11.3",
+   "published": "2026-05-11",
+   "licence": "Apache-2.0"
+  },
+  {
+   "registry": "npm",
+   "name": "rulesync",
+   "version": "18.0.0",
+   "published": "2026-09-24",
+   "licence": "MIT"
+  },
+  {
+   "registry": "npm",
+   "name": "tessl",
+   "version": "0.111.0",
+   "published": "2026-09-24",
+   "licence": "SEE LICENSE.md"
+  }
+ ],
+ "agent_client_protocol_registry": {
+  "url": "https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json",
+  "sha256": "715f5d1a8e4ee015cc2b2676c968ec94f96b6d52971901c6032332efc7790357",
+  "agent_count": 41,
+  "agent_ids": [
+   "agoragentic-acp",
+   "amp-acp",
+   "antigravity-acp",
+   "auggie",
+   "autohand",
+   "claude-acp",
+   "cline",
+   "codebuddy-code",
+   "codex-acp",
+   "cortex-code",
+   "corust-agent",
+   "crow-cli",
+   "cursor",
+   "deepagents",
+   "devin",
+   "dimcode",
+   "dirac",
+   "factory-droid",
+   "fast-agent",
+   "gemini",
+   "github-copilot-cli",
+   "glm-acp-agent",
+   "goose",
+   "grok-build",
+   "harn",
+   "junie",
+   "kilo",
+   "kimchi",
+   "kimi",
+   "minimax-code",
+   "minion-code",
+   "mistral-vibe",
+   "nova",
+   "opencode",
+   "pi-acp",
+   "poolside",
+   "qoder",
+   "qwen-code",
+   "sigit",
+   "stakpak",
+   "vtcode"
+  ]
+ },
+ "agent_skills_client_showcase": {
+  "url": "https://agentskills.io/clients.md",
+  "client_count": 46,
+  "clients": [
+   "Agentman",
+   "Amp",
+   "Autohand Code CLI",
+   "ChatGPT & Codex",
+   "Claude",
+   "Claude Code",
+   "Command Code",
+   "Cursor",
+   "Databricks Genie Code",
+   "Deep Code",
+   "Emdash",
+   "Factory",
+   "Firebender",
+   "Gemini CLI",
+   "GitHub Copilot",
+   "Google AI Edge Gallery",
+   "Goose",
+   "Hermes Agent",
+   "Junie",
+   "Kiro",
+   "Laravel Boost",
+   "Letta",
+   "Mistral AI Vibe",
+   "Mux",
+   "Ona",
+   "OpenClaw",
+   "OpenCode",
+   "OpenHands",
+   "Piebald",
+   "Pulumi Neo",
+   "Qodo",
+   "Roo Code",
+   "Snowflake Cortex Code",
+   "Spring AI",
+   "Superconductor",
+   "TRAE",
+   "Tabnine",
+   "VS Code",
+   "VT Code",
+   "Vita",
+   "Workshop",
+   "ZeroClaw",
+   "bub",
+   "fast-agent",
+   "nanobot",
+   "pi"
+  ]
+ }
+}

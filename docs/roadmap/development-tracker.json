@@ -2,9 +2,9 @@
  "counts": {
   "blocked": 2,
   "done": 45,
-  "next": 13,
+  "next": 15,
   "now": 42,
-  "waiting": 87
+  "waiting": 120
  },
  "lanes": {
   "blocked": [
@@ -667,6 +667,28 @@
     "phase": 6,
     "status": "ready",
     "title": "Reusable development workflows and recurring reviews with declared effect policies",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "After the owner creates the server and authorizes the setup app, the whole layout exists and passes the ordinary member checks, the setup app is gone, and every call is recorded.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.153",
+    "next_local_work": "Declare the three credential references, write the setup tool against a recorded dry run of the spec, and hand the owner the account steps in the private kit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Community spaces: the Discord layout applied from a spec by a one-time setup app, declared bot credentials, ordinary member checks and a measures log",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "A change to Telegram's or Discord's bot platform reaches the next research digest within a day.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.157",
+    "next_local_work": "Add the four sources and raise the limits, with tests.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Research watch sources for the chat platforms",
     "waiting_on": []
    },
    {
@@ -2613,6 +2635,556 @@
     ]
    },
    {
+    "acceptance": "Every published package names an author namespace that one account owns, no author can pass as Baltor, a vendor or another author, and no download credential can publish.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.89"
+    ],
+    "id": "S-6.140",
+    "next_local_work": "Write author_namespace/v1 with the reserved list and the other-spelling rule, and add the library:publish scope outside the defaults, both with removed-guard controls.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Author namespaces and a publish scope that a download key never carries",
+    "waiting_on": [
+     "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "An author can submit a multi-file package from the web, the interface or the command line, see it staged and then confirmed, and nothing from it reaches a customer or runs on the service.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.140",
+     "S-6.62"
+    ],
+    "id": "S-6.141",
+    "next_local_work": "Write library_submission/v1 and the staged submission records, the upload by digest, the confirmation page and the quarantine root, with the host setting off.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it",
+    "waiting_on": [
+     "S-6.140",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Every submission gets the checks imported material gets, plus code checks, each result is typed and shown to the author, and an author can run the deterministic checks before submitting.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.141",
+     "S-6.40",
+     "S-6.45"
+    ],
+    "id": "S-6.142",
+    "next_local_work": "Add the author_submission source engine and the gitleaks, GuardDog and Bandit engines with their regression cases, then the local check command.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Automated checks on every submission on a worker, and the same deterministic checks on the author's machine",
+    "waiting_on": [
+     "S-6.141",
+     "S-6.40",
+     "S-6.45"
+    ]
+   },
+   {
+    "acceptance": "Every executable package that reaches review has passed its own tests in a sandbox that could reach neither the network nor any Baltor secret.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.142"
+    ],
+    "id": "S-6.143",
+    "next_local_work": "Declare the slot in engine_slots.yaml, write the declared test runner over the process_confinement slot's namespace sandbox, and hold each escape case as a removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A package's own tests in an offline sandbox on a worker that holds no Baltor secret",
+    "waiting_on": [
+     "S-6.142"
+    ]
+   },
+   {
+    "acceptance": "Authors get a decision with reasons, and every submitted package served as Community names an independent reviewer family that did not produce it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.143",
+     "S-6.63"
+    ],
+    "id": "S-6.144",
+    "next_local_work": "Derive the producer families from the submission record, extend the reviewed catalogue writer for authored packages, and return refusal reasons to the author.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Independent review of submissions into the Community tier, never by the author or a declared model family",
+    "waiting_on": [
+     "S-6.143",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "A harmful package stops being served after one staff action, authors can retire their work safely, and customers who fetched a withdrawn version are told.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.144",
+     "S-6.83"
+    ],
+    "id": "S-6.145",
+    "next_local_work": "Write the version, quarantine, report and advisory records and the author and staff actions, with the catalogue state marker changed.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown",
+    "waiting_on": [
+     "S-6.144",
+     "S-6.83"
+    ]
+   },
+   {
+    "acceptance": "Anyone can see who wrote a package and how it was checked, and an author manages every submission from one page.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.145",
+     "S-6.67"
+    ],
+    "id": "S-6.146",
+    "next_local_work": "Add the three pages to the typed site map behind the publishing host setting and render them from the records.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Author pages, package pages and the publishing dashboard",
+    "waiting_on": [
+     "S-6.145",
+     "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "Every author accepts plain terms that say what they grant, what Baltor does with their package and what Baltor never does, and the privacy notice says what publishing shows in public.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.141"
+    ],
+    "id": "S-6.147",
+    "next_local_work": "Copy the drafted terms and privacy rows into docs/legal as drafts, add the served view and its word-for-word browser check, and record the owner's approval before opening the setting to outside authors.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Contributor terms and the privacy notice addition, published with the feature",
+    "waiting_on": [
+     "S-6.141"
+    ]
+   },
+   {
+    "acceptance": "A customer can check that a served package is the exact one that was reviewed and released, and an author can publish from continuous integration without a stored key.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.144"
+    ],
+    "id": "S-6.148",
+    "next_local_work": "Write author_submission_provenance/v1 with the source check, then the signed publish record and its verifier, then trusted publishing from GitHub Actions.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Provenance for submitted packages: verified source links, trusted publishing and a signed publish record",
+    "waiting_on": [
+     "S-6.144"
+    ]
+   },
+   {
+    "acceptance": "Any client, including the chat helpers, can ask for a recipe in words and get at most three Verified recipe cards or an honest abstention, and nobody can reconstruct the library through it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.39"
+    ],
+    "id": "S-6.149",
+    "next_local_work": "Write the request and result contracts and the projection from the served catalogue view with their checks, behind a host setting that is off.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A public recipe search: at most three Verified, body-free recipe cards per query, and public recipe pages, inside the search allowance",
+    "waiting_on": [
+     "S-6.39"
+    ]
+   },
+   {
+    "acceptance": "A recorded platform request produces exactly one answer, either Verified recipe cards or an honest abstention, with a text-free record, and nothing happens when the host setting is off.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.149"
+    ],
+    "id": "S-6.150",
+    "next_local_work": "Declare the slot, the three records and the gate, with loopback checks over recorded Telegram and Discord payloads.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue core: a chat request channel slot, a request gate and a deterministic recipe card answer, behind a host setting that is off",
+    "waiting_on": [
+     "S-6.149"
+    ]
+   },
+   {
+    "acceptance": "In a staff test chat, mentioning the bot returns one Verified recipe card answer or an abstention, and /recipe in the owned group answers only the asker.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.153"
+    ],
+    "id": "S-6.151",
+    "next_local_work": "Write the adapter against recorded guest_message payloads; the owner creates the bot in @BotFather and stores its token with the keyring tool.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue on Telegram: guest mode in any chat and an ephemeral /recipe command in the owned group",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "In a test server and in a direct message, /recipe and the message command return one private answer with Verified recipe cards or an abstention, and only the asker decides whether it is shared.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.153"
+    ],
+    "id": "S-6.152",
+    "next_local_work": "Write the adapter against recorded interaction payloads with signature checks; the owner creates the Discord team and application and stores the token with the keyring tool.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Recipe Rescue on Discord: a user-installed and server-installed app with /recipe and a message command, private answers first",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "Solved community problems become findable pages on Baltor with the consent of the people who solved them.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.153"
+    ],
+    "id": "S-6.154",
+    "next_local_work": "Write the card record and the consent flow, and render the first card from a staff example.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Solution cards: consented write-ups of solved community threads on Baltor's own pages",
+    "waiting_on": [
+     "S-6.153"
+    ]
+   },
+   {
+    "acceptance": "What people ask for and cannot find becomes the factory's next work, with their consent.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.150",
+     "S-6.40"
+    ],
+    "id": "S-6.155",
+    "next_local_work": "Declare recipe_demand/v1 and the grouping step, and feed one staff-made demand record into a dry run of the idea matrix.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Unmet recipe requests become consented demand records that feed the package factory",
+    "waiting_on": [
+     "S-6.150",
+     "S-6.40"
+    ]
+   },
+   {
+    "acceptance": "Any paid capability inside Telegram or Discord follows each platform's rules and shows its real net revenue.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.151",
+     "S-6.152"
+    ],
+    "id": "S-6.156",
+    "next_local_work": "Keep the no-payment checks in the helper steps; build this gate only when a paid chat capability is chosen.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified",
+    "waiting_on": [
+     "S-6.151",
+     "S-6.152"
+    ]
+   },
+   {
+    "acceptance": "A step's working directory holds the same bytes, modes and identity in every supported harness and on every run, whichever eligible engine placed it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.75"
+    ],
+    "id": "S-6.160",
+    "next_local_work": "Extend the confined writer with declared modes and package walking, add the named checks with the pilot outputs as fixtures, wrap Microsoft APM, then run the four-package population.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.75"
+    ]
+   },
+   {
+    "acceptance": "For each harness and model, the record shows how often a served skill is listed, loaded, used and useful, and what it costs compared with forcing it into the instruction file.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.160",
+     "S-6.47"
+    ],
+    "id": "S-6.161",
+    "next_local_work": "Write the sentinels and fingerprints, add the native skill arms and the OpenCode recipe to the runner, freeze the design, then run the pilot after the Ollama allowance probe.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion",
+    "waiting_on": [
+     "S-6.160",
+     "S-6.47"
+    ]
+   },
+   {
+    "acceptance": "For each family the record shows whether handing over verified code beats having the model rewrite it, on accepted results, tokens, time and new code, and whether the step needs a model at all.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.161",
+     "S-6.54"
+    ],
+    "id": "S-6.162",
+    "next_local_work": "Build the phones package, run its deterministic arm on both populations with no model call, and have another family write its held-out tests.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run",
+    "waiting_on": [
+     "S-6.161",
+     "S-6.54"
+    ]
+   },
+   {
+    "acceptance": "An outside project that is archived, relicensed, sold or shut down can no longer be selected silently.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.22",
+     "S-6.74"
+    ],
+    "id": "S-6.163",
+    "next_local_work": "Add lifecycle fields to the watch manifest for the catalogue's engine candidates, run the watch once and compare its report with the research record.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection",
+    "waiting_on": [
+     "S-6.22",
+     "S-6.74"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed packages that turn the record's checked facts into steps a harness can follow.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.69",
+     "S-6.63"
+    ],
+    "id": "S-6.164",
+    "next_local_work": "Draft the five candidates on the Tactical server and queue them for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Original harness packages from the agent stack research, through independent review",
+    "waiting_on": [
+     "S-6.69",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "For any run, a reader can see what each step cost by billing class and what each accepted result cost, which is the baseline every later efficiency change is measured against.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.6",
+     "S-6.41"
+    ],
+    "id": "S-6.165",
+    "next_local_work": "Declare provider_token_totals/v2 with fixtures for each billing class and each unknown case, then change the OpenCode adapter and the Responses client, each with its removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Token accounting by billing class, dated prices and price-weighted cost per accepted step",
+    "waiting_on": [
+     "S-6.6",
+     "S-6.41"
+    ]
+   },
+   {
+    "acceptance": "Steps of one task give the provider the longest byte-identical prefix their material allows, and the effect on cost is measured rather than assumed.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.165"
+    ],
+    "id": "S-6.166",
+    "next_local_work": "Measure the shared prefix of two sibling steps with the current engine, then write the stable-first engine and its fixtures.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "What a step's harness sent to its model and how much it used are recorded where the harness cannot change them, and a step cannot spend past its limits while it runs.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.61"
+    ],
+    "id": "S-6.167",
+    "next_local_work": "Write the append-only log fixture and the fail-closed control on the existing broker loop, then the live call limit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items",
+    "waiting_on": [
+     "S-6.61"
+    ]
+   },
+   {
+    "acceptance": "A step can reach only the credentials, tools, destinations and data fields it was granted, and an attempt to reach more is refused and recorded.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.61",
+     "S-6.93"
+    ],
+    "id": "S-6.168",
+    "next_local_work": "Write the Unit 42 fixture against the isolated path first, then the built-in tool check in the fresh instance loading test.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call",
+    "waiting_on": [
+     "S-6.61",
+     "S-6.93"
+    ]
+   },
+   {
+    "acceptance": "Every recorded failure says where it started and who owns the repair, so that repeated failures lead to the right change.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.96"
+    ],
+    "id": "S-6.169",
+    "next_local_work": "Add the three fields to the fingerprint record with one fixture for each fault side, using the paper's worked examples as test descriptions.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure",
+    "waiting_on": [
+     "S-6.96"
+    ]
+   },
+   {
+    "acceptance": "Long steps stay within their context budget without losing the instructions that govern them, and the chosen compaction engine is the one the evidence favors.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31",
+     "S-6.165"
+    ],
+    "id": "S-6.170",
+    "next_local_work": "Declare the slot with the native engine, write the instruction-survival fixtures, then add the drop-only proxy engine in shadow mode.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival",
+    "waiting_on": [
+     "S-6.31",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "Deciding what a step receives costs a fast closed decision instead of a full model call, and only where the measurement shows it chooses as well.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.58",
+     "S-6.93"
+    ],
+    "id": "S-6.171",
+    "next_local_work": "Build the frozen step set from recorded provisioning decisions, then the engine against a local typed-decision fixture before any live endpoint.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives",
+    "waiting_on": [
+     "S-6.58",
+     "S-6.93"
+    ]
+   },
+   {
+    "acceptance": "Self-improvement keeps only changes that transfer beyond the tasks they were tuned on and that pay for their cost, and each accepted change can be traced to its evidence.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.77"
+    ],
+    "id": "S-6.172",
+    "next_local_work": "Model the candidate record and the noise-band measurement on the daily state review Loop of S-6.77, then adapt the six critic rules with their notice.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.77"
+    ]
+   },
+   {
+    "acceptance": "Baltor can state, with its own records and intervals, what running each step in a fresh harness costs and gains against one long session on the same model.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31",
+     "S-6.110",
+     "S-6.165"
+    ],
+    "id": "S-6.173",
+    "next_local_work": "Write the frozen design and the price list, then run a five-task pilot on Ollama Cloud when the weekly allowance allows.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first",
+    "waiting_on": [
+     "S-6.31",
+     "S-6.110",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "A visitor to the efficiency page sees why fresh, focused steps should help, with outside evidence stated precisely and no number Baltor cannot support.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.174",
+    "next_local_work": "Draft the section against the product style guide, then add its named check to the page checks.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed harness engineering packages that no served item covered on September 24, 2026, and every published item faces the checks these sources call for.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.45",
+     "S-6.63",
+     "S-6.69"
+    ],
+    "id": "S-6.175",
+    "next_local_work": "Draft the large-output wrapper and the credential and egress probe first, since both are deterministic and testable offline, then queue all ten for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items",
+    "waiting_on": [
+     "S-6.45",
+     "S-6.63",
+     "S-6.69"
+    ]
+   },
+   {
+    "acceptance": "Baltor's own harness path starts from the techniques with the best evidence, each one switchable and measured.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.50",
+     "S-6.94",
+     "S-6.165"
+    ],
+    "id": "S-6.176",
+    "next_local_work": "Add the provider capability record for structured output with the Ollama Cloud case, then the file offload option with its fixture.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound",
+    "waiting_on": [
+     "S-6.50",
+     "S-6.94",
+     "S-6.165"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4097,5 +4669,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:85c38b191611b8d8bc3436d936f8ef93f0fe00a78f71f39a2dc8f83157e36a1c"
+ "source_fingerprint": "sha256:76b189b57b5ba5416e91bc0073826a1f563c86424c92c48857c07845efc37522"
 }

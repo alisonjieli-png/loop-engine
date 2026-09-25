@@ -262,6 +262,41 @@ class FlyDeploymentTests(unittest.TestCase):
                 self.assertNotEqual(self.run_guard(counterexample), 0)
                 self.assertEqual(self.run_guard(counterexample, mutant), 0)
 
+    def run_revision_step(self, name, status, head=None):
+        """Run one revision guard with a stand-in gh that answers main's head and the compare status."""
+        revision = "a" * 40
+        run = next(row["run"] for row in self.steps if row["name"] == name)
+        run = "\n".join(line for line in run.splitlines() if "actions/workflows/ci.yml" not in line and "| jq -e" not in line
+                        and "'any(.workflow_runs" not in line)
+        with tempfile.TemporaryDirectory() as folder:
+            fake = Path(folder)
+            (fake / "gh").write_text('#!/bin/sh\ncase "$*" in *compare/*) echo "$STATUS";; *heads/main*) echo "' + "b" * 40 + '";; esac\n')
+            (fake / "git").write_text('#!/bin/sh\necho "$HEAD_REVISION"\n')
+            for tool in ("gh", "git"):
+                (fake / tool).chmod(0o755)
+            env = {"PATH": f"{folder}:{os.environ['PATH']}", "RELEASE_REVISION": revision, "STATUS": status,
+                   "HEAD_REVISION": head or revision, "GITHUB_REPOSITORY": "owner/repository"}
+            return subprocess.run(["bash", "-c", run], env=env, capture_output=True, text=True).returncode
+
+    def test_a_checked_revision_on_main_is_released_even_after_main_moved_on(self):
+        """The owner, September 25, 2026: releases should be more flexible. Main may move on during a release; the
+        released revision must still be on main. Known-wrong: a revision that left main (diverged) or is not on it yet
+        (behind), and a build of other bytes than the checked revision."""
+        for name in ("Require successful checks for this exact main revision",
+                     "Refuse a revision that left main during the build"):
+            with self.subTest(step=name):
+                self.assertEqual(self.run_revision_step(name, "identical"), 0)
+                self.assertEqual(self.run_revision_step(name, "ahead"), 0)
+                self.assertNotEqual(self.run_revision_step(name, "diverged"), 0)
+                self.assertNotEqual(self.run_revision_step(name, "behind"), 0)
+        self.assertNotEqual(self.run_revision_step("Refuse a revision that left main during the build", "ahead",
+                                                   head="c" * 40), 0)
+        checkout = next(row for row in self.steps if row["name"] == "Check out the approved source")
+        self.assertEqual(checkout["with"]["ref"], "${{ inputs.revision || github.sha }}")
+        guard = next(row["run"] for row in self.steps if row["name"] == "Require successful checks for this exact main revision")
+        self.assertIn("head_sha=${RELEASE_REVISION}&status=success", guard)
+        self.assertNotIn("GITHUB_SHA", yaml.safe_dump(self.workflow))
+
     def test_workflow_is_manual_and_secrets_are_step_scoped(self):
         self.assertEqual(set(self.workflow["on"]), {"workflow_dispatch"})
         self.assertEqual(self.workflow["on"]["workflow_dispatch"]["inputs"]["operation"]["default"], "verify_access")

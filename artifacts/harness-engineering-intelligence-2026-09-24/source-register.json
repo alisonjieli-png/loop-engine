@@ -1,0 +1,270 @@
+{
+  "record_type": "source_register/v1",
+  "research_record": "docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md",
+  "read_between": "2026-09-24T23:10-04:00 and 2026-09-25T04:30-04:00",
+  "note": "Digests identify the copies read. Third-party copies are not committed; they stay outside the repository.",
+  "sources": [
+    {
+      "id": "cursor-audit-prompt",
+      "title": "Eric Zakariasson, post on X: harness token-efficiency prompt",
+      "url": "https://x.com/ericzakariasson/status/2102853511637774551",
+      "published": "2026-09-23",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "read through the public FxTwitter mirror of the post (api.fxtwitter.com); text refetched on 2026-09-25 and unchanged",
+      "saved_copy_sha256": "2f770f881a0e02b7c35eff0b38dda238660be73044344263da5972df5ffc2e95",
+      "saved_copy_bytes": 31976
+    },
+    {
+      "id": "strands-harness-blog",
+      "title": "Strands Agents: Introducing Strands harness",
+      "url": "https://strandsagents.com/blog/introducing-strands-harness/",
+      "published": "2026-09-21",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "f80ff77944c0e2dcc318bea46d1528c41f1ca997961b303293cd8c45233e70a8",
+      "saved_copy_bytes": 120152
+    },
+    {
+      "id": "strands-harness-source",
+      "title": "strands-agents/harness-sdk at 7ae759d3 (Apache-2.0)",
+      "url": "https://github.com/strands-agents/harness-sdk",
+      "published": "2026-09-24",
+      "evidence_class": "read_in_source",
+      "how_read": "git clone; defaults read in harness-py/src/strands_harness/agent.py and strands-py/src/strands/_context_manager/context_manager.py"
+    },
+    {
+      "id": "unreal-agent-blog",
+      "title": "Unreal Labs: Unreal Agent",
+      "url": "https://unreallabs.ai/blog/unreal-agent/",
+      "published": "2026-09-22",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "758bb41b010262c6bca08c65d736c442e7183339acba2520b031fe3353b32a25",
+      "saved_copy_bytes": 44042
+    },
+    {
+      "id": "unreal-agent-source",
+      "title": "unreallabsai/unreal-agent at 1b9f7784 (MIT)",
+      "url": "https://github.com/unreallabsai/unreal-agent",
+      "published": "2026-09-23",
+      "evidence_class": "read_in_source",
+      "how_read": "git clone; harness/contextbuilder, harness/operation/output.go, prompts/preamble.md"
+    },
+    {
+      "id": "harnesstax",
+      "title": "Pan, Yang, Arabzadeh, Chiang, Stoica, Zaharia: HarnessTax",
+      "url": "https://harnesstax.github.io/",
+      "published": "undated; references accessed 2026-09-16",
+      "evidence_class": "independent_measurement",
+      "how_read": "direct fetch of the post data",
+      "saved_copy_sha256": "0dfc07e2df663a903664d80ec50bd65c70fad48bc4993e1e6e61daeac0428e39",
+      "saved_copy_bytes": 19681
+    },
+    {
+      "id": "rrsi-paper",
+      "title": "Xia et al.: RRSI, arXiv 2609.24972 v2",
+      "url": "https://arxiv.org/abs/2609.24972",
+      "published": "2026-09-21 (v2 2026-09-23)",
+      "evidence_class": "author_reported_with_code",
+      "how_read": "arXiv abstract and HTML",
+      "saved_copy_sha256": "4eb9d5c8abefad723999ee48eae25eab959fba1ca149c9240d2556de51555b0b",
+      "saved_copy_bytes": 355289
+    },
+    {
+      "id": "rrsi-source",
+      "title": "google-research/rrsi at be50316e (Apache-2.0)",
+      "url": "https://github.com/google-research/rrsi",
+      "published": "2026-09-23",
+      "evidence_class": "read_in_source",
+      "how_read": "GitHub interface; rrsi/critic.py, rrsi/selection.py, rrsi/schedule.py"
+    },
+    {
+      "id": "harness-zero-paper",
+      "title": "Ye, Lu, Dong, Su, Song: Harness-Zero, arXiv 2609.24974",
+      "url": "https://arxiv.org/abs/2609.24974",
+      "published": "2026-09-21",
+      "evidence_class": "author_reported_with_code",
+      "how_read": "arXiv abstract and HTML",
+      "saved_copy_sha256": "e45341f1637b60114e4b35b351bc7230a741654ff255a27fca59b2aa06907c73",
+      "saved_copy_bytes": 1264206
+    },
+    {
+      "id": "unit42-agentcore",
+      "title": "Niv Rabin, Unit 42: A Vault with a Heap-View",
+      "url": "https://unit42.paloaltonetworks.com/securing-aws-agentcore-harness-credentials/",
+      "published": "2026-09-18",
+      "evidence_class": "demonstrated_finding",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "150813ec65c90f989a56dc3f36fa4d599f06f9463266f7b3f2ada8af05461bec",
+      "saved_copy_bytes": 259479
+    },
+    {
+      "id": "asd-agentic-ai-harnesses",
+      "title": "Australian Signals Directorate (cyber.gov.au): Agentic AI harnesses, the layer above the model",
+      "url": "https://www.cyber.gov.au/business-government/secure-design/artificial-intelligence/agentic-ai-harnesses",
+      "published": "2026-09-11",
+      "evidence_class": "guidance",
+      "how_read": "the live site did not answer from this machine; read the Internet Archive capture of 2026-09-13 22:36:42",
+      "saved_copy_sha256": "65ad673a91faaafbbeda5cd01b027fdf408994b07645636ed2910d2e4435e0e9",
+      "saved_copy_bytes": 326012
+    },
+    {
+      "id": "asd-harness-update",
+      "title": "Australian Signals Directorate: Frontier AI models, an update on AI model harnesses",
+      "url": "https://www.cyber.gov.au/about-us/view-all-content/news/frontier-ai-models-and-their-impact-on-cyber-security-an-update-on-ai-model-harnesses",
+      "published": "2026-07-13",
+      "evidence_class": "guidance",
+      "how_read": "Internet Archive capture of 2026-07-13",
+      "saved_copy_sha256": "7910f403f8d4d22dbb9204060f77fe4412fb7a1e5baa2fca6a360b6946bebf6e",
+      "saved_copy_bytes": 314799
+    },
+    {
+      "id": "anthropic-managed-agents",
+      "title": "Anthropic Engineering: Scaling Managed Agents, decoupling the brain from the hands",
+      "url": "https://www.anthropic.com/engineering/managed-agents",
+      "published": "2026-04-08",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "33f405570b3216c953bcbef289e4de249537c0a153d8c798aeaf9176bc2c6f8a",
+      "saved_copy_bytes": 179503
+    },
+    {
+      "id": "vercel-drives",
+      "title": "Vercel changelog: Drives for Vercel Sandbox are now in public beta",
+      "url": "https://vercel.com/changelog/drives-for-vercel-sandbox-are-now-in-public-beta",
+      "published": "2026-09-23",
+      "evidence_class": "vendor_documentation",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "3a59ef4f06016f920cbbae831fa0db110df0151c333cf2235eb250f704147627",
+      "saved_copy_bytes": 526394
+    },
+    {
+      "id": "vercel-sandbox-firewall",
+      "title": "Vercel documentation: Sandbox firewall",
+      "url": "https://vercel.com/docs/vercel-sandbox/concepts/firewall",
+      "published": "read 2026-09-25",
+      "evidence_class": "vendor_documentation",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "51721f2b663f688ed44b8e85aa36353747256f2a5ceddcb16677637c05e1484e",
+      "saved_copy_bytes": 1214086
+    },
+    {
+      "id": "teradata-press",
+      "title": "Teradata press release: Tera Context Engine and Tera Harness",
+      "url": "https://www.teradata.com/press-releases/2026/tera-an-agentic-coworker",
+      "published": "2026-09-22",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "b6409db727d515485c1473cc01e8057b3923913af535553598ce572fd466fd19",
+      "saved_copy_bytes": 78240
+    },
+    {
+      "id": "teradata-method",
+      "title": "Teradata: Introducing Tera, benchmark report",
+      "url": "https://www.teradata.com/insights/ai-and-machine-learning/introducing-tera-most-efficient-agent",
+      "published": "2026-09-22",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "0b719dd2013f5c27f541a97165946c4ca1c8c42ad6f4eefe6bca549e2d4f0e90",
+      "saved_copy_bytes": 101611
+    },
+    {
+      "id": "cio-teradata",
+      "title": "CIO: Teradata aims to make agentic execution of multistep data work more efficient",
+      "url": "https://www.cio.com/article/4226160/teradata-aims-to-make-agentic-execution-of-multistep-data-work-more-efficient.html",
+      "published": "2026-09-24",
+      "evidence_class": "press_report",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "d99522827c60234b897aee167336a7ad4f9f4df36649e3af749f60d75f07886c",
+      "saved_copy_bytes": 263227
+    },
+    {
+      "id": "dlab-open-source-week",
+      "title": "Tim Dettmers: dlab Open Source Week",
+      "url": "https://timdettmers.com/2026/09/21/dlab-open-source-week/",
+      "published": "2026-09-21",
+      "evidence_class": "author_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "b138a6946f1d5efde4fbf069654c5f000c089dfe88daeb1d2f9f3e1697c1dbe6",
+      "saved_copy_bytes": 48254
+    },
+    {
+      "id": "cliffcompaction-paper",
+      "title": "Nguyen, Cho, Chen, Dettmers: CliffCompaction, arXiv 2609.26779",
+      "url": "https://arxiv.org/abs/2609.26779",
+      "published": "2026-09-22",
+      "evidence_class": "author_reported_with_code",
+      "how_read": "arXiv abstract",
+      "saved_copy_sha256": "ba1deddd9c3ed65db97d139bc2d0a1693b58dffe8ecd32ac29e732cb7b66a351",
+      "saved_copy_bytes": 42690
+    },
+    {
+      "id": "cliffcompaction-source",
+      "title": "nguyenvuthientrang/cliffcompaction README (MIT)",
+      "url": "https://github.com/nguyenvuthientrang/cliffcompaction",
+      "published": "2026-09-23",
+      "evidence_class": "read_in_source",
+      "how_read": "GitHub README",
+      "saved_copy_sha256": "fb3a8a6f1d2b6202defab275f5341a3d836f42673e9a643d79d82b66efa12d0d",
+      "saved_copy_bytes": 9613
+    },
+    {
+      "id": "ibm-harness-talk",
+      "title": "Tejas Kumar (IBM): Harnesses in AI, a deep dive, AI Engineer Europe 2026",
+      "url": "https://www.youtube.com/watch?v=C_GG5g38vLU",
+      "published": "2026-05-17",
+      "evidence_class": "demonstration",
+      "how_read": "AI Engineer talk page with transcript summary",
+      "saved_copy_sha256": "d77fc92b250dc8e27a20994f936b38b3e6a2aec02eff9c9eb92069bebeb1a9b7",
+      "saved_copy_bytes": 207402
+    },
+    {
+      "id": "failure-taxonomy",
+      "title": "Raj et al. (Scale AI): Model or Harness? An Interaction-Centric Taxonomy, arXiv 2607.28802",
+      "url": "https://arxiv.org/abs/2607.28802",
+      "published": "2026-07-30",
+      "evidence_class": "author_reported",
+      "how_read": "arXiv abstract and HTML",
+      "saved_copy_sha256": "2add8abb06b799b8eac6857f03be2c6da848fe9c78ab4c3e7745a0a4f1f30555",
+      "saved_copy_bytes": 834925
+    },
+    {
+      "id": "trace-tampering",
+      "title": "Qin et al. (Max Planck Institute for Intelligent Systems, University of Tuebingen): LLM Agents Can Easily Tamper With Their Own Traces, arXiv 2609.30266",
+      "url": "https://arxiv.org/abs/2609.30266",
+      "published": "2026-09-24",
+      "evidence_class": "author_reported",
+      "how_read": "arXiv abstract and HTML",
+      "saved_copy_sha256": "2a52cc8f9cf410edc1de0fb1a192c313fdfcff0d31f5e37f2d32138a92c6376c",
+      "saved_copy_bytes": 738941
+    },
+    {
+      "id": "subconscious",
+      "title": "Subconscious: home page, research page and funding post",
+      "url": "https://www.subconscious.dev/",
+      "published": "2026-09-22",
+      "evidence_class": "vendor_self_reported",
+      "how_read": "direct fetch",
+      "saved_copy_sha256": "bf1436abccb968d06a2cfd2bb8626abdefadef88ee43f856b469aa3a0b6c33b9",
+      "saved_copy_bytes": 151392
+    },
+    {
+      "id": "jev-infoworld",
+      "title": "InfoWorld and CIO: TypeSafe AI's new models work with machines, not humans",
+      "url": "https://www.infoworld.com/article/4223468/typesafe-ais-new-models-work-with-machines-not-humans.html",
+      "published": "2026-09-17",
+      "evidence_class": "press_report",
+      "how_read": "direct fetch of the CIO copy",
+      "saved_copy_sha256": "ffe8bdb79805caa79d0ddda91f89c903db90da978b2748c88a543c25d344b7ad",
+      "saved_copy_bytes": 265993
+    },
+    {
+      "id": "ollama-structured-outputs",
+      "title": "Ollama documentation: Structured Outputs at 7af39318",
+      "url": "https://github.com/ollama/ollama/blob/main/docs/capabilities/structured-outputs.mdx",
+      "published": "2026-09-24",
+      "evidence_class": "vendor_documentation",
+      "how_read": "GitHub interface"
+    }
+  ]
+}
