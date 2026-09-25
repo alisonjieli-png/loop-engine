@@ -42,7 +42,9 @@ for(const [sizeName,viewport] of Object.entries(sizes)){
       page.on("console",message=>{if(message.type()==="error"&&!/favicon|Failed to load resource/i.test(message.text()))scriptErrors.push(message.text().slice(0,200));});
       const where=`${address} (${sizeName}, ${scheme})`;
       let status=0;
-      try{status=(await page.goto(origin+address,{waitUntil:"networkidle",timeout:45000}))?.status()||0;}catch(error){note(where,"did not open: "+String(error.message).slice(0,120));}
+      /* A person reads the page once it has loaded; a page that keeps fetching (the directory loads its rows in parts) is not
+         waited on until every request stops, only for a short moment after the load. */
+      try{status=(await page.goto(origin+address,{waitUntil:"load",timeout:45000}))?.status()||0;await page.waitForTimeout(1500);}catch(error){note(where,"did not open: "+String(error.message).slice(0,120));}
       if(status!==200)note(where,"answered "+status);
       const seen=await page.evaluate(()=>{
         const visible=node=>!!node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
@@ -72,7 +74,7 @@ const hostContext=await browser.newContext({viewport:sizes.desktop});
 for(const hostname of hostnames){
   const page=await hostContext.newPage();
   let status=0;
-  try{status=(await page.goto(new URL("/",`${new URL(origin).protocol}//${hostname}`).href,{waitUntil:"networkidle",timeout:45000}))?.status()||0;}catch{status=0;}
+  try{status=(await page.goto(new URL("/",`${new URL(origin).protocol}//${hostname}`).href,{waitUntil:"load",timeout:45000}))?.status()||0;await page.waitForTimeout(1500);}catch{status=0;}
   const heading=await page.evaluate(()=>document.querySelector("h1")?.textContent.trim()||"").catch(()=>"");
   if(status!==200||!heading)note(hostname,`root answered ${status}${heading?"":" with no main heading"}`);
   rows.push({hostname,status,heading:heading.slice(0,120)});

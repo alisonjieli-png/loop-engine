@@ -1,0 +1,89 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 27,
+  "source_revision": "f902d915bd7f8586762da2962311b6271767e1fd",
+  "continuous_integration_run": 36120351397,
+  "deployment_workflow_run": 36123608871,
+  "image_digest": "sha256:28b246e158312396f20b0c47d5f31553aa6e589eebfa4d0cfa773bf25388021e",
+  "deployed_at": "2026-09-25T10:24:39Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 26,
+  "rollback_image_digest": "sha256:863bec3ef5294949c9a3567046d6cb2238a54d1ae85e13e7e6c4839a2b8b3a80",
+  "rollback_note": "Release 26 reads the same host file, including catalogue.new_accounts_follow_release true.",
+  "changes": [
+    "the homepage hero shows the working directory one step gets, with three demonstrations start to finish (a simple task, a long job overnight, a Kaggle solution)",
+    "each hostname opens its own page; new demonstration, status, examples and case study pages, and the four /for pages the site map listed but never built",
+    "the site-wide removal of phrases the owner retired, checked on every rendered page",
+    "persona fixes 1 to 8: the password card stays while the account opens, an email sign-in lasts for the tab, prices follow the account's plan, Get set up leads a signed-in visitor to a client token, Security explains how review works, the Pi extension link can be copied, and one Menu button at phone width",
+    "the deck at deck.baltor.ai and /deck, linked from the footer, with its own shared-link card",
+    "the free public directory of protocol servers and agent APIs at /directory",
+    "the live check of what a person sees (tools/check_live_site_for_people.mjs)"
+  ],
+  "failed_first_attempts": [
+    {
+      "run": "36116916098",
+      "why": "CI on f0f8c508: the self-test's head rule expected the small shared-link card on every page, and the deck keeps its own large card; fixed in 994544e5"
+    },
+    {
+      "run": "36118353800",
+      "why": "CI on 994544e5: the deck page carried an old copy of the footer; fixed in f902d915, which also carries the directory line"
+    },
+    {
+      "why": "the first live people check timed out on /directory and /mcp-directory because it waited until every request stopped while those pages fetch their rows in parts; both open in about half a second with their heading, and the check now waits for the load and a short moment"
+    }
+  ],
+  "host_file_changes": [
+    {
+      "backup": "/data/host.json.before-follow-20260925T090415Z",
+      "at": "2026-09-25T09:04Z, on release 26",
+      "change": "catalogue.new_accounts_follow_release true and browser_identity.starter_identities empty, then follow-catalogue-release --all-tenants moved the 7 customer accounts the preview named; the diagnostic, billing-check and admin accounts stayed fixed and pilot-owner already followed",
+      "checks": {
+        "isolation": [
+          19,
+          19
+        ],
+        "catalogue": [
+          7,
+          7
+        ]
+      }
+    }
+  ],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 41,
+        "views_desktop_and_phone_light_and_dark_and_hostnames": 172,
+        "hostnames": 8,
+        "links_checked": 83,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        8,
+        8
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "hostnames": 9,
+      "same_capabilities": true,
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        215,
+        215
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "evidence_folder": "artifacts/release-27-2026-09-25"
+}
