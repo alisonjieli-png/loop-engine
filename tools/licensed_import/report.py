@@ -30,9 +30,22 @@ def _jsonl(path: Path) -> list:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def _seconds(start: str, end: str) -> float:
-    parse = lambda value: datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")  # noqa: E731
-    return max(0.0, (parse(end) - parse(start)).total_seconds())
+IDLE_GAP_SECONDS = 300.0
+
+
+def active_seconds(times) -> float:
+    """Seconds of work between journal events, leaving out every gap longer than five minutes.
+
+    A round that stopped and restarted (a crash, a usage limit) is measured by
+    the time it worked, not by the hours it waited.
+    """
+    stamps = sorted(datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ") for value in times)
+    total = 0.0
+    for earlier, later in zip(stamps, stamps[1:]):
+        gap = (later - earlier).total_seconds()
+        if gap <= IDLE_GAP_SECONDS:
+            total += gap
+    return total
 
 
 def _latest(folder: Path, prefix: str) -> list:
@@ -88,8 +101,14 @@ def per_source_rates(kept, outcomes, leads, discovery_reports, workers: int) -> 
     return result
 
 
-def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: int = 8) -> dict:
-    """Write the evidence files of one round and return the batch report."""
+def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: int = 8,
+                 index_path: "Path | None" = None) -> dict:
+    """Write the evidence files of one round and return the batch report.
+
+    The compact candidate index is written to `index_path` when one is given
+    (the store folder, outside git, for a round too large to commit), and the
+    report records its row count and SHA-256 either way.
+    """
     output.mkdir(parents=True, exist_ok=True)
     store = SQLiteRecordStore(str(store_root / "records.db"), read_only=True)
     try:
@@ -127,9 +146,7 @@ def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: i
     unique_bodies = {entry["digest"] for payload in kept for entry in payload["package"]["files"]}
     body_bytes = sum(entry["size_bytes"] for payload in kept for entry in payload["package"]["files"]
                      if entry["digest"] in unique_bodies)
-    dispatches = [row for row in journal if row["event"] == "dispatch"]
-    finished = [row for row in journal if row["event"] == "outcome"]
-    reading_seconds = _seconds(dispatches[0]["at"], finished[-1]["at"]) if dispatches and finished else 0.0
+    reading_seconds = active_seconds(row["at"] for row in journal if row["event"] in ("dispatch", "outcome"))
     discovery_seconds = sum(engine.get("seconds", 0) for report in discovery_reports
                             for engine in report["engines"].values())
     sync_seconds = sum(summary.get("metadata_seconds", 0) + summary.get("dedup_seconds", 0)
@@ -185,8 +202,8 @@ def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: i
                   "projected_records_bytes_per_100000_candidates":
                       round(store_size["records_db"]["bytes"] / max(1, len(kept) + len(ideas)) * 100_000),
                   "unique_body_bytes_of_kept_candidates": body_bytes}}
-    (output / "batch-report.json").write_text(json.dumps(report, indent=1, sort_keys=True))
-    with (output / "candidate-index.jsonl").open("w", encoding="utf-8") as stream:
+    index_path = Path(index_path) if index_path else output / "candidate-index.jsonl"
+    with index_path.open("w", encoding="utf-8") as stream:
         for payload in sorted(kept, key=lambda row: row["record_id"]):
             source = payload["provenance"]
             stream.write(json.dumps({
@@ -198,6 +215,11 @@ def build_report(run_folder: Path, store_root: Path, output: Path, *, workers: i
                 "effects": payload["declared_effects"], "cautions": len(payload["findings"]),
                 "merged_sources": len(payload["merged"]), "supersedes": payload["version"]["supersedes"]},
                 sort_keys=True) + "\n")
+    import hashlib
+    report["candidate_index"] = {"rows": len(kept), "sha256": hashlib.sha256(index_path.read_bytes()).hexdigest(),
+                                 "location": "store folder, outside the repository" if index_path.parent != output
+                                 else index_path.name}
+    (output / "batch-report.json").write_text(json.dumps(report, indent=1, sort_keys=True))
     return report
 
 

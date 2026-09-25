@@ -182,6 +182,10 @@ class SyncChecks(unittest.TestCase):
         self.assertEqual(report["rates_by_source"]["declared_repositories"]["candidates"], 2)
         index = (output / "candidate-index.jsonl").read_text(encoding="utf-8")
         self.assertEqual(len(index.splitlines()), 2)
+        self.assertEqual(report["candidate_index"]["rows"], 2)
+        from licensed_import.report import active_seconds
+        self.assertEqual(active_seconds(["2026-09-24T10:00:00Z", "2026-09-24T10:01:00Z", "2026-09-24T13:01:00Z",
+                                         "2026-09-24T13:02:30Z"]), 150.0)
         for fragment in ("Compare the row counts", "You review one change", "Permission is hereby granted"):
             self.assertNotIn(fragment, index)
             self.assertNotIn(fragment, (output / "batch-report.json").read_text(encoding="utf-8"))
@@ -278,7 +282,7 @@ class SyncChecks(unittest.TestCase):
         reader = lambda digest: self.store.bodies.read(digest, sizes[digest])  # noqa: E731
         first = {"acme/tools": DECLARED}
         chosen, skipped = review_export.select(payloads, first, SOURCE_PRIORITY, limit=10, per_repository=5)
-        self.assertEqual({payload["name"] for payload in chosen}, {"join-check", "reviewer"})
+        self.assertEqual([payload["name"] for payload in chosen], ["reviewer", "join-check"])
         kept, refused = review_export.scan_selection(chosen, reader, None, target=10)
         report = review_export.export(kept, reader, self.folder / "export", code_revision="a" * 40,
                                       first_source=first, summary={})

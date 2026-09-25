@@ -287,7 +287,7 @@ def export_review(args) -> dict:
 
 def report(args) -> dict:
     result = build_report(Path(args.run_folder).resolve(), Path(args.store_root).resolve(), Path(args.output).resolve(),
-                          workers=args.workers)
+                          workers=args.workers, index_path=Path(args.index_output).resolve() if args.index_output else None)
     print(json.dumps(result["headline"], indent=1, sort_keys=True))
     return result
 
@@ -344,6 +344,7 @@ def parser() -> argparse.ArgumentParser:
     three.add_argument("--store-root", required=True)
     three.add_argument("--output", required=True)
     three.add_argument("--workers", type=int, default=8, help="the parallel workers the sync ran with")
+    three.add_argument("--index-output", help="write the full candidate index here, outside the repository")
     return main
 
 

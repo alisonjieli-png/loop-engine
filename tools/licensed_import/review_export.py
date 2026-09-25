@@ -24,7 +24,8 @@ roles and its declared effects are the stored candidate's.
 The selection keeps the panel's bounds for reviewable text (every file one of
 its text media types, at most 256 kilobytes a file and 2 megabytes a
 package), spreads the campaign across repositories (a ceiling per repository)
-and orders by source, then stars. Slow scanners may run over the selection
+and orders instruction-only packages first, then by source and stars: the
+Community tier asks a package with code to pass its own tests too. Slow scanners may run over the selection
 before it is written; a blocked package is left out with its rule names and
 the next package takes its place. Nothing here approves anything.
 """
@@ -38,7 +39,7 @@ from pathlib import Path
 from loop_engine.core.harness_intelligence import HarnessIntelligenceItem
 from loop_engine.core.intelligence_tagging import TagSet
 from loop_engine.core.library_ingestion.record_rules import canonical_digest, now_utc
-from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage
+from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES, CataloguePackage
 
 from .checks import blocking_rules
 from .records import (
@@ -94,8 +95,11 @@ def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repo
             continue
         repository = payload["provenance"]["repository"]
         source = first_source.get(repository.lower(), "")
-        ranked.append(((priority.get(source, 99), -(payload["repository"].get("stars") or 0), repository.lower(),
-                        payload["provenance"]["path"]), payload))
+        # Instruction-only packages come first: the Community tier asks a package with code to pass
+        # its own tests as well, so packages holding scripts follow in later batches.
+        has_code = any(entry["role"] in EXECUTABLE_ROLES for entry in payload["package"]["files"])
+        ranked.append(((has_code, priority.get(source, 99), -(payload["repository"].get("stars") or 0),
+                        repository.lower(), payload["provenance"]["path"]), payload))
     ranked.sort(key=lambda row: row[0])
     per = Counter()
     chosen = []
