@@ -72,14 +72,21 @@ claim is on the deck, and it has no team or funding slide.
 
 ## Checks
 
+The commit `ab6bbc1c` is the deck rebased onto main `c93c201f`. Every check
+ran on it or on an export of its exact tree.
+
 | Check | Result |
 |---|---|
 | `tools/test_deck_page.py` | 17 of 17 |
 | `tools/test_website_site_map.py` | 15 of 15 |
-| Browser suite, `service-workspace-browser-deck-4.json` | see the successor record below |
-| Browser suite, `service-workspace-browser-deck-3.json` | 707 of 707, 135 of 135 removed-guard controls detected, on 7b81822b |
-| Hardcoding gate on an export of the commit | exit 0, no new high finding |
-| markdownlint, the CI scope | 0 issues |
+| Browser suite, `service-workspace-browser-deck-4.json` | 707 of 707, 135 of 135 removed-guard controls detected; the 23 deck checks and the 9 deck controls all pass |
+| Browser suite, `service-workspace-browser-deck-3.json` | 707 of 707, 135 of 135, on the same tree before the rebase |
+| A fresh visit to `/deck` | 9 requests and 316,214 bytes, of which the page, its stylesheet and its script are 69,096 |
+| Key-free tools suite, each of the 74 modules under an empty environment | 69 pass on the export; the 5 that read catalogue revisions from git history fail there with `revision_unreadable` and pass in the working tree that has the history |
+| Hardcoding gate on the export | exit 0, no new high finding |
+| Conformance on the export | all gates pass |
+| Self-test on the export | one check failed at a load average near 50: `core.mcp_sdk_transport` raised a timeout. That self-test alone then passed 7 of 7 in 26.9 seconds at a load of 73. |
+| markdownlint, the CI scope and this folder | 0 issues |
 
 Two failed runs are kept beside their successors:
 
