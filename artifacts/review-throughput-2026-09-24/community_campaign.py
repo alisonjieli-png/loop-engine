@@ -37,7 +37,6 @@ from candidate_review.prechecks import PrecheckContext, run_prechecks  # noqa: E
 from candidate_review.reviewers import ReviewerContext  # noqa: E402
 
 REVIEWER = "claude_code.subscription"
-QUOTA_GROUP = "claude_subscription"
 BATCH = 12
 
 
@@ -60,6 +59,18 @@ def _build(catalogue_folder: Path, ledger: Path, authorized: bool, population_si
 
 def _exclusions(values) -> dict:
     return dict(value.split("=", 1) for value in values)
+
+
+def _quota_group(configuration, reviewer: str) -> str:
+    return configuration.installation(reviewer).quota_group
+
+
+def _identities(options, catalogue) -> list:
+    """The identities to review: named ones, or the ones listed in a file, or every identity."""
+    names = list(options.identity)
+    if options.identities_file:
+        names += [line.strip() for line in options.identities_file.read_text().splitlines() if line.strip()]
+    return names or list(catalogue.identities())
 
 
 def prechecks(options) -> dict:
@@ -94,38 +105,46 @@ def calibrate(options) -> dict:
     control_requests = [request for _item, request in pairs]
     real = [catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
             for identity in options.real]
-    if len(real) != BATCH - len(control_requests):
+    if options.batch_size > 1 and len(real) != BATCH - len(control_requests):
         raise SystemExit(f"a mixed calibration batch holds {BATCH - len(control_requests)} real candidates")
     population = controls.population(catalogue.population_bodies())
+    quota_group = _quota_group(configuration, options.reviewer)
     limits = {"excluded_installations": _exclusions(options.exclude_installation),
-              "quota_group_call_ceilings": {QUOTA_GROUP: options.claude_calls_left}, "repeated_failure_limit": 2}
+              "quota_group_call_ceilings": {quota_group: options.calls_left}, "repeated_failure_limit": 2}
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     single = panel.run(PanelRunRequest(
         run_id=f"calibration-single-{stamp}", requests=tuple(control_requests), population=population,
         call_ceiling=len(control_requests), token_ceiling=2_000_000,
         model_calls_authorized=options.authorize_model_calls, ask_every_eligible_reviewer=True, **limits))
-    used = sum(1 for call in single.calls if call["installation_id"] == REVIEWER)
-    limits["quota_group_call_ceilings"] = {QUOTA_GROUP: max(0, options.claude_calls_left - used)}
+    used = sum(1 for call in single.calls if call["installation_id"] == options.reviewer)
+    limits["quota_group_call_ceilings"] = {quota_group: max(0, options.calls_left - used)}
+    reports = {"single": calibration_module.evaluate(controls, single)}
+    record = {"record_type": "community_campaign_calibration/v1", "reviewer": options.reviewer,
+              "controls": [item.to_dict() for item in controls.items], "reports": reports,
+              "single_calls": single.calls}
+    if options.batch_size == 1:
+        options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
+        return {mode: {installation: {"status": row["status"], "false_approvals": row["false_approvals"],
+                                      "label_refusals": row["false_refusals"], "decisions": row["decisions"]}
+                       for installation, row in report["installations"].items() if installation == options.reviewer}
+                for mode, report in reports.items()}
     # Controls at positions 1, 4, 7, 10 and 12, real candidates between them.
     order = [control_requests[0], real[0], real[1], control_requests[1], real[2], real[3], control_requests[2],
              real[4], real[5], control_requests[3], real[6], control_requests[4]]
     mixed = panel.run(PanelRunRequest(
         run_id=f"calibration-mixed-{stamp}", requests=tuple(order), population=population, call_ceiling=1,
         token_ceiling=2_000_000, model_calls_authorized=options.authorize_model_calls,
-        ask_every_eligible_reviewer=True, batch_sizes={REVIEWER: BATCH}, **limits))
-    reports = {"single": calibration_module.evaluate(controls, single)}
+        ask_every_eligible_reviewer=True, batch_sizes={options.reviewer: BATCH}, **limits))
     mixed_controls = [item for item in mixed.items if item.identity in {request.identity for request in control_requests}]
     mixed_view = type(mixed)(**{**mixed.__dict__, "items": mixed_controls})
     reports["mixed_batch_of_12"] = calibration_module.evaluate(controls, mixed_view)
-    record = {"record_type": "community_campaign_calibration/v1", "reviewer": REVIEWER,
-              "controls": [item.to_dict() for item in controls.items], "real_in_mixed_batch": options.real,
-              "reports": reports, "single_calls": single.calls, "mixed_calls": mixed.calls,
-              "real_verdicts": [{"identity": item.identity, "verdicts": item.verdicts} for item in mixed.items
-                                if item.identity in set(options.real)]}
+    record.update({"real_in_mixed_batch": options.real, "mixed_calls": mixed.calls,
+                   "real_verdicts": [{"identity": item.identity, "verdicts": item.verdicts} for item in mixed.items
+                                     if item.identity in set(options.real)]})
     options.output.write_text(json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
     return {mode: {installation: {"status": row["status"], "false_approvals": row["false_approvals"],
                                   "label_refusals": row["false_refusals"], "decisions": row["decisions"]}
-                   for installation, row in report["installations"].items() if installation == REVIEWER}
+                   for installation, row in report["installations"].items() if installation == options.reviewer}
             for mode, report in reports.items()}
 
 
@@ -134,16 +153,18 @@ def review(options) -> dict:
     catalogue = native.NativeCatalogue.load(options.catalogue, ROOT)
     configuration, criteria, instructions, panel = _build(options.catalogue, options.ledger,
                                                           options.authorize_model_calls, len(catalogue.identities()))
-    identities = options.identity or list(catalogue.identities())
+    identities = _identities(options, catalogue)
     requests = tuple(catalogue.request(identity, catalogue.producer_for(identity), criteria, instructions.sha256)
                      for identity in identities)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     result = panel.run(PanelRunRequest(
         run_id=f"community-review-{stamp}", requests=requests, population=catalogue.population_bodies(),
         call_ceiling=options.call_ceiling, token_ceiling=options.token_ceiling,
-        model_calls_authorized=options.authorize_model_calls, batch_sizes={REVIEWER: BATCH},
+        model_calls_authorized=options.authorize_model_calls,
+        batch_sizes={options.reviewer: options.batch_size} if options.batch_size > 1 else {},
         excluded_installations=_exclusions(options.exclude_installation),
-        quota_group_call_ceilings={QUOTA_GROUP: options.claude_calls_left}, repeated_failure_limit=3,
+        quota_group_call_ceilings={_quota_group(configuration, options.reviewer): options.calls_left},
+        repeated_failure_limit=3,
         collect_below_quorum_reason="Community tier (AGENTS.md decision table, Library tiers): one independent "
                                     "family is reachable; its verdicts are stored for a later second family."))
     summary = {"run_id": result.run_id, "stop_reason": result.stop_reason, "totals": result.totals(),
@@ -168,12 +189,17 @@ def main(argv=None) -> int:
             command.add_argument("--scratch-ledger", type=Path, required=True)
         else:
             command.add_argument("--ledger", type=Path, required=True)
-            command.add_argument("--claude-calls-left", type=int, required=True)
+            command.add_argument("--reviewer", default=REVIEWER, help="The one installation asked in this run.")
+            command.add_argument("--calls-left", type=int, required=True,
+                                 help="What remains of the reviewer's quota group ceiling.")
+            command.add_argument("--batch-size", type=int, default=BATCH,
+                                 help="Items per call; 1 asks one item at a time.")
             command.add_argument("--authorize-model-calls", action="store_true")
         if name == "calibrate":
             command.add_argument("--real", action="append", default=[])
         if name == "review":
             command.add_argument("--identity", action="append", default=[])
+            command.add_argument("--identities-file", type=Path)
             command.add_argument("--call-ceiling", type=int, required=True)
             command.add_argument("--token-ceiling", type=int, default=20_000_000)
     options = parser.parse_args(argv)

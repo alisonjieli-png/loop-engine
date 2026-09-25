@@ -75,7 +75,8 @@ THREAD_IDENTITY = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[
 SESSION_RECORD_LIMIT_BYTES = 64 * 1024 * 1024
 #: Words in a command line's error text, checked in this order, and the outcome each one names.
 ERROR_WORDS = (
-    (USAGE_LIMIT_REACHED, ("usage limit", "quota", "insufficient_quota", "out of credits", "credit balance")),
+    (USAGE_LIMIT_REACHED, ("usage limit", "quota", "insufficient_quota", "out of credits", "credit balance",
+                           "session limit", "hit your limit")),
     (RATE_LIMITED, ("429", "rate limit", "rate_limit", "too many requests")),
     (AUTHENTICATION_UNAVAILABLE, ("401", "403", "unauthorized", "not logged in", "log in", "login",
                                   "authentication", "invalid api key", "invalid_api_key")),

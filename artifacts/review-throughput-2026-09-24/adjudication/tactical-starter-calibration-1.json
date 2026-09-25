@@ -1,0 +1,354 @@
+{
+  "record_type": "candidate_review_command_summary/v1",
+  "run_id": "tactical-starter-calibration-1",
+  "listing": {
+    "ok": true,
+    "error": "",
+    "withheld": [
+      "kimi-k3"
+    ]
+  },
+  "stop_reason": "calibration_only",
+  "totals": null,
+  "ineligible": null,
+  "capped_quota_groups": [],
+  "run_limits": {
+    "batch_sizes": {},
+    "quota_group_call_ceilings": {
+      "tactical_endpoint": 4
+    },
+    "repeated_failure_limit": 2,
+    "excluded_installations": {
+      "ollama.deepseek-v4-pro": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.qwen3.5-397b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.minimax-m3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.kimi-k2.6": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.glm-5.3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.mistral-large-3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.gpt-oss-120b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "codex.gpt-6-sol": "the Codex subscription usage limit lasts until 2026-09-29 17:24 Eastern (probes codex-1 and codex-2)",
+      "claude_code.subscription": "asked in its own run with its own ledger"
+    },
+    "collect_below_quorum": ""
+  },
+  "calibration": {
+    "stop_reason": "completed",
+    "totals": {
+      "items": 4,
+      "approved": 0,
+      "rejected": 2,
+      "refused_before_review": 0,
+      "panel_incomplete": 2,
+      "not_started": 0,
+      "disagreements": 0,
+      "calls": 4,
+      "calls_by_outcome": {
+        "verdict": 4
+      },
+      "physical_model_calls_known": 4,
+      "calls_with_unknown_physical_count": 0,
+      "calls_with_unknown_usage": 0,
+      "input_tokens_reported": 23474,
+      "output_tokens_reported": 1191,
+      "charged_tokens": 24665,
+      "pause_seconds": 0.0,
+      "elapsed_seconds": 19.669
+    },
+    "ineligible": {
+      "ollama.deepseek-v4-pro": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.qwen3.5-397b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "codex.gpt-6-sol": "the Codex subscription usage limit lasts until 2026-09-29 17:24 Eastern (probes codex-1 and codex-2)",
+      "ollama.minimax-m3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.kimi-k2.6": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.glm-5.3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.mistral-large-3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.gpt-oss-120b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+      "ollama.kimi-k3": "disabled",
+      "claude_code.bare": "disabled",
+      "claude_code.subscription": "asked in its own run with its own ledger"
+    },
+    "installations": {
+      "claude_code.bare": "calibration_incomplete",
+      "claude_code.subscription": "calibration_incomplete",
+      "codex.gpt-6-sol": "calibration_incomplete",
+      "ollama.deepseek-v4-pro": "calibration_incomplete",
+      "ollama.glm-5.3": "calibration_incomplete",
+      "ollama.gpt-oss-120b": "calibration_incomplete",
+      "ollama.kimi-k2.6": "calibration_incomplete",
+      "ollama.kimi-k3": "calibration_incomplete",
+      "ollama.minimax-m3": "calibration_incomplete",
+      "ollama.mistral-large-3": "calibration_incomplete",
+      "ollama.qwen3.5-397b": "calibration_incomplete",
+      "tactical.gemma-4-coding-abliterated": "failed_calibration"
+    },
+    "report": {
+      "record_type": "candidate_review_calibration_result/v2",
+      "set_sha256": "8238acf06c08576aaba02809cbe6f3304d69769e07bee5573082e550a387b14b",
+      "purpose": "Measure each reviewer installation on items whose correct decision is known before it is trusted with real candidates. Each known-wrong item is a real catalogue body with one planted defect that a written criterion names; the known-good item is a body an earlier independent review approved, unchanged. A reviewer that approves any known-wrong item, or gives no valid verdict on one, is not asked about real candidates in the same run.",
+      "items": [
+        {
+          "identity": "calibration_false_claim_about_the_cited_file",
+          "base_identity": "review_shared_state_for_ordering_defects",
+          "expected_decision": "reject",
+          "criterion_id": "general_practice_grounding",
+          "defect": "The one sentence about the cited file now says the opposite of what the file does: the file applies a batch of writes with explicit preconditions, and the sentence says it applies every write with no precondition."
+        },
+        {
+          "identity": "calibration_step_that_defeats_the_purpose",
+          "base_identity": "isolate_a_flaky_test_before_trusting_it",
+          "expected_decision": "reject",
+          "criterion_id": "read_as_a_customer",
+          "defect": "The repair step now tells the reader to hide the failure with automatic retries, which the item's own known-wrong example names as the mistake."
+        },
+        {
+          "identity": "calibration_effects_left_undeclared",
+          "base_identity": "keep_partial_work_when_a_long_job_is_interrupted",
+          "expected_decision": "reject",
+          "criterion_id": "effects_rule",
+          "defect": "The declared effects are now empty while the steps tell the reader to write progress files, read them back and stop and restart the job."
+        },
+        {
+          "identity": "calibration_known_good_test_driven_change",
+          "base_identity": "test_driven_change_red_green_refactor",
+          "expected_decision": "approve",
+          "criterion_id": "read_as_a_customer",
+          "defect": ""
+        }
+      ],
+      "run_id": "tactical-starter-calibration-1-calibration",
+      "installations": {
+        "claude_code.bare": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "claude_code.subscription": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "codex.gpt-6-sol": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.deepseek-v4-pro": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.glm-5.3": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.gpt-oss-120b": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.kimi-k2.6": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.kimi-k3": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.minimax-m3": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.mistral-large-3": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "ollama.qwen3.5-397b": {
+          "decisions": {},
+          "correct": 0,
+          "false_approvals": [],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "controls_without_a_verdict": [
+            "calibration_effects_left_undeclared",
+            "calibration_false_claim_about_the_cited_file",
+            "calibration_known_good_test_driven_change",
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "status": "calibration_incomplete"
+        },
+        "tactical.gemma-4-coding-abliterated": {
+          "decisions": {
+            "calibration_effects_left_undeclared": "reject",
+            "calibration_false_claim_about_the_cited_file": "reject",
+            "calibration_known_good_test_driven_change": "approve",
+            "calibration_step_that_defeats_the_purpose": "approve"
+          },
+          "correct": 3,
+          "false_approvals": [
+            "calibration_step_that_defeats_the_purpose"
+          ],
+          "false_refusals": [],
+          "known_wrong_without_a_verdict": [],
+          "controls_without_a_verdict": [],
+          "status": "failed_calibration"
+        }
+      },
+      "excluded": {
+        "claude_code.bare": "calibration_incomplete",
+        "claude_code.subscription": "calibration_incomplete",
+        "codex.gpt-6-sol": "calibration_incomplete",
+        "ollama.deepseek-v4-pro": "calibration_incomplete",
+        "ollama.glm-5.3": "calibration_incomplete",
+        "ollama.gpt-oss-120b": "calibration_incomplete",
+        "ollama.kimi-k2.6": "calibration_incomplete",
+        "ollama.kimi-k3": "calibration_incomplete",
+        "ollama.minimax-m3": "calibration_incomplete",
+        "ollama.mistral-large-3": "calibration_incomplete",
+        "ollama.qwen3.5-397b": "calibration_incomplete",
+        "tactical.gemma-4-coding-abliterated": "failed_calibration"
+      },
+      "limits": "A fixed set of planted defects measures whether a reviewer catches those defect classes. It does not estimate how often the reviewer errs on real candidates. An expected-approve control rejection is only a label disagreement until the control has complete admission eligibility evidence, including applicable native-loading evidence; it is not an empirical false-refusal measurement."
+    }
+  },
+  "record": null,
+  "command_seconds": 21.177
+}

@@ -446,6 +446,23 @@ class CommandLineEngineTest(unittest.TestCase):
         self.assertIsNone(attempt.usage.input_tokens)
         self.assertIsNone(attempt.physical_model_calls, "a killed command may have called the model")
 
+    def test_a_subscription_session_limit_is_a_spent_allowance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            program = _program(Path(directory), "claude", """
+                import json, sys
+                if sys.argv[1:] == ["--version"]:
+                    print("2.0.0 (Claude Code)"); sys.exit(0)
+                sys.stdin.read()
+                print(json.dumps({"type": "result", "subtype": "success", "is_error": True,
+                                  "result": "You've hit your session limit \\u00b7 resets 11pm (America/New_York)",
+                                  "duration_api_ms": 0, "modelUsage": {}}))
+                sys.exit(1)
+            """)
+            attempt = _command("claude_code.subscription", program).review(PROMPT, ALLOWANCE)
+        self.assertEqual(attempt.outcome, reviewers.USAGE_LIMIT_REACHED,
+                         "a spent subscription stops its quota group at once instead of failing call by call")
+        self.assertEqual(attempt.physical_model_calls, 0)
+
     def test_a_refused_login_is_no_model_call(self):
         with tempfile.TemporaryDirectory() as directory:
             program = _program(Path(directory), "claude", """

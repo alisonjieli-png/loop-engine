@@ -217,6 +217,9 @@ def run(options) -> dict:
     if options.identity:
         selection = review_record.PopulationSelection(review_record.EXPLICIT_LIST, "", tuple(options.identity),
                                                       tuple(options.identity))
+    elif options.calibrate_only:
+        # A calibration-only command selects no real candidate.
+        selection = review_record.PopulationSelection(review_record.EXPLICIT_LIST, "", (), ())
     else:
         eligible = catalogue.not_reviewed()
         selection = review_record.PopulationSelection(review_record.SEEDED_HASH_ORDER, options.seed, eligible,

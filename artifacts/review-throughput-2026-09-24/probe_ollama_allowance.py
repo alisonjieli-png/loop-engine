@@ -1,4 +1,7 @@
-"""One small recorded call that says whether the Ollama Cloud allowance can serve reviewers now.
+"""One small recorded call that says whether a reviewer installation can serve reviews now.
+
+Written first for the Ollama Cloud allowance; the same probe serves the provider binding engine (the Tactical
+endpoint), whose committed binding and operator credential reference it resolves inside this process only.
 
 The call goes through the review panel's own ``model_gateway`` engine for one
 declared installation, so it uses the same route policy, credential variable
@@ -48,8 +51,10 @@ def main(argv=None) -> int:
     installation = panel.installation(options.installation)
     started = datetime.now(timezone.utc)
     listing = listed_model_versions()
+    from tools import operator_credentials
     engine = engines.build_reviewer(installation, panel.policy, ReviewerContext(
-        model_listing=listing["models"] if listing["ok"] else None))
+        model_listing=listing["models"] if listing["ok"] else None, repository=ROOT,
+        credential_resolver=operator_credentials.resolve))
     availability = engine.availability()
     record = {"record_type": RECORD_TYPE, "started_at": started.isoformat().replace("+00:00", "Z"),
               "installation_id": installation.installation_id, "installation_sha256": installation.sha256,

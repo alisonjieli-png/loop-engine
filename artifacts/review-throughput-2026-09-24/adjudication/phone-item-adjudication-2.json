@@ -1,0 +1,222 @@
+{
+ "calls": [
+  {
+   "body_sha256": "da32d40945936bdc4895fc8ee536f44b2baabc90bb4339b63f924d2eddd010e3",
+   "charge_basis": "reported",
+   "charged_tokens": 12756,
+   "decision": "approve",
+   "elapsed_seconds": 4.527,
+   "engine_kind": "provider_binding",
+   "engine_version": "provider_binding/tactical_gemma_4_coding_abliterated",
+   "error_code": "",
+   "family": "google",
+   "identity": "normalize_phone_numbers",
+   "installation_id": "tactical.gemma-4-coding-abliterated",
+   "installation_sha256": "99e0113479e0bcf770ada3da98c99f3df480ada9ae5b492ea69ea042daee46a8",
+   "invalid_answer_excerpt": "",
+   "model": "gemma-4-coding-abliterated",
+   "model_version": {
+    "binding_sha256": "701d978e37f88c60906cf2c668481ce4796a64dc4c2f6dc61549df8f2058ee80",
+    "capacity_sha256": "f0b71ce3764e1eb6018060676a2ff8102f427b82c71b36e8515246f6ff01825e",
+    "endpoint": "https://ai.tacticalengineering.net:6969/v1",
+    "tls_pinned_sha256": "0fc69cf1c72abe552e9fb3cfa96db9974d7bd93394c20d219d4c051a1a923901"
+   },
+   "outcome": "verdict",
+   "pause_seconds_after": 0.0,
+   "physical_calls_basis": "the gateway's count of physical provider requests",
+   "physical_model_calls": 1,
+   "prompt_sha256": "eeb4d815b949b9e031d8ec667e027b9f6fbe2f2b36371bdecd1ff68b1fe0c610",
+   "record_type": "candidate_review_call/v2",
+   "reported_model": "gemma-4-coding-abliterated",
+   "request_record_type": "candidate_review_request/v1",
+   "request_sha256": "05f30c22026b14b498eb24e8e88afa057abd338ccea5e3f5bc6f85aa880c1872",
+   "reserved_tokens": 27204,
+   "retry_after_seconds": null,
+   "review_key": "2b91d1dfe8bd25b058a251d6c774d9851eaac639cd336e10791899235aee3cd4",
+   "route_or_command": "tactical:review.tactical.gemma-4-coding-abliterated",
+   "run_id": "phone-adjudication-20260925T030440Z",
+   "sequence": 1,
+   "started_at": "2026-09-25T03:04:40.573323Z",
+   "usage": {
+    "cached_input_tokens": null,
+    "input_tokens": 12400,
+    "output_tokens": 356,
+    "reasoning_output_tokens": null,
+    "source": "provider_reported"
+   }
+  }
+ ],
+ "decision": "approval_unchanged",
+ "decision_rule": "Any independent written rejection withdraws the standing approval of the judged bytes and of every earlier digest of the item that differs only in its anchor line. The rejecting reasons name the repair (narrow or replace); a repair is new bytes that need a new review and a new measurement. If every eligible reviewer approves, the standing approval is left unchanged; one family cannot grant a new approval.",
+ "evidence": {
+  "path": "artifacts/review-throughput-2026-09-24/adjudication/phone-item-evidence.md",
+  "sha256": "71e900debc543183fdc45fe8fdd41ef8d4676d24def5bb05f2dc25cfe295b204"
+ },
+ "identity": "normalize_phone_numbers",
+ "ineligible": {
+  "claude_code.bare": "disabled",
+  "claude_code.subscription": "producer_family",
+  "codex.gpt-6-sol": "the Codex subscription usage limit lasts until 2026-09-29 17:24 Eastern (probes codex-1 and codex-2)",
+  "ollama.deepseek-v4-pro": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.glm-5.3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.gpt-oss-120b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.kimi-k2.6": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.kimi-k3": "disabled",
+  "ollama.minimax-m3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.mistral-large-3": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached",
+  "ollama.qwen3.5-397b": "the Ollama Cloud allowance is spent: ollama-allowance-probe-4 recorded usage_limit_reached"
+ },
+ "ledger": "artifacts/review-throughput-2026-09-24/adjudication/ledger.jsonl",
+ "panel_outcome": "panel_incomplete",
+ "panel_rule": "no_standing_verdict_yet",
+ "prechecks": {
+  "reasons": [],
+  "refused": false,
+  "results": [
+   {
+    "engine_id": "builtin_licence_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "licence",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "builtin_format_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "format",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "agent_skills_reference",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the program 'agentskills' is not installed on this machine"
+     }
+    ],
+    "kind": "format",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   },
+   {
+    "engine_id": "builtin_static_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "safety",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "skillspector_static",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the program 'skillspector' is not installed on this machine"
+     }
+    ],
+    "kind": "safety",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   },
+   {
+    "engine_id": "builtin_effect_rules",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "effects",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "builtin_secret_patterns",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "secrets",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "exact_shingle_jaccard",
+    "engine_version": "1",
+    "findings": [],
+    "kind": "duplicates",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "passed"
+   },
+   {
+    "engine_id": "datasketch_minhash_lsh",
+    "engine_version": "",
+    "findings": [
+     {
+      "code": "engine_unavailable",
+      "detail": "the datasketch library (MIT licence) is not installed in this interpreter"
+     }
+    ],
+    "kind": "duplicates",
+    "record_type": "candidate_precheck_result/v1",
+    "status": "unavailable"
+   }
+  ]
+ },
+ "producer": {
+  "family": "anthropic",
+  "producer_identity": "Claude Code"
+ },
+ "reasons": [
+  "approvals_below_quorum"
+ ],
+ "record_type": "catalogue_item_adjudication/v1",
+ "recorded_at": "2026-09-25T03:04:45.110655Z",
+ "repair": [],
+ "request_sha256": "05f30c22026b14b498eb24e8e88afa057abd338ccea5e3f5bc6f85aa880c1872",
+ "reviewed_body_digest": "da32d40945936bdc4895fc8ee536f44b2baabc90bb4339b63f924d2eddd010e3",
+ "reviewed_body_size_bytes": 2579,
+ "reviewed_revision": "28960b1826d3ab8abc8e5d2c11365a31c94863b4",
+ "run_id": "phone-adjudication-20260925T030440Z",
+ "served_body_digest_measured": "8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef",
+ "served_body_relation": {
+  "anchor_line_only": true,
+  "different_lines": [
+   43
+  ],
+  "lines": 44,
+  "same_length": true
+ },
+ "served_body_revision": "bb4c6c5b",
+ "served_digest_named_by_the_coordinator": "8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef",
+ "stop_reason": "completed",
+ "verdicts": [
+  {
+   "body_sha256": "da32d40945936bdc4895fc8ee536f44b2baabc90bb4339b63f924d2eddd010e3",
+   "decision": "approve",
+   "family": "google",
+   "findings": [
+    {
+     "blocking": false,
+     "criterion_id": "restated_source_grounding",
+     "text": "The body accurately restates the logic of the `phone_normalize` function in the cited source."
+    },
+    {
+     "blocking": false,
+     "criterion_id": "licence_and_effects",
+     "text": "The license is MIT and the effects list is empty, which is correct as the function only transforms values given to it."
+    },
+    {
+     "blocking": false,
+     "criterion_id": "required_parts",
+     "text": "All required parts (when to use, steps, checks, known-wrong example, what to record, source) are present."
+    }
+   ],
+   "reasons": "The candidate accurately describes the `phone_normalize` function from the source file. The steps follow the implementation logic (handling extensions, checking international prefixes, and applying country codes based on digit counts). The checks provided are correct engineering examples that match the logic, and the known-wrong example correctly identifies the risk of applying a single country code to a multi-country dataset. The item correctly declares no effects as it is a pure transformation method.",
+   "request_sha256": "05f30c22026b14b498eb24e8e88afa057abd338ccea5e3f5bc6f85aa880c1872",
+   "review_key": "2b91d1dfe8bd25b058a251d6c774d9851eaac639cd336e10791899235aee3cd4",
+   "reviewer_id": "tactical.gemma-4-coding-abliterated",
+   "run_id": "phone-adjudication-20260925T030440Z",
+   "sequence": 1
+  }
+ ]
+}

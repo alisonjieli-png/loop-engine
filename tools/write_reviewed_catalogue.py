@@ -25,7 +25,10 @@ The tier follows the "Library tiers" row of the decision table in AGENTS.md:
 A folder serves one tier and names one fixed set of reviewers, because the
 release tools require every named reviewer to have judged every judged row.
 An item enters the folder only when every named reviewer gave a verdict bound
-to its exact package: approved when all approve, rejected when any rejects.
+to its exact package, and no other reviewer did: approved when all approve,
+rejected when any rejects. An item another reviewer also judged is left out,
+because that verdict must count (a rejection anywhere withholds approval), and
+a folder that names both reviewers is where it belongs.
 Everything else is left out and listed in the writer's report with its reason:
 a named reviewer of the producer's family (no family approves its own
 family's output), a missing verdict, a refusing pre-check, a licence off the
@@ -215,6 +218,15 @@ def write(options) -> dict:
                               "verdicts_on_record": len(found)})
         if missing:
             left_out.append({"identity": identity, "reason": "no verdict yet from " + ", ".join(missing)})
+            continue
+        # A verdict from a reviewer this folder does not name must not be lost: a rejection there withholds
+        # approval, and an approval there belongs to a folder that names both families.
+        outside = sorted({verdict["installation_id"] for other in panel.installations
+                          if other.installation_id not in {reviewer.installation_id for reviewer in reviewers}
+                          for _name, verdict, _call in verdicts_for(ledgers, other, request, instructions)})
+        if outside:
+            left_out.append({"identity": identity, "reason": "also judged by " + ", ".join(outside)
+                                                             + ", which this folder does not name"})
             continue
         if scripted and not options.allow_fixture:
             left_out.append({"identity": identity, "reason": "a verdict came from a scripted fixture reviewer"})

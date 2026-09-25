@@ -478,6 +478,18 @@ class CommandOptionsTest(unittest.TestCase):
                     command.run(options)
                 self.assertEqual(caught.exception.code, code)
 
+    def test_a_calibration_only_command_selects_no_real_candidate(self):
+        import review_catalogue_candidates as command
+        options = command._parser().parse_args([
+            "--catalogue", str(self.ROOT / "examples/29_intelligence_service/starter-catalogue"),
+            "--repository", str(self.ROOT), "--ledger", str(Path(self.directory) / "ledger.jsonl"),
+            "--calibrate", "--calibrate-only", "--call-ceiling", "0", "--token-ceiling", "0"])
+        with mock.patch.object(command, "listed_model_versions", side_effect=AssertionError("no provider listing")):
+            summary = command.run(options)
+        self.assertEqual(summary["stop_reason"], "calibration_only")
+        self.assertIsNone(summary["totals"])
+        self.assertEqual(summary["calibration"]["totals"]["items"], 4)
+
     def test_without_model_authority_no_credential_resolver_reaches_an_engine(self):
         from candidate_review.reviewers import Availability
         command, options = self.options("--exclude-installation", "codex.gpt-6-sol=the allowance is spent")

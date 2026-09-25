@@ -87,10 +87,11 @@ def skill_catalogue(folder: Path, identity: str, family: str) -> None:
 
 def fixture_panel(path: Path) -> config.PanelConfiguration:
     value = copy.deepcopy(PANEL)
-    value["installations"] = [{"record_type": config.INSTALLATION_RECORD, "installation_id": "fixture.reviewer",
-                               "engine_kind": "fixture", "family": "anthropic", "model": "fixture-model",
-                               "quota_group": "fixture", "lens": "adversarial", "enabled": True,
-                               "disabled_reason": "", "settings": {}}]
+    value["installations"] = [{"record_type": config.INSTALLATION_RECORD, "installation_id": name,
+                               "engine_kind": "fixture", "family": family, "model": "fixture-model",
+                               "quota_group": "fixture-" + name, "lens": "adversarial", "enabled": True,
+                               "disabled_reason": "", "settings": {}}
+                              for name, family in (("fixture.reviewer", "anthropic"), ("fixture.second", "google"))]
     path.write_text(json.dumps(value))
     return config.PanelConfiguration.from_dict(value)
 
@@ -112,16 +113,18 @@ class WriterTest(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name).resolve()
 
-    def review(self, decision="approve", family="zhipu", ask_producer_family=False):
+    def review(self, decision="approve", family="zhipu", ask_producer_family=False, second=None):
         folder = self.root / "candidates"
         folder.mkdir()
         skill_catalogue(folder, "check_a_sum", family)
         configuration = native_profile.configuration(fixture_panel(self.root / "panel.json"))
         criteria, instructions = native_profile.resources()
         catalogue = native.NativeCatalogue.load(folder, ROOT)
-        installation = configuration.installations[0]
-        panel = ReviewPanel(configuration, criteria, instructions,
-                            {installation.installation_id: FixtureReviewer(installation, verdict_script(decision))},
+        first, other = configuration.installations
+        scripts = {first.installation_id: FixtureReviewer(first, verdict_script(decision))}
+        if second is not None:
+            scripts[other.installation_id] = FixtureReviewer(other, verdict_script(second))
+        panel = ReviewPanel(configuration, criteria, instructions, scripts,
                             engines.build_precheck_engines(configuration), ReviewLedger(self.root / "ledger.jsonl"))
         request = catalogue.request("check_a_sum", catalogue.producer_for("check_a_sum"), criteria, instructions.sha256)
         # A defect that let the producer's family be asked is simulated by switching the panel's exclusion off.
@@ -186,6 +189,16 @@ class WriterTest(unittest.TestCase):
         with mock.patch.object(writer, "_same_family", lambda reviewers, producer: False):
             summary = self.write(folder)
         self.assertEqual(summary["approved"], 1)
+
+    def test_a_verdict_from_a_reviewer_the_folder_does_not_name_leaves_the_item_out(self):
+        for second in ("reject", "approve"):
+            with self.subTest(second=second):
+                self.root = Path(tempfile.mkdtemp(dir=self.tmp.name)).resolve()
+                folder = self.review(second=second)
+                with self.assertRaisesRegex(writer.WriterError, "no_judged_items"):
+                    self.write(folder)
+                report = self.root / "reviewed"
+                self.assertFalse(report.exists())
 
     def test_a_scripted_fixture_verdict_is_left_out_unless_a_check_allows_it(self):
         with self.assertRaisesRegex(writer.WriterError, "no_judged_items"):

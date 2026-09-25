@@ -1,0 +1,36 @@
+{
+ "allowance": "serving",
+ "availability_reason": "",
+ "available": true,
+ "call": {
+  "answer": "READY",
+  "elapsed_seconds": 1.285,
+  "error_detail": "",
+  "outcome": "answered",
+  "physical_model_calls": 1,
+  "reported_model": "gemma-4-coding-abliterated",
+  "retry_after_seconds": null,
+  "usage": {
+   "cached_input_tokens": null,
+   "input_tokens": 31,
+   "output_tokens": 1,
+   "reasoning_output_tokens": null,
+   "source": "provider_reported"
+  }
+ },
+ "family": "google",
+ "installation_id": "tactical.gemma-4-coding-abliterated",
+ "installation_sha256": "99e0113479e0bcf770ada3da98c99f3df480ada9ae5b492ea69ea042daee46a8",
+ "listing": {
+  "error": "",
+  "http_status": 200,
+  "model_version": null,
+  "models_listed": 19,
+  "ok": true
+ },
+ "model": "gemma-4-coding-abliterated",
+ "prompt_sha256": "5add72bf26b5a2c8e43d60461613b68f0f13bda1974786bb35b4d505823c5201",
+ "quota_group": "tactical_endpoint",
+ "record_type": "review_allowance_probe/v1",
+ "started_at": "2026-09-25T03:04:09.931439Z"
+}
