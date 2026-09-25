@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f67cdd32fa726b`.
+Source fingerprint: `sha256:85c38b191611b8d8bc3436d936f8ef93f0fe00a78f71f39a2dc8f83157e36a1c`.
 
 ## Where things stand
 
@@ -47,9 +47,11 @@ Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f6
 | S-6.12 | Build the website, subscriber dashboard, and operator workflows | building | S-6.5, S-6.6, S-6.21 |
 | S-6.24 | Deliver client, authentication, endpoint-based model and native-harness onboarding | building | S-6.5, S-6.9, S-6.12 |
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
+| S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
+| S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
 | S-1.4 | Evaluation product command over a frozen suite | building |  |
 | S-1.7 | Runnable prompt and harness optimization command | building | S-1.4 |
 | S-2.15 | Noise injection and explorative optimization over the evaluation product | building | S-1.7 |
@@ -59,8 +61,6 @@ Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f6
 | S-4.3 | Packaging tiers and pricing draft | building | S-4.2 |
 | S-4.4 | Deployment to the owner's cloud account | building | S-4.2 |
 | S-4.5 | Billing with metered usage | building | S-4.4 |
-| S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
-| S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85 |
 
 ## Can start next
 
@@ -146,6 +146,15 @@ Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f6
 | S-6.96 | Failure fingerprints and known fixes, and a changed approach when a fingerprint repeats | proposed | S-6.41 |
 | S-6.97 | The decision outcome review: tool decisions joined to their later outcomes and scored by an independent evaluator | proposed | S-6.41, S-6.58 |
 | S-6.98 | Consented run traces as training and evaluation examples | proposed | S-6.41 |
+| S-6.110 | Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger | proposed | S-6.37, S-6.44 |
+| S-6.111 | The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page | proposed | S-6.67, S-6.110 |
+| S-6.112 | DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges | proposed | S-6.110 |
+| S-6.113 | The 2025 red-team finding tracked on current models, and the safety framework's checks repaired | proposed | S-6.110 |
+| S-6.114 | Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests | proposed | S-6.110, S-6.44 |
+| S-6.115 | Configuration search on the owner's entity resolution pipeline, scored by an exact metric | proposed | S-6.110 |
+| S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
+| S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
+| S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
@@ -162,15 +171,6 @@ Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f6
 | S-4.16 | Define the deployment in the repository, not in a console | ready | S-4.13 |
 | S-4.8 | Cloud capacity within a client budget, quotas, and spin-up policy | proposed | S-2.23, S-4.2 |
 | S-4.9 | Administrator surfaces for system and client administrators | proposed | S-4.8 |
-| S-6.110 | Replayable showcase run records: step working directories, trajectories in the Agent Trajectory Interchange Format, and a cost and time ledger | proposed | S-6.37, S-6.44 |
-| S-6.111 | The owner's publications index on papers.baltor.ai and the showcase hostnames, each serving its own page | proposed | S-6.67, S-6.110 |
-| S-6.112 | DueCare rebuilt per step, with and without Baltor, on DueCare's own scorer and judges | proposed | S-6.110 |
-| S-6.113 | The 2025 red-team finding tracked on current models, and the safety framework's checks repaired | proposed | S-6.110 |
-| S-6.114 | Recreate and reuse: the owner's small tools rebuilt from their READMEs by small models, checked by the original tests | proposed | S-6.110, S-6.44 |
-| S-6.115 | Configuration search on the owner's entity resolution pipeline, scored by an exact metric | proposed | S-6.110 |
-| S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
-| S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
-| S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
 
 ## Blocked
 
@@ -256,8 +256,8 @@ Source fingerprint: `sha256:664225305651fc22febebfbb02e71d5f8fb060e32d635123c4f6
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
-- S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
+- S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)
 - S-1.10: Detection and correction node family with confidence (offline_verified)
