@@ -1422,6 +1422,32 @@ def _registration_report(root, name):
     return tuple(reports)
 
 
+class _FoundingIdentityStandIn(_IdentityStandIn):
+    """The same stand-in with a founding offer whose places are free or taken, as the identity reports them."""
+
+    def __init__(self, runtime, places_free):
+        super().__init__(runtime)
+        self.places_free = places_free
+
+    def founding_offer_open(self):
+        return self.places_free
+
+
+def _founding_offer_report(root, name):
+    """What four services report as the founding offer: places free with sign-up open, places taken, sign-up closed, none."""
+    fixture = _fixture(root, name)
+    reports = []
+    for identity, account_email in ((_FoundingIdentityStandIn(fixture.runtime, True), _adapter(_Provider())),
+                                    (_FoundingIdentityStandIn(fixture.runtime, False), _adapter(_Provider())),
+                                    (_FoundingIdentityStandIn(fixture.runtime, True),
+                                     _adapter(_Provider(), _settings(signup_enabled=False))),
+                                    (_IdentityStandIn(fixture.runtime), _adapter(_Provider()))):
+        application = _shut(ServiceHttpApplication(fixture.runtime, fixture.provisioning, _loopback_configuration(),
+                            browser_identity=identity, account_email=account_email))
+        reports.append(application.capabilities()["website"]["founding_offer_open"])
+    return tuple(reports)
+
+
 def _files_text(root):
     """Every byte under one folder, as text an operator could read."""
     return "\n".join(path.read_bytes().decode("latin-1") for path in sorted(root.rglob("*")) if path.is_file())
@@ -1543,6 +1569,14 @@ def _email_first_signup_checks(check, root):
                       and self.browser_identity.configuration.email_signup_enabled):
         check("removed_sign_up_link_rule_for_registration_is_detected",
               _registration_report(root, "registration-mutant") != (True, False, False))
+    # The public pages state the founding offer only while a place is free and a
+    # visitor can create an account to take it (finding 10 of the persona
+    # journeys of September 24, 2026).
+    check("the_founding_offer_is_reported_only_with_a_free_place_and_open_sign_up",
+          _founding_offer_report(root, "founding-offer") == (True, False, False, False))
+    with patch.object(ServiceHttpApplication, "registration_available", lambda self: True):
+        check("removed_open_sign_up_rule_for_the_founding_offer_is_detected",
+              _founding_offer_report(root, "founding-offer-mutant") != (True, False, False, False))
 
 
 def run_checks(check, root):

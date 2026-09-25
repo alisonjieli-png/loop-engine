@@ -19,6 +19,7 @@ from .account_administration import AUDIT, AccountAdministration, AccountAdminis
 from .account_email import ProviderAnswer
 from .account_origin import AccountOrigins, SupabaseIdentityAdministration, USERS_PATH
 from .account_origin_checks import mutated, signed_identity
+from .browser_identity import BrowserIdentityAdapter
 from .account_policy import (ACCOUNT_COUNTS, ANALYTICS, DEVELOPER, PERMISSIONS, ROLE_PERMISSIONS, SERVICE_DIAGNOSTICS,
                              SUPERADMIN, USAGE_COUNTS, ServiceAccountPolicy, permissions_for)
 from .free_monthly import (ACCESS_HELD, FOUNDING, FOUNDING_FREE_MONTHLY, GRANTED, LIMIT_REACHED,
@@ -269,7 +270,33 @@ def _race_for_the_last_place(root, name):
         return sorted(outcomes.values()), len(founding_holders(runtime)), _founding_count(runtime)
 
 
+def _founding_offer_follows_the_places(root, name):
+    """The public statement of the founding offer: open with a place free, closed once the places are taken or with no offer.
+
+    The pricing page and the Get started funnel state the offer only while the
+    service reports it open, so a visitor is never promised a place that is gone.
+    """
+    with signed_identity(root / name, operator_access=False) as identity:
+        adapter = identity.adapter(founding_accounts=2)
+        answers = [adapter.founding_offer_open()]
+        for index in range(2):
+            _new_account(identity, adapter, index)
+            answers.append(adapter.founding_offer_open())
+        without = identity.adapter(founding_accounts=None).founding_offer_open()
+        closed = BrowserIdentityAdapter(identity.fixture.runtime, replace(identity.policy, registration_enabled=False, email_signup_enabled=False),
+                                        lambda _: "sb_publishable_local_fixture", transport=identity.user,
+                                        founding_accounts=5).founding_offer_open()
+        return answers == [True, True, False] and without is False and closed is False
+
+
 def _founding_checks(check, root):
+    check("the_founding_offer_is_reported_open_only_while_a_place_is_free",
+          _founding_offer_follows_the_places(root, "offer-open"))
+    with mutated(BrowserIdentityAdapter, "founding_offer_open",
+                 "return len(founding_holders(self.runtime)) < self.founding_accounts", "return True"):
+        check("removed_founding_place_count_in_the_public_offer_is_detected",
+              not _founding_offer_follows_the_places(root, "offer-always-open"))
+
     def first_ten_hold(name):
         decisions, count, migrated, _identity = _first_ten(root, name)
         return decisions == [GRANTED] * 10 + [LIMIT_REACHED] and count == 10 and "founding_offer" not in migrated

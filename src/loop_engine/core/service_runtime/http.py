@@ -659,7 +659,13 @@ class ServiceHttpApplication:
                             "client_access_available": self.client_access is not None,
                             "promotion_redemption_available": self.promotions is not None,
                             "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH,
-                            "waitlist_available": self.waitlist is not None},
+                            "waitlist_available": self.waitlist is not None,
+                            # The founding offer is stated on the public pages only while a place is
+                            # free and a visitor can create an account to take it.
+                            "founding_offer_open": (self.browser_identity is not None
+                                                    and hasattr(self.browser_identity, "founding_offer_open")
+                                                    and self.registration_available()
+                                                    and self.browser_identity.founding_offer_open() is True)},
                 "protocol": {"transport": "streamable_http",
                              "versions": list(self.configuration.protocol_versions),
                              "handshake_versions": list(self.configuration.handshake_protocol_versions),

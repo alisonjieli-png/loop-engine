@@ -168,6 +168,7 @@
       <div class="pricing-grid">
         <section class="panel plan-card" aria-labelledby="plan-heading"><div class="section-heading"><div><p class="eyebrow">One plan</p><h2 id="plan-heading">Baltor Pro</h2></div><span class="badge" id="pricing-state">Baltor Pro</span></div>
           <p class="plan-price">$29 <span class="plan-period">a month</span></p>
+          <p class="caption" id="pricing-founding" data-founding-offer hidden>While founding places last, a new account gets Baltor Pro free each month.</p>
           <ul class="plan-list">
             <li data-plan-point="library"><strong>The whole library.</strong> Skills, instruction files, tools and code, subagents and commands, hooks and protocol server settings, searchable from your harness.</li>
             <li data-plan-point="unit"><strong>The measured unit is one downloaded item.</strong> One item at the version you selected counts once. A search, a second look at the same reference and a refused download are not downloads.</li>
@@ -192,13 +193,13 @@
       <section class="pricing-questions reading"><h2>Common questions</h2>
         <details><summary>Do I need a model key to use Baltor?</summary><p>No. A Baltor key gives access to the library. The model calls happen in your own tools, with your own provider account or your own models.</p></details>
         <details><summary>What happens to material I already downloaded?</summary><p>It stays where you saved it. Revoking a key or cancelling stops new requests; it does not recall files that were already delivered.</p></details>
-        <details><summary>Is there a free plan?</summary><p>The Baltor Harness you install is free and open source. The library is Baltor Pro, $29 a month, and the measured unit is one downloaded item.</p></details>
+        <details id="pricing-free-plan"><summary>Is there a free plan?</summary><p>The Baltor Harness you install is free and open source. The library is Baltor Pro, $29 a month, and the measured unit is one downloaded item.<span data-founding-offer hidden> While founding places last, a new account gets Baltor Pro free each month.</span><span data-plan-note="founding_free_monthly" hidden> Your account holds a founding place, so Baltor Pro is free for it each month.</span><span data-plan-note="free_monthly" hidden> Your account includes Baltor Pro free each month.</span></p></details>
         <details><summary>Can a team share one account?</summary><p>Not today. One account holds one person's keys. Shared accounts and team billing are later work.</p></details>
       </section>
     </section>
     <section data-view="start" hidden class="funnel-page" aria-labelledby="funnel-title">
       <div class="funnel-band">
-        <div class="funnel-head"><h1 id="funnel-title">Get started with Baltor.</h1><p class="funnel-price">Create your account, subscribe to Baltor Pro for $29 a month and connect your harness.</p></div>
+        <div class="funnel-head"><h1 id="funnel-title">Get started with Baltor.</h1><p class="funnel-price" id="funnel-price">Create your account, subscribe to Baltor Pro for $29 a month and connect your harness.</p></div>
         <div class="funnel-layout" id="funnel" data-funnel-state="register">
           <div class="funnel-card" id="funnel-card">
             <div class="funnel-panel" data-funnel-panel="register"><p class="funnel-card-step">Step 1 of 5</p><h2>Create your account</h2><p>Your email address is all we need. We send you a link to confirm it.</p><form id="funnel-signup-form" method="post"><label for="funnel-email">Email address</label><input id="funnel-email" type="email" autocomplete="email" required maxlength="254" placeholder="you@company.com"><p class="signup-consent" id="funnel-consent">By creating an account you agree to the <a href="/terms" data-page="terms">terms of service</a> and the <a href="/privacy" data-page="privacy">privacy notice</a>.</p><button id="funnel-signup-button" type="submit" class="primary">Create account</button></form><p id="funnel-signup-message" role="status" aria-live="polite"></p></div>
@@ -210,7 +211,7 @@
             <li data-funnel-step="account"><span class="funnel-step-number" aria-hidden="true">1</span><span class="funnel-step-text"><strong id="funnel-account-title">Create your account</strong><span id="funnel-account-note">Your email address, nothing else</span></span></li>
             <li data-funnel-step="confirm"><span class="funnel-step-number" aria-hidden="true">2</span><span class="funnel-step-text"><strong>Confirm your email</strong><span>Open the link we send you</span></span></li>
             <li data-funnel-step="password"><span class="funnel-step-number" aria-hidden="true">3</span><span class="funnel-step-text"><strong>Choose a password</strong><span>On the page the link opens</span></span></li>
-            <li data-funnel-step="plan"><span class="funnel-step-number" aria-hidden="true">4</span><span class="funnel-step-text"><strong>Subscribe to Baltor Pro</strong><span>$29 a month, cancel any time</span></span></li>
+            <li data-funnel-step="plan"><span class="funnel-step-number" aria-hidden="true">4</span><span class="funnel-step-text"><strong id="funnel-step-plan-title">Subscribe to Baltor Pro</strong><span id="funnel-step-plan-note">$29 a month, cancel any time</span></span></li>
             <li data-funnel-step="setup"><span class="funnel-step-number" aria-hidden="true">5</span><span class="funnel-step-text"><strong><a href="/setup" data-page="setup" id="funnel-setup-link">Get set up</a></strong><span>Connect your coding tools</span></span></li>
           </ol>
         </div>

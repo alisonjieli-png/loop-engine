@@ -500,10 +500,27 @@
     checkout:{title:"Subscribe to Baltor Pro", text:"$29 a month. Cancel any time from your account page.", covered:false, subscribe:true},
     unpaid:{title:"Subscribe to Baltor Pro", text:"$29 a month. Subscribe from your account page.", covered:false}};
   const funnelOrder = ["account", "confirm", "password", "plan", "setup"];
+  /* The price line under the heading, the fourth step and the pricing page's free plan answer follow the plan the account holds and
+     the founding offer the service reports, so no line says "subscribe for $29 a month" to an account that Baltor Pro already
+     covers, and no step is marked as a subscription that never happened. The founding offer is stated to a visitor who is not signed
+     in, and only while the service reports a founding place free. The served words are the default and are kept here, so a signed-out
+     page shows them again. Finding 10 of the persona journeys of September 24, 2026. */
+  const servedFunnel = {price:$("funnel-price").textContent, title:$("funnel-step-plan-title").textContent, note:$("funnel-step-plan-note").textContent};
+  const coveredSteps = {founding_free_monthly:["Baltor Pro included", "Free each month, as one of the first accounts"],
+    free_monthly:["Baltor Pro included", "Free each month for this account"], operator_grant:["Baltor Pro included", "Covered for this account"],
+    promotion_code:["Baltor Pro included", "Covered by a promotion code"], subscription:["Subscribed to Baltor Pro", "Manage or cancel it from your account page"]};
   function renderFunnel() {
     const signedIn = Boolean(token), checkout = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.billing?.checkout === true;
     const waitingList = capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.waitlist_available === true;
+    const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;
     const plan = signedIn ? funnelPlans[accessSource] || (checkout ? funnelPlans.checkout : funnelPlans.unpaid) : null;
+    const coveredStep = plan?.covered ? coveredSteps[accessSource] : null;
+    $("funnel-price").textContent = coveredStep ? plan.title + ". Connect your harness to start."
+      : foundingOpen ? "Create your account and connect your harness. Baltor Pro is $29 a month, and while founding places last a new account gets it free each month." : servedFunnel.price;
+    $("funnel-step-plan-title").textContent = coveredStep ? coveredStep[0] : servedFunnel.title;
+    $("funnel-step-plan-note").textContent = coveredStep ? coveredStep[1] : foundingOpen ? "$29 a month, or free each month while founding places last" : servedFunnel.note;
+    for (const sentence of document.querySelectorAll("[data-founding-offer]")) sentence.hidden = !foundingOpen;
+    for (const sentence of document.querySelectorAll("[data-plan-note]")) sentence.hidden = !signedIn || sentence.dataset.planNote !== accessSource;
     const state = signedIn ? "plan" : (registrationOpen || waitingList) ? "register" : "invite", creating = signedIn || registrationOpen || waitingList;
     $("funnel").dataset.funnelState = state;
     for (const panel of document.querySelectorAll("[data-funnel-panel]")) panel.hidden = panel.dataset.funnelPanel !== state;

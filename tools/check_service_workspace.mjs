@@ -69,7 +69,7 @@ from loop_engine.core.service_runtime.account_origin_checks import MarkingIdenti
 from loop_engine.core.service_runtime.account_origin import ACCOUNT_MARK,ACCOUNT_MARKER,AccountOrigins,SupabaseIdentityAdministration,record_origin
 from loop_engine.core.service_runtime.account_administration import AccountAdministration
 from loop_engine.core.service_runtime.account_policy import ServiceAccountPolicy
-from loop_engine.core.service_runtime.free_monthly import grant_rows
+from loop_engine.core.service_runtime.free_monthly import consider_founding_offer,grant_rows
 from loop_engine.core.service_runtime.request_limits import SOCKET_PEER_SOURCE,ServiceRequestLimits
 from loop_engine.core.service_runtime.access import ServiceAccessAdministration,ServiceClientAccessPolicy
 from loop_engine.core.service_runtime.waitlist import ServiceWaitlist,WaitlistPolicy
@@ -111,7 +111,8 @@ with ExitStack() as stack:
     quiet_project=IdentityProjectStandIn()
     # A fourth real service whose own configuration opens email sign-up, so the page is compared with a service that reports registration, not with a rewritten reply.
     signups=HttpDomainFixture(root/"signups",operator_access=False)
-    signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
+    # Like the live host, it keeps ten founding places, all free, so the public pages state the founding offer.
+    signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user,founding_accounts=10)
     signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity,account_email=account_email(config,quiet_project,provider,signups.runtime)),display_name="Baltor",request_limits=stated))
     record_origin(signups.runtime,provider+"/auth/v1",subject,"signup")
     # A sixth real service that opens email sign-up and takes payment, so the one public state that says payment is open is compared with a service that reports both, not with a rewritten reply.
@@ -141,6 +142,10 @@ with ExitStack() as stack:
     with billing.runtime._catalog.store(write=True) as store:
         rows,guards,_detail=grant_rows(billing.runtime,store,"gamma",int(time.time()),"browser fixture")
         billing.runtime._catalog.commit(store,rows,guards)
+    # A fourth account holds the founding offer, taken the way a new account takes it when it opens.
+    billing.runtime.register_tenant(TenantRegistration("delta","tenant:delta"))
+    founding_key=billing.runtime.issue_key(TenantKeyIssue("delta","browser fixture founding offer"))
+    consider_founding_offer(billing.runtime,"delta",10)
     # An eighth real service for staff administration: a superadmin, named by provider identity in its accounts policy, and one
     # customer. Both came through Baltor's sign-up, and the provider's user list for them is a stand-in transport.
     (root/"staff").mkdir()
@@ -183,7 +188,7 @@ with ExitStack() as stack:
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject]}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key,"confirm_base":confirm_base,"confirm_identity_origin":confirm_identity_origin,"billing_invited_token":billing.keys["beta"].key,"billing_free_monthly_token":free_key.key,"billing_founding_token":founding_key.key,"staff_base":staff_base,"staff_token":staff_tokens[staff_subject],"staff_user":staff_users[staff_subject]}),flush=True)
     sys.stdin.readline()
 `;
 /* The Python that runs the fixture services: PYTHON when it is set, so a worktree without its own environment can name a
@@ -196,7 +201,7 @@ const checks=[],errors=[],network=[]; let browser;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.staff_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token,fixture.billing_invited_token,fixture.billing_free_monthly_token,fixture.billing_founding_token,fixture.staff_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
@@ -2799,6 +2804,43 @@ try {
     note("create_a_client_token_opens_the_loaded_token_panel",member.create&&panel.path==="/account"&&panel.hash==="#account-keys"&&JSON.stringify(panel.views)===JSON.stringify(["account"])
       &&panel.controls&&panel.creator&&panel.focused==="client-token-label",{panel});
   };
+  /* Finding 10 of the persona journeys of September 24, 2026: the price line under the Get started heading said "subscribe to Baltor
+     Pro for $29 a month" to an account that the founding offer already covered, the step list marked "Subscribe to Baltor Pro, $29 a
+     month" as done for an account that never subscribed, and no page stated the founding offer before sign-up. The price line, the
+     fourth step and the pricing page's free plan answer now follow the account's plan and the founding offer the service reports. */
+  const foundingSentence="While founding places last, a new account gets Baltor Pro free each month.";
+  const foundingPrice="Create your account and connect your harness. Baltor Pro is $29 a month, and while founding places last a new account gets it free each month.";
+  const planFacts=target=>target.evaluate(()=>{const shown=node=>Boolean(node&&node.getClientRects().length);
+    return {price:document.getElementById("funnel-price")?.textContent||"",stepTitle:document.getElementById("funnel-step-plan-title")?.textContent||"",
+      stepNote:document.getElementById("funnel-step-plan-note")?.textContent||"",stepDone:document.querySelector('[data-funnel-step="plan"]')?.classList.contains("is-done")===true,
+      founding:[...document.querySelectorAll("[data-founding-offer]")].filter(node=>!node.hidden).map(node=>node.textContent.trim()),
+      notes:[...document.querySelectorAll("[data-plan-note]")].filter(node=>!node.hidden).map(node=>node.dataset.planNote),
+      card:shown(document.getElementById("pricing-founding")),answer:document.querySelector("#pricing-free-plan p")?.textContent||""};});
+  const openInPage=async (target,path)=>{await target.evaluate(path=>{history.pushState({},"",path);dispatchEvent(new PopStateEvent("popstate"));},path);await target.waitForTimeout(100);};
+  const foundingPublic=(base,open)=>async (target,note)=>{
+    await target.goto(base+"/pricing");await settled(target);await target.waitForTimeout(200);
+    const pricing=await planFacts(target);
+    await openInPage(target,"/get-started");
+    const funnel=await planFacts(target);
+    const reported=(await (await target.request.get(base+"/api/v1/capabilities")).json()).result.website.founding_offer_open;
+    if(open)note("pricing_and_get_started_state_the_founding_offer_while_places_remain",reported===true&&pricing.card
+      &&JSON.stringify(pricing.founding)===JSON.stringify([foundingSentence,foundingSentence.trim()])&&pricing.answer.includes(foundingSentence)&&pricing.notes.length===0
+      &&funnel.price===foundingPrice&&funnel.price.includes("$29 a month")&&funnel.stepTitle==="Subscribe to Baltor Pro"&&funnel.stepNote==="$29 a month, or free each month while founding places last",{reported,pricing,funnel});
+    else note("no_page_states_the_founding_offer_when_the_service_reports_no_free_place",reported===false&&!pricing.card&&pricing.founding.length===0&&!/founding/i.test(pricing.answer)
+      &&funnel.price==="Create your account, subscribe to Baltor Pro for $29 a month and connect your harness."&&funnel.stepNote==="$29 a month, cancel any time",{reported,pricing,funnel});
+  };
+  const coveredPlan=(credential,source)=>async (target,note)=>{
+    await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");await waitConnected(target);
+    await openInPage(target,"/get-started");
+    const funnel=await planFacts(target),steps=await target.evaluate(()=>[...document.querySelectorAll("[data-funnel-step] strong")].map(node=>node.textContent.trim()));
+    await openInPage(target,"/pricing");
+    const pricing=await planFacts(target);
+    const expected={founding_free_monthly:["Baltor Pro included","Free each month, as one of the first accounts","Your account holds a founding place, so Baltor Pro is free for it each month."],
+      free_monthly:["Baltor Pro included","Free each month for this account","Your account includes Baltor Pro free each month."]}[source];
+    note("get_started_and_pricing_follow_the_"+source+"_plan",funnel.price==="Your account includes Baltor Pro. Connect your harness to start."&&!/\$29|subscribe/i.test(funnel.price)
+      &&funnel.stepTitle===expected[0]&&funnel.stepNote===expected[1]&&funnel.stepDone&&!steps.includes("Subscribe to Baltor Pro")
+      &&JSON.stringify(pricing.notes)===JSON.stringify([source])&&pricing.answer.includes(expected[2])&&pricing.founding.length===0&&!pricing.card,{funnel,steps,pricing});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2830,7 +2872,9 @@ try {
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
     confirm_wait:(target,note)=>confirmWait(target,note),password_opening:openingJourney(false),password_refused:openingJourney(true),
     access_facts_open:accessFacts(fixture.confirm_base,true),access_facts_closed:accessFacts(fixture.base,false),
-    kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn};
+    kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn,
+    founding_open:foundingPublic(fixture.signup_base,true),founding_closed:foundingPublic(fixture.confirm_base,false),
+    plan_founding:coveredPlan(fixture.billing_founding_token,"founding_free_monthly"),plan_free_monthly:coveredPlan(fixture.billing_free_monthly_token,"free_monthly")};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -2903,6 +2947,21 @@ try {
     {name:"open_the_account_page_without_loading_the_token_panel",scenario:"setup_signed_in",path:"/assets/service.js",
      find:'clientAccess.refresh().then(() => { if (!$("client-access-controls").hidden) $("client-token-label").focus({preventScroll:true}); });',replacement:"",
      expected:["create_a_client_token_opens_the_loaded_token_panel"]},
+    {name:"mark_the_subscription_step_done_for_a_free_monthly_account",scenario:"plan_free_monthly",path:"/assets/service.js",
+     find:'$("funnel-step-plan-title").textContent = coveredStep ? coveredStep[0] : servedFunnel.title;',replacement:'$("funnel-step-plan-title").textContent = servedFunnel.title;',
+     expected:["get_started_and_pricing_follow_the_free_monthly_plan"]},
+    {name:"offer_the_subscription_price_to_a_founding_account",scenario:"plan_founding",path:"/assets/service.js",
+     find:'$("funnel-price").textContent = coveredStep ? plan.title',replacement:'$("funnel-price").textContent = false ? plan.title',
+     expected:["get_started_and_pricing_follow_the_founding_free_monthly_plan"]},
+    {name:"hide_the_plan_note_on_pricing",scenario:"plan_founding",path:"/assets/service.js",
+     find:'sentence.hidden = !signedIn || sentence.dataset.planNote !== accessSource;',replacement:"sentence.hidden = true;",
+     expected:["get_started_and_pricing_follow_the_founding_free_monthly_plan"]},
+    {name:"state_the_founding_offer_when_no_place_is_free",scenario:"founding_closed",path:"/assets/service.js",
+     find:"const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;",replacement:"const foundingOpen = !signedIn;",
+     expected:["no_page_states_the_founding_offer_when_the_service_reports_no_free_place"]},
+    {name:"never_state_the_founding_offer",scenario:"founding_open",path:"/assets/service.js",
+     find:"const foundingOpen = !signedIn && capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website?.founding_offer_open === true;",replacement:"const foundingOpen = false;",
+     expected:["pricing_and_get_started_state_the_founding_offer_while_places_remain"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){

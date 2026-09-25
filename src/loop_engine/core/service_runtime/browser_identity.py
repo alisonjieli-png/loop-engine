@@ -176,6 +176,24 @@ class BrowserIdentityAdapter:
             raise ServiceRuntimeError("publishable_key_required_not_server_secret")
         return key
 
+    def founding_offer_open(self):
+        """True while a new account that finishes Baltor's sign-up would take a founding place.
+
+        The pricing page and the Get started funnel state the founding offer
+        only while this is true, so a visitor is never promised a place that
+        is gone. A host without the offer, closed registration or a store that
+        cannot be read all answer False.
+        """
+        if not self.founding_accounts or self.configuration.registration_enabled is not True:
+            return False
+        from .free_monthly import founding_holders
+        try:
+            return len(founding_holders(self.runtime)) < self.founding_accounts
+        except Exception:
+            # The public capabilities record must still answer when the counter
+            # cannot be read, and it then promises nothing.
+            return False
+
     def public_configuration(self):
         return {"record_type": "browser_identity_public_configuration/v1",
                 "provider_profile": self.configuration.provider_profile,

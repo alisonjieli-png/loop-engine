@@ -1139,6 +1139,8 @@ free each month.
 | Revocation | `revoking_free_monthly_removes_access_at_the_next_check` | `removed_revocation_is_detected` |
 | The founding limit | `the_first_ten_accounts_hold_the_founding_offer_and_the_eleventh_does_not` | `removed_founding_limit_is_detected` |
 | The founding counter's exact version | `a_race_for_the_last_founding_place_yields_exactly_ten` | `removed_counter_guard_lets_the_race_pass_ten_and_is_detected` |
+| The public founding offer follows the free places | `the_founding_offer_is_reported_open_only_while_a_place_is_free` | `removed_founding_place_count_in_the_public_offer_is_detected` |
+| The public founding offer needs open sign-up | `the_founding_offer_is_reported_only_with_a_free_place_and_open_sign_up` | `removed_open_sign_up_rule_for_the_founding_offer_is_detected` |
 | Monthly renewal | `free_monthly_renews_each_month_until_revoked` | `removed_renewal_is_detected` |
 
 Other named checks hold the rest: the host loader installs all three parts and
@@ -1149,6 +1151,15 @@ audit record; a repeated request identity replays; analytics reads no address
 and a developer reads no count; the sign-up answer is the same for a new, a
 known and a replaced address. They run in `account_origin_checks.py` and
 `account_administration_checks.py`, both from the service smoke run.
+
+The capabilities record reports `website.founding_offer_open`: true while
+account creation is open and fewer accounts hold the founding offer than the
+host's founding count. The pricing page and the Get started funnel state the
+offer to a visitor who is not signed in only while it is true, and they read
+the account's plan from the session record for a signed-in person, so an
+account that the founding offer or free monthly Baltor Pro covers is never
+told to subscribe. The field says only whether a place is free, not how many
+places are left.
 
 Limits. The number of requests a sign-up makes to the identity provider now
 depends on who held the address, so the time an answer takes can differ; its
