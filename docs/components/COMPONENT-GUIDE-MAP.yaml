@@ -39,18 +39,6 @@ components:
       The three public capability groups and the internal runtime mechanics:
       the model gateway, harness adapters, workspaces, settings, retrieval,
       Runtime Memory, reusable capabilities and the semantic runtime.
-  core/engines:
-    guide: docs/components/core-architecture/ENGINE-SELECTION.md
-    covers: >-
-      The shared engine framework: the engine records, the slot catalogue,
-      engine selection for every slot, attempt assessment and fallback, and
-      the evidence that may order engines.
-  core/step_execution:
-    guide: docs/components/core-architecture/STEP-EXECUTION.md
-    covers: >-
-      The step executor slot: the step edge records, the envelope that selects
-      and runs an engine, the declared harness engine and its manifest, the
-      custom Loop engine and the qualification of a registered harness.
   core/decisions:
     guide: docs/components/typed-decisions/README.md
     covers: >-
@@ -87,10 +75,6 @@ guides:
     Large-context references and compaction.
   docs/components/core-architecture/EFFECT-APPROVALS.md:
     Durable approval decisions bound to one exact requested effect.
-  docs/components/core-architecture/ENGINE-SELECTION.md:
-    Engine selection for every engine slot, fallback and evidence ranking.
-  docs/components/core-architecture/STEP-EXECUTION.md:
-    One step on any engine, custom harness declarations and the custom Loop engine.
   docs/components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md:
     Registered external harness adapters and their declared capabilities.
   docs/components/core-architecture/HARNESS-FALLBACK.md:

@@ -1,19 +1,14 @@
 """The engine selection decision: the record written before any dispatch.
 
-Owns engine_selection_decision/v2 (architecture 6.4): the slot, scope and
+Owns engine_selection_decision/v1 (architecture 6.4): the slot, scope and
 policy a selection used, every installed and enabled engine with its digests,
 every refusal with its detail, the declared order with any override and the
 order without it, the embedded ranking record, the evidence used, the
 selected engine with its propensity, the fallback chain or the explicit
-no-fallback, the transition and the authority already consumed. Version 2
-adds the selection basis (pinned, preferred or automatic), the selection path
-and the digest of the typed request the selector read, and checks that the
-three agree with the overrides, the evidence and the propensity; no version 1
-decision was ever written, so no version 1 reader is kept (the pre-launch
-version policy). Belongs to the shared engine framework (roadmap S-6.30).
-Never a dispatch, an acceptance or a grant: its three constant flags record
-that no execution authority was granted, no task was accepted and no model
-call was made.
+no-fallback, the transition and the authority already consumed. Belongs to
+the shared engine framework (roadmap S-6.30). Never a dispatch, an acceptance
+or a grant: its three constant flags record that no execution authority was
+granted, no task was accepted and no model call was made.
 """
 from __future__ import annotations
 
@@ -26,31 +21,15 @@ from .records import (
     EngineRecordError, contract, declaration_source, exact_engine_ref, flag, identifier, identifiers, instant,
     json_object, member, optional, pattern, plain, read_part, read_record, require_derived, sequence, sha256, text)
 from .selection_records import (
-    DECLARED_ORDER_ONLY, EXCLUDE, FALLBACK_ELIGIBLE_FAILURE_KINDS, PIN, PREFER, TERMINAL_FAILURE_KINDS,
-    EngineSelectionOverride, embedded_record)
+    EXCLUDE, FALLBACK_ELIGIBLE_FAILURE_KINDS, PIN, PREFER, TERMINAL_FAILURE_KINDS, EngineSelectionOverride,
+    embedded_record)
 from ..parameter_resolution import SOURCE_PRECEDENCE, ParameterResolutionTrace, ParameterSourceKind
 
-DECISION_RECORD_TYPE = "engine_selection_decision/v2"
+DECISION_RECORD_TYPE = "engine_selection_decision/v1"
 DECISION_PHASES = ("initial", "fallback", "reuse")
 INITIAL_PHASE, FALLBACK_PHASE, REUSE_PHASE = DECISION_PHASES
 DECISION_STATUSES = ("selected", "no_eligible_engine", "refused_policy", "terminal_failure")
 SELECTED, NO_ELIGIBLE_ENGINE, REFUSED_POLICY, TERMINAL_FAILURE = DECISION_STATUSES
-#: How much freedom one choice had (the functional component standard's
-#: selection basis, never a run mode): pinned, one engine and nothing else;
-#: preferred, the declared order with permitted narrowing; automatic,
-#: approved evidence at or above the slot's floor ordered the choice.
-SELECTION_BASES = ("pinned", "preferred", "automatic")
-PINNED_BASIS, PREFERRED_BASIS, AUTOMATIC_BASIS = SELECTION_BASES
-#: How the chosen engine was reached. Every path listed is deterministic, so
-#: its propensity is one; a sampled path (a comparison arm) needs its own
-#: vocabulary entry and its declared fraction before it may be recorded.
-SELECTION_PATHS = ("first_choice", "evidence_reordered", "override_prefer", "override_pin",
-                   "fallback_after", "reuse", "no_choice")
-(FIRST_CHOICE_PATH, EVIDENCE_REORDERED_PATH, OVERRIDE_PREFER_PATH, OVERRIDE_PIN_PATH,
- FALLBACK_AFTER_PATH, REUSE_PATH, NO_CHOICE_PATH) = SELECTION_PATHS
-#: The one fallback path an initial decision may take: every initial engine was
-#: ineligible (for example unavailable) before any dispatch.
-FALLBACK_BEFORE_DISPATCH_PATH = FALLBACK_AFTER_PATH + ":engine_unavailable"
 #: The embedded ranking record of the existing preference boundary; version 2
 #: is the encoding it uses only when the fallback class insufficient_evidence appears.
 PREFERENCE_DECISION_RECORD_TYPES = ("configuration_preference_decision/v1",
@@ -409,8 +388,7 @@ DECISION_FIELDS = (
     "slot_id", "slot_digest", "scope_key", "phase", "scope", "policy_digest", "policy_source",
     "configuration_digest", "universe", "eligibility", "declared_order", "override", "order_without_override",
     "ranking", "evidence", "selected", "propensity", "fallbacks", "no_fallback", "transition", "consumed",
-    "status", "selection_loop_id", "as_of", "binding_site", "parent_decision_digest", "selection_basis",
-    "selection_path", "request_digest") + CONSTANT_FALSE_FLAGS
+    "status", "selection_loop_id", "as_of", "binding_site", "parent_decision_digest") + CONSTANT_FALSE_FLAGS
 
 
 @dataclass(frozen=True)
@@ -449,9 +427,6 @@ class EngineSelectionDecision:
     as_of: str
     binding_site: str
     parent_decision_digest: str
-    selection_basis: str
-    selection_path: str
-    request_digest: str
 
     def __post_init__(self):
         set_ = object.__setattr__
@@ -498,9 +473,6 @@ class EngineSelectionDecision:
             raise EngineRecordError("invalid_field", "parent_decision_digest is text, empty at the top of a tree")
         if self.parent_decision_digest:
             sha256(self.parent_decision_digest, "parent_decision_digest")
-        member(self.selection_basis, "selection_basis", SELECTION_BASES)
-        _selection_path(self.selection_path)
-        sha256(self.request_digest, "request_digest")
         _require_complete_eligibility(self)
         _require_propensity(self)
         _refuse_widening_order(self)
@@ -508,10 +480,6 @@ class EngineSelectionDecision:
         _refuse_fallback_after_terminal(self)
         _require_ranking_for_an_initial_selection(self)
         self._check_consistency()
-        _require_basis_to_agree(self)
-        _require_path_to_agree(self)
-        _require_evidence_for_a_changed_order(self)
-        _require_propensity_to_follow_the_path(self)
 
     def _check_consistency(self):
         eligible = {item.installation_id for item in self.eligibility if item.eligible}
@@ -558,8 +526,6 @@ class EngineSelectionDecision:
                 "consumed": self.consumed.to_dict(), "status": self.status,
                 "selection_loop_id": self.selection_loop_id, "as_of": self.as_of,
                 "binding_site": self.binding_site, "parent_decision_digest": self.parent_decision_digest,
-                "selection_basis": self.selection_basis, "selection_path": self.selection_path,
-                "request_digest": self.request_digest,
                 **{name: False for name in CONSTANT_FALSE_FLAGS}}
 
     @classmethod
@@ -586,8 +552,7 @@ class EngineSelectionDecision:
             None if transition is None else FallbackTransition(**read_part(transition, "transition",
                                                                           TRANSITION_FIELDS)),
             ConsumedAuthority(**read_part(record["consumed"], "consumed", CONSUMED_FIELDS)), record["status"],
-            record["selection_loop_id"], record["as_of"], record["binding_site"], record["parent_decision_digest"],
-            record["selection_basis"], record["selection_path"], record["request_digest"])
+            record["selection_loop_id"], record["as_of"], record["binding_site"], record["parent_decision_digest"])
 
 
 UNIVERSE_FIELDS = tuple(item.name for item in dataclass_fields(UniverseEntry))
@@ -695,87 +660,6 @@ def _require_parent_link(decision, nested):
     if nested != bool(decision.parent_decision_digest):
         raise EngineRecordError("parent_decision_required",
                                 "a nested decision names its parent decision, and a top-level one names none")
-
-
-def _selection_path(value):
-    """A listed path; a fallback path names the failure kind that moved it."""
-    if type(value) is str and value.startswith(FALLBACK_AFTER_PATH + ":"):
-        return member(value.partition(":")[2], "fallback failure kind",
-                      FALLBACK_ELIGIBLE_FAILURE_KINDS + TERMINAL_FAILURE_KINDS)
-    if value == FALLBACK_AFTER_PATH:
-        raise EngineRecordError("invalid_vocabulary", "a fallback path names its failure kind")
-    return member(value, "selection_path", SELECTION_PATHS)
-
-
-def _applied_kinds(decision) -> set:
-    return {item.kind for item in decision.override}
-
-
-def _require_basis_to_agree(decision):
-    """The basis is derived from the overrides and the evidence, never asserted.
-
-    A pin makes the choice pinned and leaves nothing to fall back to; only
-    evidence that ranked the choice makes it automatic, and a declared
-    order only override closes evidence for this decision."""
-    kinds, basis = _applied_kinds(decision), decision.selection_basis
-    if PIN in kinds and (basis != PINNED_BASIS or decision.fallbacks or not decision.no_fallback):
-        raise EngineRecordError("selection_basis_disagrees", "an applied pin is a pinned choice with no fallback")
-    if DECLARED_ORDER_ONLY in kinds and decision.evidence.reason != NOT_REQUESTED:
-        raise EngineRecordError("selection_basis_disagrees", "a declared order only override closes evidence")
-    if (basis == AUTOMATIC_BASIS) != decision.evidence.used:
-        raise EngineRecordError("selection_basis_disagrees",
-                                "a choice is automatic exactly when approved evidence ranked it")
-    host_pin = len(decision.declared_order) == 1 and decision.no_fallback and not decision.evidence.used
-    if (basis == PINNED_BASIS and decision.status == SELECTED and PIN not in kinds and not host_pin):
-        raise EngineRecordError("selection_basis_disagrees",
-                                "a pinned choice has a pin applied or exactly one declared engine and no fallback")
-
-
-def _require_path_to_agree(decision):
-    """The path follows the phase, the applied pin, the evidence and a preference, in that order."""
-    kinds = _applied_kinds(decision)
-    if decision.status != SELECTED:
-        expected = NO_CHOICE_PATH
-    elif (decision.phase == INITIAL_PHASE and decision.selection_path == FALLBACK_BEFORE_DISPATCH_PATH
-          and PIN not in kinds and not decision.evidence.used):
-        # No initial engine was eligible and the policy falls back on an
-        # unavailable engine: the first eligible fallback, before any dispatch.
-        expected = FALLBACK_BEFORE_DISPATCH_PATH
-    elif decision.phase == FALLBACK_PHASE:
-        expected = FALLBACK_AFTER_PATH + ":" + decision.transition.failure_kind
-    elif decision.phase == REUSE_PHASE:
-        expected = REUSE_PATH
-    elif PIN in kinds:
-        expected = OVERRIDE_PIN_PATH
-    elif decision.evidence.changed_order:
-        expected = EVIDENCE_REORDERED_PATH
-    elif PREFER in kinds and decision.order_without_override[:1] != (
-            decision.selected.installation_id,):
-        expected = OVERRIDE_PREFER_PATH
-    else:
-        expected = FIRST_CHOICE_PATH
-    if decision.selection_path != expected:
-        raise EngineRecordError("selection_path_disagrees", f"expected {expected}")
-
-
-def _require_evidence_for_a_changed_order(decision):
-    """A ranking that differs from the declared order carries the evidence that changed it."""
-    if decision.phase != INITIAL_PHASE or decision.ranking is None:
-        return
-    ordered = decision.ranking.get("ordered_ids")
-    ordered = tuple(ordered) if type(ordered) in (list, tuple) else ()
-    changed = bool(ordered) and ordered != tuple(decision.declared_order)
-    if changed != decision.evidence.changed_order:
-        raise EngineRecordError("ranking_changed_without_evidence",
-                                "only approved evidence may order the declared engines differently")
-
-
-def _require_propensity_to_follow_the_path(decision):
-    """Every path this record lists is deterministic, so a chosen engine has propensity one."""
-    if decision.propensity is not None and (decision.propensity.numerator,
-                                            decision.propensity.denominator) != (1, 1):
-        raise EngineRecordError("propensity_follows_the_selection_path",
-                                "a deterministic selection path has propensity 1/1")
 
 
 def self_test():

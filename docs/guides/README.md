@@ -59,12 +59,6 @@ request in both the customer's refusal and the durable record, the read-only
 command that finds those records, what the health route measures, and the first
 failure of each dependency. Every command in it reads and changes nothing.
 
-The [staff tools guide](staff-tools.md) is the procedure for the people who
-run the service: a staff key for Claude Code, Codex, OpenCode or an operator
-agent, the protocol endpoint that answers staff keys only, the plan and apply
-of every change, download credits, service messages, sign-up links for people
-who signed up offline, and publishing new library files without a redeploy.
-
 The [launch setup runbook](launch-setup-runbook.md) lists the account, hosting,
 identity, storage, payment and secret-reference work for the owner. The
 [decision-tool guide](jev-and-harness-decision-tools.md) covers optional Jev

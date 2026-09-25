@@ -91,12 +91,12 @@ def _package(folder, row, kind):
     return CataloguePackage(tuple(files), FILE_BODY if single else PACKAGE_BODY), payloads
 
 
-def _attributes(row, review, recorded_at, batch):
+def _attributes(row, review, recorded_at, batch, schema):
     values = {"cited_source": row["reference"]["source_ref"].split("@", 1)[0], "origin_layer": review["source_layer"],
               "catalogued_on": recorded_at, "batch": batch}
-    if "tier" in review:
-        # The library tier of the decision table (Verified or Community) travels with every served item, so it is
-        # shown and can be filtered on; a schema that does not declare it refuses the item.
+    if "tier" in review and any(item.name == "tier" for item in schema.attributes):
+        # The library tier of the decision table (Verified or Community) always travels in the line's approval. It is
+        # also a served attribute, shown and filtered on, when the release schema declares one named tier.
         values["tier"] = review["tier"]
     return values
 
@@ -135,7 +135,7 @@ def build(folder, *, accepted_licenses, schema_path=None, include=(), batch="sta
                       # The review record approved these bytes under the tier its row names.
                       "approval": {"tier": row_tier(identity, review), "approval_ref": review["approval_ref"],
                                    "approved_digest": review["body_digest"]},
-                      "attributes": schema.validate_values(_attributes(row, review, recorded_at, batch))})
+                      "attributes": schema.validate_values(_attributes(row, review, recorded_at, batch, schema))})
         payloads.extend(files)
     if not lines:
         raise ManifestBuildError("no_approved_items", "no item is approved, so there is nothing to bundle")

@@ -51,12 +51,6 @@ QUALIFICATION_LADDER = ("connected", "material_listed", "material_loaded", "step
                         "independently_accepted")
 DEPRECATED_STAGE, ARCHIVED_STAGE = "deprecated", "archived"
 RETIREMENT_STAGES = (DEPRECATED_STAGE, ARCHIVED_STAGE)
-#: The engine lifecycle stages that selection reads, named once here; each is
-#: a member of the component ontology's lifecycle vocabulary (lifecycles()).
-TRIAL_ONLY_LIFECYCLES = ("candidate", "under_review")
-REJECTED_LIFECYCLE = "rejected"
-DEPRECATED_LIFECYCLE, ARCHIVED_LIFECYCLE = DEPRECATED_STAGE, ARCHIVED_STAGE
-SELECTION_LIFECYCLES = TRIAL_ONLY_LIFECYCLES + (REJECTED_LIFECYCLE, DEPRECATED_LIFECYCLE, ARCHIVED_LIFECYCLE)
 
 _VERSION = re.compile(r"^[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}$")
 _SLOT_VERSION = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")

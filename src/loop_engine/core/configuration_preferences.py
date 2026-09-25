@@ -16,22 +16,6 @@ from .configuration_capabilities import (
     ConfigurationCapabilityError, ConfigurationFact, canonical, digest, exact_digest, exact_text)
 from .record_operations_records import parse_json
 
-#: The fallback classes a meta policy may name. ``insufficient_evidence`` is an
-#: evidence ranker's typed signal that the exact scope has fewer matched,
-#: reviewed records than its declared minimum: the next ranking engine, in the
-#: end the declared order, decides, and the attempt is recorded as that class,
-#: never as an engine failure.
-FALLBACK_CLASSES = ("engine_unavailable", "engine_unqualified", "target_kind_unsupported", "engine_failed",
-                    "invalid_proposal", "insufficient_evidence")
-INSUFFICIENT_EVIDENCE = FALLBACK_CLASSES[-1]
-#: A decision record keeps version 1 unless an insufficient-evidence attempt
-#: appears, which version 1 readers do not know.
-DECISION_RECORD_TYPES = ("configuration_preference_decision/v1", "configuration_preference_decision/v2")
-
-
-class InsufficientEvidence(ConfigurationCapabilityError):
-    """An evidence ranker declines to order: too few matched reviewed records."""
-
 
 @dataclass(frozen=True)
 class PreferenceCandidate:
@@ -208,7 +192,8 @@ class MetaPreferencePolicy:
             for value in values:
                 exact_text(value, name)
             object.__setattr__(self, name, values)
-        if (not self.engine_order or not set(self.fallback_on) <= set(FALLBACK_CLASSES)
+        if (not self.engine_order or not set(self.fallback_on)
+                <= {"engine_unavailable", "engine_unqualified", "target_kind_unsupported", "engine_failed", "invalid_proposal"}
                 or type(self.allow_unqualified) is not bool):
             raise ConfigurationCapabilityError("meta preference policy needs an order and known failure classes")
 
@@ -236,7 +221,7 @@ def resolve_preference(request: PreferenceSelectionRequest) -> dict:
         raise ConfigurationCapabilityError("preference request must be typed")
     engines = {v.engine_ref: v for v in request.engines}
     ids = tuple(v.candidate_id for v in request.snapshot.candidates)
-    result = {"record_type": DECISION_RECORD_TYPES[0],
+    result = {"record_type": "configuration_preference_decision/v1",
         "snapshot_digest": request.snapshot.content_digest, "target_kind": request.snapshot.target_kind,
         "scope_digest": request.snapshot.scope_digest, "as_of": request.as_of.isoformat(),
         "eligible_candidates": [v.to_dict() for v in request.snapshot.candidates],
@@ -265,8 +250,6 @@ def resolve_preference(request: PreferenceSelectionRequest) -> dict:
                     raise ConfigurationCapabilityError("preference configuration changed after binding")
                 try:
                     proposal = engine.adapter.rank(request.snapshot)
-                except InsufficientEvidence:
-                    reason = INSUFFICIENT_EVIDENCE
                 except ConfigurationCapabilityError:
                     # A proposal the record contract refuses (a repeated id, a
                     # missing evidence reference) is an invalid proposal, not
@@ -282,8 +265,6 @@ def resolve_preference(request: PreferenceSelectionRequest) -> dict:
                     or len(proposal.ordered_ids) != len(ids) or set(proposal.ordered_ids) != set(ids)):
                 reason = "invalid_proposal"
         result["attempts"].append({"engine_ref": name, "result": reason or "valid_ordering"})
-        if reason == INSUFFICIENT_EVIDENCE:
-            result["record_type"] = DECISION_RECORD_TYPES[1]
         if reason:
             if reason not in request.policy.fallback_on:
                 break

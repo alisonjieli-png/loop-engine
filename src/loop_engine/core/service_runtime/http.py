@@ -33,8 +33,6 @@ from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnk
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 from .retention import RetentionSchedule, ServiceRetentionPolicy
-# Staff tools, September 24, 2026 (staff_tools.py, admin_mcp.py): the staff addresses, named once.
-from .staff_routes import ADMIN_PROTOCOL_PATH, STAFF_BODY_ROUTES, STAFF_KEYS_PATH, STAFF_TOOL_ROUTES
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 from .web_pages import (CACHEABLE_WEB_ASSETS, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL, WEB_ASSETS,
                         asset_etag, missing_address_page, served_asset, validator_matches)
@@ -135,9 +133,6 @@ API_ROUTES = {
     BILLING_PLANS_PATH: ("GET",),
     BILLING_CHECKOUT_PATH: ("POST",),
     BILLING_PORTAL_PATH: ("POST",),
-    # Staff tools: the staff key route of the Administration page, and one route for each staff tool.
-    STAFF_KEYS_PATH: ("GET", "POST"),
-    **{path: ("POST",) for path in STAFF_TOOL_ROUTES},
 }
 #: The address the protocol transport answers, ahead of the interface router.
 PROTOCOL_PATH = "/mcp"
@@ -145,7 +140,7 @@ PROTOCOL_PATH = "/mcp"
 #: that decide what is served, so that it cannot drift from them. A failure
 #: record keeps the path only when it is one of these; anything else is
 #: recorded as the unmatched name, because a stranger chooses that text.
-DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, ADMIN_PROTOCOL_PATH, *WEB_ASSETS)
+DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
 #: The addresses whose request body may itself be a credential. Sign-up takes an
 #: address alone since September 23, 2026, and refuses a request that carries a
 #: password, but a caller can still send one, and the refused body would hold
@@ -589,10 +584,6 @@ class ServiceHttpApplication:
     #: The host's catalogue refresher, started with the application and
     #: stopped with it. None serves the catalogue loaded at start unchanged.
     catalogue_refresher: object | None = field(default=None, repr=False)
-    #: The staff tools (staff_tools.py): the /admin/mcp endpoint and the staff
-    #: routes. None serves neither; the host loader installs them with staff
-    #: administration.
-    staff_tools: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -1225,10 +1216,6 @@ class ServiceHttpApplication:
             security_settings=TransportSecuritySettings(allowed_hosts=list(config.allowed_hosts),
                                                        allowed_origins=list(config.allowed_origins)),
             max_request_body_size=config.maximum_request_bytes)
-        # Staff tools (admin_mcp.py): a second protocol endpoint, for staff keys only.
-        from contextlib import nullcontext
-        from .admin_mcp import STAFF_ACTOR_KEY, staff_protocol_actor, staff_protocol_manager
-        staff_manager = staff_protocol_manager(self)
 
         @asynccontextmanager
         async def lifespan(_app):
@@ -1236,53 +1223,12 @@ class ServiceHttpApplication:
             schedule.start()
             renewal.start()
             try:
-                async with manager.run(), self._catalogue_refresh(), (
-                        staff_manager.run() if staff_manager is not None else nullcontext()):
+                async with manager.run(), self._catalogue_refresh():
                     yield
             finally:
                 await schedule.stop()
                 await renewal.stop()
             self._workers.shutdown(wait=False, cancel_futures=False)
-
-        async def serve_protocol(scope, receive, send, request, cors, handler, caller_key, caller):
-            """Serve one protocol request to one endpoint, for a caller that endpoint already verified."""
-            if request.method != "POST":
-                # One POST endpoint in both kinds of version: this
-                # service keeps no session, so there is no stream to
-                # open with GET and no session to end with DELETE.
-                raise ServiceHttpError("protocol_method_not_allowed", 405, headers={"Allow": "POST"})
-            body = await self._body(request)
-            payload = _parse_json(body) if body else {}
-            if not isinstance(payload, dict):
-                raise ServiceHttpError("object_required")
-            # The version is chosen here, before the protocol library
-            # or any effect, and the library is told the choice in the
-            # header it routes on. Every later request is checked
-            # against the served versions the same way.
-            selected, served = select_protocol_binding(
-                config, payload, request.headers.getlist(PROTOCOL_VERSION_HEADER))
-            if served is not payload:
-                body = _json_bytes(served)
-            scope["headers"] = [(name, value) for name, value in scope["headers"]
-                                if name not in (PROTOCOL_VERSION_HEADER.encode(), b"content-length")] + [
-                (PROTOCOL_VERSION_HEADER.encode(), selected.encode("ascii")),
-                (b"content-length", str(len(body)).encode("ascii"))]
-            scope[caller_key] = caller
-            delivered = False
-            async def replay():
-                nonlocal delivered
-                if not delivered:
-                    delivered = True
-                    return {"type": "http.request", "body": body, "more_body": False}
-                return await receive()
-            async def protocol_send(message):
-                if message["type"] == "http.response.start":
-                    message = {**message, "headers": list(message.get("headers", ()))
-                               + [(key.lower().encode(), value.encode()) for key, value in {
-                                   **cors, "Cache-Control": "no-store",
-                                   "X-Content-Type-Options": "nosniff"}.items()]}
-                await send(message)
-            await handler.handle_request(scope, replay, protocol_send)
 
         async def transport(scope, receive, send):
             request = Request(scope, receive)
@@ -1309,12 +1255,43 @@ class ServiceHttpApplication:
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
                 elif request.url.path == PROTOCOL_PATH:
                     context = await self._authenticated(request)
-                    await serve_protocol(scope, receive, send, request, cors, manager, "service_authentication", context)
-                    return
-                elif request.url.path == ADMIN_PROTOCOL_PATH and staff_manager is not None:
-                    # Staff tools (admin_mcp.py): the staff endpoint answers staff keys only.
-                    actor = await staff_protocol_actor(self, request)
-                    await serve_protocol(scope, receive, send, request, cors, staff_manager, STAFF_ACTOR_KEY, actor)
+                    if request.method != "POST":
+                        # One POST endpoint in both kinds of version: this
+                        # service keeps no session, so there is no stream to
+                        # open with GET and no session to end with DELETE.
+                        raise ServiceHttpError("protocol_method_not_allowed", 405, headers={"Allow": "POST"})
+                    body = await self._body(request)
+                    payload = _parse_json(body) if body else {}
+                    if not isinstance(payload, dict):
+                        raise ServiceHttpError("object_required")
+                    # The version is chosen here, before the protocol library
+                    # or any effect, and the library is told the choice in the
+                    # header it routes on. Every later request is checked
+                    # against the served versions the same way.
+                    selected, served = select_protocol_binding(
+                        config, payload, request.headers.getlist(PROTOCOL_VERSION_HEADER))
+                    if served is not payload:
+                        body = _json_bytes(served)
+                    scope["headers"] = [(name, value) for name, value in scope["headers"]
+                                        if name not in (PROTOCOL_VERSION_HEADER.encode(), b"content-length")] + [
+                        (PROTOCOL_VERSION_HEADER.encode(), selected.encode("ascii")),
+                        (b"content-length", str(len(body)).encode("ascii"))]
+                    scope["service_authentication"] = context
+                    delivered = False
+                    async def replay():
+                        nonlocal delivered
+                        if not delivered:
+                            delivered = True
+                            return {"type": "http.request", "body": body, "more_body": False}
+                        return await receive()
+                    async def protocol_send(message):
+                        if message["type"] == "http.response.start":
+                            message = {**message, "headers": list(message.get("headers", ()))
+                                       + [(key.lower().encode(), value.encode()) for key, value in {
+                                           **cors, "Cache-Control": "no-store",
+                                           "X-Content-Type-Options": "nosniff"}.items()]}
+                        await send(message)
+                    await manager.handle_request(scope, replay, protocol_send)
                     return
                 else:
                     response = await self._web_route(request, Response, JSONResponse)
@@ -1377,8 +1354,7 @@ class ServiceHttpApplication:
         # kept, so there is nothing a failure record could disclose. A header is
         # never kept here, so the credential cannot reach a record this way, and
         # a body that is itself a credential is never kept under any choice.
-        if (self.observability.captures_request_body and request.url.path not in CREDENTIAL_BODY_ROUTES
-                and request.url.path not in STAFF_BODY_ROUTES):
+        if self.observability.captures_request_body and request.url.path not in CREDENTIAL_BODY_ROUTES:
             request.scope[CAPTURED_BODY_KEY] = body
         return body
 
@@ -1482,10 +1458,6 @@ class ServiceHttpApplication:
                 prepared = self.account_email.prepare(path.rsplit("/", 1)[-1], _parse_json(await self._body(request)), address)
                 output, status_code = await self._work(lambda: invoke_http_service_as_loop(prepared.operation,
                     lambda: self.account_email.deliver(prepared))), 202
-        elif path == STAFF_KEYS_PATH or path in STAFF_TOOL_ROUTES:
-            # Staff tools (admin_mcp.py): a staff key or a staff browser session, never a customer key.
-            from .admin_mcp import staff_route
-            output = await staff_route(self, request, path)
         elif path == WAITLIST_PATH and method == "POST":
             # No sign-in: the address is the request. A refused request counts
             # as a refused attempt from one client address, and the list itself

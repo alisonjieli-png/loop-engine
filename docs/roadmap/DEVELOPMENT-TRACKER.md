@@ -3,17 +3,17 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a36e9d28620975`.
+Source fingerprint: `sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be731597e465ba8caec`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 41 |
+| Being built now | 42 |
 | Can start next | 13 |
 | Waiting on earlier work | 87 |
 | Blocked | 2 |
-| Done | 45 |
+| Done | 44 |
 
 ## Being built now
 
@@ -47,6 +47,7 @@ Source fingerprint: `sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a3
 | S-6.12 | Build the website, subscriber dashboard, and operator workflows | building | S-6.5, S-6.6, S-6.21 |
 | S-6.24 | Deliver client, authentication, endpoint-based model and native-harness onboarding | building | S-6.5, S-6.9, S-6.12 |
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
+| S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | building | S-6.85 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
@@ -219,7 +220,7 @@ Source fingerprint: `sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a3
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 3 of 10 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 10 |
 | D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
@@ -250,13 +251,12 @@ Source fingerprint: `sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a3
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (45 steps)
+## Done (44 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
-- S-6.120: Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)
 - S-1.10: Detection and correction node family with confidence (offline_verified)

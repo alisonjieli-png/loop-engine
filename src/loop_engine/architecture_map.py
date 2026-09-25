@@ -73,8 +73,6 @@ MODULE_MAP = {
         "catalogue_search", "catalogue_serving", "catalogue_grants", "catalogue_commands",
         "catalogue_release_checks", "catalogue_serving_checks", "catalogue_tiers", "catalogue_tier_checks",
         "catalogue_follow_checks",
-        "staff_routes", "staff_keys", "staff_tools", "staff_tool_accounts", "staff_tool_catalogue", "activity",
-        "credits", "account_messages", "account_import", "admin_mcp", "staff_tool_checks", "admin_mcp_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "core.library_ingestion": ("__init__", "candidates", "connection_rendering", "duplicates", "effects", "engines", "fetch_cache", "format_builtin", "format_connection", "format_json_schema", "format_skills_ref", "github_reader", "https_transport", "licence_checks", "licences", "near_duplicate_builtin", "near_duplicate_datasketch", "optional_engine_checks", "outline_deterministic", "outline_model", "package_resolver", "pipeline", "pipeline_checks", "processes", "provenance", "provenance_checks", "quarantine", "record_rules", "registry_sync", "render_checks", "rendering_types", "request_log", "scan_builtin", "scan_checks", "scan_skillspector", "selection", "skill_rendering", "source_checks", "source_declarations", "source_github", "source_mcp_registry", "staging_rows", "topics"),
@@ -82,13 +80,8 @@ MODULE_MAP = {
         "__init__", "records", "host_records", "selection_records", "decision_records",
         "records_checks", "selection_records_checks",
         "slots", "slot_index", "slot_checks",
-        "selection", "fallback", "selection_checks", "evidence", "evidence_checks",
     ),
-    "core.step_execution": (
-        "__init__", "records", "harness_manifest", "harness_manifest_checks", "harness_launch",
-        "harness_endpoint", "declared_harness", "procedures", "loop_runtime", "loop_harness_process",
-        "engines", "envelope", "qualification", "fixture_harness", "engines_checks", "launch_checks",
-    ),
+    "core.step_execution": ("__init__",),
     "ontology": (
         "artifacts", "catalog", "folders", "loop_definition_record",
         "loop_node", "node", "ontology_checks", "records",

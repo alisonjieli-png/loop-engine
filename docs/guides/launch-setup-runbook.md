@@ -495,13 +495,6 @@ For each release:
    The body store keeps its own copy, and two copies of a large library take a
    large share of the one gigabyte volume.
 
-The same publish, rollback and withdrawal are staff tools, for a superadmin's
-protocol client or a script: `catalogue_publish` reads a bundle that steps 1 to
-4 left in `/data/incoming` when the host file's `staff_tools` block names that
-folder as `catalogue_incoming_root`, and it keeps the digest guard of step 5.
-The [staff tools guide](staff-tools.md#new-files-in-the-live-library-without-a-redeploy)
-has the calls.
-
 To roll back a release, read the active and earlier release identities with
 `catalogue-status`, then run
 `loop-engine service rollback-catalogue --config /data/host.json --to-release EARLIER --expected-release ACTIVE`.

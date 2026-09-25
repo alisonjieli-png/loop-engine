@@ -42,18 +42,6 @@ separates current records and bounded implementations from the unfinished
 shared selector. The dated source and deployment observations below remain
 historical; the research activates no new runtime or engine registry.
 
-## September 24 build
-
-The shared selector, the step executor slot's adoption, custom harness
-declarations and the custom Loop engine are built. Section 13.14 records what
-exists, the scaling and compartment rules the build applied, and what remains.
-The component guides are
-[Engine selection](../components/core-architecture/ENGINE-SELECTION.md) and
-[Step execution](../components/core-architecture/STEP-EXECUTION.md). The
-decision record is `engine_selection_decision/v2`, which adds the selection
-basis, the selection path and the request digest; statements elsewhere in this
-document that name version 1 are the design as written on September 22.
-
 ## How to read this document
 
 Sections 1 to 3 give the whole idea, the words and where engines sit inside
@@ -2254,13 +2242,6 @@ This is also the only way a parked in-process runner can return: as the inner
 implementation of a `custom_loop_harness` engine, never as an in-process call
 site, so the phase 2 guarantee survives any restore.
 
-Built on September 24 (section 13.14): `baltor_loop.process` is that engine,
-declared by a `step_harness_manifest/v1` like any outside harness and started
-fresh in the sandbox for each step, and `baltor_loop.in_process` is the same
-runtime as an `in_process_runner` engine that never counts as delegation. Both
-run deterministic procedures only; the model relay back through the broker is
-not built, so a model-led step still goes to an outside harness.
-
 ### 13.11 The overnight night runner
 
 `code_nodes/overnight_night.py` is the one live step path on `main`, and
@@ -2312,82 +2293,6 @@ labelled `local_contract` and never reported as more. Roadmap D-19-T03 is the
 end-to-end case: "Delegate one real step through a harness engine chosen by
 the executor slot", with a second harness able to replace the first by
 configuration.
-
-### 13.14 What was built on September 24, and the rules it applies
-
-```text
-Step executor slot, September 24
-├── core/engines/selection.py: one selector for every slot
-├── core/engines/fallback.py: attempt assessment and fallback for every slot
-├── core/engines/evidence.py: the evidence rule, trials, reviews, snapshots, method 1
-└── core/step_execution
-    ├── records.py: step_run_request/v1, step_run_result/v1, executor_profile/v1
-    ├── envelope.py: execute_step and run_step_attempt ("delegated step execution")
-    ├── engines.py: the factory table, the descriptor projection, the requirement screen
-    ├── harness_manifest.py and data/step_harness_manifests.yaml: step_harness_manifest/v1
-    ├── declared_harness.py, harness_launch.py, harness_endpoint.py: any declared harness
-    ├── loop_runtime.py, loop_harness_process.py, procedures.py: the custom Loop engine
-    └── qualification.py: engine_qualification/v1 from a fixture step
-```
-
-The descriptor projection lives in `core/step_execution/engines.py`, not in
-`HarnessRegistry.descriptors`: the starter catalogue pins the bytes of
-`core/external_harness.py` and `core/event_vocabulary.py`, so this build edits
-neither and records selection in existing event kinds
-(`capability.search.started`, `capability.search.completed`,
-`capability.selected`) with the field `component` set to `engine_selection`.
-
-Scaling and compartment rules this build applied:
-
-1. **One selector, many slots.** A slot supplies only its requirement screen;
-   every other rule (the policy read against the slot record, eligibility,
-   preferences, ranking, the decision record, fallback) is shared code with one
-   set of checks. A new slot adds data and a screen, never a second selector.
-2. **A declared harness adds data, not code.** One engine class runs every
-   `step_harness_manifest/v1`; a new harness is one manifest and one
-   installation. Code that behaves differently is a different engine, in its
-   own module, named once in the factory table.
-3. **Selection reads records, never the world.** Discovery projects each
-   engine's own declaration; availability and qualification are expiring
-   facts; evidence is a published snapshot, never a live query. Selection
-   starts no process and opens no connection, so its cost grows only with the
-   engines installed in one slot, and one check replaces the process, socket
-   and web request functions with failing ones to prove it.
-4. **Isolation follows the step's risk.** A step that requires delegation
-   admits only the slot's delegating kinds and process isolation; the
-   in-process engine serves deterministic steps only. A harness for each step
-   need not be a cold process: warm infrastructure (a long-lived session or a
-   pool) is a separate installation that a qualification must show keeps
-   context, permissions, mutable state and credentials separated, and until
-   one does, only a fresh process for each step is qualified. A high-risk step
-   can require stronger isolation without imposing its cost on every step.
-5. **The compatibility key is the eligibility key.** An executor profile
-   carries one entry for each component type, package format and version,
-   adapter version, harness interface and version, scope, and activation and
-   permission mode, with a support state of native, translated, embedded,
-   simulated, unsupported or unverified. A step's material is admitted only
-   where support is native, translated or embedded; "supports this harness" is
-   never one Boolean.
-6. **Evidence states stay separate.** Every placed file of a step is resolved,
-   materialized, available, loaded, used or verified, each shown by its own
-   observation. Loading counts only when the file's text reached a model
-   request the harness sent; an exit, a session identifier or an agent saying
-   that it followed a skill never counts.
-7. **Split where the boundary is useful.** A step is its own node where it has
-   a meaningful input, an inspectable output, and a useful independent
-   acceptance or retry boundary. The step edge carries exactly those: typed
-   inputs, output ports with digests, the evaluation contract, and one
-   physical attempt with its own fallback decision. Smaller is not the goal.
-8. **A parked capability returns only through the custom Loop engine.** It is
-   named in the procedure table with its checkpoint revision and refused until
-   an owner decision, its suite collected again and its own qualification.
-
-The owner's harness packaging research note of September 24 supplied rules 4
-to 7. What stays open: the model relay inside the custom Loop harness process,
-protocol server placement for a step, warm placements, the Agent Client
-Protocol engine, the paired efficiency method and the evidence compiler, the
-host file's engines block, and a real provider run (`end_to_end`), which
-waits for model-call authority.
 
 ## 14. Hosted search as an engine slot (S-6.32)
 

@@ -141,7 +141,6 @@
     showSignedIn(false);
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
     staffRole = ""; $("staff-admin").hidden = true; $("staff-counts").replaceChildren(); $("staff-accounts").replaceChildren(); $("account-plan").hidden = true;
-    $("staff-tools").hidden = true; $("staff-key-list").replaceChildren(); $("issued-staff-key-value").value = ""; $("issued-staff-key").hidden = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
@@ -632,7 +631,6 @@
       ...(health ? [["Service ready", health.ready ? "Yes" : "No"], ["Checks failing", health.checks.filter(row => !row.passed).map(row => row.name).join(", ") || "None"]] : [])]);
     $("staff-accounts").replaceChildren();
     $("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");
-    await loadStaffTools(overview).catch(error => message("staff-tools-message", error.message, true));
     if (!overview.permissions.includes("accounts.list")) { message("staff-message", "Your role reads the figures above. Account changes need a superadmin."); return; }
     const listing = await request("/api/v1/admin/accounts");
     for (const row of listing.accounts) {
@@ -685,60 +683,6 @@
     } catch (error) { message("staff-message", error.message + " Refresh to see the current state; an exact retry reuses this request identity.", true); }
     finally { staffBusy = false; $("staff-link-button").disabled = false; }
   });
-  /* Staff keys for the staff tools. A superadmin creates a key for one staff member; the page shows it once, in a password
-     field, and afterwards lists only its label, role and dates. The connection entries name the environment variable and
-     never hold a key. The service checks the role, the session and the expiry again on every call. */
-  const staffKeyVariable = "BALTOR_STAFF_KEY";
-  let staffKeyRequest = null;
-  async function loadStaffTools(overview) {
-    const endpoint = location.origin + "/admin/mcp";
-    $("staff-tools").hidden = false; $("staff-endpoint").textContent = endpoint;
-    $("staff-claude-config").textContent = JSON.stringify({mcpServers:{"baltor-staff":{type:"http", url:endpoint,
-      headers:{Authorization:"Bearer ${" + staffKeyVariable + "}"}}}}, null, 2);
-    $("staff-codex-config").textContent = "[mcp_servers.baltor_staff]\nurl = \"" + endpoint + "\"\nbearer_token_env_var = \"" + staffKeyVariable + "\"";
-    const manage = overview.permissions.includes("staff_keys.manage");
-    $("staff-key-form").hidden = !manage; $("staff-key-list").replaceChildren();
-    if (!manage) { message("staff-tools-message", "A superadmin creates staff keys. Your role's key reaches the tools your role may call."); return; }
-    const listing = await request("/api/v1/admin/staff-keys");
-    const chosen = $("staff-key-member").value; $("staff-key-member").replaceChildren();
-    for (const member of listing.members) { const choice = element("option", member.staff_member + " · " + member.role); choice.value = member.staff_member; $("staff-key-member").append(choice); }
-    if (listing.members.some(member => member.staff_member === chosen)) $("staff-key-member").value = chosen;
-    if (!listing.keys.length) $("staff-key-list").append(element("p", "No staff keys yet.", "caption"));
-    for (const row of listing.keys) {
-      const item = element("article", "", "result"); item.dataset.staffKey = row.key_id;
-      item.append(element("h3", row.label), element("span", row.state, "badge"),
-        element("p", row.staff_member + " · " + row.role + " · expires " + new Date(row.expires_at * 1000).toLocaleString()));
-      if (row.state === "active") { const button = element("button", "Revoke " + row.label, "quiet"); button.type = "button";
-        button.addEventListener("click", async () => {
-          if (staffBusy || !confirm("Revoke the staff key “" + row.label + "”? Its next call is refused.")) return;
-          staffBusy = true; button.disabled = true;
-          try { await request("/api/v1/admin/staff-keys", {record_type:"service_staff_key_request/v1", operation:"revoke", request_id:crypto.randomUUID(), key_id:row.key_id});
-            await loadStaffTools(overview); message("staff-tools-message", "Staff key revoked."); }
-          catch (error) { message("staff-tools-message", error.message + " Refresh to see the current state before trying again.", true); }
-          finally { staffBusy = false; button.disabled = false; }
-        }); item.append(button); }
-      $("staff-key-list").append(item);
-    }
-  }
-  $("staff-key-form").addEventListener("submit", async event => {
-    event.preventDefault(); if (staffBusy) return;
-    const fields = {record_type:"service_staff_key_request/v1", operation:"mint", staff_member:$("staff-key-member").value,
-      label:$("staff-key-label").value.trim(), lifetime_seconds:Number($("staff-key-hours").value) * 3600};
-    const signature = JSON.stringify(fields);
-    if (!staffKeyRequest || staffKeyRequest.signature !== signature) staffKeyRequest = {signature, id:crypto.randomUUID()};
-    staffBusy = true; $("staff-key-button").disabled = true; $("issued-staff-key-value").value = ""; $("issued-staff-key").hidden = true;
-    try {
-      const result = await request("/api/v1/admin/staff-keys", {...fields, request_id:staffKeyRequest.id});
-      staffKeyRequest = null;
-      await loadStaffTools(await request("/api/v1/admin/overview"));
-      if (result.key) { $("issued-staff-key-value").value = result.key; $("issued-staff-key").hidden = false;
-        message("staff-tools-message", "Staff key created. Save it in " + staffKeyVariable + " before you leave this page."); }
-      else message("staff-tools-message", "This request already created a key, and a key is shown only once. Revoke it and create a new one.");
-    } catch (error) { message("staff-tools-message", error.message + " An exact retry reuses this request identity.", true); }
-    finally { staffBusy = false; $("staff-key-button").disabled = false; }
-  });
-  $("copy-staff-key").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("issued-staff-key-value").value); message("staff-tools-message", "Staff key copied. Store it privately."); } catch (_) { $("issued-staff-key-value").type = "text"; $("issued-staff-key-value").select(); message("staff-tools-message", "Copy the selected key, then clear it from this page."); } });
-  $("clear-staff-key").addEventListener("click", () => { $("issued-staff-key-value").value = ""; $("issued-staff-key-value").type = "password"; $("issued-staff-key").hidden = true; });
   $("issue-access").addEventListener("submit", async event => {
     event.preventDefault(); if (accessBusy || !accessOptions) return;
     const fields = {record_type:"service_access_request/v1", operation:"issue", tenant_id:$("token-tenant").value, label:$("token-label").value.trim(),

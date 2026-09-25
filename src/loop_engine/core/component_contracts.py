@@ -28,7 +28,7 @@ class LoopComponentError(ValueError):
 #: ``core/engines/slots.py``); adding a file here is a reviewed change.
 COMPONENT_RESOURCE_FILES = (
     "component_interactions.yaml", "component_folder_map.yaml",
-    "engine_slots.yaml", "step_harness_manifests.yaml")
+    "engine_slots.yaml")
 
 
 def component_payload_digest(value: object) -> str:

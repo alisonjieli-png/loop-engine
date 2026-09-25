@@ -389,10 +389,6 @@ def run_checks() -> dict:
         with without(module, guard, replacement):
             check(control, _observe(scenario) is False)
     check("the_engines_block_is_a_declaration_and_a_slot_is_bound_or_unbound_once", _host_block_rules_hold())
-    # Known wrong: a lifecycle stage selection reads that the component ontology does not define.
-    check("every_lifecycle_stage_selection_reads_is_in_the_component_vocabulary",
-          set(records.SELECTION_LIFECYCLES) <= set(records.lifecycles())
-          and len(set(records.SELECTION_LIFECYCLES)) == len(records.SELECTION_LIFECYCLES))
     # Rules written inline in the records: each has no guard function to remove
     # inside the test, so source mutants confirm that removing it fails the check.
     for name, scenario in (

@@ -1,9 +1,9 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 45,
+  "done": 44,
   "next": 13,
-  "now": 41,
+  "now": 42,
   "waiting": 87
  },
  "lanes": {
@@ -94,22 +94,6 @@
     "status": "offline_verified",
     "title": "Maintain one continuation plan and regenerate its status artifact",
     "waiting_on": []
-   },
-   {
-    "acceptance": "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.85",
-     "S-6.99"
-    ],
-    "id": "S-6.120",
-    "next_local_work": "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service.",
-    "phase": 6,
-    "status": "offline_verified",
-    "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
-    "waiting_on": [
-     "S-6.85"
-    ]
    },
    {
     "acceptance": "",
@@ -926,7 +910,7 @@
      "S-6.28"
     ],
     "id": "S-6.30",
-    "next_local_work": "Adopt the selector in the service slots through the host engine table; build the paired efficiency method and the evidence compiler; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md.",
+    "next_local_work": "Complete shared selection and at-use binding using existing records; qualify semantic behavior and state transitions per docs/research/FUNCTIONAL-ENGINE-WRAPPING-RESEARCH-AND-IMPROVEMENTS-2026-09-23.md before adopting the framework in executor, compiler, search, email, store, model, identity and billing slots.",
     "phase": 6,
     "status": "building",
     "title": "Engines behind fixed edges: the shared engine framework",
@@ -941,7 +925,7 @@
      "S-6.30"
     ],
     "id": "S-6.31",
-    "next_local_work": "Build the model relay inside the custom Loop harness process, protocol server placement for a step, and the Agent Client Protocol engine with OpenCode first; then the end_to_end run of D-19-T03 once model-call authority covers it.",
+    "next_local_work": "Implement the records and the first adapter after the framework package.",
     "phase": 6,
     "status": "building",
     "title": "The harness executor slot: delegate each step to a standard harness",
@@ -956,7 +940,7 @@
      "S-6.31"
     ],
     "id": "S-6.42",
-    "next_local_work": "Declare manifests for Codex, Claude Code and OpenCode in a no-model or fixture mode and qualify each; qualify a warm placement only with a check that keeps context, permissions, mutable state and credentials separated.",
+    "next_local_work": "Research the forks and run the independent-instance tests without model calls where possible.",
     "phase": 6,
     "status": "building",
     "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
@@ -1232,6 +1216,22 @@
     "title": "Deploy an authorized pilot and qualify its real request path",
     "waiting_on": [
      "S-6.14"
+    ]
+   },
+   {
+    "acceptance": "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.99"
+    ],
+    "id": "S-6.120",
+    "next_local_work": "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service.",
+    "phase": 6,
+    "status": "building",
+    "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
+    "waiting_on": [
+     "S-6.85"
     ]
    },
    {
@@ -3903,13 +3903,13 @@
     "D-17",
     "D-24"
    ],
-   "done_steps": 3,
+   "done_steps": 2,
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 3,
+    "building": 4,
     "live_qualified": 1,
-    "offline_verified": 2,
+    "offline_verified": 1,
     "proposed": 4
    },
    "steps": [
@@ -4082,5 +4082,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a36e9d28620975"
+ "source_fingerprint": "sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be731597e465ba8caec"
 }

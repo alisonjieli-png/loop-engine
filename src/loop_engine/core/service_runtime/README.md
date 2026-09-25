@@ -55,8 +55,6 @@ Existing service boundary
 ├── account_origin.py: the one way in, the identity administration edge and the marking command
 ├── account_policy.py: staff roles and permissions fixed in code, and the host's accounts block
 ├── account_administration.py: the staff overview, the account list and superadmin actions
-├── staff_*.py, activity.py, credits.py, account_messages.py, account_import.py and
-│   admin_mcp.py: the staff tools and the staff protocol endpoint
 ├── staff_sign_up_links.py: sign-up links a superadmin sends through Baltor's own sign-up
 ├── free_monthly.py: free monthly Baltor Pro, the founding offer and the monthly renewal
 ├── web_pages.py: the served page address table and the packaged files behind it
@@ -1183,103 +1181,6 @@ reservation leaves any account it prepared without a pending record, so that
 account opens without the free monthly grant; a superadmin grants it from the
 account list. A batch of ten addresses makes up to about fifty requests to the
 identity provider and the mail sender in one staff request.
-
-## Staff tools and the staff protocol endpoint
-
-This section describes the source in this repository. A deployment serves it
-only after a release that includes it. The owner asked on September 24, 2026
-for a protocol server and an interface for managing the service from Claude
-Code, Codex or any protocol client, and whether new files and searchable
-entries can reach the library without a full deploy.
-
-```text
-Staff tool modules
-├── staff_routes.py          the staff addresses and tool names, named once
-├── staff_keys.py            service_staff_key/v1: mint, list, revoke, authenticate
-├── staff_tools.py           the registry, the call rules, plan and apply, the host block
-├── activity.py              service_staff_audit_event/v1 and the activity search
-├── credits.py               service_download_credits/v1 and the metering beside the plan
-├── account_messages.py      message_send and the staff daily message allowance
-├── account_import.py        accounts_invite and accounts_import over the staff sign-up link
-├── staff_tool_accounts.py   accounts, credits, activity, the catalogue view and health
-├── staff_tool_catalogue.py  status, publish, rollback and withdrawal of catalogue releases
-└── admin_mcp.py             the /admin/mcp server and the staff routes
-```
-
-Rules, each held by a named check:
-
-- A staff key is minted only by a superadmin browser session, bound to one
-  staff entry by the digest of its identity and to that entry's role, shown
-  once and kept as a SHA-256 digest. It expires 24 hours after minting unless
-  the superadmin chose from five minutes to seven days, and a key the staff
-  list no longer matches with the same role is refused.
-- `/admin/mcp` reads staff keys only. A customer key, a host key or a browser
-  session is refused with `staff_credential_required`, counted by the
-  failed-attempt limit for the client address.
-- Every tool checks `ROLE_PERMISSIONS`. Analytics reads counts and never an
-  address, and an address filter from a counts-only role is refused.
-- Every tool with an effect is two calls: a plan with a digest over the
-  arguments, the caller and the version of every record it depends on, and an
-  apply naming that digest and a new request identity. The apply commits its
-  effect, its request identity and its audit record in one batch, guarded by
-  the staff key's own record version, so a key revoked in between commits
-  nothing. An effect that reaches outside the store reserves its request
-  identity and its message allowance first and records its outcome after.
-- Every call writes one `service_staff_audit_event/v1` record under the
-  request reference; a read that cannot write its record answers nothing.
-- A download credit is drawn by the metering of a body read in the same batch
-  as its usage record, against the credit record's exact version, from the
-  grant that expires first; an account whose plan grants bodies draws none.
-- A staff message needs a service purpose and never goes out for marketing,
-  and staff messages and sign-up links draw on the daily allowance of the
-  `staff_tools` block, 50 by default.
-- An import row with a value in a column that carries authority is refused as
-  `second_way_in`, and its value never reaches a plan, a record or a message.
-
-| Guard | Named check | Removed-guard control |
-|---|---|---|
-| Staff key revocation | `a_revoked_staff_key_is_refused_at_its_next_use` | `removed_staff_key_revocation_is_detected` |
-| Staff key expiry | `an_expired_staff_key_is_refused` | `removed_staff_key_expiry_is_detected` |
-| The role table for every tool | `developer_and_analytics_reach_no_superadmin_tool_and_analytics_reads_no_address` | `removed_staff_tool_permission_table_is_detected` |
-| No address filter for counts | the same check | `removed_address_filter_guard_for_counts_is_detected` |
-| The plan digest | `an_apply_names_the_digest_of_the_plan_for_the_same_arguments_and_state` | `removed_plan_digest_comparison_is_detected` |
-| The audit record of every call | `every_staff_tool_call_writes_one_audit_record_with_its_request_reference` | `removed_audit_record_is_detected` |
-| Staff accounts stay on | `a_staff_tool_switches_a_customer_off_and_never_a_staff_member` | `removed_staff_account_protection_is_detected` |
-| Credit expiry at metering | `credits_are_refused_after_their_expiry` | `removed_credit_expiry_is_detected` |
-| A service purpose for a message | `a_message_without_a_service_purpose_or_for_marketing_is_refused_before_anything_is_sent` | `removed_service_purpose_rule_is_detected` |
-| The staff daily message allowance | `a_message_over_the_staff_daily_allowance_is_refused_at_plan_and_at_apply` | `removed_daily_message_allowance_is_detected` |
-| No second way in from an import | `an_import_row_that_would_create_a_second_way_in_is_refused_and_its_value_never_kept` | `removed_second_way_in_guard_is_detected` |
-| The bundle digest of a publish | `catalogue_publish_keeps_the_bundle_digest_guard_and_needs_no_redeploy` | `removed_bundle_digest_guard_is_detected` |
-
-Other named checks hold the rest: a key is shown once and kept as a digest; a
-customer or host key is never a staff key and a staff key never a customer
-key; a key whose member changed role is refused; a key mints no key; a plan
-applied after its key was revoked commits nothing; credits are drawn once for
-each request identity, and an account with a plan draws none; a message is
-previewed and sent inside its template; imported rows are validated,
-deduplicated and sent through the one way in; free monthly on a sign-up link
-needs the grant permission and opens an account that includes Baltor Pro;
-rollback and withdrawal run from a plan against the active release. Over real
-loopback sockets, `admin_mcp_checks.py` drives the official protocol client in
-both protocol versions, refuses a customer key, a host key and a browser
-session at `/admin/mcp`, refuses a staff key at every customer route and at
-the staff key route, and journals a refused staff call under `/admin/mcp`.
-Both modules run from the service smoke run.
-
-The browser suite adds two named checks with two removed-guard controls: a
-superadmin creates a staff key that the page shows once in a password field
-while the connection entries name only `BALTOR_STAFF_KEY`, and the
-Administration page answers how new files reach the live library without a
-redeploy.
-
-Limits. Each account search reads the identity provider's whole user list,
-as the account list does, which suits a young service and needs paging at the
-provider before many thousands of accounts. Activity search reads every record
-of each kind it is asked for. A message that fails after its reservation
-still counts against the allowance, and a batch interrupted between its
-reservation and its outcome stays in progress under its request identity;
-the staff member plans it again. The staff sign-up link form of the
-Administration page does not draw on the staff daily message allowance yet.
 
 ## Waiting list
 

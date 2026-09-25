@@ -350,10 +350,8 @@ each may do is the table `ROLE_PERMISSIONS` in code:
 Staff roles
 ├── superadmin: every permission below
 ├── developer: service diagnostics, meaning the measured health record and
-│   the newest refusal codes, counted; the activity record and the catalogue
-│   view; no account, billing or catalogue change
-└── analytics: account, usage and activity counts and the catalogue view;
-    no address and no change
+│   the newest refusal codes, counted; no account or billing change
+└── analytics: account counts and usage counts; no address and no change
 ```
 
 Who holds a role comes from the `staff` list of the host file's `accounts`
@@ -440,101 +438,6 @@ is considered for the founding offer like any other account.
 
 The public pages do not change. Anyone can still sign up on the Get started
 page, and the Administration view calls this a sign-up link.
-
-## Staff tools and the staff protocol endpoint
-
-This section describes the source in this repository. A deployment serves it
-only after a release that includes it.
-
-The owner asked on September 24, 2026 for a protocol server and an interface
-that let the person running Baltor manage it from Claude Code, Codex or any
-Model Context Protocol client: search and read accounts, grant credits, send
-service messages, bring in people who signed up offline, read the activity,
-search the catalogue and publish new files without a redeploy.
-
-```text
-Staff transports
-├── /admin/mcp                   Streamable HTTP, the same library and version
-│                                negotiation as /mcp, for a staff key only
-├── /api/v1/admin/tools/<tool>   the same tools, for a staff key or a signed-in
-│                                staff browser session
-└── /api/v1/admin/staff-keys     a superadmin browser session lists, mints and
-                                 revokes staff keys; a staff key never reaches it
-```
-
-A staff key, record `service_staff_key/v1`, is minted by a superadmin on the
-Administration page for one entry of the host file's staff list. It carries
-that entry's role, is shown once and kept as a digest, lasts 24 hours unless
-the superadmin chose another lifetime of up to seven days, and is refused at
-its next use once revoked (`staff_key_revoked`), expired (`staff_key_expired`)
-or no longer matched by the staff list (`staff_key_role_changed`). A customer
-key, a host key or a browser session at `/admin/mcp` is refused with
-`staff_credential_required`, and a staff key at any customer route is refused
-like any unknown credential. A client reads the key from the environment
-variable `BALTOR_STAFF_KEY`; no configuration file holds it.
-
-| Tool | Permission it needs | Effect |
-|---|---|---|
-| `accounts_search` | `accounts.search` for rows, `accounts.counts` for counts only | none |
-| `account_get` | `accounts.read` | none |
-| `account_action` | the permission of its operation | grant or revoke free monthly, switch off or on |
-| `accounts_invite`, `accounts_import` | `accounts.send_sign_up_links`, and `accounts.grant_free_monthly` with `free_monthly` | a sign-up link to each address |
-| `credits_grant`, `credits_revoke` | `credits.grant`, `credits.revoke` | download credits |
-| `message_send` | `messages.send` | one service message to each recipient |
-| `activity_search` | `activity.read` for events, `activity.counts` for counts only | none |
-| `data_search`, `catalogue_status` | `catalogue.read` | none |
-| `catalogue_publish` | `catalogue.publish` | a release, with the bundle digest guard |
-| `catalogue_rollback` | `catalogue.rollback` | the pointer moves to an earlier release |
-| `item_withdraw` | `catalogue.withdraw` | a durable withdrawal |
-| `service_health` | `service.diagnostics` | none |
-
-Every tool with an effect takes two calls. The call with `step` `plan` answers
-`service_staff_plan/v1`: what would change, and a plan digest over the exact
-arguments, the caller and the version of every record the change depends on.
-The call with `step` `apply` names that digest and a new `request_id`. A
-digest that no longer matches is refused with `plan_changed` and nothing
-changes; a missing one is refused with `plan_digest_required`; a repeated
-request identity returns the first result. Every call writes one
-`service_staff_audit_event/v1` record under its request reference, and an
-apply commits it in the same batch as its effect.
-
-Analytics reads counts and never an address: its `accounts_search` answers
-counts only and refuses an address filter with `address_search_forbidden`.
-A staff tool never switches off a staff member's own account
-(`staff_account_protected`).
-
-A download credit, record `service_download_credits/v1`, is one download a
-superadmin grants to an account with an expiry and a reason. Metering honours
-it beside the plan: an account whose plan grants bodies draws no credit, and an
-account without such a plan downloads while it holds a usable credit, one
-credit for each metered read. There is no purchase and no overage billing.
-
-A staff message goes out only for a service purpose: `account_notice`,
-`service_notice`, `security_notice` or `support_reply`. A message without one
-is refused with `message_service_purpose_required`, and marketing with
-`marketing_needs_recorded_consent`, because the service records no marketing
-consent. The plan shows the exact text inside the service message template.
-Staff messages and staff sign-up links draw on a daily allowance of their own,
-50 of the mail provider's free 100 by default, set by the host file's optional
-`staff_tools` block, record `service_staff_tools/v1`; a plan or an apply over
-it is refused with `staff_mail_daily_cap_reached`.
-
-An import reads CSV text with a header row or JSON rows, validates and
-deduplicates each row, skips addresses with an open account or a pending
-sign-up, and refuses a row with a value in a column that carries a password,
-a confirmation, an identity, a role, scopes, a plan or credits. Each address
-it sends to gets the staff sign-up link above, through the one way in.
-
-New files reach the live library through a catalogue release, with no
-redeploy: `catalogue_publish` reads a bundle already uploaded to the host's
-incoming folder, refuses it with `bundle_digest_mismatch` unless its digest is
-the one its builder printed, and publishes it as `publish-catalogue` does; the
-running service serves it at its next refresh.
-
-The [staff tools guide](../../guides/staff-tools.md) is the operator procedure,
-and the
-[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#staff-tools-and-the-staff-protocol-endpoint)
-has every rule with its named check and removed-guard control.
 
 ## Free monthly Baltor Pro and the founding offer
 

@@ -193,30 +193,6 @@ def _reserve(administration, staff, request):
     return current, None
 
 
-def pending_link_rows(runtime, store, issuer, sent, *, free_monthly, sent_by_subject, sent_by_role, request_id, now):
-    """The pending link record of each account a sign-up link reached, and the guards they commit under.
-
-    `sent` names (address digest, provider user) pairs. The staff route here
-    and the staff tools' `accounts_invite` and `accounts_import` both write
-    these, so an account opened from either is completed the same way when it
-    activates, with free monthly Baltor Pro when it was asked for.
-    """
-    catalog = runtime._catalog
-    rows, guards = [], []
-    for address_digest, provider_user_id in sent:
-        link_key = (issuer, provider_user_id)
-        previous = catalog.read(store, LINK, link_key)
-        earlier = _link_payload(previous) if previous is not None else {}
-        link = catalog.record(LINK, link_key, {
-            "record_type": LINK_VERSION, "issuer": issuer, "provider_user_id": provider_user_id,
-            "address_digest": address_digest, "state": PENDING, "free_monthly": free_monthly, "sent_at": now,
-            "sent_by_subject": sent_by_subject, "sent_by_role": sent_by_role, "request_id": request_id,
-            "sends": earlier.get("sends", 0) + 1, "activated_at": None, "tenant_id": ""})
-        rows.append(link)
-        guards.append(catalog.guard(previous, link["record_id"]))
-    return rows, guards
-
-
 def _complete(administration, staff, request, outcomes):
     """Write every pending link and the completed audit record in one write."""
     from .account_administration import AUDIT
@@ -232,12 +208,21 @@ def _complete(administration, staff, request, outcomes):
         event_row = catalog.read(store, AUDIT, key)
         if event_row is None or event_row["payload"].get("request_digest") != request.identity():
             raise ServiceRuntimeError("concurrent_update")
-        rows, guards = pending_link_rows(
-            runtime, store, administration.issuer,
-            [(row["address_digest"], row["provider_user_id"]) for row in stored if row["outcome"] == SENT],
-            free_monthly=request.free_monthly, sent_by_subject=staff.subject, sent_by_role=staff.role,
-            request_id=request.request_id, now=now)
-        guards.append(catalog.guard(event_row))
+        rows, guards = [], [catalog.guard(event_row)]
+        for row in stored:
+            if row["outcome"] != SENT:
+                continue
+            link_key = (administration.issuer, row["provider_user_id"])
+            previous = catalog.read(store, LINK, link_key)
+            earlier = _link_payload(previous) if previous is not None else {}
+            link = catalog.record(LINK, link_key, {
+                "record_type": LINK_VERSION, "issuer": administration.issuer,
+                "provider_user_id": row["provider_user_id"], "address_digest": row["address_digest"],
+                "state": PENDING, "free_monthly": request.free_monthly, "sent_at": now,
+                "sent_by_subject": staff.subject, "sent_by_role": staff.role, "request_id": request.request_id,
+                "sends": earlier.get("sends", 0) + 1, "activated_at": None, "tenant_id": ""})
+            rows.append(link)
+            guards.append(catalog.guard(previous, link["record_id"]))
         rows.append({**event_row, "record_version": uuid.uuid4().hex,
                      "payload": {**event_row["payload"], "state": COMPLETED, "result": result, "completed_at": now}})
         catalog.commit(store, tuple(rows), tuple(guards))

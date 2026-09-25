@@ -7,7 +7,7 @@ from dataclasses import replace
 
 from .configuration_capabilities import ConfigurationFact, canonical, digest
 from .configuration_preferences import (
-    ExistingOrderPreference, ExplicitOrderPreference, InsufficientEvidence, MetaPreferencePolicy,
+    ExistingOrderPreference, ExplicitOrderPreference, MetaPreferencePolicy,
     PreferenceCandidate, PreferenceEngineBinding, PreferenceProposal,
     PreferenceSelectionRequest, PreferenceSnapshot, SuppliedAgentPreference,
     resolve_preference, resolve_preference_as_loop)
@@ -126,43 +126,8 @@ def run_checks():
           invalid["attempts"][0]["result"] == "invalid_proposal" and invalid["status"] == "abstained")
     import json
     check("the_decision_record_is_json_plain", json.loads(json.dumps(invalid)) == invalid)
-    check("insufficient_evidence_is_recorded_as_a_fallback_not_an_engine_failure",
-          _insufficient_evidence_scenario(base, existing))
-    from unittest.mock import patch
-    from . import configuration_preferences as preferences
-    with patch.object(preferences, "InsufficientEvidence", type("UnrelatedSignal", (Exception,), {})):
-        check("removed_insufficient_evidence_class_is_detected",
-              not _insufficient_evidence_scenario(base, existing))
     return {"tests": tests, "passed": sum(t["passed"] for t in tests), "total": len(tests),
             "all_passed": all(t["passed"] for t in tests)}
-
-
-def _insufficient_evidence_scenario(base, existing) -> bool:
-    """Known wrong: an evidence ranker's insufficient-evidence signal recorded as an
-    engine failure or an invalid proposal, the declared order not reached, or the
-    decision left at version 1, which does not know that class; or a policy that does
-    not name the class falling back anyway. The signal class is bound when this module
-    loads, so a control that removes the boundary's class leaves the ranker unchanged."""
-
-    class ThinEvidence:
-        def descriptor(self):
-            return {"method": "offline_thin_evidence_fixture"}
-
-        def rank(self, snapshot):
-            raise InsufficientEvidence("fewer matched reviewed records than the declared minimum")
-    thin = engine("thin-evidence@1.0.0", ThinEvidence())
-    policy = MetaPreferencePolicy((thin.engine_ref, existing.engine_ref), ("insufficient_evidence",))
-    decided = resolve_preference(replace(base, policy=policy, engines=(thin, existing)))
-    stopped = resolve_preference(replace(base, policy=MetaPreferencePolicy((thin.engine_ref, existing.engine_ref)),
-                                         engines=(thin, existing)))
-    plain = resolve_preference(replace(base, policy=MetaPreferencePolicy((existing.engine_ref,)),
-                                       engines=(existing,)))
-    return (decided["record_type"] == "configuration_preference_decision/v2"
-            and [item["result"] for item in decided["attempts"]] == ["insufficient_evidence", "valid_ordering"]
-            and decided["selected_engine_ref"] == existing.engine_ref
-            and decided["ordered_ids"] == ["first", "second", "third"]
-            and stopped["status"] == "abstained" and len(stopped["attempts"]) == 1
-            and plain["record_type"] == "configuration_preference_decision/v1")
 
 
 def _meta_checks(check, base, existing, explicit):

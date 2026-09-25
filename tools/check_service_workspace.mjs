@@ -68,8 +68,6 @@ from loop_engine.core.service_runtime.account_email import ProviderAnswer
 from loop_engine.core.service_runtime.account_origin_checks import MarkingIdentityProjectStandIn as IdentityProjectStandIn
 from loop_engine.core.service_runtime.account_origin import ACCOUNT_MARK,ACCOUNT_MARKER,AccountOrigins,SupabaseIdentityAdministration,record_origin
 from loop_engine.core.service_runtime.account_administration import AccountAdministration
-from loop_engine.core.service_runtime.staff_keys import StaffKeys
-from loop_engine.core.service_runtime.staff_tools import StaffTools
 from loop_engine.core.service_runtime.account_policy import ServiceAccountPolicy
 from loop_engine.core.service_runtime.free_monthly import grant_rows
 from loop_engine.core.service_runtime.request_limits import SOCKET_PEER_SOURCE,ServiceRequestLimits
@@ -162,12 +160,7 @@ with ExitStack() as stack:
         staff_tokens[person]=jwt.encode({"iss":provider+"/auth/v1","aud":"authenticated","sub":person,"exp":int(time.time())+1800,"iat":int(time.time()),"role":"authenticated","is_anonymous":False},private_key,algorithm="RS256",headers={"kid":"browser-test"})
         staff_identity.activate(staff_tokens[person])
     staff_administration=AccountAdministration(staff.runtime,ServiceAccountPolicy(staff=({"role":"superadmin","provider_user_id":staff_subject,"name":"Staff Tester"},)),provider+"/auth/v1",origins=AccountOrigins(staff.runtime,provider+"/auth/v1",SupabaseIdentityAdministration(provider,allow_network=True,transport=staff_project.admin)),identity_secret=lambda:"sb_secret_browser_fixture")
-    # The staff tools of September 24, 2026 are installed as the host loader installs them: with staff administration.
-    def staff_application(config):
-        application=ServiceHttpApplication(staff.runtime,staff.provisioning,config,browser_identity=staff_identity,account_administration=staff_administration,account_email=account_email(config,staff_project,provider,staff.runtime))
-        application.staff_tools=StaffTools(application,staff_administration,StaffKeys(staff.runtime,staff_administration))
-        return application
-    staff_base,_=stack.enter_context(running_http(staff,application_factory=staff_application,display_name="Baltor",request_limits=stated))
+    staff_base,_=stack.enter_context(running_http(staff,application_factory=lambda config:ServiceHttpApplication(staff.runtime,staff.provisioning,config,browser_identity=staff_identity,account_administration=staff_administration,account_email=account_email(config,staff_project,provider,staff.runtime)),display_name="Baltor",request_limits=stated))
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
@@ -2607,29 +2600,6 @@ try {
       &&/Sign-up link sent/.test(shown.row)&&/Free monthly Baltor Pro starts when the account opens/.test(shown.row)&&/Not confirmed/.test(shown.row)
       &&!invitationWords.test(shown.message+" "+shown.row+" "+shown.formWords),{form,...shown});
   };
-  /* The owner's request of September 24, 2026: a superadmin creates a staff key for a protocol client on the Administration
-     page. The key is shown once, in a password field; the connection entries name the environment variable and never hold
-     a key; and the page answers how new files reach the live library without a redeploy. */
-  const staffToolsJourney=async (target,note)=>{
-    await staffSignIn(target);
-    await target.waitForFunction(()=>document.getElementById("staff-key-form")?.hidden===false,null,{timeout:10000}).catch(()=>{});
-    const panel=await target.evaluate(()=>document.getElementById("staff-tools")?.hidden===false&&document.getElementById("staff-key-form")?.hidden===false);
-    if(panel){await target.fill("#staff-key-label","Claude Code check");await target.click("#staff-key-button");
-      await target.waitForFunction(()=>document.getElementById("issued-staff-key")?.hidden===false||document.getElementById("staff-tools-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});}
-    const shown=await target.evaluate(()=>({key:document.getElementById("issued-staff-key-value")?.value||"",type:document.getElementById("issued-staff-key-value")?.type||"",
-      claude:document.getElementById("staff-claude-config")?.textContent||"",codex:document.getElementById("staff-codex-config")?.textContent||"",
-      words:document.getElementById("staff-tools")?.innerText||"",keys:[...document.querySelectorAll("#staff-key-list article")].map(item=>item.innerText),
-      library:document.getElementById("library-updates")?.textContent||""}));
-    if(note===check)await target.locator("#staff-tools").screenshot({path:output.replace(/\.json$/,"-staff-tools.png")}).catch(()=>{});
-    const endpoint=fixture.staff_base+"/admin/mcp",key=shown.key;
-    note("a_superadmin_creates_a_staff_key_shown_once_and_the_connection_names_only_its_variable",panel&&/^bsk_/.test(key)&&shown.type==="password"
-      &&shown.claude.includes(endpoint)&&shown.claude.includes("${BALTOR_STAFF_KEY}")&&shown.codex.includes('bearer_token_env_var = "BALTOR_STAFF_KEY"')
-      &&!shown.claude.includes(key)&&!shown.codex.includes(key)&&!shown.words.includes(key)
-      &&shown.keys.some(text=>text.includes("Claude Code check")&&/active/.test(text))&&!invitationWords.test(shown.words),
-      {...shown,key:key?"(present, not recorded)":""});
-    note("the_administration_page_answers_how_new_files_reach_the_live_library_without_a_redeploy",panel&&/without a redeploy/.test(shown.words)
-      &&/catalogue_publish/.test(shown.library)&&/bundle digest/.test(shown.library)&&/no restart/.test(shown.library),{library:shown.library});
-  };
   /* The confirmation page keeps Confirm disabled, with a short note, until its sign-in settings have loaded, so a quick click
      is never refused with the link unused. The settings request is held here, then released. */
   const confirmWait=async (target,note)=>{
@@ -2676,7 +2646,6 @@ try {
     invited:signedInFunnel(fixture.billing_invited_token,true),unpaid:signedInFunnel(fixture.billing_token,false),
     free_monthly:signedInFunnel(fixture.billing_free_monthly_token,true,true),
     staff:(target,note)=>staffJourney(target,note),staff_links:(target,note)=>staffLinkJourney(target,note),
-    staff_tools:(target,note)=>staffToolsJourney(target,note),
     confirm_wait:(target,note)=>confirmWait(target,note)};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
@@ -2708,8 +2677,6 @@ try {
     {name:"use_another_title_for_a_free_monthly_account",scenario:"free_monthly",path:"/assets/service.js",find:'free_monthly:{title:"Your account includes Baltor Pro"',replacement:'free_monthly:{title:"Your account covers Baltor Pro"',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_included_plan_on_the_account_page",scenario:"free_monthly",path:"/assets/service.js",find:'$("account-plan").hidden = !coveredSources.includes(accessSource);',replacement:'$("account-plan").hidden = true;',expected:["get_started_funnel_tells_a_free_monthly_account_that_it_includes_baltor_pro"]},
     {name:"hide_the_staff_accounts_view",scenario:"staff",path:"/assets/service.js",find:'$("staff-admin").hidden = false;',replacement:"",expected:["a_superadmin_sees_every_account_and_grants_free_monthly_in_the_administration_view"]},
-    {name:"put_the_staff_key_in_the_connection_entry",scenario:"staff_tools",path:"/assets/service.js",find:'$("issued-staff-key-value").value = result.key;',replacement:'$("issued-staff-key-value").value = result.key; $("staff-claude-config").textContent += result.key;',expected:["a_superadmin_creates_a_staff_key_shown_once_and_the_connection_names_only_its_variable"]},
-    {name:"hide_the_staff_tools_panel",scenario:"staff_tools",path:"/assets/service.js",find:'$("staff-tools").hidden = false;',replacement:"",expected:["a_superadmin_creates_a_staff_key_shown_once_and_the_connection_names_only_its_variable","the_administration_page_answers_how_new_files_reach_the_live_library_without_a_redeploy"]},
     {name:"hide_the_sign_up_link_form",scenario:"staff_links",path:"/assets/service.js",find:'$("staff-links-form").hidden = !overview.permissions.includes("accounts.send_sign_up_links");',replacement:'$("staff-links-form").hidden = true;',expected:["a_superadmin_sends_a_sign_up_link_and_the_account_shows_as_waiting"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
