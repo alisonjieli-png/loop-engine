@@ -122,13 +122,14 @@ def _project_urls():
 def source_prefix() -> str:
     """Where a review record cited by a repository path can be read: the main line of the repository that the
     distribution's own metadata names. The address has one owner, pyproject.toml, and is never written here. Empty
-    when the metadata names no https repository; the page then says the record is kept with the release."""
-    from urllib.parse import urlsplit
+    when the metadata names no https repository; the page then says the record is kept with the release. The address
+    is split as text: this module renders a page and imports no network module, not even for parsing."""
     for entry in _project_urls():
         label, _, address = entry.partition(",")
         address = address.strip().rstrip("/")
-        parts = urlsplit(address)
-        if label.strip().lower() in REPOSITORY_LABELS and parts.scheme == "https" and parts.netloc:
+        scheme, separator, rest = address.partition("://")
+        if (label.strip().lower() in REPOSITORY_LABELS and scheme == "https" and separator and rest.split("/", 1)[0]
+                and not any(character.isspace() for character in address)):
             return address + "/blob/main/"
     return ""
 
