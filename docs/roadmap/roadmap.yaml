@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1486,19 +1486,19 @@ continuation:
   workstreams:
     - title: Reusable capabilities and detection
       legacy_steps: [S-0.5, S-1.10]
-      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
+      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
@@ -3946,3 +3946,76 @@ steps:
     acceptance: "A change to Telegram's or Discord's bot platform reaches the next research digest within a day."
     evidence: "The daily research watch holds 17 sources, with an online limit of 20 and a page host allowlist that includes neither core.telegram.org nor discord.com. Research: docs/research/COMMUNITY-AND-CHAT-DISTRIBUTION-2026-09-24.md."
     next_local_work: "Add the four sources and raise the limits, with tests."
+  - id: S-6.160
+    phase: 6
+    title: "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine"
+    status: proposed
+    depends_on: [S-6.44, S-6.75]
+    boundary: [tools/install_selected_material.py, src/loop_engine/data/engine_slots.yaml, artifacts/agent-stack-landscape-2026-09-24/e01]
+    verify:
+      - "the native engine places multi-file packages through the confined writer, keeps each declared mode (0644 or 0755, taken from the package manifest) and records every file digest"
+      - "every engine behind material_install_layout, native or upstream, passes the E01 rule on the frozen four-package population: bytes, declared modes and identity metadata kept, the same normalized tree in four roots, nothing written outside the project and the step's own home folder, no network for a local package, the item listed by Codex, Claude Code, OpenCode and Pi, and the path-escape package refused"
+      - "Microsoft APM 0.31.0 runs as a pinned wrapper engine with the step's own home folder, and its lockfile is kept as evidence with the absolute source path normalized"
+      - "an in-project link between two native roots, such as the one Sentry dotagents makes, is reported as one shared root and never followed out of the project"
+    adversarial: "The Rulesync and OpenPackage SKILL.md outputs of September 25, 2026, a script placed with mode 0644, a Codex copy without the identity metadata, an engine that writes into a second home folder and a link that leaves the project must each fail a named check with its removed-guard control."
+    acceptance: "A step's working directory holds the same bytes, modes and identity in every supported harness and on every run, whichever eligible engine placed it."
+    evidence: "September 25, 2026 pilot with no model call, two packages, five engines, four roots: only the native confined writer, Microsoft APM 0.31.0 and dotagents 3.1.0 kept every byte; Rulesync 18.0.0 and OpenPackage 0.11.3 rewrote every SKILL.md and Rulesync removed the identity metadata from the Codex copy; the native writer dropped the script's executable mode; dotagents' init needed the network and wrote 284 files into the home folder; every engine gave the same tree in all four roots; Codex 0.155.1 and Claude Code 2.1.282 listed all 20 placements and neither known-wrong control; the native writer refused dotagents' linked folder. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md; evidence: artifacts/agent-stack-landscape-2026-09-24/e01."
+    next_local_work: "Extend the confined writer with declared modes and package walking, add the named checks with the pilot outputs as fixtures, wrap Microsoft APM, then run the four-package population."
+  - id: S-6.161
+    phase: 6
+    title: "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion"
+    status: proposed
+    depends_on: [S-6.160, S-6.47]
+    boundary: [case-studies/data-cleanup-with-and-without-baltor/runner, docs/research]
+    verify:
+      - "a design frozen before any counted call: the 143-row data cleanup population and its scorer, its five approved items by digest, the arms none, native skill, forced AGENTS.md inclusion and native skill with three decoy skills, Pi 0.73.1 and OpenCode 1.18.32 behind the counting proxy, three repetitions"
+      - "listed, loaded and used come from recorded request bodies and step outputs by rules fixed before the run: name and description in the first request, a pre-declared body sentinel in any request, and a pre-declared output fingerprint for each item"
+      - "useful is the scorer's primary metric under the September 22 claim rule; cost is requests, prompt, cached and output tokens and seconds per step, with unknown usage kept unknown"
+      - "glm-5.3-flash:cloud on Ollama Cloud under a ceiling of 800 physical requests, a step cap of 8, one allowance probe and an eight-step pilot; the Tactical gemma-4-coding-abliterated route only after an operability pre-check, under its own ceiling of 800"
+    adversarial: "A skill at a wrong root counted as listed, an item with a mismatched digest that reaches a step, a loaded count taken from file presence, a benefit claim without the claim rule and a run past its ceiling must each be refused."
+    acceptance: "For each harness and model, the record shows how often a served skill is listed, loaded, used and useful, and what it costs compared with forcing it into the instruction file."
+    evidence: "The September 22 data cleanup run forced items into AGENTS.md, so loading was never the model's choice: the cheap model was clearly worse with the phone item (0.842 against 0.991) and spent 45 to 446 percent more prompt tokens per step. On September 25 Codex and Claude Code listed every E01 placement and neither control. Without material the cheap model scored 0.948 to 1.000, so usefulness may not separate on this population; the record must say so if it does not. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 7.3."
+    next_local_work: "Write the sentinels and fingerprints, add the native skill arms and the OpenCode recipe to the runner, freeze the design, then run the pilot after the Ollama allowance probe."
+  - id: S-6.162
+    phase: 6
+    title: "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run"
+    status: proposed
+    depends_on: [S-6.161, S-6.54]
+    boundary: [case-studies/data-cleanup-with-and-without-baltor, examples/29_intelligence_service/starter-catalogue]
+    verify:
+      - "four code packages, one per data cleanup family, with typed command line contracts, their own tests, held-out tests written by a different model family, licence records (phonenumbers Apache-2.0, email-validator Unlicense, rapidfuzz MIT) and digests, staged as candidates for the review panel"
+      - "arms: the model writes the transformation, the skill text only, the code package placed with its skill, and a deterministic Solution run of the package with no model"
+      - "the frozen 143-row population and a held-out population from the same generator with a new seed, both frozen before any call and scored by the same scorer"
+      - "the deterministic arm runs first with no model call; each model arm runs under a ceiling of 600 physical requests per route, a step cap of 8 and a three-step pilot"
+    adversarial: "A package that reads the held-out truth, a reuse step whose package never ran counted as reuse, a claim drawn from the frozen population alone and a package approved by its own author must each be refused."
+    acceptance: "For each family the record shows whether handing over verified code beats having the model rewrite it, on accepted results, tokens, time and new code, and whether the step needs a model at all."
+    evidence: "Paying to rewrite code that already exists is one of the six customer problems in AGENTS.md. The September 22 phone item failed on trunk and exit prefixes; phonenumbers 9.0.40 (Apache-2.0) is maintained code for that parsing. Roadmap step S-6.114 applies the same protocol to the owner's 24 tools. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 7.4."
+    next_local_work: "Build the phones package, run its deterministic arm on both populations with no model call, and have another family write its held-out tests."
+  - id: S-6.163
+    phase: 6
+    title: "A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection"
+    status: proposed
+    depends_on: [S-6.22, S-6.74]
+    boundary: [tools/research_source_watch.json, tools/refresh_research_sources.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "every engine candidate named in engine_slots.yaml or in a research catalogue has a watch entry with its repository, package and homepage addresses"
+      - "a weekly read-only run writes a new dated report with the archived flag, licence, last push, latest release, redirects and notice text of each entry"
+      - "a fired signal marks the candidate held with its evidence, and engine selection refuses a held candidate until a person reviews it"
+    adversarial: "An archived repository, a licence change, a redirect to a discontinuation notice and a page announcing a new owner must each hold the candidate, and a watch report used as runtime authority must fail."
+    acceptance: "An outside project that is archived, relicensed, sold or shut down can no longer be selected silently."
+    evidence: "September 25, 2026: of the 30 priority entries, five had changed status with no watch noticing: TensorZero archived and no longer maintained, Daytona's core moved to a private codebase, Agentuity discontinued, Smithery acquired by Arcade, and mcp.run moved to Turbo MCP with a next chapter announced. The existing watch holds 17 sources. Research: docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md section 3."
+    next_local_work: "Add lifecycle fields to the watch manifest for the catalogue's engine candidates, run the watch once and compare its report with the research record."
+  - id: S-6.164
+    phase: 6
+    title: "Original harness packages from the agent stack research, through independent review"
+    status: proposed
+    depends_on: [S-6.69, S-6.63]
+    boundary: [tools/candidate_review, docs/research]
+    verify:
+      - "five candidates written from the research record's checked facts, never copied from vendor text: checking a model-merged edit before accepting it, making an interrupted step safe to retry, choosing where untrusted code runs, writing a with-and-without evaluation for one skill, and pinning and verifying an agent package install"
+      - "each carries its sources with fetch dates, its declared effects, a known-wrong case and digests, and stays a candidate until reviewers from other model families approve it"
+      - "every vendor fact in a package carries its date, and the lifecycle watch rechecks it"
+    adversarial: "A package that copies vendor documentation, a vendor fact without a date, a self-reported vendor number presented as measured and an approval by the package's own producer must each be refused."
+    acceptance: "The library serves reviewed packages that turn the record's checked facts into steps a harness can follow."
+    evidence: "docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md sections 6 to 8, the DBOS retry trial of September 23, 2026 and the E01 pilot of September 25, 2026."
+    next_local_work: "Draft the five candidates on the Tactical server and queue them for the review panel."

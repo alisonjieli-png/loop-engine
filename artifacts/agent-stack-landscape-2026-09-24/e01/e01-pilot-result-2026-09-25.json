@@ -1,0 +1,4443 @@
+{
+ "comparison": {
+  "apm/P1-single-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "apm/P2-multi-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "dotagents/P1-single-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "needed: the offline run failed or placed nothing, so both counted runs went online"
+  },
+  "dotagents/P2-multi-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "needed: the offline run failed or placed nothing, so both counted runs went online"
+  },
+  "native/P1-single-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "native/P2-multi-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "opkg/P1-single-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "opkg/P2-multi-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "rulesync/P1-single-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  },
+  "rulesync/P2-multi-file": {
+   "a_b_differences": [],
+   "a_b_identical_after_path_normalization": true,
+   "network": "not needed: both runs offline"
+  }
+ },
+ "date": "2026-09-25 04:28 EDT",
+ "packages": {
+  "P1-single-file": {
+   "files": {
+    "SKILL.md": {
+     "bytes": 3070,
+     "mode": "0o644",
+     "sha256": "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+    }
+   },
+   "name": "find-duplicate-records-with-blocking-keys"
+  },
+  "P2-multi-file": {
+   "files": {
+    "SKILL.md": {
+     "bytes": 3577,
+     "mode": "0o644",
+     "sha256": "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+    },
+    "assets/sample.csv": {
+     "bytes": 73,
+     "mode": "0o644",
+     "sha256": "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+    },
+    "assets/seed.bin": {
+     "bytes": 256,
+     "mode": "0o644",
+     "sha256": "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+    },
+    "references/formats.md": {
+     "bytes": 62,
+     "mode": "0o644",
+     "sha256": "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+    },
+    "scripts/split_address.py": {
+     "bytes": 273,
+     "mode": "0o755",
+     "sha256": "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+    }
+   },
+   "name": "split-address-lines-into-components"
+  }
+ },
+ "record_type": "e01_materialization_pilot/v1",
+ "runs": {
+  "apm/P1-single-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/apm/P1-single-file/A-off-123ddb",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "<tools>/apmvenv/bin/apm install <work>/runs/apm/P1-single-file/A-off-123ddb/src/skills/find-duplicate-records-with-blocking-keys --target claude,codex --no-policy </dev/null",
+      "rc": 0,
+      "seconds": 1.01,
+      "stderr_tail": "",
+      "stdout_tail": "\n  [+] \n<work>/runs/apm/P1-single-file/A-off-12\n3ddb/src/skills/find-duplicate-records-with-blocking-keys (local)\n  |-- Skill integrated -> .agents/skills/, .claude/skills/\n[i] Added apm_modules/ to .gitignore\n  [i] Skipped inactive experimental resolver for target 'copilot-cowork' during \nlockfile reconciliation.\n  [i] Skipped inactive experimental resolver for target 'copilot-app' during \nlockfile reconciliation.\n[*] Installed 1 APM dependency in 0.2s.\n"
+     }
+    ],
+    "extra_project_files": [
+     ".gitignore",
+     "apm.lock.yaml",
+     "apm.yml",
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys/SKILL.md"
+    ],
+    "home_new_file_count": 3,
+    "home_new_files_sample": [
+     ".apm/.apm-lifecycle.lock",
+     ".apm/config.json",
+     ".cache/apm/last_version_check"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".codex": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "17ee12b053fc529e00ae3b8f4a518177b70c974d5118eb6033eef587e531748f"
+     ],
+     "apm.lock.yaml": [
+      "file",
+      "0o600",
+      "b760f4e3c0c2f515b42bd697289487983935caf1f795f12c91b45d2ec1df4f73"
+     ],
+     "apm.yml": [
+      "file",
+      "0o664",
+      "48e96c9083c1e8eb538638c23bc292489c63638ec4f57fa996a5d09b8f66e2b2"
+     ],
+     "apm_modules": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/apm/P1-single-file/B-off-e9598e",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "<tools>/apmvenv/bin/apm install <work>/runs/apm/P1-single-file/B-off-e9598e/src/skills/find-duplicate-records-with-blocking-keys --target claude,codex --no-policy </dev/null",
+      "rc": 0,
+      "seconds": 0.83,
+      "stderr_tail": "",
+      "stdout_tail": "\n  [+] \n<work>/runs/apm/P1-single-file/B-off-e9\n598e/src/skills/find-duplicate-records-with-blocking-keys (local)\n  |-- Skill integrated -> .agents/skills/, .claude/skills/\n[i] Added apm_modules/ to .gitignore\n  [i] Skipped inactive experimental resolver for target 'copilot-cowork' during \nlockfile reconciliation.\n  [i] Skipped inactive experimental resolver for target 'copilot-app' during \nlockfile reconciliation.\n[*] Installed 1 APM dependency in 0.1s.\n"
+     }
+    ],
+    "extra_project_files": [
+     ".gitignore",
+     "apm.lock.yaml",
+     "apm.yml",
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys/SKILL.md"
+    ],
+    "home_new_file_count": 3,
+    "home_new_files_sample": [
+     ".apm/.apm-lifecycle.lock",
+     ".apm/config.json",
+     ".cache/apm/last_version_check"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".codex": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "17ee12b053fc529e00ae3b8f4a518177b70c974d5118eb6033eef587e531748f"
+     ],
+     "apm.lock.yaml": [
+      "file",
+      "0o600",
+      "b760f4e3c0c2f515b42bd697289487983935caf1f795f12c91b45d2ec1df4f73"
+     ],
+     "apm.yml": [
+      "file",
+      "0o664",
+      "48e96c9083c1e8eb538638c23bc292489c63638ec4f57fa996a5d09b8f66e2b2"
+     ],
+     "apm_modules": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   }
+  },
+  "apm/P2-multi-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/apm/P2-multi-file/A-off-cb3dcb",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "<tools>/apmvenv/bin/apm install <work>/runs/apm/P2-multi-file/A-off-cb3dcb/src/skills/split-address-lines-into-components --target claude,codex --no-policy </dev/null",
+      "rc": 0,
+      "seconds": 0.74,
+      "stderr_tail": "",
+      "stdout_tail": "t flag)\n  [+] \n<work>/runs/apm/P2-multi-file/A-off-cb3\ndcb/src/skills/split-address-lines-into-components (local)\n  |-- Skill integrated -> .agents/skills/, .claude/skills/\n[i] Added apm_modules/ to .gitignore\n  [i] Skipped inactive experimental resolver for target 'copilot-cowork' during \nlockfile reconciliation.\n  [i] Skipped inactive experimental resolver for target 'copilot-app' during \nlockfile reconciliation.\n[*] Installed 1 APM dependency in 0.1s.\n"
+     }
+    ],
+    "extra_project_files": [
+     ".gitignore",
+     "apm.lock.yaml",
+     "apm.yml",
+     "apm_modules/_local/split-address-lines-into-components/SKILL.md",
+     "apm_modules/_local/split-address-lines-into-components/assets/sample.csv",
+     "apm_modules/_local/split-address-lines-into-components/assets/seed.bin",
+     "apm_modules/_local/split-address-lines-into-components/references/formats.md",
+     "apm_modules/_local/split-address-lines-into-components/scripts/split_address.py"
+    ],
+    "home_new_file_count": 3,
+    "home_new_files_sample": [
+     ".apm/.apm-lifecycle.lock",
+     ".apm/config.json",
+     ".cache/apm/last_version_check"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".codex": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "17ee12b053fc529e00ae3b8f4a518177b70c974d5118eb6033eef587e531748f"
+     ],
+     "apm.lock.yaml": [
+      "file",
+      "0o600",
+      "69db59fec0e842397bfefa98c444602694cd3766237298dd6a6eb45de30fba6b"
+     ],
+     "apm.yml": [
+      "file",
+      "0o664",
+      "84157cb763c89bc5e2706d2290ed21be13e6edf2416ee60afb93906a40df4c3d"
+     ],
+     "apm_modules": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/apm/P2-multi-file/B-off-faafd3",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "<tools>/apmvenv/bin/apm install <work>/runs/apm/P2-multi-file/B-off-faafd3/src/skills/split-address-lines-into-components --target claude,codex --no-policy </dev/null",
+      "rc": 0,
+      "seconds": 0.83,
+      "stderr_tail": "",
+      "stdout_tail": "t flag)\n  [+] \n<work>/runs/apm/P2-multi-file/B-off-faa\nfd3/src/skills/split-address-lines-into-components (local)\n  |-- Skill integrated -> .agents/skills/, .claude/skills/\n[i] Added apm_modules/ to .gitignore\n  [i] Skipped inactive experimental resolver for target 'copilot-cowork' during \nlockfile reconciliation.\n  [i] Skipped inactive experimental resolver for target 'copilot-app' during \nlockfile reconciliation.\n[*] Installed 1 APM dependency in 0.1s.\n"
+     }
+    ],
+    "extra_project_files": [
+     ".gitignore",
+     "apm.lock.yaml",
+     "apm.yml",
+     "apm_modules/_local/split-address-lines-into-components/SKILL.md",
+     "apm_modules/_local/split-address-lines-into-components/assets/sample.csv",
+     "apm_modules/_local/split-address-lines-into-components/assets/seed.bin",
+     "apm_modules/_local/split-address-lines-into-components/references/formats.md",
+     "apm_modules/_local/split-address-lines-into-components/scripts/split_address.py"
+    ],
+    "home_new_file_count": 3,
+    "home_new_files_sample": [
+     ".apm/.apm-lifecycle.lock",
+     ".apm/config.json",
+     ".cache/apm/last_version_check"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".codex": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "17ee12b053fc529e00ae3b8f4a518177b70c974d5118eb6033eef587e531748f"
+     ],
+     "apm.lock.yaml": [
+      "file",
+      "0o600",
+      "69db59fec0e842397bfefa98c444602694cd3766237298dd6a6eb45de30fba6b"
+     ],
+     "apm.yml": [
+      "file",
+      "0o664",
+      "84157cb763c89bc5e2706d2290ed21be13e6edf2416ee60afb93906a40df4c3d"
+     ],
+     "apm_modules": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     "apm_modules/_local/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "apm_modules/_local/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   }
+  },
+  "dotagents/P1-single-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/dotagents/P1-single-file/A-on-438e16",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P1-single-file/A-on-438e16/src/skills/find-duplicate-records-with-blocking-keys vendor/find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 0,
+      "seconds": 2.53,
+      "stderr_tail": "",
+      "stdout_tail": "Created agents.toml\nCreated .agents/skills/\nCreated .agents/.gitignore\nCreated symlink: .claude/skills/ \u2192 .agents/skills/\n\nNext steps:\n  1. Add skills: npx @sentry/dotagents --project add getsentry/skills find-bugs\n  2. Install: npx @sentry/dotagents --project install\n"
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.03,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/find-duplicate-records-with-blocking-keys </dev/null",
+      "rc": 0,
+      "seconds": 0.48,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: find-duplicate-records-with-blocking-keys\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.49,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): find-duplicate-records-with-blocking-keys\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 284,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/dotagents-qa",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/SKILL.md",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/references/config-schema.md",
+     ".local/dotagents/getsentry/dotagents/.claude-plugin/marketplace.json",
+     ".local/dotagents/getsentry/dotagents/.claude/settings.json",
+     ".local/dotagents/getsentry/dotagents/.claude/skills",
+     ".local/dotagents/getsentry/dotagents/.craft.yml",
+     ".local/dotagents/getsentry/dotagents/.cursor/skills",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/ci.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/pr-risk.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/release.yml",
+     ".local/dotagents/getsentry/dotagents/.gitignore",
+     ".local/dotagents/getsentry/dotagents/.oxlintrc.json",
+     ".local/dotagents/getsentry/dotagents/AGENTS.md",
+     ".local/dotagents/getsentry/dotagents/CHANGELOG.md",
+     ".local/dotagents/getsentry/dotagents/LICENSE.md",
+     ".local/dotagents/getsentry/dotagents/README.md",
+     ".local/dotagents/getsentry/dotagents/RELEASING.md",
+     ".local/dotagents/getsentry/dotagents/agents.toml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-direct-child-process-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-lib-host-dependencies-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-library-stdio-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-process-exit-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-untyped-string-record-test.yml"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "8434d64855c6d99e5c1713bc54b2de316cb63d79b0c6f38015ecda8bf9ae0d87"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "15c86b92bee7ab43808ff532d48ec1f79555519d89ab7ad8c37fba9aa0014fd4"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "79e24699f05b2ac96500ec7541ef994d1b768c1281d5e437a030b18c96b31a90"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": false
+   },
+   "A-offline-failed": {
+    "all_commands_ok": false,
+    "base": "<work>/runs/dotagents/P1-single-file/A-off-5a1b79",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P1-single-file/A-off-5a1b79/src/skills/find-duplicate-records-with-blocking-keys vendor/find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 1,
+      "seconds": 1.12,
+      "stderr_tail": "Failed to clone https://github.com/getsentry/dotagents: Cloning into '<work>/runs/dotagents/P1-single-file/A-off-5a1b79/home/.local/dotagents/getsentry/dotagents'...\nfatal: unable to access 'https://github.com/getsentry/dotagents/': Failed to connect to github.com port 443 via 127.0.0.1 after 0 ms: Could not connect to server\n\n",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.03,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/find-duplicate-records-with-blocking-keys </dev/null",
+      "rc": 0,
+      "seconds": 0.48,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: find-duplicate-records-with-blocking-keys\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.54,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): find-duplicate-records-with-blocking-keys\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "8434d64855c6d99e5c1713bc54b2de316cb63d79b0c6f38015ecda8bf9ae0d87"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "15c86b92bee7ab43808ff532d48ec1f79555519d89ab7ad8c37fba9aa0014fd4"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "79e24699f05b2ac96500ec7541ef994d1b768c1281d5e437a030b18c96b31a90"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/dotagents/P1-single-file/B-on-3261e2",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P1-single-file/B-on-3261e2/src/skills/find-duplicate-records-with-blocking-keys vendor/find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 0,
+      "seconds": 2.17,
+      "stderr_tail": "",
+      "stdout_tail": "Created agents.toml\nCreated .agents/skills/\nCreated .agents/.gitignore\nCreated symlink: .claude/skills/ \u2192 .agents/skills/\n\nNext steps:\n  1. Add skills: npx @sentry/dotagents --project add getsentry/skills find-bugs\n  2. Install: npx @sentry/dotagents --project install\n"
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.03,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/find-duplicate-records-with-blocking-keys </dev/null",
+      "rc": 0,
+      "seconds": 0.6,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: find-duplicate-records-with-blocking-keys\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.53,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): find-duplicate-records-with-blocking-keys\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 284,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/dotagents-qa",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/SKILL.md",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/references/config-schema.md",
+     ".local/dotagents/getsentry/dotagents/.claude-plugin/marketplace.json",
+     ".local/dotagents/getsentry/dotagents/.claude/settings.json",
+     ".local/dotagents/getsentry/dotagents/.claude/skills",
+     ".local/dotagents/getsentry/dotagents/.craft.yml",
+     ".local/dotagents/getsentry/dotagents/.cursor/skills",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/ci.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/pr-risk.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/release.yml",
+     ".local/dotagents/getsentry/dotagents/.gitignore",
+     ".local/dotagents/getsentry/dotagents/.oxlintrc.json",
+     ".local/dotagents/getsentry/dotagents/AGENTS.md",
+     ".local/dotagents/getsentry/dotagents/CHANGELOG.md",
+     ".local/dotagents/getsentry/dotagents/LICENSE.md",
+     ".local/dotagents/getsentry/dotagents/README.md",
+     ".local/dotagents/getsentry/dotagents/RELEASING.md",
+     ".local/dotagents/getsentry/dotagents/agents.toml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-direct-child-process-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-lib-host-dependencies-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-library-stdio-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-process-exit-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-untyped-string-record-test.yml"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "8434d64855c6d99e5c1713bc54b2de316cb63d79b0c6f38015ecda8bf9ae0d87"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "15c86b92bee7ab43808ff532d48ec1f79555519d89ab7ad8c37fba9aa0014fd4"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "79e24699f05b2ac96500ec7541ef994d1b768c1281d5e437a030b18c96b31a90"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": false
+   }
+  },
+  "dotagents/P2-multi-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/dotagents/P2-multi-file/A-on-d539f6",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P2-multi-file/A-on-d539f6/src/skills/split-address-lines-into-components vendor/split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 0,
+      "seconds": 1.72,
+      "stderr_tail": "",
+      "stdout_tail": "Created agents.toml\nCreated .agents/skills/\nCreated .agents/.gitignore\nCreated symlink: .claude/skills/ \u2192 .agents/skills/\n\nNext steps:\n  1. Add skills: npx @sentry/dotagents --project add getsentry/skills find-bugs\n  2. Install: npx @sentry/dotagents --project install\n"
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.03,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/split-address-lines-into-components </dev/null",
+      "rc": 0,
+      "seconds": 0.55,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: split-address-lines-into-components\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.51,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): split-address-lines-into-components\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 284,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/dotagents-qa",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/SKILL.md",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/references/config-schema.md",
+     ".local/dotagents/getsentry/dotagents/.claude-plugin/marketplace.json",
+     ".local/dotagents/getsentry/dotagents/.claude/settings.json",
+     ".local/dotagents/getsentry/dotagents/.claude/skills",
+     ".local/dotagents/getsentry/dotagents/.craft.yml",
+     ".local/dotagents/getsentry/dotagents/.cursor/skills",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/ci.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/pr-risk.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/release.yml",
+     ".local/dotagents/getsentry/dotagents/.gitignore",
+     ".local/dotagents/getsentry/dotagents/.oxlintrc.json",
+     ".local/dotagents/getsentry/dotagents/AGENTS.md",
+     ".local/dotagents/getsentry/dotagents/CHANGELOG.md",
+     ".local/dotagents/getsentry/dotagents/LICENSE.md",
+     ".local/dotagents/getsentry/dotagents/README.md",
+     ".local/dotagents/getsentry/dotagents/RELEASING.md",
+     ".local/dotagents/getsentry/dotagents/agents.toml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-direct-child-process-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-lib-host-dependencies-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-library-stdio-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-process-exit-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-untyped-string-record-test.yml"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "387487ee91f112631bbc6b8f74752c50b12fdbe447f5ce9d9cfdc9bcbf63f2f2"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "7dacd2c4e38dc678458788cd39213174467a5fd6e2345ed21fd86aa7e14589bd"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "9667276403bf88cc72b278fcbdc6b0402aa9972cfdfc7a04fb18c34c8b7b7ad7"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     "vendor/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     "vendor/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     "vendor/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     "vendor/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": false
+   },
+   "A-offline-failed": {
+    "all_commands_ok": false,
+    "base": "<work>/runs/dotagents/P2-multi-file/A-off-d4e7d1",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P2-multi-file/A-off-d4e7d1/src/skills/split-address-lines-into-components vendor/split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 1,
+      "seconds": 1.07,
+      "stderr_tail": "Failed to clone https://github.com/getsentry/dotagents: Cloning into '<work>/runs/dotagents/P2-multi-file/A-off-d4e7d1/home/.local/dotagents/getsentry/dotagents'...\nfatal: unable to access 'https://github.com/getsentry/dotagents/': Failed to connect to github.com port 443 via 127.0.0.1 after 0 ms: Could not connect to server\n\n",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.02,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/split-address-lines-into-components </dev/null",
+      "rc": 0,
+      "seconds": 0.49,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: split-address-lines-into-components\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.47,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): split-address-lines-into-components\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "387487ee91f112631bbc6b8f74752c50b12fdbe447f5ce9d9cfdc9bcbf63f2f2"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "7dacd2c4e38dc678458788cd39213174467a5fd6e2345ed21fd86aa7e14589bd"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "9667276403bf88cc72b278fcbdc6b0402aa9972cfdfc7a04fb18c34c8b7b7ad7"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     "vendor/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     "vendor/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     "vendor/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     "vendor/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/dotagents/P2-multi-file/B-on-803ed4",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": true
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p vendor && cp -rp <work>/runs/dotagents/P2-multi-file/B-on-803ed4/src/skills/split-address-lines-into-components vendor/split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project init --agents claude,codex </dev/null",
+      "rc": 0,
+      "seconds": 1.67,
+      "stderr_tail": "",
+      "stdout_tail": "Created agents.toml\nCreated .agents/skills/\nCreated .agents/.gitignore\nCreated symlink: .claude/skills/ \u2192 .agents/skills/\n\nNext steps:\n  1. Add skills: npx @sentry/dotagents --project add getsentry/skills find-bugs\n  2. Install: npx @sentry/dotagents --project install\n"
+     },
+     {
+      "cmd": "python3 -c \"import re;p='agents.toml';t=open(p).read();t=re.sub(r'\\n\\[\\[skills\\]\\]\\nname = \\\"dotagents\\\"\\nsource = \\\"getsentry/dotagents\\\"\\n','\\n',t);open(p,'w').write(t)\"",
+      "rc": 0,
+      "seconds": 0.02,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rm -rf .agents/skills/dotagents",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "dotagents --project add path:vendor/split-address-lines-into-components </dev/null",
+      "rc": 0,
+      "seconds": 0.51,
+      "stderr_tail": "",
+      "stdout_tail": "Added skill: split-address-lines-into-components\n"
+     },
+     {
+      "cmd": "dotagents --project install </dev/null",
+      "rc": 0,
+      "seconds": 0.5,
+      "stderr_tail": "",
+      "stdout_tail": "Installed 1 skill(s): split-address-lines-into-components\n"
+     }
+    ],
+    "extra_project_files": [
+     ".agents/.gitignore",
+     ".claude/skills",
+     ".gitignore",
+     "agents.lock",
+     "agents.toml"
+    ],
+    "home_new_file_count": 284,
+    "home_new_files_sample": [
+     ".dotagents/update-check.json",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/dotagents-qa",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/SKILL.md",
+     ".local/dotagents/getsentry/dotagents/.agents/skills/warden-skill/references/config-schema.md",
+     ".local/dotagents/getsentry/dotagents/.claude-plugin/marketplace.json",
+     ".local/dotagents/getsentry/dotagents/.claude/settings.json",
+     ".local/dotagents/getsentry/dotagents/.claude/skills",
+     ".local/dotagents/getsentry/dotagents/.craft.yml",
+     ".local/dotagents/getsentry/dotagents/.cursor/skills",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/ci.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/pr-risk.yml",
+     ".local/dotagents/getsentry/dotagents/.github/workflows/release.yml",
+     ".local/dotagents/getsentry/dotagents/.gitignore",
+     ".local/dotagents/getsentry/dotagents/.oxlintrc.json",
+     ".local/dotagents/getsentry/dotagents/AGENTS.md",
+     ".local/dotagents/getsentry/dotagents/CHANGELOG.md",
+     ".local/dotagents/getsentry/dotagents/LICENSE.md",
+     ".local/dotagents/getsentry/dotagents/README.md",
+     ".local/dotagents/getsentry/dotagents/RELEASING.md",
+     ".local/dotagents/getsentry/dotagents/agents.toml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-direct-child-process-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-lib-host-dependencies-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-library-stdio-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-process-exit-test.yml",
+     ".local/dotagents/getsentry/dotagents/ast-grep/rule-tests/no-untyped-string-record-test.yml"
+    ],
+    "links": {
+     ".claude/skills": "../.agents/skills"
+    },
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/.gitignore": [
+      "file",
+      "0o664",
+      "387487ee91f112631bbc6b8f74752c50b12fdbe447f5ce9d9cfdc9bcbf63f2f2"
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "link",
+      null,
+      "../.agents/skills"
+     ],
+     ".gitignore": [
+      "file",
+      "0o664",
+      "f88a1a7f555d0f8fb0dbf1538eea9862165643b6f42192866cf9234678a3e6d3"
+     ],
+     "agents.lock": [
+      "file",
+      "0o664",
+      "7dacd2c4e38dc678458788cd39213174467a5fd6e2345ed21fd86aa7e14589bd"
+     ],
+     "agents.toml": [
+      "file",
+      "0o664",
+      "9667276403bf88cc72b278fcbdc6b0402aa9972cfdfc7a04fb18c34c8b7b7ad7"
+     ],
+     "vendor": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     "vendor/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     "vendor/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     "vendor/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     "vendor/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     "vendor/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": false
+   }
+  },
+  "native/P1-single-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/native/P1-single-file/A-off-7ce2a1",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "python3 <repo>/artifacts/agent-stack-landscape-2026-09-24/e01/native_place.py <work>/runs/native/P1-single-file/A-off-7ce2a1/src/skills/find-duplicate-records-with-blocking-keys <work>/runs/native/P1-single-file/A-off-7ce2a1/project find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.33,
+      "stderr_tail": "",
+      "stdout_tail": "placed 2 files for 2 clients\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/native/P1-single-file/B-off-09a3a5",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "python3 <repo>/artifacts/agent-stack-landscape-2026-09-24/e01/native_place.py <work>/runs/native/P1-single-file/B-off-09a3a5/src/skills/find-duplicate-records-with-blocking-keys <work>/runs/native/P1-single-file/B-off-09a3a5/project find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.26,
+      "stderr_tail": "",
+      "stdout_tail": "placed 2 files for 2 clients\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ],
+     ".claude": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   }
+  },
+  "native/P2-multi-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/native/P2-multi-file/A-off-a1ac13",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "python3 <repo>/artifacts/agent-stack-landscape-2026-09-24/e01/native_place.py <work>/runs/native/P2-multi-file/A-off-a1ac13/src/skills/split-address-lines-into-components <work>/runs/native/P2-multi-file/A-off-a1ac13/project split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.22,
+      "stderr_tail": "",
+      "stdout_tail": "placed 10 files for 2 clients\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o644",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o644",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/native/P2-multi-file/B-off-0b5a21",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": true,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o644",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "python3 <repo>/artifacts/agent-stack-landscape-2026-09-24/e01/native_place.py <work>/runs/native/P2-multi-file/B-off-0b5a21/src/skills/split-address-lines-into-components <work>/runs/native/P2-multi-file/B-off-0b5a21/project split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.22,
+      "stderr_tail": "",
+      "stdout_tail": "placed 10 files for 2 clients\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o644",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o755",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o644",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   }
+  },
+  "opkg/P1-single-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/opkg/P1-single-file/A-off-91ce27",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "opkg install <work>/runs/opkg/P1-single-file/A-off-91ce27/src --skills find-duplicate-records-with-blocking-keys --platforms claude codex </dev/null",
+      "rc": 0,
+      "seconds": 0.81,
+      "stderr_tail": "- Loading <work>/runs/opkg/P1-single-file/A-off-91ce27/src\n\u2714 Loaded <work>/runs/opkg/P1-single-file/A-off-91ce27/src\n- Installing src\n- Preparing src\n\u2714 Prepared src\n- Installing src\n\u2714 Installed src\n",
+      "stdout_tail": "\u2713 Installing 1 package from openpackage.yml\n\u2713 Initialized workspace openpackage.yml in .openpackage/\n\u2713 Installed files: 2\n  \u251c\u2500\u2500 .agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n  \u2514\u2500\u2500 .claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n\u2713 Installation complete: 2 installed\n"
+     }
+    ],
+    "extra_project_files": [
+     ".openpackage/openpackage.index.yml",
+     ".openpackage/openpackage.lock",
+     ".openpackage/openpackage.yml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".openpackage/config.jsonc"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "097bc494c3b91d6ffd86780c9706f2e124e587c5e44953c117ce4f5f02ae1f87"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "097bc494c3b91d6ffd86780c9706f2e124e587c5e44953c117ce4f5f02ae1f87"
+     ],
+     ".openpackage": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".openpackage/openpackage.index.yml": [
+      "file",
+      "0o664",
+      "515e454fdc5fd3f83add9e662dcebc510d064a9796dae90625dca0a7b5870556"
+     ],
+     ".openpackage/openpackage.lock": [
+      "file",
+      "0o664",
+      "b7925f8d713fad67b81c319a06378b0d6ead39de6ff90cc2e5280a26e0a38fd3"
+     ],
+     ".openpackage/openpackage.yml": [
+      "file",
+      "0o664",
+      "dc5dc71583d89b526266f09f94249ff34fd5be32718b83afb4871ae92de68d5d"
+     ],
+     ".openpackage/packages": [
+      "dir",
+      "0o775",
+      ""
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/opkg/P1-single-file/B-off-05e961",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "opkg install <work>/runs/opkg/P1-single-file/B-off-05e961/src --skills find-duplicate-records-with-blocking-keys --platforms claude codex </dev/null",
+      "rc": 0,
+      "seconds": 0.8,
+      "stderr_tail": "- Loading <work>/runs/opkg/P1-single-file/B-off-05e961/src\n\u2714 Loaded <work>/runs/opkg/P1-single-file/B-off-05e961/src\n- Installing src\n- Preparing src\n\u2714 Prepared src\n- Installing src\n\u2714 Installed src\n",
+      "stdout_tail": "\u2713 Installing 1 package from openpackage.yml\n\u2713 Initialized workspace openpackage.yml in .openpackage/\n\u2713 Installed files: 2\n  \u251c\u2500\u2500 .agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n  \u2514\u2500\u2500 .claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n\u2713 Installation complete: 2 installed\n"
+     }
+    ],
+    "extra_project_files": [
+     ".openpackage/openpackage.index.yml",
+     ".openpackage/openpackage.lock",
+     ".openpackage/openpackage.yml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".openpackage/config.jsonc"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "097bc494c3b91d6ffd86780c9706f2e124e587c5e44953c117ce4f5f02ae1f87"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "097bc494c3b91d6ffd86780c9706f2e124e587c5e44953c117ce4f5f02ae1f87"
+     ],
+     ".openpackage": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".openpackage/openpackage.index.yml": [
+      "file",
+      "0o664",
+      "515e454fdc5fd3f83add9e662dcebc510d064a9796dae90625dca0a7b5870556"
+     ],
+     ".openpackage/openpackage.lock": [
+      "file",
+      "0o664",
+      "b7925f8d713fad67b81c319a06378b0d6ead39de6ff90cc2e5280a26e0a38fd3"
+     ],
+     ".openpackage/openpackage.yml": [
+      "file",
+      "0o664",
+      "dc5dc71583d89b526266f09f94249ff34fd5be32718b83afb4871ae92de68d5d"
+     ],
+     ".openpackage/packages": [
+      "dir",
+      "0o775",
+      ""
+     ]
+    },
+    "offline": true
+   }
+  },
+  "opkg/P2-multi-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/opkg/P2-multi-file/A-off-6a5edd",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "opkg install <work>/runs/opkg/P2-multi-file/A-off-6a5edd/src --skills split-address-lines-into-components --platforms claude codex </dev/null",
+      "rc": 0,
+      "seconds": 0.76,
+      "stderr_tail": "- Loading <work>/runs/opkg/P2-multi-file/A-off-6a5edd/src\n\u2714 Loaded <work>/runs/opkg/P2-multi-file/A-off-6a5edd/src\n- Installing src\n- Preparing src\n\u2714 Prepared src\n- Installing src\n\u2714 Installed src\n",
+      "stdout_tail": "pts/split_address.py\n  \u251c\u2500\u2500 .agents/skills/split-address-lines-into-components/SKILL.md\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/assets/sample.csv\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/assets/seed.bin\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/references/formats.md\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/scripts/split_address.py\n  \u2514\u2500\u2500 .claude/skills/split-address-lines-into-components/SKILL.md\n\u2713 Installation complete: 10 installed\n"
+     }
+    ],
+    "extra_project_files": [
+     ".openpackage/openpackage.index.yml",
+     ".openpackage/openpackage.lock",
+     ".openpackage/openpackage.yml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".openpackage/config.jsonc"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "d2e4dede6ebafb9b31bcdc6cc582f5b56df4d8a6d694a00be7459e9e3b42e2d5"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "d2e4dede6ebafb9b31bcdc6cc582f5b56df4d8a6d694a00be7459e9e3b42e2d5"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".openpackage": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".openpackage/openpackage.index.yml": [
+      "file",
+      "0o664",
+      "bb4dab85f757148512a5b5cccedba63d96423db686f0c5a5b9e54ec2fb948a83"
+     ],
+     ".openpackage/openpackage.lock": [
+      "file",
+      "0o664",
+      "18df396817d58981d0c1926b413c51777504424f75bb70cfb458b7f38086b0bb"
+     ],
+     ".openpackage/openpackage.yml": [
+      "file",
+      "0o664",
+      "dc5dc71583d89b526266f09f94249ff34fd5be32718b83afb4871ae92de68d5d"
+     ],
+     ".openpackage/packages": [
+      "dir",
+      "0o775",
+      ""
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/opkg/P2-multi-file/B-off-fb19e7",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "opkg install <work>/runs/opkg/P2-multi-file/B-off-fb19e7/src --skills split-address-lines-into-components --platforms claude codex </dev/null",
+      "rc": 0,
+      "seconds": 0.86,
+      "stderr_tail": "- Loading <work>/runs/opkg/P2-multi-file/B-off-fb19e7/src\n\u2714 Loaded <work>/runs/opkg/P2-multi-file/B-off-fb19e7/src\n- Installing src\n- Preparing src\n\u2714 Prepared src\n- Installing src\n\u2714 Installed src\n",
+      "stdout_tail": "pts/split_address.py\n  \u251c\u2500\u2500 .agents/skills/split-address-lines-into-components/SKILL.md\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/assets/sample.csv\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/assets/seed.bin\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/references/formats.md\n  \u251c\u2500\u2500 .claude/skills/split-address-lines-into-components/scripts/split_address.py\n  \u2514\u2500\u2500 .claude/skills/split-address-lines-into-components/SKILL.md\n\u2713 Installation complete: 10 installed\n"
+     }
+    ],
+    "extra_project_files": [
+     ".openpackage/openpackage.index.yml",
+     ".openpackage/openpackage.lock",
+     ".openpackage/openpackage.yml"
+    ],
+    "home_new_file_count": 1,
+    "home_new_files_sample": [
+     ".openpackage/config.jsonc"
+    ],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "d2e4dede6ebafb9b31bcdc6cc582f5b56df4d8a6d694a00be7459e9e3b42e2d5"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "d2e4dede6ebafb9b31bcdc6cc582f5b56df4d8a6d694a00be7459e9e3b42e2d5"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".openpackage": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".openpackage/openpackage.index.yml": [
+      "file",
+      "0o664",
+      "bb4dab85f757148512a5b5cccedba63d96423db686f0c5a5b9e54ec2fb948a83"
+     ],
+     ".openpackage/openpackage.lock": [
+      "file",
+      "0o664",
+      "18df396817d58981d0c1926b413c51777504424f75bb70cfb458b7f38086b0bb"
+     ],
+     ".openpackage/openpackage.yml": [
+      "file",
+      "0o664",
+      "dc5dc71583d89b526266f09f94249ff34fd5be32718b83afb4871ae92de68d5d"
+     ],
+     ".openpackage/packages": [
+      "dir",
+      "0o775",
+      ""
+     ]
+    },
+    "offline": true
+   }
+  },
+  "rulesync/P1-single-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/rulesync/P1-single-file/A-off-71d234",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p .rulesync/skills && cp -rp <work>/runs/rulesync/P1-single-file/A-off-71d234/src/skills/find-duplicate-records-with-blocking-keys .rulesync/skills/find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rulesync generate --targets claudecode,codexcli --features skills </dev/null",
+      "rc": 0,
+      "seconds": 1.03,
+      "stderr_tail": "",
+      "stdout_tail": "Written 2 skills\n    .claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n    .agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n\ud83c\udf89 All done! Written 2 file(s) total (2 skills)\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "e5dd80c5105a002794d19ce68686958a7c25e11124bfebaa76881ad3d282c2aa"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "3c2deefed25694cc0f0842bd8a97a160af36eae8f3535786a9b2298fecf7a3b7"
+     ],
+     ".rulesync": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/rulesync/P1-single-file/B-off-46b01b",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p .rulesync/skills && cp -rp <work>/runs/rulesync/P1-single-file/B-off-46b01b/src/skills/find-duplicate-records-with-blocking-keys .rulesync/skills/find-duplicate-records-with-blocking-keys",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rulesync generate --targets claudecode,codexcli --features skills </dev/null",
+      "rc": 0,
+      "seconds": 1.0,
+      "stderr_tail": "",
+      "stdout_tail": "Written 2 skills\n    .claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n    .agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md\n\ud83c\udf89 All done! Written 2 file(s) total (2 skills)\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "e5dd80c5105a002794d19ce68686958a7c25e11124bfebaa76881ad3d282c2aa"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o664",
+      "3c2deefed25694cc0f0842bd8a97a160af36eae8f3535786a9b2298fecf7a3b7"
+     ],
+     ".rulesync": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/find-duplicate-records-with-blocking-keys": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/find-duplicate-records-with-blocking-keys/SKILL.md": [
+      "file",
+      "0o644",
+      "e590219c0d41f29b406e9d4299a701134d0810f0435229d15c33eae426ae9aea"
+     ]
+    },
+    "offline": true
+   }
+  },
+  "rulesync/P2-multi-file": {
+   "A": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/rulesync/P2-multi-file/A-off-1e5396",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p .rulesync/skills && cp -rp <work>/runs/rulesync/P2-multi-file/A-off-1e5396/src/skills/split-address-lines-into-components .rulesync/skills/split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.01,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rulesync generate --targets claudecode,codexcli --features skills </dev/null",
+      "rc": 0,
+      "seconds": 1.08,
+      "stderr_tail": "",
+      "stdout_tail": "mats.md\n    .claude/skills/split-address-lines-into-components/scripts/split_address.py\n    .agents/skills/split-address-lines-into-components/SKILL.md\n    .agents/skills/split-address-lines-into-components/assets/sample.csv\n    .agents/skills/split-address-lines-into-components/assets/seed.bin\n    .agents/skills/split-address-lines-into-components/references/formats.md\n    .agents/skills/split-address-lines-into-components/scripts/split_address.py\n\ud83c\udf89 All done! Written 2 file(s) total (2 skills)\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "90b7d1de1e549acd9c962a857d0181725fee91d1a4b595e05ca83211f93b23cf"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "c60653f2e09d275752fe6835820a3a67c4fbcaca534f7463bf5ca1df73007732"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".rulesync": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   },
+   "B": {
+    "all_commands_ok": true,
+    "base": "<work>/runs/rulesync/P2-multi-file/B-off-e221b7",
+    "checks": {
+     "claude-code:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [
+       "baltor-identity",
+       "baltor-body-sha256"
+      ],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "claude-code:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     },
+     "codex:SKILL.md": {
+      "byte_identical": false,
+      "exists": true,
+      "metadata_keys_kept": [],
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/sample.csv": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:assets/seed.bin": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:references/formats.md": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o664",
+      "mode_preserved": false,
+      "reached_via_link": false
+     },
+     "codex:scripts/split_address.py": {
+      "byte_identical": true,
+      "exists": true,
+      "mode": "0o755",
+      "mode_preserved": true,
+      "reached_via_link": false
+     }
+    },
+    "commands": [
+     {
+      "cmd": "mkdir -p .rulesync/skills && cp -rp <work>/runs/rulesync/P2-multi-file/B-off-e221b7/src/skills/split-address-lines-into-components .rulesync/skills/split-address-lines-into-components",
+      "rc": 0,
+      "seconds": 0.0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+     },
+     {
+      "cmd": "rulesync generate --targets claudecode,codexcli --features skills </dev/null",
+      "rc": 0,
+      "seconds": 1.08,
+      "stderr_tail": "",
+      "stdout_tail": "mats.md\n    .claude/skills/split-address-lines-into-components/scripts/split_address.py\n    .agents/skills/split-address-lines-into-components/SKILL.md\n    .agents/skills/split-address-lines-into-components/assets/sample.csv\n    .agents/skills/split-address-lines-into-components/assets/seed.bin\n    .agents/skills/split-address-lines-into-components/references/formats.md\n    .agents/skills/split-address-lines-into-components/scripts/split_address.py\n\ud83c\udf89 All done! Written 2 file(s) total (2 skills)\n"
+     }
+    ],
+    "extra_project_files": [],
+    "home_new_file_count": 0,
+    "home_new_files_sample": [],
+    "links": {},
+    "normalized_tree": {
+     ".agents": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "90b7d1de1e549acd9c962a857d0181725fee91d1a4b595e05ca83211f93b23cf"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".agents/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".agents/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".agents/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".claude": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o664",
+      "c60653f2e09d275752fe6835820a3a67c4fbcaca534f7463bf5ca1df73007732"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o664",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".claude/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o664",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".claude/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o664",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".claude/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ],
+     ".rulesync": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/SKILL.md": [
+      "file",
+      "0o644",
+      "4c0bc04247c001d3dad2c91108077f99922a23a7168d7465ef32c9196b8b1ba4"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets/sample.csv": [
+      "file",
+      "0o644",
+      "79a4605a307d634f7290ab2cdc86b74beed248fb2b63b02c624d7efa9e26df10"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/assets/seed.bin": [
+      "file",
+      "0o644",
+      "7bf2eb14a3f08937d6d6867682cbfc44d64a5de1698c46665b971474662b3fd2"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/references": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/references/formats.md": [
+      "file",
+      "0o644",
+      "11553dddb18bcadaeb26af7c27b122457b5f0d2f30771c453d88d1230baff98b"
+     ],
+     ".rulesync/skills/split-address-lines-into-components/scripts": [
+      "dir",
+      "0o775",
+      ""
+     ],
+     ".rulesync/skills/split-address-lines-into-components/scripts/split_address.py": [
+      "file",
+      "0o755",
+      "c93e5586853d90a0cb71e1aeec7df235aa23dfe440afb364159ccbc8224a61f9"
+     ]
+    },
+    "offline": true
+   }
+  }
+ },
+ "tool_versions": {
+  "apm": "Agent Package Manager (APM) CLI version 0.31.0",
+  "dotagents": "3.1.0",
+  "git": "git version 2.53.0",
+  "node": "v22.22.1",
+  "opkg": "0.11.3",
+  "python": "Python 3.14.4",
+  "rulesync": "18.0.0"
+ }
+}

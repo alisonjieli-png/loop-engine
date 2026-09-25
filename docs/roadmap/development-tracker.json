@@ -4,7 +4,7 @@
   "done": 44,
   "next": 15,
   "now": 42,
-  "waiting": 103
+  "waiting": 108
  },
  "lanes": {
   "blocked": [
@@ -2881,6 +2881,91 @@
     ]
    },
    {
+    "acceptance": "A step's working directory holds the same bytes, modes and identity in every supported harness and on every run, whichever eligible engine placed it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.75"
+    ],
+    "id": "S-6.160",
+    "next_local_work": "Extend the confined writer with declared modes and package walking, add the named checks with the pilot outputs as fixtures, wrap Microsoft APM, then run the four-package population.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.75"
+    ]
+   },
+   {
+    "acceptance": "For each harness and model, the record shows how often a served skill is listed, loaded, used and useful, and what it costs compared with forcing it into the instruction file.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.160",
+     "S-6.47"
+    ],
+    "id": "S-6.161",
+    "next_local_work": "Write the sentinels and fingerprints, add the native skill arms and the OpenCode recipe to the runner, freeze the design, then run the pilot after the Ollama allowance probe.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion",
+    "waiting_on": [
+     "S-6.160",
+     "S-6.47"
+    ]
+   },
+   {
+    "acceptance": "For each family the record shows whether handing over verified code beats having the model rewrite it, on accepted results, tokens, time and new code, and whether the step needs a model at all.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.161",
+     "S-6.54"
+    ],
+    "id": "S-6.162",
+    "next_local_work": "Build the phones package, run its deterministic arm on both populations with no model call, and have another family write its held-out tests.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run",
+    "waiting_on": [
+     "S-6.161",
+     "S-6.54"
+    ]
+   },
+   {
+    "acceptance": "An outside project that is archived, relicensed, sold or shut down can no longer be selected silently.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.22",
+     "S-6.74"
+    ],
+    "id": "S-6.163",
+    "next_local_work": "Add lifecycle fields to the watch manifest for the catalogue's engine candidates, run the watch once and compare its report with the research record.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection",
+    "waiting_on": [
+     "S-6.22",
+     "S-6.74"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed packages that turn the record's checked facts into steps a harness can follow.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.69",
+     "S-6.63"
+    ],
+    "id": "S-6.164",
+    "next_local_work": "Draft the five candidates on the Tactical server and queue them for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Original harness packages from the agent stack research, through independent review",
+    "waiting_on": [
+     "S-6.69",
+     "S-6.63"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4365,5 +4450,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc756ad3db93a50"
+ "source_fingerprint": "sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d31d246bd2b21"
 }

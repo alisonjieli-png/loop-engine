@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc756ad3db93a50`.
+Source fingerprint: `sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d31d246bd2b21`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc7
 |---|---:|
 | Being built now | 42 |
 | Can start next | 15 |
-| Waiting on earlier work | 103 |
+| Waiting on earlier work | 108 |
 | Blocked | 2 |
 | Done | 44 |
 
@@ -173,6 +173,11 @@ Source fingerprint: `sha256:b0c0c808e0df78cbe42d7771532b80b5edb0ce9b8dfec585bfc7
 | S-6.154 | Solution cards: consented write-ups of solved community threads on Baltor's own pages | proposed | S-6.153 |
 | S-6.155 | Unmet recipe requests become consented demand records that feed the package factory | proposed | S-6.150, S-6.40 |
 | S-6.156 | Nothing is sold inside chat apps until the Telegram Stars and Discord Premium Apps flows are qualified | proposed | S-6.151, S-6.152 |
+| S-6.160 | Reproducible step materialization (experiment E01): every placement engine proves byte, mode, identity, home-folder and repeatability fidelity, with Microsoft APM as the first upstream engine | proposed | S-6.44, S-6.75 |
+| S-6.161 | Installed, listed, loaded, used and useful (experiment E02): native skill placement measured against no material and forced inclusion | proposed | S-6.160, S-6.47 |
+| S-6.162 | Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run | proposed | S-6.161, S-6.54 |
+| S-6.163 | A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection | proposed | S-6.22, S-6.74 |
+| S-6.164 | Original harness packages from the agent stack research, through independent review | proposed | S-6.69, S-6.63 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

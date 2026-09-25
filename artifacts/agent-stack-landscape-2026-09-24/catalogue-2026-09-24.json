@@ -1,0 +1,964 @@
+{
+ "record_type": "agent_stack_catalogue/v1",
+ "prepared": "2026-09-25",
+ "input": "Owner-pasted research input of September 24, 2026 (57 entries, 11 layers)",
+ "check_states": {
+  "primary": "Primary pages",
+  "primary_and_ran": "Primary pages and pilot run",
+  "metadata": "Metadata only",
+  "not_rechecked": "Not rechecked"
+ },
+ "decisions": {
+  "reference": "Reference only",
+  "competitive_benchmark": "Competitive benchmark",
+  "engine_candidate_later": "Engine candidate, later",
+  "hold": "Hold",
+  "exclude": "Exclude",
+  "customer_side_later": "Customer-side connection, later",
+  "benchmark_in_E04": "Benchmark in E04",
+  "watch": "Watch",
+  "in_use": "In use",
+  "trial_next": "Trial next (E01)",
+  "candidate_with_conditions": "Candidate with conditions",
+  "reject_for_served_bytes": "Not for served bytes",
+  "first_candidate": "First candidate",
+  "customer_side_tool": "Customer-side tool",
+  "method_for_E09": "Method for E09",
+  "measurement_backend": "Measurement backend",
+  "compatibility_contract_in_use": "Compatibility contract, in use",
+  "compatibility_contract": "Compatibility contract"
+ },
+ "entries": [
+  {
+   "id": "L01",
+   "name": "MuleSoft Agent Fabric",
+   "layer": "Governance and fabrics",
+   "owner_input_action": "Architecture reference",
+   "check_state": "not_rechecked",
+   "slots": [],
+   "decision": "reference",
+   "observed": "Not rechecked. The owner's input describes a registry, discovery, brokers, gateways and governance across agents, models, application interfaces and protocol servers.",
+   "question_before_adoption": "Which identities and policy decisions are enforced at each remote boundary?",
+   "sources": []
+  },
+  {
+   "id": "L02",
+   "name": "Amazon Bedrock AgentCore",
+   "layer": "Governance and fabrics",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "not_rechecked",
+   "slots": [],
+   "decision": "competitive_benchmark",
+   "observed": "Not rechecked. The owner's input lists a managed runtime, identity, gateway, memory, evaluation, optimization, policy and a resource registry.",
+   "question_before_adoption": "Which services are needed, what data persists, and who owns task acceptance?",
+   "sources": []
+  },
+  {
+   "id": "L03",
+   "name": "agentgateway",
+   "layer": "Governance and fabrics",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "tool_protocol_gateway"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository agentgateway/agentgateway: Apache-2.0, pushed September 25, 2026.",
+   "question_before_adoption": "Does an allowed request remain scoped to the exact customer, tool and effect?",
+   "sources": [
+    "https://github.com/agentgateway/agentgateway"
+   ]
+  },
+  {
+   "id": "L04",
+   "name": "Turbo MCP (mcp.run)",
+   "layer": "Governance and fabrics",
+   "owner_input_action": "Hold / reverify",
+   "check_state": "primary",
+   "slots": [
+    "tool_protocol_gateway"
+   ],
+   "decision": "hold",
+   "observed": "mcp.run redirects to turbomcp.ai. The page markets a self-hosted gateway and management platform for the Model Context Protocol and says: \"Stay tuned for Turbo MCP's next chapter\".",
+   "question_before_adoption": "What remains available during the announced next chapter, and under which terms?",
+   "sources": [
+    "https://mcp.run/",
+    "https://turbomcp.ai/"
+   ]
+  },
+  {
+   "id": "L05",
+   "name": "Agentuity",
+   "layer": "Governance and fabrics",
+   "owner_input_action": "Hold / reverify",
+   "check_state": "primary",
+   "slots": [],
+   "decision": "exclude",
+   "observed": "agentuity.com still markets a full-stack agent platform, agentuity.com/docs answers \"Page not found\", and agentuity.dev redirects to agentcompany.com/agentuity, which says: \"Agentuity has been discontinued. Agentuity and its services are no longer available.\"",
+   "question_before_adoption": "None until a service is offered again under stated terms.",
+   "sources": [
+    "https://agentuity.com/",
+    "https://agentuity.com/docs",
+    "https://agentuity.dev/"
+   ]
+  },
+  {
+   "id": "L06",
+   "name": "Composio",
+   "layer": "Tools and authorization",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "primary",
+   "slots": [
+    "tool_protocol_gateway",
+    "catalogue_search_policy"
+   ],
+   "decision": "competitive_benchmark",
+   "observed": "A session scopes the user, tool access (all toolkits by default), authentication and execution state, and by default includes a remote sandbox that is \"not billed today\". Skills derived from platform usage arrive inside tool search results with plan steps and pitfalls; there is \"no opt-out today\" and \"no API for listing or reading skills\". \"Sessions read the latest published version of each tool.\" Tools carry read-only, create, update and destructive tags. Python SDK 0.24.0; repository MIT.",
+   "question_before_adoption": "Can the exact guidance, connection, tool version and effects of one call be captured for a repeatable evaluation? Only by saving the full search response in Run History, because sessions read the latest tool version and skills cannot be listed.",
+   "sources": [
+    "https://docs.composio.dev/docs/how-composio-works.md",
+    "https://docs.composio.dev/docs/skills.md",
+    "https://docs.composio.dev/docs/configuring-sessions.md"
+   ]
+  },
+  {
+   "id": "L07",
+   "name": "Nango",
+   "layer": "Tools and authorization",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "local_credential_source",
+    "tool_protocol_gateway"
+   ],
+   "decision": "customer_side_later",
+   "observed": "Repository NangoHQ/nango: licence not asserted by GitHub, pushed September 25, 2026.",
+   "question_before_adoption": "Can one function be tested, versioned and bound to the correct customer connection without hidden retries?",
+   "sources": [
+    "https://github.com/NangoHQ/nango"
+   ]
+  },
+  {
+   "id": "L08",
+   "name": "Pipedream Connect",
+   "layer": "Tools and authorization",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "local_credential_source",
+    "tool_protocol_gateway"
+   ],
+   "decision": "customer_side_later",
+   "observed": "Repository PipedreamHQ/pipedream: licence not asserted by GitHub, pushed September 25, 2026.",
+   "question_before_adoption": "What are the exact operation, connection selection rule, billing unit and retry behavior?",
+   "sources": [
+    "https://github.com/PipedreamHQ/pipedream"
+   ]
+  },
+  {
+   "id": "L09",
+   "name": "Arcade",
+   "layer": "Tools and authorization",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "tool_protocol_gateway"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository ArcadeAI/arcade-mcp: MIT, pushed September 25, 2026. Arcade announced on August 5, 2026 that it acquired Smithery.",
+   "question_before_adoption": "Can two users, several provider accounts, approvals and ambiguous effects stay separated?",
+   "sources": [
+    "https://github.com/ArcadeAI/arcade-mcp",
+    "https://www.arcade.dev/blog/smithery-joins-arcade"
+   ]
+  },
+  {
+   "id": "L10",
+   "name": "Relace",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "model_access"
+   ],
+   "decision": "benchmark_in_E04",
+   "observed": "The documentation index lists trace compaction (\">50k tok/s\", self-reported), instant apply (\">10k tok/s\", self-reported), a code reranker, fast agentic search run one turn at a time through a chat completions request with the caller supplying the harness (also installable as a protocol server), hosted open-weight models, repositories with scoped repository tokens, and sandboxes.",
+   "question_before_adoption": "Does an applied edit keep unrelated code and pass independent tests on held-out repositories?",
+   "sources": [
+    "https://docs.relace.ai/llms.txt",
+    "https://www.relace.ai/"
+   ]
+  },
+  {
+   "id": "L11",
+   "name": "Morph",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "typed_decision",
+    "model_call_strategy",
+    "model_access"
+   ],
+   "decision": "benchmark_in_E04",
+   "observed": "Fast Apply (\"10,500 tok/s, 98% accuracy\", self-reported); Compact, where \"every surviving line is byte-for-byte identical to the original\" and the response lists the removed line ranges; WarpGrep code search (about 6 seconds per query, self-reported); Reflexes classifiers; a model router that classifies difficulty, ambiguity and domain (0.005 dollars per request); hosted open-weight models; a protocol server.",
+   "question_before_adoption": "Are omitted sections, missing search dependencies and discarded context detected before acceptance?",
+   "sources": [
+    "https://docs.morphllm.com/llms.txt",
+    "https://www.morphllm.com/"
+   ]
+  },
+  {
+   "id": "L12",
+   "name": "Cloudflare Code Mode",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "tool_protocol_gateway"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Package @cloudflare/codemode 0.5.2 (MIT, in cloudflare/agents). The reference, updated July 22, 2026, carries no experimental label. A runtime can execute, search, describe, approve, reject and roll back. Execution records have the states running, paused, completed, error, rejected and rolled_back. A connector method can require approval: the run pauses and resumes by replay; a rejection does not roll back earlier actions; rollback calls revert functions in reverse order. globalOutbound null blocks outbound network; the default timeout is 60,000 milliseconds.",
+   "question_before_adoption": "Can each nested external effect be authorized and accounted for, rather than approving a whole program? Partly: approval is per connector method, but a rejection leaves earlier actions in place.",
+   "sources": [
+    "https://developers.cloudflare.com/agents/tools/codemode/api-reference/",
+    "https://blog.cloudflare.com/code-mode/"
+   ]
+  },
+  {
+   "id": "L13",
+   "name": "Riza",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "not_rechecked",
+   "slots": [
+    "workspace_backend",
+    "process_confinement"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Not rechecked. The owner's input describes a service for untrusted Python, JavaScript, Ruby and PHP with self-hosting documentation.",
+   "question_before_adoption": "Can the required packages, input sizes, network limits and execution limits be supported?",
+   "sources": []
+  },
+  {
+   "id": "L14",
+   "name": "AgentFS (Turso)",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Benchmark next",
+   "check_state": "metadata",
+   "slots": [
+    "workspace_backend"
+   ],
+   "decision": "hold",
+   "observed": "Repository tursodatabase/agentfs: GitHub detects no licence; last push June 3, 2026.",
+   "question_before_adoption": "Which operations are captured, and are snapshots consistent during writes? First: a stated licence and resumed development.",
+   "sources": [
+    "https://github.com/tursodatabase/agentfs"
+   ]
+  },
+  {
+   "id": "L15",
+   "name": "Extism",
+   "layer": "Code and programmatic tools",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "custom_plugins_port"
+   ],
+   "decision": "watch",
+   "observed": "Repository extism/extism: BSD-3-Clause, pushed September 2, 2026. Installed as 1.1.1 on September 23 (ecosystem edge map).",
+   "question_before_adoption": "Which host functions, file and network permissions and resource limits are exposed?",
+   "sources": [
+    "https://github.com/extism/extism"
+   ]
+  },
+  {
+   "id": "L16",
+   "name": "Pi",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Benchmark next",
+   "check_state": "metadata",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "in_use",
+   "observed": "The repository moved to earendil-works/pi (MIT, pushed September 24, 2026). Pi 0.73.1 is already a Baltor step harness (S-6.42), and pi-acp is in the Agent Client Protocol registry.",
+   "question_before_adoption": "Can inherited global context, extensions and credentials be excluded from a fresh step?",
+   "sources": [
+    "https://github.com/earendil-works/pi"
+   ]
+  },
+  {
+   "id": "L17",
+   "name": "Deep Agents (LangChain)",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "primary",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "competitive_benchmark",
+   "observed": "deepagents 0.7.19 (MIT, September 24). Permissions apply only to the built-in file tools; \"Custom tools and MCP tools that access the filesystem are not covered\", nor are sandbox backends that run commands. The first matching rule wins and no match allows the call. Subagents inherit the parent's rules unless their own rules replace them entirely. Skills follow the Agent Skills specification with progressive disclosure. Exposed over the Agent Client Protocol (deepagents-acp).",
+   "question_before_adoption": "Do custom tools and sandbox commands bypass the file rules, and are subagent permissions explicit? The documentation says they bypass them, so Baltor's own confinement must hold.",
+   "sources": [
+    "https://docs.langchain.com/oss/python/deepagents/permissions.md",
+    "https://docs.langchain.com/oss/python/deepagents/skills.md",
+    "https://docs.langchain.com/oss/python/deepagents/acp.md"
+   ]
+  },
+  {
+   "id": "L18",
+   "name": "Mastra",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "metadata",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "reference",
+   "observed": "npm @mastra/core 1.71.0 (Apache-2.0 on npm; GitHub asserts no licence), September 24, 2026.",
+   "question_before_adoption": "Which memory, schedules and workflow state would overlap Baltor's owners?",
+   "sources": [
+    "https://github.com/mastra-ai/mastra"
+   ]
+  },
+  {
+   "id": "L19",
+   "name": "Agno (AgentOS)",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "metadata",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "reference",
+   "observed": "Repository agno-agi/agno: Apache-2.0, pushed September 25, 2026.",
+   "question_before_adoption": "Can one declared step use it without creating a competing top-level task scheduler?",
+   "sources": [
+    "https://github.com/agno-agi/agno"
+   ]
+  },
+  {
+   "id": "L20",
+   "name": "Pydantic AI",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "step_executor",
+    "typed_decision"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository pydantic/pydantic-ai: MIT, pushed September 25, 2026.",
+   "question_before_adoption": "Are validation failures, model retries and tool effects surfaced with consistent identities?",
+   "sources": [
+    "https://github.com/pydantic/pydantic-ai"
+   ]
+  },
+  {
+   "id": "L21",
+   "name": "Letta",
+   "layer": "Harnesses and agent systems",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "metadata",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "competitive_benchmark",
+   "observed": "Repository letta-ai/letta: Apache-2.0, pushed September 10, 2026. Listed as an Agent Skills client.",
+   "question_before_adoption": "How are persistent facts, changes and permissions separated between users and tasks?",
+   "sources": [
+    "https://github.com/letta-ai/letta"
+   ]
+  },
+  {
+   "id": "L22",
+   "name": "Tessl",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "primary",
+   "slots": [
+    "catalogue_qualification_resolver",
+    "response_evaluator",
+    "library_safety_scan"
+   ],
+   "decision": "competitive_benchmark",
+   "observed": "Six components: registry and package manager; governance with Snyk security scoring and role-based access; evaluations with and without context; observability of where skills activate; context and findings across repositories; the Tessl Agent (open beta). An evaluation runs each scenario without and with the skill and a judge scores a per-scenario rubric; scenario generation targets 3 by default. Publishing is private by default and runs lint and review; a minimum review score policy blocks a version skill by skill; making a plugin public needs approval and cannot be undone. Free 0 dollars, Team 100 dollars a month, Enterprise; publishing and installing are free. Self-reported: \"74% of findings are real defects\" and \"94% task success, up from 67%, Fastify\". CLI 0.111.0. The activation mechanism is not documented in the pages read.",
+   "question_before_adoption": "Can Baltor show value beyond managed, evaluated skills? Baltor records loaded as an observed fact, scores with deterministic independent checkers, and places each step's files in a fresh harness.",
+   "sources": [
+    "https://docs.tessl.io/overview/readme.md",
+    "https://docs.tessl.io/improving-your-skills/evaluate-skill-quality-using-scenarios.md",
+    "https://docs.tessl.io/creating-skills-and-plugins/publish-and-update.md",
+    "https://tessl.io/pricing",
+    "https://tessl.io/"
+   ]
+  },
+  {
+   "id": "L23",
+   "name": "Microsoft APM",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary_and_ran",
+   "slots": [
+    "material_install_layout"
+   ],
+   "decision": "trial_next",
+   "observed": "apm-cli 0.31.0 (MIT, September 15). One apm.yml; the lockfile \"pins exact versions and content hashes\"; every install scans for hidden Unicode and blocks transitive protocol servers unless declared or trusted; apm-policy.yml applies at install. The E01 pilot: byte-identical placement for Claude Code and Codex, script mode kept, no network, identical across four roots; it writes apm.yml, apm.lock.yaml (with the absolute local source path), an apm_modules copy and .gitignore, and 3 files in HOME.",
+   "question_before_adoption": "Does the exact locked package install reproducibly into each supported harness without widening permissions? Yes for skills in the pilot; protocol server configuration is untested.",
+   "sources": [
+    "https://microsoft.github.io/apm/",
+    "https://github.com/microsoft/apm"
+   ]
+  },
+  {
+   "id": "L24",
+   "name": "Sentry dotagents",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary_and_ran",
+   "slots": [
+    "material_install_layout"
+   ],
+   "decision": "candidate_with_conditions",
+   "observed": "@sentry/dotagents 3.1.0 (MIT). The documentation opens with \"Global by Default\"; --project selects project scope. The E01 pilot: byte-identical, mode kept, identical across roots; it made .claude/skills a link to ../.agents/skills, and project init cloned github.com/getsentry/dotagents into HOME for its own default skill (284 files; offline, init exits 1).",
+   "question_before_adoption": "Can a scratch project install avoid changing global or unrelated state? Only with HOME set to the step's own folder, a prepared agents.toml instead of init, and a declared rule for the linked folder.",
+   "sources": [
+    "https://dotagents.sentry.dev/",
+    "https://github.com/getsentry/dotagents"
+   ]
+  },
+  {
+   "id": "L25",
+   "name": "Rulesync",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary_and_ran",
+   "slots": [],
+   "decision": "reject_for_served_bytes",
+   "observed": "rulesync 18.0.0 (MIT, September 24). A supported mark means the feature works in at least one of project, global or simulated mode. The E01 pilot: every SKILL.md was rewritten (the description folded onto new lines) and, for Codex, the metadata map holding Baltor's identity and digest was removed; other files kept their bytes and modes; no network and no HOME writes.",
+   "question_before_adoption": "Which features are native, simulated, project-only or global-only? For Baltor's served bytes the question is closed: it changes them.",
+   "sources": [
+    "https://github.com/dyoshikawa/rulesync"
+   ]
+  },
+  {
+   "id": "L26",
+   "name": "OpenPackage",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary_and_ran",
+   "slots": [],
+   "decision": "reject_for_served_bytes",
+   "observed": "opkg 0.11.3 (Apache-2.0, May 11, 2026); repository last pushed May 29. The README names the platform claudecode, but 0.11.3 placed nothing for it and reported \"Unknown platform: claudecode\"; the name claude worked. The E01 pilot: a blank line was inserted after every SKILL.md header; it writes three files under .openpackage/ and one in HOME.",
+   "question_before_adoption": "Does its version and ownership model keep local edits and show transitive dependencies? Not pursued: it changes served bytes.",
+   "sources": [
+    "https://github.com/enulus/OpenPackage",
+    "https://openpackage.dev/"
+   ]
+  },
+  {
+   "id": "L27",
+   "name": "Docker MCP Catalog and Toolkit",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [
+    "library_ingestion_source",
+    "tool_protocol_gateway"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "A catalog of \"300+ verified servers\" (self-reported) as container images with versioning, provenance and bill of materials metadata; custom catalogs; profiles; a gateway; Dynamic MCP, where mcp-find searches only the configured catalog. \"MCP Gateway as part of Docker AI Governance is an invite-only feature.\" docker/mcp-gateway is MIT.",
+   "question_before_adoption": "Which product surface is available, and what network and credential authority does each server receive?",
+   "sources": [
+    "https://docs.docker.com/ai/mcp-catalog-and-toolkit/",
+    "https://docs.docker.com/ai/mcp-catalog-and-toolkit/catalog/"
+   ]
+  },
+  {
+   "id": "L28",
+   "name": "Smithery",
+   "layer": "Packages and context delivery",
+   "owner_input_action": "Architecture reference",
+   "check_state": "primary",
+   "slots": [
+    "library_ingestion_source"
+   ],
+   "decision": "hold",
+   "observed": "\"Smithery is now a part of Arcade.dev\" (acquisition announced August 5, 2026). It lists protocol servers and skills with usage counts and accepts publishing. The command line repository now lives at arcadeai-labs/smithery-cli (AGPL-3.0); npm @smithery/cli 4.11.1 dates from April 30, 2026.",
+   "question_before_adoption": "Are source identity, version, authentication needs and usage rights enough to qualify an item? Recheck the terms under the new owner first.",
+   "sources": [
+    "https://smithery.ai/",
+    "https://www.arcade.dev/blog/smithery-joins-arcade",
+    "https://github.com/arcadeai-labs/smithery-cli"
+   ]
+  },
+  {
+   "id": "L29",
+   "name": "E2B",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [
+    "process_confinement",
+    "workspace_backend"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Sandboxes can be created, paused with memory, resumed, snapshotted and forked; templates carry tags and versions. \"Every sandbox has outbound internet access by default\", with an off switch and allow and deny lists. Secrets are injected into outbound HTTPS requests outside the sandbox. Hobby: 100 dollars of one-time credit, sessions up to 1 hour, 20 concurrent; Pro: 150 dollars a month, sessions up to 24 hours. SDK e2b 2.51.0 (MIT).",
+   "question_before_adoption": "Do pause, resume, cleanup, credentials and workspace isolation match the tenant model?",
+   "sources": [
+    "https://e2b.dev/docs/llms.txt",
+    "https://e2b.dev/pricing"
+   ]
+  },
+  {
+   "id": "L30",
+   "name": "Daytona",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [
+    "process_confinement",
+    "workspace_backend"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "The public repository says: \"As of June 2026, Daytona's core development has moved to a private codebase\"; the last public release, v0.190.0, is AGPL-3.0. SDKs live at github.com/daytona/clients; Python SDK 0.217.0 is Apache-2.0. Billing is per second with 200 dollars of free compute; sandboxes can stop, archive and delete themselves; \"sub 90ms\" creation is self-reported.",
+   "question_before_adoption": "What is reset between logical jobs, what persists, and what is billed while idle? Also: it is now a hosted service with an open SDK, not open infrastructure.",
+   "sources": [
+    "https://github.com/daytonaio/daytona",
+    "https://github.com/daytona/clients",
+    "https://www.daytona.io/pricing",
+    "https://www.daytona.io/docs/llms.txt"
+   ]
+  },
+  {
+   "id": "L31",
+   "name": "Blaxel",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "process_confinement",
+    "workspace_backend"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository blaxel-ai/sandbox: MIT, pushed September 25, 2026.",
+   "question_before_adoption": "Can timeouts be reconciled without duplicate resources, and do jobs stay isolated on resumed machines?",
+   "sources": [
+    "https://github.com/blaxel-ai/sandbox"
+   ]
+  },
+  {
+   "id": "L32",
+   "name": "Runloop",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "process_confinement",
+    "workspace_backend",
+    "response_evaluator"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Devboxes, blueprints, snapshots, Axon event streams, a broker that speaks the Agent Client Protocol, an AI gateway that proxies model calls \"without exposing credentials to agents\", versioned agents, benchmarks with custom scorers, and egress network policies. Python SDK 1.32.0 (MIT).",
+   "question_before_adoption": "Can a benchmark run and its exact environment be reproduced and exported without losing task evidence?",
+   "sources": [
+    "https://docs.runloop.ai/llms.txt",
+    "https://www.runloop.ai/"
+   ]
+  },
+  {
+   "id": "L33",
+   "name": "Deno Sandbox",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "not_rechecked",
+   "slots": [
+    "process_confinement"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Not rechecked. The owner's input describes Linux microVM sandboxes with file and process access and network and secret controls.",
+   "question_before_adoption": "What are the current limits, and how do approved-host secret replacement and egress limits behave under redirects?",
+   "sources": []
+  },
+  {
+   "id": "L34",
+   "name": "Modal Sandboxes",
+   "layer": "Execution and sandboxes",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "process_confinement"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository modal-labs/modal-client: Apache-2.0, pushed September 24, 2026.",
+   "question_before_adoption": "Does the image support rendering and native dependencies, and are runtime, storage and accelerator costs all recorded?",
+   "sources": [
+    "https://github.com/modal-labs/modal-client"
+   ]
+  },
+  {
+   "id": "L35",
+   "name": "DBOS",
+   "layer": "Durable execution",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "step_attempt_durability (proposed)"
+   ],
+   "decision": "first_candidate",
+   "observed": "dbos 3.1.0 (MIT, September 24). The documentation describes a library for durable workflows \"built on top of Postgres\" and a page on converging concurrent executions on one recorded outcome. The September 23 trial of 3.0.0 on SQLite: an interrupted step ran again and charged twice until an idempotency key and a ledger check were added.",
+   "question_before_adoption": "Can worker recovery keep Baltor identities without deciding acceptance or repeating uncertain effects?",
+   "sources": [
+    "https://docs.dbos.dev/llms.txt",
+    "https://github.com/dbos-inc/dbos-transact-py"
+   ]
+  },
+  {
+   "id": "L36",
+   "name": "Restate",
+   "layer": "Durable execution",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [
+    "step_attempt_durability (proposed)"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "The server is under the Business Source License 1.1; its additional use grant forbids offering a \"Public Restate Platform Service\" to third parties. Server v1.7.12 (September 22); Python SDK restate-sdk 1.0.5.",
+   "question_before_adoption": "What is journaled, what can replay, and how are committed external actions reconciled? Internal use fits the licence grant.",
+   "sources": [
+    "https://github.com/restatedev/restate",
+    "https://docs.restate.dev/llms.txt"
+   ]
+  },
+  {
+   "id": "L37",
+   "name": "Inngest",
+   "layer": "Durable execution",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "step_attempt_durability (proposed)"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository inngest/inngest: licence not asserted by GitHub, pushed September 25, 2026.",
+   "question_before_adoption": "Can event deduplication, backpressure and retention match the task contract?",
+   "sources": [
+    "https://github.com/inngest/inngest"
+   ]
+  },
+  {
+   "id": "L38",
+   "name": "Trigger.dev",
+   "layer": "Durable execution",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "step_attempt_durability (proposed)"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository triggerdotdev/trigger.dev: Apache-2.0, pushed September 24, 2026.",
+   "question_before_adoption": "Which task state is authoritative during deploy, retry and cancellation?",
+   "sources": [
+    "https://github.com/triggerdotdev/trigger.dev"
+   ]
+  },
+  {
+   "id": "L39",
+   "name": "Mem0",
+   "layer": "Memory and retrieval",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [],
+   "decision": "customer_side_tool",
+   "observed": "A managed platform and a self-hosted open source library; memories are filtered by user_id, with an optional run_id for session recall in search, and deleted one by one or for a whole user; a hosted protocol server. Hobby 1,000 retrieval requests a month, Starter 19 dollars (5,000), Pro 249 dollars (50,000), Enterprise unlimited. mem0ai 2.2.0 (Apache-2.0).",
+   "question_before_adoption": "Can a retrieved memory be traced, corrected, revoked and restricted to its user? Baltor's Runtime Memory stays per run and its persistent layers stay reviewed, so Mem0 is a tool a customer's step may use, not a Baltor layer.",
+   "sources": [
+    "https://docs.mem0.ai/llms.txt",
+    "https://mem0.ai/pricing"
+   ]
+  },
+  {
+   "id": "L40",
+   "name": "Zep and Graphiti",
+   "layer": "Memory and retrieval",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "primary",
+   "slots": [
+    "similarity_candidate_source"
+   ],
+   "decision": "reference",
+   "observed": "Zep calls itself \"the unified context layer for enterprise data\", with temporal context graphs served by its own graph database service. Graphiti (Apache-2.0, 0.30.2) keeps temporal validity windows on facts and keeps the ingested episodes as provenance.",
+   "question_before_adoption": "Are time validity, provenance and access limits kept in every retrieval path? Revisit when Runtime History and Solution Intelligence needs facts that expire.",
+   "sources": [
+    "https://help.getzep.com/llms.txt",
+    "https://github.com/getzep/graphiti"
+   ]
+  },
+  {
+   "id": "L41",
+   "name": "Hindsight (Vectorize)",
+   "layer": "Memory and retrieval",
+   "owner_input_action": "Benchmark next",
+   "check_state": "metadata",
+   "slots": [],
+   "decision": "customer_side_tool",
+   "observed": "Repository vectorize-io/hindsight: MIT, pushed September 25, 2026.",
+   "question_before_adoption": "Does reflection add correct, sourced information rather than turn mistakes into lasting facts?",
+   "sources": [
+    "https://github.com/vectorize-io/hindsight"
+   ]
+  },
+  {
+   "id": "L42",
+   "name": "Cognee",
+   "layer": "Memory and retrieval",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [],
+   "decision": "customer_side_tool",
+   "observed": "Repository topoteretes/cognee: Apache-2.0, pushed September 25, 2026.",
+   "question_before_adoption": "Can ingestion and derived graphs be versioned, isolated, deleted and compared with simpler retrieval?",
+   "sources": [
+    "https://github.com/topoteretes/cognee"
+   ]
+  },
+  {
+   "id": "L43",
+   "name": "Supermemory",
+   "layer": "Memory and retrieval",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [],
+   "decision": "customer_side_tool",
+   "observed": "Repository supermemoryai/supermemory: MIT, pushed September 24, 2026.",
+   "question_before_adoption": "What is retained, which source does a fact cite, and how does deletion propagate?",
+   "sources": [
+    "https://github.com/supermemoryai/supermemory"
+   ]
+  },
+  {
+   "id": "L44",
+   "name": "Browserbase",
+   "layer": "Browser and research",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "not_rechecked",
+   "slots": [
+    "web_research_port"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Not rechecked. The owner's input lists cloud browser sessions, search, fetch, agents and hosted browser functions.",
+   "question_before_adoption": "Can exact actions, credentials, external effects and replay be audited? The Web Research port stays off until a recorded owner decision.",
+   "sources": []
+  },
+  {
+   "id": "L45",
+   "name": "Stagehand",
+   "layer": "Browser and research",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "web_research_port"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository browserbase/stagehand: MIT, pushed September 25, 2026.",
+   "question_before_adoption": "When does it call a model, what can be cached, and are changed pages detected before an action?",
+   "sources": [
+    "https://github.com/browserbase/stagehand"
+   ]
+  },
+  {
+   "id": "L46",
+   "name": "Parallel Web Systems",
+   "layer": "Browser and research",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "not_rechecked",
+   "slots": [
+    "web_research_port"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Not rechecked. The owner's input lists search, extraction, multi-hop research tasks, entity discovery and monitoring interfaces.",
+   "question_before_adoption": "Are sources sufficient, contradictions kept, and long jobs resumed through one event owner?",
+   "sources": []
+  },
+  {
+   "id": "L47",
+   "name": "GEPA",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [],
+   "decision": "method_for_E09",
+   "observed": "Optimizes any text parameter by model reflection and Pareto-efficient evolutionary search against a metric, with a training set, a validation set and a max_metric_calls budget; optimize_anything accepts any text artifact; also available as dspy.GEPA. gepa 0.1.4 (MIT, July 15, 2026).",
+   "question_before_adoption": "Does an improvement hold on held-out tasks, and can the optimizer reach or change the judge? Use it only inside the self-improvement Practitioner task, staging candidates for independent review.",
+   "sources": [
+    "https://github.com/gepa-ai/gepa",
+    "https://gepa-ai.github.io/gepa/"
+   ]
+  },
+  {
+   "id": "L48",
+   "name": "Harbor",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "response_evaluator",
+    "run_history_export"
+   ],
+   "decision": "measurement_backend",
+   "observed": "\"Harbor is a framework for running any agent with any model on any task in any sandbox in parallel.\" Separate and custom verifiers, datasets, trajectories in the Agent Trajectory Interchange Format, pre-integrated sandbox providers; the official harness for Terminal-Bench 2.0. harbor 0.23.0 (Apache-2.0, September 12; Python 3.12 or newer); the repository moved from laude-institute to harbor-framework.",
+   "question_before_adoption": "Can both arms see identical tasks while neither reaches the hidden verifier or answer?",
+   "sources": [
+    "https://docs.harborframework.com/",
+    "https://github.com/harbor-framework/harbor"
+   ]
+  },
+  {
+   "id": "L49",
+   "name": "Inspect",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Benchmark next",
+   "check_state": "primary",
+   "slots": [
+    "response_evaluator"
+   ],
+   "decision": "measurement_backend",
+   "observed": "The agent bridge routes the native model calls of Claude Code, Codex CLI and Gemini CLI through the current Inspect model provider. Scoring policy, epochs, deferred re-scoring and recorded fallbacks are documented. inspect-ai 0.3.268 (MIT, September 22).",
+   "question_before_adoption": "Can acceptance rules be fixed before execution and all missing or failed arms stay visible?",
+   "sources": [
+    "https://inspect.aisi.org.uk/agent-bridge.html",
+    "https://inspect.aisi.org.uk/llms.txt"
+   ]
+  },
+  {
+   "id": "L50",
+   "name": "Braintrust",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "not_rechecked",
+   "slots": [
+    "run_history_export"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Not rechecked. The owner's input lists tracing, evaluation, datasets and an assistant for analysis.",
+   "question_before_adoption": "Can trace privacy, judge changes, exports and candidate versus accepted states stay explicit?",
+   "sources": []
+  },
+  {
+   "id": "L51",
+   "name": "LangWatch",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Adapter candidate",
+   "check_state": "metadata",
+   "slots": [
+    "run_history_export"
+   ],
+   "decision": "engine_candidate_later",
+   "observed": "Repository langwatch/langwatch: Apache-2.0, pushed September 25, 2026.",
+   "question_before_adoption": "Which signals show actual task quality rather than successful model or tool responses?",
+   "sources": [
+    "https://github.com/langwatch/langwatch"
+   ]
+  },
+  {
+   "id": "L52",
+   "name": "TensorZero",
+   "layer": "Evaluation and optimization",
+   "owner_input_action": "Competitive benchmark",
+   "check_state": "primary",
+   "slots": [],
+   "decision": "exclude",
+   "observed": "The homepage says: \"TensorZero remains available on GitHub but is no longer maintained.\" The repository is archived (last push June 11, 2026; last release 2026.6.0 on June 4), and the documentation address redirects to the repository's docs folder.",
+   "question_before_adoption": "None for adoption. Its gateway, feedback and experiment design stays a reference for model access and model call strategy.",
+   "sources": [
+    "https://www.tensorzero.com/",
+    "https://github.com/tensorzero/tensorzero"
+   ]
+  },
+  {
+   "id": "L53",
+   "name": "Model Context Protocol",
+   "layer": "Protocols",
+   "owner_input_action": "Compatibility contract",
+   "check_state": "primary",
+   "slots": [
+    "protocol_endpoint",
+    "tool_protocol_transport"
+   ],
+   "decision": "compatibility_contract_in_use",
+   "observed": "Revision 2026-07-28 is stateless: no initialize handshake, the version and client capabilities travel on each request, protocol-level sessions and the Mcp-Session-Id header are removed, servers must answer server/discover, subscriptions/listen replaces the old subscription calls, and tasks moved into an official extension. Baltor speaks 2026-07-28 beside 2025-11-25 (S-6.43, live qualified).",
+   "question_before_adoption": "Which protocol version and optional features does this exact client and server pair support?",
+   "sources": [
+    "https://modelcontextprotocol.io/specification/2026-07-28/changelog"
+   ]
+  },
+  {
+   "id": "L54",
+   "name": "Agent Client Protocol",
+   "layer": "Protocols",
+   "owner_input_action": "Compatibility contract",
+   "check_state": "primary",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "compatibility_contract",
+   "observed": "Version 1 defines the stdio transport; Streamable HTTP is a \"draft proposal in progress\". A version 2 tracking proposal lists remote transports, a new prompt lifecycle and permission requests among its breaking changes. The public registry listed 41 agents on September 25, including Claude Code, Codex, OpenCode, Pi, Goose, Gemini CLI and Deep Agents adapters. Schema v1.23.0 (September 18).",
+   "question_before_adoption": "Are permissions, cancellation and terminal completion consistent across the tested implementations?",
+   "sources": [
+    "https://agentclientprotocol.com/protocol/v1/transports.md",
+    "https://agentclientprotocol.com/rfds/v2/overview.md",
+    "https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json"
+   ]
+  },
+  {
+   "id": "L55",
+   "name": "Agent2Agent",
+   "layer": "Protocols",
+   "owner_input_action": "Compatibility contract",
+   "check_state": "primary",
+   "slots": [
+    "step_executor"
+   ],
+   "decision": "compatibility_contract",
+   "observed": "\"An open protocol enabling communication and interoperability between opaque agentic applications\"; agents interact \"without needing to share internal memory, tools, or proprietary logic\". Specification v1.0.1 (May 28, 2026); a2a-sdk 1.1.5.",
+   "question_before_adoption": "What must be proven about a returned result beyond the remote task's completion state? Independent acceptance, as for any step.",
+   "sources": [
+    "https://a2a-protocol.org/latest/"
+   ]
+  },
+  {
+   "id": "L56",
+   "name": "AG-UI",
+   "layer": "Protocols",
+   "owner_input_action": "Compatibility contract",
+   "check_state": "primary",
+   "slots": [
+    "interaction_stream (proposed)"
+   ],
+   "decision": "watch",
+   "observed": "An \"open, lightweight, event-based protocol\" between agents and user-facing applications, distinct from the A2UI generative interface specification. ag-ui-protocol 1.0.0 (Python, September 17).",
+   "question_before_adoption": "Can a user approval be bound to the exact current task and operation rather than a stale interface event?",
+   "sources": [
+    "https://docs.ag-ui.com/introduction.md"
+   ]
+  },
+  {
+   "id": "L57",
+   "name": "Agent Skills",
+   "layer": "Protocols",
+   "owner_input_action": "Compatibility contract",
+   "check_state": "primary",
+   "slots": [
+    "material_install_layout",
+    "library_format_validation"
+   ],
+   "decision": "compatibility_contract_in_use",
+   "observed": "A skill needs name (up to 64 characters of lowercase letters, numbers and hyphens) and description (up to 1,024 characters); license, compatibility (up to 500), metadata (a string to string map) and allowed-tools (experimental) are optional. The client showcase listed 46 clients on September 25.",
+   "question_before_adoption": "Was a package installed, listed, loaded, used, or shown to improve accepted results? Experiments E01 and E02 answer each rung separately.",
+   "sources": [
+    "https://agentskills.io/specification.md",
+    "https://agentskills.io/clients.md"
+   ]
+  }
+ ]
+}
