@@ -1906,7 +1906,7 @@ try {
     if(folded&&!await target.evaluate(()=>document.getElementById("menu-button")?.getAttribute("aria-expanded")==="true"))await button.click();
     const state=await target.evaluate(()=>{const shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
       const bar=document.querySelector("header"),menu=document.querySelector("header .menu-button");
-      return {entries:[...document.querySelectorAll("header a:not(.brand), header button")].filter(shown).map(node=>node.textContent.replace(/\s+/g," ").trim()),
+      return {entries:[...document.querySelectorAll("header a:not(.brand), header button:not([aria-controls=main-nav])")].filter(shown).map(node=>node.textContent.replace(/\s+/g," ").trim()),
         account:[...document.querySelectorAll('header a[data-page="account"]')].filter(shown).map(node=>node.getAttribute("href")),
         menuRight:menu?Math.round(menu.getBoundingClientRect().right):0,barEnd:bar?Math.round(bar.getBoundingClientRect().right-parseFloat(getComputedStyle(bar).paddingRight)):0};});
     if(folded)await target.keyboard.press("Escape");
@@ -2705,6 +2705,7 @@ try {
       await target.goto(base+path);
       await target.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability",null,{timeout:10000}).catch(()=>{});
       if(open)await target.waitForFunction(()=>document.getElementById("email-login")?.hidden===false,null,{timeout:10000}).catch(()=>{});
+      if(path==="/setup")await target.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.getElementById("setup-message")?.textContent!=="",null,{timeout:10000}).catch(()=>{});
       found[path]=await target.evaluate(()=>{const view=[...document.querySelectorAll("[data-view]")].find(item=>!item.hidden);
         return [document.querySelector("header")?.innerText||"",view?.innerText||"",document.querySelector("footer")?.innerText||""].join("\n");});
     }
@@ -2769,13 +2770,13 @@ try {
     note("a_page_opened_by_a_confirmation_link_starts_from_the_link",Boolean(link)&&byLink.form&&!byLink.unusable&&linkFacts.connected==="Not connected"&&linkFacts.keys.length===0,{byLink,linkFacts});
     /* The same link with a password the page refuses after the provider verified it: the verified session is held for the retry,
        and is never kept, so a reload elsewhere in the tab does not open the account. */
-    if(link){await target.fill("#confirm-password",address);await target.fill("#confirm-password-again",address);await target.click("#confirm-button");
+    if(link&&byLink.form){await target.fill("#confirm-password",address);await target.fill("#confirm-password-again",address);await target.click("#confirm-button");
       await target.waitForFunction(()=>document.getElementById("confirm-message")?.classList.contains("error"),null,{timeout:10000}).catch(()=>{});}
     const pending=await keptFacts(target);
     await target.evaluate(()=>{history.pushState({},"","/account");dispatchEvent(new PopStateEvent("popstate"));});
     await target.reload();await settled(target);await target.waitForTimeout(800);
     const pendingReloaded=await keptFacts(target);
-    note("a_confirmation_whose_password_is_not_set_is_never_kept",Boolean(link)&&pending.keys.length===0&&pending.connected==="Not connected"
+    note("a_confirmation_whose_password_is_not_set_is_never_kept",Boolean(link)&&byLink.form&&pending.keys.length===0&&pending.connected==="Not connected"
       &&pendingReloaded.keys.length===0&&pendingReloaded.connected==="Not connected"&&pendingReloaded.path==="/account",{pending,pendingReloaded});
     /* A service token pasted on the sign-in page stays in page memory only. */
     await target.goto(fixture.base+"/login");await target.fill("#access-token",fixture.token);await target.click("#connect-button");await waitConnected(target);
@@ -2837,7 +2838,8 @@ try {
       stepNote:document.getElementById("funnel-step-plan-note")?.textContent||"",stepDone:document.querySelector('[data-funnel-step="plan"]')?.classList.contains("is-done")===true,
       founding:[...document.querySelectorAll("[data-founding-offer]")].filter(node=>!node.hidden).map(node=>node.textContent.trim()),
       notes:[...document.querySelectorAll("[data-plan-note]")].filter(node=>!node.hidden).map(node=>node.dataset.planNote),
-      card:shown(document.getElementById("pricing-founding")),answer:document.querySelector("#pricing-free-plan p")?.textContent||""};});
+      card:shown(document.getElementById("pricing-founding")),answer:(()=>{const copy=document.querySelector("#pricing-free-plan p")?.cloneNode(true);
+        copy?.querySelectorAll("[hidden]").forEach(node=>node.remove());return copy?.textContent||"";})()};});
   const openInPage=async (target,path)=>{await target.evaluate(path=>{history.pushState({},"",path);dispatchEvent(new PopStateEvent("popstate"));},path);await target.waitForTimeout(100);};
   const foundingPublic=(base,open)=>async (target,note)=>{
     await target.goto(base+"/pricing");await settled(target);await target.waitForTimeout(200);
@@ -3035,8 +3037,8 @@ try {
     {name:"bring_back_the_closed_account_creation_sentence_on_security",scenario:"access_facts_open",path:"/security",
      find:'You sign in with your email address and password. Client tokens',replacement:'Public account creation is not open. Access comes from your operator, who can issue and revoke test tokens. Client tokens',
      expected:["no_page_says_account_creation_is_closed_while_registration_is_open","security_and_how_it_works_state_the_self_service_account_facts"]},
-    {name:"bring_back_the_operator_revocation_sentence_on_get_set_up",scenario:"access_facts_open",path:"/setup",
-     find:'<p id="client-revoke-note">Open your account page,',replacement:'<p id="client-revoke-note">If your operator gave you the token, ask your operator to revoke it. Open your account page,',
+    {name:"bring_back_the_operator_revocation_sentence_on_get_set_up",scenario:"access_facts_open",path:"/assets/client-recipes.json",
+     find:'"revocation_note": "Open your account page,',replacement:'"revocation_note": "If your operator gave you the token, ask your operator to revoke it. Open your account page,',
      expected:["no_page_says_account_creation_is_closed_while_registration_is_open"]},
     {name:"never_state_that_the_service_takes_new_accounts",scenario:"access_facts_open",path:"/assets/service.js",find:"applyRegistrationState(registrationOpen);",replacement:"",
      expected:["security_and_how_it_works_state_the_self_service_account_facts"]},
