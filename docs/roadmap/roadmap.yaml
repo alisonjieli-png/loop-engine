@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94]
@@ -1504,7 +1504,7 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
@@ -3654,3 +3654,151 @@ steps:
     acceptance: "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call."
     evidence: "September 24, 2026, the owner: \"Do we have an MCP or tool or API endpoint for managemnet functions like managing users, searching users, searching data, activity logs, adding credits to users, emailing users custom information, signing users up if they sign up offline via an email collection form or breadsheet share\" and \"can we easily add more files and searchable database entries without having to go through a full deploy\". Built and checked locally the same day; see docs/verification/STAFF-TOOLS-2026-09-24.md."
     next_local_work: "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service."
+  - id: S-6.140
+    phase: 6
+    title: "Author namespaces and a publish scope that a download key never carries"
+    status: proposed
+    depends_on: [S-6.85, S-6.89]
+    boundary: [src/loop_engine/core/service_runtime/records.py, src/loop_engine/core/service_runtime/runtime.py]
+    verify:
+      - "an account from Baltor's own sign-up claims one personal namespace, @handle, of 2 to 39 lowercase letters, digits and single inner hyphens, recorded as author_namespace/v1 and never issued again after the account closes"
+      - "reserved names (Baltor's own names and service words, and the names of model vendors, harnesses and registries) and every other spelling of a reserved or existing handle (hyphens, dots or underscores moved, case folded, or a look-alike character such as 0 for o or rn for m) are refused before the claim"
+      - "the new key scope library:publish sits outside DEFAULT_SCOPES, as billing:manage does, so a download or search key can never stage a submission"
+      - "a namespace proves a domain with a DNS TXT record or the same token at an HTTPS well-known address, the proof is checked again weekly, the verified-domain mark disappears with the proof, and a vendor's name is released only to a namespace that proves the vendor's domain"
+      - "a namespace is never moved away from an owner Baltor can reach; a namespace with no released package after 180 days can be released on request"
+    adversarial: "A download-scoped key that stages a submission, a handle that differs from a reserved name only by punctuation, case or a look-alike character, a second personal namespace for one account, a closed account's handle claimed by a new account, and a verified-domain mark that stays after its record is removed must each fail a named check with its removed-guard control."
+    acceptance: "Every published package names an author namespace that one account owns, no author can pass as Baltor, a vendor or another author, and no download credential can publish."
+    evidence: "September 24, 2026, the owner's pasted note: 'We may also want the ability for people to publish skills, tools, python scripts, etc into our platform'. Research read on September 25, 2026 in docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md: the MCP Registry ties a namespace to a GitHub account or a domain proven by DNS or HTTPS; npm and Hugging Face tie scopes to user and organization names; Claude Code refuses marketplace names that imitate or respell a reserved one; the registry survey of September 24 records that a download credential must never authorize publishing."
+    next_local_work: "Write author_namespace/v1 with the reserved list and the other-spelling rule, and add the library:publish scope outside the defaults, both with removed-guard controls."
+  - id: S-6.141
+    phase: 6
+    title: "Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it"
+    status: proposed
+    depends_on: [S-6.140, S-6.62]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_packages.py, src/loop_engine/core/service_runtime/http.py]
+    verify:
+      - "a library_submission/v1 manifest names the namespace, package name, semantic version, summary, kind, files with roles, media types, digests and sizes, one licence from the allowlist with its licence file, declared effects and network hosts, secret names needed, tests for any executable file, a contract for an executable tool, declared model assistance (none, named panel families, another family or unknown), an optional source repository at a full commit, the changelog and the contributor terms version"
+      - "the web form at /publish and the interface under /api/v1/publish upload files by digest in bounded requests, reuse the catalogue_package/v1 limits (64 files, 8 MiB a file, 32 MiB a package, safe paths), and refuse symbolic links, archives inside the package, compiled bytecode, executable binaries and media types outside a closed list"
+      - "a key can only stage; a staged submission enters the checks only after its author confirms it in a signed-in browser session, the confirmation binds the exact manifest digest, and authors get a daily digest of state changes within the free email allowance"
+      - "bodies go to a quarantine store behind the body store edge with its own root, which no search, listing, download or release reads"
+      - "the service runs structural checks only and never starts a process on, imports or interprets submitted bytes"
+      - "each account has limits on submissions a day, open submissions and stored bytes, and each network address has a request limit, with the first choices of 10, 3, 100 MiB and 30 an hour measured and adjusted on evidence"
+      - "the feature stays behind a host setting that is off for outside authors until S-6.147 records the owner's approval of the contributor terms"
+    adversarial: "A key that confirms its own staged submission, a body served or searchable before approval, a path that escapes, a symbolic link, a .pyc file, an archive inside the package, a version string reused after withdrawal, a submission past its daily limit and a service code path that executes submitted bytes must each fail a named check with its removed-guard control."
+    acceptance: "An author can submit a multi-file package from the web, the interface or the command line, see it staged and then confirmed, and nothing from it reaches a customer or runs on the service."
+    evidence: "npm's stage-only tokens stage a version that only a maintainer with two-factor authentication can approve (npm 12.1.0 documentation, edited September 24, 2026). GitGuardian reported that Smithery's hosted build let a submitted setting read a Fly.io token with machine rights in an organization of more than 3,000 apps (June 2025); Baltor also runs on Fly.io. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write library_submission/v1 and the staged submission records, the upload by digest, the confirmation page and the quarantine root, with the host setting off."
+  - id: S-6.142
+    phase: 6
+    title: "Automated checks on every submission on a worker, and the same deterministic checks on the author's machine"
+    status: proposed
+    depends_on: [S-6.141, S-6.40, S-6.45]
+    boundary: [src/loop_engine/core/library_ingestion/engines.py, tools/ingest_outside_material.py]
+    verify:
+      - "a source engine author_submission in the library_ingestion_source slot reads confirmed submissions through a staff scope, library:review, and yields library_source_candidate records with author_submission_provenance/v1, so the format, licence, safety, effect and duplicate engines run unchanged"
+      - "new engines behind the existing library_safety_scan slot run offline in the scanner sandbox, each pinned by source revision and licence: gitleaks for secrets, GuardDog for malicious code patterns, and Bandit for Python weaknesses as caution notes only"
+      - "each adopted project has a Baltor-native engine beside it or a recorded reason, as rule 6 of AGENTS.md requires: the repository's own secret patterns beside gitleaks, new built-in code rules beside GuardDog, and a recorded reason for Bandit's caution-only notes; every new engine is recorded in engine_slots.yaml and passes the slot's conformance kit alone"
+      - "the declared licence must match the licence file by the existing matcher, every file notice must agree, and each file written by someone else carries its own allowlisted licence and notice"
+      - "detected effects must be a subset of declared effects; an executable role without spawns_process, or network use without a declared host, holds the submission"
+      - "an exact or near duplicate of another author's package or of refused or outline-only source material is refused or held for a superadmin, and a package name one edit away from a package that at least 25 accounts fetched in another namespace is held"
+      - "every engine writes submission_check_result/v1 with its engine and version, finding code, severity, file and line and never the matched text, and nothing found, not scanned and scanner failed stay distinct"
+      - "a Baltor key found in a submission is revoked at once and its owner is told; any other secret holds the submission, and Baltor never tests a found secret against its provider"
+      - "loop-engine publish check runs the deterministic engines offline on a folder, with the versions and codes the worker uses"
+    adversarial: "A malicious item from the regression set, a secret in a skill script, a licence file that does not match the declared licence, a GPL-3.0 file inside an MIT package, an undeclared network call, a duplicate of an existing package under a new name, a scanner crash read as clean and a finding that copies the secret must each fail a named check."
+    acceptance: "Every submission gets the checks imported material gets, plus code checks, each result is typed and shown to the author, and an author can run the deterministic checks before submitting."
+    evidence: "Hugging Face runs ClamAV at each commit and TruffleHog on each push; ClawHub runs SkillSpector, A.I.G and ClawScan on each release, refuses compiled Python its scanner cannot read, and rescans daily with VirusTotal (OpenClaw, February 7, 2026); skills.sh shows three scanners whose results are not tied to a version. Baltor's ingestion already runs builtin_static_rules and SkillSpector without network. GuardDog and Bandit are Apache-2.0 and gitleaks is MIT (GitHub, September 25, 2026). Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Add the author_submission source engine and the gitleaks, GuardDog and Bandit engines with their regression cases, then the local check command."
+  - id: S-6.143
+    phase: 6
+    title: "A package's own tests in an offline sandbox on a worker that holds no Baltor secret"
+    status: proposed
+    depends_on: [S-6.142]
+    boundary: [src/loop_engine/data/engine_slots.yaml, src/loop_engine/core/library_ingestion/engines.py]
+    verify:
+      - "a new slot library_package_tests, recorded in engine_slots.yaml with its conformance kit, owns the test contract and the result, and nests the existing process_confinement slot, whose linux_namespace_sandbox kind runs the tests with no network, the package mounted read only, one scratch folder, no inherited environment or home folder, and bounded processor time, memory, processes, file size and output; the choice never moves to a weaker isolation"
+      - "a package with a skill script, a hook or an executable tool must declare tests (runtime, command and a time limit of at most 120 seconds); at launch the runtimes are Python 3.12 and Node.js 22 with the standard library only"
+      - "a package_test_result/v1 record binds the package digest, the sandbox profile digest, the command, the exit status, the counts and the time, and a failed or timed-out run holds the submission with the end of its output"
+      - "the worker's own reporting key is outside the sandbox's view"
+    adversarial: "A test that opens a socket, reads the home folder, reads an environment variable of the worker, writes outside its scratch folder, forks without bound or runs past its limit, and a package with executable files and no tests, must each fail a named check."
+    acceptance: "Every executable package that reaches review has passed its own tests in a sandbox that could reach neither the network nor any Baltor secret."
+    evidence: "The Community tier in the AGENTS.md decision table requires 'its own tests where it has code'. PyPI's trusted publishing security model says to treat a publisher as an API token, and GitGuardian's Smithery report shows what a build holding a broad token can reach. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Declare the slot in engine_slots.yaml, write the declared test runner over the process_confinement slot's namespace sandbox, and hold each escape case as a removed-guard control."
+  - id: S-6.144
+    phase: 6
+    title: "Independent review of submissions into the Community tier, never by the author or a declared model family"
+    status: proposed
+    depends_on: [S-6.143, S-6.63]
+    boundary: [tools/candidate_review, tools/review_catalogue_candidates.py]
+    verify:
+      - "the producer families of a submission are the panel families its author declared; reviewers from those families, and anyone who owns or maintains the namespace, never review it"
+      - "Community needs every automated check and the package's own tests passing, plus one approving family outside the producer families; unknown assistance needs two approving families; Verified keeps its rule of two approving families"
+      - "the first executable package of a new namespace also waits for a second approving family or a superadmin"
+      - "reviewers read package text as quoted material under the written criteria, and a verdict binds the exact package digest"
+      - "a refusal returns the failed criteria in plain words to the author, an appeal goes to a family that has not seen the package or to a superadmin, and a submission waits when no eligible family is reachable"
+      - "an approved submission is written as a reviewed catalogue folder with its tier, author, reviewers and digests, for the next catalogue release"
+    adversarial: "An approval from a declared assistance family, an approval by a namespace member, an approval for bytes other than the submitted digest, a Community approval with a failing test, and a package with unknown assistance approved by one family must each fail a named check."
+    acceptance: "Authors get a decision with reasons, and every submitted package served as Community names an independent reviewer family that did not produce it."
+    evidence: "The Library tiers row of the AGENTS.md decision table, September 24, 2026. The review panel declares families and never infers them from a model name (tools/candidate_review/README.md). Tessl lints and reviews on publish and blocks a version below a minimum score, according to its own documentation read on September 25, 2026. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Derive the producer families from the submission record, extend the reviewed catalogue writer for authored packages, and return refusal reasons to the author."
+  - id: S-6.145
+    phase: 6
+    title: "Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown"
+    status: proposed
+    depends_on: [S-6.144, S-6.83]
+    boundary: [src/loop_engine/core/service_runtime/catalogue_releases.py, src/loop_engine/core/service_runtime/account_administration.py]
+    verify:
+      - "a version string is used once for each package, forever, its bytes never change, and the latest version is the highest released one that is not a prerelease and is not yanked, withdrawn or quarantined"
+      - "an author deprecates a version or a package with a message (still served with the message), yanks a version (served only to an exact pin) and withdraws a version within 72 hours of release when no account fetched it; a later withdrawal needs a security, legal or personal data reason and a superadmin"
+      - "a signed-in reader reports a package as malware, exposed secret, licence or copyright, personal data, impersonation, spam or broken, and reports reach a staff queue in the Administration view"
+      - "a superadmin or developer quarantines a version at once with a catalogue_quarantine/v1 record that download and search honour before the next release, the catalogue state marker changes so an older image refuses to serve, and a superadmin clears the quarantine or turns it into a durable withdrawal"
+      - "accounts that fetched a quarantined or withdrawn version are told by email, and each security withdrawal publishes a package_advisory/v1 record"
+      - "every active submitted package is rescanned when a scanner or its rules change and at least weekly, and a new blocking finding quarantines it"
+    adversarial: "A reused version after withdrawal, a changed body under an existing version, a quarantined version served or listed, a rollback that revives a withdrawal, an older image that ignores quarantine records, an author who withdraws a fetched version after 72 hours without a superadmin, and a report that reaches no queue must each fail a named check."
+    acceptance: "A harmful package stops being served after one staff action, authors can retire their work safely, and customers who fetched a withdrawn version are told."
+    evidence: "npm never reuses a package@version, allows unpublishing for 72 hours when nothing depends on a package, and warns on every install of a deprecated version; PEP 792 (final, July 8, 2025) defines active, archived, quarantined and deprecated; PEP 592 defines yanking; PyPI quarantined about 140 projects from August to December 2024 and one returned; the MCP Registry keeps a removed entry readable with the status deleted. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write the version, quarantine, report and advisory records and the author and staff actions, with the catalogue state marker changed."
+  - id: S-6.146
+    phase: 6
+    title: "Author pages, package pages and the publishing dashboard"
+    status: proposed
+    depends_on: [S-6.145, S-6.67]
+    boundary: [src/loop_engine/core/service_runtime/web_site_map.json, src/loop_engine/core/service_runtime/web_pages.py]
+    verify:
+      - "/authors/<handle> shows the handle, an optional display name, a verified domain when proven, and each package with its tier, latest version, licence, kinds and deprecation notes, and shows no email address and nothing about any customer's use"
+      - "each package page shows its versions with dates and states, reviewers by family, the licence, files with digests, declared effects, test and scan summaries, the source link and whether it was verified, and how to install it"
+      - "the signed-in dashboard lists the author's submissions with states, held findings, review reasons and actions, the staged submissions to confirm, and the keys with the publish scope"
+      - "the pages use plain product words and no runtime terms, and the typed site map, header and footer checks cover them behind the publishing host setting"
+    adversarial: "An author page that shows an email address, a package page that shows a tier the active release does not hold, a dashboard action that works on another account's package and a runtime term on a public page must each fail a named check."
+    acceptance: "Anyone can see who wrote a package and how it was checked, and an author manages every submission from one page."
+    evidence: "npm, Hugging Face and Smithery show packages under user and organization names, and ClawHub shows a scan summary before install. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Add the three pages to the typed site map behind the publishing host setting and render them from the records."
+  - id: S-6.147
+    phase: 6
+    title: "Contributor terms and the privacy notice addition, published with the feature"
+    status: proposed
+    depends_on: [S-6.141]
+    boundary: [docs/legal/README.md, src/loop_engine/core/service_runtime/web_assets/index.html]
+    verify:
+      - "the contributor terms drafted in docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md move to docs/legal/CONTRIBUTOR-TERMS.md, and /contributor-terms serves the same words, held word for word by a browser check as the terms of service are"
+      - "every submission records the version of the contributor terms its author accepted, and a submission under an older version is refused until the author accepts the current one"
+      - "the privacy notice gains the drafted rows on author handles, published packages, review records and reports, and the sentence naming the review providers, served word for word"
+      - "the publishing host setting stays off for outside authors until the owner's approval of both texts is recorded in the AGENTS.md legal paragraph"
+    adversarial: "A served terms page that differs from the approved text, a submission without a terms version, a submission under an outdated version, and publishing opened to outside authors without the recorded approval must each fail a named check."
+    acceptance: "Every author accepts plain terms that say what they grant, what Baltor does with their package and what Baltor never does, and the privacy notice says what publishing shows in public."
+    evidence: "Contributor terms compared on September 25, 2026: GitHub's terms (effective April 27, 2026) license contributions inbound equals outbound and include training AI features in the grant to GitHub; PyPI's Terms of Use (effective February 25, 2025) grant the Python Software Foundation and all users an irrevocable licence to distribute; Hugging Face's terms (effective September 15, 2022) grant a licence to provide the services; npm's open-source terms (March 10, 2022) license npm to provide content to its users. The AGENTS.md authority section keeps legal commitments with the owner."
+    next_local_work: "Copy the drafted terms and privacy rows into docs/legal as drafts, add the served view and its word-for-word browser check, and record the owner's approval before opening the setting to outside authors."
+  - id: S-6.148
+    phase: 6
+    title: "Provenance for submitted packages: verified source links, trusted publishing and a signed publish record"
+    status: proposed
+    depends_on: [S-6.144]
+    boundary: [src/loop_engine/core/library_ingestion/provenance.py, src/loop_engine/core/service_runtime/catalogue_releases.py]
+    verify:
+      - "an optional source repository at a full commit is fetched by the worker, and the source link is marked verified only when every submitted file equals the file at that commit"
+      - "GitHub Actions can stage a submission with a short-lived OpenID Connect token checked for issuer, audience, repository and owner identifiers, workflow and environment, with no stored key, and a person still confirms it"
+      - "each released version gets a publish_record/v1 statement in the in-toto form, naming the package digest, namespace, version, tier, review record digest and release, signed with a Baltor Ed25519 key whose public half is served at a well-known address"
+      - "loop-engine checks a fetched package against its signed publish record before placing it"
+    adversarial: "A source link whose commit differs from the upload, a token from another repository or from a recreated owner, a publish record for another digest and a tampered package must each fail a named check."
+    acceptance: "A customer can check that a served package is the exact one that was reviewed and released, and an author can publish from continuous integration without a stored key."
+    evidence: "npm and PyPI mint short-lived publishing credentials from continuous integration identity tokens and publish Sigstore-signed provenance; PyPI's security model warns that anyone who can change a publishing workflow can publish and that a recreated account can inherit trust; Hugging Face marks GPG-signed commits as verified. Research: docs/research/PUBLISHING-INTO-BALTOR-2026-09-24.md."
+    next_local_work: "Write author_submission_provenance/v1 with the source check, then the signed publish record and its verifier, then trusted publishing from GitHub Actions."

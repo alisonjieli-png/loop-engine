@@ -4,7 +4,7 @@
   "done": 44,
   "next": 13,
   "now": 42,
-  "waiting": 87
+  "waiting": 96
  },
  "lanes": {
   "blocked": [
@@ -2598,6 +2598,154 @@
     ]
    },
    {
+    "acceptance": "Every published package names an author namespace that one account owns, no author can pass as Baltor, a vendor or another author, and no download credential can publish.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.89"
+    ],
+    "id": "S-6.140",
+    "next_local_work": "Write author_namespace/v1 with the reserved list and the other-spelling rule, and add the library:publish scope outside the defaults, both with removed-guard controls.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Author namespaces and a publish scope that a download key never carries",
+    "waiting_on": [
+     "S-6.85"
+    ]
+   },
+   {
+    "acceptance": "An author can submit a multi-file package from the web, the interface or the command line, see it staged and then confirmed, and nothing from it reaches a customer or runs on the service.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.140",
+     "S-6.62"
+    ],
+    "id": "S-6.141",
+    "next_local_work": "Write library_submission/v1 and the staged submission records, the upload by digest, the confirmation page and the quarantine root, with the host setting off.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it",
+    "waiting_on": [
+     "S-6.140",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Every submission gets the checks imported material gets, plus code checks, each result is typed and shown to the author, and an author can run the deterministic checks before submitting.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.141",
+     "S-6.40",
+     "S-6.45"
+    ],
+    "id": "S-6.142",
+    "next_local_work": "Add the author_submission source engine and the gitleaks, GuardDog and Bandit engines with their regression cases, then the local check command.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Automated checks on every submission on a worker, and the same deterministic checks on the author's machine",
+    "waiting_on": [
+     "S-6.141",
+     "S-6.40",
+     "S-6.45"
+    ]
+   },
+   {
+    "acceptance": "Every executable package that reaches review has passed its own tests in a sandbox that could reach neither the network nor any Baltor secret.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.142"
+    ],
+    "id": "S-6.143",
+    "next_local_work": "Declare the slot in engine_slots.yaml, write the declared test runner over the process_confinement slot's namespace sandbox, and hold each escape case as a removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A package's own tests in an offline sandbox on a worker that holds no Baltor secret",
+    "waiting_on": [
+     "S-6.142"
+    ]
+   },
+   {
+    "acceptance": "Authors get a decision with reasons, and every submitted package served as Community names an independent reviewer family that did not produce it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.143",
+     "S-6.63"
+    ],
+    "id": "S-6.144",
+    "next_local_work": "Derive the producer families from the submission record, extend the reviewed catalogue writer for authored packages, and return refusal reasons to the author.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Independent review of submissions into the Community tier, never by the author or a declared model family",
+    "waiting_on": [
+     "S-6.143",
+     "S-6.63"
+    ]
+   },
+   {
+    "acceptance": "A harmful package stops being served after one staff action, authors can retire their work safely, and customers who fetched a withdrawn version are told.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.144",
+     "S-6.83"
+    ],
+    "id": "S-6.145",
+    "next_local_work": "Write the version, quarantine, report and advisory records and the author and staff actions, with the catalogue state marker changed.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown",
+    "waiting_on": [
+     "S-6.144",
+     "S-6.83"
+    ]
+   },
+   {
+    "acceptance": "Anyone can see who wrote a package and how it was checked, and an author manages every submission from one page.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.145",
+     "S-6.67"
+    ],
+    "id": "S-6.146",
+    "next_local_work": "Add the three pages to the typed site map behind the publishing host setting and render them from the records.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Author pages, package pages and the publishing dashboard",
+    "waiting_on": [
+     "S-6.145",
+     "S-6.67"
+    ]
+   },
+   {
+    "acceptance": "Every author accepts plain terms that say what they grant, what Baltor does with their package and what Baltor never does, and the privacy notice says what publishing shows in public.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.141"
+    ],
+    "id": "S-6.147",
+    "next_local_work": "Copy the drafted terms and privacy rows into docs/legal as drafts, add the served view and its word-for-word browser check, and record the owner's approval before opening the setting to outside authors.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Contributor terms and the privacy notice addition, published with the feature",
+    "waiting_on": [
+     "S-6.141"
+    ]
+   },
+   {
+    "acceptance": "A customer can check that a served package is the exact one that was reviewed and released, and an author can publish from continuous integration without a stored key.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.144"
+    ],
+    "id": "S-6.148",
+    "next_local_work": "Write author_submission_provenance/v1 with the source check, then the signed publish record and its verifier, then trusted publishing from GitHub Actions.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Provenance for submitted packages: verified source links, trusted publishing and a signed publish record",
+    "waiting_on": [
+     "S-6.144"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4082,5 +4230,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be731597e465ba8caec"
+ "source_fingerprint": "sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b169bc63fb83eb7"
 }

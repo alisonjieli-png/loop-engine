@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be731597e465ba8caec`.
+Source fingerprint: `sha256:4185ab5b2391b1b2076da75e9bc010d99a83302486921d2d0b169bc63fb83eb7`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be73159
 |---|---:|
 | Being built now | 42 |
 | Can start next | 13 |
-| Waiting on earlier work | 87 |
+| Waiting on earlier work | 96 |
 | Blocked | 2 |
 | Done | 44 |
 
@@ -155,6 +155,15 @@ Source fingerprint: `sha256:45458f31f53fc4dbfcdf0563a9ef40786bc1dafe68c49be73159
 | S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
 | S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
 | S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
+| S-6.140 | Author namespaces and a publish scope that a download key never carries | proposed | S-6.85 |
+| S-6.141 | Submission intake: staged by form, interface or command line, confirmed by a signed-in person, kept where nothing serves it | proposed | S-6.140, S-6.62 |
+| S-6.142 | Automated checks on every submission on a worker, and the same deterministic checks on the author's machine | proposed | S-6.141, S-6.40, S-6.45 |
+| S-6.143 | A package's own tests in an offline sandbox on a worker that holds no Baltor secret | proposed | S-6.142 |
+| S-6.144 | Independent review of submissions into the Community tier, never by the author or a declared model family | proposed | S-6.143, S-6.63 |
+| S-6.145 | Versions, deprecation, yanking, withdrawal, reports, quarantine and takedown | proposed | S-6.144, S-6.83 |
+| S-6.146 | Author pages, package pages and the publishing dashboard | proposed | S-6.145, S-6.67 |
+| S-6.147 | Contributor terms and the privacy notice addition, published with the feature | proposed | S-6.141 |
+| S-6.148 | Provenance for submitted packages: verified source links, trusted publishing and a signed publish record | proposed | S-6.144 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
