@@ -1883,7 +1883,7 @@
      "S-6.62"
     ],
     "id": "S-6.199",
-    "next_local_work": "Write the screening profile and its control set from the pilot's rejections, measure it against the full review on the same 240 packages, then add the report route, the flag records and the withdrawal rules to the service, and the rescan and upstream check to the daily job.",
+    "next_local_work": "Add the report route, the flag records and the withdrawal rules to the service, and the rescan and upstream check to the daily job; measure the screen again only with a reviewer of another family.",
     "phase": 6,
     "status": "proposed",
     "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
@@ -5184,5 +5184,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:73dc62e456b1102bdf7789316b30265905c9284c612c3de601e9aba12593bae0"
+ "source_fingerprint": "sha256:ceaae3957fdc9c222a7b07937b0c3d312944e5f8a394241337686aaff7952991"
 }

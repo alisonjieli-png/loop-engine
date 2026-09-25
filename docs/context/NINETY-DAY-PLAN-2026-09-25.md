@@ -50,15 +50,16 @@ Recorded as the "Approval of intelligence items" row of the AGENTS.md
 decision table and as roadmap step S-6.199. Before publication: the
 deterministic prechecks, pinned provenance, and one screening call for up to
 12 packages by one calibrated reviewer from a family that did not produce
-them, answering four questions only (hidden instructions, effects beyond the
-declared ones, a description the files do not match, no use to a harness);
-then automatic publication as Community by the daily job. After publication:
+them, answering the written criteria of the material; then automatic
+publication as Community by the daily job. A shorter four-question screen
+was measured the same night on the 240-package pilot: it approved 7 of the
+10 packages the written criteria rejected, so the written criteria stay the
+questions of the one call (52 seconds for 12 packages). After publication:
 a report button on every item, withdrawal within a minute on a signed-in
 customer's report (a Verified item needs a staff flag or two customers), a
 nightly rescan with the current rules, a weekly upstream check,
 second-family reviews that upgrade to Verified or withdraw, and a kept
-record for every withdrawal. The pilot's ten rejections are the control the
-shorter screen must still reject.
+record for every withdrawal.
 
 ## The thirteen decisions
 
