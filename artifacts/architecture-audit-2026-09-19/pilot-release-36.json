@@ -1,0 +1,74 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 36,
+  "source_revision": "cd0794772a9d1da35b074457f88a4272f58ed57c",
+  "continuous_integration_run": 36199029654,
+  "deployment_workflow_run": 36200624566,
+  "image_digest": "sha256:b1198bff6eb3d0f7175d1261098f866d1e690a5b835f1030ba08169e473a6567",
+  "deployed_at": "2026-09-25T23:23:00Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 35,
+  "rollback_image_digest": "sha256:2778dce49bc303977543af49ee06f4529a09f4741ae437ec63e2e15d8820f210",
+  "rollback_note": "Release 35 serves the same pages and the same catalogue store; it lacks the request screening station and the text model engine kind, which no customer route uses yet.",
+  "changes": [
+    "the request screening station of the typed decision slot: a written request_screening_policy/v1 with patterns, actions, levels and thresholds; decisions proceed or hold with hold as the safe default and four guards (S-6.198)",
+    "the text_model_json engine kind: a text model behind the typed decision edge, its reply read as one strict JSON object with named repairs, admitted in the gateway like every engine",
+    "the rules engine answers the screening station from a policy's written patterns; the gateway passes configured_secret_unavailable through so a station records why an endpoint was unavailable",
+    "tools/red_team_decisions.py, the pinned scenario record of the owner's CC0 modern slavery write-up and three recorded runs (case-studies/decision-red-team-modern-slavery)",
+    "the conformance manifest refreshed for the three new decision modules"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 45,
+        "views": 188,
+        "hostnames": 8,
+        "links_checked": 310,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0,
+    "note": "The restart at 23:23 UTC built the catalogue view from the store with the 1,629 packages of the third Community release published at 23:22 UTC; that release's own retrieval check is artifacts/community-release-3-2026-09-25/live-retrieval-1.json."
+  },
+  "browser_suite_on_this_revision": {
+    "where": "GitHub Actions, workflow browser-nightly.yml started by hand",
+    "run": 36199031805,
+    "checks": [
+      909,
+      909
+    ],
+    "mutants_detected": [
+      183,
+      183
+    ]
+  },
+  "observed_after_the_restart": {
+    "health": "ready, catalogue_view_current, catalogue release 11a2974d… with 1,629 items built at 23:23:00 UTC",
+    "customer_visible_change": "none on the website; the change is inside the engine"
+  },
+  "evidence_folder": "artifacts/release-36-2026-09-25"
+}
