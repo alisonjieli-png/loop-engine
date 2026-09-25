@@ -39,8 +39,10 @@ RELEASE_MANIFEST = "examples/29_intelligence_service/starter-catalogue/host-rele
 MAXIMUM_WITHDRAWN = 3
 #: The demonstration pages, each by its address and its view, whose steps print the digests of the references they show.
 DEMONSTRATION_PAGES = (("/demo", "demo"), ("/demo/kaggle", "demo-kaggle"))
-#: Six catalogue disclosure checks and one digest check for each demonstration page.
-PLANNED_CHECKS = 6 + len(DEMONSTRATION_PAGES)
+#: Seven catalogue disclosure checks and one digest check for each demonstration page.
+PLANNED_CHECKS = 7 + len(DEMONSTRATION_PAGES)
+#: The label every Community item carries in a search answer.
+COMMUNITY_TIER, COMMUNITY_LABEL = "community", "Community"
 #: One item of the homepage demonstration: its identity and the digest prefix it prints.
 DEMONSTRATION_ITEM = re.compile(r'data-demo-item="([a-z0-9_]+)"[^>]*>.*?data-fact="digest">([0-9a-f]{8})<', re.S)
 #: One view of the one page, from its opening tag to the next view or the end of the main part.
@@ -70,6 +72,22 @@ def demonstration_mismatches(shown, served):
     return {identity: {"shown": prefix, "served": (served.get(identity) or "")[:8]}
             for identity, prefix in sorted(shown.items())
             if not (served.get(identity) or "").startswith(prefix)}
+
+
+def unapproved_verified_hits(verified_hits, approved):
+    """Every item a search narrowed to Verified returned that the review record did not approve."""
+    return sorted(set(verified_hits) - set(approved))
+
+
+def unlabelled_other_hits(default_hits, approved):
+    """Every item a search with the account's own library setting returned that the review record did not approve and
+    that is not a Community item labelled Community.
+
+    Since the first Community catalogue release, published without a redeploy on September 25, 2026, a search also
+    returns Community items, approved by that release rather than by the review record this check reads. Each hit is
+    (identity, library_tier, library_tier_label)."""
+    return sorted(identity for identity, tier, label in default_hits
+                  if identity not in approved and (tier != COMMUNITY_TIER or label != COMMUNITY_LABEL))
 
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -153,20 +171,34 @@ def main():
               f"{len(served)} offered, {len(withheld)} withheld for undeclared authority, "
               f"{len(set(approved) - registered)} withdrawn")
         check("no_rejected_item_is_registered", not (set(served + withheld) & set(rejected)))
-        found = set()
+        found, verified_found, default_hits = set(), set(), []
         for query in queries:
-            status, result = request("/api/v1/retrieval", {"record_type": "service_retrieval_request/v2",
-                "query": query, "mode": "lexical", "top_n": 50})
-            if status != 200:
-                raise RuntimeError(f"the search for {query!r} was refused with status {status}")
-            identities = sorted(hit["reference"]["identity"] for hit in result["result"]["hits"])
-            hits_by_query[query] = identities
-            found.update(identities)
-            if result["result"]["bodies_loaded"] is not False:
-                raise RuntimeError("the search loaded a body")
-        check("every_search_returns_approved_items_and_loads_no_body",
-              bool(found) and found <= set(approved),
-              f"{len(found)} distinct items over {len(queries)} queries")
+            # Each query is asked twice: narrowed to Verified items, which only the review record may approve, and
+            # with the account's own library setting, which also receives labelled Community items.
+            answers = {}
+            for name, narrowing in (("verified", {"library_tiers": ["verified"]}), ("default", {})):
+                status, result = request("/api/v1/retrieval", {"record_type": "service_retrieval_request/v2",
+                    "query": query, "mode": "lexical", "top_n": 50, **narrowing})
+                if status != 200:
+                    raise RuntimeError(f"the search for {query!r} was refused with status {status}")
+                if result["result"]["bodies_loaded"] is not False:
+                    raise RuntimeError("the search loaded a body")
+                answers[name] = result["result"]["hits"]
+            verified_identities = sorted(hit["reference"]["identity"] for hit in answers["verified"])
+            default_rows = [(hit["reference"]["identity"], hit.get("library_tier"), hit.get("library_tier_label"))
+                            for hit in answers["default"]]
+            hits_by_query[query] = {"verified": verified_identities, "default": sorted(row[0] for row in default_rows)}
+            verified_found.update(verified_identities)
+            default_hits.extend(default_rows)
+            found.update(verified_identities, (row[0] for row in default_rows))
+        unapproved = unapproved_verified_hits(verified_found, approved)
+        check("every_search_returns_approved_items_and_loads_no_body", bool(verified_found) and not unapproved,
+              f"{len(verified_found)} distinct Verified items over {len(queries)} queries"
+              + (f"; not approved: {unapproved}" if unapproved else ""))
+        unlabelled = unlabelled_other_hits(default_hits, approved)
+        check("every_other_search_hit_is_a_labelled_community_item", not unlabelled,
+              f"{len(set(row[0] for row in default_hits) - set(approved))} Community items over {len(queries)} queries"
+              + (f"; unlabelled or unapproved: {unlabelled}" if unlabelled else ""))
         check("no_search_returns_a_rejected_item", not (found & set(rejected)))
         for identity in rejected:
             status, refusal = request("/api/v1/provisioning",

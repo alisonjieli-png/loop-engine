@@ -1,0 +1,63 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 31,
+  "source_revision": "eaabbe62aae1f85f7866b3c21c9b13fcd2bed6f5",
+  "continuous_integration_run": 36158116005,
+  "deployment_workflow_run": 36160821801,
+  "image_digest": "sha256:bf5ab28b2383601787a464d1b2978b6bb91a3d434926b4f1db30220d0cc68942",
+  "deployed_at": "2026-09-25T16:29:39Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 30,
+  "rollback_image_digest": "sha256:c075f297d8c1717cd462d84151c0496bad89b751586e4726dc5a4606c9352de6",
+  "rollback_note": "Release 30 serves the Community catalogue too, but its website download and Pi extension ask with version 1 and refuse every Community item that search offers.",
+  "changes": [
+    "the website's download button, the Pi extension and the documentation ask with version 2 of the provisioning request, as search does",
+    "each search result on the website shows its library tier, Verified or Community",
+    "the published meaning of Verified states that the first catalogue lacks its two-family review, and the README says what is true",
+    "the public wording rules live in one file that every page check imports"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 44,
+        "views": 184,
+        "hostnames": 8,
+        "links_checked": 338,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        8,
+        8
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0
+  },
+  "catalogue_release_after": {
+    "release_id": "2e23bfaa4ab38ffa5539130774e7b2503aeeef6f42d578d29674733de8a50823",
+    "bundle_digest": "4e0484b76924a2d907c7a42bd088ba44b0123f365cf78d3ea8a81d9100f04e9e",
+    "published_without_redeploy": true,
+    "items": 93,
+    "evidence_folder": "artifacts/community-release-2026-09-25"
+  },
+  "evidence_folder": "artifacts/release-31-2026-09-25"
+}

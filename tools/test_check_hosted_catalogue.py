@@ -61,11 +61,40 @@ class ViewDigestTests(unittest.TestCase):
     def test_every_demonstration_page_is_checked_on_its_own(self):
         from check_hosted_catalogue import DEMONSTRATION_PAGES, PLANNED_CHECKS
         self.assertEqual([view for _address, view in DEMONSTRATION_PAGES], ["demo", "demo-kaggle"])
-        self.assertEqual(PLANNED_CHECKS, 8)
+        self.assertEqual(PLANNED_CHECKS, 9)
         kaggle = ONE_PAGE.replace('data-view="demo" hidden', 'data-view="demo-kaggle" hidden')
         self.assertEqual(demonstration_page_digests(kaggle, "demo-kaggle"), {"profile_text_column_before_cleaning": "3274cbf5"})
         # KNOWN_WRONG: the view of the other demonstration is not read as this one.
         self.assertEqual(demonstration_page_digests(kaggle, "demo"), {})
+
+
+APPROVED = ["split_address_lines_into_components", "find_duplicate_records_with_blocking_keys"]
+
+
+class SearchTierTests(unittest.TestCase):
+    """Since the first Community catalogue release (September 25, 2026) a search also returns Community items."""
+
+    def test_verified_and_labelled_community_hits_leave_nothing_to_report(self):
+        from check_hosted_catalogue import unapproved_verified_hits, unlabelled_other_hits
+        self.assertEqual(unapproved_verified_hits(APPROVED[:1], APPROVED), [])
+        hits = [(APPROVED[0], "verified", "Verified"), ("audio_aggregation_agentic_task", "community", "Community")]
+        self.assertEqual(unlabelled_other_hits(hits, APPROVED), [])
+
+    def test_known_wrong_a_verified_only_search_returning_an_unapproved_item_is_reported(self):
+        from check_hosted_catalogue import unapproved_verified_hits
+        self.assertEqual(unapproved_verified_hits([APPROVED[0], "audio_aggregation_agentic_task"], APPROVED),
+                         ["audio_aggregation_agentic_task"])
+
+    def test_known_wrong_an_unapproved_hit_labelled_verified_is_reported(self):
+        from check_hosted_catalogue import unlabelled_other_hits
+        self.assertEqual(unlabelled_other_hits([("invented_item", "verified", "Verified")], APPROVED), ["invented_item"])
+
+    def test_known_wrong_a_community_hit_without_its_label_is_reported(self):
+        from check_hosted_catalogue import unlabelled_other_hits
+        self.assertEqual(unlabelled_other_hits([("audio_aggregation_agentic_task", "community", None)], APPROVED),
+                         ["audio_aggregation_agentic_task"])
+        self.assertEqual(unlabelled_other_hits([("audio_aggregation_agentic_task", None, None)], APPROVED),
+                         ["audio_aggregation_agentic_task"])
 
 
 if __name__ == "__main__":
