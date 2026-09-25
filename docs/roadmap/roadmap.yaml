@@ -982,7 +982,7 @@ continuation:
     - id: D-26
       title: "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day"
       stage: public_launch
-      steps: [S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.64, S-6.88]
+      steps: [S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
       depends_on: [D-20, D-22]
       actions:
         - "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line."
@@ -1387,7 +1387,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.177, S-6.178]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.177, S-6.178]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.179, S-6.180]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.178, S-6.179]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.178, S-6.179]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176]
@@ -2951,14 +2951,14 @@ steps:
   - id: S-6.63
     phase: 6
     title: An independent review panel of several model families
-    status: proposed
+    status: building
     depends_on: [S-6.45]
     boundary: [tools/carry_catalogue_approvals.py, examples/29_intelligence_service/starter-catalogue/REVIEW.md]
     verify: ['reviewer engines behind one edge: Ollama Cloud models such as Kimi K3, GLM 5.3, DeepSeek, Qwen and MiniMax, the Codex command line and the Claude Code command line', 'deterministic pre-checks before any model call: file-level rights, native format, safety scan, effects, secrets and duplicates', 'approval needs three approving reviewers from three model families, none of them the author''s family, bound to the exact bytes and naming each reviewer', 'a frozen malicious and benign challenge set plus blinded, stratified human adjudication of real approvals and refusals, with an error gate by risk class before scale', 'a call ceiling, rate-limit pauses and a resumable cursor, with every call recorded']
     adversarial: An approval from the authoring family, an approval not bound to the reviewed bytes, a rights-ambiguous item, a panel that fails its measured error gate and a run that exceeds its declared ceiling must each be refused.
     acceptance: The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.
-    evidence: 'September 22 evening: owner direction for 10,000 items, multi-model review, managed releases of new files, and user settings with good defaults. September23 independent native calibration review verified five curated control observations but found two enforcement gaps: persisted exclusions could be removed and an author-family-skipped reviewer could enter a later candidate phase uncalibrated. Both are being repaired before any live native review or admission. The benign control also needs applicable native-loading qualification before a rejection can be treated as a false refusal. Evidence is in docs/verification/NATIVE-REVIEW-CALIBRATION-INDEPENDENT-QA-2026-09-23.md. Successor repair now closes both gaps plus an altered-prompt/recomputed-review-key gap, with 281 component checks, 79 combined checks, six removed guards and 19 independent focused checks passing (one optional dependency skip in the component suite). Panel export is v3 and calibration result v2; native ledger and hosted approval source are unchanged. See docs/verification/CALIBRATION-EXPORT-ELIGIBILITY-REPAIR-2026-09-23.md and docs/verification/NATIVE-REVIEW-CALIBRATION-INDEPENDENT-SUCCESSOR-QA-2026-09-23.md. The real pilot remains held for applicable benign-control native-loading evidence.'
-    next_local_work: Library wave 1 builds the panel and runs a measured plumbing pilot on 30 of the 74 unreviewed starter items, then calibrates on frozen malicious and benign items and a real-batch human sample before scaling.
+    evidence: 'September 22 evening: owner direction for 10,000 items, multi-model review, managed releases of new files, and user settings with good defaults. September23 independent native calibration review verified five curated control observations but found two enforcement gaps: persisted exclusions could be removed and an author-family-skipped reviewer could enter a later candidate phase uncalibrated. Both are being repaired before any live native review or admission. The benign control also needs applicable native-loading qualification before a rejection can be treated as a false refusal. Evidence is in docs/verification/NATIVE-REVIEW-CALIBRATION-INDEPENDENT-QA-2026-09-23.md. Successor repair now closes both gaps plus an altered-prompt/recomputed-review-key gap, with 281 component checks, 79 combined checks, six removed guards and 19 independent focused checks passing (one optional dependency skip in the component suite). Panel export is v3 and calibration result v2; native ledger and hosted approval source are unchanged. See docs/verification/CALIBRATION-EXPORT-ELIGIBILITY-REPAIR-2026-09-23.md and docs/verification/NATIVE-REVIEW-CALIBRATION-INDEPENDENT-SUCCESSOR-QA-2026-09-23.md. The real pilot remains held for applicable benign-control native-loading evidence. September 24, 2026 (review throughput): the Codex reviewer pins its model and reads it back from the command line''s session record (protocol codex_exec_session; an unreported model is still refused); Claude reviews on the owner''s subscription with claude -p --safe-mode; the Tactical endpoint is a provider_binding reviewer; batched review asks up to 12 items per call with one verdict bound to each item''s digest; per-group call ceilings, a stop after repeated identical failures and collection below the quorum with a written reason. The main session set the quorum at two families and recorded the Verified and Community tiers in the AGENTS.md decision table (row Library tiers). Calibration: Claude rejected every known-wrong native control and approved the benign one, alike one at a time and in a mixed batch of 12; Tactical failed calibration on both profiles (3 of 4 native and 1 of 3 starter known-wrong controls approved), so it reviews no real candidate. Ollama Cloud stayed spent (four recorded probes) and Codex stays limited until September 29. Evidence: docs/verification/REVIEW-ENGINES-AND-BATCHING-2026-09-24.md and artifacts/review-throughput-2026-09-24/README.md.'
+    next_local_work: "Calibrate Codex (after September 29) and the Ollama Cloud reviewers when their allowances return, then ask them as the second family for Community items so they can become Verified; teach the dated review record to read batch calls; keep one recorded allowance probe before every batch."
   - id: S-6.64
     phase: 6
     title: Independently authored alternatives to restricted-source ideas
@@ -4288,6 +4288,21 @@ steps:
     acceptance: "A browser check that goes stale is reported within a day instead of waiting for the next local preflight."
     evidence: "On September 25, 2026 the homepage count check failed from release 30, when the homepage started showing the live count, until release 32, because only the local preflight runs the browser suite; ci.yml does not."
     next_local_work: "Write the scheduled workflow with the Playwright browsers and the Python extras the suite needs, and measure its run time on GitHub."
+  - id: S-6.119
+    phase: 6
+    title: "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release"
+    status: building
+    depends_on: [S-6.63, S-6.40]
+    boundary: [tools/write_reviewed_catalogue.py, tools/build_catalogue_release_bundle.py]
+    verify:
+      - "every served row names its tier, its reviewers and the exact digest each verdict approved; a one-file item keeps the reviewed package digest that binds its body at its placement"
+      - "Verified needs two approving families, none the producer's; Community needs every automated check (licence allowlist, pinned provenance, pre-checks, the SkillSpector static scan) and one approving family that did not produce the item"
+      - "an item another reviewer also judged, a refusing pre-check or scan, or a verdict from a reviewer that failed calibration is left out with its reason"
+      - "library bodies stay outside the public repository, and the release bundle builder accepts the folder and carries the tier into the served attributes"
+    adversarial: "An own-family approval, a Community row whose other-family rejection was dropped, a row whose body differs from the reviewed package file, a folder written inside the repository and a verdict from a reviewer that approved a known-wrong control must each fail a named check."
+    acceptance: "The main session builds and publishes a release from the folder, and every served item shows Verified or Community with its reviewers."
+    evidence: "September 24, 2026: the owner asked for 1,000 and more harness components fully live and retrievable; the main session recorded the tiers in the AGENTS.md decision table. The overnight lanes of zhipu, openai, moonshot and nvidia hold 274 candidates and the two google lanes 1,019; the writer and its checks are tools/write_reviewed_catalogue.py and tools/test_write_reviewed_catalogue.py; campaign evidence is in artifacts/review-throughput-2026-09-24/README.md."
+    next_local_work: "Finish Claude's Community review of the overnight and google-lane candidates, write the folders under /home/username/baltor-library/, review licensed imports as the import store fills, and ask a second calibrated family when one returns."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"

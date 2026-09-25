@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b196868f05b9d9f29`.
+Source fingerprint: `sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a69126b89e80e4574`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 43 |
+| Being built now | 45 |
 | Can start next | 15 |
-| Waiting on earlier work | 122 |
+| Waiting on earlier work | 121 |
 | Blocked | 3 |
 | Done | 47 |
 
@@ -30,6 +30,8 @@ Source fingerprint: `sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b1968
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | building | S-6.31 |
 | S-6.69 | The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day | building | S-6.40, S-6.63, S-6.62 |
+| S-6.63 | An independent review panel of several model families | building | S-6.45 |
+| S-6.119 | Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release | building | S-6.63, S-6.40 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
@@ -102,7 +104,6 @@ Source fingerprint: `sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b1968
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
 | S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | proposed | S-6.40, S-6.76 |
-| S-6.63 | An independent review panel of several model families | proposed | S-6.45 |
 | S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
 | S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
@@ -260,7 +261,7 @@ Source fingerprint: `sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b1968
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 | D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 10 |
-| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 11 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
 | D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |

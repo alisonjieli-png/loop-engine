@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 43,
-  "waiting": 122
+  "now": 45,
+  "waiting": 121
  },
  "lanes": {
   "blocked": [
@@ -1052,6 +1052,38 @@
     ]
    },
    {
+    "acceptance": "The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.45"
+    ],
+    "id": "S-6.63",
+    "next_local_work": "Calibrate Codex (after September 29) and the Ollama Cloud reviewers when their allowances return, then ask them as the second family for Community items so they can become Verified; teach the dated review record to read batch calls; keep one recorded allowance probe before every batch.",
+    "phase": 6,
+    "status": "building",
+    "title": "An independent review panel of several model families",
+    "waiting_on": [
+     "S-6.45"
+    ]
+   },
+   {
+    "acceptance": "The main session builds and publishes a release from the folder, and every served item shows Verified or Community with its reviewers.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.40"
+    ],
+    "id": "S-6.119",
+    "next_local_work": "Finish Claude's Community review of the overnight and google-lane candidates, write the folders under /home/username/baltor-library/, review licensed imports as the import store fills, and ask a second calibrated family when one returns.",
+    "phase": 6,
+    "status": "building",
+    "title": "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.40"
+    ]
+   },
+   {
     "acceptance": "A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.",
     "blocked_on": "",
     "depends_on": [
@@ -1756,21 +1788,6 @@
     "waiting_on": [
      "S-6.40",
      "S-6.76"
-    ]
-   },
-   {
-    "acceptance": "The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.45"
-    ],
-    "id": "S-6.63",
-    "next_local_work": "Library wave 1 builds the panel and runs a measured plumbing pilot on 30 of the 74 unreviewed starter items, then calibrates on frozen malicious and benign items and a real-batch human sample before scaling.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "An independent review panel of several model families",
-    "waiting_on": [
-     "S-6.45"
     ]
    },
    {
@@ -4496,8 +4513,8 @@
    "id": "D-22",
    "stage": "continued_improvement",
    "status_counts": {
-    "building": 1,
-    "proposed": 7
+    "building": 2,
+    "proposed": 6
    },
    "steps": [
     "S-6.51",
@@ -4623,8 +4640,8 @@
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 2,
-    "proposed": 8
+    "building": 4,
+    "proposed": 7
    },
    "steps": [
     "S-6.69",
@@ -4635,11 +4652,12 @@
     "S-6.40",
     "S-6.62",
     "S-6.63",
+    "S-6.119",
     "S-6.64",
     "S-6.88"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 10
+   "total_steps": 11
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -4761,5 +4779,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:2e8f71118ae18f02d2f1a778cb053b6bd54f7795a9ce196b196868f05b9d9f29"
+ "source_fingerprint": "sha256:837f0953fba58e26f083cb98d3dbc5cd8dd253e40852a71a69126b89e80e4574"
 }
