@@ -74,6 +74,12 @@ one of its reviewers came from the model family of the items' author. A
 browser check reads both records and fails when the page says anything they
 do not hold.
 
+A recipe's note may name a file this website serves under `/assets/`, as
+the Pi recipe names its extension, `/assets/pi/baltor.ts`. The guide turns
+that path into a link that opens the served file in a new tab, keeps the
+note's exact words, and adds "Copy the file address", which copies the file's
+full address. A note without such a path shows no file action.
+
 The guide's connection check runs the protocol handshake with the page's
 token, and it takes a client token, not an email sign-in. A visitor who is not
 signed in sees "Sign in to check access". Signed in with an email address, the

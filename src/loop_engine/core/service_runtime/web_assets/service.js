@@ -852,11 +852,25 @@
     const configuration = fill(recipe.configuration);
     return recipe.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
   };
+  /* A recipe's note may name a file this website serves under /assets/, such as the Pi extension at /assets/pi/baltor.ts. That path
+     becomes a link to the file on this website, so the reader can open and read it before saving it, and one button copies the
+     file's full address. The note keeps its exact words; only the path turns into a link. Any other text stays text. Finding 6 of
+     the persona journeys of September 24, 2026. */
+  const servedFile = /\/assets\/[a-z0-9][a-z0-9-]*(?:\/[a-z0-9][a-z0-9._-]*)*\.[a-z0-9]+(?=[\s,.;:)]|$)/;
+  function renderNote(note) {
+    const target = $("client-configuration-note"), found = note.match(servedFile);
+    target.replaceChildren();
+    if (!found) { target.textContent = note; $("client-file").hidden = true; return; }
+    const link = element("a", found[0]); link.href = found[0]; link.id = "client-file-link"; link.target = "_blank"; link.rel = "noopener";
+    target.append(note.slice(0, found.index), link, note.slice(found.index + found[0].length));
+    $("client-file").hidden = false; $("client-file-address").textContent = location.origin + found[0];
+    $("copy-client-file").textContent = "Copy the file address";
+  }
   function renderRecipe() {
     const selected = recipes?.recipes.find(item => item.id === chosenRecipe);
     if (!selected) return;
     $("client-configuration").textContent = configurationText(selected);
-    $("configuration-location").textContent = selected.configuration_location; $("client-configuration-note").textContent = selected.configuration_note;
+    $("configuration-location").textContent = selected.configuration_location; renderNote(selected.configuration_note);
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
     $("client-version-note").textContent = selected.version_note;
     $("client-revoke-note").textContent = recipes.revocation_note; $("client-removal-note").textContent = selected.removal_note;
@@ -879,6 +893,10 @@
     if (next === undefined || !tabs.length) return;
     event.preventDefault(); chooseRecipe(tabs[(next + tabs.length) % tabs.length].dataset.recipe, true);
   });
+  $("copy-client-file").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("client-file-address").textContent); $("copy-client-file").textContent = "File address copied"; }
+    catch (_) { message("setup-message", "Clipboard unavailable. Select and copy the file address."); }
+  });
   $("copy-configuration").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText($("client-configuration").textContent); $("copy-configuration").textContent = "Configuration copied"; }
     catch (_) { message("setup-message", "Clipboard unavailable. Select and copy the configuration text."); }
@@ -898,7 +916,7 @@
     if (homeEntry && homeRecipe) homeEntry.textContent = configurationText(homeRecipe);
   }).catch(error => {
     recipes = null; $("setup-message").dataset.refusal = error.refusal || "unavailable";
-    chosenRecipe = ""; $("client-tabs").replaceChildren(); $("copy-configuration").disabled = true; $("configuration-location").textContent = "No connection settings are shown";
+    chosenRecipe = ""; $("client-tabs").replaceChildren(); $("copy-configuration").disabled = true; $("client-file").hidden = true; $("configuration-location").textContent = "No connection settings are shown";
     $("client-configuration").textContent = "No configuration is shown."; $("client-version-note").textContent = "";
     message("setup-message", error.refusal ? "The connection recipes did not pass their safety check, so none is shown. Use the setup guide; do not guess a configuration." : "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true);
   });

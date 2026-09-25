@@ -2880,6 +2880,31 @@ try {
     note("pricing_links_new_vetted_additions_to_how_review_works",link.href==="/security#how-review-works"&&link.text==="pass review"&&landed.path==="/security"&&landed.hash==="#how-review-works"
       &&JSON.stringify(landed.views)===JSON.stringify(["security"])&&landed.top>=0&&landed.top<landed.viewport,{link,landed});
   };
+  /* Finding 6 of the persona journeys of September 24, 2026: the Pi tab named the extension this website serves, /assets/pi/baltor.ts,
+     as plain text. The path is now a link to the served file, the note keeps its exact words, and one button copies the file's full
+     address. The file the link opens is compared with the source file, and a tab whose note names no file shows no file action. */
+  const piSource=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/pi/baltor.ts"),"utf8");
+  const piExtension=async (target,note)=>{
+    await target.context().grantPermissions(["clipboard-read","clipboard-write"]);
+    await target.goto(fixture.base+"/setup");await settled(target);
+    await target.waitForSelector("#client-tab-pi",{timeout:10000}).catch(()=>{});
+    const recipe=recipeRecord.recipes.find(item=>item.id==="pi");
+    const tabFacts=()=>target.evaluate(()=>{const link=document.querySelector("#client-configuration-note a");
+      return {note:document.getElementById("client-configuration-note")?.textContent||"",href:link?.getAttribute("href")||"",text:link?.textContent||"",newTab:link?.target==="_blank"&&/noopener/.test(link?.rel||""),
+        action:Boolean(document.getElementById("copy-client-file")?.getClientRects().length),address:document.getElementById("client-file-address")?.textContent||""};});
+    await target.click("#client-tab-codex").catch(()=>{});
+    const other=await tabFacts();
+    await target.click("#client-tab-pi").catch(()=>{});
+    const pi=await tabFacts();
+    await target.evaluate(()=>navigator.clipboard.writeText("nothing copied yet")).catch(()=>{});
+    if(pi.action)await target.click("#copy-client-file");
+    await target.waitForTimeout(200);
+    const copied=await target.evaluate(()=>navigator.clipboard.readText()).catch(()=>"");
+    const served=pi.href?await target.request.get(fixture.base+pi.href):null,body=served?await served.text():"";
+    note("the_pi_extension_path_is_a_link_with_a_copy_action",pi.note===recipe.configuration_note&&pi.href==="/assets/pi/baltor.ts"&&pi.text==="/assets/pi/baltor.ts"&&pi.newTab
+      &&pi.action&&pi.address===fixture.base+"/assets/pi/baltor.ts"&&copied===pi.address&&served?.status()===200&&body===piSource
+      &&!other.href&&!other.action&&other.note===recipeRecord.recipes.find(item=>item.id==="codex").configuration_note,{pi,other,copied,status:served?.status()});
+  };
   const signedInFunnel=(credential,covered,freeMonthly=false)=>async (target,note)=>{
     await target.goto(fixture.billing_base+"/login");await target.fill("#access-token",credential);await target.click("#connect-button");
     await target.waitForFunction(()=>document.querySelector("#connection-state")?.textContent==="Connected",null,{timeout:10000}).catch(()=>{});
@@ -2914,7 +2939,7 @@ try {
     kept_sign_in:keptSignIn,kept_staff_sign_in:keptStaffSignIn,setup_signed_in:setupSignedIn,
     founding_open:foundingPublic(fixture.signup_base,true),founding_closed:foundingPublic(fixture.confirm_base,false),
     plan_founding:coveredPlan(fixture.billing_founding_token,"founding_free_monthly"),plan_free_monthly:coveredPlan(fixture.billing_free_monthly_token,"free_monthly"),
-    review_explained:reviewExplained};
+    review_explained:reviewExplained,pi_extension:piExtension};
   for(const name of Object.keys(journeyScenarios)){
     const {context:opened,page:target}=await openJourney(null);
     try{await journeyScenarios[name](target,check);}catch(error){check("journey_scenario_completed_"+name,false,{error:safeError(error)});}
@@ -3008,6 +3033,10 @@ try {
      find:" One of those reviewers came from the same model family as the model that wrote the items.",replacement:"",expected:["how_review_works_states_only_what_the_review_records_hold"]},
     {name:"leave_new_vetted_additions_unexplained",scenario:"review_explained",path:"/pricing",
      find:'<a href="/security#how-review-works" data-page="security" id="pricing-review-link">pass review</a>',replacement:"pass review",expected:["pricing_links_new_vetted_additions_to_how_review_works"]},
+    {name:"print_the_pi_extension_path_as_plain_text",scenario:"pi_extension",path:"/assets/service.js",find:"const target = $(\"client-configuration-note\"), found = note.match(servedFile);",
+     replacement:"const target = $(\"client-configuration-note\"), found = null;",expected:["the_pi_extension_path_is_a_link_with_a_copy_action"]},
+    {name:"copy_only_the_path_of_the_pi_extension",scenario:"pi_extension",path:"/assets/service.js",find:"$(\"client-file-address\").textContent = location.origin + found[0];",
+     replacement:"$(\"client-file-address\").textContent = found[0];",expected:["the_pi_extension_path_is_a_link_with_a_copy_action"]},
     {name:"let_confirm_run_before_the_sign_in_settings_load",scenario:"confirm_wait",path:"/assets/service.js",find:'$("confirm-button").disabled = !identityClient; $("confirm-loading").hidden = Boolean(identityClient);',replacement:'$("confirm-button").disabled = false; $("confirm-loading").hidden = true;',expected:["the_confirm_button_waits_for_the_sign_in_settings"]},
     {name:"offer_no_checkout_to_an_account_without_paid_access",scenario:"unpaid",path:"/assets/service.js",find:"$(\"funnel-subscribe\").hidden = !plan.subscribe;",replacement:"$(\"funnel-subscribe\").hidden = true;",expected:["get_started_funnel_offers_checkout_to_an_account_without_paid_access"]}];
   for(const control of journeyControls){
