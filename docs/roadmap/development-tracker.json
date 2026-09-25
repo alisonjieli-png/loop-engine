@@ -1,9 +1,9 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 44,
+  "done": 45,
   "next": 13,
-  "now": 40,
+  "now": 41,
   "waiting": 87
  },
  "lanes": {
@@ -94,6 +94,22 @@
     "status": "offline_verified",
     "title": "Maintain one continuation plan and regenerate its status artifact",
     "waiting_on": []
+   },
+   {
+    "acceptance": "The person running Baltor manages accounts, credits, messages, sign-up links and catalogue releases from Claude Code, Codex or an operator agent limited to its role, with no change made by mistake and a record of every call.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.85",
+     "S-6.99"
+    ],
+    "id": "S-6.120",
+    "next_local_work": "Release the committed revision, add the staff_tools block with catalogue_incoming_root to the host file, mint a staff key for the owner, connect Claude Code to /admin/mcp and run accounts_search, catalogue_status and one credits_grant plan and apply against the live service.",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases",
+    "waiting_on": [
+     "S-6.85"
+    ]
    },
    {
     "acceptance": "",
@@ -1261,6 +1277,23 @@
     "status": "building",
     "title": "Maintain sourced competitor, prior-art, funding, and strategic-path research",
     "waiting_on": []
+   },
+   {
+    "acceptance": "At each station a step asks a typed question and binds the answer of the engine its policy declares, or the station's safe default when no engine answers; advisory guidance stays apart, no answer grants authority, every decision is joined to its outcome, and a per-station measurement names the cheapest engine that meets the station's declared accuracy floor.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.31"
+    ],
+    "id": "S-6.100",
+    "next_local_work": "Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1.",
+    "phase": 6,
+    "status": "building",
+    "title": "Decision stations around the build step: typed judgments with swappable engines, measured",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.31"
+    ]
    },
    {
     "acceptance": "",
@@ -3695,7 +3728,7 @@
    "id": "D-19",
    "stage": "continued_improvement",
    "status_counts": {
-    "building": 3,
+    "building": 4,
     "proposed": 4
    },
    "steps": [
@@ -3705,10 +3738,11 @@
     "S-6.40",
     "S-6.41",
     "S-6.42",
-    "S-6.60"
+    "S-6.60",
+    "S-6.100"
    ],
    "title": "Engines behind fixed edges for every functional component",
-   "total_steps": 7
+   "total_steps": 8
   },
   {
    "acceptance": "A client on either protocol revision connects and loads an approved item in its own layout; every served item shows its licence, digest and measured or unmeasured effect; the dated deadlines are met.",
@@ -3869,13 +3903,13 @@
     "D-17",
     "D-24"
    ],
-   "done_steps": 2,
+   "done_steps": 3,
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
     "building": 3,
     "live_qualified": 1,
-    "offline_verified": 1,
+    "offline_verified": 2,
     "proposed": 4
    },
    "steps": [
@@ -3887,10 +3921,11 @@
     "S-6.38",
     "S-6.46",
     "S-6.89",
-    "S-6.99"
+    "S-6.99",
+    "S-6.120"
    ],
    "title": "Go fully live: open registration and self-serve paid onboarding",
-   "total_steps": 9
+   "total_steps": 10
   },
   {
    "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
@@ -4047,5 +4082,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc4ecdb509fe0a"
+ "source_fingerprint": "sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a36e9d28620975"
 }

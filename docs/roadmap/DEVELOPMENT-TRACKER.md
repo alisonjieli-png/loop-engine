@@ -3,17 +3,17 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc4ecdb509fe0a`.
+Source fingerprint: `sha256:cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a36e9d28620975`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 40 |
+| Being built now | 41 |
 | Can start next | 13 |
 | Waiting on earlier work | 87 |
 | Blocked | 2 |
-| Done | 44 |
+| Done | 45 |
 
 ## Being built now
 
@@ -50,6 +50,7 @@ Source fingerprint: `sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
 | S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
+| S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
 | S-1.4 | Evaluation product command over a frozen suite | building |  |
 | S-1.7 | Runnable prompt and harness optimization command | building | S-1.4 |
 | S-2.15 | Noise injection and explorative optimization over the evaluation product | building | S-1.7 |
@@ -212,13 +213,13 @@ Source fingerprint: `sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
 | D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
-| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 7 |
+| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 8 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 1 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 5 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
-| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 2 of 9 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 3 of 10 |
 | D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 10 |
 | D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
 | D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 9 |
@@ -249,12 +250,13 @@ Source fingerprint: `sha256:6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (44 steps)
+## Done (45 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
+- S-6.120: Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)
 - S-1.10: Detection and correction node family with confidence (offline_verified)

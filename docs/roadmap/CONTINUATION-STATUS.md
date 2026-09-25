@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `6e2e96986ca563b90d01961ccf1c140763c6e20c0d73cfe18afc4ecdb509fe0a`.
+Plan fingerprint: `cc354fd80973cbc51a98a72a8984eabc72bc54cd88aabe0ea1a36e9d28620975`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -55,6 +55,7 @@ These steps are already being built. They are not completed dependencies or perm
 | S-6.25 | artifacts/architecture-audit-2026-09-19/ contains the source graph, file coverage, component rows, review registers, and client/server diagrams. Structural enumeration is complete for its declared population; every-file semantic review is not claimed. | Continue the declared acceptance checks |
 | S-6.18 | Practitioner runtime, Solution execution and export templates have separate modules. Typed decision contracts, provider mapping and gateway support now live under core/decisions with import-boundary tests. Website assets live inside service_runtime. The larger flat core still needs measured reorganization; no whole-repository cleanliness claim is made. | Continue the declared acceptance checks |
 | S-6.22 | Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. Six further September 22 records in docs/research cover frontier harness positioning and Google context-state work, model-call strategy and disagreement, benchmark and showcase options, CodeGraph and Graphify alongside retrieval engines, library scale with paid acquisition readiness, and customer-side credential and endpoint delegation. They distinguish observed behavior from proposals and identify tests for Claude Code's build work. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred. | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
+| S-6.100 | September 24, 2026, the owner: "What about research and further seperation and containerization, and swapable engines for reasonining and decision steps vs build step". The owner later reported that Jev is full and TypeSafe has paused sign-ups, so the Jev adapter stays as it is, unqualified, and other engines behind the same contract come first. First slice, built and checked locally: the command safety station with the command risk policy (a parser that never runs what it reads), the in-process rules engine, the separate advisory guidance channel on the typed edge, the boundary decision station judgment, the command-safety command with a harness hook that only narrows, and 29 station checks in which every guard is also run with that guard removed. The slot's two planned checks are now existing checks. The run-time engine selector has not reached main, so stations use their declared order and record that dependency. | Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1. |
 
 ## Release gates
 
@@ -670,7 +671,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-19: Engines behind fixed edges for every functional component
 
-Owning steps: S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60. Acceptance dependencies: D-12.
+Owning steps: S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60, S-6.100. Acceptance dependencies: D-12.
 
 Owning boundaries: `src/loop_engine/core/boundary_registry.py`; `src/loop_engine/core/external_harness.py`; `src/loop_engine/core/harness_intelligence_search.py`.
 
@@ -846,7 +847,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-25: Go fully live: open registration and self-serve paid onboarding
 
-Owning steps: S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89, S-6.99. Acceptance dependencies: D-17, D-24.
+Owning steps: S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.38, S-6.46, S-6.89, S-6.99, S-6.120. Acceptance dependencies: D-17, D-24.
 
 Owning boundaries: `src/loop_engine/core/service_runtime/browser_identity.py`; `src/loop_engine/core/service_runtime/web_pages.py`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/check_hosted_website.mjs`; `.github/workflows/fly-pilot.yml`.
 
@@ -1133,6 +1134,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.14 | Qualify the release candidate on the exact exported tree | proposed | S-6.4, S-6.5, S-6.6, S-6.10, S-6.12, S-6.13, S-6.21, S-6.23, S-6.24, S-6.26, S-6.27 |
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
 | S-6.16 | Activate approved paid access and publish the release decision | proposed | S-6.6, S-6.15, S-6.21 |
+| S-6.120 | Staff tools: a staff protocol endpoint and admin routes for accounts, credits, messages, sign-up links, activity and catalogue releases | offline_verified | S-6.85, S-6.99 |
 
 ## Continued improvements
 
@@ -1173,6 +1175,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.116 | media.baltor.ai: seeded short videos from the owner's media tools, made step by step | proposed | S-6.110, S-6.111 |
 | S-6.117 | Original first-party media packages from the owner's MIT tools, through the independent review | proposed | S-6.40, S-6.63 |
 | S-6.118 | Baltor's own social posts, made step by step and approved by a person | proposed | S-6.59, S-6.116 |
+| S-6.100 | Decision stations around the build step: typed judgments with swappable engines, measured | building | S-6.30, S-6.31 |
 
 ## Every retained initiative
 
@@ -1183,10 +1186,10 @@ Legacy statuses remain historical component claims until current integration evi
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96 |
 | Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117 |
 | Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94 |
-| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98 |
+| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13, S-6.57 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84 |
 | Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118 |
 
