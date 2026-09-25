@@ -1388,7 +1388,7 @@ continuation:
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
   launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.81, S-6.63, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120]
-  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
       hours: [0, 3]
@@ -1486,31 +1486,31 @@ continuation:
   workstreams:
     - title: Reusable capabilities and detection
       legacy_steps: [S-0.5, S-1.10]
-      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162]
+      continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.64, S-6.69, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60, S-6.93, S-6.97, S-6.98, S-6.100, S-6.161, S-6.165, S-6.171]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30, S-6.74, S-6.75, S-6.86, S-6.87, S-6.157, S-6.163, S-6.172]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46, S-6.65, S-6.85, S-6.66, S-6.67, S-6.68, S-6.78, S-6.79, S-6.89, S-6.99, S-6.120, S-6.140, S-6.141, S-6.146, S-6.147, S-6.149, S-6.150, S-6.151, S-6.152, S-6.156, S-6.174]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55, S-6.71, S-6.72, S-6.73, S-6.76, S-6.77, S-6.84]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.153, S-6.154]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59, S-6.90, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.118, S-6.153, S-6.154, S-6.173]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -4019,3 +4019,185 @@ steps:
     acceptance: "The library serves reviewed packages that turn the record's checked facts into steps a harness can follow."
     evidence: "docs/research/AGENT-STACK-LANDSCAPE-2026-09-24.md sections 6 to 8, the DBOS retry trial of September 23, 2026 and the E01 pilot of September 25, 2026."
     next_local_work: "Draft the five candidates on the Tactical server and queue them for the review panel."
+  - id: S-6.165
+    phase: 6
+    title: "Token accounting by billing class, dated prices and price-weighted cost per accepted step"
+    status: proposed
+    depends_on: [S-6.6, S-6.41]
+    boundary: [src/loop_engine/core/run_history_usage.py, src/loop_engine/core/opencode_harness_adapter.py, src/loop_engine/core/openai_responses_client.py]
+    verify:
+      - "a provider_token_totals/v2 record keeps uncached input, cache read, cache write, output and reasoning tokens as separate counts, each known or unknown, and a version 1 reader refuses it"
+      - "every adapter that sees cache or reasoning counts keeps them apart: the OpenCode adapter stops adding cache reads into input tokens, and the OpenAI Responses client carries cached input and reasoning tokens into Run History"
+      - "a price record for each exact provider and model gives the price of each billing class with its source and observation date, following the shape of AstraPricingSpec; a missing price makes the cost unknown, never zero"
+      - "each step record reports price-weighted cost, turns, cache read share and tool errors, and each task reports cost per accepted step and per accepted task, with the cost of rejected steps counted in the total and only accepted steps counted in the denominator"
+    adversarial: "A cache read counted as uncached input, a missing class counted as zero, a cost priced with another model's rates, a version 2 record read by a version 1 reader and a cost per accepted task that leaves out the cost of rejected steps must each fail a named check with its removed-guard control."
+    acceptance: "For any run, a reader can see what each step cost by billing class and what each accepted result cost, which is the baseline every later efficiency change is measured against."
+    evidence: "Research, technique 1: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Cursor's audit prompt of September 23, 2026 makes token and cache telemetry its first change and ranks changes by price-weighted cost per completed task. Read on main at dbf2389c: TokenUsageTotals keeps prompt and output counts only; opencode_harness_adapter.py adds cache reads into input tokens; openai_responses_client.py reads cached and reasoning tokens that Run History does not carry; AstraPricingSpec prices cached input and cache writes for one route, for a worst-case bound only."
+    next_local_work: "Declare provider_token_totals/v2 with fixtures for each billing class and each unknown case, then change the OpenCode adapter and the Responses client, each with its removed-guard control."
+  - id: S-6.166
+    phase: 6
+    title: "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends"
+    status: proposed
+    depends_on: [S-6.44, S-6.165]
+    boundary: [src/loop_engine/core/instance_instructions.py, src/loop_engine/core/node_provisioning.py]
+    verify:
+      - "a second composition engine behind the same edge orders instruction file sections from most shared to least shared: rules and authority text that all steps of a task share first, the step's own assignment last"
+      - "no timestamp, run identity, step identity or random value appears before the last shared section, and skill, tool, capability and protocol server lists are sorted and serialized deterministically"
+      - "for two steps of one task with the same shared material, the shared byte prefix of their files is recorded, and the new engine shares every byte of the shared sections"
+      - "a comparison on a frozen task set records cache read share, cost per accepted step and acceptance for both engines through the S-6.165 records; the current engine stays the default until the comparison favors the new one"
+    adversarial: "A timestamp or run identity placed before the shared sections, a skill list whose order changes between identical inputs, a composition that drops or weakens the authority section to gain prefix bytes and a default switched without the comparison must each fail a named check."
+    acceptance: "Steps of one task give the provider the longest byte-identical prefix their material allows, and the effect on cost is measured rather than assumed."
+    evidence: "Research, technique 2: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Cursor's prompt reports that explicit cache breakpoints plus moving per-request setup after them cut cold cache misses 20 percent (self-reported). Strands harness injects the date after the cached prefix (read in source at 7ae759d3). instance_instructions.py writes the step's assignment first, so two steps of one task share only the title and the first heading, and tool and skill lists keep request order."
+    next_local_work: "Measure the shared prefix of two sibling steps with the current engine, then write the stable-first engine and its fixtures."
+  - id: S-6.167
+    phase: 6
+    title: "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items"
+    status: proposed
+    depends_on: [S-6.61]
+    boundary: [src/loop_engine/core/harness_process.py, src/loop_engine/core/harness_process_relay.py, src/loop_engine/core/harness_model_authority.py]
+    verify:
+      - "every model exchange of a step, and each streamed chunk, is appended to a log outside the step's sandbox before it is forwarded; a failed write stops forwarding and ends the step with a typed reason"
+      - "the model call, token and cost limits of HarnessBudget are enforced while the step runs, at the broker or proxy, and a limit reached ends the step with a typed exit reason instead of only failing post-run acceptance"
+      - "reasoning items, including encrypted ones, pass through the relay and proxy unchanged in both directions, and a reasoning item missing from a later request writes an alert record"
+      - "acceptance never uses a harness's own transcript as evidence that an action happened; actions come from host-side observations: the exchange log, workspace digests and commands the engine ran itself"
+    adversarial: "A step that deletes or edits its harness's trace file, a skill that tells the agent to delete its session trace, a forward after a failed log write, a model call past max_model_calls that reaches the provider, a dropped encrypted reasoning item and an acceptance that cites only the harness transcript must each fail a named check."
+    acceptance: "What a step's harness sent to its model and how much it used are recorded where the harness cannot change them, and a step cannot spend past its limits while it runs."
+    evidence: "Research, techniques 13, 18 and 19: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. arXiv 2609.30266 (September 24, 2026) reports that every tested local harness except Muse Code let agents delete their traces, including through a malicious skill file, and recommends an interception server outside the agent's control that records before forwarding and fails closed. harness_process.py already records each exchange before calling the broker; HarnessBudget describes its limits as post-run acceptance bounds."
+    next_local_work: "Write the append-only log fixture and the fail-closed control on the existing broker loop, then the live call limit."
+  - id: S-6.168
+    phase: 6
+    title: "Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call"
+    status: proposed
+    depends_on: [S-6.61, S-6.93]
+    boundary: [src/loop_engine/core/harness_confinement.py, src/loop_engine/core/credential_leases.py, src/loop_engine/core/harness_fresh_instances.py]
+    verify:
+      - "a fixture step process that reads its environment, any process memory it can see, credential files and its working folder obtains no provider secret, and a call it sends through the broker socket gets no more than the step's grant: the same route and the same ceilings"
+      - "a harness's built-in tools, such as a shell or file tool, count as tools in the step menu; a step whose menu omits the shell starts its harness with the shell turned off, and the loading check proves it"
+      - "network access for a step is denied by default with a per-step allowlist; a refused destination, a literal address inside an allowed range and a host name that differs from the announced server name are refused and written to Run History as security events"
+      - "a data policy engine at the tool gateway checks each call against the verified customer, the step and the requested fields and returns only permitted fields; a deny-all engine is the default and Cedar is evaluated as the first policy engine"
+    adversarial: "The Unit 42 pattern (an injected instruction that makes a shell read memory or the environment and post a token to an outside address), a shell left on in a step whose menu has none, a request to a literal address inside an allowed range, a domain-fronted request and a tool call that returns a field its policy withholds must each fail a named check."
+    acceptance: "A step can reach only the credentials, tools, destinations and data fields it was granted, and an attempt to reach more is refused and recorded."
+    evidence: "Research, techniques 21 to 24: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Unit 42 (September 18, 2026) showed an AgentCore Harness shell running as root read a vault credential from the harness process's memory. Anthropic keeps tokens out of the sandbox with a vault and a proxy; Vercel's sandbox firewall injects credentials at egress and documents its limits. On the isolated path Baltor already starts bubblewrap with --unshare-all and --clearenv, and the relay reaches the broker over a Unix socket."
+    next_local_work: "Write the Unit 42 fixture against the isolated path first, then the built-in tool check in the fresh instance loading test."
+  - id: S-6.169
+    phase: 6
+    title: "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure"
+    status: proposed
+    depends_on: [S-6.96]
+    boundary: [src/loop_engine/core/independent_failure_review.py, src/loop_engine/core/provider_failure_classes.py]
+    verify:
+      - "failure_fingerprint/v1 gains an interaction edge between two components from a fixed vocabulary (owner, model, check, third party, context, memory, tool, local environment, external environment, another step), a fault side and a repair owner (model route, harness configuration, library item, tool, environment or check)"
+      - "the label goes to the earliest failure from which the step never recovered, and later errors are recorded as its consequences"
+      - "a fault on the check side goes to the review of the check under the persistent solving rules, never to a model or library change"
+      - "labels written by a reviewing model are candidates; their agreement with human labels is measured on a frozen set before any label feeds engine selection"
+    adversarial: "A failure labelled at a later symptom, a check fault sent to model repair, an instruction lost in compaction labelled as a model fault, a tool wrapper that reported success on a partial failure labelled as a model fault and a model-written label used before its agreement is measured must each fail a named check."
+    acceptance: "Every recorded failure says where it started and who owns the repair, so that repeated failures lead to the right change."
+    evidence: "Research, techniques 7 and 27: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. arXiv 2607.28802 (Scale AI, July 30, 2026) places 41 failure modes on interaction edges with a fault side, labels the earliest unrecovered failure, and reports Cohen's kappa up to 0.76 between reasoning-agent judges and human labels."
+    next_local_work: "Add the three fields to the fingerprint record with one fixture for each fault side, using the paper's worked examples as test descriptions."
+  - id: S-6.170
+    phase: 6
+    title: "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival"
+    status: proposed
+    depends_on: [S-6.31, S-6.165]
+    boundary: [src/loop_engine/core/context_budget.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a compaction policy slot declares four engines: the harness's native compaction (the default), a drop-only proxy with CliffCompaction under MIT as its upstream engine, a model summary that carries plan state and remaining tasks, and a fresh step seeded with the typed step result"
+      - "every engine keeps the owner's and the engine's instruction text verbatim, and a fixture set with instructions and their reasons placed early in long histories checks that each survives"
+      - "the full history before any compaction stays searchable in a file or in Run History, and every dropped span is recorded with its byte count and digest"
+      - "a comparison on long steps records cost, acceptance and instruction survival for each engine through the S-6.165 records, and the default changes only on that evidence"
+    adversarial: "A summary that drops a do-not-act instruction or its reason, a compaction of an earlier compaction, a dropped span without a digest record, a proxy engine running while the harness's own compaction is still on and a default switched without the comparison must each fail a named check."
+    acceptance: "Long steps stay within their context budget without losing the instructions that govern them, and the chosen compaction engine is the one the evidence favors."
+    evidence: "Research, techniques 8 and 9: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. CliffCompaction (arXiv 2609.26779) only truncates or drops and never compacts a compaction, reporting up to 50 percent lower cost under a bounded context. The Australian Signals Directorate guidance of September 11, 2026 says to delete stale content rather than summarize it. Strands harness summarizes at 85 percent context use. Scale AI's worked examples show summaries that dropped an instruction and the reason for it."
+    next_local_work: "Declare the slot with the native engine, write the instruction-survival fixtures, then add the drop-only proxy engine in shadow mode."
+  - id: S-6.171
+    phase: 6
+    title: "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives"
+    status: proposed
+    depends_on: [S-6.58, S-6.93]
+    boundary: [src/loop_engine/core/opencode_step_provision.py, src/loop_engine/core/decisions/system_one.py]
+    verify:
+      - "a third provisioning engine beside the trigger-word layer and the model-led provisioner asks closed questions through the typed_decision slot over a shortlist from search: include this item or not, and which of these few"
+      - "it only requests items; the engine still admits each request against the registered catalogue and library, as it does for the model-led provisioner"
+      - "a none-applies answer is allowed, and an answer below a declared confidence floor falls back to the model-led provisioner"
+      - "a frozen set of steps measures recall of needed items, wrong-item rate, bytes placed, time and cost against both existing engines, and the engine is selected only when it beats them"
+    adversarial: "A decision that grants an item outside the catalogue, a low-confidence answer acted on without the fallback, a shortlist that includes another customer's item and an engine selected without beating the existing engines must each fail a named check."
+    acceptance: "Deciding what a step receives costs a fast closed decision instead of a full model call, and only where the measurement shows it chooses as well."
+    evidence: "Research, technique 12: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. InfoWorld reported on September 17, 2026 that Jev returns a typed decision with its probability in 70 to 500 milliseconds; a feed post reports a 95 percent cut in input tokens from a decision model in front of skills, tools and context (one user, no method). opencode_step_provision.py spends one extra model call of about 7,800 input tokens per step. The Jev adapter has local contract checks and no live quality evidence."
+    next_local_work: "Build the frozen step set from recorded provisioning decisions, then the engine against a local typed-decision fixture before any live endpoint."
+  - id: S-6.172
+    phase: 6
+    title: "Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning"
+    status: proposed
+    depends_on: [S-6.63, S-6.77]
+    boundary: [src/loop_engine/data/engine_slots.yaml, tools/candidate_review]
+    verify:
+      - "an improvement Loop that proposes edits to harness configuration, instruction files or library items records for each candidate its declared edits, component, hypothesis, diff, score change, cost change and decision"
+      - "an edit budget per candidate shrinks over the rounds of a run; a noise band measured by rerunning the unchanged baseline sets an acceptance floor; a cost rule rejects cost growth that measured gain does not pay for"
+      - "before any evaluation, deterministic pre-checks (task names, answers, grader paths, secrets) and a reviewer from a model family other than the proposer's apply six rules adapted from RRSI's Apache 2.0 critic, with its notice"
+      - "components that stop earning measured gain over a declared window are proposed for removal, and held-out and out-of-distribution sets never tune these settings"
+    adversarial: "An edit that names an evolve-set task, an edit that reads the grader, a costlier candidate inside the noise band, an undeclared bundled edit, a memory mechanism that persists task-specific answers, an unbounded retry loop and a reviewer from the proposer's family must each be refused before evaluation or at selection."
+    acceptance: "Self-improvement keeps only changes that transfer beyond the tasks they were tuned on and that pay for their cost, and each accepted change can be traced to its evidence."
+    evidence: "Research, technique 25: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. RRSI (arXiv 2609.24972, code google-research/rrsi at be50316e, Apache 2.0) reports the smallest in-distribution gain but the best out-of-distribution average (43.6 against 39.7 for the starting harness), and 2.42 million policy tokens per trial against 3.80 million for unregularized evolution. Its critic shared the proposer's model family, which Baltor's review rule refuses."
+    next_local_work: "Model the candidate record and the noise-band measurement on the daily state review Loop of S-6.77, then adapt the six critic rules with their notice."
+  - id: S-6.173
+    phase: 6
+    title: "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first"
+    status: proposed
+    depends_on: [S-6.31, S-6.110, S-6.165]
+    boundary: [benchmarks, case-studies]
+    verify:
+      - "a design frozen before any counted call: a random sample of tasks from a public suite run through Harbor, starting with Terminal-Bench 2.1, three attempts per task, an attempt cap, one price list dated before the run and 95 percent bootstrap intervals over task means"
+      - "arms on the same model route: one native harness session, the same harness with the drop-only compaction proxy, Baltor per step with a fresh harness and only its files, and optionally a long-context runtime such as Subconscious as a separate route"
+      - "Gemma 4 on Ollama Cloud first, within the owner's model authority, with a call ceiling and a pilot of a few tasks"
+      - "the showcase run record of S-6.110 holds each arm's step files, cost by billing class, turns and failures, and a negative result is published as recorded"
+    adversarial: "Arms that differ in tasks, model route or checker, a price list dated after the run, an unknown cost shown as zero, a vendor number shown as a Baltor result and an attempt that can read the hidden verifier must each fail a named check."
+    acceptance: "Baltor can state, with its own records and intervals, what running each step in a fresh harness costs and gains against one long session on the same model."
+    evidence: "Research, techniques 11, 14 and 30: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. HarnessTax (UC Berkeley and Arena Intelligence) measured 21 model and harness pairs on 30 sampled tasks per suite with three attempts and bootstrap intervals, and found cost ratios of 1.5 to 2.0 at success differences within about 2 to 5 points. The vendor comparisons in the feed use single runs, leaderboard values or their own evaluations."
+    next_local_work: "Write the frozen design and the price list, then run a five-task pilot on Ollama Cloud when the weekly allowance allows."
+  - id: S-6.174
+    phase: 6
+    title: "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records"
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, docs/guides/launch-benefits-and-evidence.md]
+    verify:
+      - "the efficiency page gains a short section that cites HarnessTax's cost differences at similar success, the Australian Signals Directorate's guidance to give each sub-agent only the tools, permissions and context its part needs and to start fresh sessions instead of summarizing, and Harness-Zero's finding that generic harnesses lowered a small model's score, each with its population, date and limits"
+      - "vendor numbers (Strands harness, Unreal Agent, Teradata, Subconscious, Cursor) are not presented as evidence of Baltor's benefit"
+      - "each statement links its source, and a Baltor number appears only from a showcase run record"
+      - "the text follows the product style guide and uses no runtime terms on the public page"
+    adversarial: "A vendor percentage presented as a Baltor result, an outside figure without its task population and limits, a Baltor number without a run record and an evaluative sentence presented as a measurement must each fail a named check."
+    acceptance: "A visitor to the efficiency page sees why fresh, focused steps should help, with outside evidence stated precisely and no number Baltor cannot support."
+    evidence: "Research, techniques 10 and 11: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. AGENTS.md allows outside results only with their task population, model, harness version, evaluator, source and limits. The site already says that each step carries only the context it needs."
+    next_local_work: "Draft the section against the product style guide, then add its named check to the page checks."
+  - id: S-6.175
+    phase: 6
+    title: "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items"
+    status: proposed
+    depends_on: [S-6.45, S-6.63, S-6.69]
+    boundary: [tools/candidate_review, docs/research]
+    verify:
+      - "ten candidates are drafted: a harness cost audit skill with a request-rendering script, a cache-stable prefix checker, a large-output wrapper, a drop-only compaction proxy setup, a leakage review skill, a credential and egress probe, a trace integrity setup, a failure localization skill, a tool error classifier and a long-running command wrapper"
+      - "each candidate records its licence basis: adapted text only from Apache 2.0 or MIT sources (RRSI's critic, CliffCompaction) with notices and pinned commits, and original work where the source carries no copying licence (Cursor's prompt, the papers' text)"
+      - "each candidate carries its tests and declared effects, passes the deterministic prechecks, and is labelled Community or Verified by the tier rule, with the harnesses it was tested in and offered, loaded, used and verified kept apart"
+      - "review criteria for every package gain four rules: tools accept batches where the work is independent, scripts print plain output when not attached to a terminal, tools declare their output bound and what happens beyond it, and wrappers pass partial failures through"
+      - "the malicious-skill regression set of S-6.45 gains cases for a skill that asks the agent to delete its trace, a skill or script that reads process memory, the environment or credential files, a harness edit that names tasks or reads a grader, and a loop without an exit"
+    adversarial: "A package that copies text from a source without a copying licence, a package without its tests, a wrapper that silently truncates output, a leakage review that approves an edit naming a task, a Community label without one independent review and a published skill that asks for trace deletion must each be refused."
+    acceptance: "The library serves reviewed harness engineering packages that no served item covered on September 24, 2026, and every published item faces the checks these sources call for."
+    evidence: "Research, techniques 3, 5, 6, 16, 25 and 31: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. The September 24 library inventory found no unit on cache layout, tool offloading, token audits, compaction policy or trace integrity. arXiv 2609.30266 induced trace deletion with a skill file framed as privacy protection."
+    next_local_work: "Draft the large-output wrapper and the credential and egress probe first, since both are deterministic and testable offline, then queue all ten for the review panel."
+  - id: S-6.176
+    phase: 6
+    title: "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound"
+    status: proposed
+    depends_on: [S-6.50, S-6.94, S-6.165]
+    boundary: [src/loop_engine/core/harness_recipes.py, src/loop_engine/data/engine_slots.yaml]
+    verify:
+      - "a tool result above a declared size is written to a file, and the model sees a preview, the size and the path; the threshold is a setting per model family chosen from recorded comparisons"
+      - "a long tool returns an in-progress result at once and delivers its final result on a later turn, following the run contracts of S-6.94, and independent tool calls are issued in one turn"
+      - "small models use schema-constrained output only where a provider capability record says the provider supports it (Ollama's documentation of September 24, 2026 says local Ollama accepts a JSON schema format and that Ollama Cloud does not support structured outputs); elsewhere output is validated and repaired within a bounded number of attempts"
+      - "a step ends or changes approach after a declared number of turns with no new host-observed evidence (no changed file, no new test result, no new source), recorded as a typed exit reason"
+      - "each default is an option with its comparison record, and none becomes the default without the benchmark of S-6.173"
+    adversarial: "A tool result truncated without a file, a long tool that blocks the turn, a schema-constrained request sent to Ollama Cloud without the fallback, a step that runs past its progress bound and a default switched on without its comparison must each fail a named check."
+    acceptance: "Baltor's own harness path starts from the techniques with the best evidence, each one switchable and measured."
+    evidence: "Research, techniques 5, 15, 17 and 20: docs/research/HARNESS-ENGINEERING-INTELLIGENCE-2026-09-24.md. Read in source: Strands harness offloads results over 1,500 tokens with a 750-token preview (7ae759d3); Unreal Agent returns a running placeholder, wakes on completion and bounds output at 40,000 characters with a path to the full stream (1b9f7784). A feed post reports llama3.2 passing 0 of 3 search runs prompted and 3 of 3 with a constrained grammar."
+    next_local_work: "Add the provider capability record for structured output with the Ollama Cloud case, then the file offload option with its fixture."

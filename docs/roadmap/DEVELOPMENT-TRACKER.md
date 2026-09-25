@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d31d246bd2b21`.
+Source fingerprint: `sha256:fcb022e9a3eeff05d07dd7a22c308194ce4a8af3b1500a90f91f3d0aad7625b3`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d
 |---|---:|
 | Being built now | 42 |
 | Can start next | 15 |
-| Waiting on earlier work | 108 |
+| Waiting on earlier work | 120 |
 | Blocked | 2 |
 | Done | 44 |
 
@@ -178,6 +178,18 @@ Source fingerprint: `sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d
 | S-6.162 | Reuse versus repeated model work (experiment E03): verified code packages against model-written code and a deterministic run | proposed | S-6.161, S-6.54 |
 | S-6.163 | A lifecycle watch for every outside engine candidate: archival, licence change, acquisition and discontinuation hold its selection | proposed | S-6.22, S-6.74 |
 | S-6.164 | Original harness packages from the agent stack research, through independent review | proposed | S-6.69, S-6.63 |
+| S-6.165 | Token accounting by billing class, dated prices and price-weighted cost per accepted step | proposed | S-6.6, S-6.41 |
+| S-6.166 | Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends | proposed | S-6.44, S-6.165 |
+| S-6.167 | The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items | proposed | S-6.61 |
+| S-6.168 | Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call | proposed | S-6.61, S-6.93 |
+| S-6.169 | Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure | proposed | S-6.96 |
+| S-6.170 | A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival | proposed | S-6.31, S-6.165 |
+| S-6.171 | A typed-decision provisioning engine that decides which skills, tools and context files the next step receives | proposed | S-6.58, S-6.93 |
+| S-6.172 | Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning | proposed | S-6.63, S-6.77 |
+| S-6.173 | A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first | proposed | S-6.31, S-6.110, S-6.165 |
+| S-6.174 | An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records | proposed | S-6.33 |
+| S-6.175 | A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items | proposed | S-6.45, S-6.63, S-6.69 |
+| S-6.176 | Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound | proposed | S-6.50, S-6.94, S-6.165 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |

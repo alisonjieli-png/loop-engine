@@ -4,7 +4,7 @@
   "done": 44,
   "next": 15,
   "now": 42,
-  "waiting": 108
+  "waiting": 120
  },
  "lanes": {
   "blocked": [
@@ -2966,6 +2966,210 @@
     ]
    },
    {
+    "acceptance": "For any run, a reader can see what each step cost by billing class and what each accepted result cost, which is the baseline every later efficiency change is measured against.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.6",
+     "S-6.41"
+    ],
+    "id": "S-6.165",
+    "next_local_work": "Declare provider_token_totals/v2 with fixtures for each billing class and each unknown case, then change the OpenCode adapter and the Responses client, each with its removed-guard control.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Token accounting by billing class, dated prices and price-weighted cost per accepted step",
+    "waiting_on": [
+     "S-6.6",
+     "S-6.41"
+    ]
+   },
+   {
+    "acceptance": "Steps of one task give the provider the longest byte-identical prefix their material allows, and the effect on cost is measured rather than assumed.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.165"
+    ],
+    "id": "S-6.166",
+    "next_local_work": "Measure the shared prefix of two sibling steps with the current engine, then write the stable-first engine and its fixtures.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Cache-stable step files: shared material first, the step's own assignment last, and no volatile values before the shared part ends",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "What a step's harness sent to its model and how much it used are recorded where the harness cannot change them, and a step cannot spend past its limits while it runs.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.61"
+    ],
+    "id": "S-6.167",
+    "next_local_work": "Write the append-only log fixture and the fail-closed control on the existing broker loop, then the live call limit.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The step proxy as an independent recorder and live limiter: an append-only exchange log written before forwarding, live call and token limits, and preserved reasoning items",
+    "waiting_on": [
+     "S-6.61"
+    ]
+   },
+   {
+    "acceptance": "A step can reach only the credentials, tools, destinations and data fields it was granted, and an attempt to reach more is refused and recorded.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.61",
+     "S-6.93"
+    ],
+    "id": "S-6.168",
+    "next_local_work": "Write the Unit 42 fixture against the isolated path first, then the built-in tool check in the fresh instance loading test.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Step reach controls: no secret reachable from a step, built-in tools counted in the step menu, deny-by-default egress and a data policy at each tool call",
+    "waiting_on": [
+     "S-6.61",
+     "S-6.93"
+    ]
+   },
+   {
+    "acceptance": "Every recorded failure says where it started and who owns the repair, so that repeated failures lead to the right change.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.96"
+    ],
+    "id": "S-6.169",
+    "next_local_work": "Add the three fields to the fingerprint record with one fixture for each fault side, using the paper's worked examples as test descriptions.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Failure records with the interaction edge, the fault side and the repair owner, labelled at the earliest unrecovered failure",
+    "waiting_on": [
+     "S-6.96"
+    ]
+   },
+   {
+    "acceptance": "Long steps stay within their context budget without losing the instructions that govern them, and the chosen compaction engine is the one the evidence favors.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31",
+     "S-6.165"
+    ],
+    "id": "S-6.170",
+    "next_local_work": "Declare the slot with the native engine, write the instruction-survival fixtures, then add the drop-only proxy engine in shadow mode.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A compaction policy slot with native, drop-only, model summary and fresh-restart engines, checked for instruction survival",
+    "waiting_on": [
+     "S-6.31",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "Deciding what a step receives costs a fast closed decision instead of a full model call, and only where the measurement shows it chooses as well.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.58",
+     "S-6.93"
+    ],
+    "id": "S-6.171",
+    "next_local_work": "Build the frozen step set from recorded provisioning decisions, then the engine against a local typed-decision fixture before any live endpoint.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A typed-decision provisioning engine that decides which skills, tools and context files the next step receives",
+    "waiting_on": [
+     "S-6.58",
+     "S-6.93"
+    ]
+   },
+   {
+    "acceptance": "Self-improvement keeps only changes that transfer beyond the tasks they were tuned on and that pay for their cost, and each accepted change can be traced to its evidence.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.63",
+     "S-6.77"
+    ],
+    "id": "S-6.172",
+    "next_local_work": "Model the candidate record and the noise-band measurement on the daily state review Loop of S-6.77, then adapt the six critic rules with their notice.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Regularized selection for improvement Loops: an edit budget, a noise floor, a cost rule, a leakage review before evaluation and pruning",
+    "waiting_on": [
+     "S-6.63",
+     "S-6.77"
+    ]
+   },
+   {
+    "acceptance": "Baltor can state, with its own records and intervals, what running each step in a fresh harness costs and gains against one long session on the same model.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31",
+     "S-6.110",
+     "S-6.165"
+    ],
+    "id": "S-6.173",
+    "next_local_work": "Write the frozen design and the price list, then run a five-task pilot on Ollama Cloud when the weekly allowance allows.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A harness efficiency benchmark with and without Baltor on the HarnessTax method, cheap models first",
+    "waiting_on": [
+     "S-6.31",
+     "S-6.110",
+     "S-6.165"
+    ]
+   },
+   {
+    "acceptance": "A visitor to the efficiency page sees why fresh, focused steps should help, with outside evidence stated precisely and no number Baltor cannot support.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.174",
+    "next_local_work": "Draft the section against the product style guide, then add its named check to the page checks.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "An evidence section on the efficiency page: outside evidence with its population and limits, and Baltor numbers only from run records",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "The library serves reviewed harness engineering packages that no served item covered on September 24, 2026, and every published item faces the checks these sources call for.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.45",
+     "S-6.63",
+     "S-6.69"
+    ],
+    "id": "S-6.175",
+    "next_local_work": "Draft the large-output wrapper and the credential and egress probe first, since both are deterministic and testable offline, then queue all ten for the review panel.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A harness engineering package family: ten candidates with their licence basis, review criteria and regression cases for published items",
+    "waiting_on": [
+     "S-6.45",
+     "S-6.63",
+     "S-6.69"
+    ]
+   },
+   {
+    "acceptance": "Baltor's own harness path starts from the techniques with the best evidence, each one switchable and measured.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.50",
+     "S-6.94",
+     "S-6.165"
+    ],
+    "id": "S-6.176",
+    "next_local_work": "Add the provider capability record for structured output with the Ollama Cloud case, then the file offload option with its fixture.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Baltor harness defaults for the Baltor forks and the step executor: file offload, asynchronous tools, constrained output with a capability check and a progress bound",
+    "waiting_on": [
+     "S-6.50",
+     "S-6.94",
+     "S-6.165"
+    ]
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -4450,5 +4654,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:8b31f970ce246ba79c2a455a805db03eacb68a34b3711048f82d31d246bd2b21"
+ "source_fingerprint": "sha256:fcb022e9a3eeff05d07dd7a22c308194ce4a8af3b1500a90f91f3d0aad7625b3"
 }
