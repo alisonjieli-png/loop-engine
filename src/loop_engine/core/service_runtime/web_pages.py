@@ -189,6 +189,9 @@ def packaged_site_map():
 #: taken out first, so a page never ends up with two titles, two descriptions or two canonical addresses.
 _HEAD_END = re.compile(rb"</head\s*>", re.IGNORECASE)
 _TITLE = re.compile(rb"\s*<title\b[^>]*>.*?</title\s*>", re.IGNORECASE | re.DOTALL)
+#: A page file that carries its own shared-link picture (the deck's card) keeps it, shown as a large card.
+_OWN_IMAGE = re.compile(rb"""<meta\b[^>]*\bproperty\s*=\s*["']og:image["'][^>]*\bcontent\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_OWN_IMAGE_ALT = re.compile(rb"""<meta\b[^>]*\bproperty\s*=\s*["']og:image:alt["'][^>]*\bcontent\s*=\s*["']([^"']*)["']""", re.IGNORECASE)
 _WRITTEN_TAGS = re.compile(rb"""\s*<(?:meta\b[^>]*\b(?:name\s*=\s*["']?(?:description|robots|twitter:[^"'\s>]*|baltor-root-address)"""
                            rb"""|property\s*=\s*["']?og:[^"'\s>]*)|link\b[^>]*\brel\s*=\s*["']?canonical)\b[^>]*>""", re.IGNORECASE)
 
@@ -247,8 +250,10 @@ def with_page_head(body: bytes, head) -> bytes:
     if len(ends) != 1:
         raise PageHeadError("a page carries exactly one closing head tag")
     before, closing, after = body.partition(ends[0])
+    own_image, own_alt = _OWN_IMAGE.search(before), _OWN_IMAGE_ALT.search(before)
     before = _WRITTEN_TAGS.sub(b"", _TITLE.sub(b"", before))
     value = lambda text: escape(text, quote=True).encode("utf-8")
+    image = value(head["image"]) if own_image is None else own_image.group(1)
     tags = [b"<title>" + value(head["title"]) + b"</title>",
             b'<meta name="description" content="' + value(head["description"]) + b'">',
             b'<link rel="canonical" href="' + value(head["canonical"]) + b'">',
@@ -257,8 +262,12 @@ def with_page_head(body: bytes, head) -> bytes:
             b'<meta property="og:title" content="' + value(head["title"]) + b'">',
             b'<meta property="og:description" content="' + value(head["description"]) + b'">',
             b'<meta property="og:url" content="' + value(head["canonical"]) + b'">',
-            b'<meta property="og:image" content="' + value(head["image"]) + b'">',
-            b'<meta name="twitter:card" content="summary">']
+            b'<meta property="og:image" content="' + image + b'">',
+            b'<meta name="twitter:card" content="' + (b"summary" if own_image is None else b"summary_large_image") + b'">']
+    if own_image is not None:
+        tags.append(b'<meta name="twitter:image" content="' + image + b'">')
+        if own_alt is not None:
+            tags.append(b'<meta property="og:image:alt" content="' + own_alt.group(1) + b'">')
     if not head["indexed"]:
         tags.append(b'<meta name="robots" content="noindex">')
     if head["root_address"] != "/":

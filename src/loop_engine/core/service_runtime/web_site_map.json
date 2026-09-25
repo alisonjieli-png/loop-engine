@@ -426,11 +426,15 @@
       "address": "/deck",
       "view": "deck",
       "title": "Deck",
+      "description": "The Baltor deck: the problem, the product, the market and the plan, with every number tied to a saved record.",
       "group": "Company",
-      "linked_from": [],
-      "unlinked_reason": "The deck the owner asked for on September 24, 2026 is shared by its own address and opens at the root of deck.baltor.ai, so no header or footer link leads to it.",
+      "linked_from": [
+        "footer"
+      ],
+      "unlinked_reason": "",
       "scroll_budget": "page",
-      "price_in_first_screen": false
+      "price_in_first_screen": false,
+      "indexed": true
     },
     {
       "address": "/signup",
@@ -862,6 +866,11 @@
             "role": "link",
             "label": "What Baltor is",
             "href": "/docs/what-baltor-is"
+          },
+          {
+            "role": "link",
+            "label": "Deck",
+            "href": "/deck"
           },
           {
             "role": "link",

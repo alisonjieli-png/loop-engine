@@ -259,7 +259,7 @@ class DemonstrationPage(unittest.TestCase):
             with self.subTest(demonstration=view):
                 self.assertEqual(label_problems(self.steps[view]), [])
         # PLANTED: a folder called recorded, and a folder label that carries a retired status word.
-        called = self.page.replace('data-task-label="illustration">Example layout<', 'data-task-label="recorded">Recorded from this release\'s library<', 1)
+        called = self.page.replace('data-task-label="illustration">Example layout<', 'data-task-label="recorded">' + LABEL_WORDS["recorded"] + '<', 1)
         building = self.page.replace('data-task-label="illustration">Example layout<', 'data-task-label="illustration">Example layout, being built<', 1)
         for planted in (called, building):
             self.assertNotEqual(planted, self.page)

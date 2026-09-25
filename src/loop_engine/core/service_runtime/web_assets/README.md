@@ -189,7 +189,7 @@ on the homepage to the number of items in
 `examples/29_intelligence_service/starter-catalogue/host-release/manifest.json`.
 
 Each step of the two demonstration pages shows its search and its download
-under the label "Recorded from this release's library". Their item names,
+under the label "Real results from the library". Their item names,
 kinds, licences, sizes and digests must be what a real search of this
 release's packaged catalogue returns; moving the catalogue anchor rewrites
 every body and so every digest, and `tools/test_showcase_pages.py` then names
