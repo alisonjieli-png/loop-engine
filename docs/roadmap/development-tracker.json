@@ -3,8 +3,8 @@
   "blocked": 3,
   "done": 47,
   "next": 15,
-  "now": 45,
-  "waiting": 136
+  "now": 46,
+  "waiting": 135
  },
  "lanes": {
   "blocked": [
@@ -1424,6 +1424,21 @@
     "waiting_on": [
      "S-6.30",
      "S-6.31"
+    ]
+   },
+   {
+    "acceptance": "A browser check that goes stale is reported within a day instead of waiting for the next local preflight.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.177"
+    ],
+    "id": "S-6.180",
+    "next_local_work": "Run .github/workflows/browser-nightly.yml by hand once it is on main, record its run time and result, then let the schedule run it each night.",
+    "phase": 6,
+    "status": "building",
+    "title": "The browser suite runs every night on main and reports a failure without gating a deploy",
+    "waiting_on": [
+     "S-6.177"
     ]
    },
    {
@@ -3519,21 +3534,6 @@
     ]
    },
    {
-    "acceptance": "A browser check that goes stale is reported within a day instead of waiting for the next local preflight.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.177"
-    ],
-    "id": "S-6.180",
-    "next_local_work": "Write the scheduled workflow with the Playwright browsers and the Python extras the suite needs, and measure its run time on GitHub.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The browser suite runs every night on main and reports a failure without gating a deploy",
-    "waiting_on": [
-     "S-6.177"
-    ]
-   },
-   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -5019,5 +5019,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:866b78534b610dec67b39af708afc23b154d083fab555b26e1583ae43b3777f9"
+ "source_fingerprint": "sha256:53919668a9cbcd37abfff09f019b08aaa086fbe1390a0d798572285cc7591c18"
 }

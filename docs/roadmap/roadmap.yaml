@@ -4277,9 +4277,9 @@ steps:
   - id: S-6.180
     phase: 6
     title: "The browser suite runs every night on main and reports a failure without gating a deploy"
-    status: proposed
+    status: building
     depends_on: [S-6.177]
-    boundary: [.github/workflows, tools/check_service_workspace.mjs]
+    boundary: [.github/workflows/browser-nightly.yml, tools/test_browser_nightly_workflow.py, tools/check_service_workspace.mjs]
     verify:
       - "a scheduled workflow runs tools/check_service_workspace.mjs on the newest main revision each night with the browsers and fixtures it needs, and keeps the report as an artifact"
       - "a failed check or an undetected mutant opens or updates one issue that names the check and the revision, and a later passing run closes it"
@@ -4287,7 +4287,7 @@ steps:
     adversarial: "A night whose suite fails without an issue, an issue left open after a passing run, and a nightly run that switches the deploy setting must each fail a named check."
     acceptance: "A browser check that goes stale is reported within a day instead of waiting for the next local preflight."
     evidence: "On September 25, 2026 the homepage count check failed from release 30, when the homepage started showing the live count, until release 32, because only the local preflight runs the browser suite; ci.yml does not."
-    next_local_work: "Write the scheduled workflow with the Playwright browsers and the Python extras the suite needs, and measure its run time on GitHub."
+    next_local_work: "Run .github/workflows/browser-nightly.yml by hand once it is on main, record its run time and result, then let the schedule run it each night."
   - id: S-6.119
     phase: 6
     title: "Community and Verified library tiers from the review panel, written as reviewed catalogue folders for release"

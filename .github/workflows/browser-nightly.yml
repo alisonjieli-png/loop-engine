@@ -1,0 +1,115 @@
+name: Nightly browser suite
+
+# The browser suite (tools/check_service_workspace.mjs) drives real Chrome against local fixture services: every
+# page of the site map, the workspace, the catalogue browser, sign-up and billing, and their removed-guard controls.
+# It takes about forty minutes, so continuous integration does not run it, and until September 25, 2026 only the
+# local release preflight did; its homepage count check had then gone stale for two releases unnoticed (roadmap
+# step S-6.180). This run reports and gates nothing: it never touches a deploy setting or a release, keeps its
+# report as a run artifact, opens or updates one issue when a check fails or a control goes undetected, and closes
+# that issue after a passing run.
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: browser-nightly
+  cancel-in-progress: false
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install -e '.[all]'
+          npm ci --prefix showcase --no-audit --no-fund
+      - name: Run the browser suite
+        id: suite
+        run: |
+          set -uo pipefail
+          folder="$RUNNER_TEMP/browser"
+          mkdir -p "$folder"
+          PYTHON="$(command -v python)" timeout 6600 node tools/check_service_workspace.mjs "$folder/browser-report.json" > "$folder/run.log" 2>&1
+          code=$?
+          tail -c 3000 "$folder/run.log"
+          python3 - "$folder/browser-report.json" "$code" > "$folder/summary.md" <<'EOF'
+          import json
+          import os
+          import sys
+
+          path, code = sys.argv[1], sys.argv[2]
+          revision = os.environ.get("GITHUB_SHA", "")[:8]
+          run = f"{os.environ.get('GITHUB_SERVER_URL', '')}/{os.environ.get('GITHUB_REPOSITORY', '')}/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}"
+          try:
+              with open(path, encoding="utf-8") as stream:
+                  report = json.load(stream)
+          except (OSError, ValueError) as error:
+              print(f"The browser suite on {revision} wrote no readable report (exit {code}, {type(error).__name__}). Run: {run}")
+              sys.exit(0)
+          checks, mutants = report.get("checks", []), report.get("mutants", [])
+          failed = [row.get("name", "?") for row in checks if row.get("passed") is not True]
+          undetected = [row.get("name", "?") for row in mutants if row.get("detected") is not True]
+          print(f"Browser suite on {revision}: {len(checks) - len(failed)} of {len(checks)} checks passed, "
+                f"{len(mutants) - len(undetected)} of {len(mutants)} removed-guard controls detected (exit {code}).")
+          print(f"\nRun and report: {run}")
+          for title, names in (("Failed checks", failed), ("Undetected controls", undetected)):
+              if names:
+                  print(f"\n{title}:")
+                  for name in names[:40]:
+                      print(f"- {name}")
+                  if len(names) > 40:
+                      print(f"- and {len(names) - 40} more")
+          EOF
+          cat "$folder/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+      - name: Keep the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-nightly
+          path: ${{ runner.temp }}/browser
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Open or update the issue when the suite failed
+        if: steps.suite.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="Nightly browser suite: a check failed"
+          number="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body-file "$RUNNER_TEMP/browser/summary.md"
+          else
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/browser/summary.md"
+          fi
+      - name: Close the issue after a passing run
+        if: steps.suite.outputs.code == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="Nightly browser suite: a check failed"
+          number="$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body-file "$RUNNER_TEMP/browser/summary.md"
+            gh issue close "$number"
+          fi
+      - name: Mark the run failed when the suite failed
+        if: steps.suite.outputs.code != '0'
+        run: exit 1

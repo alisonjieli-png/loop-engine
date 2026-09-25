@@ -993,7 +993,8 @@ const applyPaymentState = name => {
     clientAccess.connectionChanged();
     waitlistOffer(value);
     $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
-    $("retrieval-note").textContent = "Installed vector method: " + value.retrieval.vector_backend + ". Semantic embedding model installed: " + (value.retrieval.semantic_embedding_model_installed ? "yes" : "no") + ". Bodies load only after selection.";
+    /* The retrieval note keeps its served words. It named the search backend until September 25, 2026; roadmap steps S-6.39
+       and S-6.184 keep the retrieval engines off every public page, so nobody learns how to rebuild the library through search. */
     $("setup-protocol").textContent = value.protocol.versions.join(", ");
     $("test-protocol").disabled = !token || authenticationMode === "browser_identity" || !principalScopes.includes("provisioning:metadata") || connectionBusy;
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */

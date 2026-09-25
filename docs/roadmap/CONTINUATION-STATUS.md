@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `866b78534b610dec67b39af708afc23b154d083fab555b26e1583ae43b3777f9`.
+Plan fingerprint: `53919668a9cbcd37abfff09f019b08aaa086fbe1390a0d798572285cc7591c18`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -60,6 +60,7 @@ These steps are already being built. They are not completed dependencies or perm
 | S-6.18 | Practitioner runtime, Solution execution and export templates have separate modules. Typed decision contracts, provider mapping and gateway support now live under core/decisions with import-boundary tests. Website assets live inside service_runtime. The larger flat core still needs measured reorganization; no whole-repository cleanliness claim is made. | Continue the declared acceptance checks |
 | S-6.22 | Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. Six further September 22 records in docs/research cover frontier harness positioning and Google context-state work, model-call strategy and disagreement, benchmark and showcase options, CodeGraph and Graphify alongside retrieval engines, library scale with paid acquisition readiness, and customer-side credential and endpoint delegation. They distinguish observed behavior from proposals and identify tests for Claude Code's build work. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred. | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
 | S-6.100 | September 24, 2026, the owner: "What about research and further seperation and containerization, and swapable engines for reasonining and decision steps vs build step". The owner later reported that Jev is full and TypeSafe has paused sign-ups, so the Jev adapter stays as it is, unqualified, and other engines behind the same contract come first. First slice, built and checked locally: the command safety station with the command risk policy (a parser that never runs what it reads), the in-process rules engine, the separate advisory guidance channel on the typed edge, the boundary decision station judgment, the command-safety command with a harness hook that only narrows, and 29 station checks in which every guard is also run with that guard removed. The slot's two planned checks are now existing checks. The run-time engine selector has not reached main, so stations use their declared order and record that dependency. | Add the four remaining stations with their engines (test-output parsers, lexical scoring and local rerankers, local classifiers trained on labeled decisions, the small-model and constrained-decoding engines, typed decision library adapters and hosted adapters that wait for a key), build the labeled sets from repository evidence, measure each engine per station on the Tactical server within its 300-call allowance, and write the prior-art research record. When the run-time engine selector reaches main, stations take their engine through it and write engine_selection_decision/v1. |
+| S-6.180 | On September 25, 2026 the homepage count check failed from release 30, when the homepage started showing the live count, until release 32, because only the local preflight runs the browser suite; ci.yml does not. | Run .github/workflows/browser-nightly.yml by hand once it is on main, record its run time and result, then let the schedule run it each night. |
 
 ## Release gates
 
@@ -1237,7 +1238,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.187 | How Baltor is built with AI coding agents: a public statement, and a review by a second model family before a change to identity, billing, access or deployment code is pushed | proposed | S-6.34 |
 | S-6.185 | A pre-registered with-and-without study on an outside population: SkillsBench v1.1 with no material, the raw skill, Baltor's selection allowed to add nothing, the forced bundle and the oracle | proposed | S-6.47, S-6.32 |
 | S-6.179 | Candidates come from planned ideas, not from a mechanical grid of data types, tasks and domains | proposed | S-6.40 |
-| S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | proposed | S-6.177 |
+| S-6.180 | The browser suite runs every night on main and reports a failure without gating a deploy | building | S-6.177 |
 
 ## Every retained initiative
 

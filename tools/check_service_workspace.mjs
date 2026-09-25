@@ -913,6 +913,16 @@ try {
   check("library_count_check_rejects_a_count_the_service_does_not_serve",countAgrees(String(servedCount))
     &&!countAgrees(String(servedCount+1))&&!countAgrees("10,000")
     &&(releasedItemCount===servedCount||!countAgrees(String(releasedItemCount))),{served:servedCount,released:releasedItemCount});
+  /* No page names the search backend (roadmap steps S-6.39 and S-6.184): the workspace printed "Installed vector method: ..."
+     from the capabilities record until September 25, 2026. The note keeps its served words. */
+  const retrieval=(await (await page.request.get(fixture.base+"/api/v1/capabilities")).json()).result?.retrieval||{};
+  const namesBackend=text=>/vector method|embedding model installed/i.test(text)
+    ||(typeof retrieval.vector_backend==="string"&&retrieval.vector_backend.length>3&&text.includes(retrieval.vector_backend));
+  const retrievalNote=await page.locator("#retrieval-note").evaluate(node=>node.textContent);
+  check("no_page_names_the_search_backend",!namesBackend(retrievalNote)&&!namesBackend(await page.evaluate(()=>document.body.textContent))
+    &&retrievalNote.startsWith("Search returns references."),{note:retrievalNote});
+  check("backend_name_check_rejects_the_old_note",namesBackend("Installed vector method: "+(retrieval.vector_backend||"x")+".")
+    &&namesBackend("Semantic embedding model installed: no.")&&!namesBackend("Search returns references."));
   /* The six kinds of harness material and the three use cases, in the design's order, each under its own heading and none with a
      status word, as the owner decided on September 23, 2026. */
   const kindCards=await homeCards(page,"[data-kind]","kind"),useCaseCards=await homeCards(page,'[data-view="home"] [data-use-case]',"useCase");
