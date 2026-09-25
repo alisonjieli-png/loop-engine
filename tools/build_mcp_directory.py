@@ -16,6 +16,8 @@ entries updated since the last complete traversal (updated_since, with a one hou
 resumes where it stopped. It also reads GitHub's MCP directory and the Docker MCP Catalog at the commit its main
 branch names, and, with --licences, the licence GitHub reports for each code repository through the gh login.
 `build` needs no network. `check` compares the packaged files with each other and with the served address table.
+`chrome` copies the shared header and footer from `index.html` into the page after the one-page app changes them,
+and changes nothing else.
 
 Start a state folder from the recorded research traversal of September 23, 2026 instead of a full read:
 
@@ -197,10 +199,7 @@ def write_packaged(offerings, rules, checked: dict, generated_at: str) -> dict:
     LINK_TABLE.write_text(head + ', "rows": {\n' + lines + "\n}}\n", encoding="utf-8")
     first = [directory_page.decode_row(row, manifest) for row in _first_rows(offerings, manifest, parts)]
     canonical = directory_page.SECURE + json.loads(SITE_MAP.read_text(encoding="utf-8"))["canonical_hostname"] + PAGE_ADDRESS
-    html = PAGE.read_text(encoding="utf-8")
-    header, footer = directory_page.chrome_from_index(INDEX.read_text(encoding="utf-8"))
-    html = directory_page.replace_region(html, "header", header)
-    html = directory_page.replace_region(html, "footer", footer)
+    html = with_chrome(PAGE.read_text(encoding="utf-8"))
     html = directory_page.replace_region(html, "facts", directory_page.facts_html(manifest))
     html = directory_page.replace_region(html, "chips", directory_page.chips_html(manifest))
     html = directory_page.replace_region(html, "rows", "".join(directory_page.row_html(row, manifest) for row in first))
@@ -208,6 +207,21 @@ def write_packaged(offerings, rules, checked: dict, generated_at: str) -> dict:
                                          + directory_page.structured_data(manifest, first, canonical) + "</script>")
     PAGE.write_text(html, encoding="utf-8")
     return manifest
+
+
+def with_chrome(html: str) -> str:
+    """The page with its header and footer regions copied from index.html as they are served."""
+    header, footer = directory_page.chrome_from_index(INDEX.read_text(encoding="utf-8"))
+    return directory_page.replace_region(directory_page.replace_region(html, "header", header), "footer", footer)
+
+
+def command_chrome(_arguments) -> int:
+    """Copy the shared header and footer from index.html into the page, and change nothing else."""
+    before = PAGE.read_text(encoding="utf-8")
+    after = with_chrome(before)
+    PAGE.write_text(after, encoding="utf-8")
+    print(json.dumps({"changed": after != before}))
+    return 0
 
 
 def _first_rows(offerings, manifest: dict, parts: list) -> list:
@@ -363,13 +377,14 @@ def main(argv=None) -> int:
     research = commands.add_parser("import-research", help="write the committed extract of the research selection")
     research.add_argument("--ranked", required=True)
     commands.add_parser("check", help="compare the packaged files with each other and with the served table")
+    commands.add_parser("chrome", help="copy the shared header and footer from index.html into the page, and nothing else")
     arguments = parser.parse_args(argv)
     if arguments.command == "check":
         problems = check_packaged()
         print(json.dumps({"problems": problems}))
         return 1 if problems else 0
     return {"refresh": command_refresh, "build": command_build, "seed": command_seed,
-            "import-research": command_import_research}[arguments.command](arguments)
+            "import-research": command_import_research, "chrome": command_chrome}[arguments.command](arguments)
 
 
 if __name__ == "__main__":

@@ -24,13 +24,18 @@
     filters: {offering: "", origin: "", transport: "", auth: ""}, order: "sources", rowHeight: 120, target: "", frame: 0};
   const list = $("directory-list"), pane = $("directory-scroll"), count = $("directory-count");
 
-  /* The shared header and footer, as the one-page app drives them: the appearance button, the phone menu and the status line. */
+  /* The shared header and footer, as the one-page app drives them: the appearance button, the phone menu and the status line.
+     The phone menu is one button that shows and hides the navigation it controls and says which with aria-expanded; Escape
+     closes it and returns focus to the button, as service.js does on the other pages. */
   const themes = ["system", "light", "dark"];
   let theme = "light";
   $("theme")?.addEventListener("click", () => { theme = themes[(themes.indexOf(theme) + 1) % themes.length];
     if (theme === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
     $("theme").textContent = "Appearance: " + theme; });
-  addEventListener("keydown", event => { const menu = $("menu-toggle"); if (event.key === "Escape" && menu?.checked) { menu.checked = false; menu.focus(); } });
+  const menuButton = $("menu-button");
+  const setMenu = open => { if (!menuButton) return; menuButton.setAttribute("aria-expanded", String(open)); menuButton.closest(".header")?.classList.toggle("menu-open", open); };
+  menuButton?.addEventListener("click", () => setMenu(menuButton.getAttribute("aria-expanded") !== "true"));
+  addEventListener("keydown", event => { if (event.key === "Escape" && menuButton?.getAttribute("aria-expanded") === "true") { setMenu(false); menuButton.focus(); } });
   fetch("/api/v1/capabilities", {headers: {Accept: "application/json"}}).then(response => {
     if (!response.ok) throw new Error("unavailable");
     $("service-status").textContent = "Service available";

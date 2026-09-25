@@ -167,9 +167,11 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
     &&followed.cache==="no-store"&&followed.robotsTag.includes("noindex"),followed);
   check("directory_counted_redirect_refuses_a_row_the_list_does_not_hold",unknown.status()===404,{status:unknown.status()});
   check("robots_file_asks_search_engines_not_to_follow_counted_links",/^Disallow: \/out\/$/m.test(robots),{robots});
-  /* The second address serves the same page. */
+  /* The second address serves the same page. The service writes each address's own canonical address into the head, so the
+     page body is compared: a person opening either address sees the same directory. */
   const second=await page.request.get(base+"/mcp-directory");
-  check("directory_second_address_serves_the_same_page",second.status()===200&&(await second.text())===served);
+  const bodyOf=html=>html.split(/<\/head\s*>/i)[1]||"";
+  check("directory_second_address_serves_the_same_page",second.status()===200&&bodyOf(await second.text())===bodyOf(served)&&bodyOf(served).length>0);
   /* 1440 and 390 pixels: no sideways scrolling, and the full page for the report. */
   const wide=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-innerWidth,height:document.documentElement.scrollHeight}));
   await page.screenshot({path:screenshot("-directory-desktop.png"),fullPage:true});
@@ -179,8 +181,17 @@ export async function runDirectoryChecks({browser,base,check,mutants,errors,loca
     rowHeight:getComputedStyle(document.getElementById("directory-list")).getPropertyValue("--row-height").trim(),
     clipped:[...document.querySelectorAll("#directory-list [data-row]")].slice(0,4).some(row=>[...row.querySelectorAll("a, p")].some(node=>node.getBoundingClientRect().bottom>row.getBoundingClientRect().bottom+1))}));
   await phone.page.screenshot({path:screenshot("-directory-mobile.png"),fullPage:true});
+  /* On a phone the header's Menu button opens the site navigation, and Escape closes it, as on every other page. */
+  const navShown=()=>phone.page.evaluate(()=>({shown:Boolean(document.getElementById("main-nav")?.checkVisibility()),expanded:document.getElementById("menu-button")?.getAttribute("aria-expanded")||""}));
+  const menuClosed=await navShown();
+  await phone.page.click("#menu-button");
+  const menuOpened=await navShown();
+  await phone.page.keyboard.press("Escape");
+  const menuEscaped=await navShown();
   await phone.context.close();
   check("directory_reads_at_1440_and_390_without_sideways_scrolling",wide.overflow<=1&&narrow.overflow<=1&&!narrow.clipped,{wide,narrow});
+  check("directory_phone_menu_opens_and_closes",!menuClosed.shown&&menuOpened.shown&&menuOpened.expanded==="true"&&!menuEscaped.shown&&menuEscaped.expanded==="false",
+    {closed:menuClosed,opened:menuOpened,escaped:menuEscaped});
   /* Listing text is marked only inside listing rows, the listing detail and the sponsored band. */
   const marks=await (async()=>{const view=await loadDirectory(browser,base,{errors,localOnly});
     const found=await view.page.evaluate(()=>[...document.querySelectorAll("[data-listing-text]")].filter(node=>!node.closest("[data-row], #directory-detail, #directory-sponsored-list")).map(node=>node.tagName));

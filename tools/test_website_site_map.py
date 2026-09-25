@@ -517,14 +517,23 @@ def load_inventories():
     return tuple(inventories)
 
 
+#: What the service answers for a counted link of a public list, `/out/<list>/<link>/<row>`: a redirect to the
+#: address that list's packaged link table holds (`public_links.py`). A link the tables do not hold is not served.
+COUNTED_LINK_ANSWER = "redirect"
+
+
 def served_site():
     """The website this checkout serves, read through the service's own served address table."""
+    from urllib.parse import unquote
+
+    from loop_engine.core.service_runtime.public_links import PublicListLinks
     site_map = load_site_map()
+    counted_links = PublicListLinks()
 
     def serve(address):
         answer = web_pages.served_asset(address, "GET", site_map.display_name)
         if answer is None:
-            return None
+            return ("", COUNTED_LINK_ANSWER) if counted_links.destination(unquote(address)) else None
         return (answer[0].decode("utf-8"), answer[1]) if answer[1] == HTML else ("", answer[1])
     return Site(site_map, serve, tuple(web_pages.WEB_ASSETS), load_inventories(), load_layout_standard())
 

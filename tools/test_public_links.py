@@ -104,6 +104,18 @@ class Redirects(unittest.TestCase):
             self.assertNotIn("noindex", links().redirect("/out/directory/site/docker/notes", "GET", Answer).headers["X-Robots-Tag"])
 
 
+class SiteComparison(unittest.TestCase):
+    def test_the_site_comparison_serves_a_held_counted_link_and_refuses_an_unknown_one(self):
+        """tools/test_website_site_map.py reads the served website: a row's counted link is served, a made-up one is not."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from test_website_site_map import COUNTED_LINK_ANSWER, served_site
+        site = served_site()
+        held = next(iter(public_links.packaged_link_tables()["directory"]["rows"]))
+        self.assertEqual(site.answer("/out/directory/site/" + held), ("", COUNTED_LINK_ANSWER))
+        self.assertIsNone(site.answer("/out/directory/site/no.such/row"))
+        self.assertIsNone(site.answer("/out/elsewhere/site/" + held))
+
+
 class Answer:
     def __init__(self, status_code, headers):
         self.status_code, self.headers = status_code, headers
