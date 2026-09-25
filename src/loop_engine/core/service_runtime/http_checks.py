@@ -57,9 +57,12 @@ def _web_checks(check, root):
             import re as _re
             page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
             from .web_pages import WEB_ASSETS
+            from .model_directory_pages import handles as _rendered_by_the_model_directory
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
+            # The model directory's pages are rendered from its records after the page table finds nothing.
             unserved = sorted(value for value in linked
-                              if value not in WEB_ASSETS and not value.startswith("/api/")
+                              if value not in WEB_ASSETS and not _rendered_by_the_model_directory(value)
+                              and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
             check("every_internal_address_on_the_page_is_served", not unserved)
             # The addresses are read from the page; a page that names none

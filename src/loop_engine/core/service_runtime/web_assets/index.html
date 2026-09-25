@@ -43,12 +43,21 @@
 <figure class="hero-directory" id="hero-directory" aria-labelledby="hero-directory-title" data-hero-directory>
 <div class="hero-directory-head"><p class="hero-directory-title" id="hero-directory-title">The working directory for one step</p><p class="status-tag is-building" data-hero-label="illustration">Example layout</p></div>
 <pre class="hero-tree" tabindex="0" aria-label="The working directory of one step">step-3-find-duplicates/
-├── <span data-hero-part="instructions">AGENTS.md</span><span class="hero-tree-note">                   only this step's context</span>
-├── <span data-hero-part="skills">.claude/skills/</span>
-│   └── find-duplicate-records-with-blocking-keys/
-│       └── SKILL.md<span class="hero-tree-note">                the skill it needs</span>
-├── <span data-hero-part="tools">.mcp.json</span><span class="hero-tree-note">                   its tools, nothing more</span>
-└── <span data-hero-part="code">lib/blocking_keys.py</span><span class="hero-tree-note">        reused code, not rewritten</span></pre>
+├── <span data-hero-part="instructions">AGENTS.md</span><span class="hero-tree-note">                     only this step's context</span>
+├── CLAUDE.md<span class="hero-tree-note">                     imports @AGENTS.md</span>
+├── .claude/
+│   ├── settings.json<span class="hero-tree-note">             this step's permissions</span>
+│   └── <span data-hero-part="skills">skills/</span><span class="hero-tree-note">                   5 vetted skills it chose</span>
+│       ├── find-duplicate-records-with-blocking-keys/
+│       │   └── SKILL.md
+│       ├── score-duplicate-pairs-by-weakest-signal/
+│       ├── canonicalize-company-legal-suffixes/
+│       ├── normalize-and-recover-email-addresses/
+│       └── propose-a-dedupe-without-deleting-rows/
+├── <span data-hero-part="tools">.mcp.json</span><span class="hero-tree-note">                     its tools, nothing more</span>
+├── lib/
+│   └── <span data-hero-part="code">blocking_keys.py</span><span class="hero-tree-note">          reused code, not rewritten</span>
+└── .baltor/step.lock.json<span class="hero-tree-note">        versions and digests</span></pre>
 <p class="hero-directory-note" data-hero-note>The local engine is built to assemble a directory like this on demand for every step of a task.</p>
 </figure>
       </div>
