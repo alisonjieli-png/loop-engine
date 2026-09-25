@@ -709,6 +709,19 @@ class ServiceHttpApplication:
         return (self.browser_identity is not None and self.browser_identity.configuration.email_signup_enabled
                 and self.account_email is not None and self.account_email.availability()["signup_available"] is True)
 
+    def served_item_count(self):
+        """How many approved, not withdrawn items the active catalogue serves now, or None when this host serves none.
+
+        The homepage shows this number, so a catalogue release published without a redeploy changes it at once."""
+        provisioning = getattr(self, "provisioning", None)
+        if provisioning is None:
+            return None
+        try:
+            view = provisioning.current_view()
+            return sum(1 for identity in view.approved_bindings() if identity not in view.withdrawn)
+        except Exception:
+            return None
+
     def capabilities(self):
         from importlib.metadata import version
         session_options = self.billing_sessions.options() if self.billing_sessions is not None else {}
@@ -745,7 +758,8 @@ class ServiceHttpApplication:
                             "tiered_provisioning_request_record_type": TIERED_PROVISIONING_REQUEST_VERSION,
                             "step_effects_header": "Baltor-Step-Effects",
                             "step_effects": list(STEP_EFFECTS),
-                            "default_step_effects": list(DEFAULT_STEP_EFFECTS)},
+                            "default_step_effects": list(DEFAULT_STEP_EFFECTS),
+                            "served_items": self.served_item_count()},
                 "retrieval": {"request_record_type": RETRIEVAL_REQUEST_VERSION,
                               "authority_effects": "metadata_eligibility_only",
                               "modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",

@@ -121,7 +121,14 @@
   const applyRegistrationState = open => {
     for (const sentence of document.querySelectorAll("[data-registration-state]")) sentence.hidden = sentence.dataset.registrationState !== (open ? "open" : "closed");
   };
-  const applyPaymentState = name => {
+    /* The library count follows the catalogue the service serves now: a catalogue release published without a
+     redeploy changes it on the next visit. The number in the page stays for a reader without the script. */
+  const applyLibraryCount = capabilities => {
+    const served = capabilities?.library?.served_items;
+    if (!Number.isInteger(served) || served < 1) return;
+    for (const node of document.querySelectorAll("[data-library-count]")) node.textContent = served.toLocaleString("en-US");
+  };
+const applyPaymentState = name => {
     const state = paymentStates[name] || paymentStates.closed;
     $("pricing-payment-state").textContent = state.note;
     $("pricing-teaser-note").textContent = state.teaser;
@@ -977,6 +984,7 @@
   else keptSession.clear();
   request("/api/v1/capabilities", null, false).then(value => {
     capabilities = value; $("service-status").textContent = "Service available";
+    applyLibraryCount(value);
     clientAccess.connectionChanged();
     waitlistOffer(value);
     $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
