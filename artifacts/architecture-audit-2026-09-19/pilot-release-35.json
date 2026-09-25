@@ -1,0 +1,83 @@
+{
+  "record_type": "deployment_evidence/v1",
+  "fly_release": 35,
+  "source_revision": "2cc06eb7810d3d3088bad30a0cc42fbfa005d4a3",
+  "continuous_integration_run": 36194030862,
+  "deployment_workflow_run": 36196169822,
+  "image_digest": "sha256:2778dce49bc303977543af49ee06f4529a09f4741ae437ec63e2e15d8820f210",
+  "deployed_at": "2026-09-25T22:22:20Z",
+  "deploy_setting_after": false,
+  "rollback_fly_release": 34,
+  "rollback_image_digest": "sha256:a914f340558115a940de44eed8712037f887744867adf3e47517ed5150868936",
+  "rollback_note": "Release 34 serves the same pages; it would load the host file's licence policy the same way, because the policy key is read by the host loader both releases share, so a rollback keeps the 316-item catalogue release serving.",
+  "changes": [
+    "the review panel reads imported licensed packages: the imported-layout reader, criteria written for imported material, calibration controls, the writer's provenance for imports (S-6.196)",
+    "the wording rules reconciled with the open, library-first product: the retired trial words and the Verified and Community customer words in both terminology files, and the public website guide's funnel text (S-6.181)"
+  ],
+  "failed_first_attempts": [],
+  "host_file_changes": [
+    {
+      "at": "2026-09-25T21:43:08Z",
+      "field": "license_policy",
+      "from": "absent (the default accepts MIT only)",
+      "to": "service_host_license_policy/v1 accepting MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, CC0-1.0 and CC-BY-4.0",
+      "backup": "/data/host.json.before-license-policy-20260925T214308",
+      "loaded_by": "the release 35 restart at 22:22 UTC",
+      "roadmap": "S-6.119",
+      "note": "The catalogue release bundle builder refused the 316-package Community release with item_license_not_accepted for an Apache-2.0 package until the bundle was built with the same accepted list; the host policy is read at service start, so the release waited for this restart. The service's own configuration loader accepted the edited file in a dry run before the write."
+    }
+  ],
+  "live_checks": {
+    "decides": {
+      "people": {
+        "pages": 45,
+        "views": 188,
+        "hostnames": 8,
+        "links_checked": 339,
+        "problems": 0
+      },
+      "catalogue_with_homepage_digest_guard": [
+        9,
+        9
+      ],
+      "service": [
+        19,
+        19
+      ]
+    },
+    "advice": {
+      "http_addresses_200": [
+        135,
+        135
+      ],
+      "pi_extension_served_byte_for_byte": [
+        9,
+        9
+      ],
+      "detailed_browser_rules_on_baltor_ai": [
+        216,
+        216
+      ]
+    },
+    "physical_model_calls": 0,
+    "note": "The catalogue check ran before the 316-item Community release was published and saw 33 offered items; the release's own live retrieval check is artifacts/community-release-2-2026-09-25/live-retrieval-4.json."
+  },
+  "browser_suite_on_this_revision": {
+    "where": "GitHub Actions, workflow browser-nightly.yml started by hand",
+    "run": 36194061979,
+    "checks": [
+      909,
+      909
+    ],
+    "mutants_detected": [
+      183,
+      183
+    ]
+  },
+  "observed_after_the_restart": {
+    "health": "ready, catalogue_view_current",
+    "catalogue_after_the_publish_at_22_35_utc": "release c7208dc813ab0197… with 316 items, built at 22:36 UTC; the library page lists 316 items",
+    "live_retrieval_check": "6 of 6 for an imported Community instruction file, after two earlier attempts that chose an item a read-only request cannot receive and one that reused a request identity"
+  },
+  "evidence_folder": "artifacts/release-35-2026-09-25"
+}
