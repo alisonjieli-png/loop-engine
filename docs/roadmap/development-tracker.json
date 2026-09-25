@@ -1,7 +1,7 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 46,
+  "done": 47,
   "next": 15,
   "now": 42,
   "waiting": 120
@@ -97,6 +97,21 @@
     "title": "A free public directory of MCP servers and agent APIs at /directory",
     "waiting_on": [
      "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Anyone can open baltor.ai/models, /endpoints and /can-i-run without an account, compare models and services on sourced and dated facts, see what their own hardware can run, and copy a working harness setup.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67"
+    ],
+    "id": "S-6.101",
+    "next_local_work": "Release the committed revision, check the three pages and a sample of detail pages on the live hostnames, add the footer links and a Get set up link in index.html once the session editing it has merged, and turn on the daily refresh workflow's first run.",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run",
+    "waiting_on": [
+     "S-6.67"
     ]
    },
    {
@@ -4684,5 +4699,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:bb18d7ba99acdef9f01198724a53ceacd4f9f0799cd44d7c04d7d025ad5c8e05"
+ "source_fingerprint": "sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d245202854f8eb2e0"
 }

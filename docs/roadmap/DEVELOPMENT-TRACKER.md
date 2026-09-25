@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:bb18d7ba99acdef9f01198724a53ceacd4f9f0799cd44d7c04d7d025ad5c8e05`.
+Source fingerprint: `sha256:4c2f81f5c81887af1740c48a33f2d535d239e3e3b07c116d245202854f8eb2e0`.
 
 ## Where things stand
 
@@ -13,7 +13,7 @@ Source fingerprint: `sha256:bb18d7ba99acdef9f01198724a53ceacd4f9f0799cd44d7c04d7
 | Can start next | 15 |
 | Waiting on earlier work | 120 |
 | Blocked | 2 |
-| Done | 46 |
+| Done | 47 |
 
 ## Being built now
 
@@ -286,12 +286,13 @@ Source fingerprint: `sha256:bb18d7ba99acdef9f01198724a53ceacd4f9f0799cd44d7c04d7
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (46 steps)
+## Done (47 steps)
 
 - S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.89: Superadmin user management and the first 10 accounts free each month (live_qualified)
 - S-6.99: Sign-up links a superadmin sends through Baltor's own sign-up, and a confirmation page that waits for its settings (offline_verified)
 - S-6.102: A free public directory of MCP servers and agent APIs at /directory (offline_verified)
+- S-6.101: A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run (offline_verified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-6.121: The deck at deck.baltor.ai: every number from a saved record, the hostname root, and the slides only the owner can supply (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
