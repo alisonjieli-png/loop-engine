@@ -1,7 +1,7 @@
 """The deck at /deck: every number carries a source note and matches its record, and no retired or invitation word.
 
 Kind: development check over packaged files. It reads the page that `web_pages.served_asset` serves at /deck, the
-deck's script, the typed site map, the browser suite's word rules and terminology.yaml. It starts no server, opens
+deck's script, the typed site map, the public wording rules (`tools/public_wording_rules.mjs`) and terminology.yaml. It starts no server, opens
 no connection and needs no credential, so it runs with the other tools tests and under an empty environment.
 
 The owner asked on September 24, 2026 for a deck at deck.baltor.ai whose content comes only from public facts backed
@@ -48,7 +48,8 @@ CARD_ADDRESS, CARD_SIZE = "/assets/deck-card.png", (1200, 630)
 CANONICAL = "https://baltor.ai/deck"
 #: A visible source note links each record at this address, so a reader can open the record the number came from.
 SOURCE_PREFIX = "https://github.com/alisonjieli-png/loop-engine/blob/main/"
-BROWSER_SUITE = ROOT / "tools" / "check_service_workspace.mjs"
+#: The one file every page check imports its wording rules from (September 25, 2026).
+WORDING_RULES = ROOT / "tools" / "public_wording_rules.mjs"
 BROWSER_DECK_CHECKS = ROOT / "tools" / "deck_checks.mjs"
 TERMINOLOGY = ROOT / "terminology.yaml"
 #: A number: digits with the separators a written number uses. The same pattern is exported by tools/deck_checks.mjs.
@@ -64,7 +65,7 @@ NUMBER = re.compile(NUMBER_PATTERN + r"|\b(?:" + "|".join(NUMBER_WORDS) + r")\b"
 #: The head texts a shared link or a search result shows. None of them can carry a source note.
 HEAD_TEXTS = ('meta[name="description"]', 'meta[property="og:title"]', 'meta[property="og:description"]',
               'meta[property="og:image:alt"]', 'meta[name="twitter:title"]', 'meta[name="twitter:description"]')
-#: The word rules of the browser suite, read from it so the two never disagree.
+#: The word rules of the public wording rules file, read from it so the deck and the browser checks never disagree.
 SUITE_WORD_RULES = ("retiredAccessWords", "invitationWords", "publicVocabulary")
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
@@ -292,13 +293,16 @@ def head_carries_no_number(deck: Deck):
 
 
 def suite_word_rules(source: str | None = None):
-    """The browser suite's word rules, as compiled Python patterns."""
-    source = BROWSER_SUITE.read_text("utf-8") if source is None else source
+    """The public wording rules every page check imports, as compiled Python patterns.
+
+    Until September 25, 2026 they were read from the browser suite, which then defined them; they moved to
+    tools/public_wording_rules.mjs so no check keeps a copy of its own."""
+    source = WORDING_RULES.read_text("utf-8") if source is None else source
     rules = {}
     for name in SUITE_WORD_RULES:
-        found = re.search(r"^const " + name + r"=/(.+)/([a-z]*);$", source, re.MULTILINE)
+        found = re.search(r"^export const " + name + r"=/(.+)/([a-z]*);$", source, re.MULTILINE)
         if not found:
-            raise ValueError(f"the browser suite no longer defines {name} as one regular expression on its own line")
+            raise ValueError(f"the public wording rules no longer define {name} as one regular expression on its own line")
         rules[name] = re.compile(found.group(1), re.IGNORECASE if "i" in found.group(2) else 0)
     return rules
 
@@ -529,14 +533,17 @@ class ServedDeck(unittest.TestCase):
         self.assertNotEqual(changed, source)
         self.assertNotEqual(browser_number_rule(changed), (NUMBER_PATTERN, list(NUMBER_WORDS)))
 
-    def test_the_word_rules_are_read_from_the_browser_suite_and_terminology(self):
+    def test_the_word_rules_are_read_from_the_wording_rules_file_and_terminology(self):
         rules = {**suite_word_rules(), **terminology_rules()}
         for sentence in ("Join the private beta.", "Request an invitation", "Planned", "Search is free.", "Built on Loop Engine",
                          "Building with Loops", "early access"):
             with self.subTest(sentence=sentence):
                 self.assertTrue(any(pattern.search(sentence) for pattern in rules.values()))
         with self.assertRaises(ValueError):
-            suite_word_rules("const retiredAccessWords = new RegExp('beta');")
+            suite_word_rules("export const retiredAccessWords = new RegExp('beta');")
+        # A copy left in a page check is not the rule: only the exported definition counts.
+        with self.assertRaises(ValueError):
+            suite_word_rules("const retiredAccessWords=/beta/i;\nconst invitationWords=/invite/i;\nconst publicVocabulary=/Loop/i;")
 
 
 def browser_number_rule(source: str | None = None):
