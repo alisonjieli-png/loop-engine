@@ -1,10 +1,10 @@
 {
  "counts": {
   "blocked": 3,
-  "done": 48,
+  "done": 49,
   "next": 15,
-  "now": 50,
-  "waiting": 139
+  "now": 61,
+  "waiting": 137
  },
  "lanes": {
   "blocked": [
@@ -146,6 +146,24 @@
     "waiting_on": [
      "S-6.63",
      "S-6.69"
+    ]
+   },
+   {
+    "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.119",
+     "S-6.196"
+    ],
+    "id": "S-6.197",
+    "next_local_work": "Move the cron's REPOSITORY to the permanent job checkout, read the 16:17 UTC slot's counts.json (the first with the balanced mix and the tags), and add the overnight batch's 8,904 native candidates as a second input of the job.",
+    "phase": 6,
+    "status": "live_qualified",
+    "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.119"
     ]
    },
    {
@@ -1069,21 +1087,203 @@
     ]
    },
    {
-    "acceptance": "Approved packages reach customers every day without a person starting any step and without a redeploy.",
+    "acceptance": "Approved packages reach customers within six hours of export without a session, and anything that later proves wrong leaves the library within a minute of the flag, with its record kept.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.196",
+     "S-6.197",
+     "S-6.62"
+    ],
+    "id": "S-6.199",
+    "next_local_work": "Release the report route in Fly release 38 and check a report and a withdrawal live; install the nightly rescan and weekly upstream check; feed the oracle's withdrawal candidates to the report path; add Codex and Ollama Cloud as second-family reviewers so an oracle approval can upgrade an item to Verified.",
+    "phase": 6,
+    "status": "building",
+    "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
+    "waiting_on": [
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "10,000 packages are live, searchable, retrievable and findable by search engines, with the measurements that sized the service.",
     "blocked_on": "",
     "depends_on": [
      "S-6.62",
-     "S-6.119",
-     "S-6.196"
+     "S-6.184",
+     "S-6.199"
     ],
-    "id": "S-6.197",
-    "next_local_work": "Read the 04 slot's journal and the 10:17 UTC cron run (~/.le-ci-tmp/daily-cron.log and each run's journal.jsonl under ~/baltor-library/daily/); at four slots a day of 2,000 packages the served count passes 10,000 within two days, so run the serving measurement (S-6.203) before then or lower EXPORT_TARGET.",
+    "id": "S-6.203",
+    "next_local_work": "Release paging and the table's progressive load, extend the volume to 3 GB before the release that crosses 10,000, add a release-document retention rule, then build the item pages with sitemap entries.",
     "phase": 6,
     "status": "building",
-    "title": "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback",
+    "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
     "waiting_on": [
      "S-6.62",
-     "S-6.119"
+     "S-6.184",
+     "S-6.199"
+    ]
+   },
+   {
+    "acceptance": "A customer searching the library finds skills, plugins, hooks, commands, subagents, rules, protocol server configurations, contract schemas and python scripts, in the shares the decision table names, and the code a Community item ships was read whole by its reviewer.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.196",
+     "S-6.197"
+    ],
+    "id": "S-6.205",
+    "next_local_work": "Let the 16:17 UTC slot run with the balanced mix, read its export report's mix_kept and the writer's counts by kind, then sample ten approved packages with scripts and check each reviewer answer against the code.",
+    "phase": 6,
+    "status": "building",
+    "title": "Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "A customer or a harness asks the library for verification skills, or for acting tools, and gets items tagged that way, with the tag's basis visible.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.205"
+    ],
+    "id": "S-6.206",
+    "next_local_work": "Measure again on the first served release that carries the tags (the 16:17 UTC slot's 7,806-package release), add a headline-word rule for verification and research, and put a text model engine behind the same edge for writing.",
+    "phase": 6,
+    "status": "building",
+    "title": "Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.205"
+    ]
+   },
+   {
+    "acceptance": "The owner attaches a drive, one command inventories it, and within a day generated packages seeded from the owner's own projects are searchable and retrievable, each with its seed provenance.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.197",
+     "S-6.205"
+    ],
+    "id": "S-6.207",
+    "next_local_work": "Read the seed wave's counts, carry its attribution commit to main so the packages' cited sources resolve publicly, check the reviewed folder reached the next daily release, and build seeds-2 from the finished inventory with the corrected media task statements.",
+    "phase": 6,
+    "status": "building",
+    "title": "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.205"
+    ]
+   },
+   {
+    "acceptance": "A visitor sees what the library holds and signs up; an account searches every file in one table.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.184",
+     "S-6.206"
+    ],
+    "id": "S-6.208",
+    "next_local_work": "Release the pure fix and paging, then check signed in that the table lists every package the account may see, and screenshot both signed out and signed in.",
+    "phase": 6,
+    "status": "building",
+    "title": "The library page counts every harness file kind and sends visitors to sign up; the signed-in library is one searchable table without size or digest columns",
+    "waiting_on": [
+     "S-6.184",
+     "S-6.206"
+    ]
+   },
+   {
+    "acceptance": "A checked change reaches the live service in 25 minutes or less, and fewer than one push in twenty fails its first run.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.180"
+    ],
+    "id": "S-6.200",
+    "next_local_work": "Read the first sharded run's job times into artifacts/ci-speed-2026-09-26/after.json, add the records-only lane, and record the run-history medians in the weekly number.",
+    "phase": 6,
+    "status": "building",
+    "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
+    "waiting_on": [
+     "S-6.180"
+    ]
+   },
+   {
+    "acceptance": "A new demo or page goes from its record to a checked live hostname in 60 minutes or less.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67",
+     "S-6.62"
+    ],
+    "id": "S-6.201",
+    "next_local_work": "Add the DNS record and certificate for redteam.baltor.ai after release 38, then generalise the showcase builder into the page and demo generators for the Kaggle and overnight demos.",
+    "phase": 6,
+    "status": "building",
+    "title": "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation",
+    "waiting_on": [
+     "S-6.67",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Every Monday staff read one page with last week's numbers and their trend.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.120",
+     "S-6.6"
+    ],
+    "id": "S-6.204",
+    "next_local_work": "Build the staff page that shows the week and its trend, add the visitor counter with its retention rule (a privacy notice change for visitor measurement needs the owner), and point the Monday cron entry at the job checkout.",
+    "phase": 6,
+    "status": "building",
+    "title": "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff",
+    "waiting_on": [
+     "S-6.120",
+     "S-6.6"
+    ]
+   },
+   {
+    "acceptance": "No owner request is skipped silently: each one is live or its gap is written down, and the list of gaps is read every day.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.76"
+    ],
+    "id": "S-6.210",
+    "next_local_work": "Install the daily 06:30 UTC run, restart or merge the paused lines the ledger lists, and correct the step statuses it finds stale.",
+    "phase": 6,
+    "status": "building",
+    "title": "Every owner request tracked: one ledger row per request with its steps and live state, checked against the roadmap and reported daily",
+    "waiting_on": [
+     "S-6.76"
+    ]
+   },
+   {
+    "acceptance": "Staff see what customers found useful, what they asked for and what the library could not answer, and the next generation wave reads it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.199",
+     "S-6.120"
+    ],
+    "id": "S-6.211",
+    "next_local_work": "Release it in Fly release 38, draft the privacy notice rows for ratings and requests for the owner's approval, and add a retention rule and a staff state for requests.",
+    "phase": 6,
+    "status": "building",
+    "title": "User Feedback Intelligence on the hosted service: a rating of each download, requests for material and search gap counts, read by staff and turned into generation ideas",
+    "waiting_on": [
+     "S-6.199",
+     "S-6.120"
+    ]
+   },
+   {
+    "acceptance": "Anyone with the address sees what changed, what the product does and what is next, always current with the records.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.67",
+     "S-6.35"
+    ],
+    "id": "S-6.212",
+    "next_local_work": "Finish the generator and its checks, release the pages, and fold the regeneration into the release record step.",
+    "phase": 6,
+    "status": "building",
+    "title": "Unlinked public changelog, feature list and todo pages generated from the release records and the roadmap",
+    "waiting_on": [
+     "S-6.67",
+     "S-6.35"
     ]
    },
    {
@@ -1518,7 +1718,7 @@
      "S-6.63"
     ],
     "id": "S-6.198",
-    "next_local_work": "Publish the showcase page on its own hostname through the page generator (S-6.201); run Jev when the owner places their TypeSafe key in the environment or keyring under the reference env:TYPESAFE_API_KEY; ask an Ollama Cloud model when the weekly allowance returns.",
+    "next_local_work": "Release the served case study page (S-6.201) in Fly release 38 and add the redteam.baltor.ai record and certificate; run Jev when the owner places their TypeSafe key in the environment or keyring under the reference env:TYPESAFE_API_KEY; ask an Ollama Cloud model when the weekly allowance returns.",
     "phase": 6,
     "status": "building",
     "title": "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page",
@@ -1875,72 +2075,22 @@
     ]
    },
    {
-    "acceptance": "Approved packages reach customers within six hours of export without a session, and anything that later proves wrong leaves the library within a minute of the flag, with its record kept.",
+    "acceptance": "An account browsing the dashboard sees the files for its industry, role and level, in its language and region, and finds the gaps.",
     "blocked_on": "",
     "depends_on": [
-     "S-6.196",
-     "S-6.197",
-     "S-6.62"
+     "S-6.206",
+     "S-6.208",
+     "S-6.40"
     ],
-    "id": "S-6.199",
-    "next_local_work": "Add the report route, the flag records and the withdrawal rules to the service, and the rescan and upstream check to the daily job; measure the screen again only with a reviewer of another family.",
+    "id": "S-6.209",
+    "next_local_work": "Write the industry and level vocabularies beside the occupation grid, add the facet rules engine behind the tagging edge, carry the attributes through the writer, and add the facet filters to the table.",
     "phase": 6,
     "status": "proposed",
-    "title": "Publish after one screen, then let feedback withdraw: the four-question screening review, automatic Community publication, a report button, nightly rescans, upstream checks and withdrawal rules",
+    "title": "Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard",
     "waiting_on": [
-     "S-6.197",
-     "S-6.62"
-    ]
-   },
-   {
-    "acceptance": "10,000 packages are live, searchable, retrievable and findable by search engines, with the measurements that sized the service.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.62",
-     "S-6.184",
-     "S-6.199"
-    ],
-    "id": "S-6.203",
-    "next_local_work": "Run the three local measurements from the community and imported release folders, then build the item pages and paging.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "10,000 packages served: measured at 1,000, 5,000 and 10,000, paged listing, one indexable page per item with sitemap entries",
-    "waiting_on": [
-     "S-6.62",
-     "S-6.184",
-     "S-6.199"
-    ]
-   },
-   {
-    "acceptance": "A checked change reaches the live service in 25 minutes or less, and fewer than one push in twenty fails its first run.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.180"
-    ],
-    "id": "S-6.200",
-    "next_local_work": "Shard the self-test and cache the environment, add the records-only lane, install the hook, and record the run-history medians in the weekly number.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Continuous integration in 12 minutes or less, and fewer failed pushes: sharded self-test, cached environment, a records-only lane and a pre-push hook that runs the preflight",
-    "waiting_on": [
-     "S-6.180"
-    ]
-   },
-   {
-    "acceptance": "A new demo or page goes from its record to a checked live hostname in 60 minutes or less.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.67",
-     "S-6.62"
-    ],
-    "id": "S-6.201",
-    "next_local_work": "Generalise the showcase page builder that tools/test_showcase_pages.py already checks into the two generators, then produce the decision red-team page (S-6.198) and the Kaggle and overnight demos from records.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "A page or a demo from one typed record, live on its own hostname within an hour: the page generator, the demo generator and hostname automation",
-    "waiting_on": [
-     "S-6.67",
-     "S-6.62"
+     "S-6.206",
+     "S-6.208",
+     "S-6.40"
     ]
    },
    {
@@ -1961,20 +2111,40 @@
     ]
    },
    {
-    "acceptance": "Every Monday staff read one page with last week's numbers and their trend.",
+    "acceptance": "A developer installs one skill and their harness searches and fetches from Baltor; anyone can read what the library gained each day.",
     "blocked_on": "",
     "depends_on": [
-     "S-6.120",
-     "S-6.6"
+     "S-6.202",
+     "S-6.212",
+     "S-6.197"
     ],
-    "id": "S-6.204",
-    "next_local_work": "Turn the counts-only script into the command, add the request counter with the retention rule, and schedule the weekly record.",
+    "id": "S-6.213",
+    "next_local_work": "Codex drafts the skill content and its tests as a candidate package; Claude integrates it into the integrations folder, the library and Get set up, and adds the snapshot and digest to the daily job after the public changelog lands.",
     "phase": 6,
     "status": "proposed",
-    "title": "The weekly number: visitors, accounts, paying subscribers and served packages, read from the service's own records and published to staff",
+    "title": "The product as a harness file: a first-party Baltor skill any harness installs to search and fetch from the library, plus a daily public library snapshot from each catalogue release",
     "waiting_on": [
-     "S-6.120",
-     "S-6.6"
+     "S-6.202",
+     "S-6.212"
+    ]
+   },
+   {
+    "acceptance": "A builder reads what appeared yesterday in papers, skills, plugins, protocol servers, services and repositories in the format they prefer, and installs the useful parts as components.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.213",
+     "S-6.102",
+     "S-6.81",
+     "S-6.197"
+    ],
+    "id": "S-6.214",
+    "next_local_work": "Codex writes the source adapters and the distillation records in its lane; Claude builds the day page, the RSS and JSON routes and the path from an entry to a candidate component.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Daily distillations: new papers, skills, plugins, protocol servers, services and repositories, each served as a summary page, RSS, JSON and downloadable components",
+    "waiting_on": [
+     "S-6.213",
+     "S-6.81"
     ]
    },
    {
@@ -4784,8 +4954,8 @@
    "id": "D-18",
    "stage": "initial_service",
    "status_counts": {
-    "building": 5,
-    "proposed": 4
+    "building": 6,
+    "proposed": 3
    },
    "steps": [
     "S-6.29",
@@ -5000,7 +5170,7 @@
    "id": "D-25",
    "stage": "public_launch",
    "status_counts": {
-    "building": 4,
+    "building": 8,
     "live_qualified": 1,
     "offline_verified": 1,
     "proposed": 7
@@ -5018,10 +5188,14 @@
     "S-6.120",
     "S-6.201",
     "S-6.202",
-    "S-6.204"
+    "S-6.204",
+    "S-6.210",
+    "S-6.212",
+    "S-6.213",
+    "S-6.214"
    ],
    "title": "Go fully live: open registration and self-serve paid onboarding",
-   "total_steps": 13
+   "total_steps": 17
   },
   {
    "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
@@ -5036,13 +5210,13 @@
     "D-20",
     "D-22"
    ],
-   "done_steps": 1,
+   "done_steps": 2,
    "id": "D-26",
    "stage": "public_launch",
    "status_counts": {
-    "building": 5,
-    "live_qualified": 1,
-    "proposed": 9
+    "building": 11,
+    "live_qualified": 2,
+    "proposed": 8
    },
    "steps": [
     "S-6.69",
@@ -5050,6 +5224,12 @@
     "S-6.197",
     "S-6.199",
     "S-6.203",
+    "S-6.205",
+    "S-6.206",
+    "S-6.207",
+    "S-6.208",
+    "S-6.209",
+    "S-6.211",
     "S-6.70",
     "S-6.81",
     "S-6.82",
@@ -5062,7 +5242,7 @@
     "S-6.88"
    ],
    "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
-   "total_steps": 15
+   "total_steps": 21
   },
   {
    "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
@@ -5184,5 +5364,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:f95316a800236fa3b70353dacd003d0de4a7f0f5064c8c6332832a087f40c63c"
+ "source_fingerprint": "sha256:e5e623c355f6d41e0415ff520eafe7fe42413bcb96931b5e21dc228c68d4c5f7"
 }

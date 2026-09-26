@@ -136,19 +136,43 @@ on this machine from cron, outside the daily slots' two-hour windows, with a
 cap per run, and publishes only through the daily job's review and publish
 path.
 
+## Evening update, 21:00 to 22:00 UTC
+
+| Fact | State at 22:00 UTC |
+|---|---|
+| Fly release | 37 (`43b421f8`), live since 13:25 UTC. The Machine restarted once more at 16:59 UTC for a host setting (below). |
+| Catalogue | release `add925433546` since 21:38 UTC: 7,806 packages, the first release in the balanced mix and with the tags ([record](../../artifacts/community-release-7-2026-09-26/README.md)); its publish needed two retries and a repair of the private publish script. |
+| Live fixes | The signed-in library table's list answer was refused (413) because the whole list exceeded the 256 KB answer cap; `http.maximum_response_bytes` is now 16 MiB. With the list answered, a signed-in account saw 534 of 6,398 packages: 1,988 that declare only `pure` were withheld from every step (fixed on the integration tree at the served-record boundary) and the page carries no effect authority (the paged-listing agent lists everything and asks before a fetch). The volume is 3 GB. |
+| Integration tree | `/home/username/.le-integration`: origin/main `c3db3408` plus twelve package commits and the repairs above, not pushed. The conformance gates pass; the failing tools tests were repaired (a naming clash between the two feedback packages, two conformance findings, the shard manifest, the architecture map). Release 38 waits for the verifiers, above all the CI sharding one, because a wrong shard map would block every push. |
+| Seed wave 1 | 203 candidates from the owner's drive; the Claude Code reviewer approved 0 of 197 (S-6.207 evidence has the reasons). Drive-derived content moves to the Codex lane with stricter packaging rules. |
+| Agents | Two usage limits stopped every agent (the Fable credits at about 16:00 UTC, the session limit until 21:20 UTC). Every unfinished worktree was saved as a patch twice (`~/.le-ci-tmp/agent-partial-2026-09-26` and `-b`), and both workflows plus the paged-listing agent were resumed at 21:30 UTC on Opus 5.5. |
+| Codex | Running beside Claude in `/home/username/.le-codex-build/library-expansion-20260926` with 2,195 candidate components (2,065 API operation references), a source discovery timer and a design integration plan. The split is in [its note](CODEX-COORDINATION-2026-09-26-1725.md) and [Claude's reply](CLAUDE-COORDINATION-REPLY-2026-09-26-1735.md), both in the shared checkout: Codex supplies sources and candidate content, Claude integrates, reviews, releases and builds the site. |
+
+The owner's later directions of the evening, each now a roadmap step or a
+delegated package: the public changelog, feature list and todo pages
+(S-6.212, building), the benchmark-radar setup as a model for a first-party
+Baltor skill and a daily public snapshot (S-6.213), and daily distillations of
+papers, skills, plugins, protocol servers, services and repositories served as
+pages, RSS, JSON and components (S-6.214). The design package the owner gave
+Codex (`Baltor.ai page improvements.zip`) is Claude's to implement, after
+release 39, following Codex's integration plan.
+
 ## Next steps, in order
 
-1. Release 37 from a green `main` with the library page, the table, the
-   search-result tags and the list-row attributes; screenshot `/library`
-   signed out and the table signed in; live checks on every hostname.
-2. Read the 16:17 UTC slot's `counts.json` (`~/baltor-library/daily/2026-09-26-16/`):
-   the mix kept, the harness kinds approved and the tags; sample ten approved
-   packages with scripts and check each reviewer answer against the code.
-3. When the drive inventory finishes, build the seed ideas from the full
-   inventory and run the first generation wave (fifty seeds) on the Tactical
-   lane, then the native review and the daily publish.
-4. Feed the overnight batch's 8,904 native candidates to the native review
+1. Release 38 from the integration tree once the verifiers report: the
+   feedback reports and withdrawal, user feedback, the red-team page, the
+   oracles, the request ledger, the weekly number, tag rules 1.1.0, the pure
+   fix, CI sharding if its verifier passes; then install the rescan, oracle and
+   ledger cron entries against the job checkout, fast-forward the job checkout
+   between slots, and add the redteam.baltor.ai record and certificate.
+2. Release 39: the public status pages, facet tags, quickstarts and paging
+   with the effect confirmation, when their builders and verifiers finish.
+3. The design integration, steps 1 and 2 of the Codex plan, as one checked
+   increment after release 39.
+4. Review and integrate the Codex drafts (adapted references, the shared
+   compiler review, the verification plan), then review the Codex lane's
+   candidates with a non-OpenAI reviewer and publish through the daily job.
+5. Restart or merge the seven paused lines the request ledger lists, and the
+   Procedural Graphs research that never reached main.
+6. Feed the overnight batch's 8,904 native candidates to the native review
    path as a second input of the daily job.
-5. S-6.209 (occupation, industry, level, language and geography tags), then
-   S-6.203 (serving measurement at 10,000, which the count will pass within a
-   day).
