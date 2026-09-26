@@ -22,6 +22,7 @@ from .scan_skillspector import SkillSpectorStatic
 from .selection import ONE_OF, SET_OF, EngineSlot
 from .source_github import GitHubPinnedRepositoriesSource
 from .source_mcp_registry import McpOfficialRegistrySource
+from .step_functions import RulesStepFunctionTagger
 
 SOURCE_SLOT = EngineSlot(
     "library_ingestion_source", "1.0.0", "read_candidates(declaration, library_candidate_request/v1) -> "
@@ -41,8 +42,11 @@ NEAR_DUPLICATE_SLOT = EngineSlot(
 OUTLINE_SLOT = EngineSlot(
     "library_outline", "1.0.0", "outline(candidate, source text) -> library_candidate_outline/v1",
     ("outline_writer",), ONE_OF, ("model_outline", "deterministic_outline"))
+STEP_FUNCTION_SLOT = EngineSlot(
+    "library_step_function_tagging", "1.0.0", "tag(step_function_material/v1) -> step_function_tags/v1",
+    ("function_tagger",), ONE_OF, ("step_function_rules",))
 
-SLOTS = (SOURCE_SLOT, FORMAT_SLOT, SAFETY_SLOT, NEAR_DUPLICATE_SLOT, OUTLINE_SLOT)
+SLOTS = (SOURCE_SLOT, FORMAT_SLOT, SAFETY_SLOT, NEAR_DUPLICATE_SLOT, OUTLINE_SLOT, STEP_FUNCTION_SLOT)
 FACTORIES = {
     SOURCE_SLOT.slot_id: {"github_pinned_repositories": GitHubPinnedRepositoriesSource,
                           "mcp_official_registry": McpOfficialRegistrySource},
@@ -55,4 +59,5 @@ FACTORIES = {
     NEAR_DUPLICATE_SLOT.slot_id: {"datasketch_minhash_lsh": DatasketchMinHashLsh,
                                   "builtin_minhash_lsh": BuiltinMinHashLsh},
     OUTLINE_SLOT.slot_id: {"model_outline": ModelOutline, "deterministic_outline": DeterministicOutline},
+    STEP_FUNCTION_SLOT.slot_id: {"step_function_rules": RulesStepFunctionTagger},
 }

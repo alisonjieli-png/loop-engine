@@ -999,6 +999,12 @@ class ServiceHttpApplication:
             if manifest["size_bytes"] > self.configuration.maximum_inline_body_bytes:
                 raise ServiceHttpError("download_required", 413)
         result = self.provisioning.invoke_for_principal(current.principal, operation, view=view, **fields)
+        if operation == LIST_OPERATION and callable(getattr(view, "shown_attributes", None)):
+            # Each listed row carries the served attributes an account may see (the tier the row already names,
+            # the kind of file a harness picks up and the step functions), so the signed-in table filters on
+            # them without a second request. They are descriptive only and grant nothing (roadmap S-6.208).
+            result = {**result, "items": [{**row, "attributes": view.shown_attributes(row["identity"])}
+                                          for row in result["items"]]}
         if "provisioning:read" not in current.effective_scopes:
             if operation == LIST_OPERATION:
                 result = {**result, "items": [{**row, "body_allowed": False} for row in result["items"]]}

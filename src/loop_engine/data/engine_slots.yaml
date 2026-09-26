@@ -1243,6 +1243,75 @@ slots:
       - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
     planned_checks: []
   - record_type: engine_slot/v1
+    slot_id: library_step_function_tagging
+    slot_version: 1.0.0
+    title: Library step function tagging
+    function: >-
+      Tag one library item with the kinds of step it supports, from the
+      closed vocabulary (acting, analysis, building, operating, planning,
+      reasoning, research, reviewing, verification, writing), as the served
+      attribute step_functions. A tag is descriptive only and grants
+      nothing; an item whose words name no function gets no tag.
+    design_table: roadmap_addition
+    inventory_records: []
+    roadmap_steps: [S-6.206]
+    implementation_state: planned
+    work_boundaries: []
+    planned_work_boundaries:
+      - {boundary: library ingestion, added_by: N1}
+    release_reason: ""
+    release_edge: ""
+    interactions: [core.interaction.library.tag_step_functions]
+    unavailable_result: {form: error_code, value: no_eligible_engine, answer_exists: true}
+    conformance_suite: core.library_ingestion.step_function_checks
+    component_folder: src/loop_engine/core/library_ingestion
+    folder_move_package: ""
+    nested_under: []
+    nesting_scope_rule: not_nested
+    nesting_scope_reason: ""
+    joined_with: []
+    engine_protocol: core.library_ingestion.step_functions.StepFunctionTagger
+    engine_protocol_version: step_function_tagger/v1
+    engine_kinds: [function_tagger]
+    engine_kind_groups: {}
+    native_registry: core.library_ingestion.engines.FACTORIES
+    native_declaration: core.library_ingestion.engines.STEP_FUNCTION_SLOT
+    requirement_comparison: ""
+    descriptor_projection: core.library_ingestion.engines.describe_engine
+    factory_table: core.library_ingestion.engines
+    planned_symbols: [core.library_ingestion.engines.describe_engine]
+    selection_mode: one_of
+    dispatch_key: ""
+    derived_from: ""
+    fallback_ceiling: none
+    failure_kinds: [engine_unavailable, engine_reported_failure, output_validation_failed,
+                    engine_changed_after_selection, policy_refused]
+    ranking_objectives: []
+    evidence_minimum_floor: null
+    scope_fields: [operation_contract]
+    bindings:
+      - {context: engine_side, selection_phase: loop_start,
+         binding_site: runtime_context_internal_binding, host_must_bind: true}
+    declaration_source: >-
+      The factory table's STEP_FUNCTION_SLOT: the rules engine, which needs
+      no authority and reads only the item's name, purpose, bounded entry
+      text and file roles. A text model engine may be added behind the same
+      edge later; the tags record the engine that wrote them, so a rule tag
+      is never mistaken for a judged one. The reviewed catalogue writer asks
+      this slot for every approved item and carries the answer as the item's
+      step_functions attribute into the release bundle.
+    retired_engines: []
+    known_direct_construction_sites: []
+    existing_checks:
+      - core.library_ingestion.step_function_checks:a_test_skill_is_tagged_verification_and_a_release_runbook_operating
+      - core.library_ingestion.step_function_checks:a_package_with_a_script_or_a_hook_is_tagged_acting_from_its_roles
+      - core.library_ingestion.step_function_checks:removed_role_rule_drops_the_acting_tag_of_a_script_package
+      - core.library_ingestion.step_function_checks:an_item_whose_words_name_no_function_gets_no_tag_and_no_attribute
+      - core.library_ingestion.step_function_checks:removed_score_threshold_tags_every_function_named_once
+      - core.library_ingestion.step_function_checks:tags_are_a_closed_bounded_vocabulary_in_a_fixed_order
+      - core.engines.slot_checks:every_slot_a_factory_table_declares_is_catalogued_with_its_kinds_and_mode
+    planned_checks: []
+  - record_type: engine_slot/v1
     slot_id: tool_protocol_transport
     slot_version: 1.0.0
     title: Tool protocol transport

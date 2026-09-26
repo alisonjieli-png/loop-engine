@@ -1,8 +1,15 @@
 "use strict";
-/* Browsing the material published for one account. Search answers a question; browsing shows what is
-   there. The service decides what this account may see, which group an item belongs to and whether its
-   body may be fetched. This file only arranges and displays the record the service returned. It holds
-   no token, keeps no body and writes nothing into browser storage. */
+/* Browsing the library published for one account, as one searchable table. Search answers a question;
+   browsing shows what is there. The service decides what this account may see and whether an item's body
+   may be fetched. This file only arranges and displays the record the service returned. It holds no token,
+   keeps no body and writes nothing into browser storage.
+
+   The owner, September 26, 2026: "we should use a searchable table format not a random HTML table/rows,
+   also size, and digest are useless pieces of information to waste space on showing and we need ALL types
+   of harness working directory component files not just SKILLS". So the table names every file's purpose,
+   the kind of file a harness picks up, its label, the kinds of step it supports, its licence, its declared
+   effects and the tools it is written for; it shows no size and no digest; and a search box, three filters
+   and sortable columns narrow it without a second request (roadmap S-6.208). */
 window.BaltorCatalogueBrowser = {
   create({request, element, message, current}) {
     const $ = id => document.getElementById(id);
@@ -21,27 +28,22 @@ window.BaltorCatalogueBrowser = {
        this page was not written for, never an item shown without its label. */
     const knownTiers = new Set(["verified", "community"]);
     const metadataScope = "provisioning:metadata";
-    /* The four groups, with the plain name each one carries in this view, and before them the files a
-       development tool reads as they are: skills, agent instructions and similar drop-in files. Those
-       are the harness family, whose bodies live in their own source layer, so they are not one of the
-       four groups. A service serves only that family unless its host declares another, so the group
-       comes first. It is shown only when the service offers such an item, and it says that it sits
-       beside the four groups. Until September 22, 2026 it was named for material already on the
-       reader's machine, which was not true of a file the service delivers. */
-    const groups = [
-      {layer:"harness_local", name:"Files for your development tools", outside:true,
-       note:"Skills, agent instructions and other files your development tool reads as they are. They sit beside the four groups below."},
-      {layer:"context_intelligence", name:"Guidance and methods",
-       note:"Written help, procedures and checklists for a step of your task."},
-      {layer:"code_intelligence", name:"Reusable code and tools",
-       note:"Code and tools that were reviewed before they were published here."},
-      {layer:"runtime_history_solution_intelligence", name:"What worked before",
-       note:"Records of earlier work that can be read again."},
-      {layer:"user_feedback_intelligence", name:"Your own instructions",
-       note:"Instructions your account added for its own work."}];
-    const kindNames = {reusable_code:"Reusable code", skill:"Skill", tool:"Tool", instruction_file:"Instructions"};
-    const knownLayers = new Set(groups.map(group => group.layer)), knownKinds = Object.keys(kindNames);
-    let listed = null, shown = null, selected = "", active = false;
+    /* The kinds of file a harness picks up, in the order the filter lists them, with the plain name of each.
+       An item names its own through the harness_kind attribute the service serves; an item served before the
+       attribute existed is placed by its first style when that names a kind (the licensed import writes the
+       package kind there), else by its served kind. */
+    const harnessKinds = [["skill", "Skill"], ["instruction_file", "Instruction file"], ["rules", "Rules"],
+      ["subagent", "Subagent"], ["command", "Command"], ["hook", "Hook"], ["plugin_manifest", "Plugin manifest"],
+      ["marketplace", "Plugin marketplace"], ["protocol_server_configuration", "Protocol server configuration"],
+      ["harness_settings", "Harness settings"], ["contract_schema", "Contract schema"], ["code_module", "Code module"]];
+    const harnessKindNames = Object.fromEntries(harnessKinds), harnessKindOrder = harnessKinds.map(([name]) => name);
+    const servedKindFallback = {skill:"skill", instruction_file:"instruction_file", tool:"code_module", reusable_code:"code_module"};
+    const knownLayers = new Set(["harness_local", "context_intelligence", "code_intelligence",
+      "runtime_history_solution_intelligence", "user_feedback_intelligence"]);
+    const knownKinds = Object.keys(servedKindFallback);
+    const columns = [["purpose", "What it is for"], ["harness_kind", "Kind of file"], ["tier", "Label"],
+      ["step_functions", "Step functions"], ["license", "Licence"], ["effects", "Declared effects"], ["styles", "Written for"]];
+    let listed = null, shown = null, selected = "", active = false, sortKey = "harness_kind", sortAscending = true;
     const downloads = new Map();
     const eligible = () => current().connected && current().scopes.includes(metadataScope);
     const count = number => number + (number === 1 ? " item" : " items");
@@ -59,10 +61,10 @@ window.BaltorCatalogueBrowser = {
       if (!/^[0-9a-f]{64}$/.test(String(row.digest))) return "a missing digest";
       if (!knownLayers.has(row.source_layer)) return "a group this page does not know";
       if (!knownKinds.includes(row.kind)) return "a kind this page does not know";
-      if (!Number.isInteger(row.size_bytes) || row.size_bytes < 0) return "an unreadable size";
       if (!Array.isArray(row.declared_effects) || !Array.isArray(row.styles)) return "an unreadable list of declared values";
       if (typeof row.body_allowed !== "boolean") return "no plain answer about downloading";
       if (!knownTiers.has(row.library_tier) || !stated(row.library_tier_label)) return "no library tier";
+      if (row.attributes !== undefined && (row.attributes === null || typeof row.attributes !== "object" || Array.isArray(row.attributes))) return "unreadable attributes";
       return "";
     };
     /* One item, asked for by name. It carries the same facts as a list entry under its own record
@@ -72,7 +74,6 @@ window.BaltorCatalogueBrowser = {
       if (value.identity !== row.identity) return "another item";
       if (!/^[0-9a-f]{64}$/.test(String(value.digest))) return "a missing digest";
       if (!stated(value.source_ref) || !stated(value.qualification_basis)) return "a missing description";
-      if (!Number.isInteger(value.size_bytes) || value.size_bytes < 0) return "an unreadable size";
       if (!Array.isArray(value.declared_effects) || !Array.isArray(value.styles)) return "an unreadable list of declared values";
       if (typeof value.body_allowed !== "boolean") return "no plain answer about downloading";
       if (!knownTiers.has(value.library_tier) || !stated(value.library_tier_label)) return "no library tier";
@@ -90,9 +91,9 @@ window.BaltorCatalogueBrowser = {
        service sent it, because inventing a friendly sentence for an unknown refusal would tell the
        reader something that was never checked. */
     const refusals = {
-      selected_body_digest_mismatch:"This item changed since the list was loaded. Load the catalogue again before fetching it.",
-      item_withheld:"This item is no longer offered to this account. Load the catalogue again to see what is there now.",
-      item_unavailable:"This item is no longer available to this account. Load the catalogue again to see what is there now.",
+      selected_body_digest_mismatch:"This item changed since the list was loaded. Load the library again before fetching it.",
+      item_withheld:"This item is no longer offered to this account. Load the library again to see what is there now.",
+      item_unavailable:"This item is no longer available to this account. Load the library again to see what is there now.",
       body_forbidden:"This account may read the details of this item, not the file.",
       body_reader_unavailable:"This service cannot hand out files at the moment. The details above are unchanged.",
       meter_unavailable:"This service cannot record usage at the moment, so it did not send the file.",
@@ -101,70 +102,118 @@ window.BaltorCatalogueBrowser = {
       const named = /^Service refused the request: ([a-z_]+)\.$/.exec(text);
       return named && refusals[named[1]] ? refusals[named[1]] : text;
     };
+    /* The facts of one row as the table shows them: the served attributes first, the item's own fields
+       where no attribute exists. A tag is shown exactly as the service sent it. */
+    const attributesOf = row => (row.attributes && typeof row.attributes === "object") ? row.attributes : {};
+    const harnessKindOf = row => {
+      const declared = attributesOf(row).harness_kind;
+      if (typeof declared === "string" && harnessKindNames[declared]) return declared;
+      const style = (row.styles || []).find(name => harnessKindNames[name]);
+      return style || servedKindFallback[row.kind] || "code_module";
+    };
+    const functionsOf = row => Array.isArray(attributesOf(row).step_functions) ? attributesOf(row).step_functions.map(String) : [];
+    const toolsOf = row => (row.styles || []).filter(name => stated(name) && !harnessKindNames[name] && !/^[a-z_]+_(format|skill|agent|command|rule|manifest|hooks|settings|config|marketplace|schema|module)$/.test(name));
+    const cells = row => ({
+      purpose: row.purpose, harness_kind: harnessKindNames[harnessKindOf(row)], tier: row.library_tier_label,
+      step_functions: functionsOf(row).join(", ") || "Not tagged", license: stated(row.license) ? row.license : "Not stated",
+      effects: row.declared_effects.length ? row.declared_effects.join(", ") : "None declared",
+      styles: toolsOf(row).join(", ") || "Every tool"});
+    const searchable = row => [row.purpose, row.identity, harnessKindOf(row), harnessKindNames[harnessKindOf(row)],
+      row.library_tier_label, ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || [])]
+      .join(" ").toLowerCase();
     const clearDetail = text => $("browse-detail").replaceChildren(element("p", text, "caption"));
     function controls() {
       const ready = eligible() && !active;
       $("refresh-browse").disabled = !ready;
-      $("browse-kind").disabled = !ready || !listed || $("browse-kind").options.length < 2;
-      $("browse-style").disabled = !ready || !listed || $("browse-style").options.length < 2;
+      for (const id of ["browse-search", "browse-kind", "browse-tier", "browse-style"]) $(id).disabled = !ready || !listed;
     }
     function reset() {
       listed = null; shown = null; selected = ""; active = false; downloads.clear();
-      $("browse-groups").replaceChildren(); $("browse-count").textContent = "Sign in to browse";
-      for (const id of ["browse-kind", "browse-style"]) {
-        $(id).replaceChildren(element("option", id === "browse-kind" ? "Every kind" : "Every tool"));
-        $(id).options[0].value = "";
-      }
+      $("browse-table-body").replaceChildren(); $("browse-count").textContent = "Sign in to browse";
+      $("browse-search").value = "";
+      options($("browse-kind"), [], "Every kind of file"); options($("browse-tier"), [], "Every label"); options($("browse-style"), [], "Every tool");
       clearDetail("Open an item to read its details.");
-      message("browse-message", "Sign in to browse the material published for your account.");
+      message("browse-message", "Sign in to browse the library published for your account.");
       controls();
     }
     function connectionChanged() {
       controls();
-      if (eligible()) message("browse-message", "Load the catalogue to see every item your account may use.");
+      if (eligible()) message("browse-message", "Load the library to see every file your account may use.");
       else if (current().connected) message("browse-message",
         "This account may not list material. Ask the person who runs this service for permission to search and list.", true);
     }
-    /* A control shows the request that was sent, never a request the reader only started to make. The
-       choices come from the unfiltered catalogue, so a filter can always be undone, and the selected
-       value is the one this reply was asked for. */
-    function options(select, values, plainName, chosen) {
-      select.replaceChildren(element("option", select.id === "browse-kind" ? "Every kind" : "Every tool"));
+    /* A filter's choices come from the whole loaded library, so a filter can always be undone. */
+    function options(select, values, everything) {
+      const chosen = select.value;
+      select.replaceChildren(element("option", everything));
       select.options[0].value = "";
-      for (const value of values) { const choice = element("option", plainName(value)); choice.value = value; select.append(choice); }
+      for (const [value, name] of values) { const choice = element("option", name); choice.value = value; select.append(choice); }
       select.value = [...select.options].some(choice => choice.value === chosen) ? chosen : "";
     }
-    function render(rows, total, filtered) {
-      const groupsElement = $("browse-groups");
-      groupsElement.replaceChildren();
-      for (const group of groups) {
-        const held = rows.filter(row => row.source_layer === group.layer);
-        if (group.outside && !held.length) continue;
-        const section = element("section", "", "browse-group");
-        section.dataset.layer = group.layer;
-        const heading = element("div", "", "browse-group-heading");
-        heading.append(element("h3", group.name), element("span", count(held.length), "badge"));
-        section.append(heading, element("p", group.note, "caption"));
-        if (!held.length) section.append(element("p", filtered
-          ? "Nothing in this group matches your filters." : "Nothing is published in this group yet.", "browse-empty"));
-        else {
-          const list = element("ul", "", "browse-list");
-          for (const row of held) {
-            const line = document.createElement("li");
-            const button = element("button", "", "browse-item");
-            button.type = "button"; button.dataset.identity = row.identity;
-            button.setAttribute("aria-current", row.identity === selected ? "true" : "false");
-            button.append(element("span", row.purpose, "browse-item-name"),
-              element("span", row.library_tier_label + " · " + (kindNames[row.kind] || row.kind) + " · " + row.size_bytes + " bytes · "
-                + (row.body_allowed ? "download permitted" : "details only"), "browse-item-facts"));
-            button.addEventListener("click", () => choose(row));
-            line.append(button); list.append(line);
-          }
-          section.append(list);
-        }
-        groupsElement.append(section);
+    function sorted(rows) {
+      const key = sortKey, direction = sortAscending ? 1 : -1;
+      const value = row => key === "harness_kind" ? String(harnessKindOrder.indexOf(harnessKindOf(row))).padStart(2, "0")
+        : key === "tier" ? (row.library_tier === "verified" ? "0" : "1") + row.purpose.toLowerCase()
+        : String(cells(row)[key]).toLowerCase();
+      return [...rows].sort((left, right) => {
+        const first = value(left), second = value(right);
+        if (first === second) return left.purpose.localeCompare(right.purpose) * direction;
+        return first.localeCompare(second) * direction;
+      });
+    }
+    function filtered() {
+      const words = $("browse-search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const kind = $("browse-kind").value, tier = $("browse-tier").value, style = $("browse-style").value;
+      return listed.filter(row => (!kind || harnessKindOf(row) === kind) && (!tier || row.library_tier === tier)
+        && (!style || (row.styles || []).includes(style))
+        && (!words.length || words.every(word => searchable(row).includes(word))));
+    }
+    function renderHead() {
+      const head = $("browse-table-head");
+      head.replaceChildren();
+      const line = document.createElement("tr");
+      for (const [key, name] of columns) {
+        const cell = document.createElement("th"); cell.scope = "col";
+        const button = element("button", name, "browse-sort"); button.type = "button"; button.dataset.sortKey = key;
+        if (key === sortKey) { cell.setAttribute("aria-sort", sortAscending ? "ascending" : "descending"); button.dataset.active = "true"; }
+        button.addEventListener("click", () => { if (sortKey === key) sortAscending = !sortAscending; else { sortKey = key; sortAscending = true; } apply(); });
+        cell.append(button); line.append(cell);
       }
-      $("browse-count").textContent = rows.length === total ? count(rows.length) : rows.length + " of " + count(total);
+      head.append(line);
+    }
+    function render(rows) {
+      const body = $("browse-table-body");
+      body.replaceChildren();
+      for (const row of rows) {
+        const line = document.createElement("tr");
+        line.dataset.identity = row.identity; line.dataset.harnessKind = harnessKindOf(row); line.dataset.libraryTier = row.library_tier;
+        line.setAttribute("aria-selected", row.identity === selected ? "true" : "false");
+        const values = cells(row);
+        for (const [key] of columns) {
+          const cell = document.createElement("td");
+          if (key === "purpose") {
+            const button = element("button", values.purpose, "browse-open"); button.type = "button";
+            button.addEventListener("click", () => choose(row));
+            cell.append(button);
+          } else if (key === "tier") {
+            const badge = element("span", values.tier, "badge"); badge.dataset.libraryTier = row.library_tier; cell.append(badge);
+          } else cell.textContent = values[key];
+          line.append(cell);
+        }
+        body.append(line);
+      }
+      if (!rows.length) {
+        const line = document.createElement("tr"), cell = document.createElement("td");
+        cell.colSpan = columns.length; cell.className = "browse-empty";
+        cell.textContent = listed && listed.length ? "Nothing matches your search and filters." : "Nothing is published for this account yet.";
+        line.append(cell); body.append(line);
+      }
+      $("browse-count").textContent = listed && rows.length !== listed.length ? rows.length + " of " + count(listed.length) : count(rows.length);
+    }
+    function apply() {
+      if (!listed) return;
+      shown = sorted(filtered());
+      renderHead(); render(shown);
     }
     function showDetail(row, entries, status) {
       const panel = $("browse-detail");
@@ -176,11 +225,12 @@ window.BaltorCatalogueBrowser = {
     }
     /* Selecting an item asks the service about that exact item again. The list may be minutes old, and
        permission or the published revision can change in between. The reply must name the same item and
-       carry the same digest; a different one means the page must not offer a download of what it listed. */
+       carry the same digest; a different one means the page must not offer a download of what it listed.
+       The digest is compared here and never shown: it is a check, not a fact a reader acts on. */
     async function choose(row) {
       selected = row.identity;
-      for (const button of $("browse-groups").querySelectorAll(".browse-item")) {
-        button.setAttribute("aria-current", button.dataset.identity === selected ? "true" : "false");
+      for (const line of $("browse-table-body").querySelectorAll("tr[data-identity]")) {
+        line.setAttribute("aria-selected", line.dataset.identity === selected ? "true" : "false");
       }
       const epoch = current().generation;
       showDetail(row, null, "Checking this item with the service…");
@@ -193,25 +243,26 @@ window.BaltorCatalogueBrowser = {
           throw new Error("This service answered with an item record that holds " + problem + ". Nothing is shown for it.");
         }
         if (value.digest !== row.digest) {
-          throw new Error("This item changed since the list was loaded. Load the catalogue again before fetching it.");
+          throw new Error("This item changed since the list was loaded. Load the library again before fetching it.");
         }
+        const shownValues = cells(row);
         const note = showDetail(row, [
           ["What it is for", row.purpose],
-          ["Library tier", value.library_tier_label],
+          ["Kind of file", shownValues.harness_kind],
+          ["Label", value.library_tier_label],
+          ["Step functions", shownValues.step_functions],
           ["Exact reference", row.identity],
           ["Where it comes from", value.source_ref],
           ["Licence", stated(value.license) ? value.license : "Not stated"],
-          ["Size", value.size_bytes + " bytes"],
-          ["Digest", value.digest],
           ["Declared effects", value.declared_effects.length ? value.declared_effects.join(", ") : "None declared"],
-          ["Written for", value.styles.length ? value.styles.join(", ") : "No tool named, so it suits every tool"],
+          ["Written for", toolsOf(value).length ? toolsOf(value).join(", ") : "No tool named, so it suits every tool"],
           ["Basis of its review", value.qualification_basis],
           ["The file itself", value.body_allowed ? "You may fetch it. Access is checked again on the way." : "Not granted to this account."]], "");
         if (!value.body_allowed) { note.textContent = "This account may read the details above, not the file."; return; }
         const button = element("button", "Fetch exact revision", "quiet");
         button.type = "button"; button.id = "browse-download";
         button.addEventListener("click", () => fetchBody(row, button, note));
-        note.textContent = "Fetching this file records usage. The digest is checked against the bytes that arrive.";
+        note.textContent = "Fetching this file records usage. The bytes are checked against the exact version that was listed.";
         $("browse-detail").insertBefore(button, note);
       } catch (error) {
         if (epoch !== current().generation || selected !== row.identity) return;
@@ -242,60 +293,55 @@ window.BaltorCatalogueBrowser = {
         const link = element("a", "Download");
         link.href = objectUrl; link.download = "intelligence-" + measured.slice(0, 12) + ".txt"; link.click();
         setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-        status.textContent = "Downloaded. Digest verified. Loading it into your own tool and accepting the result are separate steps.";
+        status.textContent = "Downloaded and checked. Loading it into your own tool and accepting the result are separate steps.";
       } catch (error) {
         status.textContent = error.name === "AbortError"
           ? "The wait ended. Usage may have been recorded. Repeat this exact selection to reconcile it."
           : plainly(error.message);
       } finally { if (epoch === current().generation) button.disabled = false; }
     }
-    /* The service applies the filters, because it owns the rule about which material a request may see.
-       The page sends no authority over effects, so the service applies its default step effect, reading
-       files, and material that declares any other effect is not offered here. The choices themselves come
-       from an unfiltered load, so a filter can always be undone. */
-    async function load(fresh) {
+    /* One load brings the whole library this account may see; the search box and the filters narrow it
+       here, so the service answers once. The page sends no authority over effects, so the service applies
+       its default step effect, reading files, and material that declares any other effect is not offered. */
+    async function load() {
       if (!eligible() || active) return;
-      const epoch = current().generation, kind = fresh ? "" : $("browse-kind").value, style = fresh ? "" : $("browse-style").value;
+      const epoch = current().generation;
       active = true; controls();
-      message("browse-message", fresh ? "Loading the catalogue…" : "Applying your filters…");
+      message("browse-message", "Loading the library…");
       try {
-        const value = await request(path, {record_type:requestVersion, operation:"list",
-          ...(kind ? {kinds:[kind]} : {}), ...(style ? {style} : {})});
+        const value = await request(path, {record_type:requestVersion, operation:"list"});
         if (epoch !== current().generation) return;
         const refusal = refusalText(value);
         if (refusal) {
           listed = null; shown = null; selected = "";
-          $("browse-groups").replaceChildren(); $("browse-count").textContent = "Nothing shown";
+          $("browse-table-body").replaceChildren(); $("browse-count").textContent = "Nothing shown";
           clearDetail("Nothing is shown for this reply.");
           message("browse-message", refusal, true);
           return;
         }
-        if (fresh) { listed = value.items; selected = ""; clearDetail("Open an item to read its details."); }
-        options($("browse-kind"), knownKinds.filter(name => listed.some(row => row.kind === name)), value => kindNames[value], kind);
+        listed = value.items; selected = ""; clearDetail("Open an item to read its details.");
+        options($("browse-kind"), harnessKinds.filter(([name]) => listed.some(row => harnessKindOf(row) === name)), "Every kind of file");
+        options($("browse-tier"), [["verified", "Verified"], ["community", "Community"]].filter(([name]) => listed.some(row => row.library_tier === name)), "Every label");
         // A development tool names itself. The page shows that name as it was published, never one it invented.
-        options($("browse-style"), [...new Set(listed.flatMap(row => row.styles))].filter(stated).sort(), value => value, style);
-        shown = value.items;
-        if (selected && !shown.some(row => row.identity === selected)) { selected = ""; clearDetail("Open an item to read its details."); }
-        render(shown, listed.length, Boolean(kind || style));
-        /* The service holds material back for more than one reason, and only some of them are the
-           filters. It also holds back material this account may not see, and material that declares an
-           effect such as running a command, for which this page carries no authority at all. The
-           sentence names the reasons that can apply to the request that was actually sent. */
+        options($("browse-style"), [...new Set(listed.flatMap(toolsOf))].sort().map(name => [name, name]), "Every tool");
+        apply();
+        /* The service holds material back for more than one reason: material this account may not see,
+           and material that declares an effect such as running a command, for which this page carries no
+           authority at all. */
         const withheld = value.withheld.length;
-        message("browse-message", "Showing " + count(shown.length) + " for " + value.tenant_id + ". "
-          + (withheld ? count(withheld) + (kind || style
-              ? " did not match the filters, this account's permissions, or a declared effect this page holds no authority for. "
-              : (withheld === 1 ? " is" : " are")
-                + " not offered here, because of this account's permissions or a declared effect this page holds no authority for. ") : "")
-          + "This list holds descriptions only. No file was fetched.");
+        message("browse-message", "Showing " + count(listed.length) + " for " + value.tenant_id + ". "
+          + (withheld ? count(withheld) + (withheld === 1 ? " is" : " are")
+            + " not offered here, because of this account's permissions or a declared effect this page holds no authority for. " : "")
+          + "This table holds descriptions only. No file was fetched.");
       } catch (error) {
         if (epoch !== current().generation) return;
         message("browse-message", error.name === "AbortError"
-          ? "The wait for the catalogue ended. Nothing was loaded. Try again." : plainly(error.message), true);
+          ? "The wait for the library ended. Nothing was loaded. Try again." : plainly(error.message), true);
       } finally { if (epoch === current().generation) { active = false; controls(); } }
     }
-    $("refresh-browse").addEventListener("click", () => load(true));
-    for (const id of ["browse-kind", "browse-style"]) $(id).addEventListener("change", () => load(false));
+    $("refresh-browse").addEventListener("click", () => load());
+    $("browse-search").addEventListener("input", () => apply());
+    for (const id of ["browse-kind", "browse-tier", "browse-style"]) $(id).addEventListener("change", () => apply());
     reset();
     return {reset, connectionChanged, load};
   }

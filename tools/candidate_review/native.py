@@ -42,8 +42,14 @@ MAX_ITEMS = 10000
 #: own, and a batch of original candidates often cites one small idea record per item, so the bound follows
 #: the item bound instead of a fixed 64.
 MAX_SOURCES = MAX_ITEMS + 1
-TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-python", "application/x-python",
-                        "application/json", "application/schema+json", "application/yaml", "text/yaml", "application/toml"})
+#: The media types a reviewer reads as text, line by line. Scripts in shell, JavaScript, TypeScript and PowerShell
+#: joined on September 26, 2026 so a package with code is read whole (roadmap S-6.205); the licensed import's
+#: review export keeps the same set, and its checks compare the two.
+TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-rst", "text/x-python", "application/x-python",
+                        "application/json", "application/schema+json", "application/yaml", "text/yaml",
+                        "application/toml", "application/x-sh", "text/javascript", "text/x-typescript",
+                        "text/x-powershell", "text/x-ruby", "text/x-perl", "text/x-go", "text/x-rust", "text/x-php",
+                        "text/x-lua", "text/html", "text/css", "text/csv", "application/xml", "application/sql"})
 ITEM_FIELDS = ("reference", "body_path", "package", "package_root", "producer", "dependencies")
 REFERENCE_FIELDS = ("identity", "kind", "purpose", "digest", "source_layer", "source_ref", "family", "size_bytes",
                     "license", "declared_effects", "styles", "tags", "exposure", "availability", "body_included")

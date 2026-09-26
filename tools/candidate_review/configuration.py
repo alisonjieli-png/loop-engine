@@ -37,7 +37,8 @@ PRECHECK_KINDS = ("licence", "format", "safety", "effects", "secrets", "duplicat
 #: ``engines`` builds exactly these; a check keeps the two lists equal.
 PRECHECK_ENGINES = MappingProxyType({
     "licence": ("builtin_licence_rules", "native_licence_rules", "imported_licence_rules"),
-    "format": ("builtin_format_rules", "agent_skills_reference", "native_format_rules", "imported_format_rules"),
+    "format": ("builtin_format_rules", "agent_skills_reference", "native_format_rules", "imported_format_rules",
+               "imported_format_rules_code_read"),
     "safety": ("builtin_static_rules", "skillspector_static", "native_safety_rules", "imported_safety_rules"),
     "effects": ("builtin_effect_rules", "native_effects_rules", "imported_effects_rules"),
     "secrets": ("builtin_secret_patterns", "native_secret_rules", "imported_secret_rules"),

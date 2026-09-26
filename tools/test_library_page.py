@@ -1,9 +1,10 @@
-"""The public library page lists what a visitor may judge before paying, and nothing that would rebuild the library.
+"""The public library page counts every kind of harness file and lists no item before sign-up.
 
-Roadmap step S-6.184. The page is rendered by src/loop_engine/core/service_runtime/library_page.py from one catalogue
-view. Each rule below refuses one way to break the page: a Community item listed one by one, a second body printed, a
-Verified item left out, a withdrawn item listed, a withdrawal shown without its note, a search backend named, or a
-retired public word. Each rule has a known-wrong control.
+Roadmap step S-6.208, after S-6.184. The page is rendered by src/loop_engine/core/service_runtime/library_page.py from
+one catalogue view. Each rule below refuses one way to break the page: an item listed one by one, a second body
+printed, a size or a digest shown, a withdrawn item counted, a withdrawal shown without its note, a count that folds
+the harness kinds into the four served kinds, a search backend named, or a retired public word. Each rule has a
+known-wrong control.
 """
 from __future__ import annotations
 
@@ -20,17 +21,24 @@ from loop_engine.core.harness_intelligence import HarnessIntelligenceCatalogue, 
 from loop_engine.core.provisioning_server import (ProvisioningItemBinding, ProvisioningQualification,
                                                   ProvisioningQualificationResolver)
 from loop_engine.core.service_runtime import library_page
+from loop_engine.core.service_runtime.catalogue_attributes import HARNESS_KINDS
+from loop_engine.core.service_runtime.catalogue_schema import CatalogueAttributeSchema
 from loop_engine.core.service_runtime.catalogue_serving import CatalogueView
 from loop_engine.core.service_runtime.catalogue_tiers import TIER_MEANINGS
 
 REVIEWS = "examples/29_intelligence_service/starter-catalogue/reviews.json#"
+#: identity, served kind, purpose, tier, body, styles (the licensed import writes the harness kind first).
 ITEMS = (
     ("check_for_existing_work_before_building", "skill", "Check for existing work before building", "verified",
-     "SAMPLE BODY with <b>markup</b> that must be escaped"),
+     "SAMPLE BODY with <b>markup</b> that must be escaped", ("claude", "codex")),
     ("find_duplicate_records_with_blocking_keys", "skill", "Find duplicate records with blocking keys", "verified",
-     "FIND DUPLICATES BODY"),
-    ("audio_aggregation_agentic_task", "skill", "Aggregate audio for an agentic task", "community", "COMMUNITY SKILL BODY"),
-    ("write_the_step_brief", "instruction_file", "Write the brief for one step", "community", "COMMUNITY BRIEF BODY"),
+     "FIND DUPLICATES BODY", ()),
+    ("audio_aggregation_agentic_task", "skill", "Aggregate audio for an agentic task", "community",
+     "COMMUNITY SKILL BODY", ("skill", "agent_skill")),
+    ("write_the_step_brief", "instruction_file", "Write the brief for one step", "community", "COMMUNITY BRIEF BODY",
+     ("subagent", "plugin_agent")),
+    ("import_hook_session_start", "tool", "Run a check when a session starts", "community", "HOOK BODY",
+     ("hook", "plugin_hooks")),
 )
 CHANGES = {"added": [{"identity": "audio_aggregation_agentic_task", "item_version": "v", "note": ""}],
            "changed": [],
@@ -38,24 +46,34 @@ CHANGES = {"added": [{"identity": "audio_aggregation_agentic_task", "item_versio
                           "note": "Withdrawn after a measured drop.", "durable": True}]}
 #: Words that would tell a reader how search works.
 BACKEND_WORDS = re.compile(r"vector|embedding|character[ _-]?hash|lexical|full-text index", re.IGNORECASE)
+SIZE_OR_DIGEST = re.compile(r"\b\d[\d,]* bytes\b|\bdigest\b|[0-9a-f]{12,}", re.IGNORECASE)
 
 
-def fixture_view(withdrawn=frozenset(), changes=None):
+def fixture_view(withdrawn=frozenset(), changes=None, attributes=None):
     catalogue, approvals, bodies = HarnessIntelligenceCatalogue(), {}, {}
-    for identity, kind, purpose, tier, body in ITEMS:
+    for identity, kind, purpose, tier, body, styles in ITEMS:
         item = item_from_body(HarnessIntelligenceDraft(identity, kind, purpose, "harness_local", f"fixture:{identity}/v1",
-                                                       "MIT"), body)
+                                                       "MIT", styles=styles), body)
         catalogue.register(item)
         approvals[identity] = ProvisioningQualification(ProvisioningItemBinding.from_item(item), "approved", "host_attested",
                                                         REVIEWS + identity, tier)
         bodies[identity] = body
     resolver = ProvisioningQualificationResolver("library-fixture", lambda binding: approvals[binding.identity])
+    served = {}
+    if attributes:
+        served = {"schema": CatalogueAttributeSchema.from_dict({"record_type": "catalogue_attribute_schema/v1", "attributes": [
+            {"name": "harness_kind", "type": "choice", "choices": list(HARNESS_KINDS), "filterable": True, "shown": True}]}),
+            "attributes": dict(attributes)}
     return CatalogueView(catalogue, resolver, lambda item: bodies[item.identity], withdrawn=frozenset(withdrawn),
-                         changes=dict(CHANGES if changes is None else changes))
+                         changes=dict(CHANGES if changes is None else changes), **served)
 
 
 def listed(html):
     return set(re.findall(r'data-library-item="([^"]+)"', html))
+
+
+def counted_kinds(html):
+    return re.findall(r'<tr data-harness-kind="([^"]+)">', html)
 
 
 def printed_bodies(html):
@@ -63,7 +81,7 @@ def printed_bodies(html):
 
 
 def visible_text(html):
-    return re.sub(r"<[^>]+>", " ", re.sub(r"<script[\s\S]*?</script>|<style[\s\S]*?</style>", " ", html))
+    return re.sub(r"<[^>]+>", " ", re.sub(r"<script[\s\S]*?</script>|<style[\s\S]*?</style>|<pre[\s\S]*?</pre>", " ", html))
 
 
 def pyproject_repository():
@@ -80,15 +98,18 @@ def installed_as(*entries):
 def page_problems(html, view):
     """Every rule the page breaks, for one view."""
     rows = library_page.library_rows(view)
-    verified = {row.identity for row in rows if row.tier == "verified"}
-    community = {row.identity for row in rows if row.tier == "community"}
     problems = []
-    if listed(html) & community:
-        problems.append("a Community item is listed one by one")
-    if verified - listed(html):
-        problems.append("a Verified item is left out")
+    if listed(html):
+        problems.append("an item is listed one by one")
     if len(printed_bodies(html)) > 1 or html.count("<pre") > 1:
         problems.append("more than one body is printed")
+    if SIZE_OR_DIGEST.search(visible_text(html)):
+        problems.append("a size or a digest is shown")
+    if set(counted_kinds(html)) != {row.harness_kind for row in rows}:
+        problems.append("the counts do not name every harness kind the view serves")
+    if {"tool", "instruction_file"} & set(counted_kinds(html)) and any(
+            row.harness_kind not in ("tool", "instruction_file") for row in rows if row.kind in ("tool", "instruction_file")):
+        problems.append("a count folds harness kinds into the served kinds")
     for row in library_page.release_changes(view)["withdrawn"]:
         if row.get("note") and row["note"] not in html:
             problems.append("a withdrawal is shown without its note")
@@ -105,11 +126,23 @@ class LibraryPageTests(unittest.TestCase):
     def test_the_page_keeps_every_rule(self):
         self.assertEqual(page_problems(self.html, self.view), [])
 
-    def test_counts_stand_in_for_the_community_items(self):
+    def test_the_counts_name_every_harness_kind_and_no_item_is_listed(self):
         self.assertIn("data-library-counts", self.html)
-        self.assertIn("2 Community items", self.html)
-        self.assertEqual(listed(self.html), {"check_for_existing_work_before_building",
-                                             "find_duplicate_records_with_blocking_keys"})
+        self.assertEqual(counted_kinds(self.html), ["skill", "subagent", "hook"])
+        self.assertEqual(listed(self.html), set())
+        self.assertIn("5 files a coding agent can fetch today, of 3 kinds", self.html)
+        self.assertIn("2 Verified and 3 Community", self.html)
+        self.assertIn('href="/get-started"', self.html)
+        self.assertIn('href="/app#browse-heading"', self.html)
+
+    def test_a_served_harness_kind_attribute_wins_over_the_styles(self):
+        view = fixture_view(attributes={"find_duplicate_records_with_blocking_keys": {"harness_kind": "rules"}})
+        rows = {row.identity: row for row in library_page.library_rows(view)}
+        self.assertEqual(rows["find_duplicate_records_with_blocking_keys"].harness_kind, "rules")
+        self.assertEqual(rows["write_the_step_brief"].harness_kind, "subagent")
+        self.assertEqual(rows["import_hook_session_start"].harness_kind, "hook")
+        self.assertEqual(rows["check_for_existing_work_before_building"].harness_kind, "skill")
+        self.assertEqual(page_problems(library_page.library_body(view), view), [])
 
     def test_one_item_is_printed_in_full_and_escaped(self):
         self.assertEqual(printed_bodies(self.html), ["check_for_existing_work_before_building"])
@@ -143,11 +176,11 @@ class LibraryPageTests(unittest.TestCase):
             self.assertNotIn("Review record</a>", html, entries)
             self.assertIn("Review record kept with the release", html, entries)
 
-    def test_a_withdrawn_item_is_not_listed(self):
-        item = self.view.catalogue.items["find_duplicate_records_with_blocking_keys"]
+    def test_a_withdrawn_item_is_not_counted(self):
+        item = self.view.catalogue.items["import_hook_session_start"]
         view = fixture_view(withdrawn={(item.identity, item.digest)})
         html = library_page.library_body(view)
-        self.assertNotIn("find_duplicate_records_with_blocking_keys", listed(html))
+        self.assertNotIn("hook", counted_kinds(html))
         self.assertEqual(page_problems(html, view), [])
 
     def test_the_whole_page_renders_from_an_empty_view(self):
@@ -156,14 +189,6 @@ class LibraryPageTests(unittest.TestCase):
         self.assertIn(b"<h1", body)
         self.assertIsNone(library_page.rendered(library_page.empty_view(), "/library", "POST", "Baltor"))
         self.assertIsNone(library_page.rendered(library_page.empty_view(), "/libraries", "GET", "Baltor"))
-
-    def test_a_row_without_a_page_of_its_own_does_not_look_like_a_link(self):
-        rows = re.findall(r'<li class="md-row"[\s\S]*?</li>', self.html)
-        self.assertEqual(len(rows), 2)
-        self.assertEqual([row for row in rows if "md-row-link" in row or 'class="md-row-head"' not in row], [])
-        css = (Path(__file__).resolve().parents[1] / "src/loop_engine/core/service_runtime/web_assets/model-directory.css"
-               ).read_text(encoding="utf-8")
-        self.assertRegex(css, r"\.md-row-head \.md-name\{[^}]*color:var\(--ink\)")
 
     def test_the_item_in_full_wraps_and_is_not_clipped(self):
         self.assertRegex(self.html, r'<pre class="md-code md-code-wrap" data-library-sample=')
@@ -185,19 +210,24 @@ class LibraryPageTests(unittest.TestCase):
         self.assertEqual(found, {})
 
     # Known-wrong controls: each rule must report the page it exists to refuse.
-    def test_known_wrong_a_listed_community_item_is_found(self):
-        row = next(row for row in library_page.library_rows(self.view) if row.tier == "community")
-        html = self.html.replace("</ol>", library_page._verified_item(row) + "</ol>", 1)
-        self.assertIn("a Community item is listed one by one", page_problems(html, self.view))
+    def test_known_wrong_a_listed_item_is_found(self):
+        html = self.html + '<li data-library-item="write_the_step_brief">Write the brief for one step</li>'
+        self.assertIn("an item is listed one by one", page_problems(html, self.view))
 
     def test_known_wrong_a_second_body_is_found(self):
         html = self.html + '<pre data-library-sample="find_duplicate_records_with_blocking_keys">FIND DUPLICATES</pre>'
         self.assertIn("more than one body is printed", page_problems(html, self.view))
 
-    def test_known_wrong_a_missing_verified_item_is_found(self):
-        html = re.sub(r'<li class="md-row" data-library-item="find_duplicate_records_with_blocking_keys"[\s\S]*?</li>', "",
-                      self.html, count=1)
-        self.assertIn("a Verified item is left out", page_problems(html, self.view))
+    def test_known_wrong_a_size_or_a_digest_is_found(self):
+        self.assertIn("a size or a digest is shown", page_problems(self.html + "<p>1,204 bytes</p>", self.view))
+        self.assertIn("a size or a digest is shown",
+                      page_problems(self.html + "<p><code>0123456789abcdef</code></p>", self.view))
+
+    def test_known_wrong_a_missing_or_folded_kind_is_found(self):
+        html = re.sub(r'<tr data-harness-kind="hook">[\s\S]*?</tr>', "", self.html, count=1)
+        self.assertIn("the counts do not name every harness kind the view serves", page_problems(html, self.view))
+        folded = self.html.replace('data-harness-kind="hook"', 'data-harness-kind="tool"', 1)
+        self.assertIn("a count folds harness kinds into the served kinds", page_problems(folded, self.view))
 
     def test_known_wrong_a_withdrawal_without_its_note_is_found(self):
         html = self.html.replace("Withdrawn after a measured drop.", "")

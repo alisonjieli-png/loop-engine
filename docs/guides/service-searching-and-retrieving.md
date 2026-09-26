@@ -50,6 +50,27 @@ This selects material; it does not grant execution permission. A manifest or
 read must carry the appropriate selection fields too. A metadata `filters`
 condition does not replace this selection or your harness's own permissions.
 
+### Filter by the kind of step
+
+Each served item carries the kinds of step it supports as the `step_functions`
+attribute, from a fixed list: `acting`, `analysis`, `building`, `operating`,
+`planning`, `reasoning`, `research`, `reviewing`, `verification` and `writing`.
+Rules write the tags from the item's own words and file roles, so a tag says
+what the item is about, not that a reviewer judged it good at that. An item
+whose words name no function has no tag. The `harness_kind` attribute names the
+kind of file a harness picks up, such as `skill`, `hook` or `subagent`. A step
+about to verify a change can ask for verification material only, and a search
+can combine that with the library tier:
+
+```json
+{"record_type":"service_retrieval_request/v2","query":"run the tests before merging","mode":"lexical","filters":{"step_functions":{"any_of":["verification","reviewing"]},"tier":{"equals":"verified"}}}
+```
+
+Every hit returns its shown attributes under `attributes`, the tags among
+them. A release whose schema does not declare an attribute refuses a filter on
+it with `search_filter_not_allowed`; read the active release's schema from the
+capabilities answer before filtering on it.
+
 ## Read the reference
 
 Keep the complete `reference` returned for the item.

@@ -12,7 +12,12 @@ repeated effect beyond that recorded authority.
 ## Current context route
 
 Start with the newest dated handoff, the
-[September 25 night handoff](SESSION-HANDOFF-2026-09-25-NIGHT.md). It records
+[September 26 session handoff](SESSION-HANDOFF-2026-09-26.md). It records
+the sixth Community catalogue release with 6,398 packages, the balanced kind
+mix and the code route, the step function and harness kind tags, the owner's
+drive as seed material, the library page and table direction, what runs
+unattended and the order of the next steps. The
+[September 25 night handoff](SESSION-HANDOFF-2026-09-25-NIGHT.md) before it records
 release 35, the 316-package Community catalogue release, the ninety-day plan
 and the changed review process, the decision red team, what runs unattended
 and the order of the next steps. The

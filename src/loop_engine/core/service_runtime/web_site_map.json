@@ -117,7 +117,7 @@
       "address": "/library",
       "view": "library",
       "title": "The library",
-      "description": "Every Verified item with its licence, size, digest and review record, the Community items by kind, one item in full, and what the served release changed.",
+      "description": "What the library holds, counted by every kind of harness file and its label, one item in full, and what the served release changed.",
       "group": "Product",
       "linked_from": [
         "header",

@@ -41,15 +41,16 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 REPOSITORY = HERE.parent
+for entry in (str(REPOSITORY / "src"),):
+    if entry not in sys.path:
+        sys.path.insert(0, entry)
+
+from loop_engine.core.service_runtime.catalogue_attributes import TIER_ATTRIBUTE, declare  # noqa: E402
 
 REVIEW_FILE, ITEMS_FILE, SCHEMA_FILE = "reviews.json", "items.json", "attribute-schema.json"
 REVIEW_RECORD = "starter_catalogue_independent_review/v2"
 ITEMS_RECORD = "starter_catalogue_candidate_items/v2"
 JUDGED = ("approved", "rejected", "carry_refused")
-TIER_ATTRIBUTE = {"name": "tier", "type": "choice", "choices": ["verified", "community"], "searchable": False,
-                  "filterable": True, "shown": True,
-                  "description": "Verified: approved by independent reviewers of at least two model families that did "
-                                 "not produce it. Community: every automated check and one independent review."}
 
 
 class CombineError(ValueError):
@@ -202,9 +203,9 @@ def combine(options) -> dict:
     items_record = dict(base_items)
     items_record.update({"items": items, "source_digests": source_digests,
                          "previous_source_revisions": previous, "publication": "not_published"})
-    schema = _json(base / SCHEMA_FILE)
-    if not any(attribute["name"] == "tier" for attribute in schema["attributes"]):
-        schema["attributes"].append(dict(TIER_ATTRIBUTE))
+    # The snapshot's schema declares every well-known served attribute (the tier, the harness kind and the step
+    # functions), so a row written with them is served with them and a row written before them carries none.
+    schema = declare(_json(base / SCHEMA_FILE))
     (output / ITEMS_FILE).write_text(json.dumps(items_record, indent=1, sort_keys=True) + "\n")
     (output / REVIEW_FILE).write_text(json.dumps(review, indent=1, sort_keys=True) + "\n")
     (output / SCHEMA_FILE).write_text(json.dumps(schema, indent=2) + "\n")

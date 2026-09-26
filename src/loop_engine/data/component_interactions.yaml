@@ -1202,3 +1202,24 @@ interactions:
     verification: outline_refused_when_it_repeats_its_source
     run_history: ingestion_loop_and_model_call_records
     implementation_state: candidate
+  - interaction_id: core.interaction.library.tag_step_functions
+    producer_kind: runtime_definition
+    consumer_kind: adapter
+    operation: tag_step_functions
+    request_contract: step_function_material/v1
+    result_contract: step_function_tags/v1
+    relationship: spawned_by
+    delivery: one_engine_per_item
+    scheduling: serial
+    retry: none_the_rules_engine_is_deterministic
+    timeout: none_no_call_leaves_the_process
+    cancellation: inherited_run_cancellation
+    compatibility: exact_engine_descriptor_and_edge_version
+    context_handoff: bounded_name_purpose_entry_text_and_file_roles_only
+    authority_transfer: none_a_tag_grants_nothing
+    privacy: closed_vocabulary_words_never_item_text
+    failure: typed_engine_failure_kind
+    repair: no_tag_is_the_declared_answer_when_no_word_matches
+    verification: known_wrong_material_left_untagged_and_the_role_rule_mutant
+    run_history: tags_name_their_engine_and_evidence_in_the_reviewed_folder
+    implementation_state: candidate

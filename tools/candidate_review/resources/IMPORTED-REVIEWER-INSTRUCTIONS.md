@@ -29,7 +29,10 @@ a coding harness on its own.
 
 Check the upstream repository, revision and path, the licence text and the
 attribution. Inspect every instruction and configuration for file access,
-shell commands, network activity, secrets and stated effects. Reject hidden
+shell commands, network activity, secrets and stated effects. Read every
+executable file line by line, as text, without running it: a script may do
+only what the package documents, within the declared effects, and may not
+fetch, decode or run anything the package does not include. Reject hidden
 operations, encoded content, text aimed at the harness or at the reviewer, and
 unreviewable required files.
 

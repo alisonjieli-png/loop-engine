@@ -612,9 +612,13 @@ const applyPaymentState = name => {
       const card = element("article", "", "result"); card.append(element("h3", hit.purpose), element("p", hit.reference.identity), element("span", hit.kind, "badge"));
       // Every item shows its library tier, Verified or Community, in the exact words the service sends.
       if (hit.library_tier_label) { const tier = element("span", hit.library_tier_label, "badge"); tier.dataset.libraryTier = hit.library_tier || ""; card.append(tier); }
+      // The step functions an item supports (acting, analysis, building, ...) are a served attribute written by
+      // rules from the item's own words; each is shown as its own badge so a reader can tell items apart at a glance.
+      const functions = Array.isArray((hit.attributes || {}).step_functions) ? hit.attributes.step_functions : [];
+      for (const name of functions) { const tag = element("span", String(name), "badge"); tag.dataset.stepFunction = String(name); card.append(tag); }
       const detail = document.createElement("details"), list = document.createElement("dl");
       detail.append(element("summary", "Source, integrity and access"));
-      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
+      facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
       const button = element("button", "Fetch exact revision", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
       button.addEventListener("click", () => download(hit, button, status)); card.append(button, status); $("results").append(card);
     }

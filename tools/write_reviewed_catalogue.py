@@ -50,6 +50,7 @@ serves. A package of several files is written with its files and
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 from pathlib import Path
 import sys
@@ -70,6 +71,10 @@ from candidate_review.prompt import build_prompt, member_prompt_sha256  # noqa: 
 from candidate_review.records import sha256_hex  # noqa: E402
 from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft, item_from_body  # noqa: E402
 from loop_engine.core.intelligence_tagging import TagSet  # noqa: E402
+from loop_engine.core.library_ingestion.step_functions import (  # noqa: E402
+    RulesStepFunctionTagger, StepFunctionMaterial, entry_text)
+from loop_engine.core.service_runtime.catalogue_attributes import (  # noqa: E402
+    HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE, TIER_ATTRIBUTE, declare, harness_kind_of)
 from loop_engine.core.service_runtime.catalogue_packages import CataloguePackage  # noqa: E402
 
 ITEMS_RECORD = "starter_catalogue_candidate_items/v2"
@@ -90,10 +95,25 @@ RULES = {
                 "approves it against the written criteria. One written objection withholds approval. Tier: "
                 "Community; it becomes Verified only through the full review."),
 }
-TIER_ATTRIBUTE = {"name": "tier", "type": "choice", "choices": list(TIERS), "searchable": False,
-                  "filterable": True, "shown": True,
-                  "description": "Verified: approved by independent reviewers of at least two model families. "
-                                 "Community: automated checks and one independent review."}
+#: Each written item carries the kinds of step it supports and the kind of file a harness picks up, as served
+#: attributes (roadmap S-6.206, S-6.208). The rules engine names itself on every tag it writes.
+TAGGER = RulesStepFunctionTagger()
+
+
+def item_attributes(reference: dict, spec: dict, package, files, *, is_import: bool) -> tuple:
+    """(attributes, attribute engines) of one item: its harness kind and, when its words name one, its step
+    functions. The tagger reads the name, purpose, bounded entry text and file roles, never a licence text."""
+    declared = str(spec.get("provenance", {}).get("harness_kind") or "") if is_import else ""
+    roles = tuple(entry.role for entry in package.files)
+    kind = harness_kind_of(reference["kind"], tuple(reference.get("styles") or ()), roles, declared)
+    text = entry_text([(entry.path, entry.role, entry.media_type, file.text) for entry, file in zip(package.files, files)])
+    material = StepFunctionMaterial(reference["kind"], kind, str(spec.get("title") or reference["identity"]),
+                                    reference["purpose"], text, roles)
+    tags = TAGGER.tag(material)
+    attributes = {"harness_kind": kind, **tags.attribute_values()}
+    engines = ({"step_functions": {"engine_id": tags.engine_id, "engine_version": tags.engine_version}}
+               if tags.functions else {})
+    return attributes, engines
 
 
 class WriterError(ValueError):
@@ -264,8 +284,10 @@ def write(options) -> dict:
                                "harness_kind": spec["provenance"]["harness_kind"]})
         else:
             provenance["authoring"] = "original_model_authored"
+        attributes, attribute_engines = item_attributes(reference, spec, package, files, is_import=is_import)
         row_item = {"lifecycle": "candidate", "license_state": "declared", "tier": options.tier,
-                    "provenance": provenance}
+                    "provenance": provenance, "attributes": attributes,
+                    **({"attribute_engines": attribute_engines} if attribute_engines else {})}
         if form["single"]:
             placement = KIND_PLACEMENT.get(reference["kind"])
             if placement is None or placement != (form["path"], form["role"]):
@@ -332,9 +354,8 @@ def write(options) -> dict:
     items_record = {"record_type": ITEMS_RECORD, "source_revision": catalogue.source_revision,
                     "previous_source_revisions": [], "source_digests": dict(catalogue.source_digests),
                     "publication": "not_published", "items": items}
-    schema = _json(REPOSITORY / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json")
-    schema["attributes"] = [attribute for attribute in schema["attributes"] if attribute["name"] != "tier"]
-    schema["attributes"].append(dict(TIER_ATTRIBUTE))
+    schema = declare(_json(REPOSITORY / "examples/29_intelligence_service/starter-catalogue/attribute-schema.json"),
+                     TIER_ATTRIBUTE, HARNESS_KIND_ATTRIBUTE, STEP_FUNCTIONS_ATTRIBUTE)
     output.mkdir(parents=True)
     for relative, payload in sorted(bodies.items()):
         target = output / relative
@@ -343,9 +364,14 @@ def write(options) -> dict:
     (output / "items.json").write_text(json.dumps(items_record, indent=1, sort_keys=True) + "\n")
     (output / "reviews.json").write_text(json.dumps(review, indent=1, sort_keys=True) + "\n")
     (output / "attribute-schema.json").write_text(json.dumps(schema, indent=2) + "\n")
+    tagged = [item["attributes"] for item in items]
     report = {"record_type": REPORT_RECORD, "output": str(output), "tier": options.tier,
               "reviewers": options.reviewer, "approved": counted["approved"], "rejected": counted["rejected"],
-              "left_out": left_out}
+              "left_out": left_out,
+              "harness_kinds": dict(sorted(Counter(values["harness_kind"] for values in tagged).items())),
+              "step_functions": dict(sorted(Counter(function for values in tagged
+                                                    for function in values.get("step_functions", ())).items())),
+              "untagged": sum(1 for values in tagged if not values.get("step_functions"))}
     (output / "writer-report.json").write_text(json.dumps(report, indent=1, sort_keys=True) + "\n")
     return {key: report[key] for key in ("output", "tier", "approved", "rejected")} | {"left_out": len(left_out)}
 

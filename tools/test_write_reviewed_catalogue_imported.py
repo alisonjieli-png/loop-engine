@@ -73,8 +73,15 @@ class ImportedWriterTest(unittest.TestCase):
         [row] = json.loads((reviewed / "reviews.json").read_text())["rows"]
         self.assertEqual((row["outcome"], row["tier"], row["producer"]["family"]),
                          ("approved", "community", imported.UPSTREAM_FAMILY))
+        # The writer tags each approved item with the kinds of step it supports (S-6.206): the fixture is a
+        # review skill, so it carries reviewing; the tag names the rules engine and reaches the bundle line.
+        self.assertEqual(item["attributes"], {"harness_kind": "skill", "step_functions": ["reviewing"]})
+        self.assertEqual(item["attribute_engines"]["step_functions"]["engine_id"], "step_function_rules")
+        schema = json.loads((reviewed / "attribute-schema.json").read_text())
+        self.assertIn("step_functions", [attribute["name"] for attribute in schema["attributes"]])
         _schema, lines, _payloads = bundle_tool.build(reviewed, accepted_licenses=("MIT",))
         self.assertEqual([line["attributes"]["tier"] for line in lines], ["community"])
+        self.assertEqual(lines[0]["attributes"]["step_functions"], ["reviewing"])
         self.assertEqual(len(lines[0]["package"]["files"]), 3)
 
     def test_an_imported_rejection_is_written_as_rejected(self):

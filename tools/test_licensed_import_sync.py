@@ -299,10 +299,15 @@ class SyncChecks(unittest.TestCase):
         population = json.loads((self.folder / "export" / "specifications-001.json").read_text())
         self.assertEqual({spec["provenance"]["authoring"] for spec in population["specifications"]},
                          {"imported_verbatim_under_permissive_licence"})
+        # A shell script is text the reviewer reads since September 26, 2026; an image is still not.
         shell = {**payloads[0], "package": {"body_form": "package", "files": payloads[0]["package"]["files"] + [
             {"path": "run.sh", "digest": "0" * 64, "size_bytes": 3, "media_type": "application/x-sh",
              "role": "skill_script"}]}}
-        self.assertEqual(review_export.reviewable(shell), "a_file_is_not_reviewable_text")
+        self.assertIsNone(review_export.reviewable(shell))
+        image = {**payloads[0], "package": {"body_form": "package", "files": payloads[0]["package"]["files"] + [
+            {"path": "logo.png", "digest": "0" * 64, "size_bytes": 3, "media_type": "image/png",
+             "role": "skill_asset"}]}}
+        self.assertEqual(review_export.reviewable(image), "a_file_is_not_reviewable_text")
         with self.assertRaises(FileExistsError):
             review_export.export(kept, reader, self.folder / "export", code_revision="a" * 40, first_source=first,
                                  summary={})

@@ -51,7 +51,10 @@ def community_folder(root: Path) -> Path:
     items = {"record_type": combine.ITEMS_RECORD, "source_revision": "1" * 40, "previous_source_revisions": [],
              "source_digests": {}, "publication": "not_published",
              "items": [{"reference": item.reference(), "body_path": "bodies/check_a_sum.md", "lifecycle": "candidate",
-                        "license_state": "declared", "tier": "community"}]}
+                        "license_state": "declared", "tier": "community",
+                        "attributes": {"step_functions": ["verification"]},
+                        "attribute_engines": {"step_functions": {"engine_id": "step_function_rules",
+                                                                 "engine_version": "1.0.0"}}}]}
     review = {"record_type": combine.REVIEW_RECORD, "recorded_at": "2026-09-25", "catalogue_source_revision": "1" * 40,
               "reviewers": [{"reviewer_id": "claude_code.subscription", "label": "claude-opus-5-5 (anthropic)",
                              "lens": "provenance_licence_and_safety", "produced_any_item_under_review": False}],
@@ -97,6 +100,12 @@ class CombineTest(unittest.TestCase):
         self.assertEqual(tiers[starter["identity"]], "verified")
         self.assertNotIn(WITHDRAWN, tiers)
         self.assertTrue(any(attribute.name == "tier" for attribute in schema.attributes))
+        # The step function tags of an added row travel through the snapshot into the bundle line, and the
+        # combined schema declares the attribute even when the base folder's schema does not (S-6.206).
+        self.assertTrue(any(attribute.name == "step_functions" for attribute in schema.attributes))
+        tags = {line["reference"]["identity"]: line["attributes"].get("step_functions") for line in lines}
+        self.assertEqual(tags["check_a_sum"], ["verification"])
+        self.assertIsNone(tags[starter["identity"]], "a starter row written before the tagger carries no tag")
         dates = {line["reference"]["identity"]: line["attributes"]["catalogued_on"] for line in lines}
         self.assertEqual(dates["check_a_sum"], "2026-09-25", "a Community row keeps its own review date")
         self.assertEqual(dates[starter["identity"]], "2026-09-21", "a starter row keeps the starter review date")

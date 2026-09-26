@@ -1,18 +1,39 @@
-"""Bounded checks for imported licensed packages; a package with code is held until its own tests run in a sandbox.
+"""Bounded checks for imported licensed packages, with two routes for a package that holds code.
 
 The safety, effect, secret and duplicate checks are the original-package checks, applied to the imported request.
 The licence and format checks are this profile's own: an imported package keeps its upstream layout, so the original
 profile's placement rules do not apply, and its licence is the panel's accepted list with the licence text and the
 attribution inside the package. Nothing here approves anything; a finding only refuses before any reviewer is asked.
+
+```text
+A package with code (a skill script, a hook or an executable tool)
+├── reviewer_reads_code (imported_format_rules_code_read, the Community route since September 26, 2026)
+│   ├── every executable file is text the reviewer reads line by line, within the review bounds
+│   ├── a Python file parses; a JSON hook file is strict JSON
+│   ├── the effects rules still refuse an undeclared network, file or process effect
+│   └── the reviewer answers the executable-code criterion of the written criteria
+└── sandbox_tests (imported_format_rules, the rule until then and the route to Verified for code)
+    └── the package waits until its own tests have run in a sandbox
+```
+
+The owner, September 26, 2026, asked for python scripts and "a large mix of everything that can be placed into a
+harness working directory"; the sandbox route kept every package with a script out of the library, so the Community
+tier reads the code instead and the sandbox stays the Verified route (roadmap S-6.205).
 """
 from __future__ import annotations
 
+import ast
 import json
 from pathlib import PurePosixPath
 
 import yaml
 
 from loop_engine.core.service_runtime.catalogue_packages import EXECUTABLE_ROLES, FILE_ROLES
+
+#: The routes a package with code may take; each format engine names its own.
+CODE_ROUTES = ("reviewer_reads_code", "sandbox_tests")
+REVIEWER_READS_CODE, SANDBOX_TESTS = CODE_ROUTES
+PYTHON_MEDIA = frozenset({"text/x-python", "application/x-python"})
 
 from .imported import IMPORTED_PROFILE, ImportedPackageReviewRequest
 from .native import json_document
@@ -77,7 +98,10 @@ def _skill_header(file):
 
 
 class ImportedFormatRules(ImportedCheck):
+    """The format rules with the sandbox route: a package with code waits for its own tests."""
+
     kind, engine_id = "format", "imported_format_rules"
+    code_route = SANDBOX_TESTS
 
     def findings(self, request, context):
         findings = []
@@ -86,7 +110,7 @@ class ImportedFormatRules(ImportedCheck):
         content = 0
         for file in request.files:
             role, media, text = file.entry.role, file.entry.media_type, file.text
-            if role in EXECUTABLE_ROLES:
+            if role in EXECUTABLE_ROLES and self.code_route == SANDBOX_TESTS:
                 findings.append(("imported_code_tests_missing", "a package with code waits for its own tests in a sandbox"))
                 continue
             if text is None:
@@ -98,6 +122,11 @@ class ImportedFormatRules(ImportedCheck):
                 continue
             if file.entry.path not in licence_files:
                 content += 1
+            if media in PYTHON_MEDIA:
+                try:
+                    ast.parse(text)
+                except (SyntaxError, ValueError, RecursionError):
+                    findings.append(("imported_code_syntax_invalid", f"{file.entry.path}: a Python file must parse"))
             if media in JSON_MEDIA:
                 try:
                     json_document(file.payload)
@@ -115,6 +144,13 @@ class ImportedFormatRules(ImportedCheck):
         if not content:
             findings.append(("imported_content_missing", "the package holds nothing beyond its licence and attribution"))
         return findings
+
+
+class ImportedFormatRulesCodeRead(ImportedFormatRules):
+    """The format rules with the reviewer route: code is text the reviewer reads, parsed where a parser exists."""
+
+    engine_id = "imported_format_rules_code_read"
+    code_route = REVIEWER_READS_CODE
 
 
 class ImportedSafetyRules(ImportedCheck, NativeSafetyRules):

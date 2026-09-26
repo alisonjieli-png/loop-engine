@@ -129,6 +129,37 @@ class StarterBundleTest(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertFalse((HERE.parent / "bundle-here").exists())
 
+    def test_an_items_own_attributes_join_the_line_and_known_wrong_ones_are_refused(self):
+        from loop_engine.core.library_ingestion.step_functions import STEP_FUNCTIONS_ATTRIBUTE
+        from loop_engine.core.service_runtime.records import ServiceRuntimeError
+        identity = _approved()[0]
+
+        def tagged(value):
+            for row in value["items"]:
+                if row["reference"]["identity"] == identity:
+                    row["attributes"] = {"step_functions": ["verification", "reviewing"]}
+        with tempfile.TemporaryDirectory(prefix="bundle-attributes-") as directory:
+            folder = _copy(directory)
+            _rewrite(folder, "items.json", tagged)
+            # The item names an attribute its schema does not declare: refused before anything is bundled.
+            with self.assertRaises(ServiceRuntimeError) as held:
+                tool.build(folder, accepted_licenses=("MIT",), include=(identity,))
+            self.assertEqual(held.exception.code, "attribute_not_declared")
+            _rewrite(folder, "attribute-schema.json",
+                     lambda value: value["attributes"].append(dict(STEP_FUNCTIONS_ATTRIBUTE)))
+            _schema, lines, _payloads = tool.build(folder, accepted_licenses=("MIT",), include=(identity,))
+            self.assertEqual(lines[0]["attributes"]["step_functions"], ["verification", "reviewing"])
+            self.assertEqual(lines[0]["attributes"]["cited_source"], tool.cited_source(lines[0]["reference"]["source_ref"]))
+
+            def restating(value):
+                for row in value["items"]:
+                    if row["reference"]["identity"] == identity:
+                        row["attributes"] = {"catalogued_on": "2020-01-01"}
+            _rewrite(folder, "items.json", restating)
+            with self.assertRaises(ManifestBuildError) as held:
+                tool.build(folder, accepted_licenses=("MIT",), include=(identity,))
+            self.assertEqual(held.exception.code, "item_attribute_reserved")
+
 
 if __name__ == "__main__":
     unittest.main()

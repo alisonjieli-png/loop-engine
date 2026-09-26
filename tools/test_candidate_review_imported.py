@@ -136,13 +136,21 @@ def codes(outcome):
     return {finding.code for result in outcome.results for finding in result.findings}
 
 
-def evaluate(**options):
+def evaluate(code_route=None, **options):
     with tempfile.TemporaryDirectory() as folder:
         fixture(folder, **options)
         catalogue, request = load_request(folder)
-        config = imported_profile.configuration(BASE)
+        config = imported_profile.configuration(BASE, **({"code_route": code_route} if code_route else {}))
         return prechecks.run_prechecks(request, imported_profile.engines(config),
                                        prechecks.PrecheckContext(config.policy, catalogue.population_bodies()))
+
+
+def with_effects(*effects):
+    """An edit that declares the item's effects, on the row and on its specification alike."""
+    def edit(records):
+        records["row"]["reference"]["declared_effects"] = list(effects)
+        records["spec"]["declared_effects"] = list(effects)
+    return edit
 
 
 def change(path, value):
@@ -268,9 +276,39 @@ class ImportedPrecheckTest(unittest.TestCase):
         self.assertIn("imported_licence_text_missing",
                       codes(evaluate(files=files_of(LICENSE=(b"\n", "text/plain", "other")))))
 
-    def test_known_wrong_code_waits_for_its_own_tests(self):
+    def test_known_wrong_code_waits_for_its_own_tests_on_the_sandbox_route(self):
         files = files_of(**{"scripts/check__py": (b"print('checked')\n", "text/x-python", "executable_tool")})
-        self.assertIn("imported_code_tests_missing", codes(evaluate(files=files)))
+        self.assertIn("imported_code_tests_missing", codes(evaluate(code_route="sandbox_tests", files=files)))
+        with self.assertRaises(ValueError):
+            imported_profile.configuration(BASE, code_route="trust_me")
+
+    def test_code_the_reviewer_reads_passes_the_format_rules_when_it_parses_and_declares_its_effects(self):
+        files = files_of(**{"scripts/check__py": (b"print('checked')\n", "text/x-python", "executable_tool")})
+        outcome = evaluate(files=files, edit=with_effects("spawns_process"))
+        self.assertFalse(outcome.refused, codes(outcome))
+        engines = {result.engine_id for result in outcome.results}
+        self.assertIn("imported_format_rules_code_read", engines)
+        self.assertNotIn("imported_format_rules", engines)
+
+    def test_known_wrong_a_script_that_does_not_parse_is_refused_on_the_reviewer_route(self):
+        files = files_of(**{"scripts/check__py": (b"def broken(:\n", "text/x-python", "executable_tool")})
+        self.assertIn("imported_code_syntax_invalid", codes(evaluate(files=files, edit=with_effects("spawns_process"))))
+
+    def test_known_wrong_a_script_with_an_undeclared_effect_is_refused_on_the_reviewer_route(self):
+        script = b"import requests\nrequests.get('https://example.test')\n"
+        files = files_of(**{"scripts/fetch__py": (script, "text/x-python", "executable_tool")})
+        self.assertIn("native_effect_undeclared", codes(evaluate(files=files, edit=with_effects("spawns_process"))))
+        self.assertIn("native_process_effect_missing", codes(evaluate(files=files)))
+
+    def test_known_wrong_an_executable_that_is_not_text_is_refused_on_the_reviewer_route(self):
+        files = files_of(**{"run__cmd": (b"\xff\xfe\x00run", "application/octet-stream", "hook")})
+        self.assertIn("imported_binary_verification_missing",
+                      codes(evaluate(files=files, edit=with_effects("spawns_process"))))
+
+    def test_a_shell_script_is_read_as_text_by_the_reviewer_route(self):
+        files = files_of(**{"scripts/run__sh": (b"#!/bin/sh\necho checked\n", "application/x-sh", "skill_script")})
+        outcome = evaluate(files=files, edit=with_effects("spawns_process"))
+        self.assertFalse(outcome.refused, codes(outcome))
 
     def test_known_wrong_malformed_json_and_skill_metadata_are_refused(self):
         manifest = files_of(**{"plugin__json": (b"{not json", "application/json", "plugin_manifest")})

@@ -1,22 +1,22 @@
-"""The public library page at /library: what the library holds, readable before anyone pays.
+"""The public library page at /library: what the library holds, counted by every kind of harness file, before sign-up.
 
 Kind: pure rendering over one catalogue view. The transport asks `rendered` for the page with the view it serves at
 that moment, so a catalogue release published without a redeploy reaches this page within the refresher's minute.
 Nothing here reads a request, a credential or an account's grants, and nothing here says how search works.
 
-Roadmap step S-6.184, from the stakeholder review of September 24, 2026: "Browse the library" ended at a sign-in
-prompt, so a visitor could not judge the library before paying. The page lists every Verified item with its purpose,
-kind, licence, size, digest and review record; it stands counts by kind and tier in for the Community items, which it
-does not list one by one; it prints one item in full; and it lists what the served release added, changed and
-withdrew, with each withdrawal's note. Search beyond this page and every download still need an account.
+Roadmap step S-6.184 (September 24, 2026) made the page list every Verified item with its size and digest. The owner,
+September 26, 2026: "we should make people sign up before showing them, and we should use a searchable table format
+not a random HTML table/rows, also size, and digest are useless pieces of information to waste space on showing and we
+need ALL types of harness working directory component files not just SKILLS". So this page lists no item one by one:
+it counts the library by harness kind and tier, shows one item in full so a visitor can judge the material, and
+sends the visitor to sign up; the searchable table of every item is the signed-in library in the app.
 
 ```text
 /library
-├── the counts, from the served view
+├── the counts by harness kind and tier, from the served view (every kind a harness picks up)
 ├── what the two labels mean, in the words the service publishes
-├── Verified items, one row each, with the review record an approval names
-├── Community items, as counts by kind only
 ├── one item in full, read through the view like any served body
+├── the searchable table: after sign-up, in the app
 └── the served release: what it added, changed and withdrew
 ```
 """
@@ -29,18 +29,20 @@ from functools import lru_cache
 from html import escape
 
 from ..provisioning_server import COMMUNITY_TIER, LIBRARY_TIERS, QUALIFICATION_APPROVED, TIER_LABELS, VERIFIED_TIER
+from .catalogue_attributes import HARNESS_KINDS, harness_kind_label, harness_kind_of
 from .catalogue_tiers import TIER_MEANINGS
 
 ADDRESS = "/library"
 VIEW = "library"
+#: Where a signed-in account browses and searches the whole library as a table.
+APP_LIBRARY_ADDRESS = "/app#browse-heading"
+SIGN_UP_ADDRESS = "/get-started"
 #: The item printed in full when the served library holds it as Verified; otherwise the shortest Verified item.
 SAMPLE_PREFERENCE = ("check_for_existing_work_before_building",)
 #: The distribution whose own metadata names the public repository, from the project URLs in pyproject.toml.
 DISTRIBUTION = "loop-engine"
 #: The project URL labels that name the repository, as the packaging metadata normalizes them.
 REPOSITORY_LABELS = ("repository", "source")
-#: The plain name of each item kind the catalogue knows; any other kind is shown as it is written.
-KIND_NAMES = {"skill": "Skill", "instruction_file": "Instruction file", "tool": "Tool", "reusable_code": "Reusable code"}
 
 
 def handles(address: str) -> bool:
@@ -49,16 +51,27 @@ def handles(address: str) -> bool:
 
 @dataclass(frozen=True)
 class LibraryRow:
-    """One approved item the view serves, with the facts the page may show and the review record it names."""
+    """One approved item the view serves, with the facts the page may count and the review record it names."""
 
     identity: str
     purpose: str
     kind: str
+    harness_kind: str
     licence: str
     size_bytes: int
-    digest: str
     tier: str
     approval_ref: str
+
+
+def _shown(view, identity: str) -> dict:
+    reader = getattr(view, "shown_attributes", None)
+    if not callable(reader):
+        return {}
+    try:
+        values = reader(identity)
+    except Exception:  # noqa: BLE001 - an attribute that cannot be read is not shown
+        return {}
+    return values if isinstance(values, dict) else {}
 
 
 def library_rows(view) -> "list[LibraryRow]":
@@ -75,8 +88,10 @@ def library_rows(view) -> "list[LibraryRow]":
             continue
         if getattr(decision, "status", None) != QUALIFICATION_APPROVED or decision.library_tier not in LIBRARY_TIERS:
             continue
-        rows.append(LibraryRow(identity, item.purpose, item.kind, item.license_name or "", int(item.size_bytes),
-                               item.digest, decision.library_tier, decision.approval_ref or ""))
+        declared = str(_shown(view, identity).get("harness_kind") or "")
+        kind = harness_kind_of(item.kind, tuple(getattr(item, "styles", ()) or ()), (), declared)
+        rows.append(LibraryRow(identity, item.purpose, item.kind, kind, item.license_name or "", int(item.size_bytes),
+                               decision.library_tier, decision.approval_ref or ""))
     return rows
 
 
@@ -100,10 +115,6 @@ def release_changes(view) -> dict:
     value = getattr(view, "changes", None) or {}
     return {key: [row for row in value.get(key, []) if isinstance(row, dict) and row.get("identity")]
             for key in ("added", "changed", "withdrawn")}
-
-
-def _kind(kind: str) -> str:
-    return KIND_NAMES.get(kind, kind.replace("_", " ").capitalize())
 
 
 def _items(count: int) -> str:
@@ -142,28 +153,23 @@ def _review_link(row: LibraryRow) -> str:
     return "Review record kept with the release"
 
 
+def counts_by_harness_kind(rows) -> "list[tuple[str, dict]]":
+    """(harness kind, {tier: count}) for every kind that has an item, in the order the kinds are listed."""
+    counted = Counter((row.harness_kind, row.tier) for row in rows)
+    present = [kind for kind in HARNESS_KINDS if any(counted[(kind, tier)] for tier in LIBRARY_TIERS)]
+    present += sorted({row.harness_kind for row in rows} - set(HARNESS_KINDS))
+    return [(kind, {tier: counted[(kind, tier)] for tier in LIBRARY_TIERS}) for kind in present]
+
+
 def _counts_table(rows) -> str:
-    kinds = sorted({row.kind for row in rows}, key=lambda kind: (_kind(kind), kind))
-    counted = Counter((row.kind, row.tier) for row in rows)
     head = "".join(f'<th scope="col">{escape(TIER_LABELS[tier])}</th>' for tier in LIBRARY_TIERS)
-    body = "".join(f'<tr><th scope="row">{escape(_kind(kind))}</th>'
-                   + "".join(f"<td>{counted[(kind, tier)]}</td>" for tier in LIBRARY_TIERS) + "</tr>" for kind in kinds)
-    totals = "".join(f"<td>{sum(1 for row in rows if row.tier == tier)}</td>" for tier in LIBRARY_TIERS)
-    return ('<div class="md-table-wrap"><table class="md-table" data-library-counts><thead><tr><th scope="col">Kind</th>'
-            f'{head}</tr></thead><tbody>{body}<tr><th scope="row">All kinds</th>{totals}</tr></tbody></table></div>')
-
-
-def _verified_item(row: LibraryRow) -> str:
-    """One row, in the layout of a directory row on every screen size. A directory row links to a page of its own; a
-    library row does not, so its name is set in the text colour and never looks like a link."""
-    return (f'<li class="md-row" data-library-item="{escape(row.identity)}" data-library-tier="{escape(row.tier)}">'
-            f'<div class="md-row-head"><span class="md-name">{escape(row.purpose)}</span>'
-            f'<span class="md-maker"><code>{escape(row.identity)}</code></span></div><dl class="md-facts">'
-            f'<div><dt>Kind</dt><dd>{escape(_kind(row.kind))}</dd></div>'
-            f'<div><dt>Licence</dt><dd>{escape(row.licence or "Not stated")}</dd></div>'
-            f'<div><dt>Size</dt><dd>{row.size_bytes:,} bytes</dd></div>'
-            f'<div><dt>Digest</dt><dd><code>{escape(row.digest[:12])}</code></dd></div></dl>'
-            f'<p class="md-tags">{escape(TIER_LABELS[row.tier])} · {_review_link(row)}</p></li>')
+    body = "".join(f'<tr data-harness-kind="{escape(kind)}"><th scope="row">{escape(harness_kind_label(kind))}</th>'
+                   + "".join(f"<td>{counts[tier]:,}</td>" for tier in LIBRARY_TIERS)
+                   + f"<td>{sum(counts.values()):,}</td></tr>" for kind, counts in counts_by_harness_kind(rows))
+    totals = "".join(f"<td>{sum(1 for row in rows if row.tier == tier):,}</td>" for tier in LIBRARY_TIERS)
+    return ('<div class="md-table-wrap"><table class="md-table" data-library-counts><thead><tr><th scope="col">Kind of '
+            f'file</th>{head}<th scope="col">All</th></tr></thead><tbody>{body}<tr><th scope="row">All kinds</th>'
+            f"{totals}<td>{len(rows):,}</td></tr></tbody></table></div>")
 
 
 def _release_band(view, rows) -> str:
@@ -200,36 +206,40 @@ def library_body(view, rows=None) -> str:
     rows = library_rows(view) if rows is None else rows
     verified = [row for row in rows if row.tier == VERIFIED_TIER]
     community = [row for row in rows if row.tier == COMMUNITY_TIER]
+    kinds = counts_by_harness_kind(rows)
     chosen, body = sample(view, rows)
     meanings = "".join(f"<div><dt>{escape(TIER_LABELS[tier])}</dt><dd>{escape(TIER_MEANINGS[tier])}</dd></div>"
                        for tier in LIBRARY_TIERS)
+    kind_names = ", ".join(harness_kind_label(kind).lower() + "s" for kind, _counts in kinds[:6])
     intro = ('<div class="md-band md-intro"><h1 id="library-title">The library</h1>'
-             f'<p class="lede">{len(rows)} items a coding agent can fetch today: {len(verified)} Verified and '
-             f'{len(community)} Community. Each one names its licence, its size and the digest of its exact bytes. '
-             "Read them here; search and downloads come with an account.</p>"
-             '<div class="md-actions"><a class="button primary" href="/get-started">Get started</a>'
-             '<a class="button secondary" href="/setup">Get set up</a></div></div>')
+             f'<p class="lede">{len(rows):,} files a coding agent can fetch today, of {len(kinds)} kinds'
+             + (f" ({escape(kind_names)}" + (", and more" if len(kinds) > 6 else "") + ")" if kinds else "")
+             + f": {len(verified):,} Verified and {len(community):,} Community. Every file names its source, its "
+             "licence and its review. Create an account to search the whole library as a table and download the "
+             "exact file your agent chose.</p>"
+             f'<div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Create an account</a>'
+             f'<a class="button secondary" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div>')
+    counts = ('<div class="md-band" id="counts" aria-labelledby="counts-title"><h2 id="counts-title">What is in it</h2>'
+              '<p class="md-reading">Every kind of file a harness picks up from its working directory, counted by the '
+              "label it carries.</p>" + _counts_table(rows) + "</div>")
     labels = ('<div class="md-band" id="labels" aria-labelledby="labels-title"><h2 id="labels-title">What the labels mean'
               f'</h2><dl class="md-dl">{meanings}</dl></div>')
-    counts = ('<div class="md-band" id="counts" aria-labelledby="counts-title"><h2 id="counts-title">What is in it</h2>'
-              + _counts_table(rows) + "</div>")
-    listed = ('<div class="md-band" id="verified" aria-labelledby="verified-title"><h2 id="verified-title">Verified items'
-              '</h2>' + (f'<ol class="md-list" data-library-verified>{"".join(_verified_item(row) for row in verified)}</ol>'
-                         if verified else "<p>No item carries the Verified label today.</p>") + "</div>")
-    others = ('<div class="md-band" id="community" aria-labelledby="community-title"><h2 id="community-title">Community '
-              f'items</h2><p class="md-reading">{len(community)} Community items, counted by kind in the table above. Each '
-              "one is shown with "
-              "its label wherever an account searches, and an account can leave Community items out.</p></div>")
+    table = ('<div class="md-band" id="browse" aria-labelledby="browse-title"><h2 id="browse-title">Search it as a table'
+             '</h2><p class="md-reading">A signed-in account sees every file in one searchable table: its purpose, the '
+             "kind of file, its label, the kinds of step it supports, its licence and the effects it declares, with a "
+             "search box and sortable columns. Each row opens to the file's details and, with Baltor Pro, to the file "
+             f'itself.</p><div class="md-actions"><a class="button primary" href="{SIGN_UP_ADDRESS}">Create an account'
+             f'</a><a class="button secondary" href="{APP_LIBRARY_ADDRESS}">Sign in and browse</a></div></div>')
     if chosen is not None and body is not None:
         shown = ('<div class="md-band" id="sample" aria-labelledby="sample-title"><h2 id="sample-title">One item in full'
-                 f'</h2><p class="md-reading"><code>{escape(chosen.identity)}</code>, {escape(TIER_LABELS[chosen.tier])}, '
-                 f'digest <code>{escape(chosen.digest[:12])}</code>. Every other body comes through an account and is '
-                 'checked against its digest.</p>'
+                 f'</h2><p class="md-reading">{escape(chosen.purpose)}: a {escape(harness_kind_label(chosen.harness_kind).lower())}, '
+                 f'{escape(TIER_LABELS[chosen.tier])}, licence {escape(chosen.licence or "not stated")}, {_review_link(chosen)}. '
+                 'Every other body comes through an account and is checked against its exact version.</p>'
                  f'<pre class="md-code md-code-wrap" data-library-sample="{escape(chosen.identity)}">'
                  f"<code>{escape(body)}</code></pre></div>")
     else:
         shown = ""
-    return intro + labels + counts + listed + others + shown + _release_band(view, rows)
+    return intro + counts + labels + table + shown + _release_band(view, rows)
 
 
 def library_page(view, site_map, display_name: str) -> str:

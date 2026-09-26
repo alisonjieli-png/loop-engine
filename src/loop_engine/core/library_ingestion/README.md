@@ -105,9 +105,13 @@ Library ingestion (functional component)
 ├── library_near_duplicate, one_of
 │   ├── datasketch_minhash_lsh: the adopted library
 │   └── builtin_minhash_lsh: the declared fallback that needs no library
-└── library_outline, one_of
-    ├── model_outline: one model sentence per outline, under model authority only
-    └── deterministic_outline: a template sentence that needs no authority
+├── library_outline, one_of
+│   ├── model_outline: one model sentence per outline, under model authority only
+│   └── deterministic_outline: a template sentence that needs no authority
+└── library_step_function_tagging, one_of
+    └── step_function_rules: the kinds of step an item supports (acting, analysis,
+        building, operating, planning, reasoning, research, reviewing, verification,
+        writing) from its words and file roles, served as the step_functions attribute
 ```
 
 `engines.py` is the factory table and the only module that names the

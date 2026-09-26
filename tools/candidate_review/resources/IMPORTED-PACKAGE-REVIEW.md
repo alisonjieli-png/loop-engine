@@ -32,8 +32,12 @@ file the customer receives, with exact paths, file roles and byte digests.
   placeholder, a personal note, generic advice with no step a harness can
   take, or a fragment that refers to files it neither includes nor explains
   is not sufficient grounds for approval.
-- Require separate verification for binary assets and executable code. Do not
-  approve a package while omitting an unreviewed file.
+- Read every executable file line by line: a script does only what the
+  package documents, its commands, network calls, file writes and secret reads
+  stay within the declared effects, and no line fetches, decodes or runs
+  material the package does not include.
+- Require separate verification for binary assets. Do not approve a package
+  while omitting an unreviewed file.
 
 Approval covers the exact package digest and all files it names. It does not
 grant execution, network, secret, model or spending authority. Installation,

@@ -982,7 +982,7 @@ continuation:
     - id: D-26
       title: "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day"
       stage: public_launch
-      steps: [S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
+      steps: [S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.205, S-6.206, S-6.207, S-6.208, S-6.209, S-6.70, S-6.81, S-6.82, S-6.83, S-6.40, S-6.62, S-6.63, S-6.119, S-6.64, S-6.88]
       depends_on: [D-20, D-22]
       actions:
         - "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line."
@@ -1387,7 +1387,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.200, S-6.201, S-6.202, S-6.204, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
+  launch_order: [S-6.29, S-6.35, S-6.68, S-6.43, S-6.33, S-6.67, S-6.46, S-6.65, S-6.85, S-6.89, S-6.99, S-6.102, S-6.101, S-6.34, S-6.39, S-6.38, S-6.66, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.205, S-6.206, S-6.207, S-6.208, S-6.209, S-6.200, S-6.201, S-6.202, S-6.204, S-6.81, S-6.63, S-6.119, S-6.62, S-6.70, S-6.83, S-6.64, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.78, S-6.79, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16, S-6.120, S-6.121, S-6.194, S-6.192, S-6.190, S-6.186, S-6.184, S-6.183, S-6.182, S-6.181, S-6.177, S-6.178]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22, S-6.84, S-6.71, S-6.72, S-6.73, S-6.74, S-6.75, S-6.76, S-6.77, S-6.80, S-6.82, S-6.86, S-6.87, S-6.88, S-6.90, S-6.91, S-6.92, S-6.93, S-6.94, S-6.95, S-6.96, S-6.97, S-6.98, S-6.110, S-6.111, S-6.112, S-6.113, S-6.114, S-6.115, S-6.116, S-6.117, S-6.118, S-6.100, S-6.140, S-6.141, S-6.142, S-6.143, S-6.144, S-6.145, S-6.146, S-6.147, S-6.148, S-6.149, S-6.150, S-6.151, S-6.152, S-6.153, S-6.154, S-6.155, S-6.156, S-6.157, S-6.160, S-6.161, S-6.162, S-6.163, S-6.164, S-6.165, S-6.166, S-6.167, S-6.168, S-6.169, S-6.170, S-6.171, S-6.172, S-6.173, S-6.174, S-6.175, S-6.176, S-6.195, S-6.193, S-6.191, S-6.189, S-6.188, S-6.187, S-6.185, S-6.179, S-6.180, S-6.198]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1489,7 +1489,7 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11, S-6.91, S-6.92, S-6.96, S-6.162, S-6.169]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54, S-6.62, S-6.63, S-6.119, S-6.64, S-6.69, S-6.196, S-6.197, S-6.199, S-6.203, S-6.205, S-6.206, S-6.207, S-6.208, S-6.209, S-6.70, S-6.81, S-6.82, S-6.83, S-6.88, S-6.95, S-6.117, S-6.142, S-6.143, S-6.144, S-6.145, S-6.148, S-6.155, S-6.164, S-6.175, S-6.190, S-6.189, S-6.178, S-6.179]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61, S-6.80, S-6.94, S-6.160, S-6.166, S-6.167, S-6.168, S-6.170, S-6.176, S-6.193]
@@ -4553,7 +4553,7 @@ steps:
   - id: S-6.197
     phase: 6
     title: "One unattended daily job from the day's approvals to a checked live catalogue release, with automatic rollback"
-    status: building
+    status: live_qualified
     depends_on: [S-6.62, S-6.119, S-6.196]
     boundary: [tools/write_reviewed_catalogue.py, tools/build_catalogue_release_bundle.py, tools/check_hosted_catalogue.py]
     verify:
@@ -4563,8 +4563,8 @@ steps:
       - "each day's counts of packages exported, reviewed, approved, published and served are recorded"
     adversarial: "A bundle that holds an unapproved package, a publish that skips the live check, a failed check that leaves the new release serving and a run that exceeds its declared call ceiling must each be refused."
     acceptance: "Approved packages reach customers every day without a person starting any step and without a redeploy."
-    evidence: "Observed on September 25, 2026: the 93-item Community release went live without a redeploy, but exporting, reviewing, writing the reviewed folder, bundling, publishing and checking were each started by hand. Evening: the operator scripts daily_library_release.sh, catalogue_status.sh and rollback_catalogue.sh exist in the private tools folder with journaled stages. Night of September 25 to 26: the first run on import batch 2 went from prechecks to a published, checked release (2,000 exported, 1,707 passed, 143 Tactical calls, 1,647 approved, 29 rejected, 31 left out; release 04a69e0b with 3,276 items published at 00:58 UTC and served from 01:00 UTC, retrieval check 6 of 6; artifacts/community-release-4-2026-09-26/README.md), after four defects in the job were fixed on the way (a symlinked export folder, exclusion reasons with spaces, an incomplete calibration that now retries once, and a publish that outlives the Machines API exec call's deadline and is now started in the background and polled). A cron entry runs the job every six hours (17 past 00:00, 06:00, 12:00 and 18:00 in the machine's Eastern time, so 04:17, 10:17, 16:17 and 22:17 UTC) with --publish, REPOSITORY set to the release worktree and RUN_FOLDER set to the import run of September 24; each slot has its own run name (date and UTC hour), so every slot exports and reviews its own 2,000 packages. The first slot at 04:17 UTC on September 26 failed to start (the script was not executable and the entry called it directly); both were fixed and the 04 slot started by hand at 04:40 UTC as the export stage's first run (2,000 exported, 1,630 passed). A fifth defect surfaced there: the calibration retry reused the first attempt's ledger and so re-asked only the one missing control on its own, a different test from the batch of twelve; the retry now writes its own ledger, and the fresh attempt qualified at 04:58 UTC. The slot then ran to the end without a person: 136 review calls, 1,536 approved, release a7451e06 with 4,812 packages published at 06:18 UTC by the background publish and served from 06:19 UTC, retrieval check 6 of 6 (artifacts/community-release-5-2026-09-26/README.md). The 10:17 UTC slot is the first run cron starts itself."
-    next_local_work: "Read the 04 slot's journal and the 10:17 UTC cron run (~/.le-ci-tmp/daily-cron.log and each run's journal.jsonl under ~/baltor-library/daily/); at four slots a day of 2,000 packages the served count passes 10,000 within two days, so run the serving measurement (S-6.203) before then or lower EXPORT_TARGET."
+    evidence: "Observed on September 25, 2026: the 93-item Community release went live without a redeploy, but exporting, reviewing, writing the reviewed folder, bundling, publishing and checking were each started by hand. Evening: the operator scripts daily_library_release.sh, catalogue_status.sh and rollback_catalogue.sh exist in the private tools folder with journaled stages. Night of September 25 to 26: the first run on import batch 2 went from prechecks to a published, checked release (2,000 exported, 1,707 passed, 143 Tactical calls, 1,647 approved, 29 rejected, 31 left out; release 04a69e0b with 3,276 items published at 00:58 UTC and served from 01:00 UTC, retrieval check 6 of 6; artifacts/community-release-4-2026-09-26/README.md), after four defects in the job were fixed on the way (a symlinked export folder, exclusion reasons with spaces, an incomplete calibration that now retries once, and a publish that outlives the Machines API exec call's deadline and is now started in the background and polled). A cron entry runs the job every six hours (17 past 00:00, 06:00, 12:00 and 18:00 in the machine's Eastern time, so 04:17, 10:17, 16:17 and 22:17 UTC) with --publish, REPOSITORY set to the release worktree and RUN_FOLDER set to the import run of September 24; each slot has its own run name (date and UTC hour), so every slot exports and reviews its own 2,000 packages. The first slot at 04:17 UTC on September 26 failed to start (the script was not executable and the entry called it directly); both were fixed and the 04 slot started by hand at 04:40 UTC as the export stage's first run (2,000 exported, 1,630 passed). A fifth defect surfaced there: the calibration retry reused the first attempt's ledger and so re-asked only the one missing control on its own, a different test from the batch of twelve; the retry now writes its own ledger, and the fresh attempt qualified at 04:58 UTC. The slot then ran to the end without a person: 136 review calls, 1,536 approved, release a7451e06 with 4,812 packages published at 06:18 UTC by the background publish and served from 06:19 UTC, retrieval check 6 of 6 (artifacts/community-release-5-2026-09-26/README.md). The 10:17 UTC slot is the first run cron starts itself. September 26, 2026: the 10:17 UTC slot, the first that cron started, ran every stage itself from 10:17 to 11:55 UTC (2,000 exported, 1,660 passed, 139 calls, 1,586 approved) and published release 856bff51 with 6,398 packages, checked 6 of 6; the 04 slot before it was started by hand after a permissions fault and published 4,812. Both records are under artifacts/community-release-5 and -6."
+    next_local_work: "Move the cron's REPOSITORY to the permanent job checkout, read the 16:17 UTC slot's counts.json (the first with the balanced mix and the tags), and add the overnight batch's 8,904 native candidates as a second input of the job."
   - id: S-6.198
     phase: 6
     title: "Red-team the typed decision engines with the modern slavery scenarios: a request-screening station, every engine scored on the same five requests, and a showcase page"
@@ -4669,6 +4669,81 @@ steps:
     acceptance: "Every Monday staff read one page with last week's numbers and their trend."
     evidence: "Measured on September 25, 2026 with a counts-only script: 0 live subscriptions, 0 customers, 2 checkout sessions started and none finished, 18 accounts of which 9 confirmed and 16 made on the day of the release checks; no visitor count exists."
     next_local_work: "Turn the counts-only script into the command, add the request counter with the retention rule, and schedule the weekly record."
+  - id: S-6.205
+    phase: 6
+    title: "Library composition: every kind a harness picks up in every export, code read by the reviewer at Community, and the mix recorded per release"
+    status: building
+    depends_on: [S-6.196, S-6.197]
+    boundary: [tools/licensed_import/review_export.py, tools/import_licensed_harness_files.py, tools/candidate_review/imported_prechecks.py, tools/candidate_review/native.py, tools/candidate_review/resources]
+    verify:
+      - "the review export draws every package kind (skills, skills with scripts, subagents, commands, rules, instruction files, plugin manifests, hooks, protocol server configurations, marketplaces, contract schemas, code modules, harness settings) in a declared share each export, any prefix of the selection keeps the mix, an exhausted kind spills over, and the earlier ranked order stays selectable"
+      - "a package with code passes the format rules at Community when every executable file is text the reviewer reads, a Python file parses, the effects rules find nothing undeclared and the reviewer answers the executable-code criterion; the sandbox-tests route stays the Verified route for code"
+      - "shell, JavaScript, TypeScript and PowerShell files are text the reviewer reads, within the review bounds, and the export and the panel share one media set"
+      - "each export report and each daily release record the mix that was selected, kept and approved"
+    adversarial: "The ranked order drawing no hook, manifest or script in its first fifty, a script that does not parse, a script with an undeclared network call, an executable that is not text, and a sandbox-route package with code must each be refused by a named check."
+    acceptance: "A customer searching the library finds skills, plugins, hooks, commands, subagents, rules, protocol server configurations, contract schemas and python scripts, in the shares the decision table names, and the code a Community item ships was read whole by its reviewer."
+    evidence: "September 26, 2026: the 4,812 served packages were 2,100 skills, 1,973 instruction files and 739 tools, with no script among them, because the export ordered instruction-only packages first and the format rule held every package with code for sandbox tests; the import store held 25,096 skills (2,162 with scripts), 6,799 subagents, 6,437 commands, 2,939 plugin manifests, 2,932 instruction files, 2,787 rules, 1,077 marketplaces, 952 protocol server configurations, 942 hooks, 744 contract schemas and 82 code modules not yet exported. The owner the same day: the library should be 'a large mix of everything that can be placed into a harness working directory'."
+    next_local_work: "Let the 16:17 UTC slot run with the balanced mix, read its export report's mix_kept and the writer's counts by kind, then sample ten approved packages with scripts and check each reviewer answer against the code."
+  - id: S-6.206
+    phase: 6
+    title: "Step function tags: each served item carries the kinds of step it supports (acting, analysis, building, operating, planning, reasoning, research, reviewing, verification, writing), filterable in search and shown on the pages"
+    status: building
+    depends_on: [S-6.62, S-6.205]
+    boundary: [src/loop_engine/core/library_ingestion/step_functions.py, tools/write_reviewed_catalogue.py, tools/combine_reviewed_catalogues.py, tools/build_catalogue_release_bundle.py, src/loop_engine/core/service_runtime/web_assets]
+    verify:
+      - "the library_step_function_tagging engine slot has a rules engine that tags an item from its name, purpose, bounded entry text and file roles, records its evidence, and leaves an item untagged when its words name no function"
+      - "the reviewed catalogue writer asks the slot for every approved item, the combined snapshot and the release bundle carry the tags as the step_functions attribute, and the release schema declares it as a searchable, filterable, shown keyword list"
+      - "a search request filters on step_functions with any_of, the protocol search result and the library pages show the tags, and a tag says which engine wrote it so a rule tag is never mistaken for a judged one"
+      - "a sample of one hundred tagged items is checked by hand against their text and the precision is recorded before a model engine is added behind the same edge"
+    adversarial: "A tag outside the closed vocabulary, more than four tags, a tag on an item whose words name no function, an item attribute that overrides a builder attribute, and a package with a script losing its acting tag when the role rule is removed must each fail a named check."
+    acceptance: "A customer or a harness asks the library for verification skills, or for acting tools, and gets items tagged that way, with the tag's basis visible."
+    evidence: "September 26, 2026, the owner: 'it would be helpful to tag some of these skills by whether they support acting, reasoning, building, analysis, verification, etc'. The attribute schema had cited_source, origin_layer, catalogued_on, batch and tier; no served attribute described what an item is for."
+    next_local_work: "Read the tag counts of the first release that carries them, sample one hundred, record the precision, and add the search filter control to the library page."
+  - id: S-6.207
+    phase: 6
+    title: "The owner's own volumes as seed material: a read-only inventory with provenance classes, seed records per project, and generated harness files reviewed and published under the owner's authorship declaration"
+    status: building
+    depends_on: [S-6.40, S-6.197, S-6.205]
+    boundary: [tools/scan_local_volume.py, tools/licensed_import, src/loop_engine/core/library_ingestion]
+    verify:
+      - "one command inventories a mounted volume without copying, hashing or opening a file beyond its first bytes, skips vendored dependencies, environments, caches and system folders, and writes the inventory outside the repository"
+      - "every project root is classed by provenance from typed signals (git remote owner, licence holder, copyright lines) with the owner's declaration as the recorded basis, and a project that names another author is inspiration only"
+      - "a seed record per owner-authored project names its purpose, languages, entry files and the harness file kinds it could yield (instruction file, skill, tool, hook, command, contract), and a generation wave turns seed records into original harness packages that pass the prechecks and the one screening call before publication"
+      - "each generated package cites its seed project path and inventory revision, and a second volume attaches by the same command with no code change"
+    adversarial: "A generated package whose seed project is classed third-party, a seed that cites a file the inventory does not hold, a scan that writes into the repository, and an inventory that opens whole files must each be refused by a named check."
+    acceptance: "The owner attaches a drive, one command inventories it, and within a day generated packages seeded from the owner's own projects are searchable and retrievable, each with its seed provenance."
+    evidence: "September 26, 2026: the owner attached a 7.3 TB volume (3.1 TB used, exFAT) at /run/media/username/Expansion holding MAIN_PROJECTS with its own index, a documents backup and a disk backup, and asked for it to be scanned 'aggressively' as seed material, then other drives; the inventory command was written and its first walk started that morning."
+    next_local_work: "Read the first inventory's summary and provenance classes, write the seed record builder over the owner-authored projects, and run the first generation wave of fifty packages through the daily job's review and publish path."
+  - id: S-6.208
+    phase: 6
+    title: "The library page counts every harness file kind and sends visitors to sign up; the signed-in library is one searchable table without size or digest columns"
+    status: building
+    depends_on: [S-6.184, S-6.206]
+    boundary: [src/loop_engine/core/service_runtime/library_page.py, src/loop_engine/core/service_runtime/catalogue_attributes.py, src/loop_engine/core/service_runtime/web_assets/catalogue-browser.js, src/loop_engine/core/service_runtime/http.py]
+    verify:
+      - "the public page at /library lists no item one by one; it counts the library by harness kind (every kind a harness picks up) and by label, shows one item in full, and sends the visitor to create an account or sign in"
+      - "a signed-in account browses the whole library as one table with a search box and sortable columns for the purpose, the kind of file, the label, the step functions, the licence and the declared effects; no column shows a size or a digest, and each row opens the item's details and, with Baltor Pro, the file"
+      - "the provisioning list rows carry the served attributes an account may see, so the table filters on the kind of file and the step functions without a second request"
+      - "the site map, the page checks and the browser checks agree with the page as served on every hostname"
+    adversarial: "A public page that lists an item one by one, a table column that shows a size or a digest, a count that folds harness kinds into the four served kinds, and a list row that carries an attribute its release schema does not declare must each fail a named check."
+    acceptance: "A visitor sees what the library holds and signs up; an account searches every file in one table."
+    evidence: "September 26, 2026, the owner on the /library page: 'we should make people sign up before showing them, and we should use a searchable table format not a random HTML table/rows, also size, and digest are useless pieces of information to waste space on showing and we need ALL types of harness working directory component files not just SKILLS'. The page then listed 42 Verified items with their size and digest and counted the library as instruction file, skill and tool."
+    next_local_work: "Release the page and the table together, then screenshot both signed out and signed in."
+  - id: S-6.209
+    phase: 6
+    title: "Occupation, industry, level, language and geography tags on every served file, searchable in the signed-in dashboard"
+    status: proposed
+    depends_on: [S-6.206, S-6.208, S-6.40]
+    boundary: [src/loop_engine/core/library_ingestion, src/loop_engine/core/intelligence_tagging.py, tools/write_reviewed_catalogue.py, src/loop_engine/core/service_runtime/web_assets/catalogue-browser.js]
+    verify:
+      - "each served file carries, where its words or its idea record say so, the job titles, industries, seniority levels, natural languages and geographies it is for, as served attributes written by a rules engine behind the same tagging edge as the step functions, with the engine named and an item left untagged when nothing in it says"
+      - "the occupation and industry vocabularies are the pinned occupation grid and a declared industry list, so a tag is a stable word a filter can name"
+      - "the signed-in table filters and groups by these facets, and a search request filters on them with any_of; the public pages show none of it"
+      - "a sample of one hundred tagged items is checked by hand against their text and the precision is recorded"
+    adversarial: "A facet value outside its vocabulary, a tag on an item whose words name no occupation or industry, a public page that shows the facets, and a filter on an attribute the release schema does not declare must each fail a named check."
+    acceptance: "An account browsing the dashboard sees the files for its industry, role and level, in its language and region, and finds the gaps."
+    evidence: "September 26, 2026, the owner: 'we also may want to tag/label our harness component files by job title, industry, level, language, geography, etc, and allow people to search in the dashboard (when they sign up not on the home pages) to see all of the different files in different industries, classes, etc'. The intelligence tag dimensions (role, domain, geography, language) and the idea matrix facets (job title, seniority, location, language) exist as records; no served file carries them yet."
+    next_local_work: "Write the industry and level vocabularies beside the occupation grid, add the facet rules engine behind the tagging edge, carry the attributes through the writer, and add the facet filters to the table."
   - id: S-6.101
     phase: 6
     title: "A public directory of models, endpoints and local runtimes, with a can-I-run hardware check, at /models, /endpoints and /can-i-run"

@@ -675,17 +675,19 @@ pi -p --baltor-check</pre><p><a class="text-link" href="/setup" data-page="setup
         </section>
       </div>
       <section class="panel browse" aria-labelledby="browse-heading">
-        <div class="section-heading"><div><p class="eyebrow">Browse what you have</p><h2 id="browse-heading">Everything published for your account</h2></div><span class="badge" id="browse-count">Sign in to browse</span></div>
-        <p class="secondary">Search answers a question. Browsing shows what is there, grouped by where the material comes from. Open an item to read its details before you fetch the file.</p>
+        <div class="section-heading"><div><p class="eyebrow">The library</p><h2 id="browse-heading">Every file published for your account</h2></div><span class="badge" id="browse-count">Sign in to browse</span></div>
+        <p class="secondary">Search answers a question. The table shows everything that is there: skills, instruction files, rules, subagents, commands, hooks, plugin manifests, protocol server settings, schemas and code. Type to narrow it, sort a column, and open a row to read its details before you fetch the file.</p>
         <div class="browse-controls">
-          <div class="browse-field"><label for="browse-kind">Kind of material</label><select id="browse-kind" disabled><option value="">Every kind</option></select></div>
+          <div class="browse-field browse-field-wide"><label for="browse-search">Search the table</label><input id="browse-search" type="search" autocomplete="off" placeholder="purpose, kind, step, licence, tool" disabled></div>
+          <div class="browse-field"><label for="browse-kind">Kind of file</label><select id="browse-kind" disabled><option value="">Every kind of file</option></select></div>
+          <div class="browse-field"><label for="browse-tier">Label</label><select id="browse-tier" disabled><option value="">Every label</option></select></div>
           <div class="browse-field"><label for="browse-style">Development tool</label><select id="browse-style" disabled><option value="">Every tool</option></select></div>
-          <button type="button" id="refresh-browse" class="quiet" disabled>Load the catalogue</button>
+          <button type="button" id="refresh-browse" class="quiet" disabled>Load the library</button>
         </div>
-        <p class="caption">Material that names no development tool suits every tool, so a tool filter keeps it. Material that declares an effect, such as running a command, is not offered here, because this page holds no permission to run anything.</p>
-        <p id="browse-message" role="status" aria-live="polite">Sign in to browse the material published for your account.</p>
+        <p class="caption">A file that names no development tool suits every tool, so a tool filter keeps it. A file that declares an effect, such as running a command, is not offered here, because this page holds no permission to run anything.</p>
+        <p id="browse-message" role="status" aria-live="polite">Sign in to browse the library published for your account.</p>
         <div class="browse-layout">
-          <div id="browse-groups" class="browse-groups"></div>
+          <div class="browse-table-wrap"><table class="browse-table" aria-describedby="browse-message"><thead id="browse-table-head"></thead><tbody id="browse-table-body"></tbody></table></div>
           <aside id="browse-detail" class="browse-detail" tabindex="-1" aria-live="polite" aria-label="Selected item"><p class="caption">Open an item to read its details.</p></aside>
         </div>
       </section>

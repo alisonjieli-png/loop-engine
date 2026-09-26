@@ -118,6 +118,15 @@ def _attributes(row, review, recorded_at, batch, schema):
         # The library tier of the decision table (Verified or Community) always travels in the line's approval. It is
         # also a served attribute, shown and filtered on, when the release schema declares one named tier.
         values["tier"] = review["tier"]
+    # An item's own attributes (the harness kind and the step functions the writer tagged it with) join the line.
+    # They never restate one of the builder's: that would let a row relabel its tier or its review date.
+    own = row.get("attributes") or {}
+    if not isinstance(own, dict):
+        raise ManifestBuildError("item_attributes_invalid", "an item's attributes are a mapping")
+    if set(own) & set(values):
+        raise ManifestBuildError("item_attribute_reserved",
+                                 "an item's own attributes never restate the builder's: " + ", ".join(sorted(set(own) & set(values))))
+    values.update(own)
     return values
 
 

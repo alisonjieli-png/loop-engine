@@ -65,7 +65,7 @@ ORIGINAL_INTERACTION_ROWS_DIGEST = (
 LIBRARY_INGESTION_FACTORY_TABLE = "core.library_ingestion.engines"
 LIBRARY_INGESTION_SLOTS = (
     "library_ingestion_source", "library_format_validation", "library_safety_scan",
-    "library_near_duplicate", "library_outline")
+    "library_near_duplicate", "library_outline", "library_step_function_tagging")
 #: A suite that forbidden_paths.json keeps out of the main self-test, used as
 #: the real-data case of the collected-suite check and as proof that the
 #: parked list was read. It is core.ollama_client because its exception is

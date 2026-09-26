@@ -127,6 +127,22 @@ class IdeaAndPromptChecks(unittest.TestCase):
             with self.assertRaises(LaneError):
                 runner.write_idea({"record_type": "something_else/v9"})
 
+    def test_a_seed_excerpt_enters_the_prompt_between_markers_and_an_idea_without_one_is_unchanged(self):
+        plain = _render_prompt(_idea())
+        self.assertNotIn("<<<SEED>>>", plain)
+        seeded = _idea()
+        seeded["applicability"] = {**seeded["applicability"],
+                                   "seed_excerpt": "README:\nResize every image in a folder.\n\nModules:\nmodule "
+                                                   "resize.py\n  def resize(path, width)"}
+        prompt = _render_prompt(seeded)
+        self.assertTrue(prompt.startswith(plain))
+        self.assertIn("<<<SEED>>>\nREADME:\nResize every image", prompt)
+        self.assertTrue(prompt.endswith("\n<<<END SEED>>>"))
+        self.assertIn("owner's own project", prompt)
+        blank = _idea()
+        blank["applicability"] = {**blank["applicability"], "seed_excerpt": "  "}
+        self.assertEqual(_render_prompt(blank), plain)
+
     def test_prompt_carries_identity_and_known_wrong(self):
         prompt = _render_prompt(_idea())
         self.assertIn("string-standardization-data-cleaning", prompt)

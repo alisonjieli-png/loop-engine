@@ -108,13 +108,21 @@ def load_matrix(path: Path) -> dict:
     return batch
 
 
+#: Batch source kinds whose ideas carry their own task statement, so no occupation is rotated over them: the
+#: owner's volume seeds (tools/build_volume_seed_ideas.py) ground each idea in one of the owner's own projects.
+SELF_GROUNDED_SOURCE_KINDS = ("owner_volume_inventory",)
+
+
 def _occupation_rotation(matrix: dict) -> list[dict]:
-    """The pinned occupations and their task statements, in file order."""
+    """The pinned occupations and their task statements, in file order; empty for a self-grounded batch."""
     source = {}
+    kinds = {record.get("kind") for record in matrix.get("sources", [])}
     for record in matrix.get("sources", []):
         if record.get("kind") == "onet_pinned":
             source = record
     if not source:
+        if kinds and kinds <= set(SELF_GROUNDED_SOURCE_KINDS):
+            return []
         refuse("matrix_missing_pinned_source")
     path = Path(__file__).resolve().parents[1] / source["path"]
     raw = json.loads(path.read_text(encoding="utf-8"))
@@ -181,7 +189,7 @@ def select_stratified(matrix: dict, count: int, seed: int = 20260924) -> list[di
                 continue
             idea = pool[cursor]
             cursors[datatype] = cursor + 1
-            facet = rotation[len(picked) % len(rotation)]
+            facet = rotation[len(picked) % len(rotation)] if rotation else {}
             picked.append({
                 **idea,
                 "applicability": {**idea["applicability"], **facet},

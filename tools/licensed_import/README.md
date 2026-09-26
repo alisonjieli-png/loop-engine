@@ -252,12 +252,25 @@ third-party bytes. A scheduled round runs `discover` then `sync` with a new
 run folder, reusing the store; the journal and cursors make each command
 restartable.
 
+The fourth command, `export-review`, hands stored candidates to the review
+panel as a catalogue folder. Since September 26, 2026 it draws every kind a
+harness picks up in a declared share (`--kind-mix balanced`, the default;
+`--kind-share hook=0.10` changes one share; `--kind-mix ranked` is the earlier
+order), and its report records the mix selected and kept (roadmap S-6.205):
+
+```bash
+PYTHONPATH=src:tools python tools/import_licensed_harness_files.py export-review \
+  --run-folder RUN_FOLDER --store-root STORE --output REVIEW_EXPORT --code-revision REVISION \
+  --target 2000 --limit 2600 --per-repository 15 --kind-mix balanced
+```
+
 ## Checks
 
 ```bash
 PYTHONPATH=src:tools python -m unittest tools.test_licensed_import_licensing \
   tools.test_licensed_import_packages tools.test_licensed_import_reads \
-  tools.test_licensed_import_discovery_dedup tools.test_licensed_import_sync tools.test_licensed_import_sources
+  tools.test_licensed_import_discovery_dedup tools.test_licensed_import_sync tools.test_licensed_import_sources \
+  tools.test_licensed_import_review_export
 ```
 
 Every check runs offline. Each guard has a known-wrong case, and the

@@ -36,7 +36,7 @@ from loop_engine.core.library_ingestion.https_transport import HttpsGetTransport
 from loop_engine.core.library_ingestion.record_rules import now_utc  # noqa: E402
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog  # noqa: E402
 
-from licensed_import import discovery, dedup  # noqa: E402
+from licensed_import import discovery, dedup, review_export  # noqa: E402
 from licensed_import.checks import CiscoSkillScanner, StaticChecks  # noqa: E402
 from licensed_import.github_api import ApiBudgets, GitHubApi  # noqa: E402
 from licensed_import.harness_kinds import SourceScope  # noqa: E402
@@ -238,7 +238,6 @@ def sync(args) -> dict:
 def export_review(args) -> dict:
     """Select, scan and write stored candidates as a catalogue folder the review panel can load."""
     from loop_engine.catalog.query import IntelligenceQuery
-    from licensed_import import review_export
     from licensed_import.storage import NAMESPACE
     store = ImportStore(Path(args.store_root), writes_authorized=False)
     try:
@@ -255,8 +254,13 @@ def export_review(args) -> dict:
             if key not in first_source or discovery.SOURCE_PRIORITY.get(row["engine_id"], 99) < \
                     discovery.SOURCE_PRIORITY.get(first_source[key], 99):
                 first_source[key] = row["engine_id"]
+        try:
+            kind_shares = review_export.parse_kind_shares(args.kind_share)
+        except ValueError as error:
+            raise SystemExit(f"export-review: {error}") from None
         chosen, skipped = review_export.select(payloads, first_source, discovery.SOURCE_PRIORITY,
-                                               limit=args.limit, per_repository=args.per_repository)
+                                               limit=args.limit, per_repository=args.per_repository,
+                                               kind_mix=args.kind_mix, kind_shares=kind_shares)
         checks = None
         if args.skillspector_program or args.cisco_scanner_program:
             extra = ([CiscoSkillScanner(args.cisco_scanner_program, str(Path(args.work_folder) / "cisco"))]
@@ -271,6 +275,9 @@ def export_review(args) -> dict:
                    "earlier_exports": sorted(Path(folder).name for folder in args.exclude_export or ()),
                    "limit": args.limit, "target": args.target,
                    "per_repository": args.per_repository, "selected": len(chosen),
+                   "kind_mix": args.kind_mix,
+                   "kind_shares": kind_shares if args.kind_mix == review_export.BALANCED else {},
+                   "mix_selected": review_export.mix_counts(chosen), "mix_kept": review_export.mix_counts(kept),
                    "not_selected": dict(skipped), "scanned": len(chosen) if checks else 0,
                    "scan_seconds": round(time.monotonic() - started, 1),
                    "scan_engines": checks.describe()["engines"] if checks else [],
@@ -281,7 +288,8 @@ def export_review(args) -> dict:
         _rewrite(Path(args.output) / "scan-refusals.jsonl", refused)
     finally:
         store.close()
-    print(json.dumps({key: report[key] for key in ("items", "licences", "kinds", "repositories")}, indent=1))
+    print(json.dumps({key: report[key] for key in ("items", "licences", "kinds", "mix", "with_scripts",
+                                                    "repositories")}, indent=1))
     return report
 
 
@@ -334,6 +342,10 @@ def parser() -> argparse.ArgumentParser:
     four.add_argument("--limit", type=int, default=2400)
     four.add_argument("--target", type=int, default=2000)
     four.add_argument("--per-repository", type=int, default=15)
+    four.add_argument("--kind-mix", choices=review_export.KIND_MIXES, default=review_export.BALANCED,
+                      help="balanced draws every kind in its share each export; ranked is the earlier order")
+    four.add_argument("--kind-share", action="append", metavar="KIND=FRACTION",
+                      help="a share of the balanced mix to change, for example hook=0.10")
     four.add_argument("--work-folder", default="")
     four.add_argument("--exclude-export", action="append", help="an earlier export folder whose items are skipped")
     four.add_argument("--scan-workers", type=int, default=8)

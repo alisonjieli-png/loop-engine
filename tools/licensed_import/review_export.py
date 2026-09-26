@@ -23,11 +23,25 @@ roles and its declared effects are the stored candidate's.
 
 The selection keeps the panel's bounds for reviewable text (every file one of
 its text media types, at most 256 kilobytes a file and 2 megabytes a
-package), spreads the campaign across repositories (a ceiling per repository)
-and orders instruction-only packages first, then by source and stars: the
-Community tier asks a package with code to pass its own tests too. Slow scanners may run over the selection
-before it is written; a blocked package is left out with its rule names and
-the next package takes its place. Nothing here approves anything.
+package) and spreads the campaign across repositories (a ceiling per
+repository). Two selection rules exist, chosen by the caller:
+
+```text
+kind mix
+├── balanced (the default since September 26, 2026): every kind a harness picks
+│   up is drawn each export in a declared share, skills with scripts as their
+│   own share, by a weighted round robin, so any prefix of the selection keeps
+│   the mix and an exhausted kind spills over to the others
+└── ranked (the rule until then): instruction-only packages first, then by
+    source and stars, which drew skills and instruction files before anything
+    else while the stock lasted
+```
+
+The owner, September 26, 2026: the library "should be skills, plugins,
+python scripts, literally a large mix of everything that can be placed into a
+harness working directory". Slow scanners may run over the selection before
+it is written; a blocked package is left out with its rule names and the next
+package takes its place. Nothing here approves anything.
 """
 from __future__ import annotations
 
@@ -52,12 +66,30 @@ EXPORT_REPORT_RECORD_TYPE = "licensed_import_review_export/v1"
 IMPORTED_PROFILE = "imported_licensed_package/v1"
 UPSTREAM_FAMILY = "upstream_author"
 METHOD_IDENTITY = "licensed_import/github_verbatim/v1"
-#: The panel's reviewable text media types and bounds (tools/candidate_review/native.py).
-TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-python", "application/x-python", "application/json",
-                        "application/schema+json", "application/yaml", "text/yaml", "application/toml"})
+#: The panel's reviewable text media types and bounds; the same set as tools/candidate_review/native.py, which
+#: the sync checks compare. Scripts in shell, JavaScript, TypeScript and PowerShell are text the reviewer reads
+#: line by line since September 26, 2026 (roadmap S-6.205); images, archives and unknown bytes are not.
+TEXT_MEDIA = frozenset({"text/plain", "text/markdown", "text/x-rst", "text/x-python", "application/x-python",
+                        "application/json", "application/schema+json", "application/yaml", "text/yaml",
+                        "application/toml", "application/x-sh", "text/javascript", "text/x-typescript",
+                        "text/x-powershell", "text/x-ruby", "text/x-perl", "text/x-go", "text/x-rust", "text/x-php",
+                        "text/x-lua", "text/html", "text/css", "text/csv", "application/xml", "application/sql"})
 MAXIMUM_FILE_BYTES = 256 * 1024
 MAXIMUM_PAYLOAD_BYTES = 2 * 1024 * 1024
 POPULATION_SIZE = 50
+#: The kind mixes a caller may ask for.
+KIND_MIXES = ("balanced", "ranked")
+BALANCED, RANKED = KIND_MIXES
+#: A skill whose package holds a script is its own share, so code enters the library at a steady rate.
+SKILL_WITH_SCRIPTS = "skill_with_scripts"
+#: The balanced mix of one export, as shares of the limit. Chosen on September 26, 2026 from the stock then on
+#: disk (25,096 skills, of which 2,162 with scripts; 6,799 subagents; 6,437 commands; 2,939 plugin manifests;
+#: 2,932 instruction files; 2,787 rules; 1,077 marketplaces; 952 protocol server configurations; 942 hooks; 744
+#: contract schemas; 82 code modules) so that every kind lasts about the same number of exports. A kind with
+#: nothing left spills its share over to the others.
+DEFAULT_KIND_SHARES = {SKILL: 0.30, SKILL_WITH_SCRIPTS: 0.10, SUBAGENT: 0.12, COMMAND: 0.12, RULES: 0.08,
+                       INSTRUCTION_FILE: 0.08, PLUGIN_MANIFEST: 0.06, HOOK: 0.05, PROTOCOL_SERVER: 0.03,
+                       MARKETPLACE: 0.02, CONTRACT_SCHEMA: 0.02, CODE_MODULE: 0.01, SETTINGS: 0.01}
 #: The panel's item kinds; the harness file kind stays on the specification and in the tags.
 REFERENCE_KINDS = {SKILL: "skill", INSTRUCTION_FILE: "instruction_file", RULES: "instruction_file",
                    SUBAGENT: "instruction_file", COMMAND: "instruction_file", HOOK: "tool", PLUGIN_MANIFEST: "tool",
@@ -84,9 +116,38 @@ def reviewable(payload: dict) -> "str | None":
     return None
 
 
-def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repository: int) -> tuple:
-    """(chosen, skipped reasons): reviewable packages in source and star order, spread across repositories."""
-    skipped = Counter()
+def has_code(payload: dict) -> bool:
+    return any(entry["role"] in EXECUTABLE_ROLES for entry in payload["package"]["files"])
+
+
+def mix_key(payload: dict) -> str:
+    """The share a package draws from: its kind, or skill_with_scripts for a skill that holds a script."""
+    if payload["kind"] == SKILL and has_code(payload):
+        return SKILL_WITH_SCRIPTS
+    return payload["kind"]
+
+
+def parse_kind_shares(values) -> dict:
+    """KIND=FRACTION arguments over the default mix; a share is a fraction between 0 and 1 of a known kind."""
+    shares = dict(DEFAULT_KIND_SHARES)
+    for value in values or ():
+        kind, separator, fraction = str(value).partition("=")
+        if not separator or kind not in shares:
+            raise ValueError(f"a kind share is KIND=FRACTION for one of {sorted(shares)}: {value!r}")
+        try:
+            share = float(fraction)
+        except ValueError:
+            raise ValueError(f"the share of {kind} is a number: {value!r}") from None
+        if not 0 <= share <= 1:
+            raise ValueError(f"the share of {kind} is between 0 and 1: {value!r}")
+        shares[kind] = share
+    if not any(shares.values()):
+        raise ValueError("at least one kind keeps a share above zero")
+    return shares
+
+
+def _ranked(payloads, first_source: dict, priority: dict, skipped: Counter, *, code_last: bool) -> list:
+    """Reviewable packages with their order key: source priority, then stars, then repository and path."""
     ranked = []
     for payload in payloads:
         reason = reviewable(payload)
@@ -95,15 +156,64 @@ def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repo
             continue
         repository = payload["provenance"]["repository"]
         source = first_source.get(repository.lower(), "")
-        # Instruction-only packages come first: the Community tier asks a package with code to pass
-        # its own tests as well, so packages holding scripts follow in later batches.
-        has_code = any(entry["role"] in EXECUTABLE_ROLES for entry in payload["package"]["files"])
-        ranked.append(((has_code, priority.get(source, 99), -(payload["repository"].get("stars") or 0),
-                        repository.lower(), payload["provenance"]["path"]), payload))
+        # The ranked rule put instruction-only packages first, because the Community tier once asked a
+        # package with code to pass its own tests; the balanced rule gives code its own share instead.
+        order = ((has_code(payload),) if code_last else ()) + (
+            priority.get(source, 99), -(payload["repository"].get("stars") or 0), repository.lower(),
+            payload["provenance"]["path"])
+        ranked.append((order, payload))
     ranked.sort(key=lambda row: row[0])
+    return [payload for _order, payload in ranked]
+
+
+def _balanced(ranked: list, shares: dict, skipped: Counter, *, limit: int, per_repository: int) -> list:
+    """A weighted round robin over the kind buckets: at each draw the bucket furthest behind its share.
+
+    The shares are renormalized over the buckets that still hold a package,
+    so an exhausted kind spills over to the others, and any prefix of the
+    result keeps the mix as closely as whole packages allow."""
+    buckets = defaultdict(list)
+    for payload in ranked:
+        key = mix_key(payload)
+        if shares.get(key, 0) > 0:
+            buckets[key].append(payload)
+        else:
+            skipped["kind_share_is_zero"] += 1
+    positions = {key: 0 for key in buckets}
+    taken, per = Counter(), Counter()
+    chosen = []
+    while len(chosen) < limit:
+        live = [key for key in buckets if positions[key] < len(buckets[key])]
+        if not live:
+            break
+        total = sum(shares[key] for key in live)
+        key = max(live, key=lambda name: (shares[name] / total * (len(chosen) + 1) - taken[name],
+                                          shares[name], -sorted(buckets).index(name)))
+        payload = buckets[key][positions[key]]
+        positions[key] += 1
+        repository = payload["provenance"]["repository"].lower()
+        if per[repository] >= per_repository:
+            skipped["repository_ceiling_reached"] += 1
+            continue
+        per[repository] += 1
+        taken[key] += 1
+        chosen.append(payload)
+    return chosen
+
+
+def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repository: int,
+           kind_mix: str = RANKED, kind_shares: "dict | None" = None) -> tuple:
+    """(chosen, skipped reasons): reviewable packages spread across repositories, in the asked kind mix."""
+    if kind_mix not in KIND_MIXES:
+        raise ValueError(f"the kind mix is one of {KIND_MIXES}: {kind_mix!r}")
+    skipped = Counter()
+    if kind_mix == BALANCED:
+        ranked = _ranked(payloads, first_source, priority, skipped, code_last=False)
+        return _balanced(ranked, kind_shares or DEFAULT_KIND_SHARES, skipped, limit=limit,
+                         per_repository=per_repository), skipped
     per = Counter()
     chosen = []
-    for _order, payload in ranked:
+    for payload in _ranked(payloads, first_source, priority, skipped, code_last=True):
         repository = payload["provenance"]["repository"].lower()
         if per[repository] >= per_repository:
             skipped["repository_ceiling_reached"] += 1
@@ -113,6 +223,11 @@ def select(payloads, first_source: dict, priority: dict, *, limit: int, per_repo
         if len(chosen) >= limit:
             break
     return chosen, skipped
+
+
+def mix_counts(payloads) -> dict:
+    """How many packages of each share a selection holds, most first."""
+    return dict(Counter(mix_key(payload) for payload in payloads).most_common())
 
 
 def scan_selection(chosen, body_reader, checks, *, target: int, scan_workers: int = 8) -> tuple:
@@ -224,6 +339,8 @@ def export(chosen, body_reader, folder: Path, *, code_revision: str, first_sourc
               "profile": IMPORTED_PROFILE, "items": len(items), "populations": len(populations),
               "files": sum(len(row["package"]["files"]) for row in items),
               "kinds": dict(Counter(payload["kind"] for payload in chosen).most_common()),
+              "mix": mix_counts(chosen),
+              "with_scripts": sum(1 for payload in chosen if has_code(payload)),
               "licences": dict(Counter(payload["licence"]["spdx_expression"] for payload in chosen).most_common()),
               "by_first_source_and_licence": {source: dict(counts) for source, counts in sorted(by_source.items())},
               "repositories": len({payload["provenance"]["repository"].lower() for payload in chosen}),

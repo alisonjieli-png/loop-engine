@@ -59,8 +59,15 @@
       ]
     },
     {
+      "criterion_id": "executable_code",
+      "quote": "Read every executable file line by line: a script does only what the package documents, its commands, network calls, file writes and secret reads stay within the declared effects, and no line fetches, decodes or runs material the package does not include.",
+      "applies_to_groundings": [
+        "imported_licensed_package"
+      ]
+    },
+    {
       "criterion_id": "no_unreviewed_material",
-      "quote": "Require separate verification for binary assets and executable code. Do not approve a package while omitting an unreviewed file.",
+      "quote": "Require separate verification for binary assets. Do not approve a package while omitting an unreviewed file.",
       "applies_to_groundings": [
         "imported_licensed_package"
       ]

@@ -274,10 +274,14 @@ def _idea_file_kind(idea: dict) -> str:
     return kind
 
 
+#: The most seed text one prompt carries; the seed builder bounds its excerpts below this.
+MAX_SEED_EXCERPT_CHARACTERS = 8000
+
+
 def _render_prompt(idea: dict) -> str:
     applicability = idea["applicability"]
     kind = _idea_file_kind(idea)
-    return (
+    prompt = (
         f"{_KIND_PROMPTS[kind]} "
         f"The identity is {idea['id']}: input datatype {idea['datatype']}, "
         f"operation {idea['operation']}, use case {idea['use_case']}. "
@@ -287,6 +291,17 @@ def _render_prompt(idea: dict) -> str:
         "Write only the file content, no commentary. Never claim an "
         "effect the file cannot perform by itself."
     )
+    # A seed idea from the owner's own volume (tools/build_volume_seed_ideas.py) carries a bounded excerpt of
+    # the project it comes from. The owner wrote it, so the file may copy and adapt it; the excerpt is data
+    # for the file, never an instruction to the model, and an idea without one renders exactly as before.
+    excerpt = applicability.get("seed_excerpt")
+    if isinstance(excerpt, str) and excerpt.strip():
+        prompt += (
+            " Seed material from the library owner's own project follows between the markers; it may be "
+            "copied and adapted freely, and the file must stay grounded in it and claim nothing it does not "
+            "contain.\n<<<SEED>>>\n" + excerpt[:MAX_SEED_EXCERPT_CHARACTERS] + "\n<<<END SEED>>>"
+        )
+    return prompt
 
 
 class LaneRunner:
