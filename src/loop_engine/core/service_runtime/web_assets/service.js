@@ -605,6 +605,38 @@ const applyPaymentState = name => {
     } catch (error) { status.textContent = error.name === "AbortError" ? "The wait ended. Usage may have been recorded. Retry this exact selection to reconcile." : error.message; }
     finally { button.disabled = false; }
   }
+  /* A reader reports the exact item version a result card shows. The service withdraws a Community item on the first
+     report and a Verified item on the second report from another account, counting each account once (roadmap S-6.199).
+     The words of the outcome follow the service's own answer. */
+  const reportOutcome = value => {
+    if (!value || value.record_type !== "service_catalogue_report_result/v1") return "The service answered with a report record this page was not written for.";
+    if (value.withdrawn) return "Thank you. This item is withdrawn from the library and queued for review.";
+    return "Thank you. Your report is recorded and the item is queued for review. A Verified item is withdrawn when a second account reports it or when staff flag it.";
+  };
+  function reportControl(identity, digest) {
+    const holder = element("div", "", "result-report");
+    const open = element("button", "Report a problem with this item", "quiet"); open.type = "button";
+    const form = element("form", "", "result-report-form"); form.hidden = true;
+    const box = document.createElement("textarea"); box.maxLength = 400; box.rows = 3; box.required = true;
+    box.placeholder = "What is wrong with it? Up to 400 characters."; box.setAttribute("aria-label", "What is wrong with this item");
+    const send = element("button", "Send report", "quiet"); send.type = "submit";
+    const outcome = element("p", "", "caption"); outcome.setAttribute("role", "status");
+    form.append(box, send); holder.append(open, form, outcome);
+    open.addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) box.focus(); });
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const reason = box.value.trim(), epoch = generation;
+      if (!reason) { outcome.textContent = "Write what is wrong before sending."; return; }
+      send.disabled = true; outcome.textContent = "Sending your report…";
+      try {
+        const value = await request("/api/v1/provisioning", {record_type:"service_provisioning_request/v2", operation:"report", identity, expected_digest:digest, reason});
+        if (epoch !== generation) return;
+        outcome.textContent = reportOutcome(value); form.hidden = true; box.value = "";
+      } catch (error) { if (epoch === generation) outcome.textContent = error.name === "AbortError" ? "The wait ended. Your report may not have been recorded. Send it again." : error.message; }
+      finally { if (epoch === generation) send.disabled = false; }
+    });
+    return holder;
+  }
   function renderResults(hits) {
     $("results").replaceChildren(); $("result-count").textContent = hits.length + " references";
     if (!hits.length) { $("results").append(element("p", "No permitted matches. Try a different description.", "empty")); return; }
@@ -620,7 +652,7 @@ const applyPaymentState = name => {
       detail.append(element("summary", "Source, integrity and access"));
       facts(list, [["Library tier", hit.library_tier_label || "Not stated"], ["Step functions", functions.join(", ") || "Not tagged"], ["Source", hit.reference.source_ref], ["Digest", hit.reference.body_digest], ["License", hit.license || "Unknown"], ["Declared effects", (hit.declared_effects || []).join(", ") || "None declared"], ["Harness scope", (hit.harness_styles || []).join(", ") || "No specific harness declared"], ["Qualification basis", hit.qualification_basis], ["Bytes", hit.size_bytes], ["Body access", hit.body_allowed ? "Permitted, checked again on fetch" : "Not granted"]]); detail.append(list); card.append(detail);
       const button = element("button", "Fetch exact revision", "quiet"), status = element("p", "", "caption"); button.type = "button"; button.disabled = !hit.body_allowed; status.setAttribute("role", "status");
-      button.addEventListener("click", () => download(hit, button, status)); card.append(button, status); $("results").append(card);
+      button.addEventListener("click", () => download(hit, button, status)); card.append(button, status, reportControl(hit.reference.identity, hit.reference.body_digest)); $("results").append(card);
     }
   }
   $("search-form").addEventListener("submit", async event => {

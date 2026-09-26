@@ -24,6 +24,8 @@ window.BaltorCatalogueBrowser = {
        guesses. */
     const listVersion = "provisioning_list/v3", manifestVersion = "provisioning_manifest/v3";
     const itemVersion = "harness_intelligence_item/v1";
+    /* The answer to a report. The service decides whether the report withdrew the item; this page repeats it. */
+    const reportVersion = "service_catalogue_report_result/v1";
     /* Every item names its library tier and the exact label to show for it. An item without one is a record
        this page was not written for, never an item shown without its label. */
     const knownTiers = new Set(["verified", "community"]);
@@ -97,7 +99,11 @@ window.BaltorCatalogueBrowser = {
       body_forbidden:"This account may read the details of this item, not the file.",
       body_reader_unavailable:"This service cannot hand out files at the moment. The details above are unchanged.",
       meter_unavailable:"This service cannot record usage at the moment, so it did not send the file.",
-      scope_required:"This account may not do that. Ask the person who runs this service for permission."};
+      scope_required:"This account may not do that. Ask the person who runs this service for permission.",
+      item_withdrawn:"This item was withdrawn from the library. Load the library again to see what is there now.",
+      report_reason_invalid:"Write what is wrong in plain words, up to 400 characters.",
+      catalogue_reports_unavailable:"This service does not take reports at the moment. Nothing was recorded.",
+      staff_role_required:"Only a staff member can flag an item. A report from your account still counts."};
     const plainly = text => {
       const named = /^Service refused the request: ([a-z_]+)\.$/.exec(text);
       return named && refusals[named[1]] ? refusals[named[1]] : text;
@@ -122,6 +128,42 @@ window.BaltorCatalogueBrowser = {
       row.library_tier_label, ...functionsOf(row), row.license || "", ...(row.declared_effects || []), ...(row.styles || [])]
       .join(" ").toLowerCase();
     const clearDetail = text => $("browse-detail").replaceChildren(element("p", text, "caption"));
+    /* A reader who finds a problem reports the exact item version they saw. The service withdraws a Community
+       item on the first report and a Verified item on the second report from another account, and counts each
+       account once. The words of the outcome follow the service's own answer, never a guess made here. */
+    const reportOutcome = value => {
+      if (!value || value.record_type !== reportVersion) return "This service answered with a report record this page was not written for.";
+      if (value.withdrawn) return "Thank you. This item is withdrawn from the library and queued for review.";
+      return "Thank you. Your report is recorded and the item is queued for review. A Verified item is withdrawn when a second account reports it or when staff flag it.";
+    };
+    function reportControl(row) {
+      const holder = element("div", "", "browse-report");
+      const open = element("button", "Report a problem with this item", "quiet"); open.type = "button";
+      const form = element("form", "", "browse-report-form"); form.hidden = true;
+      const box = document.createElement("textarea"); box.maxLength = 400; box.rows = 3; box.required = true;
+      box.placeholder = "What is wrong with it? Up to 400 characters."; box.setAttribute("aria-label", "What is wrong with this item");
+      const send = element("button", "Send report", "quiet"); send.type = "submit";
+      const outcome = element("p", "", "caption"); outcome.setAttribute("role", "status");
+      form.append(box, send); holder.append(open, form, outcome);
+      open.addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) box.focus(); });
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        const reason = box.value.trim(), epoch = current().generation;
+        if (!reason) { outcome.textContent = "Write what is wrong before sending."; return; }
+        send.disabled = true; outcome.textContent = "Sending your report…";
+        try {
+          const value = await request(path, {record_type:requestVersion, operation:"report", identity:row.identity,
+            expected_digest:row.digest, reason});
+          if (epoch !== current().generation) return;
+          outcome.textContent = reportOutcome(value); form.hidden = true; box.value = "";
+        } catch (error) {
+          if (epoch !== current().generation) return;
+          outcome.textContent = error.name === "AbortError"
+            ? "The wait ended. Your report may not have been recorded. Send it again." : plainly(error.message);
+        } finally { if (epoch === current().generation) send.disabled = false; }
+      });
+      return holder;
+    }
     function controls() {
       const ready = eligible() && !active;
       $("refresh-browse").disabled = !ready;
@@ -258,6 +300,7 @@ window.BaltorCatalogueBrowser = {
           ["Written for", toolsOf(value).length ? toolsOf(value).join(", ") : "No tool named, so it suits every tool"],
           ["Basis of its review", value.qualification_basis],
           ["The file itself", value.body_allowed ? "You may fetch it. Access is checked again on the way." : "Not granted to this account."]], "");
+        $("browse-detail").append(reportControl(row));
         if (!value.body_allowed) { note.textContent = "This account may read the details above, not the file."; return; }
         const button = element("button", "Fetch exact revision", "quiet");
         button.type = "button"; button.id = "browse-download";

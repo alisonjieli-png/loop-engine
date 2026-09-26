@@ -133,6 +133,22 @@ def withdrawal_keys(binding, store):
     return frozenset(keys)
 
 
+def withdrawal_notes(binding, store):
+    """Every durable withdrawal with its note, keyed like `withdrawal_keys`, so a page can show why an item left.
+
+    The keys come from `withdrawal_keys`, the one rule that decides what is withdrawn; this only adds the notes."""
+    keys, notes = withdrawal_keys(binding, store), {}
+    for row in binding.rows_all(store, WITHDRAWAL_KIND):
+        payload = row["payload"]
+        if (payload["identity"], payload["body_digest"]) not in keys:
+            continue
+        notes[(payload["identity"], payload["body_digest"])] = {
+            "identity": payload["identity"], "body_digest": payload["body_digest"],
+            "item_version": payload.get("item_version", ""), "note": payload.get("note", ""),
+            "withdrawn_at": payload.get("withdrawn_at", 0), "release_id": payload.get("release_id", "")}
+    return notes
+
+
 def is_withdrawn(binding, store, identity, body_digest):
     row = binding.read(store, WITHDRAWAL_KIND, (identity, body_digest))
     if row is not None and row["payload"].get("record_type") != WITHDRAWAL_RECORD_TYPE:

@@ -75,6 +75,7 @@ MODULE_MAP = {
         "catalogue_search", "catalogue_serving", "catalogue_grants", "catalogue_commands",
         "catalogue_release_checks", "catalogue_serving_checks", "catalogue_tiers", "catalogue_tier_checks",
         "catalogue_follow_checks", "library_page",
+        "catalogue_reports", "catalogue_report_checks",
         "commercial_relationship", "public_links",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),

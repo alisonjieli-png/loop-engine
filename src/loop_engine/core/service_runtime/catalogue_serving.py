@@ -109,6 +109,9 @@ class CatalogueView:
     #: The served release's own record of what it added, changed and withdrew, each with its note; the public library
     #: page lists it. A view built in code or from the image has none.
     changes: dict = field(default_factory=dict, repr=False, compare=False)
+    #: The note of every durable withdrawal that touches this view's release, keyed like `withdrawn`, so the public
+    #: library page keeps the record and the note of an item withdrawn after the release was published.
+    withdrawal_notes: dict = field(default_factory=dict, repr=False, compare=False)
     _lazy: dict = field(default_factory=dict, repr=False, compare=False)
 
     def approved_bindings(self):
@@ -169,13 +172,15 @@ class CatalogueView:
             self.withdrawal_check(identity, package.served_digest)
         return self.body_store.read(entry.digest, entry.size_bytes), entry
 
-    def without(self, withdrawn, *, state_revision):
+    def without(self, withdrawn, *, state_revision, notes=None):
         """A new view with every durably withdrawn item left out; the index is shared, not rebuilt."""
         keep = {identity: item for identity, item in self.catalogue.items.items()
                 if (identity, item.digest) not in withdrawn}
         return replace(self, catalogue=HarnessIntelligenceCatalogue(keep),
                        bindings={identity: value for identity, value in self.bindings.items() if identity in keep},
                        withdrawn=frozenset(withdrawn), state_revision=state_revision, built_at=time.time(),
+                       withdrawal_notes={**self.withdrawal_notes, **{key: value for key, value in (notes or {}).items()
+                                                                     if key in withdrawn}},
                        index=self.search_index(), _lazy={})
 
 
@@ -219,7 +224,7 @@ def store_view(config, settings, *, license_policy, family_policy):
     """Build the view of the active release: verify every record and body, then index it once."""
     from ..practitioner_runtime.provisioning import _item
     from .catalogue_bundle import item_version_tier
-    from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_keys
+    from .catalogue_releases import load_release, read_pointer, read_state, verify_release_bodies, withdrawal_notes
     from .catalogue_search import IndexEntry, ReleaseSearchIndex, entry_text
     binding = ServiceCatalogBinding(config)
     body_store = require_body_store(VolumeBodyStore(settings.body_store_root))
@@ -229,7 +234,8 @@ def store_view(config, settings, *, license_policy, family_policy):
         if pointer is None:
             _refuse("catalogue_release_not_published", "the store source needs a published release")
         release = load_release(binding, store, pointer["release_id"])
-        withdrawn = withdrawal_keys(binding, store)
+        notes = withdrawal_notes(binding, store)
+        withdrawn = frozenset(notes)
     # Every body of every served item is read and checked before this view
     # can be installed; a changed byte keeps the previous view serving.
     verify_release_bodies(release, body_store, withdrawn=withdrawn)
@@ -270,7 +276,8 @@ def store_view(config, settings, *, license_policy, family_policy):
                          withdrawal_check=check, body_store=body_store,
                          index=ReleaseSearchIndex(tuple(entries), release.schema),
                          state_revision=state["revision"] if state else 0, built_at=time.time(),
-                         changes=dict(release.document.get("changes") or {}))
+                         changes=dict(release.document.get("changes") or {}),
+                         withdrawal_notes={key: value for key, value in notes.items() if key[0] in dict(release.items)})
 
 
 def catalogue_state_gate(config, settings):
@@ -306,14 +313,14 @@ def state_token(config):
 
 def next_view(current, token, config, settings, *, license_policy, family_policy):
     """The view for a changed catalogue state: a full build for a new release, a cheaper one for withdrawals."""
-    from .catalogue_releases import withdrawal_keys
+    from .catalogue_releases import withdrawal_notes
     revision, release_id = token
     if settings.source == STORE_SOURCE and release_id != current.release_id:
         return store_view(config, settings, license_policy=license_policy, family_policy=family_policy)
     binding = ServiceCatalogBinding(config)
     with binding.store() as store:
-        withdrawn = withdrawal_keys(binding, store)
-    return current.without(withdrawn | current.withdrawn, state_revision=revision)
+        notes = withdrawal_notes(binding, store)
+    return current.without(frozenset(notes) | current.withdrawn, state_revision=revision, notes=notes)
 
 
 class CatalogueRefresher:

@@ -197,6 +197,16 @@ def _release_band(view, rows) -> str:
         lines.append(f'<h3>Withdrawn in this release</h3><ul class="md-plain">{withdrawn}</ul>')
     else:
         lines.append('<p class="md-reading">This release withdrew no item.</p>')
+    # An item withdrawn after the release was published, on a customer report, a staff flag, a rescan or an
+    # operator's command, keeps its record and its note here until a new review serves new bytes (roadmap S-6.199).
+    listed = {row["identity"] for row in changes["withdrawn"]}
+    later = sorted((row for row in (getattr(view, "withdrawal_notes", None) or {}).values()
+                    if isinstance(row, dict) and row.get("identity") and row["identity"] not in listed),
+                   key=lambda row: (row.get("withdrawn_at") or 0, row["identity"]))
+    if later:
+        items = "".join(f'<li data-library-withdrawn="{escape(row["identity"])}"><code>{escape(row["identity"])}</code>'
+                        + (f": {escape(str(row.get('note') or ''))}" if row.get("note") else "") + "</li>" for row in later)
+        lines.append(f'<h3>Withdrawn since this release was published</h3><ul class="md-plain">{items}</ul>')
     return ('<div class="md-band" id="releases" aria-labelledby="releases-title"><h2 id="releases-title">Releases and '
             "withdrawals</h2>" + "".join(lines) + "</div>")
 

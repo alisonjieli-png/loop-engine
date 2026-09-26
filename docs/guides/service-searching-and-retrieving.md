@@ -156,6 +156,51 @@ dependencies before a harness can use it. Preserve the package's relative
 paths. A download does not grant local process, network or model authority.
 Verify loading and check the resulting work against your task.
 
+## Report a problem with an item
+
+Every served item can be reported. Send the `report` operation to
+`/api/v1/provisioning` with the item's `identity`, the `expected_digest` you
+were served and a `reason` of up to 400 characters of plain text. The signed-in
+pages offer the same report from the detail panel of the library table and from
+each search result card. A harness sends it through the protocol tool
+`provisioning_report`, with the same three fields.
+
+```json
+{"record_type":"service_provisioning_request/v2","operation":"report","identity":"item-identity","expected_digest":"selected-digest","reason":"The steps delete files outside the project."}
+```
+
+The answer is `service_catalogue_report_result/v1`. Its `state` is `withdrawn`
+when the report withdrew the item and `recorded` when it did not yet; `withdrawn`
+says the same as a Boolean, `reports` counts the accounts that reported this
+exact item version, `reports_to_withdraw` is how many are needed for its tier,
+`flags` counts staff flags, and `review_state` is `queued`, because every
+report queues the item for the full review.
+
+The rule follows the item's `library_tier`, read from the served approval and
+never from the request:
+
+| Library tier | What withdraws the item version |
+| --- | --- |
+| Community | The first report from a signed-in account. |
+| Verified | A report from a second account, or a flag from a staff member. |
+
+A report counts once for each account and item version. Sending it again is the
+same record. A withdrawn item leaves search, listing and download within the
+service's refresh interval, one minute on the hosted service, and a read of it
+answers `item_withdrawn` at once. The withdrawal keeps the item's record and the
+reason, both shown on the public library page. A withdrawn item version is never
+served again by a later release; a new review of new bytes is needed. Only a
+staff member can send the `flag` operation, which withdraws any tier at once.
+
+| Code | Status | Meaning |
+| --- | --- | --- |
+| `report_reason_invalid` | 400 | The reason is empty, longer than 400 characters or holds control characters. |
+| `selected_body_digest_mismatch` | 400 | The service serves other bytes than the report names. Search again and report the digest you now see. |
+| `item_unavailable` | 404 | No served item has that identity. |
+| `item_withdrawn` | 404 | The item version is already withdrawn. |
+| `staff_role_required` | 403 | Only a staff member can flag. Your report still counts. |
+| `catalogue_reports_unavailable` | 503 | This host does not refresh its catalogue, so it takes no reports. |
+
 See [Usage and what you pay for](service-usage-and-what-you-pay-for.md) for retries
 and [Serving and connections](service-serving-and-connections.md) for the wire
 protocol, limits and refusal codes.

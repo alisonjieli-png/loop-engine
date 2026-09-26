@@ -46,8 +46,11 @@ DISABLE_ACCOUNT = "accounts.disable"
 ENABLE_ACCOUNT = "accounts.enable"
 #: Start Baltor's own sign-up for a few addresses, owner request of September 24, 2026.
 SEND_SIGN_UP_LINKS = "accounts.send_sign_up_links"
+#: Flag one served item so that it is withdrawn at once, whatever its tier (roadmap S-6.199, September 26, 2026).
+CATALOGUE_FLAG = "catalogue.flag"
 PERMISSIONS = (ACCOUNTS_LIST, ACCOUNT_COUNTS, USAGE_COUNTS, SERVICE_DIAGNOSTICS,
-               GRANT_FREE_MONTHLY, REVOKE_FREE_MONTHLY, DISABLE_ACCOUNT, ENABLE_ACCOUNT, SEND_SIGN_UP_LINKS)
+               GRANT_FREE_MONTHLY, REVOKE_FREE_MONTHLY, DISABLE_ACCOUNT, ENABLE_ACCOUNT, SEND_SIGN_UP_LINKS,
+               CATALOGUE_FLAG)
 #: What each role may do. This table is the only source of a permission.
 ROLE_PERMISSIONS = MappingProxyType({
     SUPERADMIN: frozenset(PERMISSIONS),

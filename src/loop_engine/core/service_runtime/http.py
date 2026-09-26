@@ -21,6 +21,8 @@ from ...loop.loop_role import LoopRole, LoopRoleIdentity
 from ..facets import EFFECTS
 from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding, tierless_answer
+from .catalogue_reports import (FEEDBACK_OPERATIONS, FLAG_OPERATION, MAXIMUM_REASON_CHARACTERS, REPORT_OPERATION,
+                                REPORT_TOOL)
 from .catalogue_tiers import DEFAULT_LIBRARY_SETTINGS, narrowed, tier_legend
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
@@ -518,10 +520,24 @@ LIBRARY_TIERS_SCHEMA = {"type": "array", "items": {"enum": ["verified", "communi
 
 def tiered_provisioning_schema(operation):
     """The version 2 request and protocol tool schema: version 1's fields and the optional library tier filter."""
+    if operation in FEEDBACK_OPERATIONS:
+        return feedback_schema()
     schema = http_provisioning_schema(operation)
     if operation != DISCOVER_OPERATION:
         schema["properties"]["library_tiers"] = dict(LIBRARY_TIERS_SCHEMA)
     return schema
+
+
+def feedback_schema():
+    """The closed shape of a report or a flag: the item, the digest the caller saw and a bounded reason.
+
+    Both are version 2 operations only, because their answer names the item's library tier. The digest binds the
+    report to the exact bytes the caller was served, so a report of one version never withdraws another."""
+    return {"type": "object", "additionalProperties": False, "required": ["identity", "expected_digest", "reason"],
+            "properties": {"identity": {"type": "string", "minLength": 1},
+                           "expected_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                           "reason": {"type": "string", "minLength": 1, "maxLength": MAXIMUM_REASON_CHARACTERS,
+                                      "description": "What is wrong with the item, in plain words."}}}
 
 
 def http_retrieval_schema():
@@ -1139,6 +1155,32 @@ class ServiceHttpApplication:
         request = ServiceAccessRequest.from_customer_dict(fields, current.principal.tenant_id)
         return self.client_access.apply(current.principal, request, session=session)
 
+    def _feedback(self, context, operation, fields):
+        """Record one report or one flag against the catalogue the service serves now (roadmap S-6.199).
+
+        A report needs the metadata scope every customer credential holds. A flag needs a signed-in staff member
+        whose role holds the `catalogue.flag` permission; a host key never holds a role. Both are answered only on
+        a host that serves its catalogue with a refresher, because the withdrawal a report causes reaches the served
+        view through that refresher within its interval."""
+        from .account_policy import CATALOGUE_FLAG, permissions_for
+        from .catalogue_reports import record_feedback
+        from .storage import ServiceCatalogBinding
+        current = self.authenticator.revalidate(context)
+        self._require_scope(current, "provisioning:metadata")
+        if self.catalogue_refresher is None:
+            raise ServiceHttpError("catalogue_reports_unavailable", 503)
+        role = ""
+        if operation == FLAG_OPERATION:
+            role = self.account_administration.role_of(current) if self.account_administration is not None else ""
+            if CATALOGUE_FLAG not in permissions_for(role):
+                raise ServiceRuntimeError("staff_role_required")
+        result = record_feedback(ServiceCatalogBinding(self.runtime.config), self.provisioning.current_view(),
+                                 kind=operation, tenant_id=current.principal.tenant_id, role=role,
+                                 identity=fields["identity"], expected_digest=fields["expected_digest"],
+                                 reason=fields["reason"])
+        self.authenticator.revalidate(context)
+        return result
+
     def _staff_facts(self, context):
         """The staff role of a signed-in session and its permissions, for the page's navigation only."""
         from .account_policy import permissions_for
@@ -1224,7 +1266,7 @@ class ServiceHttpApplication:
             raise ServiceHttpError("unsupported_version")
         tiered = payload["record_type"] == TIERED_PROVISIONING_REQUEST_VERSION
         operation = payload.get("operation")
-        if operation not in TOOL_OPERATIONS.values():
+        if operation not in TOOL_OPERATIONS.values() and not (tiered and operation in FEEDBACK_OPERATIONS):
             raise ServiceHttpError("unsupported_operation")
         fields = {key: value for key, value in payload.items() if key not in ("record_type", "operation")}
         from jsonschema import validate, ValidationError
@@ -1265,6 +1307,11 @@ class ServiceHttpApplication:
                 for name, operation in TOOL_OPERATIONS.items()]
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
                 inputSchema=http_retrieval_schema()))
+            # A harness reports an item it was served; a Community item is withdrawn at once and a Verified one on
+            # the second report from another account (roadmap S-6.199).
+            tools.append(types.Tool(name=REPORT_TOOL, description="Report a problem with an item you were served",
+                inputSchema=feedback_schema(), annotations=types.ToolAnnotations(
+                    readOnlyHint=False, destructiveHint=False, idempotentHint=True)))
             return types.ListToolsResult(tools=tools)
 
         async def call_tool(ctx, params):
@@ -1278,6 +1325,10 @@ class ServiceHttpApplication:
                 if name == "intelligence_search":
                     fields = with_step_effects(self._validate_search(arguments, versioned=False), effects)
                     output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
+                elif name == REPORT_TOOL:
+                    validate(arguments, feedback_schema())
+                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
+                        "catalogue_" + REPORT_OPERATION, lambda: self._feedback(context, REPORT_OPERATION, arguments)))
                 else:
                     operation = TOOL_OPERATIONS.get(name)
                     if operation is None:
@@ -1707,6 +1758,16 @@ class ServiceHttpApplication:
                     shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif path in ("/api/v1/provisioning", "/api/v1/download") and method == "POST":
                 operation, fields, tiered = self._validate_provisioning(_parse_json(await self._body(request)))
+                if operation in FEEDBACK_OPERATIONS:
+                    # A report or a flag carries no step effects and returns no body, so it is answered here.
+                    if path.endswith("download"):
+                        raise ServiceHttpError("download_requires_read")
+                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
+                        "catalogue_" + operation, lambda: self._feedback(context, operation, fields)))
+                    if output.get("record_type") != RESULT_VERSION:
+                        output = {"record_type": RESULT_VERSION, "operation": operation, "result": output}
+                    encoded = _json_bytes(output)
+                    return Response(encoded, media_type="application/json", status_code=status_code)
                 if operation != DISCOVER_OPERATION and tiered:
                     fields = with_step_effects(fields, step_effects(request.headers))
                 if path.endswith("download"):
