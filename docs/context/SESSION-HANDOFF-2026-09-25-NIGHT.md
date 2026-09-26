@@ -75,7 +75,13 @@ run's journal is `journal.jsonl` under `~/baltor-library/daily/<run>/`. The
 first cron slot at 04:17 UTC on September 26 failed to start because the
 script was not executable and the entry called it directly; the tools are
 executable now, the entry calls `bash`, and the 04 slot was started by hand
-at 04:40 UTC as the first run of the export stage.
+at 04:40 UTC as the first run of the export stage (2,000 exported, 1,630
+passed the prechecks). Its first calibration attempt was incomplete and the
+retry reused the first attempt's ledger, so it re-asked only the one
+missing control on its own, where this reviewer is known to fail; the retry
+now writes its own ledger and asks the whole batch of twelve again, and the
+fresh attempt qualified at 04:58 UTC (the first attempt is kept under
+`daily/2026-09-26-04/attempt-1`).
 
 ## Next steps, in order
 
