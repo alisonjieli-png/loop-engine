@@ -17,6 +17,13 @@ The vocabulary is closed, because a filter needs stable words. A tag is
 descriptive only: it grants nothing, and no code that decides access reads
 it. An item whose text names no function gets no tag, which is the honest
 answer, not a guess.
+
+Rules version 1.1.0 (September 26, 2026) follows a hand-judged sample of
+100 tagged items from the reviewed imported packages, recorded under
+``artifacts/step-function-tags-precision-2026-09-26``: body words alone
+need four distinct matches, name and purpose evidence wins ties, and the
+words that misled most were dropped. The measured before and after
+precision is in that record, not here, so this text cannot go stale.
 """
 from __future__ import annotations
 
@@ -41,11 +48,16 @@ STEP_FUNCTIONS_ATTRIBUTE = {
 TEXT_BOUND = 6000
 NAME_BOUND = 256
 PURPOSE_BOUND = 2048
-#: A function is tagged at this score: one distinct word in the name or purpose, or two distinct
-#: words in the body, or a file role that a harness runs.
+#: A function is tagged at this score: one distinct word in the name or purpose, or a file role that a
+#: harness runs, or enough distinct words in the body.
 MINIMUM_SCORE = 2
 HEADLINE_WEIGHT = 2
 BODY_CAP = 2
+#: A function whose only evidence is body words needs this many distinct ones. The September 26, 2026
+#: hand-judged sample (artifacts/step-function-tags-precision-2026-09-26) found body-only tags right 28
+#: times in 100 against 55 for tags with a name or purpose word, and three words admitted mostly wrong
+#: tags too: two or three incidental body words are not enough.
+BODY_ONLY_MINIMUM = 4
 MAXIMUM_FUNCTIONS = 4
 #: Package file roles a harness runs (catalogue_packages.EXECUTABLE_ROLES, restated here so this
 #: module reads nothing from the serving side) and the package kinds that exist to be run.
@@ -53,40 +65,54 @@ EXECUTABLE_ROLES = ("skill_script", "hook", "executable_tool")
 ROLE_FUNCTIONS = {"skill_script": "acting", "hook": "acting", "executable_tool": "acting"}
 HARNESS_KIND_FUNCTIONS = {"hook": "acting", "protocol_server_configuration": "acting"}
 _WORDS = {
+    # Words the September 26, 2026 sample showed to mislead were removed: "apply" (acting) fired on "apply the
+    # template"; "ci", "cd", "pipeline", "alert" and "infrastructure" (operating) fired on planning pipelines, a
+    # Polish pronoun and word lists; "create" and "generate" (building) fired on documents, personas and
+    # replies; "approve", "approval" and "pull request" (reviewing) fired on approval gates and PR creation.
+    # The "-ing" forms the sample found missing were added.
     "acting": r"run|runs|running|execute|executes|executing|execution|command|commands|invoke|invokes|install|"
-              r"installs|installation|apply|applies|automate|automates|automation|trigger|triggers|shell|script|"
+              r"installs|installation|automate|automates|automation|trigger|triggers|shell|script|"
               r"scripts|tool|tools|hook|hooks|cli",
-    "analysis": r"analy[sz]e|analy[sz]es|analy[sz]ing|analysis|analytics|inspect|inspects|inspection|diagnose|"
-                r"diagnoses|diagnosis|diagnostics|debug|debugging|profile|profiling|profiler|investigate|"
-                r"investigation|metrics|measure|measures|measurement|compare|comparison|evaluate|evaluation|"
-                r"benchmark|benchmarks|benchmarking|trace|tracing|root cause",
-    "building": r"build|builds|building|implement|implements|implementation|scaffold|scaffolds|scaffolding|"
-                r"generate|generates|generating|generator|create|creates|creating|compile|compiles|refactor|"
-                r"refactors|refactoring|migrate|migration|migrations|bootstrap|develop|developing|development|"
-                r"prototype|prototyping",
-    "operating": r"deploy|deploys|deployment|deployments|monitor|monitoring|ci|cd|pipeline|pipelines|release|"
-                 r"releases|releasing|docker|kubernetes|k8s|infrastructure|infra|ops|devops|incident|incidents|"
-                 r"logging|observability|alert|alerts|uptime|rollback|terraform|helm|container|containers",
+    "analysis": r"analy[sz]e|analy[sz]es|analy[sz]ing|analysis|analytics|inspect|inspects|inspecting|inspection|"
+                r"diagnose|diagnoses|diagnosing|diagnosis|diagnostics|debug|debugging|profile|profiling|profiler|"
+                r"investigate|investigating|investigation|metrics|measure|measures|measuring|measurement|compare|"
+                r"comparing|comparison|evaluate|evaluating|evaluation|benchmark|benchmarks|benchmarking|trace|"
+                r"tracing|root cause",
+    "building": r"build|builds|building|implement|implements|implementing|implementation|coding|scaffold|scaffolds|"
+                r"scaffolding|compile|compiles|refactor|refactors|refactoring|migrate|migration|migrations|"
+                r"bootstrap|develop|developing|development|prototype|prototyping",
+    "operating": r"deploy|deploys|deploying|deployment|deployments|monitor|monitoring|ci/cd|continuous integration|"
+                 r"continuous delivery|continuous deployment|release|releases|releasing|docker|kubernetes|k8s|"
+                 r"ops|devops|incident|incidents|logging|observability|uptime|rollback|terraform|helm|container|"
+                 r"containers",
     "planning": r"plan|plans|planning|roadmap|milestone|milestones|breakdown|break down|task list|prioriti[sz]e|"
                 r"prioriti[sz]ation|spec|specs|specification|prd|design doc|design document|estimate|estimates|"
                 r"estimation|scope|scoping|backlog|sprint|sprints",
-    "reasoning": r"reason|reasons|reasoning|think|thinking|decide|decides|decision|decisions|brainstorm|"
+    "reasoning": r"reason|reasons|reasoning|think|thinking|decide|decides|deciding|decision|decisions|brainstorm|"
                  r"brainstorming|hypothesis|hypotheses|trade-?offs?|strategy|strategies|architecture|"
-                 r"architectural|judge|judgement|judgment|weigh|weighs|alternatives|first principles|"
-                 r"chain of thought",
+                 r"architectural|judge|judging|judgement|judgment|weigh|weighs|weighing|alternatives|"
+                 r"first principles|chain of thought",
     "research": r"research|researching|search|searches|searching|explore|explores|exploring|exploration|"
                 r"discover|discovers|discovery|browse|browsing|lookup|look up|literature|survey|surveys|"
                 r"find out|gather information|sources",
-    "reviewing": r"review|reviews|reviewing|reviewer|critique|critiques|feedback|pull request|pull requests|"
-                 r"code review|approve|approval|audit|audits|auditing",
-    "verification": r"test|tests|testing|verify|verifies|verification|validate|validates|validation|check|checks|"
-                    r"checking|lint|linting|linter|assert|asserts|assertion|qa|regression|coverage|correctness|"
-                    r"proof|prove|proves",
-    "writing": r"writing|writer|draft|drafts|drafting|document|documents|documenting|documentation|docs|readme|"
-               r"blog|article|articles|prose|changelog|commit message|commit messages|summary|summari[sz]e|"
-               r"summari[sz]es|translate|translation|rewrite|editing|report|reports|essay|email|emails|newsletter",
+    "reviewing": r"review|reviews|reviewing|reviewer|critique|critiques|feedback|code review|audit|audits|auditing",
+    "verification": r"test|tests|testing|verify|verifies|verifying|verification|validate|validates|validating|"
+                    r"validation|check|checks|checking|lint|linting|linter|assert|asserts|assertion|qa|regression|"
+                    r"coverage|correctness|proof|prove|proves",
+    "writing": r"writing|writer|authoring|draft|drafts|drafting|document|documents|documenting|documentation|docs|"
+               r"readme|blog|article|articles|prose|changelog|commit message|commit messages|summary|summari[sz]e|"
+               r"summari[sz]es|summari[sz]ing|translate|translation|rewrite|editing|report|reports|essay|email|"
+               r"emails|newsletter",
 }
-_PATTERNS = {function: re.compile(r"(?<![a-z0-9])(?:" + words + r")(?![a-z0-9])") for function, words in _WORDS.items()}
+
+
+def _compile(words: dict) -> dict:
+    return {function: re.compile(r"(?<![a-z0-9])(?:" + pattern + r")(?![a-z0-9])") for function, pattern in words.items()}
+
+
+_PATTERNS = _compile(_WORDS)
+#: Among equal scores, a function with a name, purpose or role word ranks above one with body words only.
+HEADLINE_FIRST = True
 _SEPARATORS = re.compile(r"[_\-./]+")
 
 
@@ -175,13 +201,16 @@ class RulesStepFunctionTagger(StepFunctionTagger):
 
     A word in the name or purpose weighs two, a distinct word in the body one
     (at most two count), and a file role a harness runs weighs two for
-    acting. A function is tagged at a score of two; the four highest are
-    kept, in vocabulary order among equals. The evidence names each word or
-    role, so a sampled tag can be checked against the item by hand.
+    acting. A function is tagged at a score of two, except that a function
+    with body words only needs four distinct ones (version 1.1.0, from the
+    September 26, 2026 sample). The four highest are kept; among equals a
+    function with name, purpose or role evidence ranks first, then
+    vocabulary order. The evidence names each word or role, so a sampled tag
+    can be checked against the item by hand.
     """
 
     engine_id = "step_function_rules"
-    engine_version = "1.0.0"
+    engine_version = "1.1.0"
     engine_kind = "function_tagger"
     effects = ("pure",)
     third_party = "none"
@@ -197,10 +226,11 @@ class RulesStepFunctionTagger(StepFunctionTagger):
 
     def describe(self) -> dict:
         return {"engine_id": self.engine_id, "engine_version": self.engine_version,
-                "minimum_score": MINIMUM_SCORE, "maximum_functions": MAXIMUM_FUNCTIONS, "text_bound": TEXT_BOUND}
+                "minimum_score": MINIMUM_SCORE, "body_only_minimum": BODY_ONLY_MINIMUM,
+                "maximum_functions": MAXIMUM_FUNCTIONS, "text_bound": TEXT_BOUND}
 
-    def scores(self, material: StepFunctionMaterial) -> dict:
-        """The score and the evidence of every function, before the threshold is applied."""
+    def _scored(self, material: StepFunctionMaterial) -> dict:
+        """Every function's score, its evidence, its headline word count and its distinct body word count."""
         headline, body = _headline(material), material.text.lower()
         scored = {}
         for function in STEP_FUNCTIONS:
@@ -208,27 +238,39 @@ class RulesStepFunctionTagger(StepFunctionTagger):
             head_words = sorted(set(pattern.findall(headline)))
             body_words = sorted(set(pattern.findall(body)) - set(head_words))
             score = HEADLINE_WEIGHT * len(head_words) + min(len(body_words), BODY_CAP)
-            evidence = [f"name or purpose: {word}" for word in head_words] + [f"text: {word}" for word in body_words[:BODY_CAP]]
-            scored[function] = [score, evidence]
+            shown = body_words[:BODY_CAP] if head_words else body_words[:max(BODY_CAP, BODY_ONLY_MINIMUM)]
+            evidence = [f"name or purpose: {word}" for word in head_words] + [f"text: {word}" for word in shown]
+            scored[function] = {"score": score, "evidence": evidence, "headline": len(head_words), "body": len(body_words)}
         for role in sorted(set(material.file_roles)):
             function = ROLE_FUNCTIONS.get(role)
             if function:
-                scored[function][0] += HEADLINE_WEIGHT
-                scored[function][1].append(f"file role: {role}")
+                scored[function]["score"] += HEADLINE_WEIGHT
+                scored[function]["headline"] += 1
+                scored[function]["evidence"].append(f"file role: {role}")
         function = HARNESS_KIND_FUNCTIONS.get(material.harness_kind)
         if function:
-            scored[function][0] += HEADLINE_WEIGHT
-            scored[function][1].append(f"harness kind: {material.harness_kind}")
-        return {function: (score, tuple(evidence)) for function, (score, evidence) in scored.items()}
+            scored[function]["score"] += HEADLINE_WEIGHT
+            scored[function]["headline"] += 1
+            scored[function]["evidence"].append(f"harness kind: {material.harness_kind}")
+        return scored
+
+    def scores(self, material: StepFunctionMaterial) -> dict:
+        """The score and the evidence of every function, before the threshold is applied."""
+        return {function: (row["score"], tuple(row["evidence"])) for function, row in self._scored(material).items()}
 
     def tag(self, material: StepFunctionMaterial) -> StepFunctionTags:
         if not isinstance(material, StepFunctionMaterial):
             raise LibraryRecordError("step_function_material_invalid", "the tagger reads step_function_material/v1")
-        scored = self.scores(material)
+        scored = self._scored(material)
         order = {function: index for index, function in enumerate(STEP_FUNCTIONS)}
-        chosen = sorted((function for function, (score, _evidence) in scored.items() if score >= MINIMUM_SCORE),
-                        key=lambda function: (-scored[function][0], order[function]))[:MAXIMUM_FUNCTIONS]
-        evidence = tuple((function, basis) for function in chosen for basis in scored[function][1])
+        # A body-only function needs BODY_ONLY_MINIMUM distinct words; a headline word or a role is enough on
+        # its own. Among equal scores, evidence from the name, purpose or roles ranks above body words.
+        eligible = [function for function, row in scored.items()
+                    if row["score"] >= MINIMUM_SCORE and (row["headline"] or row["body"] >= BODY_ONLY_MINIMUM)]
+        chosen = sorted(eligible, key=lambda function: (-scored[function]["score"],
+                                                        -scored[function]["headline"] if HEADLINE_FIRST else 0,
+                                                        order[function]))[:MAXIMUM_FUNCTIONS]
+        evidence = tuple((function, basis) for function in chosen for basis in scored[function]["evidence"])
         return StepFunctionTags(tuple(chosen), self.engine_id, self.engine_version, evidence)
 
 

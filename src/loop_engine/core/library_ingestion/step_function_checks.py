@@ -3,15 +3,19 @@
 Each check names the input that must be tagged, refused or left untagged.
 The controls whose names start with ``removed_`` run a check with one rule
 taken away and confirm that the check would then fail: without the file-role
-rule a package that only holds a script loses its acting tag, and without
-the score threshold every function that is named once would be tagged.
+rule a package that only holds a script loses its acting tag, without the
+score threshold every function that is named once would be tagged, without
+the body-only minimum three incidental body words tag a function, without
+the headline-first order a purpose word loses to body words, and with the
+dropped words back or the added words gone the sampled cases score as they
+did under rules 1.0.0.
 """
 from __future__ import annotations
 
 from .record_rules import LibraryRecordError
 from .step_functions import (
-    ATTRIBUTE_NAME, MAXIMUM_FUNCTIONS, STEP_FUNCTIONS, STEP_FUNCTIONS_ATTRIBUTE, TEXT_BOUND,
-    RulesStepFunctionTagger, StepFunctionMaterial, StepFunctionTags, entry_text)
+    ATTRIBUTE_NAME, BODY_ONLY_MINIMUM, MAXIMUM_FUNCTIONS, STEP_FUNCTIONS, STEP_FUNCTIONS_ATTRIBUTE, TEXT_BOUND,
+    RulesStepFunctionTagger, StepFunctionMaterial, StepFunctionTags, _WORDS, _compile, entry_text)
 
 TEST_SKILL = ("---\nname: run-tests\ndescription: Run the project's test suite and report each failing check.\n---\n\n"
               "# Run tests\n\nRun the tests, then verify every failing assertion against the change.\n")
@@ -19,6 +23,30 @@ DEPLOY_RUNBOOK = ("# Release to the cluster\n\nDeploy the image with the pipelin
                   "back on an incident.\n")
 PLAIN = "# Notes\n\nThe colour of the header is navy. The footer repeats the address.\n"
 SCRIPT_ONLY = "#!/usr/bin/env python3\nprint('hello')\n"
+#: Three verification words in a body that is about a door, then a fourth: the September 26, 2026 sample
+#: found two or three incidental body words tag the wrong function far more often than the right one.
+THREE_BODY_WORDS = "# Door\n\nCheck the lock. Test the latch. Verify the hinge before the guests arrive.\n"
+FOUR_BODY_WORDS = THREE_BODY_WORDS + "Validate the key against the cylinder.\n"
+#: Four body-only functions at score two, each from four distinct words, beside one word in the purpose.
+CROWDED_BODY = ("Run the command, install the script and invoke the cli. Analyze, inspect, debug and profile the "
+                "output. Build, implement, compile and refactor the module. Deploy, monitor, release and docker "
+                "the service.\n")
+#: The words the sample dropped, as the 1.0.0 vocabulary held them, to prove each drop changes the answer.
+DROPPED_WORDS = {"acting": "apply|applies", "operating": "ci|cd|pipeline|pipelines|alert|alerts|infrastructure|infra",
+                 "building": "create|creates|creating|generate|generates|generating|generator",
+                 "reviewing": "approve|approval|pull request|pull requests"}
+ADDED_WORDS = {"building": ("implementing", "coding"), "analysis": ("diagnosing", "inspecting"),
+               "verification": ("verifying", "validating"), "reasoning": ("deciding", "judging")}
+
+
+def _patterns_with(extra: dict) -> dict:
+    return _compile({function: words + ("|" + extra[function] if function in extra else "")
+                     for function, words in _WORDS.items()})
+
+
+def _patterns_without(removed: dict) -> dict:
+    return _compile({function: "|".join(part for part in words.split("|") if part not in removed.get(function, ()))
+                     for function, words in _WORDS.items()})
 
 
 def _refused(build) -> bool:
@@ -92,12 +120,75 @@ def self_test() -> dict:
 
     # One word alone is not enough: "check" once in a body must not tag verification.
     once = tagger.tag(StepFunctionMaterial("skill", "skill", "colours", "", "Check the header colour.\n", ()))
-    with _without(MINIMUM_SCORE=1):
+    with _without(MINIMUM_SCORE=1, BODY_ONLY_MINIMUM=1):
         once_without_threshold = tagger.tag(StepFunctionMaterial("skill", "skill", "colours", "",
                                                                  "Check the header colour.\n", ()))
     check("removed_score_threshold_tags_every_function_named_once",
           once.functions == () and once_without_threshold.functions == ("verification",),
           f"with the threshold {once.functions}; without {once_without_threshold.functions}")
+
+    # Body words alone need four distinct matches (rules 1.1.0): three verification words in a text about a
+    # door tag nothing; a fourth tags verification, with all four words in the evidence. One purpose word or
+    # a role still suffices on its own.
+    three = tagger.tag(StepFunctionMaterial("skill", "skill", "door", "", THREE_BODY_WORDS, ()))
+    four = tagger.tag(StepFunctionMaterial("skill", "skill", "door", "", FOUR_BODY_WORDS, ()))
+    purpose_word = tagger.tag(StepFunctionMaterial("skill", "skill", "door", "Verify the hinge.", PLAIN, ()))
+    check("body_words_alone_need_four_distinct_matches_but_one_purpose_word_suffices",
+          BODY_ONLY_MINIMUM == 4 and three.functions == () and four.functions == ("verification",)
+          and [basis for function, basis in four.evidence] == ["text: check", "text: test", "text: validate",
+                                                                "text: verify"]
+          and purpose_word.functions == ("verification",)
+          and tagger.describe()["body_only_minimum"] == BODY_ONLY_MINIMUM,
+          f"three {three.functions}; four {four.functions}; purpose {purpose_word.functions}")
+    with _without(BODY_ONLY_MINIMUM=2):
+        three_without_minimum = tagger.tag(StepFunctionMaterial("skill", "skill", "door", "", THREE_BODY_WORDS, ()))
+    check("removed_body_only_minimum_tags_three_incidental_body_words",
+          three.functions == () and three_without_minimum.functions == ("verification",),
+          f"with the minimum {three.functions}; without {three_without_minimum.functions}")
+
+    # At equal scores, a function named in the purpose ranks above four body-only functions that precede it
+    # in vocabulary order: "audit" in the purpose keeps reviewing within the four tags kept.
+    audit = tagger.tag(StepFunctionMaterial("skill", "skill", "change-gate", "Audit the change.", CROWDED_BODY, ()))
+    with _without(HEADLINE_FIRST=False):
+        audit_by_order = tagger.tag(StepFunctionMaterial("skill", "skill", "change-gate", "Audit the change.",
+                                                         CROWDED_BODY, ()))
+    check("name_or_purpose_evidence_outranks_body_words_at_equal_score",
+          audit.functions[0] == "reviewing" and len(audit.functions) == MAXIMUM_FUNCTIONS
+          and all(tagger.scores(StepFunctionMaterial("skill", "skill", "change-gate", "Audit the change.",
+                                                     CROWDED_BODY, ()))[function][0] == 2
+                  for function in ("acting", "analysis", "building", "operating", "reviewing")),
+          audit.functions)
+    check("removed_headline_first_drops_the_audit_tag_behind_four_body_only_functions",
+          "reviewing" in audit.functions and "reviewing" not in audit_by_order.functions,
+          f"headline first {audit.functions}; vocabulary order only {audit_by_order.functions}")
+
+    # The words the sample dropped no longer tag: "apply" is not acting, a planning pipeline is not
+    # operating, creating a document is not building, and a pull request for approval is not reviewing.
+    dropped = {"acting": "Apply the discount to the order.", "operating": "Planning pipeline for the feature.",
+               "building": "Create a persona document.", "reviewing": "Open a pull request for approval."}
+    now = {function: tagger.scores(StepFunctionMaterial("skill", "skill", "x", purpose, PLAIN, ()))[function][0]
+           for function, purpose in dropped.items()}
+    with _without(_PATTERNS=_patterns_with(DROPPED_WORDS)):
+        before = {function: tagger.scores(StepFunctionMaterial("skill", "skill", "x", purpose, PLAIN, ()))[function][0]
+                  for function, purpose in dropped.items()}
+    check("dropped_words_no_longer_score_their_function", all(score == 0 for score in now.values()), now)
+    check("removed_word_drops_score_apply_pipeline_create_and_pull_request_again",
+          all(score == 0 for score in now.values()) and all(score >= 2 for score in before.values()),
+          f"now {now}; with the dropped words back {before}")
+
+    # The "-ing" forms the sample found missing tag their function from the purpose alone.
+    added = {"building": "Use when implementing multiplayer.", "analysis": "Diagnosing why memories decay.",
+             "verification": "Verifying a breach claim.", "reasoning": "Deciding between the two designs."}
+    tagged = {function: tagger.tag(StepFunctionMaterial("skill", "skill", "x", purpose, PLAIN, ())).functions
+              for function, purpose in added.items()}
+    with _without(_PATTERNS=_patterns_without(ADDED_WORDS)):
+        untagged = {function: tagger.tag(StepFunctionMaterial("skill", "skill", "x", purpose, PLAIN, ())).functions
+                    for function, purpose in added.items()}
+    check("added_ing_forms_tag_their_function_from_the_purpose",
+          all(tagged[function] == (function,) for function in added), tagged)
+    check("removed_added_words_leave_implementing_and_diagnosing_untagged",
+          all(tagged[function] == (function,) for function in added) and all(functions == () for functions in untagged.values()),
+          f"with the words {tagged}; without {untagged}")
 
     # The vocabulary is closed, the count bounded, the order fixed and the record round-trips.
     everything = " ".join(("deploy", "analyze", "build", "plan", "reason", "research", "review", "verify",
@@ -110,7 +201,7 @@ def self_test() -> dict:
           and crowded.functions == tagger.tag(StepFunctionMaterial("skill", "skill", "everything", everything,
                                                                    everything, ())).functions
           and again.to_dict() == crowded.to_dict()
-          and crowded.to_dict()["engine"] == {"engine_id": "step_function_rules", "engine_version": "1.0.0"}
+          and crowded.to_dict()["engine"] == {"engine_id": "step_function_rules", "engine_version": "1.1.0"}
           and _refused(lambda: StepFunctionTags(("acting", "dancing"), "x", "1"))
           and _refused(lambda: StepFunctionTags(tuple(STEP_FUNCTIONS[:MAXIMUM_FUNCTIONS + 1]), "x", "1"))
           and _refused(lambda: StepFunctionTags(("acting", "acting"), "x", "1"))

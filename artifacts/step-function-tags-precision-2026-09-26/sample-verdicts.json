@@ -1,0 +1,8184 @@
+{
+ "after": {
+  "distribution": {
+   "approved_items": 1586,
+   "engine": {
+    "engine_id": "step_function_rules",
+    "engine_version": "1.1.0"
+   },
+   "items_per_function": {
+    "acting": 779,
+    "analysis": 314,
+    "building": 315,
+    "operating": 111,
+    "planning": 216,
+    "reasoning": 185,
+    "research": 159,
+    "reviewing": 246,
+    "verification": 512,
+    "writing": 378
+   },
+   "tagged_items": 1312,
+   "tags_per_item": {
+    "0": 274,
+    "1": 348,
+    "2": 356,
+    "3": 277,
+    "4": 331
+   },
+   "top_words_per_function": {
+    "acting": [
+     {
+      "basis": "text: command",
+      "items": 286
+     },
+     {
+      "basis": "text: run",
+      "items": 278
+     },
+     {
+      "basis": "text: commands",
+      "items": 209
+     },
+     {
+      "basis": "text: cli",
+      "items": 178
+     },
+     {
+      "basis": "text: tool",
+      "items": 118
+     },
+     {
+      "basis": "text: tools",
+      "items": 108
+     },
+     {
+      "basis": "text: install",
+      "items": 108
+     },
+     {
+      "basis": "text: execute",
+      "items": 105
+     }
+    ],
+    "analysis": [
+     {
+      "basis": "text: analysis",
+      "items": 97
+     },
+     {
+      "basis": "text: analyze",
+      "items": 75
+     },
+     {
+      "basis": "name or purpose: analysis",
+      "items": 70
+     },
+     {
+      "basis": "text: compare",
+      "items": 44
+     },
+     {
+      "basis": "text: analytics",
+      "items": 41
+     },
+     {
+      "basis": "name or purpose: analyze",
+      "items": 34
+     },
+     {
+      "basis": "text: comparison",
+      "items": 31
+     },
+     {
+      "basis": "name or purpose: profile",
+      "items": 25
+     }
+    ],
+    "building": [
+     {
+      "basis": "text: build",
+      "items": 108
+     },
+     {
+      "basis": "name or purpose: build",
+      "items": 91
+     },
+     {
+      "basis": "text: implementation",
+      "items": 52
+     },
+     {
+      "basis": "text: development",
+      "items": 46
+     },
+     {
+      "basis": "name or purpose: development",
+      "items": 42
+     },
+     {
+      "basis": "text: implement",
+      "items": 42
+     },
+     {
+      "basis": "name or purpose: implementation",
+      "items": 39
+     },
+     {
+      "basis": "text: building",
+      "items": 38
+     }
+    ],
+    "operating": [
+     {
+      "basis": "name or purpose: release",
+      "items": 21
+     },
+     {
+      "basis": "text: deploy",
+      "items": 17
+     },
+     {
+      "basis": "text: deployment",
+      "items": 17
+     },
+     {
+      "basis": "text: ci/cd",
+      "items": 16
+     },
+     {
+      "basis": "text: monitoring",
+      "items": 13
+     },
+     {
+      "basis": "name or purpose: monitor",
+      "items": 13
+     },
+     {
+      "basis": "name or purpose: monitoring",
+      "items": 13
+     },
+     {
+      "basis": "name or purpose: deployment",
+      "items": 12
+     }
+    ],
+    "planning": [
+     {
+      "basis": "text: scope",
+      "items": 76
+     },
+     {
+      "basis": "name or purpose: plan",
+      "items": 73
+     },
+     {
+      "basis": "text: plan",
+      "items": 70
+     },
+     {
+      "basis": "text: planning",
+      "items": 40
+     },
+     {
+      "basis": "text: plans",
+      "items": 34
+     },
+     {
+      "basis": "name or purpose: spec",
+      "items": 33
+     },
+     {
+      "basis": "name or purpose: planning",
+      "items": 33
+     },
+     {
+      "basis": "text: spec",
+      "items": 29
+     }
+    ],
+    "reasoning": [
+     {
+      "basis": "text: decision",
+      "items": 59
+     },
+     {
+      "basis": "name or purpose: architecture",
+      "items": 49
+     },
+     {
+      "basis": "text: decisions",
+      "items": 40
+     },
+     {
+      "basis": "text: architecture",
+      "items": 29
+     },
+     {
+      "basis": "name or purpose: strategy",
+      "items": 29
+     },
+     {
+      "basis": "name or purpose: decisions",
+      "items": 23
+     },
+     {
+      "basis": "name or purpose: decision",
+      "items": 20
+     },
+     {
+      "basis": "text: reason",
+      "items": 19
+     }
+    ],
+    "research": [
+     {
+      "basis": "name or purpose: research",
+      "items": 60
+     },
+     {
+      "basis": "name or purpose: search",
+      "items": 53
+     },
+     {
+      "basis": "text: search",
+      "items": 39
+     },
+     {
+      "basis": "text: research",
+      "items": 28
+     },
+     {
+      "basis": "text: discovery",
+      "items": 25
+     },
+     {
+      "basis": "text: sources",
+      "items": 24
+     },
+     {
+      "basis": "text: discover",
+      "items": 23
+     },
+     {
+      "basis": "name or purpose: discovery",
+      "items": 19
+     }
+    ],
+    "reviewing": [
+     {
+      "basis": "name or purpose: review",
+      "items": 118
+     },
+     {
+      "basis": "name or purpose: audit",
+      "items": 76
+     },
+     {
+      "basis": "text: review",
+      "items": 60
+     },
+     {
+      "basis": "name or purpose: reviewer",
+      "items": 45
+     },
+     {
+      "basis": "text: audit",
+      "items": 36
+     },
+     {
+      "basis": "name or purpose: reviews",
+      "items": 28
+     },
+     {
+      "basis": "text: reviewer",
+      "items": 24
+     },
+     {
+      "basis": "name or purpose: code review",
+      "items": 20
+     }
+    ],
+    "verification": [
+     {
+      "basis": "text: check",
+      "items": 262
+     },
+     {
+      "basis": "text: test",
+      "items": 182
+     },
+     {
+      "basis": "text: checks",
+      "items": 120
+     },
+     {
+      "basis": "name or purpose: check",
+      "items": 81
+     },
+     {
+      "basis": "name or purpose: test",
+      "items": 76
+     },
+     {
+      "basis": "text: tests",
+      "items": 74
+     },
+     {
+      "basis": "text: verify",
+      "items": 73
+     },
+     {
+      "basis": "text: coverage",
+      "items": 63
+     }
+    ],
+    "writing": [
+     {
+      "basis": "text: docs",
+      "items": 128
+     },
+     {
+      "basis": "text: report",
+      "items": 86
+     },
+     {
+      "basis": "text: document",
+      "items": 74
+     },
+     {
+      "basis": "text: summary",
+      "items": 59
+     },
+     {
+      "basis": "text: documentation",
+      "items": 55
+     },
+     {
+      "basis": "name or purpose: writing",
+      "items": 54
+     },
+     {
+      "basis": "text: draft",
+      "items": 45
+     },
+     {
+      "basis": "name or purpose: report",
+      "items": 39
+     }
+    ]
+   },
+   "untagged_by_harness_kind": {
+    "command": 51,
+    "contract_schema": 8,
+    "instruction_file": 22,
+    "marketplace": 39,
+    "plugin_manifest": 68,
+    "rules": 9,
+    "skill": 60,
+    "subagent": 17
+   },
+   "untagged_items": 274
+  },
+  "note": "Same 100 identities; kept tags keep their verdict, the 32 added tags were judged, and correct tags the new rules removed count as missed.",
+  "rules_version": "1.1.0",
+  "verdicts": {
+   "by_evidence_source": {
+    "body_only": {
+     "arguable": 12,
+     "correct": 17,
+     "precision_lenient": 0.527,
+     "precision_strict": 0.309,
+     "tags": 55,
+     "wrong": 26
+    },
+    "headline": {
+     "arguable": 30,
+     "correct": 92,
+     "precision_lenient": 0.792,
+     "precision_strict": 0.597,
+     "tags": 154,
+     "wrong": 32
+    },
+    "role_or_kind": {
+     "arguable": 0,
+     "correct": 3,
+     "precision_lenient": 1.0,
+     "precision_strict": 1.0,
+     "tags": 3,
+     "wrong": 0
+    }
+   },
+   "engine": {
+    "engine_id": "step_function_rules",
+    "engine_version": "1.1.0"
+   },
+   "items": [
+    {
+     "harness_kind": "command",
+     "identity": "import_command_modernize_status_7629c40c3234",
+     "index": 1,
+     "missed": [
+      "analysis"
+     ],
+     "note": "read-only status report; build a table is not building",
+     "tags": [],
+     "title": "modernize-status"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_fix_build_708ab6100ba8",
+     "index": 2,
+     "missed": [
+      "acting",
+      "verification"
+     ],
+     "note": "diagnose and fix Xcode build failures",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: diagnose",
+        "text: diagnostics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: build"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "fix-build"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_bump_mathlib_b5f710bd08ab",
+     "index": 3,
+     "missed": [
+      "building",
+      "verification"
+     ],
+     "note": "changelog is consulted, not written",
+     "tags": [
+      {
+       "evidence": [
+        "text: cli",
+        "text: command",
+        "text: run",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "bump-mathlib"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_web_development_1d83608f8e0d",
+     "index": 4,
+     "missed": [
+      "operating"
+     ],
+     "note": "Deploy: manageHosting upload after a build",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "name or purpose: implementing",
+        "text: build"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: verification"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "web-development"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_mcp_jdwp_java_mcp_5d04b60f3942",
+     "index": 5,
+     "missed": [
+      "analysis"
+     ],
+     "note": "jdwp-inspector debugger server config",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: tool",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "mcp-jdwp-java-mcp"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_researchers_verifier_fd26d5f4c87e",
+     "index": 6,
+     "missed": [],
+     "note": "fact-checking before human review; apply is incidental",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: validation",
+        "name or purpose: verify",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: sources"
+       ],
+       "function": "research",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: review",
+        "text: reviewer"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "researchers-verifier"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_mcp_jdwp_java_marketplace_fdf4171f33e5",
+     "index": 7,
+     "missed": [],
+     "note": "marketplace listing of a Java debugger plugin",
+     "tags": [
+      {
+       "evidence": [
+        "text: debugging",
+        "text: evaluate",
+        "text: inspect",
+        "text: trace"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "mcp-jdwp-java-marketplace"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_cortex_82834a86eb01",
+     "index": 8,
+     "missed": [
+      "building"
+     ],
+     "note": "design and build AI features; decision tree",
+     "tags": [
+      {
+       "evidence": [
+        "text: cli",
+        "text: invoke",
+        "text: run",
+        "text: running"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: architecture",
+        "text: decision",
+        "text: decisions",
+        "text: reasoning"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: regression",
+        "text: test",
+        "text: testing"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "cortex"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_diagnose_underperformer_33c6bcc83fec",
+     "index": 9,
+     "missed": [
+      "reasoning"
+     ],
+     "note": "read-only diagnosis; hook is an ad creative hook",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: diagnose",
+        "text: compare",
+        "text: comparison"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      }
+     ],
+     "title": "diagnose-underperformer"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_sync_figma_tokens_c27ea045e8ff",
+     "index": 10,
+     "missed": [],
+     "note": "opens a PR for review, does not review",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sync-figma-tokens"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_dynatrace_managed_c7d3a1c94a7f",
+     "index": 11,
+     "missed": [],
+     "note": "building entity selectors is a query, not software",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: observability",
+        "text: container",
+        "text: containers"
+       ],
+       "function": "operating",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: tool"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: building"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "dynatrace-managed"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_reddit_e1e589d8a01a",
+     "index": 12,
+     "missed": [],
+     "note": "monitor keyword mentions is not operations",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: discovery",
+        "name or purpose: research",
+        "text: discover",
+        "text: search"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: cli",
+        "text: run",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "reddit"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_github_cursorrules_prompt_file_instructi_9d1acea4adb5",
+     "index": 13,
+     "missed": [],
+     "note": "clean code rules; article is the text form",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: coding"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      }
+     ],
+     "title": "github-cursorrules-prompt-file-instructions"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_context_and_tools_mcp_d27d55c2dd4f",
+     "index": 14,
+     "missed": [
+      "operating"
+     ],
+     "note": "create and manage Netlify projects, deploys",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: tools",
+        "text: install",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "context-and-tools-mcp"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_workflow_classify_5e0e0c3d7197",
+     "index": 15,
+     "missed": [
+      "analysis"
+     ],
+     "note": "classify task size and recommend the pipeline",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: hooks",
+        "text: run",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: plans",
+        "text: prd",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: explore",
+        "text: look up",
+        "text: research",
+        "text: search"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: test",
+        "text: verification",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "workflow-classify"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_reviewer_22637d329abc",
+     "index": 16,
+     "missed": [],
+     "note": "read-only reviewer; commands checked, not run",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: correctness",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewer",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "reviewer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_google_shopping_optimization_39824320da56",
+     "index": 17,
+     "missed": [
+      "analysis"
+     ],
+     "note": "bidding strategy is a domain word",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: strategy",
+        "text: decisions"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "google-shopping-optimization"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_security_auditor_64202803c099",
+     "index": 18,
+     "missed": [],
+     "note": "audit code; read-only; audit logging is a checklist item",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: check",
+        "name or purpose: validate",
+        "text: validation"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: audit"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: run",
+        "text: runs",
+        "text: tool"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "security-auditor"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_health_9f2d627b7d8b",
+     "index": 19,
+     "missed": [
+      "acting"
+     ],
+     "note": "inspecting janitor status, diagnosing decay",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: diagnosing",
+        "name or purpose: inspecting"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "text: coverage"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewing"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "health"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_vuln_scanner_055b3a3d4e36",
+     "index": 20,
+     "missed": [
+      "analysis"
+     ],
+     "note": "run vulnerability scans; prioritize is triage",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "name or purpose: tools",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: testing",
+        "text: checks",
+        "text: validate"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: prioritize",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "vuln-scanner"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_audience_profile_171d7fd940e2",
+     "index": 21,
+     "missed": [
+      "writing"
+     ],
+     "note": "Build a narrative buyer persona document",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "name or purpose: triggers",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: analytics",
+        "name or purpose: profile",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: surveys",
+        "text: survey"
+       ],
+       "function": "research",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: develop",
+        "text: development"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "audience-profile"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_uplift_migrator_88245c397f54",
+     "index": 22,
+     "missed": [],
+     "note": "analysis/ is a folder path",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "name or purpose: migrate",
+        "text: migration"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: runs",
+        "text: command",
+        "text: executing"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: prove",
+        "text: proves",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "uplift-migrator"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_skill_prd_29bfb3e65e44",
+     "index": 23,
+     "missed": [],
+     "note": "Write an AI-optimized PRD",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: prd",
+        "name or purpose: scoping",
+        "text: plan",
+        "text: specs"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: draft",
+        "text: drafting",
+        "text: summary",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "skill-prd"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_chief_of_staff_0df0a1525dc7",
+     "index": 24,
+     "missed": [],
+     "note": "generates draft replies; alert is a sender name",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: draft",
+        "name or purpose: email",
+        "text: docs",
+        "text: emails"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: hooks",
+        "text: cli",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "chief-of-staff"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_cloudbase_plugin_75aa5216ec0b",
+     "index": 25,
+     "missed": [],
+     "note": "plugin manifest with a deploy command and MCP server",
+     "tags": [],
+     "title": "cloudbase-plugin"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_vehicle_selection_2af1d4702487",
+     "index": 26,
+     "missed": [],
+     "note": "decides silently how each plan phase runs",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execution",
+        "name or purpose: runs"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: planning"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewing",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: decides"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "vehicle-selection"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_bm_security_auditor_46a79223a97c",
+     "index": 27,
+     "missed": [
+      "reviewing",
+      "analysis"
+     ],
+     "note": "security audit; produces SECURITY.md; PLAN.md is an input",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: verifies",
+        "text: check",
+        "text: checking"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: plans"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: document",
+        "text: documentation",
+        "text: reports",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "bm-security-auditor"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_migrate_6e11e7e09d67",
+     "index": 28,
+     "missed": [],
+     "note": "migrations with rollback strategies",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: migrate",
+        "name or purpose: migration",
+        "name or purpose: migrations",
+        "text: build"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: invoke",
+        "text: run",
+        "text: script"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: rollback",
+        "text: deploy",
+        "text: release"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: verification",
+        "text: check",
+        "text: test"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "migrate"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_sap_qa_tester_71c5aab02dab",
+     "index": 29,
+     "missed": [
+      "acting"
+     ],
+     "note": "not responsible for debugging root causes",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: qa",
+        "name or purpose: test",
+        "name or purpose: testing",
+        "name or purpose: tests",
+        "text: assert",
+        "text: check"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: document",
+        "text: writer",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sap-qa-tester"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_references_agents_4588d7d99d70",
+     "index": 30,
+     "missed": [
+      "building"
+     ],
+     "note": "Basic Agent Creation reference; tracing is a config",
+     "tags": [],
+     "title": "references-agents"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_writing_skills_marketplace_24d4b70290a9",
+     "index": 31,
+     "missed": [],
+     "note": "16 production writing-style skills",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "writing-skills-marketplace"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_verify_cc0814555e74",
+     "index": 32,
+     "missed": [],
+     "note": "npm run build is a check; report is a template",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: validate",
+        "name or purpose: verification",
+        "name or purpose: verify",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: command",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: implementation",
+        "text: build"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "verify"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_sdd_requirements_0781226a3028",
+     "index": 33,
+     "missed": [],
+     "note": "Generate EARS-formatted requirements documents",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: specification",
+        "text: spec",
+        "text: specs"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: documents",
+        "text: document"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "sdd-requirements"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cc_dev_agent_d85813acea11",
+     "index": 34,
+     "missed": [],
+     "note": "writing CLAUDE.md/spec.md, dispatching subagents",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: spec",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: writing",
+        "text: docs"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "cc-dev-agent"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_corporate_communication_f9d1a0d0b7f3",
+     "index": 35,
+     "missed": [],
+     "note": "decision appears in an example announcement",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: emails",
+        "text: draft",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "corporate-communication"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_nimble_web_expert_454afc0ceedc",
+     "index": 36,
+     "missed": [],
+     "note": "Use Nimble CLI for ALL web tasks",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: cli",
+        "name or purpose: tool",
+        "text: command",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: discovery",
+        "text: look up",
+        "text: research",
+        "text: search"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      }
+     ],
+     "title": "nimble-web-expert"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_commit_conventions_c6c7f1cdcb63",
+     "index": 37,
+     "missed": [
+      "writing"
+     ],
+     "note": "Conventional Commits format; commit messages are written",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: build",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: checks",
+        "text: test"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: audit"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "commit-conventions"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_codex_test_gen_0ccee0093b8c",
+     "index": 38,
+     "missed": [
+      "building"
+     ],
+     "note": "When NOT to Use: Code review",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "text: coverage"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "codex-test-gen"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_build_dad1ca17fa4d",
+     "index": 39,
+     "missed": [],
+     "note": "write a failing test, run the suite (Chinese)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: development",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: command"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: breakdown",
+        "text: plan",
+        "text: planning",
+        "text: spec"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: regression",
+        "text: test",
+        "text: tests",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "build"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_hz_unity_sdk_upgrade_15efbad3ab51",
+     "index": 40,
+     "missed": [
+      "research",
+      "acting"
+     ],
+     "note": "Grounds migration decisions in current documentation results",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: compile",
+        "name or purpose: migration",
+        "text: build",
+        "text: implement"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: coverage",
+        "name or purpose: validating",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: documentation",
+        "text: changelog",
+        "text: docs"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: decisions"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "hz-unity-sdk-upgrade"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_debug_investigator_ad7ccba4800f",
+     "index": 41,
+     "missed": [],
+     "note": "hypothesis-driven debugging with ranked hypotheses",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: debug",
+        "name or purpose: debugging",
+        "name or purpose: root cause",
+        "text: analyzes",
+        "text: inspection"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: hypotheses",
+        "name or purpose: hypothesis",
+        "name or purpose: reasoning",
+        "name or purpose: strategy",
+        "text: decisions",
+        "text: strategies"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: automation",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: planning",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "debug-investigator"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_style_direction_bae0b6920746",
+     "index": 42,
+     "missed": [
+      "acting"
+     ],
+     "note": "starts a local server through scripts (Spanish)",
+     "tags": [],
+     "title": "style-direction"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_mvp_scope_c001299ffbb9",
+     "index": 43,
+     "missed": [],
+     "note": "MVP Scope and Appetite Rules",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: scope",
+        "text: backlog"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "mvp-scope"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_compose_test_71fad7933348",
+     "index": 44,
+     "missed": [],
+     "note": "Run Compose UI tests",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "name or purpose: verify"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "compose-test"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_recommend_49b1a565abea",
+     "index": 45,
+     "missed": [],
+     "note": "recommends commands; keyword tables",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: command",
+        "name or purpose: commands"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze",
+        "text: benchmark",
+        "text: debug"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: develop",
+        "text: development",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: coverage",
+        "text: qa",
+        "text: test",
+        "text: validate"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "recommend"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_beer_and_code_harness_marketplace_07ea046b7fe0",
+     "index": 46,
+     "missed": [],
+     "note": "marketplace of commands, scripts, and hooks",
+     "tags": [],
+     "title": "beer-and-code-harness-marketplace"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_ta_missing_receipts_f37a11db5256",
+     "index": 47,
+     "missed": [
+      "acting",
+      "analysis"
+     ],
+     "note": "Call ping_client_for_documents; Analyze and prioritize",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: documents",
+        "text: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: strategy"
+       ],
+       "function": "reasoning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "ta-missing-receipts"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_env_validator_31814c2dac3b",
+     "index": 48,
+     "missed": [],
+     "note": "phase: build; docker-compose is an input",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: check",
+        "name or purpose: validate",
+        "name or purpose: validates",
+        "name or purpose: validation",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "env-validator"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_prompt_engineer_1614c169e946",
+     "index": 49,
+     "missed": [
+      "analysis",
+      "writing"
+     ],
+     "note": "ci is a Polish pronoun; measures prompt variants on a test set",
+     "tags": [],
+     "title": "prompt_engineer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_postman_mcp_server_a004a53841aa",
+     "index": 50,
+     "missed": [],
+     "note": "MCP tool guidance; create and analyze are tasks of the tools",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: tool",
+        "name or purpose: tools",
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: decisions",
+        "text: decision"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: checks",
+        "text: test",
+        "text: tests",
+        "text: verification"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "postman-mcp-server"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_writing_skills_agents_bee426009e3d",
+     "index": 51,
+     "missed": [
+      "verification"
+     ],
+     "note": "validate_skills.py the CI gate",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing",
+        "text: changelog"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: install",
+        "text: run",
+        "text: runs",
+        "text: scripts"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "writing-skills-AGENTS"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_harness_accept_bc787c676995",
+     "index": 52,
+     "missed": [],
+     "note": "ship/wait/reject recommendation; Do NOT load for implementation",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: decide",
+        "name or purpose: decision",
+        "text: judge",
+        "text: judgment"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: code review",
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: inspection",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "harness-accept"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_qa_security_4fa9c5c4342c",
+     "index": 53,
+     "missed": [
+      "reviewing",
+      "analysis"
+     ],
+     "note": "security auditor (Polish); ci is a pronoun",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: qa"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "qa_security"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_ship_aacf59e07797",
+     "index": 54,
+     "missed": [
+      "analysis",
+      "verification"
+     ],
+     "note": "Run all auditors and produce a scorecard",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: cli",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "ship"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_stock_deep_dive_04b931e9e4d0",
+     "index": 55,
+     "missed": [
+      "acting"
+     ],
+     "note": "Work through one IDX symbol; present a lean",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analyse",
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: think"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: research"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      }
+     ],
+     "title": "stock-deep-dive"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_eodhd_claude_skills_claude_c6e9fc6b7925",
+     "index": 56,
+     "missed": [],
+     "note": "repository overview; eodhd-analyze is a skill name",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: install",
+        "text: run",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: deployment",
+        "text: monitor",
+        "text: release",
+        "text: releases"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: test",
+        "text: testing",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: documentation",
+        "text: readme",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "eodhd-claude-skills-CLAUDE"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_fit_scorer_5860e70fa50f",
+     "index": 57,
+     "missed": [],
+     "note": "Not for finding new influencers",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: discovery",
+        "text: sources"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analytics",
+        "text: benchmarking",
+        "text: benchmarks",
+        "text: compare"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: estimates",
+        "text: plan",
+        "text: prioritization",
+        "text: prioritize"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: email",
+        "text: report",
+        "text: reports",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "fit-scorer"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_marketing_mindset_agents_399c85eb3ed8",
+     "index": 58,
+     "missed": [],
+     "note": "when to recommend the marketing-mindset skill",
+     "tags": [],
+     "title": "marketing-mindset-AGENTS"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_mcp_jdwp_java_claude_cdaf011d9f01",
+     "index": 59,
+     "missed": [
+      "verification"
+     ],
+     "note": "Build Commands; ./mvnw test runs them",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: invokes",
+        "text: run",
+        "text: running"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analyzes",
+        "text: debug",
+        "text: debugging",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: builds",
+        "text: compile",
+        "text: compiles"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      }
+     ],
+     "title": "mcp-jdwp-java-CLAUDE"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_zh_cn_agents_750fb1d08d91",
+     "index": 60,
+     "missed": [
+      "building",
+      "verification"
+     ],
+     "note": "test-driven, 80%+ coverage (Chinese)",
+     "tags": [],
+     "title": "zh-CN-AGENTS"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_skills_marketplace_835eadf0bae7",
+     "index": 61,
+     "missed": [
+      "research"
+     ],
+     "note": "29 investigation workflows; emails are targets",
+     "tags": [],
+     "title": "Skills-marketplace"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_plan_8d294c1958ff",
+     "index": 62,
+     "missed": [],
+     "note": "never writes application code; Planning pipeline",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "name or purpose: planning",
+        "name or purpose: spec",
+        "text: scope",
+        "text: specification"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: run",
+        "text: runs",
+        "text: scripts",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: draft",
+        "text: prose",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "plan"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_desk_risk_limits_201af7ebf2b1",
+     "index": 63,
+     "missed": [],
+     "note": "issues a PASS or REJECT; in writing is idiom",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checks",
+        "text: check"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "desk-risk-limits"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_editing_0379cb4ff964",
+     "index": 64,
+     "missed": [],
+     "note": "Edit, review, or improve existing marketing copy",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: editing",
+        "text: articles",
+        "text: blog"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: test",
+        "text: validate",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "editing"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_teach_impeccable_33e4506eb79e",
+     "index": 65,
+     "missed": [
+      "research"
+     ],
+     "note": "scan the project to discover; Write Design Context",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: documentation",
+        "text: readme",
+        "text: summarize"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "teach-impeccable"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_iteration_drive_bdb34c9f5187",
+     "index": 66,
+     "missed": [],
+     "note": "drive the iteration: execute, create PR, merge loop",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execute",
+        "text: command",
+        "text: execution"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: backlog",
+        "text: plan",
+        "text: plans",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "iteration-drive"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_oma_skill_creator_f1c7b5161b37",
+     "index": 67,
+     "missed": [],
+     "note": "Create or update OMA skills; SKILL.md authoring",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execution",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: validating",
+        "text: checking",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: decide",
+        "text: deciding",
+        "text: decisions",
+        "text: judgment"
+       ],
+       "function": "reasoning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: authoring",
+        "text: editing",
+        "text: report",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "oma-skill-creator"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_solana_security_standard_mcp_791df96f8a78",
+     "index": 68,
+     "missed": [],
+     "note": "MCP server config: npx solana-security-mcp",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "solana-security-standard-mcp"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_ac_git_pull_request_bd0416765438",
+     "index": 69,
+     "missed": [],
+     "note": "Creates Pull Requests with structured documentation",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: validation",
+        "text: check",
+        "text: checking"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: documentation",
+        "text: changelog",
+        "text: commit messages"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze",
+        "text: compare",
+        "text: investigation"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "ac-git-pull-request"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_appstore_archive_uploader_4599987447f6",
+     "index": 70,
+     "missed": [
+      "operating",
+      "acting"
+     ],
+     "note": "archive, export, upload, or publish",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: builds"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "appstore-archive-uploader"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_improve_961caf1c2a7c",
+     "index": 71,
+     "missed": [],
+     "note": "diagnoses weaknesses, evaluates via A/B; edits skill text",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: comparison",
+        "name or purpose: diagnoses",
+        "text: analytics",
+        "text: diagnosing"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: runs",
+        "text: run",
+        "text: tool"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: reports",
+        "text: rewrite"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: decision",
+        "text: judge",
+        "text: reason",
+        "text: reasoning"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "improve"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_implementer_8d5ab6cf11de",
+     "index": 72,
+     "missed": [
+      "acting"
+     ],
+     "note": "Implementation specialist for a test-first slice",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: implementation",
+        "text: coding",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: test",
+        "text: check",
+        "text: validation"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "implementer"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_document_a1c03c5423e4",
+     "index": 73,
+     "missed": [],
+     "note": "Generate technical documentation from source code",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: document",
+        "name or purpose: documentation",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "document"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_release_validator_9e7cd45e94f3",
+     "index": 74,
+     "missed": [
+      "acting"
+     ],
+     "note": "Validates release readiness; build and changelog are checked",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: tests",
+        "name or purpose: validates",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: builds",
+        "text: migration"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: changelog",
+        "text: document",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: release"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "release-validator"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_social_170d2e61fb70",
+     "index": 75,
+     "missed": [],
+     "note": "Create platform-specific social content",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: execute",
+        "text: hook",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: planning",
+        "text: scope",
+        "text: specs"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: document",
+        "text: readme",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "social"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_web_checklist_2edd443bf0b4",
+     "index": 76,
+     "missed": [
+      "verification"
+     ],
+     "note": "post-merge web test checklist (Korean)",
+     "tags": [],
+     "title": "web-checklist"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cost_aware_llm_pipeline_4893f4d5bb65",
+     "index": 77,
+     "missed": [
+      "building"
+     ],
+     "note": "LLM pipeline code patterns (Japanese)",
+     "tags": [],
+     "title": "cost-aware-llm-pipeline"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_sequence_bb5d7b5e1a14",
+     "index": 78,
+     "missed": [],
+     "note": "Create automated email sequence",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: email",
+        "text: docs",
+        "text: emails"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: automation",
+        "text: command",
+        "text: running",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sequence"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_test_61812ff3f714",
+     "index": 79,
+     "missed": [
+      "building"
+     ],
+     "note": "Wait for approval from the user",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "text: assertion",
+        "text: testing"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "test"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_slack_e6d8718e8d25",
+     "index": 80,
+     "missed": [],
+     "note": "Slack messaging through MCP tools",
+     "tags": [
+      {
+       "evidence": [
+        "text: cli",
+        "text: run",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "slack"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_vaaya_0e1884cd8186",
+     "index": 81,
+     "missed": [],
+     "note": "email is a service; approve is a purchase",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: search"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: automation",
+        "text: execution",
+        "text: install"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: email",
+        "text: editing"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "vaaya"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_interview_plan_b3851a8fd478",
+     "index": 82,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "Interview a plan; Scan for anti-patterns",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: estimate",
+        "text: estimates"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analytics",
+        "text: comparison",
+        "text: evaluate",
+        "text: measure"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: alternatives",
+        "text: decisions",
+        "text: judgment",
+        "text: think"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: discover",
+        "text: discovery",
+        "text: research",
+        "text: sources"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "interview-plan"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_alakazam_e5e88957588a",
+     "index": 83,
+     "missed": [],
+     "note": "Use after research collection",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: sources"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "alakazam"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_writing_skills_plugin_1928fb3b2d5d",
+     "index": 84,
+     "missed": [],
+     "note": "writing-skills plugin manifest",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "writing-skills-plugin"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_solana_security_standard_plugin_e874f1fe447a",
+     "index": 85,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "scan_solana_code MCP tool; audit keyword",
+     "tags": [],
+     "title": "solana-security-standard-plugin"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_experiment_screener_2125ae9cb3bd",
+     "index": 86,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "Screen experiment plans before implementation (Chinese)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plans",
+        "text: plan",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: implementation"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "experiment-screener"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_sap_object_documenter_7039b4b65ea4",
+     "index": 87,
+     "missed": [
+      "analysis",
+      "acting"
+     ],
+     "note": "classifies each by style; summarizes dependencies",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: document",
+        "name or purpose: documentation",
+        "name or purpose: summarizes",
+        "text: readme"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: checks",
+        "text: lint",
+        "text: test",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sap-object-documenter"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_multiplayer_basics_25a052d69129",
+     "index": 88,
+     "missed": [],
+     "note": "Use when implementing multiplayer; implementing is not in the vocabulary",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: implementing"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      }
+     ],
+     "title": "multiplayer-basics"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_find_leaks_in_the_wild_e9a4e9a1d791",
+     "index": 89,
+     "missed": [],
+     "note": "incident response is an application area",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: validation",
+        "name or purpose: verifying"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: search",
+        "name or purpose: searches",
+        "text: discovery"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: incident",
+        "name or purpose: monitoring"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: judge",
+        "text: reasons",
+        "text: think"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "find-leaks-in-the-wild"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_ng_baseline_a3332bfce8dd",
+     "index": 90,
+     "missed": [
+      "writing"
+     ],
+     "note": "Records the version everyone agreed is correct",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: command",
+        "text: commands",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "ng-baseline"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_cli_output_claude_a2c11e4e6055",
+     "index": 91,
+     "missed": [
+      "reasoning",
+      "building"
+     ],
+     "note": "Trade-offs: between design variants",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: cli",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: prove",
+        "text: validates",
+        "text: verification",
+        "text: verifying"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "cli-output-claude"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_deep_review_cb8f2675b26e",
+     "index": 92,
+     "missed": [],
+     "note": "Deep single-function security review",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "deep-review"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cost_tracking_faf51ca1576e",
+     "index": 93,
+     "missed": [],
+     "note": "Track and report token usage; cost breakdown",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: metrics",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: execute",
+        "text: hook",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "cost-tracking"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_docs_claude_a79ac4d0356d",
+     "index": 94,
+     "missed": [],
+     "note": "Team and Enterprise plans; docs is the title",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "docs-claude"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_incident_response_f064a7531c7c",
+     "index": 95,
+     "missed": [
+      "writing",
+      "analysis"
+     ],
+     "note": "Generar un informe postmortem (Spanish)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: incident",
+        "text: rollback"
+       ],
+       "function": "operating",
+       "verdict": "correct"
+      }
+     ],
+     "title": "incident-response"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_docs_reviewer_ce4e0281c2bd",
+     "index": 96,
+     "missed": [],
+     "note": "reviews documentation, does not write it",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: documentation",
+        "text: documents",
+        "text: readme"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: correctness",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewer",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: commands",
+        "text: run",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "docs-reviewer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_prior_art_search_242f98b6f71e",
+     "index": 97,
+     "missed": [
+      "analysis",
+      "writing"
+     ],
+     "note": "check patents is a trigger phrase for search",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: literature",
+        "name or purpose: search",
+        "text: research",
+        "text: searching"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: check",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "prior-art-search"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_graph_the_network_21f94ba42322",
+     "index": 98,
+     "missed": [],
+     "note": "shell-network detection; shared infrastructure of a target",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: investigation",
+        "text: analytics",
+        "text: compare"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: shell",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: build"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "graph-the-network"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_optimize_a552f0ceca73",
+     "index": 99,
+     "missed": [],
+     "note": "Alert if page load > 3s is a monitoring example",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: build",
+        "text: building"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: analyze",
+        "text: debug",
+        "text: inspect",
+        "text: measure"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: checks",
+        "text: testing",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "optimize"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_engineering_retro_d47276811401",
+     "index": 100,
+     "missed": [],
+     "note": "sprint retro; path scoping; per-author breakdown",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: analyzing",
+        "text: analyze",
+        "text: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: scoping",
+        "name or purpose: sprint",
+        "text: breakdown",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: summary",
+        "text: docs",
+        "text: documentation"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: execution"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "engineering-retro"
+    }
+   ],
+   "misleading_words": [
+    {
+     "arguable_tags": 3,
+     "correct_tags": 13,
+     "function": "acting",
+     "word": "run",
+     "wrong_tags": 9
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 10,
+     "function": "acting",
+     "word": "command",
+     "wrong_tags": 8
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 2,
+     "function": "acting",
+     "word": "runs",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 4,
+     "correct_tags": 6,
+     "function": "building",
+     "word": "build",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 7,
+     "function": "writing",
+     "word": "docs",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 3,
+     "correct_tags": 7,
+     "function": "verification",
+     "word": "test",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 13,
+     "function": "verification",
+     "word": "check",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 1,
+     "function": "writing",
+     "word": "report",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 3,
+     "function": "planning",
+     "word": "scope",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 4,
+     "function": "acting",
+     "word": "commands",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 4,
+     "correct_tags": 6,
+     "function": "planning",
+     "word": "plan",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 0,
+     "function": "research",
+     "word": "sources",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 0,
+     "correct_tags": 0,
+     "function": "acting",
+     "word": "trigger",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 4,
+     "function": "writing",
+     "word": "summary",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 0,
+     "correct_tags": 4,
+     "function": "verification",
+     "word": "verify",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 5,
+     "function": "research",
+     "word": "research",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 5,
+     "function": "acting",
+     "word": "tools",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 0,
+     "correct_tags": 6,
+     "function": "writing",
+     "word": "documentation",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 6,
+     "function": "acting",
+     "word": "tool",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 7,
+     "function": "verification",
+     "word": "tests",
+     "wrong_tags": 3
+    }
+   ],
+   "overall": {
+    "arguable": 42,
+    "correct": 112,
+    "precision_lenient": 0.726,
+    "precision_strict": 0.528,
+    "tags": 212,
+    "wrong": 58
+   },
+   "per_function": {
+    "acting": {
+     "arguable": 6,
+     "correct": 23,
+     "precision_lenient": 0.659,
+     "precision_strict": 0.523,
+     "tags": 44,
+     "wrong": 15
+    },
+    "analysis": {
+     "arguable": 5,
+     "correct": 14,
+     "precision_lenient": 0.95,
+     "precision_strict": 0.7,
+     "tags": 20,
+     "wrong": 1
+    },
+    "building": {
+     "arguable": 4,
+     "correct": 10,
+     "precision_lenient": 0.667,
+     "precision_strict": 0.476,
+     "tags": 21,
+     "wrong": 7
+    },
+    "operating": {
+     "arguable": 2,
+     "correct": 2,
+     "precision_lenient": 0.667,
+     "precision_strict": 0.333,
+     "tags": 6,
+     "wrong": 2
+    },
+    "planning": {
+     "arguable": 4,
+     "correct": 8,
+     "precision_lenient": 0.667,
+     "precision_strict": 0.444,
+     "tags": 18,
+     "wrong": 6
+    },
+    "reasoning": {
+     "arguable": 5,
+     "correct": 6,
+     "precision_lenient": 0.846,
+     "precision_strict": 0.462,
+     "tags": 13,
+     "wrong": 2
+    },
+    "research": {
+     "arguable": 2,
+     "correct": 6,
+     "precision_lenient": 0.667,
+     "precision_strict": 0.5,
+     "tags": 12,
+     "wrong": 4
+    },
+    "reviewing": {
+     "arguable": 1,
+     "correct": 7,
+     "precision_lenient": 0.727,
+     "precision_strict": 0.636,
+     "tags": 11,
+     "wrong": 3
+    },
+    "verification": {
+     "arguable": 9,
+     "correct": 19,
+     "precision_lenient": 0.778,
+     "precision_strict": 0.528,
+     "tags": 36,
+     "wrong": 8
+    },
+    "writing": {
+     "arguable": 4,
+     "correct": 17,
+     "precision_lenient": 0.677,
+     "precision_strict": 0.548,
+     "tags": 31,
+     "wrong": 10
+    }
+   },
+   "recall_gap": {
+    "items_with_a_missed_function": 44,
+    "missed_per_function": {
+     "acting": 11,
+     "analysis": 13,
+     "building": 8,
+     "operating": 3,
+     "reasoning": 2,
+     "research": 3,
+     "reviewing": 5,
+     "verification": 7,
+     "writing": 6
+    },
+    "missed_total": 58
+   }
+  }
+ },
+ "before": {
+  "distribution": {
+   "approved_items": 1586,
+   "engine": {
+    "engine_id": "step_function_rules",
+    "engine_version": "1.0.0"
+   },
+   "items_per_function": {
+    "acting": 1182,
+    "analysis": 527,
+    "building": 719,
+    "operating": 320,
+    "planning": 337,
+    "reasoning": 279,
+    "research": 213,
+    "reviewing": 285,
+    "verification": 556,
+    "writing": 403
+   },
+   "tagged_items": 1481,
+   "tags_per_item": {
+    "0": 105,
+    "1": 175,
+    "2": 181,
+    "3": 216,
+    "4": 909
+   },
+   "top_words_per_function": {
+    "acting": [
+     {
+      "basis": "text: command",
+      "items": 327
+     },
+     {
+      "basis": "text: apply",
+      "items": 252
+     },
+     {
+      "basis": "text: run",
+      "items": 246
+     },
+     {
+      "basis": "text: cli",
+      "items": 209
+     },
+     {
+      "basis": "text: commands",
+      "items": 197
+     },
+     {
+      "basis": "text: tools",
+      "items": 120
+     },
+     {
+      "basis": "name or purpose: run",
+      "items": 100
+     },
+     {
+      "basis": "name or purpose: triggers",
+      "items": 95
+     }
+    ],
+    "analysis": [
+     {
+      "basis": "text: analysis",
+      "items": 196
+     },
+     {
+      "basis": "text: analyze",
+      "items": 124
+     },
+     {
+      "basis": "name or purpose: analysis",
+      "items": 70
+     },
+     {
+      "basis": "text: analytics",
+      "items": 65
+     },
+     {
+      "basis": "text: compare",
+      "items": 47
+     },
+     {
+      "basis": "text: comparison",
+      "items": 39
+     },
+     {
+      "basis": "text: inspect",
+      "items": 39
+     },
+     {
+      "basis": "text: debug",
+      "items": 35
+     }
+    ],
+    "building": [
+     {
+      "basis": "text: build",
+      "items": 258
+     },
+     {
+      "basis": "text: create",
+      "items": 252
+     },
+     {
+      "basis": "name or purpose: build",
+      "items": 92
+     },
+     {
+      "basis": "text: generate",
+      "items": 81
+     },
+     {
+      "basis": "text: development",
+      "items": 72
+     },
+     {
+      "basis": "text: creating",
+      "items": 68
+     },
+     {
+      "basis": "text: building",
+      "items": 64
+     },
+     {
+      "basis": "text: implementation",
+      "items": 64
+     }
+    ],
+    "operating": [
+     {
+      "basis": "text: ci",
+      "items": 89
+     },
+     {
+      "basis": "text: release",
+      "items": 42
+     },
+     {
+      "basis": "text: deploy",
+      "items": 39
+     },
+     {
+      "basis": "text: cd",
+      "items": 34
+     },
+     {
+      "basis": "text: pipeline",
+      "items": 34
+     },
+     {
+      "basis": "text: deployment",
+      "items": 29
+     },
+     {
+      "basis": "text: infrastructure",
+      "items": 28
+     },
+     {
+      "basis": "name or purpose: ci",
+      "items": 25
+     }
+    ],
+    "planning": [
+     {
+      "basis": "text: plan",
+      "items": 127
+     },
+     {
+      "basis": "text: scope",
+      "items": 126
+     },
+     {
+      "basis": "name or purpose: plan",
+      "items": 69
+     },
+     {
+      "basis": "text: planning",
+      "items": 59
+     },
+     {
+      "basis": "text: spec",
+      "items": 49
+     },
+     {
+      "basis": "text: plans",
+      "items": 37
+     },
+     {
+      "basis": "name or purpose: planning",
+      "items": 32
+     },
+     {
+      "basis": "name or purpose: spec",
+      "items": 31
+     }
+    ],
+    "reasoning": [
+     {
+      "basis": "text: decision",
+      "items": 96
+     },
+     {
+      "basis": "text: architecture",
+      "items": 60
+     },
+     {
+      "basis": "text: decisions",
+      "items": 46
+     },
+     {
+      "basis": "name or purpose: architecture",
+      "items": 43
+     },
+     {
+      "basis": "text: reason",
+      "items": 41
+     },
+     {
+      "basis": "name or purpose: strategy",
+      "items": 28
+     },
+     {
+      "basis": "text: strategy",
+      "items": 22
+     },
+     {
+      "basis": "text: decide",
+      "items": 21
+     }
+    ],
+    "research": [
+     {
+      "basis": "text: search",
+      "items": 66
+     },
+     {
+      "basis": "name or purpose: research",
+      "items": 57
+     },
+     {
+      "basis": "name or purpose: search",
+      "items": 49
+     },
+     {
+      "basis": "text: discover",
+      "items": 42
+     },
+     {
+      "basis": "text: research",
+      "items": 42
+     },
+     {
+      "basis": "text: discovery",
+      "items": 41
+     },
+     {
+      "basis": "text: sources",
+      "items": 34
+     },
+     {
+      "basis": "name or purpose: discovery",
+      "items": 18
+     }
+    ],
+    "reviewing": [
+     {
+      "basis": "name or purpose: review",
+      "items": 109
+     },
+     {
+      "basis": "text: review",
+      "items": 88
+     },
+     {
+      "basis": "name or purpose: audit",
+      "items": 67
+     },
+     {
+      "basis": "text: audit",
+      "items": 55
+     },
+     {
+      "basis": "name or purpose: reviewer",
+      "items": 44
+     },
+     {
+      "basis": "text: approval",
+      "items": 37
+     },
+     {
+      "basis": "name or purpose: reviews",
+      "items": 28
+     },
+     {
+      "basis": "text: approve",
+      "items": 25
+     }
+    ],
+    "verification": [
+     {
+      "basis": "text: check",
+      "items": 271
+     },
+     {
+      "basis": "text: test",
+      "items": 125
+     },
+     {
+      "basis": "text: checks",
+      "items": 108
+     },
+     {
+      "basis": "name or purpose: test",
+      "items": 75
+     },
+     {
+      "basis": "name or purpose: check",
+      "items": 74
+     },
+     {
+      "basis": "text: verify",
+      "items": 53
+     },
+     {
+      "basis": "text: coverage",
+      "items": 51
+     },
+     {
+      "basis": "name or purpose: tests",
+      "items": 48
+     }
+    ],
+    "writing": [
+     {
+      "basis": "text: report",
+      "items": 107
+     },
+     {
+      "basis": "text: docs",
+      "items": 106
+     },
+     {
+      "basis": "text: summary",
+      "items": 60
+     },
+     {
+      "basis": "text: document",
+      "items": 56
+     },
+     {
+      "basis": "name or purpose: writing",
+      "items": 48
+     },
+     {
+      "basis": "text: email",
+      "items": 35
+     },
+     {
+      "basis": "text: draft",
+      "items": 35
+     },
+     {
+      "basis": "text: documentation",
+      "items": 34
+     }
+    ]
+   },
+   "untagged_by_harness_kind": {
+    "command": 11,
+    "contract_schema": 8,
+    "instruction_file": 7,
+    "marketplace": 18,
+    "plugin_manifest": 30,
+    "rules": 3,
+    "skill": 27,
+    "subagent": 1
+   },
+   "untagged_items": 105
+  },
+  "rules_version": "1.0.0",
+  "verdicts": {
+   "by_evidence_source": {
+    "body_only": {
+     "arguable": 30,
+     "correct": 43,
+     "precision_lenient": 0.474,
+     "precision_strict": 0.279,
+     "tags": 154,
+     "wrong": 81
+    },
+    "headline": {
+     "arguable": 31,
+     "correct": 89,
+     "precision_lenient": 0.736,
+     "precision_strict": 0.546,
+     "tags": 163,
+     "wrong": 43
+    },
+    "role_or_kind": {
+     "arguable": 0,
+     "correct": 3,
+     "precision_lenient": 1.0,
+     "precision_strict": 1.0,
+     "tags": 3,
+     "wrong": 0
+    }
+   },
+   "engine": {
+    "engine_id": "step_function_rules",
+    "engine_version": "1.0.0"
+   },
+   "items": [
+    {
+     "harness_kind": "command",
+     "identity": "import_command_modernize_status_7629c40c3234",
+     "index": 1,
+     "missed": [],
+     "note": "read-only status report; build a table is not building",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: inspect"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: builds"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "modernize-status"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_fix_build_708ab6100ba8",
+     "index": 2,
+     "missed": [],
+     "note": "diagnose and fix Xcode build failures",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: diagnose",
+        "text: diagnostics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: build"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "fix-build"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_bump_mathlib_b5f710bd08ab",
+     "index": 3,
+     "missed": [],
+     "note": "changelog is consulted, not written",
+     "tags": [
+      {
+       "evidence": [
+        "text: apply",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: building"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: verification"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: changelog",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "bump-mathlib"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_web_development_1d83608f8e0d",
+     "index": 4,
+     "missed": [
+      "operating"
+     ],
+     "note": "Deploy: manageHosting upload after a build",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: build"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: verification"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "web-development"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_mcp_jdwp_java_mcp_5d04b60f3942",
+     "index": 5,
+     "missed": [
+      "analysis"
+     ],
+     "note": "jdwp-inspector debugger server config",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: tool",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "mcp-jdwp-java-mcp"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_researchers_verifier_fd26d5f4c87e",
+     "index": 6,
+     "missed": [],
+     "note": "fact-checking before human review; apply is incidental",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: validation",
+        "name or purpose: verify",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: sources"
+       ],
+       "function": "research",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: review",
+        "text: reviewer"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: invoke"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "researchers-verifier"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_mcp_jdwp_java_marketplace_fdf4171f33e5",
+     "index": 7,
+     "missed": [],
+     "note": "marketplace listing of a Java debugger plugin",
+     "tags": [
+      {
+       "evidence": [
+        "text: debugging",
+        "text: evaluate"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "mcp-jdwp-java-marketplace"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_cortex_82834a86eb01",
+     "index": 8,
+     "missed": [],
+     "note": "design and build AI features; decision tree",
+     "tags": [
+      {
+       "evidence": [
+        "text: apply",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: monitor",
+        "text: monitoring"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: architecture",
+        "text: decision"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "cortex"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_diagnose_underperformer_33c6bcc83fec",
+     "index": 9,
+     "missed": [],
+     "note": "read-only diagnosis; hook is an ad creative hook",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: diagnose",
+        "text: compare",
+        "text: comparison"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: hook"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: decision",
+        "text: strategy"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "diagnose-underperformer"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_sync_figma_tokens_c27ea045e8ff",
+     "index": 10,
+     "missed": [],
+     "note": "opens a PR for review, does not review",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sync-figma-tokens"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_dynatrace_managed_c7d3a1c94a7f",
+     "index": 11,
+     "missed": [],
+     "note": "building entity selectors is a query, not software",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: observability",
+        "text: container",
+        "text: containers"
+       ],
+       "function": "operating",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: tool"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: building"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "dynatrace-managed"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_reddit_e1e589d8a01a",
+     "index": 12,
+     "missed": [],
+     "note": "monitor keyword mentions is not operations",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: discovery",
+        "name or purpose: research",
+        "text: discover",
+        "text: search"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: monitor",
+        "text: monitoring"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "reddit"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_github_cursorrules_prompt_file_instructi_9d1acea4adb5",
+     "index": 13,
+     "missed": [],
+     "note": "clean code rules; article is the text form",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: article",
+        "text: documenting"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "github-cursorrules-prompt-file-instructions"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_context_and_tools_mcp_d27d55c2dd4f",
+     "index": 14,
+     "missed": [
+      "operating"
+     ],
+     "note": "create and manage Netlify projects, deploys",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: tools",
+        "text: install",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "context-and-tools-mcp"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_workflow_classify_5e0e0c3d7197",
+     "index": 15,
+     "missed": [
+      "planning"
+     ],
+     "note": "classify task size and recommend the pipeline",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: pipeline",
+        "text: infra",
+        "text: infrastructure"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: implement",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "workflow-classify"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_reviewer_22637d329abc",
+     "index": 16,
+     "missed": [],
+     "note": "read-only reviewer; commands checked, not run",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: correctness",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewer",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: commands",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: decisions",
+        "text: judgment"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "reviewer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_google_shopping_optimization_39824320da56",
+     "index": 17,
+     "missed": [],
+     "note": "bidding strategy is a domain word",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: strategy",
+        "text: decisions"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: analyze",
+        "text: benchmarks"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      }
+     ],
+     "title": "google-shopping-optimization"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_security_auditor_64202803c099",
+     "index": 18,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "audit code; read-only; audit logging is a checklist item",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: check",
+        "name or purpose: validate",
+        "text: validation"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: applies",
+        "text: apply"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: logging",
+        "text: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: prioritize",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "security-auditor"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_health_9f2d627b7d8b",
+     "index": 19,
+     "missed": [
+      "analysis"
+     ],
+     "note": "inspecting janitor status, diagnosing decay",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "text: coverage"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: hook",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewing"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "health"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_vuln_scanner_055b3a3d4e36",
+     "index": 20,
+     "missed": [],
+     "note": "run vulnerability scans; prioritize is triage",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "name or purpose: tools",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: testing",
+        "text: checks",
+        "text: validate"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: prioritize",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      }
+     ],
+     "title": "vuln-scanner"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_audience_profile_171d7fd940e2",
+     "index": 21,
+     "missed": [
+      "writing"
+     ],
+     "note": "Build a narrative buyer persona document",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "name or purpose: triggers",
+        "text: apply",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: build",
+        "name or purpose: create",
+        "text: develop",
+        "text: development"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: analytics",
+        "name or purpose: profile",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: surveys",
+        "text: survey"
+       ],
+       "function": "research",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "audience-profile"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_uplift_migrator_88245c397f54",
+     "index": 22,
+     "missed": [],
+     "note": "analysis/ is a folder path",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "name or purpose: migrate",
+        "text: migration"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: runs",
+        "text: apply",
+        "text: command"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: prove",
+        "text: proves",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: inspection"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "uplift-migrator"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_skill_prd_29bfb3e65e44",
+     "index": 23,
+     "missed": [
+      "writing"
+     ],
+     "note": "Write an AI-optimized PRD",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: prd",
+        "name or purpose: scoping",
+        "text: plan",
+        "text: specs"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: measure",
+        "text: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: create",
+        "text: creating"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "skill-prd"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_chief_of_staff_0df0a1525dc7",
+     "index": 24,
+     "missed": [],
+     "note": "generates draft replies; alert is a sender name",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: draft",
+        "name or purpose: email",
+        "text: docs",
+        "text: emails"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: hooks",
+        "text: apply",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generates",
+        "text: create",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: alert",
+        "text: alerts"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "chief-of-staff"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_cloudbase_plugin_75aa5216ec0b",
+     "index": 25,
+     "missed": [],
+     "note": "plugin manifest with a deploy command and MCP server",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: deploy",
+        "text: deployment"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: document",
+        "text: email"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "cloudbase-plugin"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_vehicle_selection_2af1d4702487",
+     "index": 26,
+     "missed": [],
+     "note": "decides silently how each plan phase runs",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execution",
+        "name or purpose: runs"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: planning"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewing",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: decides"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "vehicle-selection"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_bm_security_auditor_46a79223a97c",
+     "index": 27,
+     "missed": [
+      "reviewing",
+      "writing"
+     ],
+     "note": "security audit; produces SECURITY.md; PLAN.md is an input",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: verifies",
+        "text: check",
+        "text: checking"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: plans"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: applies",
+        "text: apply"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      }
+     ],
+     "title": "bm-security-auditor"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_migrate_6e11e7e09d67",
+     "index": 28,
+     "missed": [],
+     "note": "migrations with rollback strategies",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: create",
+        "name or purpose: migrate",
+        "name or purpose: migration",
+        "name or purpose: migrations",
+        "text: build",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: invoke",
+        "text: apply",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: rollback",
+        "text: alerts",
+        "text: deploy"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: verification",
+        "text: check",
+        "text: test"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "migrate"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_sap_qa_tester_71c5aab02dab",
+     "index": 29,
+     "missed": [],
+     "note": "not responsible for debugging root causes",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: qa",
+        "name or purpose: test",
+        "name or purpose: testing",
+        "name or purpose: tests",
+        "text: assert",
+        "text: check"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: execution",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: debugging",
+        "text: investigation"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: create",
+        "text: creating"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "sap-qa-tester"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_references_agents_4588d7d99d70",
+     "index": 30,
+     "missed": [
+      "building"
+     ],
+     "note": "Basic Agent Creation reference; tracing is a config",
+     "tags": [
+      {
+       "evidence": [
+        "text: install",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: trace",
+        "text: tracing"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: deployment",
+        "text: releases"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "references-agents"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_writing_skills_marketplace_24d4b70290a9",
+     "index": 31,
+     "missed": [],
+     "note": "16 production writing-style skills",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "writing-skills-marketplace"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_verify_cc0814555e74",
+     "index": 32,
+     "missed": [],
+     "note": "npm run build is a check; report is a template",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: validate",
+        "name or purpose: verification",
+        "name or purpose: verify",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: command",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: implementation",
+        "text: build"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "verify"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_sdd_requirements_0781226a3028",
+     "index": 33,
+     "missed": [],
+     "note": "Generate EARS-formatted requirements documents",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: creating",
+        "name or purpose: generate",
+        "text: development",
+        "text: generating"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: specification",
+        "text: spec",
+        "text: specs"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: documents",
+        "text: document"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: tool"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sdd-requirements"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cc_dev_agent_d85813acea11",
+     "index": 34,
+     "missed": [],
+     "note": "writing CLAUDE.md/spec.md, dispatching subagents",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: spec",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: writing",
+        "text: docs"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "cc-dev-agent"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_corporate_communication_f9d1a0d0b7f3",
+     "index": 35,
+     "missed": [],
+     "note": "decision appears in an example announcement",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: emails",
+        "text: draft",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: decision",
+        "text: reason"
+       ],
+       "function": "reasoning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "corporate-communication"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_nimble_web_expert_454afc0ceedc",
+     "index": 36,
+     "missed": [],
+     "note": "Use Nimble CLI for ALL web tasks",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: cli",
+        "name or purpose: tool",
+        "text: applies",
+        "text: command"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: comparison",
+        "text: debugging"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: building"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: discovery",
+        "text: look up"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      }
+     ],
+     "title": "nimble-web-expert"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_commit_conventions_c6c7f1cdcb63",
+     "index": 37,
+     "missed": [
+      "writing"
+     ],
+     "note": "Conventional Commits format; commit messages are written",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: build",
+        "text: refactor"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: ci",
+        "text: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: checks",
+        "text: test"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: applies",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "commit-conventions"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_codex_test_gen_0ccee0093b8c",
+     "index": 38,
+     "missed": [],
+     "note": "When NOT to Use: Code review",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "text: coverage"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generate",
+        "text: create",
+        "text: creates"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: tools",
+        "text: trigger"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: code review",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "codex-test-gen"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_build_dad1ca17fa4d",
+     "index": 39,
+     "missed": [
+      "verification"
+     ],
+     "note": "write a failing test, run the suite (Chinese)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: development",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: command"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: deploys",
+        "text: rollback"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: breakdown",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "build"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_hz_unity_sdk_upgrade_15efbad3ab51",
+     "index": 40,
+     "missed": [
+      "research"
+     ],
+     "note": "Grounds migration decisions in current documentation results",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: compile",
+        "name or purpose: migration",
+        "text: build",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: coverage",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: documentation",
+        "text: changelog",
+        "text: docs"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: automation",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "hz-unity-sdk-upgrade"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_debug_investigator_ad7ccba4800f",
+     "index": 41,
+     "missed": [],
+     "note": "hypothesis-driven debugging with ranked hypotheses",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: debug",
+        "name or purpose: debugging",
+        "name or purpose: root cause",
+        "text: analyzes",
+        "text: inspection"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: hypotheses",
+        "name or purpose: hypothesis",
+        "name or purpose: reasoning",
+        "name or purpose: strategy",
+        "text: decisions",
+        "text: strategies"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: automation",
+        "text: cli"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: planning",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "debug-investigator"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_style_direction_bae0b6920746",
+     "index": 42,
+     "missed": [],
+     "note": "starts a local server through scripts (Spanish)",
+     "tags": [
+      {
+       "evidence": [
+        "text: script",
+        "text: scripts"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: writer"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "style-direction"
+    },
+    {
+     "harness_kind": "rules",
+     "identity": "import_rules_mvp_scope_c001299ffbb9",
+     "index": 43,
+     "missed": [],
+     "note": "MVP Scope and Appetite Rules",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: scope",
+        "text: backlog"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "mvp-scope"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_compose_test_71fad7933348",
+     "index": 44,
+     "missed": [],
+     "note": "Run Compose UI tests",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "name or purpose: verify"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "compose-test"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_recommend_49b1a565abea",
+     "index": 45,
+     "missed": [],
+     "note": "recommends commands; keyword tables",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: command",
+        "name or purpose: commands"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: architecture",
+        "text: think"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "recommend"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_beer_and_code_harness_marketplace_07ea046b7fe0",
+     "index": 46,
+     "missed": [],
+     "note": "marketplace of commands, scripts, and hooks",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: building"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "beer-and-code-harness-marketplace"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_ta_missing_receipts_f37a11db5256",
+     "index": 47,
+     "missed": [
+      "acting",
+      "analysis"
+     ],
+     "note": "Call ping_client_for_documents; Analyze and prioritize",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: documents",
+        "text: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: strategy"
+       ],
+       "function": "reasoning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "ta-missing-receipts"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_env_validator_31814c2dac3b",
+     "index": 48,
+     "missed": [],
+     "note": "phase: build; docker-compose is an input",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: check",
+        "name or purpose: validate",
+        "name or purpose: validates",
+        "name or purpose: validation",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: development"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: deployment",
+        "text: docker"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "env-validator"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_prompt_engineer_1614c169e946",
+     "index": 49,
+     "missed": [
+      "analysis"
+     ],
+     "note": "ci is a Polish pronoun; measures prompt variants on a test set",
+     "tags": [
+      {
+       "evidence": [
+        "text: ci",
+        "text: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "prompt_engineer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_postman_mcp_server_a004a53841aa",
+     "index": 50,
+     "missed": [],
+     "note": "MCP tool guidance; create and analyze are tasks of the tools",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: tool",
+        "name or purpose: tools",
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: decisions",
+        "text: decision"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: analyze",
+        "text: diagnose"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: create",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "postman-mcp-server"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_writing_skills_agents_bee426009e3d",
+     "index": 51,
+     "missed": [],
+     "note": "validate_skills.py the CI gate",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing",
+        "text: changelog"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: install",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: ci",
+        "text: release"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: checks",
+        "text: validate"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "writing-skills-AGENTS"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_harness_accept_bc787c676995",
+     "index": 52,
+     "missed": [],
+     "note": "ship/wait/reject recommendation; Do NOT load for implementation",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: decide",
+        "name or purpose: decision",
+        "text: judge",
+        "text: judgment"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generate",
+        "name or purpose: implementation",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: code review",
+        "name or purpose: review",
+        "text: approval"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: inspection",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "harness-accept"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_qa_security_4fa9c5c4342c",
+     "index": 53,
+     "missed": [
+      "reviewing",
+      "analysis"
+     ],
+     "note": "security auditor (Polish); ci is a pronoun",
+     "tags": [
+      {
+       "evidence": [
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: cd",
+        "text: ci"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: qa"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "qa_security"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_ship_aacf59e07797",
+     "index": 54,
+     "missed": [],
+     "note": "Run all auditors and produce a scorecard",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run",
+        "text: cli",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: profile"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: checks",
+        "text: proof"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "ship"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_stock_deep_dive_04b931e9e4d0",
+     "index": 55,
+     "missed": [],
+     "note": "Work through one IDX symbol; present a lean",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analyse",
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: run",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: think"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: research"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      }
+     ],
+     "title": "stock-deep-dive"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_eodhd_claude_skills_claude_c6e9fc6b7925",
+     "index": 56,
+     "missed": [],
+     "note": "repository overview; eodhd-analyze is a skill name",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: install"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: development"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: ci",
+        "text: deployment"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "eodhd-claude-skills-CLAUDE"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_fit_scorer_5860e70fa50f",
+     "index": 57,
+     "missed": [],
+     "note": "Not for finding new influencers",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: discovery",
+        "text: sources"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analytics",
+        "text: benchmarking"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: estimates",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: decision",
+        "text: hypothesis"
+       ],
+       "function": "reasoning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "fit-scorer"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_marketing_mindset_agents_399c85eb3ed8",
+     "index": 58,
+     "missed": [],
+     "note": "when to recommend the marketing-mindset skill",
+     "tags": [
+      {
+       "evidence": [
+        "text: apply",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: evaluate",
+        "text: evaluation"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "marketing-mindset-AGENTS"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_mcp_jdwp_java_claude_cdaf011d9f01",
+     "index": 59,
+     "missed": [
+      "verification"
+     ],
+     "note": "Build Commands; ./mvnw test runs them",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: invokes"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analyzes",
+        "text: debug"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: builds"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: container",
+        "text: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "mcp-jdwp-java-CLAUDE"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_zh_cn_agents_750fb1d08d91",
+     "index": 60,
+     "missed": [],
+     "note": "test-driven, 80%+ coverage (Chinese)",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: hooks"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: test",
+        "text: tests"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "zh-CN-AGENTS"
+    },
+    {
+     "harness_kind": "marketplace",
+     "identity": "import_marketplace_skills_marketplace_835eadf0bae7",
+     "index": 61,
+     "missed": [
+      "research"
+     ],
+     "note": "29 investigation workflows; emails are targets",
+     "tags": [
+      {
+       "evidence": [
+        "text: docs",
+        "text: emails"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "Skills-marketplace"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_plan_8d294c1958ff",
+     "index": 62,
+     "missed": [],
+     "note": "never writes application code; Planning pipeline",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "name or purpose: planning",
+        "name or purpose: spec",
+        "text: scope",
+        "text: specification"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: run",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: implementation",
+        "text: migrate"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "plan"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_desk_risk_limits_201af7ebf2b1",
+     "index": 63,
+     "missed": [],
+     "note": "issues a PASS or REJECT; in writing is idiom",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checks",
+        "text: check"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: applies",
+        "text: apply"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: summary",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "desk-risk-limits"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_editing_0379cb4ff964",
+     "index": 64,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "Edit, review, or improve existing marketing copy",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: editing",
+        "text: articles",
+        "text: blog"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: comparison"
+       ],
+       "function": "analysis",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: implement",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: planning",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "editing"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_teach_impeccable_33e4506eb79e",
+     "index": 65,
+     "missed": [],
+     "note": "scan the project to discover; Write Design Context",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: run"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: discover",
+        "text: exploration"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: docs",
+        "text: documentation"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "teach-impeccable"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_iteration_drive_bdb34c9f5187",
+     "index": 66,
+     "missed": [],
+     "note": "drive the iteration: execute, create PR, merge loop",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execute",
+        "text: command",
+        "text: execution"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: create",
+        "text: implement"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: ci"
+       ],
+       "function": "operating",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: backlog",
+        "text: plan"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "iteration-drive"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_oma_skill_creator_f1c7b5161b37",
+     "index": 67,
+     "missed": [
+      "writing"
+     ],
+     "note": "Create or update OMA skills; SKILL.md authoring",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: execution",
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: create",
+        "text: creating",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: decide",
+        "text: decisions"
+       ],
+       "function": "reasoning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "oma-skill-creator"
+    },
+    {
+     "harness_kind": "protocol_server_configuration",
+     "identity": "import_protocol_server_configuration_solana_security_standard_mcp_791df96f8a78",
+     "index": 68,
+     "missed": [],
+     "note": "MCP server config: npx solana-security-mcp",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "harness kind: protocol_server_configuration"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "solana-security-standard-mcp"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_ac_git_pull_request_bd0416765438",
+     "index": 69,
+     "missed": [
+      "writing"
+     ],
+     "note": "Creates Pull Requests with structured documentation",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: create",
+        "name or purpose: creates",
+        "text: refactor",
+        "text: refactors"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: pull request",
+        "name or purpose: pull requests",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: validation",
+        "text: check",
+        "text: checking"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "ac-git-pull-request"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_appstore_archive_uploader_4599987447f6",
+     "index": 70,
+     "missed": [
+      "operating"
+     ],
+     "note": "archive, export, upload, or publish",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: build",
+        "text: builds"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: execution",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "appstore-archive-uploader"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_improve_961caf1c2a7c",
+     "index": 71,
+     "missed": [],
+     "note": "diagnoses weaknesses, evaluates via A/B; edits skill text",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: comparison",
+        "name or purpose: diagnoses",
+        "text: analytics",
+        "text: diagnosis"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: runs",
+        "text: applies",
+        "text: apply"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: reports",
+        "text: rewrite"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: create",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "improve"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_implementer_8d5ab6cf11de",
+     "index": 72,
+     "missed": [],
+     "note": "Implementation specialist for a test-first slice",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: implementation",
+        "text: refactor",
+        "text: refactoring"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: test",
+        "text: check",
+        "text: validation"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: commands"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "implementer"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_document_a1c03c5423e4",
+     "index": 73,
+     "missed": [],
+     "note": "Generate technical documentation from source code",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: document",
+        "name or purpose: documentation",
+        "text: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generate",
+        "text: generates",
+        "text: generator"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "document"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_release_validator_9e7cd45e94f3",
+     "index": 74,
+     "missed": [],
+     "note": "Validates release readiness; build and changelog are checked",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: tests",
+        "name or purpose: validates",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: build",
+        "name or purpose: creating",
+        "text: builds",
+        "text: generate"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: changelog",
+        "text: document",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: run",
+        "text: running"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "release-validator"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_social_170d2e61fb70",
+     "index": 75,
+     "missed": [
+      "writing"
+     ],
+     "note": "Create platform-specific social content",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: create"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: planning"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "social"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_web_checklist_2edd443bf0b4",
+     "index": 76,
+     "missed": [
+      "verification"
+     ],
+     "note": "post-merge web test checklist (Korean)",
+     "tags": [
+      {
+       "evidence": [
+        "text: plan",
+        "text: spec"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "web-checklist"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cost_aware_llm_pipeline_4893f4d5bb65",
+     "index": 77,
+     "missed": [],
+     "note": "LLM pipeline code patterns (Japanese)",
+     "tags": [
+      {
+       "evidence": [
+        "text: build",
+        "text: create"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: pipeline"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "cost-aware-llm-pipeline"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_sequence_bb5d7b5e1a14",
+     "index": 78,
+     "missed": [],
+     "note": "Create automated email sequence",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: email",
+        "text: docs",
+        "text: emails"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: automation",
+        "text: command"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analytics",
+        "text: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: create"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "sequence"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_test_61812ff3f714",
+     "index": 79,
+     "missed": [],
+     "note": "Wait for approval from the user",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: test",
+        "name or purpose: tests",
+        "text: assertion",
+        "text: testing"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generate",
+        "text: create",
+        "text: generating"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: execution",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: approval",
+        "text: approve"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "test"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_slack_e6d8718e8d25",
+     "index": 80,
+     "missed": [],
+     "note": "Slack messaging through MCP tools",
+     "tags": [
+      {
+       "evidence": [
+        "text: cli",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      }
+     ],
+     "title": "slack"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_vaaya_0e1884cd8186",
+     "index": 81,
+     "missed": [],
+     "note": "email is a service; approve is a purchase",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: automation",
+        "text: execution",
+        "text: install"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: search"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: email",
+        "text: editing"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: approval",
+        "text: approve"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "vaaya"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_interview_plan_b3851a8fd478",
+     "index": 82,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "Interview a plan; Scan for anti-patterns",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plan",
+        "text: estimate",
+        "text: estimates"
+       ],
+       "function": "planning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analytics",
+        "text: comparison"
+       ],
+       "function": "analysis",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: deploy",
+        "text: infrastructure"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: alternatives",
+        "text: decisions"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      }
+     ],
+     "title": "interview-plan"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_alakazam_e5e88957588a",
+     "index": 83,
+     "missed": [],
+     "note": "Use after research collection",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: research",
+        "name or purpose: sources"
+       ],
+       "function": "research",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "alakazam"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_writing_skills_plugin_1928fb3b2d5d",
+     "index": 84,
+     "missed": [],
+     "note": "writing-skills plugin manifest",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: writing"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "writing-skills-plugin"
+    },
+    {
+     "harness_kind": "plugin_manifest",
+     "identity": "import_plugin_manifest_solana_security_standard_plugin_e874f1fe447a",
+     "index": 85,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "scan_solana_code MCP tool; audit keyword",
+     "tags": [
+      {
+       "evidence": [
+        "text: command",
+        "text: tool"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "solana-security-standard-plugin"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_experiment_screener_2125ae9cb3bd",
+     "index": 86,
+     "missed": [
+      "reviewing"
+     ],
+     "note": "Screen experiment plans before implementation (Chinese)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: plans",
+        "text: plan",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: implementation"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "experiment-screener"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_sap_object_documenter_7039b4b65ea4",
+     "index": 87,
+     "missed": [
+      "analysis"
+     ],
+     "note": "classifies each by style; summarizes dependencies",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: document",
+        "name or purpose: documentation",
+        "name or purpose: summarizes",
+        "text: readme"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: generate",
+        "text: create",
+        "text: implementation"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: lookup",
+        "text: search"
+       ],
+       "function": "research",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "sap-object-documenter"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_multiplayer_basics_25a052d69129",
+     "index": 88,
+     "missed": [
+      "building"
+     ],
+     "note": "Use when implementing multiplayer; implementing is not in the vocabulary",
+     "tags": [
+      {
+       "evidence": [
+        "text: executes",
+        "text: runs"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: validates"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "multiplayer-basics"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_find_leaks_in_the_wild_e9a4e9a1d791",
+     "index": 89,
+     "missed": [],
+     "note": "incident response is an application area",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: search",
+        "name or purpose: searches",
+        "text: discovery"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: incident",
+        "name or purpose: monitoring"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: judge",
+        "text: reasons",
+        "text: think"
+       ],
+       "function": "reasoning",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: checking",
+        "name or purpose: validation"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      }
+     ],
+     "title": "find-leaks-in-the-wild"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_ng_baseline_a3332bfce8dd",
+     "index": 90,
+     "missed": [
+      "writing"
+     ],
+     "note": "Records the version everyone agreed is correct",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: command",
+        "text: commands",
+        "text: run"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: feedback",
+        "text: pull request"
+       ],
+       "function": "reviewing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: check",
+        "text: checking"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "ng-baseline"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_cli_output_claude_a2c11e4e6055",
+     "index": 91,
+     "missed": [
+      "reasoning"
+     ],
+     "note": "Trade-offs: between design variants",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: cli",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: build",
+        "text: implement"
+       ],
+       "function": "building",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: prove",
+        "text: validates"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "cli-output-claude"
+    },
+    {
+     "harness_kind": "command",
+     "identity": "import_command_deep_review_cb8f2675b26e",
+     "index": 92,
+     "missed": [],
+     "note": "Deep single-function security review",
+     "tags": [
+      {
+       "evidence": [
+        "text: run",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "deep-review"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_cost_tracking_faf51ca1576e",
+     "index": 93,
+     "missed": [],
+     "note": "Track and report token usage; cost breakdown",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: metrics",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: report",
+        "text: summary"
+       ],
+       "function": "writing",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: command",
+        "text: execute"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: breakdown",
+        "text: estimate"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "cost-tracking"
+    },
+    {
+     "harness_kind": "instruction_file",
+     "identity": "import_instruction_file_docs_claude_a79ac4d0356d",
+     "index": 94,
+     "missed": [],
+     "note": "Team and Enterprise plans; docs is the title",
+     "tags": [
+      {
+       "evidence": [
+        "text: commands",
+        "text: tool"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: plan",
+        "text: plans"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: docs"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "docs-claude"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_incident_response_f064a7531c7c",
+     "index": 95,
+     "missed": [
+      "writing"
+     ],
+     "note": "Generar un informe postmortem (Spanish)",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: incident",
+        "text: rollback"
+       ],
+       "function": "operating",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: root cause"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: qa",
+        "text: test"
+       ],
+       "function": "verification",
+       "verdict": "arguable"
+      }
+     ],
+     "title": "incident-response"
+    },
+    {
+     "harness_kind": "subagent",
+     "identity": "import_subagent_docs_reviewer_ce4e0281c2bd",
+     "index": 96,
+     "missed": [],
+     "note": "reviews documentation, does not write it",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: docs",
+        "name or purpose: documentation",
+        "text: documents",
+        "text: readme"
+       ],
+       "function": "writing",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: correctness",
+        "text: check",
+        "text: checks"
+       ],
+       "function": "verification",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: reviewer",
+        "text: review"
+       ],
+       "function": "reviewing",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: command"
+       ],
+       "function": "acting",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "docs-reviewer"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_prior_art_search_242f98b6f71e",
+     "index": 97,
+     "missed": [],
+     "note": "check patents is a trigger phrase for search",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: literature",
+        "name or purpose: search",
+        "text: research",
+        "text: searching"
+       ],
+       "function": "research",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: check",
+        "text: verify"
+       ],
+       "function": "verification",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "text: analysis",
+        "text: analyze"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: documents",
+        "text: report"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "prior-art-search"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_graph_the_network_21f94ba42322",
+     "index": 98,
+     "missed": [],
+     "note": "shell-network detection; shared infrastructure of a target",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: applies",
+        "name or purpose: shell",
+        "text: tool",
+        "text: tools"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: investigation",
+        "text: analytics",
+        "text: compare"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: build"
+       ],
+       "function": "building",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: infrastructure"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "graph-the-network"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_optimize_a552f0ceca73",
+     "index": 99,
+     "missed": [],
+     "note": "Alert if page load > 3s is a monitoring example",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: development",
+        "text: build",
+        "text: building"
+       ],
+       "function": "building",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: apply",
+        "text: install"
+       ],
+       "function": "acting",
+       "verdict": "arguable"
+      },
+      {
+       "evidence": [
+        "text: analyze",
+        "text: debug"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "text: alert",
+        "text: alerts"
+       ],
+       "function": "operating",
+       "verdict": "wrong"
+      }
+     ],
+     "title": "optimize"
+    },
+    {
+     "harness_kind": "skill",
+     "identity": "import_skill_engineering_retro_d47276811401",
+     "index": 100,
+     "missed": [],
+     "note": "sprint retro; path scoping; per-author breakdown",
+     "tags": [
+      {
+       "evidence": [
+        "name or purpose: analysis",
+        "name or purpose: analyzing",
+        "text: analyze",
+        "text: metrics"
+       ],
+       "function": "analysis",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: scoping",
+        "name or purpose: sprint",
+        "text: breakdown",
+        "text: scope"
+       ],
+       "function": "planning",
+       "verdict": "wrong"
+      },
+      {
+       "evidence": [
+        "name or purpose: triggers",
+        "text: apply",
+        "text: execution"
+       ],
+       "function": "acting",
+       "verdict": "correct"
+      },
+      {
+       "evidence": [
+        "name or purpose: summary",
+        "text: docs",
+        "text: documentation"
+       ],
+       "function": "writing",
+       "verdict": "correct"
+      }
+     ],
+     "title": "engineering-retro"
+    }
+   ],
+   "misleading_words": [
+    {
+     "arguable_tags": 1,
+     "correct_tags": 7,
+     "function": "acting",
+     "word": "apply",
+     "wrong_tags": 11
+    },
+    {
+     "arguable_tags": 4,
+     "correct_tags": 7,
+     "function": "building",
+     "word": "create",
+     "wrong_tags": 11
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 10,
+     "function": "acting",
+     "word": "command",
+     "wrong_tags": 10
+    },
+    {
+     "arguable_tags": 6,
+     "correct_tags": 11,
+     "function": "building",
+     "word": "build",
+     "wrong_tags": 9
+    },
+    {
+     "arguable_tags": 3,
+     "correct_tags": 14,
+     "function": "acting",
+     "word": "run",
+     "wrong_tags": 9
+    },
+    {
+     "arguable_tags": 0,
+     "correct_tags": 4,
+     "function": "building",
+     "word": "generate",
+     "wrong_tags": 8
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 2,
+     "function": "building",
+     "word": "implementation",
+     "wrong_tags": 7
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 0,
+     "function": "operating",
+     "word": "pipeline",
+     "wrong_tags": 6
+    },
+    {
+     "arguable_tags": 5,
+     "correct_tags": 5,
+     "function": "planning",
+     "word": "plan",
+     "wrong_tags": 6
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 1,
+     "function": "acting",
+     "word": "applies",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 2,
+     "function": "writing",
+     "word": "report",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 2,
+     "function": "planning",
+     "word": "scope",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 2,
+     "function": "writing",
+     "word": "summary",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 6,
+     "function": "writing",
+     "word": "docs",
+     "wrong_tags": 5
+    },
+    {
+     "arguable_tags": 0,
+     "correct_tags": 3,
+     "function": "acting",
+     "word": "runs",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 3,
+     "correct_tags": 3,
+     "function": "acting",
+     "word": "tools",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 5,
+     "correct_tags": 5,
+     "function": "acting",
+     "word": "commands",
+     "wrong_tags": 4
+    },
+    {
+     "arguable_tags": 1,
+     "correct_tags": 0,
+     "function": "writing",
+     "word": "changelog",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 3,
+     "correct_tags": 0,
+     "function": "operating",
+     "word": "ci",
+     "wrong_tags": 3
+    },
+    {
+     "arguable_tags": 2,
+     "correct_tags": 0,
+     "function": "building",
+     "word": "creating",
+     "wrong_tags": 3
+    }
+   ],
+   "overall": {
+    "arguable": 61,
+    "correct": 135,
+    "precision_lenient": 0.613,
+    "precision_strict": 0.422,
+    "tags": 320,
+    "wrong": 124
+   },
+   "per_function": {
+    "acting": {
+     "arguable": 14,
+     "correct": 33,
+     "precision_lenient": 0.61,
+     "precision_strict": 0.429,
+     "tags": 77,
+     "wrong": 30
+    },
+    "analysis": {
+     "arguable": 6,
+     "correct": 21,
+     "precision_lenient": 0.73,
+     "precision_strict": 0.568,
+     "tags": 37,
+     "wrong": 10
+    },
+    "building": {
+     "arguable": 9,
+     "correct": 16,
+     "precision_lenient": 0.5,
+     "precision_strict": 0.32,
+     "tags": 50,
+     "wrong": 25
+    },
+    "operating": {
+     "arguable": 6,
+     "correct": 2,
+     "precision_lenient": 0.32,
+     "precision_strict": 0.08,
+     "tags": 25,
+     "wrong": 17
+    },
+    "planning": {
+     "arguable": 5,
+     "correct": 7,
+     "precision_lenient": 0.522,
+     "precision_strict": 0.304,
+     "tags": 23,
+     "wrong": 11
+    },
+    "reasoning": {
+     "arguable": 6,
+     "correct": 7,
+     "precision_lenient": 0.812,
+     "precision_strict": 0.438,
+     "tags": 16,
+     "wrong": 3
+    },
+    "research": {
+     "arguable": 3,
+     "correct": 7,
+     "precision_lenient": 0.833,
+     "precision_strict": 0.583,
+     "tags": 12,
+     "wrong": 2
+    },
+    "reviewing": {
+     "arguable": 1,
+     "correct": 5,
+     "precision_lenient": 0.462,
+     "precision_strict": 0.385,
+     "tags": 13,
+     "wrong": 7
+    },
+    "verification": {
+     "arguable": 8,
+     "correct": 23,
+     "precision_lenient": 0.886,
+     "precision_strict": 0.657,
+     "tags": 35,
+     "wrong": 4
+    },
+    "writing": {
+     "arguable": 3,
+     "correct": 14,
+     "precision_lenient": 0.531,
+     "precision_strict": 0.438,
+     "tags": 32,
+     "wrong": 15
+    }
+   },
+   "recall_gap": {
+    "items_with_a_missed_function": 32,
+    "missed_per_function": {
+     "acting": 1,
+     "analysis": 6,
+     "building": 2,
+     "operating": 3,
+     "planning": 1,
+     "reasoning": 1,
+     "research": 2,
+     "reviewing": 7,
+     "verification": 3,
+     "writing": 9
+    },
+    "missed_total": 35
+   }
+  }
+ },
+ "date": "2026-09-26",
+ "population": {
+  "approved_items": 1586,
+  "export_folder": "/home/username/baltor-library/review-batches/2026-09-26-10",
+  "packages_read_from": "the reviewed folder; no package text is copied here",
+  "reviewed_folder": "/home/username/baltor-library/reviewed-2026-09-26-10/imported"
+ },
+ "record_type": "step_function_tag_precision_record/v1",
+ "sample": {
+  "drawn_from": "items tagged under rules 1.0.0, sorted by identity",
+  "identities": [
+   "import_command_modernize_status_7629c40c3234",
+   "import_command_fix_build_708ab6100ba8",
+   "import_command_bump_mathlib_b5f710bd08ab",
+   "import_skill_web_development_1d83608f8e0d",
+   "import_protocol_server_configuration_mcp_jdwp_java_mcp_5d04b60f3942",
+   "import_skill_researchers_verifier_fd26d5f4c87e",
+   "import_marketplace_mcp_jdwp_java_marketplace_fdf4171f33e5",
+   "import_subagent_cortex_82834a86eb01",
+   "import_command_diagnose_underperformer_33c6bcc83fec",
+   "import_command_sync_figma_tokens_c27ea045e8ff",
+   "import_skill_dynatrace_managed_c7d3a1c94a7f",
+   "import_skill_reddit_e1e589d8a01a",
+   "import_rules_github_cursorrules_prompt_file_instructi_9d1acea4adb5",
+   "import_protocol_server_configuration_context_and_tools_mcp_d27d55c2dd4f",
+   "import_command_workflow_classify_5e0e0c3d7197",
+   "import_subagent_reviewer_22637d329abc",
+   "import_skill_google_shopping_optimization_39824320da56",
+   "import_subagent_security_auditor_64202803c099",
+   "import_command_health_9f2d627b7d8b",
+   "import_subagent_vuln_scanner_055b3a3d4e36",
+   "import_skill_audience_profile_171d7fd940e2",
+   "import_subagent_uplift_migrator_88245c397f54",
+   "import_skill_skill_prd_29bfb3e65e44",
+   "import_subagent_chief_of_staff_0df0a1525dc7",
+   "import_plugin_manifest_cloudbase_plugin_75aa5216ec0b",
+   "import_skill_vehicle_selection_2af1d4702487",
+   "import_subagent_bm_security_auditor_46a79223a97c",
+   "import_skill_migrate_6e11e7e09d67",
+   "import_subagent_sap_qa_tester_71c5aab02dab",
+   "import_instruction_file_references_agents_4588d7d99d70",
+   "import_marketplace_writing_skills_marketplace_24d4b70290a9",
+   "import_command_verify_cc0814555e74",
+   "import_skill_sdd_requirements_0781226a3028",
+   "import_skill_cc_dev_agent_d85813acea11",
+   "import_skill_corporate_communication_f9d1a0d0b7f3",
+   "import_rules_nimble_web_expert_454afc0ceedc",
+   "import_rules_commit_conventions_c6c7f1cdcb63",
+   "import_skill_codex_test_gen_0ccee0093b8c",
+   "import_command_build_dad1ca17fa4d",
+   "import_skill_hz_unity_sdk_upgrade_15efbad3ab51",
+   "import_skill_debug_investigator_ad7ccba4800f",
+   "import_skill_style_direction_bae0b6920746",
+   "import_rules_mvp_scope_c001299ffbb9",
+   "import_command_compose_test_71fad7933348",
+   "import_command_recommend_49b1a565abea",
+   "import_marketplace_beer_and_code_harness_marketplace_07ea046b7fe0",
+   "import_skill_ta_missing_receipts_f37a11db5256",
+   "import_skill_env_validator_31814c2dac3b",
+   "import_subagent_prompt_engineer_1614c169e946",
+   "import_skill_postman_mcp_server_a004a53841aa",
+   "import_instruction_file_writing_skills_agents_bee426009e3d",
+   "import_skill_harness_accept_bc787c676995",
+   "import_subagent_qa_security_4fa9c5c4342c",
+   "import_command_ship_aacf59e07797",
+   "import_skill_stock_deep_dive_04b931e9e4d0",
+   "import_instruction_file_eodhd_claude_skills_claude_c6e9fc6b7925",
+   "import_skill_fit_scorer_5860e70fa50f",
+   "import_instruction_file_marketing_mindset_agents_399c85eb3ed8",
+   "import_instruction_file_mcp_jdwp_java_claude_cdaf011d9f01",
+   "import_instruction_file_zh_cn_agents_750fb1d08d91",
+   "import_marketplace_skills_marketplace_835eadf0bae7",
+   "import_command_plan_8d294c1958ff",
+   "import_skill_desk_risk_limits_201af7ebf2b1",
+   "import_command_editing_0379cb4ff964",
+   "import_skill_teach_impeccable_33e4506eb79e",
+   "import_command_iteration_drive_bdb34c9f5187",
+   "import_skill_oma_skill_creator_f1c7b5161b37",
+   "import_protocol_server_configuration_solana_security_standard_mcp_791df96f8a78",
+   "import_skill_ac_git_pull_request_bd0416765438",
+   "import_skill_appstore_archive_uploader_4599987447f6",
+   "import_skill_improve_961caf1c2a7c",
+   "import_subagent_implementer_8d5ab6cf11de",
+   "import_command_document_a1c03c5423e4",
+   "import_subagent_release_validator_9e7cd45e94f3",
+   "import_command_social_170d2e61fb70",
+   "import_command_web_checklist_2edd443bf0b4",
+   "import_skill_cost_aware_llm_pipeline_4893f4d5bb65",
+   "import_command_sequence_bb5d7b5e1a14",
+   "import_command_test_61812ff3f714",
+   "import_skill_slack_e6d8718e8d25",
+   "import_skill_vaaya_0e1884cd8186",
+   "import_command_interview_plan_b3851a8fd478",
+   "import_subagent_alakazam_e5e88957588a",
+   "import_plugin_manifest_writing_skills_plugin_1928fb3b2d5d",
+   "import_plugin_manifest_solana_security_standard_plugin_e874f1fe447a",
+   "import_subagent_experiment_screener_2125ae9cb3bd",
+   "import_skill_sap_object_documenter_7039b4b65ea4",
+   "import_skill_multiplayer_basics_25a052d69129",
+   "import_skill_find_leaks_in_the_wild_e9a4e9a1d791",
+   "import_command_ng_baseline_a3332bfce8dd",
+   "import_instruction_file_cli_output_claude_a2c11e4e6055",
+   "import_command_deep_review_cb8f2675b26e",
+   "import_skill_cost_tracking_faf51ca1576e",
+   "import_instruction_file_docs_claude_a79ac4d0356d",
+   "import_skill_incident_response_f064a7531c7c",
+   "import_subagent_docs_reviewer_ce4e0281c2bd",
+   "import_skill_prior_art_search_242f98b6f71e",
+   "import_skill_graph_the_network_21f94ba42322",
+   "import_skill_optimize_a552f0ceca73",
+   "import_skill_engineering_retro_d47276811401"
+  ],
+  "judge": "Claude Fable 5.1, one pass, reading the headline and the entry text head",
+  "seed": 20260926,
+  "size": 100,
+  "verdict_meaning": {
+   "arguable": "partial or indirect support",
+   "correct": "the item clearly supports a step of that kind",
+   "wrong": "the tag came from incidental words"
+  }
+ }
+}
