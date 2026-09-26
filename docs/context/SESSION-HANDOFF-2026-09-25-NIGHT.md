@@ -67,11 +67,15 @@ machine's Eastern time: 04:17, 10:17, 16:17 and 22:17 UTC) with `--publish`,
 `REPOSITORY=/home/username/.le-import-review-20260925` (a detached
 worktree on main; move it to a permanent checkout before that worktree is
 retired) and `RUN_FOLDER=/home/username/.le-library/import-2026-09-24/run-1`
-(the import run whose `leads.jsonl` the export stage reads). Its log is
-`~/.le-ci-tmp/daily-cron.log`; each day's journal is
-the day's `journal.jsonl` under `~/baltor-library/daily/`. The export stage
-has not yet run unattended: the first cron run, at 04:17 UTC on September
-26, is the check.
+(the import run whose `leads.jsonl` the export stage reads). Each slot has
+its own run name, `<date>-<hour>` in UTC (for example `2026-09-26-10`), so
+every slot exports and reviews its own 2,000 packages; the reviewed records
+carry the calendar date. Its log is `~/.le-ci-tmp/daily-cron.log`; each
+run's journal is `journal.jsonl` under `~/baltor-library/daily/<run>/`. The
+first cron slot at 04:17 UTC on September 26 failed to start because the
+script was not executable and the entry called it directly; the tools are
+executable now, the entry calls `bash`, and the 04 slot was started by hand
+at 04:40 UTC as the first run of the export stage.
 
 ## Next steps, in order
 
